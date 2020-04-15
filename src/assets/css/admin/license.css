@@ -1,0 +1,362 @@
+.uo-license {
+	font-size: 15px;
+	font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	-webkit-font-smoothing:antialiased;
+	-moz-osx-font-smoothing:grayscale;
+
+	background: #fff;
+	border: 1px solid #d2d2d2;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
+
+	border-radius: 3px;
+
+	overflow: hidden;
+
+	display: flex;
+}
+
+.uo-license,
+.uo-license * {
+	box-sizing: border-box;
+}
+
+.uo-license a {
+	text-decoration: none;
+}
+
+.uo-license input {
+	border: 0;
+}
+
+	.uo-license-status {
+		width: 140px;
+		flex: 0 0 auto;
+		padding: 40px 20px;
+		text-align: center;
+		background: #fff7f6;
+		border-right: 1px solid #d2d2d2;
+		position: relative;
+	}
+
+	.uo-license--active .uo-license-status {
+		background: #f4fff4;
+	}
+
+		.uo-license-status__icon {
+			width: 55px;
+			height: 55px;
+
+			background: #e94b35;
+
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+
+			border-radius: 50%;
+		}
+
+		.uo-license--active .uo-license-status__icon {
+			background: #1fce6d;
+		}
+
+			.uo-license-status-icon__svg {
+				max-width: 50%;
+				max-height: 50%;
+
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%,-50%);
+			}
+
+				.uo-license-status-icon__svg-path {
+					fill: #fef7f6;
+				}
+
+	.uo-license-content {
+		flex: 1 1 auto;
+	}
+
+		.uo-license-content-form {
+			padding: 0;
+			margin: 0;
+			border: 0;
+		}
+
+			.uo-license-content-form__notice {
+				background: #bde5f8;
+				color: #00529b;
+				padding: 8px 15px;
+				border-radius: 3px;
+				line-height: 1.5;
+				margin-bottom: 15px;
+			}
+
+				.uo-license-content-form__notice a {
+					color: #003d73;
+					border-bottom: 1px solid rgba(0, 61, 115, 0.6);
+				}
+
+		.uo-license-content-mobile-buttons {
+			margin-top: 15px;
+			display: none;
+		}
+
+		.uo-license-content-top {
+			display: flex;
+		}
+
+			.uo-license-content-title {
+				font-size: 16px;
+				font-weight: 600;
+				color: #343434;
+				margin-bottom: 10px;
+			}
+
+			.uo-license-content-description {
+				color: #6b6b6b;
+				margin-bottom: 10px;
+			}
+
+				.uo-license-content-description a {
+					color: #0790e8;
+				}
+
+			.uo-license-content-info,
+			.uo-license-content-faq {
+				padding: 20px;
+				line-height: 1.4;
+			}
+
+			.uo-license-content-info {
+				width: 60%;
+			}
+
+				.uo-license-content-form {}
+
+					.uo-license-content-form #uo-license-field {
+						width: 100%;
+						height: 37px;
+
+						/* Padding. We are using this instead of the shortcut because otherwise WP will overwrite some paddings */
+						padding-top: 0;
+						padding-bottom: 0;
+						padding-left: 12px;
+						padding-right: 12px;
+
+						transition: border 150ms ease-in-out;
+
+						border-radius: 3px;
+						border: 1px solid #cdcdcd;
+						box-shadow: 0 2px 5px 0 rgba(0,0,0,.1);
+
+						outline: none;
+					}
+
+						.uo-license-content-form #uo-license-field:valid {
+							font-family: Consolas, Monaco, 'Courier New', Courier, monospace;
+							letter-spacing: 1px;
+						}
+
+					.uo-license-content-form #uo-license-field:hover {
+						border-color: #b9b9b9;
+					}
+
+					.uo-license-content-form #uo-license-field:focus {
+						border-color: #0790e8;
+					}
+
+			.uo-license-content-faq {
+				width: 40%;
+				position: relative;
+			}
+
+				.uo-license-content-faq:before {
+					content: '';
+
+					width: 1px;
+					height: calc(100% - 80px);
+
+					background: #e1e1e1;
+
+					position: absolute;
+					top: 40px;
+					left: 0;
+				}
+
+				.uo-license-content-faq-list {}
+
+					.uo-license-content-faq-list-ul {
+						padding: 0;
+						margin: 0;
+					}
+
+						.uo-license-content-faq-item {
+							list-style: none;
+							padding: 0;
+							margin: 0;
+						}
+
+							.uo-license-content-faq-item a {
+								color: #848484;
+								padding: 1px 0;
+								display: inline-block;
+							}
+
+		.uo-license-content-footer {
+			background: #fafafa;
+			border-top: 1px solid #e1e1e1;
+			padding: 15px 20px;
+		}
+
+.uo-license-btn {
+	outline: none;
+	display: inline-block;
+	font-weight: 400;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	user-select: none;
+	border: 1px solid transparent;
+	padding: 5px 15px;
+	font-size: 15px;
+	line-height: 1.5;
+	border-radius: 3px;
+	background-color: transparent;
+	transition: color 150ms ease-in-out, background-color 150ms ease-in-out,border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
+	cursor: pointer;
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,.1);
+	position: relative;
+}
+
+.uo-license-btn:not(:last-child){
+	margin-right: 10px;
+}
+
+	.uo-license-btn--primary {
+		color: #0790e8;
+		border-color: #0790e8;
+	}
+
+		.uo-license-btn--primary.uo-license-btn--loading,
+		.uo-license-btn--primary.uo-license-btn--disabled,
+		.uo-license-btn--primary:disabled,
+		.uo-license-btn--primary:hover,
+		.uo-license-btn--primary:focus {
+			color: #fff;
+			background-color: #0790e8;
+		}
+
+		.uo-license-btn--primary:not(.uo-license-btn--disabled):active,
+		.uo-license-btn--primary:not(.uo-license-btn--disabled):focus {
+			box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .5);
+		}
+
+	.uo-license-btn--secondary {
+		color: #6c757d;
+		border-color: #b7b7b7;
+	}
+
+		.uo-license-btn--secondary.uo-license-btn--loading,
+		.uo-license-btn--secondary.uo-license-btn--disabled,
+		.uo-license-btn--secondary:disabled,
+		.uo-license-btn--secondary:hover,
+		.uo-license-btn--secondary:focus {
+			color: #fff;
+			border-color: #9e9e9e;
+			background-color: #9e9e9e;
+		}
+
+		.uo-license-btn--secondary:not(.uo-license-btn--disabled):active,
+		.uo-license-btn--secondary:not(.uo-license-btn--disabled):focus {
+			box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, .2);
+		}
+
+	.uo-license-btn--error {
+		color: #e94b35;
+		border-color: #e94b35;
+	}
+
+		.uo-license-btn--error.uo-license-btn--loading,
+		.uo-license-btn--error.uo-license-btn--disabled,
+		.uo-license-btn--error:disabled,
+		.uo-license-btn--error:hover,
+		.uo-license-btn--error:focus {
+			color: #fff;
+			border-color: #e94b35;
+			background-color: #e94b35;
+		}
+
+		.uo-license-btn--error:not(.uo-license-btn--disabled):active,
+		.uo-license-btn--error:not(.uo-license-btn--disabled):focus {
+			box-shadow: 0 0 0 0.2rem rgba(233, 75, 53, .2);
+		}
+
+	.uo-license-btn--disabled,
+	.uo-license-btn:disabled {
+		opacity: .6;
+		cursor: not-allowed;
+	}
+
+	.uo-license-btn--loading,
+	.uo-license-btn--loading:hover {
+		color: transparent !important;
+	}
+
+		.uo-license-btn--loading:before {
+			content: '';
+
+			width: 16px;
+			height: 16px;
+
+			background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PHN2ZyB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjAiIHdpZHRoPSI2NHB4IiBoZWlnaHQ9IjY0cHgiIHZpZXdCb3g9IjAgMCAxMjggMTI4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48Zz48cGF0aCBkPSJNNzUuNCAxMjYuNjNhMTEuNDMgMTEuNDMgMCAwIDEtMi4xLTIyLjY1IDQwLjkgNDAuOSAwIDAgMCAzMC41LTMwLjYgMTEuNCAxMS40IDAgMSAxIDIyLjI3IDQuODdoLjAyYTYzLjc3IDYzLjc3IDAgMCAxLTQ3LjggNDguMDV2LS4wMmExMS4zOCAxMS4zOCAwIDAgMS0yLjkzLjM3eiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIxIi8+PGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIGZyb209IjAgNjQgNjQiIHRvPSIzNjAgNjQgNjQiIGR1cj0iMTgwMG1zIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSI+PC9hbmltYXRlVHJhbnNmb3JtPjwvZz48L3N2Zz4=) center center no-repeat;
+			background-size: contain;
+
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+
+			color: #fff;
+		}
+
+@media screen and (max-width: 768px){
+	.uo-license {
+		display: block;
+	}
+
+		.uo-license-status {
+			width: 100%;
+			border-right: 0;
+			height: 150px;
+			border-bottom: 1px solid #d2d2d2;
+		}
+
+		.uo-license-content {}
+
+			.uo-license-content-top {
+				display: block;
+			}
+
+				.uo-license-content-info,
+				.uo-license-content-faq {
+					width: 100%;
+				}
+
+					.uo-license-content-faq:before {
+						width: calc(100% - 80px);
+						height: 1px;
+
+						top: 0;
+						left: 40px;
+					}
+
+			.uo-license-content-mobile-buttons {
+				display: block;
+			}
+
+			.uo-license-content-footer {
+				display: none;
+			}
+}

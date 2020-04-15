@@ -1,0 +1,186 @@
+<?php
+
+namespace Uncanny_Automator;
+
+/**
+ * Class PM_POPUPSHOW
+ * @package uncanny_automator
+ */
+class PM_POPUPSHOW {
+
+	/**
+	 * Integration code
+	 * @var string
+	 */
+	public static $integration = 'PM';
+
+	private $action_code;
+	private $action_meta;
+
+	/**
+	 * Set up Automator action constructor.
+	 */
+	public function __construct() {
+		$this->action_code = 'POPUPSHOW';
+		$this->action_meta = 'POPUPID';
+		$this->define_action();
+
+		add_filter( 'automator_option_updated', array( $this, 'automator_option_updated' ), 10, 4 );
+	}
+
+	/**
+	 * Define and register the action by pushing it into the Automator object
+	 */
+	public function define_action() {
+
+		global $uncanny_automator;
+
+		global $wpdb;
+
+		$automator_popups = $wpdb->get_col( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'popup_settings' AND meta_value LIKE '%automator%'" );
+
+		$args = [
+			'post_type'      => 'popup',
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+			//'include'        => $automator_popups,
+		];
+
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, 'popup' );
+
+		$option = [
+			'option_code' => 'POPUPID',
+			'label'       => __( 'Select a Popup', 'uncanny-automator' ),
+			'input_type'  => 'select',
+			'required'    => true,
+			'options'     => $options,
+		];
+
+
+		$action = array(
+			'author'             => 'Uncanny Automator',
+			'support_link'       => 'https://www.automatorplugin.com/#support',
+			'integration'        => self::$integration,
+			'code'               => $this->action_code,
+			/* Translators: 1:Popups */
+			'sentence'           => sprintf( __( 'Display {{Popup:%1$s}} for the user.', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name' => __( 'Display the {{Popup}} for a user', 'uncanny-automator' ),
+			'priority'           => 11,
+			'accepted_args'      => 3,
+			'execution_function' => [ $this, 'display_pop_up' ],
+			'options'            => [
+				$option,
+			],
+		);
+
+		$uncanny_automator->register->action( $action );
+	}
+
+	/**
+	 * Validation function when the trigger action is hit
+	 *
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 */
+	public function display_pop_up( $user_id, $action_data, $recipe_id ) {
+
+		global $uncanny_automator;
+
+		$popup_id = absint( $action_data['meta']['POPUPID'] );
+
+		$popup = get_post( $popup_id );
+
+
+		if ( ! $popup ) {
+			$error_message = 'The pop up doesn\'t exist. ID: ' . $popup_id;
+			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+
+			return;
+		}
+
+		if ( 'publish' !== $popup->post_status ) {
+			$error_message = 'The pop was not published or does not exist anymore. ID: ' . $popup_id;
+			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+
+			return;
+		}
+
+		$found_it = [];
+
+		// update Popup triggers
+		$settings = get_post_meta( $popup->ID, 'popup_settings', true );
+
+		if ( isset( $settings['triggers'] ) ) {
+
+			foreach ( $settings['triggers'] as $trigger ) {
+				if ( 'automator' === $trigger['type'] ) {
+					foreach ( $trigger['settings'] as $key => $setting ) {
+						if ( 'recipe' === $key && in_array( $recipe_id, $setting ) ) {
+							$found_it = true;
+						}
+					}
+				}
+			}
+		}
+
+		if ( ! $found_it ) {
+			$error_message = 'The pop did no have the associated Recipe set as a pop up trigger. ID: ' . $popup_id;
+			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+
+			return;
+		}
+
+
+		update_user_meta( $user_id, 'display_pop_up_' . $popup_id, $popup_id );
+		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+	}
+
+	/**
+	 *
+	 */
+	public function automator_option_updated( $return, $item, $meta_key, $meta_value ) {
+
+		$found_it = [];
+
+		if ( isset( $item->post_type ) && 'uo-action' === $item->post_type ) {
+			if ( 'POPUPID' === $meta_key ) {
+
+				$popup = get_post( absint( $meta_value ) );
+				// update Popup triggers
+				$settings = get_post_meta( $popup->ID, 'popup_settings', true );
+
+				if ( isset( $settings['triggers'] ) ) {
+
+					foreach ( $settings['triggers'] as $trigger ) {
+						if ( 'automator' === $trigger['type'] ) {
+							foreach ( $trigger['settings'] as $key => $setting ) {
+								if ( 'recipe' === $key && in_array( $item->post_parent, $setting ) ) {
+									$found_it = true;
+								}
+							}
+						}
+					}
+				}
+
+				if ( ! $found_it ) {
+					$settings['triggers'][] = [
+						'type'     => 'automator',
+						'settings' => [
+							'cookie_name' => '',
+							'recipe'      => [ $item->post_parent ],
+						],
+					];
+
+					update_post_meta( $popup->ID, 'popup_settings', $settings );
+				}
+
+				return $return;
+			}
+		}
+
+		return $return;
+	}
+}

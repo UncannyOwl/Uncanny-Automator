@@ -1,0 +1,123 @@
+<?php
+
+namespace Uncanny_Automator;
+
+/**
+ * Class Actionify_Triggers
+ * @package uncanny_automator
+ */
+class Actionify_Triggers {
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		//$ajax_prevent = get_option( 'uap_automator_ajax_prevent', 1 );
+		//Always enabled
+		$ajax_prevent = 1;
+		if ( 1 === absint( $ajax_prevent ) ) {
+			///New Method to prevent ajax etc, unnecessary calls
+			if ( isset( $_REQUEST['doing_rest'] ) ) {
+				//Ignore
+				return;
+			} elseif ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] ) {
+				//Ignore
+				return;
+			} elseif ( isset( $_REQUEST['wc-ajax'] ) ) {
+				//Ignore
+				return;
+			} elseif ( isset( $_REQUEST['doing_wp_cron'] ) ) {
+				//Ignore
+				return;
+			} elseif ( 'admin-ajax.php' === basename( $_SERVER['REQUEST_URI'] ) && ! isset( $_REQUEST['action'] ) ) {
+				//Ignore
+				return;
+			} else {
+				add_action( 'plugins_loaded', array(
+					$this,
+					'actionify_triggers'
+				), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
+			}
+		} else {
+			//Old  Method
+			if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+				//Ignore
+				return;
+			} elseif ( isset( $_REQUEST['doing_rest'] ) ) {
+				//Ignore
+				return;
+			} elseif ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] ) {
+				//Ignore
+				return;
+			} else {
+				add_action( 'plugins_loaded', array(
+					$this,
+					'actionify_triggers'
+				), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
+			}
+		}
+	}
+
+	/**
+	 * Load up our activity triggers so we can add actions to them
+	 *
+	 * @return void
+	 * @since 1.0.0
+	 */
+	public function actionify_triggers() {
+
+		global $uncanny_automator;
+
+		// Get all published recipes
+		$recipes = $uncanny_automator->get_recipes_data( true );
+		foreach ( $recipes as $recipe ) {
+
+			// Only actionify published recipes
+			if ( 'publish' !== $recipe['post_status'] ) {
+				continue;
+			}
+
+			// Only actionify uncompleted recipes
+			if ( true === $recipe['completed_by_current_user'] ) {
+				continue;
+			}
+
+			// Collect all trigger codes that have been actionified so we don't double register
+			$actionified_triggers = array();
+
+			// Loop through each trigger and add our trigger event to the hook
+			foreach ( $recipe['triggers'] as $trigger ) {
+
+				// Map action to specific recipeID/TriggerID combination
+				if ( key_exists( 'code', $trigger['meta'] ) ) {
+
+					$trigger_code = $trigger['meta']['code'];
+
+					// We only want to add one action for each trigger
+					if ( in_array( $trigger_code, $actionified_triggers ) ) {
+						continue;
+					}
+
+					// The trigger may exist in the DB but the plugin integration may not be active, if it is not
+					$trigger_actions             = $uncanny_automator->get->trigger_actions_from_trigger_code( $trigger_code );
+					$trigger_validation_function = $uncanny_automator->get->trigger_validation_function_from_trigger_code( $trigger_code );
+					$trigger_priority            = $uncanny_automator->get->trigger_priority_from_trigger_code( $trigger_code );
+					$trigger_accepted_args       = $uncanny_automator->get->trigger_accepted_args_from_trigger_code( $trigger_code );
+
+					// Initialize trigger
+					if ( ! empty( $trigger_validation_function ) ) {
+						if ( is_array( $trigger_actions ) ) {
+							foreach ( $trigger_actions as $trigger_action ) {
+								add_action( $trigger_action, $trigger_validation_function, $trigger_priority, $trigger_accepted_args );
+							}
+						} else {
+							add_action( $trigger_actions, $trigger_validation_function, $trigger_priority, $trigger_accepted_args );
+						}
+
+						$actionified_triggers[] = $trigger_code;
+					}
+				}
+			}
+		}
+	}
+}

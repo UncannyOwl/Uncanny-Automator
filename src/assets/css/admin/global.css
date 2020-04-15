@@ -1,0 +1,30 @@
+.uap {
+	/* Use this class as main container to avoid conflicts */
+	font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	-webkit-font-smoothing:antialiased;
+	-moz-osx-font-smoothing:grayscale;
+}
+
+.uap * {
+	box-sizing: border-box;
+}
+
+.uap .clear:after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
+	.uap nav.uap-nav-tab-wrapper {
+		margin: 1.5em 0 1em;
+	}
+
+/* uo-recipe posts columns */
+
+.uap .uo-post-column {}
+
+	.uap .uo-post-column__list {
+		margin: 0;
+	}
+
+		.uap .uo-post-column__item {}
