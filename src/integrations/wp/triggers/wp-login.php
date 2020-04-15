@@ -65,7 +65,7 @@ class WP_LOGIN {
 	public function wp_login( $user_login, $user ) {
 
 		global $uncanny_automator;
-
+		
 		$user_id = $user->ID;
 
 		$args = [

@@ -27,7 +27,7 @@ class Automator_Recipe_Process_User {
 	 * @return array|bool|int|null
 	 */
 	public function maybe_add_trigger_entry( $args, $mark_trigger_complete = true ) {
-		$is_signed_in       = key_exists( 'is_signed_in', $args ) ? true : false;
+		$is_signed_in       = key_exists( 'is_signed_in', $args ) ? $args['is_signed_in'] : is_user_logged_in();
 		$check_trigger_code = key_exists( 'code', $args ) ? $args['code'] : null;
 		$trigger_meta       = key_exists( 'meta', $args ) ? $args['meta'] : null;
 		$post_id            = key_exists( 'post_id', $args ) ? $args['post_id'] : 0;
@@ -68,7 +68,7 @@ class Automator_Recipe_Process_User {
 				continue;
 			}
 
-			if ( 'user' === (string) $recipe['recipe_type'] && ! is_user_logged_in() ) {
+			if ( 'user' === (string) $recipe['recipe_type'] && ! $is_signed_in ) {
 				//If it's user recipe & user is not logged in.. skip recipe
 				continue;
 			}

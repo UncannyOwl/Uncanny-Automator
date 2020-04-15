@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4
 Requires PHP: 7.0
-Stable tag: 2.1
+Stable tag: 2.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,7 +96,7 @@ Here's what other people are saying about Uncanny Automator:
 
 == Frequently Asked Questions ==
 
-= Where can I find Uncanny Automator documentation and more info? =
+= Where can I find Automator documentation and more info? =
 
 You can learn more about Uncanny Automator on our website at [https://automatorplugin.com/](https://automatorplugin.com/) and our Knowledge Base is here: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/)
 
@@ -126,7 +126,7 @@ Check out our developer documentation over at [https://automatorplugin.com/artic
 
 = Can I help with development? =
 
-Uncanny Automator is open-source and the repository is open to pull requests at [https://bitbucket.org/uncannyowl/automator/src/master/](https://bitbucket.org/uncannyowl/automator/src/master/). We would love your contributions!
+Uncanny Automator is open-source and the repository is open to pull requests at [https://bitbucket.org/uncannyowl/uncanny-automator/](https://bitbucket.org/uncannyowl/uncanny-automator/). We would love your contributions!
 
 = Who is Uncanny Owl? =
 
@@ -143,6 +143,10 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.1.1 =
+* Updated: Trigger log now shows "(Reactivate Automator Pro to view)" for Automator Pro triggers when Automator Pro is deactivated
+* Fixed: Trigger: WordPress - User logs in now fires reliably
 
 = 2.1 =
 * Initial release on WordPress.org

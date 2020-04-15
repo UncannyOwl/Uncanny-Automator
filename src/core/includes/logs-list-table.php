@@ -438,8 +438,11 @@ class Logs_List_Table extends \WP_List_Table {
 				$trigger_title = $uncanny_automator->get->trigger_title_from_trigger_code( $trigger_code );
 				// get the triggers completed sentence
 				$trigger_sentence = $uncanny_automator->get->trigger_meta( $trigger->user_id, $trigger->automator_trigger_id, 'complete_trigger_sentence', $trigger->ID );
-
-				$trigger_name = '<span style="cursor: help;color: #0073aa;" title="' . $trigger_sentence . '">' . $trigger_title . '</span>';
+				if ( empty( $trigger_title ) && ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
+					$trigger_name = __( '(Reactivate Automator Pro to view)', 'uncanny-automator' );
+				} else {
+					$trigger_name = '<span style="cursor: help;color: #0073aa;" title="' . $trigger_sentence . '">' . $trigger_title . '</span>';
+				}
 			}
 
 			$recipe_run_number = $trigger->recipe_run_number;

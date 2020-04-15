@@ -1,15 +1,15 @@
-# Copyright (C) 2020 Uncanny Owl Inc.
+# Copyright (C) 2020 Uncanny Owl
 # This file is distributed under the same license as the Uncanny Automator plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 2.1\n"
+"Project-Id-Version: Uncanny Automator 2.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-04-14T20:18:35+00:00\n"
+"POT-Creation-Date: 2020-04-15T17:56:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
@@ -31,7 +31,7 @@ msgid "Connect WordPress plugins together to create powerful recipes that save t
 msgstr ""
 
 #. Author of the plugin
-msgid "Uncanny Owl Inc."
+msgid "Uncanny Owl"
 msgstr ""
 
 #. Author URI of the plugin
@@ -541,21 +541,21 @@ msgstr ""
 
 #: src/core/includes/logs-list-table.php:352
 #: src/core/includes/logs-list-table.php:428
-#: src/core/includes/logs-list-table.php:507
+#: src/core/includes/logs-list-table.php:510
 msgid "Anonymous"
 msgstr ""
 
 #: src/core/includes/logs-list-table.php:359
 #: src/core/includes/logs-list-table.php:417
-#: src/core/includes/logs-list-table.php:479
-#: src/core/includes/logs-list-table.php:492
+#: src/core/includes/logs-list-table.php:482
+#: src/core/includes/logs-list-table.php:495
 #: src/integrations/learndash/triggers/tc-moduleinteraction.php:63
 msgid "Completed"
 msgstr ""
 
 #: src/core/includes/logs-list-table.php:361
 #: src/core/includes/logs-list-table.php:419
-#: src/core/includes/logs-list-table.php:494
+#: src/core/includes/logs-list-table.php:497
 msgid "Completed with errors"
 msgstr ""
 
@@ -565,13 +565,13 @@ msgstr ""
 
 #: src/core/includes/logs-list-table.php:365
 #: src/core/includes/logs-list-table.php:423
-#: src/core/includes/logs-list-table.php:498
+#: src/core/includes/logs-list-table.php:501
 msgid "In Progress"
 msgstr ""
 
 #: src/core/includes/logs-list-table.php:421
-#: src/core/includes/logs-list-table.php:481
-#: src/core/includes/logs-list-table.php:496
+#: src/core/includes/logs-list-table.php:484
+#: src/core/includes/logs-list-table.php:499
 msgid "Completed, Do nothing"
 msgstr ""
 
@@ -579,11 +579,15 @@ msgstr ""
 msgid "Trigger Deleted: "
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:477
+#: src/core/includes/logs-list-table.php:442
+msgid "(Reactivate Automator Pro to view)"
+msgstr ""
+
+#: src/core/includes/logs-list-table.php:480
 msgid "Error"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:484
+#: src/core/includes/logs-list-table.php:487
 msgid "Action Deleted: "
 msgstr ""
 
