@@ -23,7 +23,7 @@ class Recipe_Post_Type {
 		add_action( 'manage_uo-recipe_posts_custom_column', array( $this, 'custom_column' ), 10, 2 );
 
 		// Add to parent menu
-		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+		//add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
 		// Adding entry point for JS based triggers and actions UI into Meta Boxes
 		add_action( 'add_meta_boxes', array( $this, 'recipe_add_meta_box_ui' ), 11 );
@@ -154,12 +154,12 @@ class Recipe_Post_Type {
 	public function automator_post_type() {
 
 		if ( ! post_type_exists( 'uo-recipe' ) ) {
-
+			$icon_url = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDU4MSA2NDAiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDU4MSA2NDAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTUyNi40IDM0LjFjMC42IDUgMSAxMC4xIDEuMyAxNS4xIDAuNSAxMC4zIDEuMiAyMC42IDAuOCAzMC45LTAuNSAxMS41LTEgMjMtMi4xIDM0LjQtMi42IDI2LjctNy44IDUzLjMtMTYuNSA3OC43LTcuMyAyMS4zLTE3LjEgNDEuOC0yOS45IDYwLjQtMTIgMTcuNS0yNi44IDMzLTQzLjggNDUuOS0xNy4yIDEzLTM2LjcgMjMtNTcuMSAyOS45LTI1LjEgOC41LTUxLjUgMTIuNy03Ny45IDEzLjggNzAuMyAyNS4zIDEwNi45IDEwMi44IDgxLjYgMTczLjEtMTguOSA1Mi42LTY4LjEgODguMS0xMjQgODkuNWgtNi4xYy0xMS4xLTAuMi0yMi4xLTEuOC0zMi45LTQuNy0yOS40LTcuOS01NS45LTI2LjMtNzMuNy01MC45LTI5LjItNDAuMi0zNC4xLTkzLjEtMTIuNi0xMzgtMjUgMjUuMS00NC41IDU1LjMtNTkuMSA4Ny40LTguOCAxOS43LTE2LjEgNDAuMS0yMC44IDYxLjEtMS4yLTE0LjMtMS4yLTI4LjYtMC42LTQyLjkgMS4zLTI2LjYgNS4xLTUzLjIgMTIuMi03OC45IDUuOC0yMS4yIDEzLjktNDEuOCAyNC43LTYwLjlzMjQuNC0zNi42IDQwLjYtNTEuM2MxNy4zLTE1LjcgMzcuMy0yOC4xIDU5LjEtMzYuOCAyNC41LTkuOSA1MC42LTE1LjIgNzYuOC0xNy4yIDEzLjMtMS4xIDI2LjctMC44IDQwLjEtMi4zIDI0LjUtMi40IDQ4LjgtOC40IDcxLjMtMTguMyAyMS05LjIgNDAuNC0yMS44IDU3LjUtMzcuMiAxNi41LTE0LjkgMzAuOC0zMi4xIDQyLjgtNTAuOCAxMy0yMC4yIDIzLjQtNDIuMSAzMS42LTY0LjcgNy42LTIxLjEgMTMuNC00Mi45IDE2LjctNjUuM3ptLTI3OS40IDMyOS41Yy0xOC42IDEuOC0zNi4yIDguOC01MC45IDIwLjQtMTcuMSAxMy40LTI5LjggMzIuMi0zNi4yIDUyLjktNy40IDIzLjktNi44IDQ5LjUgMS43IDczIDcuMSAxOS42IDE5LjkgMzcuMiAzNi44IDQ5LjYgMTQuMSAxMC41IDMwLjkgMTYuOSA0OC40IDE4LjZzMzUuMi0xLjYgNTEtOS40YzEzLjUtNi43IDI1LjQtMTYuMyAzNC44LTI4LjEgMTAuNi0xMy40IDE3LjktMjkgMjEuNS00NS43IDQuOC0yMi40IDIuOC00NS43LTUuOC02Ni45LTguMS0yMC0yMi4yLTM3LjYtNDAuMy00OS4zLTE4LTExLjctMzkuNS0xNy02MS0xNS4xeiIgZmlsbD0iIzgyODc4QyIvPjxwYXRoIGQ9Im0yNDIuNiA0MDIuNmM2LjItMS4zIDEyLjYtMS44IDE4LjktMS41LTExLjQgMTEuNC0xMi4yIDI5LjctMS44IDQyIDExLjIgMTMuMyAzMS4xIDE1LjEgNDQuNCAzLjkgNS4zLTQuNCA4LjktMTAuNCAxMC41LTE3LjEgMTIuNCAxNi44IDE2LjYgMzkuNCAxMSA1OS41LTUgMTguNS0xOCAzNC42LTM1IDQzLjUtMzQuNSAxOC4yLTc3LjMgNS4xLTk1LjUtMjkuNS0xLTItMi00LTIuOS02LjEtOC4xLTE5LjYtNi41LTQzIDQuMi02MS4zIDEwLTE3IDI2LjgtMjkuMiA0Ni4yLTMzLjR6IiBmaWxsPSIjODI4NzhDIi8+PC9zdmc+';
 			$labels = array(
 				'name'                  => __( 'Recipes', 'uncanny-automator' ),
 				'singular_name'         => __( 'Recipe', 'uncanny-automator' ),
-				'menu_name'             => __( 'Uncanny Automator', 'uncanny-automator' ),
-				'name_admin_bar'        => __( 'Uncanny Automator', 'uncanny-automator' ),
+				'menu_name'             => __( 'Automator', 'uncanny-automator' ),
+				'name_admin_bar'        => __( 'Automator Recipe', 'uncanny-automator' ),
 				'archives'              => __( 'Recipe Archives', 'uncanny-automator' ),
 				'attributes'            => __( 'Recipe Attributes', 'uncanny-automator' ),
 				'parent_item_colon'     => __( 'Parent Recipe:', 'uncanny-automator' ),
@@ -192,8 +192,9 @@ class Recipe_Post_Type {
 				'hierarchical'        => false,
 				'public'              => false,
 				'show_ui'             => true,
-				'show_in_menu'        => false,
-				'menu_position'       => 5,
+				//'show_in_menu'        => false,
+				'menu_position'       => 40,
+				'menu_icon'           => $icon_url,
 				'show_in_admin_bar'   => true,
 				'show_in_nav_menus'   => true,
 				'can_export'          => true,
@@ -203,24 +204,11 @@ class Recipe_Post_Type {
 				'publicly_queryable'  => true,
 				'capability_type'     => 'post',
 				'show_in_rest'        => true,
-				'rest_base'           => 'uncanny-automator',
+				'rest_base'           => 'uap',
 			);
 
 			register_post_type( 'uo-recipe', $args );
 		}
-	}
-
-	/**
-	 *
-	 */
-	public function admin_menu() {
-		add_submenu_page( 'uncanny-activities', __( 'All Recipes', 'uncanny-automator' ), __( 'All Recipes', 'uncanny-automator' ), 'manage_options', 'edit.php?post_type=uo-recipe' );
-		add_submenu_page( 'uncanny-activities', __( 'New Recipe', 'uncanny-automator' ), __( 'New Recipe', 'uncanny-automator' ), 'manage_options', 'post-new.php?post_type=uo-recipe' );
-		add_submenu_page( 'uncanny-activities', __( 'Categories', 'uncanny-automator' ), __( 'Categories', 'uncanny-automator' ), 'manage_options', 'edit-tags.php?taxonomy=recipe_category&post_type=uo-recipe' );
-		add_submenu_page( 'uncanny-activities', __( 'Tags', 'uncanny-automator' ), __( 'Tags', 'uncanny-automator' ), 'manage_options', 'edit-tags.php?taxonomy=recipe_tag&post_type=uo-recipe' );
-		add_submenu_page( 'uncanny-activities', __( 'Recipe Log', 'uncanny-automator' ), __( 'Recipe Log', 'uncanny-automator' ), 'manage_options', 'admin.php?page=uncanny-activities&tab=recipe-log' );
-		add_submenu_page( 'uncanny-activities', __( 'Trigger Log', 'uncanny-automator' ), __( 'Trigger Log', 'uncanny-automator' ), 'manage_options', 'admin.php?page=uncanny-activities&tab=trigger-log' );
-		add_submenu_page( 'uncanny-activities', __( 'Action Log', 'uncanny-automator' ), __( 'Action Log', 'uncanny-automator' ), 'manage_options', 'admin.php?page=uncanny-activities&tab=action-log' );
 	}
 
 	/**
@@ -1310,7 +1298,7 @@ class Recipe_Post_Type {
 			$this->delete_closure_logs( $post_ID );
 		}
 	}
-	
+
 	/**
 	 * Draft all children triggers and actions of recipe
 	 *
@@ -1335,12 +1323,12 @@ class Recipe_Post_Type {
 
 				// Delete all the Children of the Parent Page
 				foreach ( $children as $child ) {
-					
+
 					$child_update = array(
 						'ID'          => $child->ID,
 						'post_status' => 'draft'
 					);
-					
+
 					wp_update_post( $child_update );
 				}
 			}
@@ -1358,12 +1346,12 @@ class Recipe_Post_Type {
 
 				// Delete all the Children of the Parent Page
 				foreach ( $children as $child ) {
-					
+
 					$child_update = array(
 						'ID'          => $child->ID,
 						'post_status' => 'draft'
 					);
-					
+
 					wp_update_post( $child_update );
 				}
 			}
@@ -1381,12 +1369,12 @@ class Recipe_Post_Type {
 
 				// Delete all the Children of the Parent Page
 				foreach ( $children as $child ) {
-					
+
 					$child_update = array(
 						'ID'          => $child->ID,
 						'post_status' => 'draft'
 					);
-					
+
 					wp_update_post( $child_update );
 				}
 			}

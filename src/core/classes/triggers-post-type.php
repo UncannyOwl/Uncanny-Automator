@@ -59,7 +59,7 @@ class Triggers_Post_Type {
 		);
 		$args   = array(
 			'label'               => __( 'Automator Trigger', 'uncanny-automator' ),
-			'description'         => __( 'Steps for Triggers', 'uncanny-automator' ),
+			'description'         => __( 'Trigger for an Uncanny WordPress Automation', 'uncanny-automator' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title' ),
 			'hierarchical'        => false,

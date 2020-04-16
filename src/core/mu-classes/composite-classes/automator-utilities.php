@@ -27,7 +27,10 @@ class Automator_Utilities {
 			foreach ( $item['options'] as $option_key => $option ) {
 
 				// Check if it's a select and has options in the select
-				if ( in_array( $option['input_type'], [ 'select', 'radio' ] ) && ( isset( $option['options'] ) && ! empty( $option['options'] ) ) ) {
+				if ( in_array( $option['input_type'], [
+						'select',
+						'radio'
+					] ) && ( isset( $option['options'] ) && ! empty( $option['options'] ) ) ) {
 
 					// Create array that will be used to create the new array of options
 					$select_options = [];
@@ -86,6 +89,10 @@ class Automator_Utilities {
 	public function sort_integrations_alphabetically() {
 
 		global $uncanny_automator;
+		if ( ! $uncanny_automator->integrations ) {
+			return null;
+		}
+
 		// Save integrations here
 		$integrations = [];
 
@@ -143,12 +150,12 @@ class Automator_Utilities {
 		global $wpdb;
 		$times_to_complete = [];
 		$post_metas        = $wpdb->get_results( "SELECT meta_value, post_id FROM $wpdb->postmeta WHERE meta_key = 'recipe_completions_allowed' LIMIT 0, 99999" );
-		if ( $post_metas ) {
+		if ( $post_metas && is_array( $recipe_ids ) ) {
 			foreach ( $recipe_ids as $recipe_id ) {
 				$complete = 1;
 				$found    = false;
 				foreach ( $post_metas as $p ) {
-					if ( $recipe_id === $p->post_id ) {
+					if ( (int) $recipe_id === (int) $p->post_id ) {
 						$found    = true;
 						$complete = $p->meta_value;
 						break;
@@ -163,7 +170,7 @@ class Automator_Utilities {
 					$times_to_complete[ $recipe_id ] = 1; //Complete recipe once
 				}
 			}
-		} else {
+		} elseif ( is_array( $recipe_ids ) ) {
 			//Fallback to mark each recipe to be completed only once
 			foreach ( $recipe_ids as $recipe_id ) {
 				$times_to_complete[ $recipe_id ] = 1;
@@ -182,19 +189,12 @@ class Automator_Utilities {
 			} elseif ( (int) $recipes_completed_times[ $recipe_id ] < (int) $recipe_completions_allowed ) {
 				$time_to_complete = false;
 			}*/
-			//Only added condition that changes condition to true.
-			if ( (int) $recipes_completed_times[ $recipe_id ] === (int) $recipe_completions_allowed ) {
+			//Only added condition that changes value to true.
+			if ( is_array( $recipes_completed_times ) && key_exists( $recipe_id, $recipes_completed_times ) && (int) $recipes_completed_times[ $recipe_id ] === (int) $recipe_completions_allowed ) {
 				$time_to_complete = true;
 			}
 			$results[ $recipe_id ] = $time_to_complete;
 		}
-
-		/*Utilities::log( [
-			'$recipe_ids'        => $recipe_ids,
-			'$post_metas'        => $post_metas,
-			'$times_to_complete' => $times_to_complete,
-			'$results'           => $results,
-		], '$results', true, 'recipes_number_times_completed' );*/
 
 		return $results;
 	}

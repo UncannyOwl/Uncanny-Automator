@@ -64,9 +64,10 @@ class Logs_List_Table extends \WP_List_Table {
 				$filter_html = \uncanny_automator_pro\Pro_Filters::activities_filters_html( $this->tab );
 			} else {
 				$filter_html = '';
-				$filter_html .= '<form id="recipe-filter" method="get">';
-				$filter_html .= '<input type="hidden" name="page" value="uncanny-activities"/>';
-				$filter_html .= '<input type="hidden" name="tab" value="' . $this->tab . '"/>';
+				$filter_html .= '<form id="recipe-filter" method="get" action="' . admin_url( 'edit.php' ) . '?post_type=uo-recipe">';
+				$filter_html .= '<input type="hidden" name="post_type" value="' . sanitize_text_field( $_GET['post_type'] ) . '"/>';
+				$filter_html .= '<input type="hidden" name="page" value="uncanny-automator-' . $this->tab . '"/>';
+				//$filter_html .= '<input type="hidden" name="tab" value="' . $this->tab . '"/>';
 				$filter_html .= '<p class="search-box">';
 				$filter_html .= '<input type="text" name="search_key" value="' . ( isset( $_GET['search_key'] ) ? sanitize_text_field( $_GET['search_key'] ) : '' ) . '"/>';
 				$filter_html .= '<input type="submit" name="filter_action" id="post-query-submit" class="button" value="Search">';
@@ -445,6 +446,9 @@ class Logs_List_Table extends \WP_List_Table {
 				}
 			}
 
+			if ( empty( $trigger_name ) ) {
+
+			}
 			$recipe_run_number = $trigger->recipe_run_number;
 
 

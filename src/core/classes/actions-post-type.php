@@ -57,7 +57,7 @@ class Actions_Post_Type {
 
 		$args   = array(
 			'label'               => __( 'Automator Action', 'uncanny-automator' ),
-			'description'         => __( 'Steps for Actions', 'uncanny-automator' ),
+			'description'         => __( 'Action for an Uncanny WordPress Automation', 'uncanny-automator' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title' ),
 			'hierarchical'        => false,

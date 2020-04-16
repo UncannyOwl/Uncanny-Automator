@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Uncanny Automator
  * Description: Connect WordPress plugins together to create powerful recipes that save time and improve the user experience. With no coding required, Uncanny Automator can replace dozens of plugins with millions of recipe combinations!
- * Version: 2.1.1
+ * Version: 2.1.2
  * Author: Uncanny Owl
  * Author URI: https://www.uncannyowl.com/
  * Plugin URI: https://automatorplugin.com/
@@ -98,7 +98,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.1.1';
+	const PLUGIN_VERSION = '2.1.2';
 
 	/**
 	 * The database version number

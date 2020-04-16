@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4
 Requires PHP: 7.0
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -143,6 +143,11 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.1.2 =
+* Updated: Some additional validation of data
+* Fixed: Automator menu entries were behaving inconsistently
+* Fixed: Undefined offset in automator-utilities.php on some sites
 
 = 2.1.1 =
 * Updated: Trigger log now shows "(Reactivate Automator Pro to view)" for Automator Pro triggers when Automator Pro is deactivated

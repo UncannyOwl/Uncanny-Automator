@@ -453,11 +453,7 @@ class Automator_Functions {
 		} else {
 
 			global $uncanny_automator;
-			/*if ( ! is_null( $match_trigger_code ) ) {
-				$args['meta_key']   = 'code';
-				$args['meta_value'] = $match_trigger_code;
-				$args['compare']    = 'LIKE';
-			}*/
+
 			$recipes = get_posts( $args );
 			if ( $recipes ) {
 				foreach ( $recipes as $key => $recipe ) {
@@ -728,7 +724,7 @@ class Automator_Functions {
 					$complete = 0;
 					$found    = false;
 					foreach ( $results as $r ) {
-						if ( $recipe_id === $r->automator_recipe_id ) {
+						if ( $recipe_id === (int) $r->automator_recipe_id ) {
 							$found    = true;
 							$complete = $r->completed;
 							break;
@@ -768,6 +764,10 @@ class Automator_Functions {
 		if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
 			Utilities::log( 'ERROR: You are trying to check if a recipe is completed without providing a recipe_id.', 'is_recipe_completed ERROR', false, 'uap-errors' );
 
+			return null;
+		}
+
+		if ( ! is_user_logged_in() ) {
 			return null;
 		}
 
@@ -886,9 +886,12 @@ class Automator_Functions {
 				} else {
 					$child_meta = $child['meta'];
 				}
+
+				if ( ! $child_meta ) {
+					continue;
+				}
 				// Get post custom return an array for each meta_key as there maybe more than one value per key.. we only store and need one value
 				$child_meta_single = [];
-
 				foreach ( $child_meta as $meta_key => $meta_value ) {
 					$child_meta_single[ $meta_key ] = reset( $meta_value );
 				}

@@ -57,7 +57,7 @@ class Closures_Post_Type {
 
 		$args   = array(
 			'label'               => __( 'Automator Closure', 'uncanny-automator' ),
-			'description'         => __( 'Steps for Closures', 'uncanny-automator' ),
+			'description'         => __( 'Closure for an Uncanny WordPress Automation', 'uncanny-automator' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title' ),
 			'hierarchical'        => false,

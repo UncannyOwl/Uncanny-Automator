@@ -39,6 +39,9 @@ class Recipe_Taxonomies {
 			array(
 				'hierarchical' => true,
 				'label'        => __( 'Recipe category', 'uncanny-automator' ), // display name
+				'labels'        => array(
+					'menu_name' => __('Categories', 'uncanny-automator')
+				),
 				'query_var'    => true,
 				'rewrite'      => array(
 					'slug'       => 'uo-recipe', // This controls the base slug that will display before each term
@@ -54,6 +57,9 @@ class Recipe_Taxonomies {
 			array(
 				'hierarchical' => false,
 				'label'        => __( 'Recipe tag', 'uncanny-automator' ), // display name
+				'labels'        => array(
+					'menu_name' => __('Tags', 'uncanny-automator')
+				),
 				'query_var'    => true,
 				'rewrite'      => array(
 					'slug'       => 'uo-recipe', // This controls the base slug that will display before each term

@@ -2,23 +2,19 @@
 # This file is distributed under the same license as the Uncanny Automator plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 2.1.1\n"
+"Project-Id-Version: Uncanny Automator 2.1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-04-15T17:56:16+00:00\n"
+"POT-Creation-Date: 2020-04-16T17:30:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
 
 #. Plugin Name of the plugin
-#: src/core/classes/recipe-post-type.php:161
-#: src/core/classes/recipe-post-type.php:162
-#: src/core/extensions/activity-log.php:60
-#: src/core/extensions/module-admin-menu.php:57
 msgid "Uncanny Automator"
 msgstr ""
 
@@ -52,8 +48,8 @@ msgid "Automator Action"
 msgstr ""
 
 #: src/core/classes/actions-post-type.php:31
-#: src/core/classes/recipe-post-type.php:309
-#: src/core/classes/recipe-post-type.php:384
+#: src/core/classes/recipe-post-type.php:297
+#: src/core/classes/recipe-post-type.php:372
 #: src/core/mu-classes/composite-classes/automator-translations.php:79
 msgid "Actions"
 msgstr ""
@@ -204,7 +200,106 @@ msgid "Filter items list"
 msgstr ""
 
 #: src/core/classes/actions-post-type.php:60
-msgid "Steps for Actions"
+msgid "Action for an Uncanny WordPress Automation"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:73
+msgid "Uncanny Automator License Activation"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:73
+msgid "License Activation"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:104
+msgid "Recipe Log"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:105
+msgid "Trigger Log"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:106
+msgid "Action Log"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:129
+#: src/core/classes/recipe-post-type.php:67
+msgid "Recipe Report"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:133
+#: src/core/classes/recipe-post-type.php:70
+msgid "Trigger Report"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:137
+#: src/core/classes/recipe-post-type.php:73
+msgid "Action Report"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:148
+#: src/core/classes/recipe-post-type.php:295
+msgid "Recipe Type"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:149
+#: src/core/classes/admin-menu.php:182
+#: src/core/classes/admin-menu.php:215
+#: src/core/classes/recipe-post-type.php:160
+#: src/core/classes/recipe-post-type.php:188
+#: src/core/classes/recipe-post-type.php:419
+msgid "Recipe"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:150
+#: src/core/classes/admin-menu.php:213
+msgid "Status"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:151
+#: src/core/classes/admin-menu.php:181
+#: src/core/classes/admin-menu.php:212
+msgid "Completion Date"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:153
+msgid "Run #"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:154
+#: src/core/classes/admin-menu.php:186
+#: src/core/classes/admin-menu.php:219
+msgid "User"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:180
+#: src/core/mu-classes/composite-classes/automator-translations.php:63
+msgid "Trigger"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:183
+#: src/core/classes/admin-menu.php:216
+msgid "Recipe Status"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:184
+#: src/core/classes/admin-menu.php:217
+msgid "Recipe Completion Date"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:185
+#: src/core/classes/admin-menu.php:218
+msgid "Recipe Run #"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:211
+#: src/core/mu-classes/composite-classes/automator-translations.php:81
+msgid "Action"
+msgstr ""
+
+#: src/core/classes/admin-menu.php:214
+msgid "Notes"
 msgstr ""
 
 #: src/core/classes/closures-post-type.php:29
@@ -222,27 +317,11 @@ msgid "Closures"
 msgstr ""
 
 #: src/core/classes/closures-post-type.php:60
-msgid "Steps for Closures"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:67
-#: src/core/extensions/activity-log.php:85
-msgid "Recipe Report"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:70
-#: src/core/extensions/activity-log.php:89
-msgid "Trigger Report"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:73
-#: src/core/extensions/activity-log.php:93
-msgid "Action Report"
+msgid "Closure for an Uncanny WordPress Automation"
 msgstr ""
 
 #: src/core/classes/recipe-post-type.php:90
 #: src/core/classes/recipe-post-type.php:169
-#: src/core/classes/recipe-post-type.php:218
 msgid "New Recipe"
 msgstr ""
 
@@ -250,13 +329,12 @@ msgstr ""
 msgid "Recipes"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:160
-#: src/core/classes/recipe-post-type.php:188
-#: src/core/classes/recipe-post-type.php:431
-#: src/core/extensions/activity-log.php:105
-#: src/core/extensions/activity-log.php:138
-#: src/core/extensions/activity-log.php:171
-msgid "Recipe"
+#: src/core/classes/recipe-post-type.php:161
+msgid "Automator"
+msgstr ""
+
+#: src/core/classes/recipe-post-type.php:162
+msgid "Automator Recipe"
 msgstr ""
 
 #: src/core/classes/recipe-post-type.php:163
@@ -272,7 +350,6 @@ msgid "Parent Recipe:"
 msgstr ""
 
 #: src/core/classes/recipe-post-type.php:166
-#: src/core/classes/recipe-post-type.php:217
 msgid "All Recipes"
 msgstr ""
 
@@ -351,78 +428,50 @@ msgstr ""
 msgid "Uncanny WordPress Automation"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:219
-#: src/core/classes/recipe-taxonomies.php:117
-msgid "Categories"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:220
-#: src/core/classes/recipe-taxonomies.php:130
-msgid "Tags"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:221
-msgid "Recipe Log"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:222
-msgid "Trigger Log"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:223
-msgid "Action Log"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:307
-#: src/core/extensions/activity-log.php:104
-msgid "Recipe Type"
-msgstr ""
-
-#: src/core/classes/recipe-post-type.php:308
+#: src/core/classes/recipe-post-type.php:296
 #: src/core/classes/triggers-post-type.php:34
 #: src/core/mu-classes/composite-classes/automator-translations.php:61
 msgid "Triggers"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:310
+#: src/core/classes/recipe-post-type.php:298
 msgctxt "The number of times a recipe was completed"
 msgid "Completed Runs"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:333
+#: src/core/classes/recipe-post-type.php:321
 #: src/core/mu-classes/composite-classes/automator-translations.php:65
 msgid "Logged-in triggers"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:749
+#: src/core/classes/recipe-post-type.php:737
 msgid "Option Updated!"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:805
+#: src/core/classes/recipe-post-type.php:793
 msgid "Success!"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:1101
-#: src/core/extensions/module-admin-menu.php:398
+#: src/core/classes/recipe-post-type.php:1089
 msgid "You do not have the capability to save module settings."
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:1566
+#: src/core/classes/recipe-post-type.php:1554
 msgctxt "Email notice"
 msgid "Hi,"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:1569
+#: src/core/classes/recipe-post-type.php:1557
 msgctxt "Email notice"
 msgid "This email is to let you know that the recipe \"%s\" was automatically set to draft status because it contains multiple triggers and the Uncanny Automator Pro plugin is either not installed or not activated.  To reactivate the recipe, ensure the Uncanny Automator Pro plugin is active, then edit the recipe to switch its status to Live."
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:1572
+#: src/core/classes/recipe-post-type.php:1560
 msgctxt "Email notice"
 msgid "Recipe link: %s"
 msgstr ""
 
-#: src/core/classes/recipe-post-type.php:1575
+#: src/core/classes/recipe-post-type.php:1563
 msgctxt "Email notice"
 msgid "The %s Bot"
 msgstr ""
@@ -431,8 +480,18 @@ msgstr ""
 msgid "Recipe category"
 msgstr ""
 
-#: src/core/classes/recipe-taxonomies.php:56
+#: src/core/classes/recipe-taxonomies.php:43
+#: src/core/classes/recipe-taxonomies.php:123
+msgid "Categories"
+msgstr ""
+
+#: src/core/classes/recipe-taxonomies.php:59
 msgid "Recipe tag"
+msgstr ""
+
+#: src/core/classes/recipe-taxonomies.php:61
+#: src/core/classes/recipe-taxonomies.php:136
+msgid "Tags"
 msgstr ""
 
 #: src/core/classes/triggers-post-type.php:32
@@ -445,91 +504,12 @@ msgid "Automator Trigger"
 msgstr ""
 
 #: src/core/classes/triggers-post-type.php:62
-msgid "Steps for Triggers"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:106
-#: src/core/extensions/activity-log.php:169
-msgid "Status"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:107
-#: src/core/extensions/activity-log.php:137
-#: src/core/extensions/activity-log.php:168
-msgid "Completion Date"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:109
-msgid "Run #"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:110
-#: src/core/extensions/activity-log.php:142
-#: src/core/extensions/activity-log.php:175
-msgid "User"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:136
-#: src/core/mu-classes/composite-classes/automator-translations.php:63
-msgid "Trigger"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:139
-#: src/core/extensions/activity-log.php:172
-msgid "Recipe Status"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:140
-#: src/core/extensions/activity-log.php:173
-msgid "Recipe Completion Date"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:141
-#: src/core/extensions/activity-log.php:174
-msgid "Recipe Run #"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:167
-#: src/core/mu-classes/composite-classes/automator-translations.php:81
-msgid "Action"
-msgstr ""
-
-#: src/core/extensions/activity-log.php:170
-msgid "Notes"
-msgstr ""
-
-#: src/core/extensions/module-admin-menu.php:256
-#: src/core/extensions/module-admin-menu.php:270
-#: src/core/extensions/module-admin-menu.php:297
-#: src/core/extensions/module-admin-menu.php:335
-#: src/core/extensions/module-admin-menu.php:351
-#: src/core/extensions/module-admin-menu.php:380
-msgid "The data that was sent was malformed. Please reload the page and trying again."
-msgstr ""
-
-#: src/core/extensions/module-admin-menu.php:279
-msgid "Module is active."
-msgstr ""
-
-#: src/core/extensions/module-admin-menu.php:282
-msgid "Module is inactive."
-msgstr ""
-
-#: src/core/extensions/module-admin-menu.php:285
-msgid "There was a WordPress error. Please reload the page and trying again."
-msgstr ""
-
-#: src/core/extensions/module-admin-menu.php:315
-msgid "You do not have the capability to switch modules on or off."
-msgstr ""
-
-#: src/core/extensions/module-admin-menu.php:371
-msgid "Module settings are saved."
+msgid "Trigger for an Uncanny WordPress Automation"
 msgstr ""
 
 #. Translators: 1:Recipe ID
-#: src/core/includes/logs-list-table.php:346
-#: src/core/includes/logs-list-table.php:410
+#: src/core/includes/logs-list-table.php:347
+#: src/core/includes/logs-list-table.php:411
 #: src/core/mu-classes/composite-classes/automator-options.php:853
 #: src/core/mu-classes/composite-classes/automator-options.php:1396
 #: src/core/mu-classes/composite-classes/automator-options.php:2484
@@ -539,55 +519,55 @@ msgstr ""
 msgid "ID: %s (no title)"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:352
-#: src/core/includes/logs-list-table.php:428
-#: src/core/includes/logs-list-table.php:510
+#: src/core/includes/logs-list-table.php:353
+#: src/core/includes/logs-list-table.php:429
+#: src/core/includes/logs-list-table.php:514
 msgid "Anonymous"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:359
-#: src/core/includes/logs-list-table.php:417
-#: src/core/includes/logs-list-table.php:482
-#: src/core/includes/logs-list-table.php:495
+#: src/core/includes/logs-list-table.php:360
+#: src/core/includes/logs-list-table.php:418
+#: src/core/includes/logs-list-table.php:486
+#: src/core/includes/logs-list-table.php:499
 #: src/integrations/learndash/triggers/tc-moduleinteraction.php:63
 msgid "Completed"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:361
-#: src/core/includes/logs-list-table.php:419
-#: src/core/includes/logs-list-table.php:497
+#: src/core/includes/logs-list-table.php:362
+#: src/core/includes/logs-list-table.php:420
+#: src/core/includes/logs-list-table.php:501
 msgid "Completed with errors"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:363
+#: src/core/includes/logs-list-table.php:364
 msgid "Completed - Do nothing"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:365
-#: src/core/includes/logs-list-table.php:423
-#: src/core/includes/logs-list-table.php:501
+#: src/core/includes/logs-list-table.php:366
+#: src/core/includes/logs-list-table.php:424
+#: src/core/includes/logs-list-table.php:505
 msgid "In Progress"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:421
-#: src/core/includes/logs-list-table.php:484
-#: src/core/includes/logs-list-table.php:499
+#: src/core/includes/logs-list-table.php:422
+#: src/core/includes/logs-list-table.php:488
+#: src/core/includes/logs-list-table.php:503
 msgid "Completed, Do nothing"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:434
+#: src/core/includes/logs-list-table.php:435
 msgid "Trigger Deleted: "
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:442
+#: src/core/includes/logs-list-table.php:443
 msgid "(Reactivate Automator Pro to view)"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:480
+#: src/core/includes/logs-list-table.php:484
 msgid "Error"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:487
+#: src/core/includes/logs-list-table.php:491
 msgid "Action Deleted: "
 msgstr ""
 
