@@ -42,7 +42,7 @@ class LD_TOPICDONE {
 			'post_status'    => 'publish',
 		];
 
-		$course_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, 'course' );
+		$course_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
 
 		$args = [
 			'post_type'      => 'sfwd-lessons',
@@ -52,30 +52,31 @@ class LD_TOPICDONE {
 			'post_status'    => 'publish',
 		];
 
-		$lesson_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, 'course' );
+		$lesson_options         = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
 		$course_relevant_tokens = [
-			'LDCOURSE'     => __( 'Course Title', 'uncanny-automator' ),
+			'LDCOURSE'     => __( 'Course title', 'uncanny-automator' ),
 			'LDCOURSE_ID'  => __( 'Course ID', 'uncanny-automator' ),
 			'LDCOURSE_URL' => __( 'Course URL', 'uncanny-automator' ),
 		];
 		$lesson_relevant_tokens = [
-			'LDLESSON'     => __( 'Lesson Title', 'uncanny-automator' ),
+			'LDLESSON'     => __( 'Lesson title', 'uncanny-automator' ),
 			'LDLESSON_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
 			'LDLESSON_URL' => __( 'Lesson URL', 'uncanny-automator' ),
 		];
 		$relevant_tokens        = [
-			$this->trigger_meta          => __( 'Topic Title', 'uncanny-automator' ),
+			$this->trigger_meta          => __( 'Topic title', 'uncanny-automator' ),
 			$this->trigger_meta . '_ID'  => __( 'Topic ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_URL' => __( 'Topic URL', 'uncanny-automator' ),
 		];
-		$trigger = array(
+		$trigger                = array(
 			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Topics 2:Number of times*/
-			'sentence'            => sprintf( __( 'User completes {{a topic:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User completes {{a topic}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'sentence'            => sprintf( __( 'A user completes {{a topic:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'select_option_name'  => __( 'A user completes {{a topic}}', 'uncanny-automator' ),
 			'action'              => 'learndash_topic_completed',
 			'priority'            => 10,
 			'accepted_args'       => 1,
@@ -87,7 +88,7 @@ class LD_TOPICDONE {
 				$this->trigger_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDCOURSE',
-						__( 'Select a Course', 'uncanny-automator' ),
+						__( 'Course', 'uncanny-automator' ),
 						$course_options,
 						'',
 						'',
@@ -101,7 +102,7 @@ class LD_TOPICDONE {
 					),
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDLESSON',
-						__( 'Select a Lesson', 'uncanny-automator' ),
+						__( 'Lesson', 'uncanny-automator' ),
 						$lesson_options,
 						'',
 						'',
@@ -113,7 +114,7 @@ class LD_TOPICDONE {
 						],
 						$lesson_relevant_tokens
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( 'LDTOPIC', __( 'Select a Topic', 'uncanny-automator' ), [], false, false, false, $relevant_tokens),
+					$uncanny_automator->helpers->recipe->field->select_field( 'LDTOPIC', __( 'Topic', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
 				],
 			],
 		);
@@ -136,8 +137,8 @@ class LD_TOPICDONE {
 
 		global $uncanny_automator;
 
-		$user  = $data['user'];
-		$topic = $data['topic'];
+		$user   = $data['user'];
+		$topic  = $data['topic'];
 		$lesson = $data['lesson'];
 		$course = $data['course'];
 
@@ -147,7 +148,7 @@ class LD_TOPICDONE {
 			'post_id' => $topic->ID,
 			'user_id' => $user->ID,
 		];
-		
+
 		$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
 		if ( $args ) {
 			foreach ( $args as $result ) {

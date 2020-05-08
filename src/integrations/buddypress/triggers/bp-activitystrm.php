@@ -42,8 +42,9 @@ class BP_ACTIVITYSTRM {
 			'support_link'        => $uncanny_automator->get_author_support_link(),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:BuddyPress Users */
+			/* translators: Logged-in trigger - BuddyPress */
 			'sentence'            => sprintf( __( '{{A user:%1$s}} posts activity to their stream', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - BuddyPress */
 			'select_option_name'  => __( '{{A user}} posts activity to their stream', 'uncanny-automator' ),
 			'action'              => 'bp_activity_posted_update',
 			'priority'            => 10,

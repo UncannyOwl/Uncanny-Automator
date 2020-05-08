@@ -1,4 +1,9 @@
+var uap_redirect_in_progress = false;
 var uap_redirect_check = function(){
+    if( window.uap_redirect_in_progress == true ){
+        return;
+    }
+    window.uap_redirect_in_progress = true;
     jQuery.ajax({
         method: 'POST',
         url: uoAppRestApiSetup.root,
@@ -7,11 +12,13 @@ var uap_redirect_check = function(){
             xhr.setRequestHeader( 'X-WP-Nonce', uoAppRestApiSetup.nonce );
         },
         success : function( response ) {
+            window.uap_redirect_in_progress = false;
             if( response.redirect_url ){
                 window.parent.location = response.redirect_url;
             }
         },
         fail : function( response ) {
+            window.uap_redirect_in_progress = false;
             if( response.redirect_url ){
                 window.parent.location = response.redirect_url;
             }

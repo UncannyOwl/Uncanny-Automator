@@ -42,14 +42,14 @@ class LD_LESSONDONE {
 			'post_status'    => 'publish',
 		];
 		
-		$options                = $uncanny_automator->helpers->recipe->options->wp_query( $args, TRUE, 'course' );
+		$options                = $uncanny_automator->helpers->recipe->options->wp_query( $args, TRUE, __( 'Any course', 'uncanny-automator' ) );
 		$course_relevant_tokens = [
-			'LDCOURSE'     => __( 'Course Title', 'uncanny-automator' ),
+			'LDCOURSE'     => __( 'Course title', 'uncanny-automator' ),
 			'LDCOURSE_ID'  => __( 'Course ID', 'uncanny-automator' ),
 			'LDCOURSE_URL' => __( 'Course URL', 'uncanny-automator' ),
 		];
 		$relevant_tokens        = [
-			$this->trigger_meta          => __( 'Lesson Title', 'uncanny-automator' ),
+			$this->trigger_meta          => __( 'Lesson title', 'uncanny-automator' ),
 			$this->trigger_meta . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
 		];
@@ -59,9 +59,10 @@ class LD_LESSONDONE {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Lessons 2:Number of times*/
-			'sentence'            => sprintf( __( 'User completes {{a lesson:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User completes {{a lesson}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'sentence'            => sprintf( __( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'select_option_name'  => __( 'A user completes {{a lesson}}', 'uncanny-automator' ),
 			'action'              => 'learndash_lesson_completed',
 			'priority'            => 10,
 			'accepted_args'       => 1,
@@ -73,7 +74,7 @@ class LD_LESSONDONE {
 				$this->trigger_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDCOURSE',
-						__( 'Select a Course', 'uncanny-automator' ),
+						__( 'Course', 'uncanny-automator' ),
 						$options,
 						'',
 						'',
@@ -85,7 +86,7 @@ class LD_LESSONDONE {
 						],
 						$course_relevant_tokens
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Select a Lesson', 'uncanny-automator' ), [ '' => __( 'Select a Course Above', 'uncanny-automator' ) ], false, false, false, $relevant_tokens),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Lesson', 'uncanny-automator' ), [], false, false, false, $relevant_tokens),
 				],
 			],
 		);

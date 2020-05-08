@@ -41,7 +41,7 @@ class Formidable_Helpers {
 	 */
 	public function all_formidable_forms( $label = null, $option_code = 'FIFORMS', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
@@ -88,7 +88,6 @@ class Formidable_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_all_formidable_forms', $option );

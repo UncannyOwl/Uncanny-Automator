@@ -40,9 +40,10 @@ class CF7_SUBFORM {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Forms 2:Number of times*/
-			'sentence'            => sprintf( __( 'User submits {{a form:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User submits {{a form}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - Contact Form 7 */
+			'sentence'            => sprintf( __( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - Contact Form 7 */
+			'select_option_name'  => __( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'wpcf7_submit',
 			'priority'            => 99,
 			'accepted_args'       => 2,

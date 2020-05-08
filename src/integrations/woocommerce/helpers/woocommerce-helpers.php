@@ -42,7 +42,7 @@ class Woocommerce_Helpers {
 	public function all_wc_products( $label = null, $option_code = 'WOOPRODUCT' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -63,7 +63,7 @@ class Woocommerce_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -83,7 +83,7 @@ class Woocommerce_Helpers {
 		// TODO this currently has no usage. remove if its unused in version 1.0
 
 		if ( ! $label ) {
-			$label = __( 'Select a Status', 'uncanny-automator' );
+			$label = 'Status';
 		}
 
 		$option = [

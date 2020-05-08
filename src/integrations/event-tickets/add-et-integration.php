@@ -79,11 +79,9 @@ class Add_Et_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'The Events Calendar',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-theeventscalendar-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-theeventscalendar-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-theeventscalendar-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-theeventscalendar.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-theeventscalendar@2x.png' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'integration-tec-icon.svg' ),
+			'logo_svg'    => Utilities::get_integration_icon( 'integration-tec-icon.svg' ),
+			// 'logo_svg'    => Utilities::get_integration_icon( 'integration-tec.svg' ),
 		) );
 	}
 }

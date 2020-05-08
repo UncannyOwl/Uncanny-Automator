@@ -56,9 +56,10 @@ class WP_VIEWCUSTOMPOST {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Custom post types 2:Number of times*/
-			'sentence'            => sprintf( __( 'User views {{a custom post type:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User views {{a custom post type}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - WordPress */
+			'sentence'            => sprintf( __( 'A user views {{a custom post type:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - WordPress */
+			'select_option_name'  => __( 'A user views {{a custom post type}}', 'uncanny-automator' ),
 			'action'              => 'template_redirect',
 			'priority'            => 90,
 			'accepted_args'       => 1,
@@ -74,6 +75,7 @@ class WP_VIEWCUSTOMPOST {
 						'target_field' => $this->trigger_meta,
 						'endpoint'     => 'select_custom_post_by_type',
 					] ),
+					/* translators: Noun */
 					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Post', 'uncanny-automator' ) ),
 				],
 			],

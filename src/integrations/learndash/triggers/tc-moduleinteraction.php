@@ -50,22 +50,23 @@ class TC_MODULEINTERACTION {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Verb 2:Module*/
-			'sentence'            => sprintf( __( 'User triggers {{a Tin Can verb:%1$s}} in {{a/any Tin Can module:%2$s}}', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
-			'select_option_name'  => __( '{{A Tin Can verb}} is recorded from {{a/any Tin Can module}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'sentence'            => sprintf( __( '{{A Tin Can verb:%1$s}} is recorded from {{a Tin Can module:%2$s}}', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
+			/* translators: Logged-in trigger - LearnDash */
+			'select_option_name'  => __( '{{A Tin Can verb}} is recorded from {{a Tin Can module}}', 'uncanny-automator' ),
 			'action'              => 'tincanny_module_completed',
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'tincanny_module_completed_func' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Select a Module', 'uncanny-automator' ), $options ),
-				$uncanny_automator->helpers->recipe->field->select_field( 'TCVERB', __( 'Select a Verb', 'uncanny-automator' ), [
-					'completed'   => __( 'Completed', 'uncanny-automator' ),
-					'passed'      => __( 'Passed', 'uncanny-automator' ),
-					'failed'      => __( 'Failed', 'uncanny-automator' ),
-					'answered'    => __( 'Answered', 'uncanny-automator' ),
-					'attempted'   => __( 'Attempted', 'uncanny-automator' ),
-					'experienced' => __( 'Experienced', 'uncanny-automator' ),
+				$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Module', 'uncanny-automator' ), $options ),
+				$uncanny_automator->helpers->recipe->field->select_field( 'TCVERB', _x( 'Verb', 'Tin Can verb', 'uncanny-automator' ), [
+					'completed'   => _x( 'Completed', 'Tin Can verb', 'uncanny-automator' ),
+					'passed'      => _x( 'Passed', 'Tin Can verb', 'uncanny-automator' ),
+					'failed'      => _x( 'Failed', 'Tin Can verb', 'uncanny-automator' ),
+					'answered'    => _x( 'Answered', 'Tin Can verb', 'uncanny-automator' ),
+					'attempted'   => _x( 'Attempted', 'Tin Can verb', 'uncanny-automator' ),
+					'experienced' => _x( 'Experienced', 'Tin Can verb', 'uncanny-automator' ),
 				] ),
 			],
 		);

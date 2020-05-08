@@ -38,15 +38,16 @@ class EDD_PRODUCTPURCHASE {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:List of EDD products*/
-			'sentence'            => sprintf( __( 'User purchases {{a product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			'select_option_name'  => __( 'User purchases {{a product}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - Easy Digital Downloads */
+			'sentence'            => sprintf( __( 'A user purchases {{a product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - Easy Digital Downloads */
+			'select_option_name'  => __( 'A user purchases {{a product}}', 'uncanny-automator' ),
 			'action'              => 'edd_complete_purchase',
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'edd_product_purchase' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->edd->options->all_edd_downloads( __( 'Select a Product', 'uncanny-automator' ), $this->trigger_meta ),
+				$uncanny_automator->helpers->recipe->edd->options->all_edd_downloads( __( 'Product', 'uncanny-automator' ), $this->trigger_meta ),
 			],
 		);
 

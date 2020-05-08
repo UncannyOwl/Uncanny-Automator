@@ -43,9 +43,10 @@ class BP_ADDTOGROUP {
 			'support_link'       => $uncanny_automator->get_author_support_link(),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Groups*/
-			'sentence'           => sprintf( __( 'Add user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add user to {{a group}}', 'uncanny-automator' ),
+			/* translators: Action - BuddyPress */
+			'sentence'           => sprintf( __( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - BuddyPress */
+			'select_option_name' => __( 'Add the user to {{a group}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_to_bp_group' ),

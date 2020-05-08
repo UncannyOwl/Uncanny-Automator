@@ -38,9 +38,10 @@ class WP_ADDROLE {
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Roles*/
-			'sentence'           => sprintf( __( 'Add {{another role:%1$s}} role to user', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add {{role}} to user', 'uncanny-automator' ),
+			/* translators: Action - WordPress */
+			'sentence'           => sprintf( __( 'Add {{a new role:%1$s}} to the user\'s roles', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - WordPress */
+			'select_option_name' => __( 'Add {{a new role}} to the user\'s roles', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'add_role' ),

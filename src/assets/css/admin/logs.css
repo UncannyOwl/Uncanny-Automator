@@ -1,5 +1,9 @@
 .uap {}
 
+	.tablenav {
+		height: auto !important;
+	}
+
 	.uap .uap-logs {}
 
 		.uap .uap-log-table-container {
@@ -172,3 +176,100 @@
                                         .uap .tablenav{
                                             margin-bottom: 10px;
                                         }
+
+	.uap-report {}
+
+		.uap-report-filters {}
+
+			.uap-report-filters-content {
+				display: flex;
+				justify-content: space-between;
+			}
+
+				.uap-report-filters-left {
+					display: flex;
+					flex-wrap: wrap;
+					align-items: flex-start;
+
+					margin-bottom: -5px;
+				}
+
+					.uap-report-filters-filter {
+						margin-bottom: 5px;
+					}
+
+						.uap-report-filters-filter:not(:last-child) {
+							margin-right: 5px;
+						}
+
+						.uap-report-filters-filter select,
+						.uap-report-filters-filter input {
+							margin: 0;
+						}
+
+						.uap-report-filters-filter select,
+						.uap-report-filters-filter input[type="text"] {
+							width: 12.5rem;
+						}
+
+						.uap-report-filters-filter select:disabled,
+						.uap-report-filters-filter input[type="text"]:disabled {
+							color: #a0a5aa;
+							border-color: #ddd;
+							background-color: #f7f7f7;
+						}
+
+						.uap-report-filters-filter input[type="text"]:disabled::placeholder {
+							color: #a0a5aa !important;
+							opacity: 1 !important;
+						}
+
+						.uap-report-filters div.button.button--disabled {
+							color: #a0a5aa!important;
+							border-color: #ddd!important;
+							background: #f7f7f7!important;
+							box-shadow: none!important;
+							text-shadow: 0 1px 0 #fff!important;
+							cursor: default;
+							transform: none!important;
+						}
+
+					.uap-report-filters__pro-notice {
+						width: 100%;
+
+						color: #6e6e6e;
+						font-weight: 500;
+						font-size: 14px;
+
+						margin-top: 3px;
+
+						display: flex;
+						align-items: center;
+					}
+
+						.uap-report-filters__pro-notice:before {
+							content: '';
+
+							width: 15px;
+							height: 15px;
+
+							display: inline-block;
+
+							margin-right: 5px;
+
+							background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgYXJpYS1oaWRkZW49InRydWUiIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48ZGVmcy8+PHBhdGggZmlsbD0iIzZlNmU2ZSIgZD0iTTIyNCA0MTJhMjggMjggMCAwMS0yOC0yOHYtNjRhMjggMjggMCAxMTU2IDB2NjRhMjggMjggMCAwMS0yOCAyOHptMjI0LTE3MnYyMjRhNDggNDggMCAwMS00OCA0OEg0OGE0OCA0OCAwIDAxLTQ4LTQ4VjI0MGE0OCA0OCAwIDAxNDgtNDhoMzJ2LTQ4QzgwIDY0LjUgMTQ0LjgtLjIgMjI0LjQgMCAzMDQgLjIgMzY4IDY1LjggMzY4IDE0NS40VjE5MmgzMmE0OCA0OCAwIDAxNDggNDh6bS0zMjAtNDhoMTkydi00OGMwLTUyLjktNDMuMS05Ni05Ni05NnMtOTYgNDMuMS05NiA5NnY0OHptMjcyIDQ4SDQ4djIyNGgzNTJWMjQweiIvPjwvc3ZnPg==) no-repeat center;
+							background-size: contain;
+						}
+
+				.uap-report-filters-right {}
+
+					.uap-report-filters-search {
+						display: flex;
+					}
+
+						.uap-report-filters-search__field {
+							width: 165px;
+							margin-right: 5px;
+						}
+
+						.uap-report-filters-search__submit {}

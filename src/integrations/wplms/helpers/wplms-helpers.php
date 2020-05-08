@@ -42,7 +42,7 @@ class Wplms_Helpers {
 	public function all_wplms_quizs( $label = null, $option_code = 'WPLMS_QUIZ', $any_option = true ) {
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a Quiz', 'uncanny-automator' );
+			$label = __( 'Quiz', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -53,7 +53,7 @@ class Wplms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'quiz' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -65,7 +65,7 @@ class Wplms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Quiz Title', 'uncanny-automator' ),
+				$option_code          => __( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Quiz URL', 'uncanny-automator' ),
 			],
@@ -85,7 +85,7 @@ class Wplms_Helpers {
 
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -96,7 +96,7 @@ class Wplms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'course' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -108,7 +108,7 @@ class Wplms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -127,7 +127,7 @@ class Wplms_Helpers {
 
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a Unit', 'uncanny-automator' );
+			$label = __( 'Unit', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -138,7 +138,7 @@ class Wplms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'unit' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any unit', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -150,7 +150,7 @@ class Wplms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Unit Title', 'uncanny-automator' ),
+				$option_code          => __( 'Unit title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Unit ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Unit URL', 'uncanny-automator' ),
 			],

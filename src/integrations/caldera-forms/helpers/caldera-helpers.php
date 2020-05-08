@@ -41,7 +41,7 @@ class Caldera_Helpers {
 	public function list_caldera_forms_forms( $label = null, $option_code = 'CFFORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -70,7 +70,6 @@ class Caldera_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_caldera_forms_forms', $option );

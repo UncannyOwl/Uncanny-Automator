@@ -38,9 +38,10 @@ class EC_REGISTER {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Events*/
-			'sentence'            => sprintf( __( 'User registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			'select_option_name'  => __( 'User registers for {{an event}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - The Events Calendar */
+			'sentence'            => sprintf( __( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - The Events Calendar */
+			'select_option_name'  => __( 'A user registers for {{an event}}', 'uncanny-automator' ),
 			'action'              => 'event_tickets_rsvp_tickets_generated_for_product',
 			'priority'            => 10,
 			'accepted_args'       => 3,

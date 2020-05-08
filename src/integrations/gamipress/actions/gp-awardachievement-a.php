@@ -39,16 +39,17 @@ class GP_AWARDACHIEVEMENT_A {
 			'support_link'       => $uncanny_automator->get_author_support_link(),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Lessons*/
-			'sentence'           => sprintf( __( 'Award {{an Achievement:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Award {{an Achievement}}', 'uncanny-automator' ),
+			/* translators: Action - GamiPress */
+			'sentence'           => sprintf( __( 'Award {{an achievement:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - GamiPress */
+			'select_option_name' => __( 'Award {{an achievement}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_an_achievement' ),
 			'options_group'      => [
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->gamipress->options->list_gp_award_types(
-						__( 'Select an Achievement Type', 'uncanny-automator' ),
+						__( 'Achievement type', 'uncanny-automator' ),
 						'GPAWARDTYPES',
 						[
 							'token'        => false,
@@ -57,7 +58,11 @@ class GP_AWARDACHIEVEMENT_A {
 							'endpoint'     => 'select_achievements_from_types_AWARDACHIEVEMENT',
 						]
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Select a Award', 'uncanny-automator' ), [ '' => __( 'Select a Type Above', 'uncanny-automator' ) ] ),
+
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, 
+						/* translators: Noun */
+						__( 'Award', 'uncanny-automator' ) 
+					),
 				],
 			],
 		);

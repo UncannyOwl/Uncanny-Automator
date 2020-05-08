@@ -542,6 +542,13 @@ class Utilities {
 	public static function enqueue_global_assets() {
 		wp_enqueue_style( 'uap-admin-global', Utilities::get_css( 'admin/global.css' ), array(), Utilities::get_version() );
 		wp_enqueue_script( 'uap-admin-global', Utilities::get_js( 'admin/global.js' ), array( 'jquery' ), Utilities::get_version(), true );
+
+		wp_localize_script( 'uap-admin-global', 'UncannyAutomatorGlobal', [
+			'rest' => [
+				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
+				'nonce' => \wp_create_nonce( 'wp_rest' ),
+			]
+		]);
 	}
 
 	/**

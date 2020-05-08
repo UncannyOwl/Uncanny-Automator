@@ -26,7 +26,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	public function integer_field( $option_code = 'INT', $label = null, $description = null, $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Enter a number', 'uncanny-automator' );
+			$label = __( 'Number', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -61,7 +61,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	public function float_field( $option_code = 'FLOAT', $label = null, $description = null, $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Enter a number', 'uncanny-automator' );
+			$label = __( 'Number', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -100,7 +100,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	public function text_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default = null, $required = true, $description = '', $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Enter text', 'uncanny-automator' );
+			$label = __( 'Text', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -168,7 +168,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		// -- all_lf_lessons
 
 		if ( ! $label ) {
-			$label = __( 'Select an option', 'uncanny-automator' );
+			$label = __( 'Option', 'uncanny-automator' );
 		}
 
 		$option = [
@@ -227,7 +227,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		// -- all_lf_lessons
 
 		if ( ! $label ) {
-			$label = __( 'Select Option', 'uncanny-automator' );
+			$label = __( 'Option', 'uncanny-automator' );
 		}
 
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';

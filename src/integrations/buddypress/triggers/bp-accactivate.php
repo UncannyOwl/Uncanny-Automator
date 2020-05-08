@@ -38,7 +38,9 @@ class BP_ACCACTIVATE {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - BuddyPress */
 			'sentence'            => __( 'User\'s account is activated', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - BuddyPress */
 			'select_option_name'  => __( 'User\'s account is activated', 'uncanny-automator' ),
 			'action'              => 'bp_core_activated_user',
 			'priority'            => 10,

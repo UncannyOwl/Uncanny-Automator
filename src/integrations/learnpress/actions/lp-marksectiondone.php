@@ -41,16 +41,17 @@ class LP_MARKSECTIONDONE {
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		];
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, 'course' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any course', 'uncanny-automator' ) );
 
 		$action = [
 			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Courses*/
-			'sentence'           => sprintf( __( 'Mark {{a section:%1$s}} complete', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Mark {{a section}} complete', 'uncanny-automator' ),
+			/* translators: Action - LearnPress */
+			'sentence'           => sprintf( __( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - LearnPress */
+			'select_option_name' => __( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'lp_mark_section_done' ],
@@ -58,7 +59,7 @@ class LP_MARKSECTIONDONE {
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LPCOURSE',
-						__( 'Select a Course', 'uncanny-automator' ),
+						__( 'Course', 'uncanny-automator' ),
 						$options,
 						'',
 						'',
@@ -69,7 +70,7 @@ class LP_MARKSECTIONDONE {
 							'endpoint'     => 'select_section_from_course_LPMARKLESSONDONE',
 						]
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Select a Section', 'uncanny-automator' ), [ '' => __( 'Select a Course Above', 'uncanny-automator' ) ] ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Section', 'uncanny-automator' ) ),
 				],
 			],
 		];

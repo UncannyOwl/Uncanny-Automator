@@ -41,7 +41,7 @@ class Bbpress_Helpers {
 	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Forum', 'uncanny-automator' );
+			$label = __( 'Forum', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -62,7 +62,7 @@ class Bbpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Forum Title', 'uncanny-automator' ),
+				$option_code          => __( 'Forum title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Forum ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Forum URL', 'uncanny-automator' ),
 			],

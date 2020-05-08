@@ -38,9 +38,10 @@ class LF_COURSEDONE {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Courses 2:Number of times*/
-			'sentence'            => sprintf( __( 'User completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User completes {{a course}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LifterLMS */
+			'sentence'            => sprintf( __( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LifterLMS */
+			'select_option_name'  => __( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'lifterlms_course_completed',
 			'priority'            => 20,
 			'accepted_args'       => 2,

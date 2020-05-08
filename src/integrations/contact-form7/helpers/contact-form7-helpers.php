@@ -38,7 +38,7 @@ class Contact_Form7_Helpers {
 	public function list_contact_form7_forms( $label = null, $option_code = 'CF7FORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -74,9 +74,8 @@ class Contact_Form7_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 			'relevant_tokens' => [
-				$option_code          => __( 'Form Title', 'uncanny-automator' ),
+				$option_code          => __( 'Form title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Form ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Form URL', 'uncanny-automator' ),
 			],

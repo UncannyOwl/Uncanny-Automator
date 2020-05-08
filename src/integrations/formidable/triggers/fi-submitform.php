@@ -38,9 +38,10 @@ class FI_SUBMITFORM {
 			'support_link'        => $uncanny_automator->get_author_support_link(),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:MemberPress Products */
-			'sentence'            => sprintf( __( 'User submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			'select_option_name'  => __( 'User submits {{a form}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - Formidable */
+			'sentence'            => sprintf( __( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - Formidable */
+			'select_option_name'  => __( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'frm_process_entry',
 			'priority'            => 10,
 			'accepted_args'       => 4,

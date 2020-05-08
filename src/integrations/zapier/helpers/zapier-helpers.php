@@ -73,7 +73,7 @@ class Zapier_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter a valid webhook url.', 'uncanny-automator' ),
+					'message' => __( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -91,14 +91,14 @@ class Zapier_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter a valid webhook url.', 'uncanny-automator' ),
+					'message' => __( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter a valid fields.', 'uncanny-automator' ),
+					'message' => __( 'Please enter valid fields.', 'uncanny-automator' ),
 				] );
 			}
 			$fields = $values['WEBHOOK_FIELDS'];
@@ -130,16 +130,16 @@ class Zapier_Helpers {
 			$response = wp_remote_request( $webhook_url, $args );
 
 			if ( $response instanceof \WP_Error ) {
-				/* Translators: 1:Webhook URL*/
-				$error_message = sprintf( __( 'Error in webhook (%s) response found.', 'uncanny-automator' ), $webhook_url );
+				/* translators: 1. Webhook URL */
+				$error_message = sprintf( __( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				wp_send_json( [
 					'type'    => 'error',
 					'message' => $error_message,
 				] );
 			}
 
-			/* Translators: 1:Webhook URL*/
-			$success_message = sprintf( __( 'Successfully sent data on %s.', 'uncanny-automator' ), $webhook_url );
+			/* translators: 1. Webhook URL */
+			$success_message = sprintf( __( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
 			wp_send_json( array(
 				'type'    => 'success',

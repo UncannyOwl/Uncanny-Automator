@@ -69,7 +69,7 @@ class Tc_Tokens {
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Course Title',
+				'tokenName'       => 'Course title',
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course',
 			];
@@ -88,7 +88,7 @@ class Tc_Tokens {
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Lesson/Topic Title',
+				'tokenName'       => 'Lesson/Topic title',
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
 			];

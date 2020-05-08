@@ -38,9 +38,10 @@ class WP_USERROLE {
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Roles*/
-			'sentence'           => sprintf( __( 'Change user role to {{another role:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Change user role to another {{role}}', 'uncanny-automator' ),
+			/* translators: Action - WordPress */
+			'sentence'           => sprintf( __( 'Change the user\'s role to {{a new role:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - WordPress */
+			'select_option_name' => __( 'Change the user\'s role to {{a new role}}', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'user_role' ),
@@ -71,7 +72,7 @@ class WP_USERROLE {
 			$user_obj->set_role( $role );
 			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
 		} else {
-			$error_message = __( 'For security, the change role action cannot be applied to Administrators.', 'uncanny-automator' );
+			$error_message = __( 'For security, the change role action cannot be applied to administrators.', 'uncanny-automator' );
 			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 		}
 	}

@@ -41,8 +41,9 @@ class WP_SENDEMAIL {
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Email Address*/
+			/* translators: Action - WordPress */
 			'sentence'           => sprintf( __( 'Send an email to {{email address:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - WordPress */
 			'select_option_name' => __( 'Send an {{email}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
@@ -50,12 +51,18 @@ class WP_SENDEMAIL {
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILFROM', __( 'From:', 'uncanny-automator' ), true, 'email', '{{admin_email}}' ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILTO', __( 'To:', 'uncanny-automator' ), true, 'email', '{{user_email}}', true, __( 'Separate multiple email addresses with a comma', 'uncanny-automator' ) ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILCC', __( 'CC:', 'uncanny-automator' ), true, 'email', '', false ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBCC', __( 'BCC:', 'uncanny-automator' ), true, 'email', '', false ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILSUBJECT', __( 'Subject:', 'uncanny-automator' ), true ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBODY', __( 'Body:', 'uncanny-automator' ), true, 'textarea' ),
+					/* translators: Email field */
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILFROM', __( 'From', 'uncanny-automator' ), true, 'email', '{{admin_email}}' ),
+					/* translators: Email field */
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILTO', __( 'To', 'uncanny-automator' ), true, 'email', '{{user_email}}', true, __( 'Separate multiple email addresses with a comma', 'uncanny-automator' ) ),
+					/* translators: Email field */
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILCC', __( 'CC', 'uncanny-automator' ), true, 'email', '', false ),
+					/* translators: Email field */
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBCC', __( 'BCC', 'uncanny-automator' ), true, 'email', '', false ),
+					/* translators: Email field */
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILSUBJECT', __( 'Subject', 'uncanny-automator' ), true ),
+					/* translators: Email field */
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBODY', __( 'Body', 'uncanny-automator' ), true, 'textarea' ),
 				],
 			],
 		);

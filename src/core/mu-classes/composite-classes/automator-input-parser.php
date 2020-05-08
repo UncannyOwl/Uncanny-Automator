@@ -176,6 +176,7 @@ class Automator_Input_Parser {
 									break;
 							}
 						}
+						$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
 						$field_text = str_replace( $match, $replaceable, $field_text );
 					} else {
 						//Non usermeta
@@ -296,6 +297,7 @@ class Automator_Input_Parser {
 					}
 				}
 
+				$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
 				$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 			}
 		}
@@ -379,6 +381,7 @@ class Automator_Input_Parser {
 											$return = get_the_title( $post_id );
 										}
 									} else {
+										/* translators: Article. Fallback. Any type of content (post, page, media, etc) */
 										$return = __( 'Any', 'uncanny-automator' );
 									}
 								} elseif ( ! preg_match( '/ANON/', $piece ) ) {
@@ -423,7 +426,7 @@ class Automator_Input_Parser {
 			$adt_rp_key = get_password_reset_key( $user );
 			$user_login = $user->user_login;
 			$url        = network_site_url( "wp-login.php?action=rp&key=$adt_rp_key&login=" . rawurlencode( $user_login ), 'login' );
-			$text       = __( 'Click here to reset password.', 'uncanny-automator' );
+			$text       = __( 'Click here to reset your password.', 'uncanny-automator' );
 			$rp_link    = sprintf( '<a href="%s">%s</a>', $url, $text );
 		} else {
 			$rp_link = '';

@@ -38,9 +38,10 @@ class LP_LESSONDONE {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Lessons 2:Number of times*/
-			'sentence'            => sprintf( __( 'User completes {{a lesson:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User completes {{a lesson}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LearnPress */
+			'sentence'            => sprintf( __( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LearnPress */
+			'select_option_name'  => __( 'A user completes {{a lesson}}', 'uncanny-automator' ),
 			'action'              => 'learn_press_user_complete_lesson',
 			'priority'            => 10,
 			'accepted_args'       => 3,

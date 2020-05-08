@@ -96,6 +96,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Zapier_Helpers
 	 */
 	public $zapier;
+	/**
+	 * @var Forminator_Helpers
+	 */
+	public $forminator;
 
 	/**
 	 * @var Automator_Helpers_Recipe
@@ -323,17 +327,18 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	public function less_or_greater_than() {
 		$option = [
 			'option_code' => 'NUMBERCOND',
-			'label'       => __( 'Select Condition', 'uncanny-automator' ),
+			/* translators: Noun */
+			'label'       => __( 'Condition', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			// 'default_value'      => false,
 			'options'     => [
-				'='  => 'equal to',
-				'!=' => 'not equal to',
-				'<'  => 'less than',
-				'>'  => 'greater than',
-				'>=' => 'greater or equal to',
-				'<=' => 'less or equal to',
+				'='  => __( 'equal to', 'uncanny-automator' ),
+				'!=' => __( 'not equal to', 'uncanny-automator' ),
+				'<'  => __( 'less than', 'uncanny-automator' ),
+				'>'  => __( 'greater than', 'uncanny-automator' ),
+				'>=' => __( 'greater or equal to', 'uncanny-automator' ),
+				'<=' => __( 'less or equal to', 'uncanny-automator' ),
 			],
 		];
 
@@ -369,10 +374,19 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @param array $args
 	 * @param bool $add_any_option
 	 * @param string $add_any_option_label
+	 * @param bool $is_all_label
 	 *
 	 * @return array
+	 * @version 2.1.4 - changes made to pass __('All pages', 'uncanny-automator') as string instead of
+	 * page, post, course etc
+	 *
+	 * @version 1.0 - added
 	 */
-	public function wp_query( $args, $add_any_option = false, $add_any_option_label = 'page', $is_all_label = false ) {
+	public function wp_query( $args, $add_any_option = false, $add_any_option_label = null, $is_all_label = false ) {
+
+		if ( is_null( $add_any_option_label ) ) {
+			$add_any_option_label = __( 'Any page', 'uncanny-automator' );
+		}
 
 		if ( ! $this->load_helpers ) {
 			return [];
@@ -386,17 +400,110 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		$options = [];
 		if ( $add_any_option ) {
-			if ( $is_all_label ) {
-				$options['-1'] = sprintf( __( 'All %s', 'uncanny-automator' ), $add_any_option_label );
-			} else {
-				$options['-1'] = sprintf( __( 'Any %s', 'uncanny-automator' ), $add_any_option_label );
+			//switch statement is for pre-v2.1.4
+			//default statement is v2.1.4+ in which
+			//__() is passed to $add_any_option_label
+			switch ( $add_any_option_label ) {
+				case 'page':
+				case 'pages':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All pages', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any page', 'uncanny-automator' );
+					}
+					break;
+				case 'post':
+				case 'posts':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All posts', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any post', 'uncanny-automator' );
+					}
+					break;
+				case 'course':
+				case 'courses':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All courses', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any course', 'uncanny-automator' );
+					}
+					break;
+				case 'lesson':
+				case 'lessons':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All lessons', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any lesson', 'uncanny-automator' );
+					}
+					break;
+				case 'topic':
+				case 'topics':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All topics', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any topic', 'uncanny-automator' );
+					}
+					break;
+				case 'quiz':
+				case 'quizzes':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All quizzes', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any quiz', 'uncanny-automator' );
+					}
+					break;
+				case 'membership':
+				case 'memberships':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All memberships', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any membership', 'uncanny-automator' );
+					}
+					break;
+				case 'download':
+				case 'downloads':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All downloads', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any download', 'uncanny-automator' );
+					}
+					break;
+				case 'unit':
+				case 'units':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All units', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any unit', 'uncanny-automator' );
+					}
+					break;
+				case 'popup':
+				case 'popups':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All popups', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any popup', 'uncanny-automator' );
+					}
+					break;
+				case 'award':
+				case 'awards':
+					if ( $is_all_label ) {
+						$options['-1'] = __( 'All awards', 'uncanny-automator' );
+					} else {
+						$options['-1'] = __( 'Any award', 'uncanny-automator' );
+					}
+					break;
+				default:
+					//fallback, assuming __() string is passed
+					$options['-1'] = $add_any_option_label;
+					break;
 			}
 		}
+
 		foreach ( $posts as $post ) {
 			$title = $post->post_title;
 
 			if ( empty( $title ) ) {
-				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $post->ID );
+				$title = sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
 			}
 
 			$options[ $post->ID ] = $title;

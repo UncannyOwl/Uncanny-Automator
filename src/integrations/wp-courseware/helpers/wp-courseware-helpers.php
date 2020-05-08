@@ -43,7 +43,7 @@ class Wp_Courseware_Helpers {
 
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -54,7 +54,7 @@ class Wp_Courseware_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'course' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -66,7 +66,7 @@ class Wp_Courseware_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -87,7 +87,7 @@ class Wp_Courseware_Helpers {
 
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a Module', 'uncanny-automator' );
+			$label = __( 'Module', 'uncanny-automator' );
 		}
 		$modules = array();
 		$options = [];
@@ -128,7 +128,7 @@ class Wp_Courseware_Helpers {
 	public function all_wpcw_units( $label = null, $option_code = 'WPCW_UNIT', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Unit', 'uncanny-automator' );
+			$label = __( 'Unit', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -140,7 +140,7 @@ class Wp_Courseware_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'unit' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any unit', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -152,7 +152,7 @@ class Wp_Courseware_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Unit Title', 'uncanny-automator' ),
+				$option_code          => __( 'Unit title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Unit ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Unit URL', 'uncanny-automator' ),
 			],

@@ -38,9 +38,10 @@ class WP_SUBMITCOMMENT {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Posts 2:Number of times*/
-			'sentence'            => sprintf( __( 'User submits a comment on {{a post:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User submits a comment on {{a post}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - WordPress */
+			'sentence'            => sprintf( __( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - WordPress */
+			'select_option_name'  => __( 'A user submits a comment on {{a post}}', 'uncanny-automator' ),
 			'action'              => 'comment_post',
 			'priority'            => 90,
 			'accepted_args'       => 3,

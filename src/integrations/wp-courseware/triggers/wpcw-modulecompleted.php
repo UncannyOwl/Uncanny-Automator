@@ -38,9 +38,10 @@ class WPCW_MODULECOMPLETED {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Modules 2:Number of times*/
-			'sentence'            => sprintf( __( 'User completes {{a module:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User completes {{a module}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - WP Courseware */
+			'sentence'            => sprintf( __( 'A user completes {{a module:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - WP Courseware */
+			'select_option_name'  => __( 'A user completes {{a module}}', 'uncanny-automator' ),
 			'action'              => 'wpcw_user_completed_module',
 			'priority'            => 20,
 			'accepted_args'       => 3,

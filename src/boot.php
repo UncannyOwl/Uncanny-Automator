@@ -42,7 +42,7 @@ class Boot {
 		// We need to check if spl auto loading is available when activating plugin
 		// Plugin will not activate if SPL extension is not enabled by throwing error
 		if ( ! extension_loaded( 'SPL' ) ) {
-			trigger_error( esc_html__( 'Please contact your hosting company to update to php version 5.3+ and enable spl extensions.', 'uncanny-automator' ), E_USER_ERROR );
+			trigger_error( 'Please contact your hosting company to update to php version 5.3+ and enable spl extensions.', E_USER_ERROR );
 		}
 
 		spl_autoload_register( array( $this, 'require_class_files' ) );
@@ -58,23 +58,24 @@ class Boot {
 		/*Weekly delete logs from /wp-content/*/
 		//add_action( 'admin_init', array( $this, 'schedule_clear_debug_logs' ) );
 		//add_action( 'weekly_remove_debug_logs', array( $this, 'remove_weekly_log_action_data' ) );
-		
+
 		add_action( 'rest_api_init', [ $this, 'uo_register_api' ] );
+		add_action( 'admin_init', [ $this, 'maybe_ask_review' ] );
 	}
 
 	/**
 	 * Set a weekly schedule to remove debug logs
 	 */
-	public function schedule_clear_debug_logs() {
+	/*public function schedule_clear_debug_logs() {
 		if ( false === as_next_scheduled_action( 'weekly_remove_debug_logs' ) ) {
 			as_schedule_recurring_action( strtotime( 'midnight tonight' ), ( 7 * DAY_IN_SECONDS ), 'weekly_remove_debug_logs' );
 		}
-	}
+	}*/
 
 	/**
 	 * A callback to run when the 'weekly_remove_debug_logs' scheduled action is run.
 	 */
-	public function remove_weekly_log_action_data() {
+	/*public function remove_weekly_log_action_data() {
 		if ( ! Utilities::get_debug_mode() ) {
 			$files = glob( WP_CONTENT_DIR . '/uo-*.log' );
 			if ( $files ) {
@@ -83,14 +84,14 @@ class Boot {
 				}
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Licensing page styles
 	 *
 	 * @param $hook
 	 */
-	function scripts( $hook ) {
+	public function scripts( $hook ) {
 
 		if ( strpos( $hook, 'uncanny-automator-license-activation' ) ) {
 
@@ -107,8 +108,8 @@ class Boot {
 	public function enqueue_script() {
 		global $wpdb;
 		if ( is_user_logged_in() ) {
-			// check if there is any closure published
-			$check_closure = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type LIKE 'uo-closure' AND post_status LIKE 'publish' LIMIT 1" );
+			// check if there is a recipe and closure with publish status
+			$check_closure = $wpdb->get_col( "SELECT cp.ID as ID FROM {$wpdb->posts} cp LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent WHERE cp.post_type LIKE 'uo-closure' AND cp.post_status LIKE 'publish' AND rp.post_status LIKE 'publish' LIMIT 1" );
 			if ( ! empty( $check_closure ) ) {
 				$user_id   = wp_get_current_user()->ID;
 				$api_setup = [
@@ -277,39 +278,31 @@ class Boot {
 
 	}
 
-
 	/**
-	 * Make clone magic method private, so nobody can clone instance.
+	 * Register rest api calls for misc tasks.
 	 *
-	 * @since 1.0.0
+	 * @since 2.1.0
 	 */
-	function __clone() {
-	}
-
-	/**
-	 * Make sleep magic method private, so nobody can serialize instance.
-	 *
-	 * @since 1.0.0
-	 */
-	function __sleep() {
-	}
-
-	/**
-	 * Make wakeup magic method private, so nobody can unserialize instance.
-	 *
-	 * @since 1.0.0
-	 */
-	function __wakeup() {
-
-	}
-	
 	public function uo_register_api() {
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/uoa_redirect/', array(
+		global $wpdb;
+		$check_closure = $wpdb->get_col( "SELECT cp.ID as ID FROM {$wpdb->posts} cp LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent WHERE cp.post_type LIKE 'uo-closure' AND cp.post_status LIKE 'publish' AND rp.post_status LIKE 'publish' LIMIT 1" );
+		if ( ! empty( $check_closure ) ) {
+			register_rest_route( AUTOMATOR_REST_API_END_POINT, '/uoa_redirect/', [
+				'methods'  => 'POST',
+				'callback' => [ $this, 'send_feedback' ],
+			] );
+		}
+		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/review-banner-visibility/', [
 			'methods'  => 'POST',
-			'callback' => [ $this, 'send_feedback' ]
-		) );
+			'callback' => [ $this, 'save_review_settings' ],
+		] );
 	}
-	
+
+	/**
+	 * Rest api callbacks for redirects.
+	 *
+	 * @since 2.1.0
+	 */
 	public function send_feedback( $request ) {
 		// check if its a valid request.
 		$data = $request->get_params();
@@ -319,10 +312,90 @@ class Boot {
 			// Send a simple message at random intervals.
 			if ( ! empty( $redirect_url ) ) {
 				delete_option( 'UO_REDIRECTURL_' . $user_id );
-				return new \WP_REST_Response( array('redirect_url' => $redirect_url), 201 );
+
+				return new \WP_REST_Response( [ 'redirect_url' => $redirect_url ], 201 );
 			}
 		}
-		return new \WP_REST_Response( array('redirect_url' => ''), 201 );
+
+		return new \WP_REST_Response( [ 'redirect_url' => '' ], 201 );
+	}
+
+	/**
+	 * Admin notice for review this plugin.
+	 *
+	 * @since 2.1.4
+	 */
+	public function maybe_ask_review() {
+
+		// check plugin install date
+		$review_time = get_option( '_uncanny_automator_review_time', '' );
+
+		if ( empty( $review_time ) ) {
+			$review_time = current_time( 'timestamp' );
+			update_option( '_uncanny_automator_review_time', $review_time );
+		}
+
+		$current_date = current_time( 'timestamp' );
+		$days_after   = 10;
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		if ( ceil( ( $current_date - $review_time ) / 86400 ) > $days_after ) {
+
+			$_is_reminder   = get_option( '_uncanny_automator_review_reminder', '' );
+			$_reminder_date = get_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
+
+			if ( ! empty( $_is_reminder ) && 'hide-forever' === $_is_reminder ) {
+				return;
+			}
+
+			if ( ! empty( $_is_reminder ) && 'maybe-later' === $_is_reminder ) {
+				// check reminder date difference
+				if ( ceil( ( $current_date - $_reminder_date ) / 86400 ) < $days_after ) {
+					return;
+				}
+			}
+
+			add_action( 'admin_notices', function () {
+
+				// Get data about Automator's version
+				$is_pro  = FALSE;
+				$version = \Uncanny_Automator\InitializePlugin::PLUGIN_VERSION;
+				if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+					$is_pro  = TRUE;
+					$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+				}
+
+				// Send review URL
+				$url_send_review = 'https://wordpress.org/support/plugin/uncanny-automator/reviews/#new-post';
+
+				// Send feedback URL
+				$url_send_feedback_version = $is_pro ? 'Uncanny%20Automator%20Pro%20' . $version : 'Uncanny%20Automator%20' . $version;
+				$url_send_feedback_source  = $is_pro ? 'uncanny_automator_pro' : 'uncanny_automator';
+				$url_send_feedback         = 'https://automatorplugin.com/feedback/?version=' . $url_send_feedback_version . '&utm_source=' . $url_send_feedback_source . '&utm_medium=review_banner';
+				include Utilities::get_view( 'review-banner.php' );
+			} );
+		}
+	}
+
+	/**
+	 * Rest API callback for saving user selection for review.
+	 *
+	 * @since 2.1.4
+	 * @param object $request
+	 *
+	 * @return object
+	 */
+	public function save_review_settings( $request ) {
+		// check if its a valid request.
+		$data = $request->get_params();
+		if ( isset( $data['action'] ) && ( 'maybe-later' === $data['action'] || 'hide-forever' === $data['action'] ) ) {
+			update_option( '_uncanny_automator_review_reminder', $data['action'] );
+			update_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
+			return new \WP_REST_Response( [ 'success' => true ], 200 );
+		}
+
+		return new \WP_REST_Response( [ 'success' => false ], 200 );
 	}
 }
 

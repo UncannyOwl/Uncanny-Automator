@@ -120,24 +120,24 @@ class Automator_Registration {
 		 * Use this hook the override specific triggers type, i.e., utility or user
 		 */
 		if ( ! key_exists( 'type', $trigger ) ) {
-			$trigger_type            = apply_filters( 'uap_trigger_type', 'user', $trigger, $integration_code, $integration );
+			$trigger_type    = apply_filters( 'uap_trigger_type', 'user', $trigger, $integration_code, $integration );
 			$trigger['type'] = $trigger_type;
 		}
 
 		/**
 		 * Use this hook to modify the trigger before it it error checked and registered
 		 */
-		$trigger = apply_filters( 'pre_filter_trigger', $trigger, $integration_code, $integration );
+		$trigger = apply_filters( 'uap_register_trigger', $trigger, $integration_code, $integration );
 
 		/**
 		 * Use this hook to modify the integration_code before it is error checked and registered
 		 */
-		$integration_code = apply_filters( 'pre_filter_trigger', $integration_code, $trigger, $integration );
+		$integration_code = apply_filters( 'uap_register_trigger_integration_code', $integration_code, $trigger, $integration );
 
 		/**
 		 * Use this hook to modify the integration_code before it is error checked and registered
 		 */
-		$integration = apply_filters( 'pre_filter_trigger', $integration, $trigger, $integration_code );
+		$integration = apply_filters( 'uap_register_trigger_integration', $integration, $trigger, $integration_code );
 
 		// Integration was passed in, lets try to register it
 		if ( null !== $integration_code ) {
@@ -260,17 +260,17 @@ class Automator_Registration {
 		/**
 		 * Use this hook to modify the uap action before it it error checked and registered
 		 */
-		$uap_action = apply_filters( 'pre_filter_uap_action', $uap_action, $integration_code, $integration );
+		$uap_action = apply_filters( 'uap_register_action', $uap_action, $integration_code, $integration );
 
 		/**
 		 * Use this hook to modify the integration_code before it is error checked and registered
 		 */
-		$integration_code = apply_filters( 'pre_filter_trigger', $integration_code, $uap_action, $integration );
+		$integration_code = apply_filters( 'uap_register_action_integration_code', $integration_code, $uap_action, $integration );
 
 		/**
 		 * Use this hook to modify the integration_code before it is error checked and registered
 		 */
-		$integration = apply_filters( 'pre_filter_trigger', $integration, $uap_action, $integration_code );
+		$integration = apply_filters( 'uap_register_action_integration', $integration, $uap_action, $integration_code );
 
 		// Integration was passed in, lets try to register it
 		if ( null !== $integration_code ) {
@@ -371,17 +371,17 @@ class Automator_Registration {
 		/**
 		 * Use this hook to modify the uap closures before it it error checked and registered
 		 */
-		$closure = apply_filters( 'pre_filter_closure', $closure, $integration_code, $integration );
+		$closure = apply_filters( 'uap_register_closure', $closure, $integration_code, $integration );
 
 		/**
 		 * Use this hook to modify the integration_code before it is error checked and registered
 		 */
-		$integration_code = apply_filters( 'pre_filter_trigger', $integration_code, $closure, $integration );
+		$integration_code = apply_filters( 'uap_register_closure_integration_code', $integration_code, $closure, $integration );
 
 		/**
 		 * Use this hook to modify the integration_code before it is error checked and registered
 		 */
-		$integration = apply_filters( 'pre_filter_trigger', $integration, $closure, $integration_code );
+		$integration = apply_filters( 'uap_register_closure_integration', $integration, $closure, $integration_code );
 
 		// Integration was passed in, lets try to register it
 		if ( null !== $integration_code ) {

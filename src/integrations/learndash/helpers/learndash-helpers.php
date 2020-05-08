@@ -58,7 +58,7 @@ class Learndash_Helpers {
 	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true ) {
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -69,7 +69,7 @@ class Learndash_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'course' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -78,7 +78,7 @@ class Learndash_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -97,7 +97,7 @@ class Learndash_Helpers {
 		global $uncanny_automator;
 
 		if ( ! $label ) {
-			$label = __( 'Select a Lesson', 'uncanny-automator' );
+			$label = __( 'Lesson', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -108,7 +108,7 @@ class Learndash_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_lesson, 'lesson' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_lesson, __( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -117,7 +117,7 @@ class Learndash_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Lesson Title', 'uncanny-automator' ),
+				$option_code          => __( 'Lesson title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
 			],
@@ -136,7 +136,7 @@ class Learndash_Helpers {
 		global $uncanny_automator;
 
 		if ( ! $label ) {
-			$label = __( 'Select a Topic', 'uncanny-automator' );
+			$label = __( 'Topic', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -147,7 +147,7 @@ class Learndash_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, 'topic' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any topic', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -156,7 +156,7 @@ class Learndash_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Topic Title', 'uncanny-automator' ),
+				$option_code          => __( 'Topic title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Topic ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Topic URL', 'uncanny-automator' ),
 			],
@@ -174,7 +174,7 @@ class Learndash_Helpers {
 	public function all_ld_groups( $label = null, $option_code = 'LDGROUP', $all_label = false, $any_option = true ) {
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a Group', 'uncanny-automator' );
+			$label = __( 'Group', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -186,9 +186,9 @@ class Learndash_Helpers {
 		];
 
 		if ( $all_label ) {
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'groups', $all_label );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any group', 'uncanny-automator' ), $all_label );
 		} else {
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'group' );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any group', 'uncanny-automator' ) );
 		}
 
 		$option = [
@@ -198,7 +198,7 @@ class Learndash_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Group Title', 'uncanny-automator' ),
+				$option_code          => __( 'Group title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Group ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Group URL', 'uncanny-automator' ),
 			],
@@ -217,7 +217,7 @@ class Learndash_Helpers {
 		global $uncanny_automator;
 
 		if ( ! $label ) {
-			$label = __( 'Select a Quiz', 'uncanny-automator' );
+			$label = __( 'Quiz', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -228,7 +228,7 @@ class Learndash_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'quiz' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -237,7 +237,7 @@ class Learndash_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Quiz Title', 'uncanny-automator' ),
+				$option_code          => __( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Quiz URL', 'uncanny-automator' ),
 			],
@@ -281,7 +281,7 @@ class Learndash_Helpers {
 			];
 
 			$include_any = $include_any !== false ? true : false;
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $include_any, 'lesson' );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $include_any, __( 'Any lesson', 'uncanny-automator' ) );
 
 			foreach ( $options as $lesson_id => $lesson_name ) {
 				$fields[] = array(
@@ -346,7 +346,7 @@ class Learndash_Helpers {
 				];
 			}
 			$include_any = $include_any !== false ? true : false;
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $include_any, 'lesson' );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $include_any, __( 'Any lesson', 'uncanny-automator' ) );
 
 			foreach ( $options as $lesson_id => $lesson_name ) {
 				$fields[] = array(
@@ -380,7 +380,7 @@ class Learndash_Helpers {
 		if( $include_any ) {
 			$fields[] = [
 				'value' => - 1,
-				'text'  => __( 'Any Topic', 'uncanny-automator' ),
+				'text'  => __( 'Any topic', 'uncanny-automator' ),
 			];
 		}
 		

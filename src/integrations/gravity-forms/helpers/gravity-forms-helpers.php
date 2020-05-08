@@ -41,7 +41,7 @@ class Gravity_Forms_Helpers {
 	public function list_gravity_forms( $label = null, $option_code = 'GFFORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Gravity Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -70,7 +70,6 @@ class Gravity_Forms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gravity_forms', $option );

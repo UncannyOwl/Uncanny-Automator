@@ -150,7 +150,7 @@ class Config {
 
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-			// Automator Recipe Log
+			// Automator Recipe log
 			$table_name = $wpdb->prefix . 'uap_recipe_log';
 
 
@@ -177,7 +177,7 @@ class Config {
 			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
 			dbDelta( $sql );
 
-			// Automator Trigger Log
+			// Automator Trigger log
 			$table_name = $wpdb->prefix . 'uap_trigger_log';
 
 			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_trigger_id, DROP INDEX automator_recipe_id, DROP INDEX automator_recipe_log_id, DROP INDEX completed;';
@@ -227,7 +227,7 @@ class Config {
 			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
 			dbDelta( $sql );
 
-			// Automator Action Log
+			// Automator Action log
 			$table_name = $wpdb->prefix . 'uap_action_log';
 
 			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX error_message, DROP INDEX completed, DROP INDEX automator_recipe_log_id, DROP INDEX automator_recipe_id, DROP INDEX automator_action_id ;';

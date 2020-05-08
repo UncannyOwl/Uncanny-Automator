@@ -54,38 +54,40 @@ class Cf7_Tokens {
 	 */
 	public function automator_save_cf7_form_func( \WPCF7_ContactForm $contact_form, $recipes, $args ) {
 		if ( is_array( $args ) ) {
-			$trigger_result = array_pop( $args );
-			if ( true === $trigger_result['result'] ) {
-				global $uncanny_automator;
-				if ( $recipes && $contact_form instanceof \WPCF7_ContactForm ) {
-					foreach ( $recipes as $recipe ) {
-						$triggers = $recipe['triggers'];
-						if ( $triggers ) {
-							foreach ( $triggers as $trigger ) {
-								$trigger_id = $trigger['ID'];
-								if ( ! key_exists( 'CF7FORMS', $trigger['meta'] ) ) {
-									continue;
-								} else {
-									$form_id = (int) $trigger['meta']['CF7FORMS'];
-									$data    = $this->get_data_from_contact_form( $contact_form );
-									$user_id = (int) $trigger_result['args']['user_id'];
-									if ( $user_id ) {
-										$recipe_log_id_raw = $uncanny_automator->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
-										if ( is_array( $recipe_log_id_raw ) && key_exists( 'recipe_log_id', $recipe_log_id_raw ) ) {
-											//$recipe_log_id  = absint( $recipe_log_id_raw['recipe_log_id'] );
-											$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
-											$run_number     = (int) $trigger_result['args']['run_number'];
-
-											$args = [
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'CF7FORMS_' . $form_id,
-												'meta_value'     => serialize( $data ),
-												'run_number'     => $run_number, //get run number
-												'trigger_log_id' => $trigger_log_id,
-											];
-
-											$uncanny_automator->insert_trigger_meta( $args );
+			foreach( $args as $trigger_result ) {
+				//$trigger_result = array_pop( $args );
+				if ( TRUE === $trigger_result['result'] ) {
+					global $uncanny_automator;
+					if ( $recipes && $contact_form instanceof \WPCF7_ContactForm ) {
+						foreach ( $recipes as $recipe ) {
+							$triggers = $recipe['triggers'];
+							if ( $triggers ) {
+								foreach ( $triggers as $trigger ) {
+									$trigger_id = $trigger['ID'];
+									if ( ! key_exists( 'CF7FORMS', $trigger['meta'] ) ) {
+										continue;
+									} else {
+										$form_id = (int) $trigger['meta']['CF7FORMS'];
+										$data    = $this->get_data_from_contact_form( $contact_form );
+										$user_id = (int) $trigger_result['args']['user_id'];
+										if ( $user_id ) {
+											$recipe_log_id_raw = $uncanny_automator->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
+											if ( is_array( $recipe_log_id_raw ) && key_exists( 'recipe_log_id', $recipe_log_id_raw ) ) {
+												//$recipe_log_id  = absint( $recipe_log_id_raw['recipe_log_id'] );
+												$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
+												$run_number     = (int) $trigger_result['args']['run_number'];
+												
+												$args = [
+													'user_id'        => $user_id,
+													'trigger_id'     => $trigger_id,
+													'meta_key'       => 'CF7FORMS_' . $form_id,
+													'meta_value'     => serialize( $data ),
+													'run_number'     => $run_number, //get run number
+													'trigger_log_id' => $trigger_log_id,
+												];
+												
+												$uncanny_automator->insert_trigger_meta( $args );
+											}
 										}
 									}
 								}

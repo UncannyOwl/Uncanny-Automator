@@ -48,11 +48,11 @@ class PM_POPUPSHOW {
 			//'include'        => $automator_popups,
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, 'popup' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any popup', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code' => 'POPUPID',
-			'label'       => __( 'Select a Popup', 'uncanny-automator' ),
+			'label'       => __( 'Popup', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $options,
@@ -64,9 +64,10 @@ class PM_POPUPSHOW {
 			'support_link'       => 'https://www.automatorplugin.com/#support',
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Popups */
-			'sentence'           => sprintf( __( 'Display {{Popup:%1$s}} for the user.', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Display the {{Popup}} for a user', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - Popup Maker */
+			'sentence'           => sprintf( __( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Logged-in trigger - Popup Maker */
+			'select_option_name' => __( 'Show {{a popup}}', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => [ $this, 'display_pop_up' ],

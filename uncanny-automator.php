@@ -1,13 +1,17 @@
 <?php
 /*
- * Plugin Name: Uncanny Automator
- * Description: Connect WordPress plugins together to create powerful recipes that save time and improve the user experience. With no coding required, Uncanny Automator can replace dozens of plugins with millions of recipe combinations!
- * Version: 2.1.3
- * Author: Uncanny Owl
- * Author URI: https://www.uncannyowl.com/
- * Plugin URI: https://automatorplugin.com/
- * Text Domain: uncanny-automator
- * Domain Path: /languages
+ * Plugin Name:         Uncanny Automator
+ * Description:         Connect WordPress plugins together to create powerful recipes that save time and improve the user experience. With no coding required, Uncanny Automator can replace dozens of plugins with millions of recipe combinations!
+ * Author:              Uncanny Owl
+ * Author URI:          https://www.uncannyowl.com/
+ * Plugin URI:          https://automatorplugin.com/
+ * Text Domain:         uncanny-automator
+ * Domain Path:         /languages
+ * License:             GPLv3
+ * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
+ * Version:             2.1.4
+ * Requires at least:   5.0
+ * Requires PHP:        7.0
  */
 
 namespace Uncanny_Automator;
@@ -53,10 +57,6 @@ global $uncanny_automator;
 require_once( dirname( AUTOMATOR_BASE_FILE ) . '/src/core/mu-classes/mu-functions.php' );
 $uncanny_automator = new Automator_Functions();
 
-
-require_once( plugin_dir_path( __FILE__ ) . '/src/libraries/action-scheduler/action-scheduler.php' );
-
-
 /**
  * This class initiates the plugin load sequence and sets general plugin variables
  *
@@ -98,7 +98,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.1.3';
+	const PLUGIN_VERSION = '2.1.4';
 
 	/**
 	 * The database version number
@@ -240,21 +240,24 @@ class InitializePlugin {
 // Let's run it
 InitializePlugin::get_instance();
 
-add_filter( 'gettext', 'Uncanny_Automator\uap_temp_warning_change', 20, 3 );
-
 /**
- * Change comment form default field names.
+ * @param $translated_text
+ * @param $text
+ * @param $domain
  *
- * @link http://codex.wordpress.org/Plugin_API/Filter_Reference/gettext
+ * @return string|void
  */
 function uap_temp_warning_change( $translated_text, $text, $domain ) {
-
-	switch ( $translated_text ) {
-
-		case 'Please activate Uncanny Automator before activating Uncanny Automator Pro.':
-			$translated_text = __( 'Uncanny Automator Pro needs to be updated before it can be used with the new updates and enhancements of Uncanny Automator.', 'theme_text_domain' );
-			break;
+	if ( 'uncanny-automator-pro' === $domain ) {
+		switch ( $translated_text ) {
+			case 'Please activate Uncanny Automator before activating Uncanny Automator Pro.':
+				/* translators: 1. Trademarked term. 2. Trademarked term */
+				$translated_text = sprintf( __( '%1$s needs to be updated before it can be used with the new updates and enhancements of %2$s.', 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator' );
+				break;
+		}
 	}
 
 	return $translated_text;
 }
+
+add_filter( 'gettext', 'Uncanny_Automator\uap_temp_warning_change', 20, 3 );

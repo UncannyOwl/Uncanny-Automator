@@ -14,7 +14,7 @@ if ( ! defined( 'WPINC' ) ) {
 class Activity_Log {
 
 	/**
-	 * Activity Page Title
+	 * Activity Page title
 	 * @var $settings_page_slug
 	 */
 	public $settings_page_slug;

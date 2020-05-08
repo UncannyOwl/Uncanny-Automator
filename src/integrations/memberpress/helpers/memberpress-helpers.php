@@ -41,7 +41,7 @@ class Memberpress_Helpers {
 	 */
 	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
@@ -77,7 +77,7 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -96,7 +96,7 @@ class Memberpress_Helpers {
 	 */
 	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
@@ -139,7 +139,7 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -158,7 +158,7 @@ class Memberpress_Helpers {
 	 */
 	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
@@ -201,7 +201,7 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],

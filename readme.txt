@@ -2,13 +2,13 @@
 Contributors: uncannyowl
 Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
-Tested up to: 5.4
+Tested up to: 5.4.1
 Requires PHP: 7.0
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Uncanny Automator connects your WordPress plugins and sites together automatically. Build recipes in minutes that can personalize your site for users and automate routine tasks. No coding or extra plugins are needed!
+Uncanny Automator connects your WordPress plugins and sites together automatically. Build recipes in minutes with no code or extra plugins!
 
 == Description ==
 
@@ -143,6 +143,17 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.1.4 =
+* Added: Forminator integration
+* Added: Trigger: Forminator - User submits a form
+* Updated: A number of trigger/action sentences for consistency and improved localization
+* Updated: Renamed Trigger, Action, Recipe "report" to "log" in some places for consistency
+* Updated: Moved Action Scheduler library to Uncanny Automator Pro
+* Updated: Additional checks on recipe closures (redirect) when doing_ajax = true
+* Updated: Removed placeholders in trigger/action dropdown menus
+* Updated: Improved token handling for Contact Form 7 triggers
+* Fixed: Action: LearnPress - Enroll the user in a course not working correctly when course had a price assigned
 
 = 2.1.3 =
 * Fixed: Missing log menu entries

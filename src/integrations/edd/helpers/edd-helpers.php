@@ -38,7 +38,7 @@ class Edd_Helpers {
 	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -50,7 +50,7 @@ class Edd_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'download' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any download', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -62,7 +62,7 @@ class Edd_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Download Title', 'uncanny-automator' ),
+				$option_code          => __( 'Download title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Download ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Download URL', 'uncanny-automator' ),
 			],

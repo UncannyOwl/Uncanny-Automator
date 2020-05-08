@@ -38,15 +38,16 @@ class LP_COURSEENROLLED {
 			'support_link'        => $uncanny_automator->get_author_support_link(),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Courses 2:Number of times*/
-			'sentence'            => sprintf( __( 'User is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User is enrolled in {{a course}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LearnPress */
+			'sentence'            => sprintf( __( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LearnPress */
+			'select_option_name'  => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 			'action'              => 'learn-press/user-enrolled-course',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'lp_course_enrolled' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->learnpress->options->all_lp_courses( __( 'Select a Course', 'uncanny-automator' ), $this->trigger_meta ),
+				$uncanny_automator->helpers->recipe->learnpress->options->all_lp_courses( __( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);

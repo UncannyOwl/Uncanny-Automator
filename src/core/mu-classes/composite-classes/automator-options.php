@@ -112,40 +112,6 @@ class Automator_Options {
 	}
 
 	/**
-	 * @param string $label
-	 * @param string $description
-	 * @param string $placeholder
-	 *
-	 * @return mixed
-	 */
-	public function number_of_times( $label = null, $description = null, $placeholder = null ) {
-
-		if ( ! $label ) {
-			$label = __( 'Number of times', 'uncanny-automator' );
-		}
-
-		if ( ! $description ) {
-			$description = '';
-		}
-
-		if ( ! $placeholder ) {
-			$placeholder = __( 'Example: 1', 'uncanny-automator' );
-		}
-
-		$option = [
-			'option_code'   => 'NUMTIMES',
-			'label'         => $label,
-			'description'   => $description,
-			'placeholder'   => $placeholder,
-			'input_type'    => 'int',
-			'default_value' => 1,
-			'required'      => true,
-		];
-
-		return apply_filters( 'uap_option_number_of_times', $option );
-	}
-
-	/**
 	 * @param string $option_code
 	 * @param string $label
 	 * @param string $description
@@ -156,7 +122,7 @@ class Automator_Options {
 	public function integer_field( $option_code = 'INT', $label = null, $description = null, $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Enter a number', 'uncanny-automator' );
+			$label = __( 'Number', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -191,7 +157,7 @@ class Automator_Options {
 	public function float_field( $option_code = 'FLOAT', $label = null, $description = null, $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Enter a number', 'uncanny-automator' );
+			$label = __( 'Number', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -230,7 +196,7 @@ class Automator_Options {
 	public function text_field( $option_code = 'TEXT', $label = null, $tokens = false, $type = 'text', $default = null, $required = true, $description = '', $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Enter text', 'uncanny-automator' );
+			$label = __( 'Text', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -298,7 +264,7 @@ class Automator_Options {
 		// -- all_lf_lessons
 
 		if ( ! $label ) {
-			$label = __( 'Select an option', 'uncanny-automator' );
+			$label = __( 'Option', 'uncanny-automator' );
 		}
 
 		$option = [
@@ -357,7 +323,7 @@ class Automator_Options {
 		// -- all_lf_lessons
 
 		if ( ! $label ) {
-			$label = __( 'Select Option', 'uncanny-automator' );
+			$label = __( 'Option', 'uncanny-automator' );
 		}
 
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
@@ -386,22 +352,57 @@ class Automator_Options {
 	}
 
 	/**
+	 * @param string $label
+	 * @param string $description
+	 * @param string $placeholder
+	 *
+	 * @return mixed
+	 */
+	public function number_of_times( $label = null, $description = null, $placeholder = null ) {
+
+		if ( ! $label ) {
+			$label = __( 'Number of times', 'uncanny-automator' );
+		}
+
+		if ( ! $description ) {
+			$description = '';
+		}
+
+		if ( ! $placeholder ) {
+			$placeholder = __( 'Example: 1', 'uncanny-automator' );
+		}
+
+		$option = [
+			'option_code'   => 'NUMTIMES',
+			'label'         => $label,
+			'description'   => $description,
+			'placeholder'   => $placeholder,
+			'input_type'    => 'int',
+			'default_value' => 1,
+			'required'      => true,
+		];
+
+		return apply_filters( 'uap_option_number_of_times', $option );
+	}
+
+	/**
 	 * @return mixed
 	 */
 	public function less_or_greater_than() {
 		$option = [
 			'option_code' => 'NUMBERCOND',
-			'label'       => __( 'Select Condition', 'uncanny-automator' ),
+			/* translators: Noun */
+			'label'       => __( 'Condition', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			// 'default_value'      => false,
 			'options'     => [
-				'='  => 'equal to',
-				'!=' => 'not equal to',
-				'<'  => 'less than',
-				'>'  => 'greater than',
-				'>=' => 'greater or equal to',
-				'<=' => 'less or equal to',
+				'='  => __( 'equal to', 'uncanny-automator' ),
+				'!=' => __( 'not equal to', 'uncanny-automator' ),
+				'<'  => __( 'less than', 'uncanny-automator' ),
+				'>'  => __( 'greater than', 'uncanny-automator' ),
+				'>=' => __( 'greater or equal to', 'uncanny-automator' ),
+				'<=' => __( 'less or equal to', 'uncanny-automator' ),
 			],
 		];
 
@@ -417,6 +418,7 @@ class Automator_Options {
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
 
 		if ( ! $label ) {
+			/* translators: Noun */
 			$label = __( 'Post', 'uncanny-automator' );
 		}
 
@@ -428,7 +430,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$all_posts = $this->wp_query( $args, $any_option, 'post' );
+		$all_posts = $this->wp_query( $args, $any_option, __( 'Any post', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -437,7 +439,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $all_posts,
 			'relevant_tokens' => [
-				$option_code          => __( 'Post Title', 'uncanny-automator' ),
+				$option_code          => __( 'Post title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Post ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Post URL', 'uncanny-automator' ),
 			],
@@ -466,7 +468,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$all_pages = $this->wp_query( $args, $any_option, 'Page' );
+		$all_pages = $this->wp_query( $args, $any_option, __( 'Any page', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -475,7 +477,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $all_pages,
 			'relevant_tokens' => [
-				$option_code          => __( 'Page Title', 'uncanny-automator' ),
+				$option_code          => __( 'Page title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Page ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Page URL', 'uncanny-automator' ),
 			],
@@ -494,7 +496,7 @@ class Automator_Options {
 	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -505,7 +507,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'course' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -514,7 +516,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -532,7 +534,7 @@ class Automator_Options {
 	public function all_ld_lessons( $label = null, $any_lesson = true, $option_code = 'LDLESSON' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Lesson', 'uncanny-automator' );
+			$label = __( 'Lesson', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -543,7 +545,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_lesson, 'lesson' );
+		$options = $this->wp_query( $args, $any_lesson, __( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -552,7 +554,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Lesson Title', 'uncanny-automator' ),
+				$option_code          => __( 'Lesson title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
 			],
@@ -570,7 +572,7 @@ class Automator_Options {
 	public function all_ld_topics( $label = null, $option_code = 'LDTOPIC' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Topic', 'uncanny-automator' );
+			$label = __( 'Topic', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -581,7 +583,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, true, 'topic' );
+		$options = $this->wp_query( $args, true, __( 'Any topic', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -590,7 +592,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Topic Title', 'uncanny-automator' ),
+				$option_code          => __( 'Topic title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Topic ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Topic URL', 'uncanny-automator' ),
 			],
@@ -608,7 +610,7 @@ class Automator_Options {
 	public function all_ld_groups( $label = null, $option_code = 'LDGROUP', $all_label = false, $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Group', 'uncanny-automator' );
+			$label = __( 'Group', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -622,7 +624,7 @@ class Automator_Options {
 		if ( $all_label ) {
 			$options = $this->wp_query( $args, $any_option, 'groups', $all_label );
 		} else {
-			$options = $this->wp_query( $args, $any_option, 'group' );
+			$options = $this->wp_query( $args, $any_option, __( 'Any group', 'uncanny-automator' ) );
 		}
 
 		$option = [
@@ -632,7 +634,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Group Title', 'uncanny-automator' ),
+				$option_code          => __( 'Group title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Group ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Group URL', 'uncanny-automator' ),
 			],
@@ -650,7 +652,7 @@ class Automator_Options {
 	public function all_ld_quiz( $label = null, $option_code = 'LDQUIZ', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Quiz', 'uncanny-automator' );
+			$label = __( 'Quiz', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -661,7 +663,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'quiz' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -670,7 +672,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Quiz Title', 'uncanny-automator' ),
+				$option_code          => __( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Quiz URL', 'uncanny-automator' ),
 			],
@@ -689,12 +691,12 @@ class Automator_Options {
 
 		$args = wp_parse_args( $args, array(
 			'uo_include_any' => false,
-			'uo_any_label'   => __( 'Any Group', 'uncanny-automator' ),
+			'uo_any_label'   => __( 'Any group', 'uncanny-automator' ),
 			'status'         => array( 'public' ),
 		) );
 
 		if ( ! $label ) {
-			$label = __( 'Select a Group', 'uncanny-automator' );
+			$label = __( 'Group', 'uncanny-automator' );
 		}
 
 		global $wpdb;
@@ -742,13 +744,13 @@ class Automator_Options {
 	 */
 	public function all_buddypress_users( $label = null, $option_code = 'BPUSERS', $args = array() ) {
 		if ( ! $label ) {
-			$label = __( 'Select a User', 'uncanny-automator' );
+			$label = __( 'User', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any User', 'uncanny-automator' ),
+				'uo_any_label'   => __( 'Any user', 'uncanny-automator' ),
 			)
 		);
 
@@ -785,7 +787,7 @@ class Automator_Options {
 	public function all_wc_products( $label = null, $option_code = 'WOOPRODUCT' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -805,7 +807,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -823,7 +825,7 @@ class Automator_Options {
 	public function all_wc_subscriptions( $label = null, $option_code = 'WOOSUBSCRIPTIONS' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Subscription', 'uncanny-automator' );
+			$label = __( 'Subscription', 'uncanny-automator' );
 		}
 
 		global $wpdb;
@@ -844,13 +846,13 @@ class Automator_Options {
 		$subscriptions = $wpdb->get_results( $q );
 
 		$options       = [];
-		$options['-1'] = __( 'Any Subscription', 'uncanny-automator' );
+		$options['-1'] = __( 'Any subscription', 'uncanny-automator' );
 
 		foreach ( $subscriptions as $post ) {
 			$title = $post->post_title;
 
 			if ( empty( $title ) ) {
-				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $post->ID );
+				$title = sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
 			}
 
 			$options[ $post->ID ] = $title;
@@ -863,7 +865,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -882,7 +884,7 @@ class Automator_Options {
 	public function list_contact_form7_forms( $label = null, $option_code = 'CF7FORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -917,9 +919,8 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 			'relevant_tokens' => [
-				$option_code          => __( 'Form Title', 'uncanny-automator' ),
+				$option_code          => __( 'Form title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Form ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Form URL', 'uncanny-automator' ),
 			],
@@ -937,7 +938,7 @@ class Automator_Options {
 	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Forum', 'uncanny-automator' );
+			$label = __( 'Forum', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -957,7 +958,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Forum Title', 'uncanny-automator' ),
+				$option_code          => __( 'Forum title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Forum ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Forum URL', 'uncanny-automator' ),
 			],
@@ -978,7 +979,7 @@ class Automator_Options {
 		// TODO this currently has no usage. remove if its unused in version 1.0
 
 		if ( ! $label ) {
-			$label = __( 'Select a Status', 'uncanny-automator' );
+			$label = 'Status';
 		}
 
 
@@ -1002,7 +1003,8 @@ class Automator_Options {
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Role', 'uncanny-automator' );
+			/* translators: WordPress role */
+			$label = __( 'Role', 'uncanny-automator' );
 		}
 
 		$roles = [];
@@ -1033,7 +1035,7 @@ class Automator_Options {
 	public function list_gravity_forms( $label = null, $option_code = 'GFFORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Gravity Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -1061,7 +1063,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gravity_forms', $option );
@@ -1077,7 +1078,7 @@ class Automator_Options {
 	public function all_ec_events( $label = null, $option_code = 'ECEVENTS' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Event', 'uncanny-automator' );
+			$label = __( 'Event', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1098,7 +1099,7 @@ class Automator_Options {
 			//'default_value'      => 'Any post',
 			'options'         => $all_events,
 			'relevant_tokens' => [
-				$option_code          => __( 'Event Title', 'uncanny-automator' ),
+				$option_code          => __( 'Event title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Event ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Event URL', 'uncanny-automator' ),
 			],
@@ -1166,7 +1167,7 @@ class Automator_Options {
 	public function all_lp_courses( $label = null, $option_code = 'LPCOURSE', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1177,7 +1178,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'course' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1189,7 +1190,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -1207,7 +1208,7 @@ class Automator_Options {
 	public function all_lp_lessons( $label = null, $option_code = 'LPLESSON', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Lesson', 'uncanny-automator' );
+			$label = __( 'Lesson', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1218,7 +1219,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'lesson' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1230,7 +1231,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Lesson Title', 'uncanny-automator' ),
+				$option_code          => __( 'Lesson title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
 			],
@@ -1249,7 +1250,7 @@ class Automator_Options {
 	public function all_lf_courses( $label = null, $option_code = 'LFCOURSE', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1260,7 +1261,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'course' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1272,7 +1273,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -1290,7 +1291,7 @@ class Automator_Options {
 	public function all_lf_lessons( $label = null, $option_code = 'LFLESSON', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Lesson', 'uncanny-automator' );
+			$label = __( 'Lesson', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1301,7 +1302,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'lesson' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1313,7 +1314,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Lesson Title', 'uncanny-automator' ),
+				$option_code          => __( 'Lesson title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
 			],
@@ -1331,7 +1332,7 @@ class Automator_Options {
 	public function all_lf_sections( $label = null, $option_code = 'LFSECTION', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Section', 'uncanny-automator' );
+			$label = __( 'Section', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1342,7 +1343,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'section' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any section', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1354,7 +1355,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Section Title', 'uncanny-automator' ),
+				$option_code          => __( 'Section title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Section ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Section URL', 'uncanny-automator' ),
 			],
@@ -1384,8 +1385,10 @@ class Automator_Options {
 		$options = [];
 		if ( $add_any_option ) {
 			if ( $is_all_label ) {
+				/* translators: Fallback. All types of content (post, page, media, etc) */
 				$options['-1'] = sprintf( __( 'All %s', 'uncanny-automator' ), $add_any_option_label );
 			} else {
+				/* translators: Fallback. Any type of content (post, page, media, etc) */
 				$options['-1'] = sprintf( __( 'Any %s', 'uncanny-automator' ), $add_any_option_label );
 			}
 		}
@@ -1393,7 +1396,7 @@ class Automator_Options {
 			$title = $post->post_title;
 
 			if ( empty( $title ) ) {
-				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $post->ID );
+				$title = sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
 			}
 
 			$options[ $post->ID ] = $title;
@@ -1411,7 +1414,7 @@ class Automator_Options {
 	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1422,7 +1425,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'download' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any download', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1434,7 +1437,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Download Title', 'uncanny-automator' ),
+				$option_code          => __( 'Download title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Download ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Download URL', 'uncanny-automator' ),
 			],
@@ -1452,7 +1455,7 @@ class Automator_Options {
 	public function all_wpcw_units( $label = null, $option_code = 'WPCW_UNIT', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Unit', 'uncanny-automator' );
+			$label = __( 'Unit', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1463,7 +1466,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'unit' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any unit', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1475,7 +1478,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Unit Title', 'uncanny-automator' ),
+				$option_code          => __( 'Unit title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Unit ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Unit URL', 'uncanny-automator' ),
 			],
@@ -1494,7 +1497,7 @@ class Automator_Options {
 	public function all_wpcw_modules( $label = null, $option_code = 'WPCW_MODULE', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Module', 'uncanny-automator' );
+			$label = __( 'Module', 'uncanny-automator' );
 		}
 		$modules = array();
 		$options = [];
@@ -1536,7 +1539,7 @@ class Automator_Options {
 	public function all_wpcw_courses( $label = null, $option_code = 'WPCW_COURSE', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1547,7 +1550,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'course' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1559,7 +1562,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -1578,7 +1581,7 @@ class Automator_Options {
 	public function all_wplms_courses( $label = null, $option_code = 'WPLMS_COURSE', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Course', 'uncanny-automator' );
+			$label = __( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1589,7 +1592,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'course' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1601,7 +1604,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course Title', 'uncanny-automator' ),
+				$option_code          => __( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
 			],
@@ -1619,7 +1622,7 @@ class Automator_Options {
 	public function all_wplms_units( $label = null, $option_code = 'WPLMS_UNIT', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Unit', 'uncanny-automator' );
+			$label = __( 'Unit', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1630,7 +1633,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'unit' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any unit', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1642,7 +1645,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Unit Title', 'uncanny-automator' ),
+				$option_code          => __( 'Unit title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Unit ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Unit URL', 'uncanny-automator' ),
 			],
@@ -1660,7 +1663,7 @@ class Automator_Options {
 	public function all_wplms_quizs( $label = null, $option_code = 'WPLMS_QUIZ', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Quiz', 'uncanny-automator' );
+			$label = __( 'Quiz', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -1671,7 +1674,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'quiz' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -1683,7 +1686,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Quiz Title', 'uncanny-automator' ),
+				$option_code          => __( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Quiz URL', 'uncanny-automator' ),
 			],
@@ -1701,7 +1704,7 @@ class Automator_Options {
 	public function all_h5p_contents( $label = null, $option_code = 'H5P_CONTENT', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Content', 'uncanny-automator' );
+			$label = __( 'Content', 'uncanny-automator' );
 		}
 
 		global $wpdb;
@@ -1713,7 +1716,7 @@ class Automator_Options {
 			);
 
 			if ( $any_option ) {
-				$options['-1'] = __( 'Any Content', 'uncanny-automator' );
+				$options['-1'] = __( 'Any content', 'uncanny-automator' );
 			}
 			if ( ! empty( $contents ) ) {
 				foreach ( $contents as $content ) {
@@ -1744,7 +1747,7 @@ class Automator_Options {
 	public function all_h5p_content_types( $label = null, $option_code = 'H5P_CONTENTTYPE', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Type', 'uncanny-automator' );
+			$label = __( 'Content type', 'uncanny-automator' );
 		}
 
 		global $wpdb;
@@ -1756,7 +1759,7 @@ class Automator_Options {
 			);
 
 			if ( $any_option ) {
-				$options['-1'] = __( 'Any Type', 'uncanny-automator' );
+				$options['-1'] = __( 'Any content type', 'uncanny-automator' );
 			}
 			if ( ! empty( $types ) ) {
 				foreach ( $types as $type ) {
@@ -1789,7 +1792,7 @@ class Automator_Options {
 	public function list_ninja_forms( $label = null, $option_code = 'NFFORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Ninja Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -1819,7 +1822,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_ninja_forms', $option );
@@ -1837,7 +1839,7 @@ class Automator_Options {
 	public function list_wp_forms( $label = null, $option_code = 'WPFFORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a WP Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -1871,7 +1873,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_wp_forms', $option );
@@ -1938,7 +1939,7 @@ class Automator_Options {
 	public function list_gp_award_types( $label = null, $option_code = 'GPAWARDTYPES', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select an Achievement Type', 'uncanny-automator' );
+			$label = __( 'Achievement type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -1960,9 +1961,12 @@ class Automator_Options {
 					}
 				}
 			}
-			$options['points-award']     = 'Points Awards';
-			$options['step']             = 'Step';
-			$options['rank-requirement'] = 'Rank Requirement';
+			/* translators: GamiPress achievement type */
+			$options['points-award']     = __( 'Points awards', 'uncanny-automator' );
+			/* translators: GamiPress achievement type */
+			$options['step']             = __( 'Step', 'uncanny-automator' );
+			/* translators: GamiPress achievement type */
+			$options['rank-requirement'] = __( 'Rank requirement', 'uncanny-automator' );
 		}
 		$type = 'select';
 
@@ -1976,7 +1980,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a type', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gp_award_types', $option );
@@ -1993,7 +1996,7 @@ class Automator_Options {
 	public function list_gp_points_types( $label = null, $option_code = 'GPPOINTSTYPES', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select an Point Type', 'uncanny-automator' );
+			$label = __( 'Point type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -2005,7 +2008,7 @@ class Automator_Options {
 		$options = [];
 
 		if ( $include_all ) {
-			$options['ua-all-gp-types'] = __( 'All Point types', 'uncanny-automator' );
+			$options['ua-all-gp-types'] = __( 'All point types', 'uncanny-automator' );
 		}
 
 		if ( $this->load_option ) {
@@ -2034,7 +2037,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a point type', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gp_points_types', $option );
@@ -2051,7 +2053,7 @@ class Automator_Options {
 	public function list_gp_rank_types( $label = null, $option_code = 'GPRANKTYPES', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select an Rank Type', 'uncanny-automator' );
+			$label = __( 'Rank type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -2086,7 +2088,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a Rank type', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gp_rank_types', $option );
@@ -2101,7 +2102,7 @@ class Automator_Options {
 	 */
 	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
@@ -2143,7 +2144,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -2162,7 +2163,7 @@ class Automator_Options {
 	 */
 	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
@@ -2204,7 +2205,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -2223,7 +2224,7 @@ class Automator_Options {
 	 */
 	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a product', 'uncanny-automator' );
+			$label = __( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
@@ -2258,7 +2259,7 @@ class Automator_Options {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product Title', 'uncanny-automator' ),
+				$option_code          => __( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
@@ -2277,13 +2278,13 @@ class Automator_Options {
 	 */
 	public function all_formidable_forms( $label = null, $option_code = 'FIFORMS', $args = [] ) {
 		if ( ! $label ) {
-			$label = __( 'Select a form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any product', 'uncanny-automator' ),
+				'uo_any_label'   => __( 'Any form', 'uncanny-automator' ),
 			)
 		);
 
@@ -2323,7 +2324,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_all_formidable_forms', $option );
@@ -2338,7 +2338,7 @@ class Automator_Options {
 	public function all_lf_quizs( $label = null, $option_code = 'LFQUIZ', $any_option = true ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Quiz', 'uncanny-automator' );
+			$label = __( 'Quiz', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -2349,7 +2349,7 @@ class Automator_Options {
 			'post_status'    => 'publish',
 		];
 
-		$options = $this->wp_query( $args, $any_option, 'quiz' );
+		$options = $this->wp_query( $args, $any_option, __( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -2361,7 +2361,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Quiz Title', 'uncanny-automator' ),
+				$option_code          => __( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Quiz URL', 'uncanny-automator' ),
 			],
@@ -2379,7 +2379,7 @@ class Automator_Options {
 	public function all_lf_memberships( $label = null, $option_code = 'LFMEMBERSHIP', $any_option = true, $is_all_label = false ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Membership', 'uncanny-automator' );
+			$label = __( 'Membership', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -2402,7 +2402,7 @@ class Automator_Options {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Membership Title', 'uncanny-automator' ),
+				$option_code          => __( 'Membership title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Membership ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Membership URL', 'uncanny-automator' ),
 			],
@@ -2420,7 +2420,7 @@ class Automator_Options {
 	public function list_caldera_forms_forms( $label = null, $option_code = 'CFFORMS', $args = [] ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -2448,7 +2448,6 @@ class Automator_Options {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_caldera_forms_forms', $option );
@@ -2463,7 +2462,7 @@ class Automator_Options {
 	public function all_ec_rsvp_events( $label = null, $option_code = 'ECEVENTS' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Select a RSVP Event', 'uncanny-automator' );
+			$label = __( 'RSVP event', 'uncanny-automator' );
 		}
 
 		$args    = [
@@ -2481,7 +2480,7 @@ class Automator_Options {
 				$title = $post->post_title;
 
 				if ( empty( $title ) ) {
-					$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $post->ID );
+					$title = sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
 				}
 
 				$rsvp_ticket = $ticket_handler->get_event_rsvp_tickets( $post );
@@ -2499,9 +2498,9 @@ class Automator_Options {
 			//'default_value'      => 'Any post',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'RSVP Event Title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'RSVP Event ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'RSVP Event URL', 'uncanny-automator' ),
+				$option_code          => __( 'RSVP event title', 'uncanny-automator' ),
+				$option_code . '_ID'  => __( 'RSVP event ID', 'uncanny-automator' ),
+				$option_code . '_URL' => __( 'RSVP event URL', 'uncanny-automator' ),
 			],
 		];
 

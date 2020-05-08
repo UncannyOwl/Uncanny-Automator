@@ -38,9 +38,10 @@ class WP_LOGIN {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Number of times*/
-			'sentence'            => sprintf( __( 'User logs in {{a number of:%1$s}} times', 'uncanny-automator' ), 'NUMTIMES' ),
-			'select_option_name'  => __( 'User {{logs in}} to site', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - WordPress */
+			'sentence'            => sprintf( __( 'A user logs in to the site {{a number of:%1$s}} times', 'uncanny-automator' ), 'NUMTIMES' ),
+			/* translators: Logged-in trigger - WordPress */
+			'select_option_name'  => __( 'A user logs in to the site', 'uncanny-automator' ),
 			'action'              => 'wp_login',
 			'priority'            => 99,
 			'accepted_args'       => 2,

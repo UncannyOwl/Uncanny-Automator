@@ -42,12 +42,12 @@ class Buddypress_Helpers {
 
 		$args = wp_parse_args( $args, array(
 			'uo_include_any' => false,
-			'uo_any_label'   => __( 'Any Group', 'uncanny-automator' ),
+			'uo_any_label'   => __( 'Any group', 'uncanny-automator' ),
 			'status'         => array( 'public' ),
 		) );
 
 		if ( ! $label ) {
-			$label = __( 'Select a Group', 'uncanny-automator' );
+			$label = __( 'Group', 'uncanny-automator' );
 		}
 
 		global $wpdb;
@@ -96,13 +96,13 @@ class Buddypress_Helpers {
 	 */
 	public function all_buddypress_users( $label = null, $option_code = 'BPUSERS', $args = array() ) {
 		if ( ! $label ) {
-			$label = __( 'Select a User', 'uncanny-automator' );
+			$label = __( 'User', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any User', 'uncanny-automator' ),
+				'uo_any_label'   => __( 'Any user', 'uncanny-automator' ),
 			)
 		);
 

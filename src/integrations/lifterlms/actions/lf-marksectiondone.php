@@ -38,14 +38,15 @@ class LF_MARKSECTIONDONE {
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Courses*/
-			'sentence'           => sprintf( __( 'Mark {{a section:%1$s}} complete', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Mark {{a section}} complete', 'uncanny-automator' ),
+			/* translators: Action - LifterLMS */
+			'sentence'           => sprintf( __( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - LifterLMS */
+			'select_option_name' => __( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lf_mark_section_done' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_sections( __( 'Select a section', 'uncanny-automator' ), $this->action_meta, false ),
+				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_sections( __( 'Section', 'uncanny-automator' ), $this->action_meta, false ),
 			],
 		);
 

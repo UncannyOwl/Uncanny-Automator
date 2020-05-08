@@ -38,9 +38,10 @@ class LD_FAILQUIZ {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Quizzes 2:Number of times*/
-			'sentence'            => sprintf( __( 'User fails {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User fails {{a quiz}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'sentence'            => sprintf( __( 'A user fails {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'select_option_name'  => __( 'A user fails {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'learndash_quiz_completed',
 			'priority'            => 15,
 			'accepted_args'       => 2,

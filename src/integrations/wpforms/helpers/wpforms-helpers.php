@@ -45,7 +45,7 @@ class Wpforms_Helpers {
 
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Select a WP Form', 'uncanny-automator' );
+			$label = __( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -79,7 +79,6 @@ class Wpforms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'placeholder'     => __( 'Select a form', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_wp_forms', $option );

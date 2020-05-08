@@ -38,9 +38,10 @@ class LD_COURSEDONE {
 			'support_link'        => $uncanny_automator->get_author_support_link(),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* translators: 1:Courses 2:Number of Times */
-			'sentence'            => sprintf( __( 'User completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User completes {{a course}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'sentence'            => sprintf( __( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'select_option_name'  => __( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'learndash_course_completed',
 			'priority'            => 20,
 			'accepted_args'       => 1,

@@ -38,8 +38,9 @@ class Closure_Redirect {
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->closure_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->closure_code,
-			/* Translators: 1:URL*/
+			/* translators: Closure - WordPress */
 			'sentence'           => sprintf( __( 'Redirect to {{a link:%1$s}} when recipe is completed', 'uncanny-automator' ), $this->closure_meta ),
+			/* translators: Closure - WordPress */
 			'select_option_name' => __( 'Redirect when recipe is completed', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
@@ -62,19 +63,7 @@ class Closure_Redirect {
 	 */
 	public function redirect( $user_id, $closure_data, $recipe_id, $args ) {
 
-		/*if ( ! empty( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '/ucTinCan/statements' ) !== false ) {
-			$redirect_url = $closure_data['meta'][ $this->closure_meta ];
-
-			global $uncanny_automator;
-			$redirect_url = $uncanny_automator->parse->url( $redirect_url, $recipe_id, $args );
-			update_option( 'UO_REDIRECTURL_' . $user_id, $redirect_url );
-
-			return;
-		} else*/
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			/* it's an AJAX call */
-			/* DO NOTHING */
-			/* NOW APPLY A HACK */
 			$redirect_url = $closure_data['meta'][ $this->closure_meta ];
 
 			global $uncanny_automator;

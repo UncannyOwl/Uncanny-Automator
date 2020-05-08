@@ -40,9 +40,10 @@ class GP_AWARDRANK_A {
 			'support_link'       => $uncanny_automator->get_author_support_link(),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Lessons*/
-			'sentence'           => sprintf( __( 'Award {{a Rank:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Award {{a Rank}}', 'uncanny-automator' ),
+			/* translators: Action - GamiPress */
+			'sentence'           => sprintf( __( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - GamiPress */
+			'select_option_name' => __( 'Award {{a rank}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_points' ],
@@ -50,7 +51,7 @@ class GP_AWARDRANK_A {
 			'options_group'      => [
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->gamipress->options->list_gp_rank_types(
-						__( 'Select an Rank Type', 'uncanny-automator' ),
+						'',
 						'GPRANKTYPES',
 						[
 							'token'        => false,
@@ -59,7 +60,8 @@ class GP_AWARDRANK_A {
 							'endpoint'     => 'select_ranks_from_types_AWARDRANKS',
 						]
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Select a Rank', 'uncanny-automator' ), [ '' => __( 'Select a Type Above', 'uncanny-automator' ) ] ),
+					/* translators: Noun */
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Rank', 'uncanny-automator' ) ),
 				],
 			],
 		];

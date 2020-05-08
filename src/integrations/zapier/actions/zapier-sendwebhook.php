@@ -42,8 +42,9 @@ class ZAPIER_SENDWEBHOOK {
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Web Hooks*/
+			/* translators: Action - Zapier */
 			'sentence'           => sprintf( __( 'Send data to Zapier {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - Zapier */
 			'select_option_name' => __( 'Send data to Zapier {{webhook}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
@@ -65,8 +66,10 @@ class ZAPIER_SENDWEBHOOK {
 						'input_type' => 'select',
 
 						'option_code' => 'ACTION_EVENT',
-						'label'       => __( 'Request method', 'uncanny-automator-pro' ),
-						'description' => sprintf( __( '%s about each different HTTP method.', 'uncanny-automator-pro' ), '<a href="#" target="_blank">' . __( 'Learn more', 'uncanny-automator-pro' ) . '</a>' ),
+						/* translators: HTTP request method */
+						'label'       => __( 'Request method', 'uncanny-automator' ),
+						/* translators: 1. Learn more */
+						'description' => sprintf( __( '%1$s about each different HTTP method.', 'uncanny-automator' ), '<a href="#" target="_blank">' . __( 'Learn more', 'uncanny-automator' ) . '</a>' ),
 
 						'required' => true,
 
@@ -86,7 +89,7 @@ class ZAPIER_SENDWEBHOOK {
 
 						'option_code' => 'WEBHOOK_FIELDS',
 
-						'label' => __( 'Fields', 'uncanny-automator-pro' ),
+						'label' => __( 'Fields', 'uncanny-automator' ),
 
 						'required' => true,
 						'fields'   => [
@@ -110,8 +113,10 @@ class ZAPIER_SENDWEBHOOK {
 							],
 						],
 
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator-pro' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator-pro' ),
+						/* translators: Non-personal infinitive verb */
+						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
+						/* translators: Non-personal infinitive verb */
+						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
 					],
 				],
 			],
@@ -124,6 +129,7 @@ class ZAPIER_SENDWEBHOOK {
 				],
 				[
 					'show_in'     => $this->action_meta,
+					/* translators: Non-personal infinitive verb */
 					'text'        => __( 'Send test', 'uncanny-automator' ),
 					'css_classes' => 'btn btn--red',
 					'on_click'    => $this->send_test_js(),
@@ -322,8 +328,8 @@ class ZAPIER_SENDWEBHOOK {
 			$response = wp_remote_request( $webhook_url, $args );
 
 			if ( $response instanceof \WP_Error ) {
-				/* Translators: 1:Webhook URL*/
-				$error_message = sprintf( __( 'Error in webhook (%s) response found.', 'uncanny-automator' ), $webhook_url );
+				/* translators: 1. Webhook URL */
+				$error_message = sprintf( __( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 				return;

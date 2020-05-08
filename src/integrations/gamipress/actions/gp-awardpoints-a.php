@@ -39,24 +39,27 @@ class GP_AWARDPOINTS_A {
 			'support_link'       => $uncanny_automator->get_author_support_link(),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Lessons*/
-			'sentence'           => sprintf( __( 'Award {{Points:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Award {{Points}}', 'uncanny-automator' ),
+			/* translators: Action - GamiPress */
+			'sentence'           => sprintf( __( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'GPPOINTVALUE', $this->action_meta ),
+			/* translators: Action - GamiPress */
+			'select_option_name' => __( 'Award {{points}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_points' ],
 			'options'            => [],
 			'options_group'       => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->gamipress->options->list_gp_points_types( __( 'Select an Point Type', 'uncanny-automator' ), $this->action_meta, [
+					$uncanny_automator->helpers->recipe->gamipress->options->list_gp_points_types( __( 'Point type', 'uncanny-automator' ), $this->action_meta, [
 						'token'        => false,
 						'is_ajax'      => false,
 					] ),
+				],
+				'GPPOINTVALUE' => [
 					[
 						'input_type'      => 'int',
 
 						'option_code'     => 'GPPOINTVALUE',
-						'label'           => __( 'Enter Points', 'uncanny-automator' ),
+						'label'           => __( 'Points', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
 						'required'        => true,

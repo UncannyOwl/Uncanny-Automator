@@ -102,13 +102,14 @@ class Add_Popup_Maker_Integration {
 	public function uap_add_new_popup_trigger( $triggers ) {
 
 		$triggers['automator'] = array(
-			'name'            => __( 'On Automator Recipe Completion', 'popup-maker' ),
-			'modal_title'     => __( 'Automator Settings', 'popup-maker' ),
-			'settings_column' => sprintf( '<strong>%1$s</strong>: %2$s', __( 'Recipes', 'popup-maker' ), '{{data.recipe}}' ),
+			/* translators: 1. Trademarked term */
+			'name'            => sprintf( __( '%1$s recipe is completed', 'uncanny-automator' ), 'Automator' ),
+			'modal_title'     => __( 'Settings', 'uncanny-automator' ),
+			'settings_column' => sprintf( '<strong>%1$s</strong>: %2$s', __( 'Recipes', 'uncanny-automator' ), '{{data.recipe}}' ),
 			'fields'          => array(
 				'general' => array(
 					'recipe' => array(
-						'placeholder' => __( 'Select a Recipe', 'popup-maker' ),
+						'label'       => __( 'Recipe', 'uncanny-automator' ),
 						'type'        => 'postselect',
 						'post_type'   => 'uo-recipe',
 						'multiple'    => true,

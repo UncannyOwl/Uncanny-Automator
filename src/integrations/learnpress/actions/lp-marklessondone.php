@@ -39,16 +39,17 @@ class LP_MARKLESSONDONE {
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		];
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, 'course' );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any course', 'uncanny-automator' ) );
 
 		$action = array(
 			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* Translators: 1:Courses*/
-			'sentence'           => sprintf( __( 'Mark {{a lesson:%1$s}} complete', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Mark {{a lesson}} complete', 'uncanny-automator' ),
+			/* translators: Action - LearnPress */
+			'sentence'           => sprintf( __( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - LearnPress */
+			'select_option_name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lp_mark_lesson_done' ),
@@ -56,7 +57,7 @@ class LP_MARKLESSONDONE {
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LPCOURSE',
-						__( 'Select a Course', 'uncanny-automator' ),
+						__( 'Course', 'uncanny-automator' ),
 						$options,
 						'',
 						'',
@@ -69,8 +70,8 @@ class LP_MARKLESSONDONE {
 					),
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LPSECTION',
-						__( 'Select a Section', 'uncanny-automator' ),
-						[ '' => __( 'Select a Course Above', 'uncanny-automator' ) ],
+						__( 'Section', 'uncanny-automator' ),
+						[],
 						'',
 						'',
 						false,
@@ -79,7 +80,7 @@ class LP_MARKLESSONDONE {
 							'target_field' => $this->action_meta,
 							'endpoint'     => 'select_lesson_from_section_LPMARKLESSONDONE',
 						]),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Select a Lesson', 'uncanny-automator' ), [ '' => __( 'Select a Section Above', 'uncanny-automator' ) ] ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Lesson', 'uncanny-automator' ) ),
 				],
 			],
 		);

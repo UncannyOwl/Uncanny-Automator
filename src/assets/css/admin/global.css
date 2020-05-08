@@ -19,6 +19,151 @@
 		margin: 1.5em 0 1em;
 	}
 
+/*
+* Tooltip
+*/
+
+[uap-tooltip-admin] {
+	position: relative; 
+}
+
+[uap-tooltip-admin]::before,
+[uap-tooltip-admin]::after {
+	text-transform: none;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1;
+	user-select: none;
+	pointer-events: none;
+	position: absolute;
+	display: none;
+	opacity: 0;
+}
+
+[uap-tooltip-admin]::before {
+	content: '';
+	border: 5px solid transparent;
+	z-index: 1001;
+}
+
+[uap-tooltip-admin]::after {
+	width: 100%;
+	content: attr(uap-tooltip-admin);
+	text-align: center;
+	min-width: 80px;
+	max-width: 21em;
+	/*white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;*/
+	padding: 4px 10px 6px 10px;
+	line-height: 1.4;
+	border-radius: 4px;
+	box-shadow: 0 1em 2em -.5em rgba(0, 0, 0, 0.35);
+	background: #333;
+	color: #fff;
+	z-index: 1000;
+}
+
+[uap-tooltip-admin][uap-flow-admin^="left"]::after {
+	min-width: 80px;
+}
+
+[uap-tooltip-admin]:hover::before,
+[uap-tooltip-admin]:hover::after {
+	display: block;
+}
+
+[uap-tooltip-admin='']::before,
+[uap-tooltip-admin='']::after {
+	display: none !important;
+}
+
+[uap-tooltip-admin]:not([uap-flow-admin])::before,
+[uap-tooltip-admin][uap-flow-admin^="up"]::before {
+	bottom: calc(100% + 5px);
+	border-bottom-width: 0;
+	border-top-color: #333;
+}
+[uap-tooltip-admin]:not([uap-flow-admin])::after,
+[uap-tooltip-admin][uap-flow-admin^="up"]::after {
+	bottom: calc(100% + 10px);
+}
+[uap-tooltip-admin]:not([uap-flow-admin])::before,
+[uap-tooltip-admin]:not([uap-flow-admin])::after,
+[uap-tooltip-admin][uap-flow-admin^="up"]::before,
+[uap-tooltip-admin][uap-flow-admin^="up"]::after {
+	left: 50%;
+	transform: translate(-50%, -.5em);
+}
+
+[uap-tooltip-admin][uap-flow-admin^="down"]::before {
+	top: 100%;
+	border-top-width: 0;
+	border-bottom-color: #333;
+}
+[uap-tooltip-admin][uap-flow-admin^="down"]::after {
+	top: calc(100% + 5px);
+}
+[uap-tooltip-admin][uap-flow-admin^="down"]::before,
+[uap-tooltip-admin][uap-flow-admin^="down"]::after {
+	left: 50%;
+	transform: translate(-50%, .5em);
+}
+[uap-tooltip-admin][uap-flow-admin^="left"]::before {
+	top: 50%;
+	border-right-width: 0;
+	border-left-color: #333;
+	left: calc(0em - 10px);
+	transform: translate(-.5em, -50%);
+}
+[uap-tooltip-admin][uap-flow-admin^="left"]::after {
+	top: 50%;
+	right: calc(100% + 10px);
+	transform: translate(-.5em, -50%);
+}
+[uap-tooltip-admin][uap-flow-admin^="right"]::before {
+	top: 50%;
+	border-left-width: 0;
+	border-right-color: #333;
+	right: calc(0em - 10px);
+	transform: translate(.5em, -50%);
+}
+[uap-tooltip-admin][uap-flow-admin^="right"]::after {
+	top: 50%;
+	left: calc(100% + 10px);
+	transform: translate(.5em, -50%);
+}
+
+[uap-tooltip-admin]:not([uap-flow-admin]):hover::before,
+[uap-tooltip-admin]:not([uap-flow-admin]):hover::after,
+[uap-tooltip-admin][uap-flow-admin^="up"]:hover::before,
+[uap-tooltip-admin][uap-flow-admin^="up"]:hover::after,
+[uap-tooltip-admin][uap-flow-admin^="down"]:hover::before,
+[uap-tooltip-admin][uap-flow-admin^="down"]:hover::after {
+	animation: uap-tooltip-admins-vert 300ms ease-out forwards;
+}
+
+[uap-tooltip-admin][uap-flow-admin^="left"]:hover::before,
+[uap-tooltip-admin][uap-flow-admin^="left"]:hover::after,
+[uap-tooltip-admin][uap-flow-admin^="right"]:hover::before,
+[uap-tooltip-admin][uap-flow-admin^="right"]:hover::after {
+	animation: uap-tooltip-admins-horz 300ms ease-out forwards;
+}
+
+@keyframes uap-tooltip-admins-vert {
+	to {
+		opacity: .9;
+		transform: translate(-50%, 0);
+	}
+}
+
+@keyframes uap-tooltip-admins-horz {
+	to {
+		opacity: .9;
+		transform: translate(0, -50%);
+	}
+}
+
 /* uo-recipe posts columns */
 
 .uap .uo-post-column {}
@@ -28,3 +173,322 @@
 	}
 
 		.uap .uo-post-column__item {}
+
+/* Review banner */
+
+/* Remove WP styling */
+#uap-review-banner {
+	padding: 0;
+	border: 0;
+	box-shadow: none;
+	background: none;
+}
+
+	.uap .uap-review-banner {
+		width: 100%;
+
+		background: #fff;
+		border: 1px solid #ccd0d4;
+		border-radius: 4px;
+
+		font-size: 14px;
+		line-height: 1.4;
+		color: #343434;
+
+		display: flex;
+
+		position: relative;
+	}
+
+		.uap .uap-review-banner-left {
+			width: 86px;
+
+			flex: 0 0 auto;
+
+			display: flex;
+
+			padding: 20px 0 0 20px;
+		}
+
+			.uap-review-banner__robot {
+				width: 100%;
+				height: 100%;
+
+				position: relative;
+				overflow: hidden;
+			}
+
+				.uap-review-banner__robot img {
+					width: 100%;
+
+					position: absolute;
+					top: 0;
+					left: 0;
+				}
+
+		.uap .uap-review-banner-right {
+			flex: 1 1 auto;
+
+			padding: 20px;
+		}
+
+			.uap .uap-review-banner__title {
+				font-size: 15px;
+				font-weight: 600;
+
+				padding-right: 25px;
+			}
+
+			.uap .uap-review-banner__description {
+				font-size: 14px;
+				margin-top: 2px;
+			}
+
+			.uap .uap-review-banner__actions {
+				padding-top: 20px;
+
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+
+				margin-bottom: -10px;
+			}
+
+				.uap .uap-review-banner__action {
+					display: inline-block;
+
+					padding: 5px 15px;
+
+					margin-bottom: 10px;
+
+					border: 1px solid #b7b7b7;
+					border-radius: 4px;
+					box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
+
+					font-weight: 500;
+					color: #6c757d;
+
+					text-decoration: none;
+
+					cursor: pointer;
+
+					position: relative;
+
+					transition: background 150ms ease-in-out,
+					            color      150ms ease-in-out,
+					            border     150ms ease-in-out;
+				}
+
+					.uap .uap-review-banner__action:before {
+						content: '';
+
+						width: 10px;
+						height: 10px;
+
+						border: 2px solid transparent;
+						border-top-color: #fff;
+						border-radius: 50%;
+
+						position: absolute;
+						top: 50%;
+						left: 50%;
+
+						opacity: 0;
+
+						user-select: none;
+
+						animation: rotating-centered 2s linear infinite;
+						transition: opacity 150ms ease-in-out;
+					}
+
+				.uap .uap-review-banner__action:not(:last-child) {
+					margin-right: 10px;
+				}
+
+					.uap .uap-review-banner__action:hover {
+						color: #fff;
+						background: #9e9e9e;
+						border-color: #9e9e9e;
+					}
+
+					.uap .uap-review-banner__action--loading,
+					.uap .uap-review-banner__action--loading:hover,
+					.uap .uap-review-banner__action--loading:active,
+					.uap .uap-review-banner__action--loading:focus {
+						color: transparent;
+						background: #9e9e9e;
+						border-color: #9e9e9e;
+					}
+
+					.uap .uap-review-banner__action--loading:before {
+						opacity: 1;
+					}
+
+					.uap .uap-review-banner__action--primary {
+						border-color: #0790e8;
+						color: #0790e8;
+					}
+
+						.uap .uap-review-banner__action--primary:hover {
+							background: #0790e8;
+							border-color: #0790e8;
+						}
+
+						.uap .uap-review-banner__action--primary.uap-review-banner__action--loading,
+						.uap .uap-review-banner__action--primary.uap-review-banner__action--loading:hover,
+						.uap .uap-review-banner__action--primary.uap-review-banner__action--loading:active,
+						.uap .uap-review-banner__action--primary.uap-review-banner__action--loading:focus {
+							background: #0790e8;
+							border-color: #0790e8;
+						}
+
+					.uap .uap-review-banner__action--anchor {
+						box-shadow: none;
+						border: 0;
+						padding-left: 0;
+						padding-right: 0;
+						background: transparent;
+						border-color: transparent;
+					}
+
+						.uap .uap-review-banner__action--anchor-border {
+							text-decoration: underline;
+						}
+
+						.uap .uap-review-banner__action--anchor:hover {
+							background: transparent;
+							border-color: transparent;
+							color: #5c636a;
+						}
+
+						.uap .uap-review-banner__action--anchor.uap-review-banner__action--loading,
+						.uap .uap-review-banner__action--anchor.uap-review-banner__action--loading:hover,
+						.uap .uap-review-banner__action--anchor.uap-review-banner__action--loading:active,
+						.uap .uap-review-banner__action--anchor.uap-review-banner__action--loading:focus {
+							color: #5c636a;
+						}
+
+						.uap .uap-review-banner__action--anchor.uap-review-banner__action--loading {
+							padding-right: 35px;
+						}
+
+						.uap .uap-review-banner__action--anchor:before {
+							border-top-color: #9e9e9e;
+							left: auto;
+							right: 0;
+						}
+
+					.uap-review-banner__action--no-margin-right {
+						margin-right: 5px !important;
+					}
+
+					.uap .uap-review-banner__disclaimer {
+						font-size: 13px;
+						color: #9e9e9e;
+					}
+
+			.uap #uap-review-banner__close {
+				position: absolute;
+				top: 15px;
+				right: 15px;
+				z-index: 10;
+
+				padding: 5px;
+
+				cursor: pointer;
+
+				border-radius: 50%;
+
+				transition: background 150ms ease-in-out;
+			}
+
+				.uap .uap-review-banner__close-tooltip {
+					width: 100%;
+					height: 100%;
+					border-radius: 50%;
+
+					position: absolute;
+					top: 0;
+					left: 0;
+
+					z-index: 100;
+				}
+
+				.uap #uap-review-banner__close:hover {
+					background: #e0e2e3;
+				}
+
+				.uap #uap-review-banner__close:before {
+					content: '';
+
+					width: 10px;
+					height: 10px;
+
+					border: 2px solid transparent;
+					border-top-color: #90979c;
+					border-radius: 50%;
+
+					position: absolute;
+					top: 50%;
+					left: 50%;
+
+					opacity: 0;
+
+					user-select: none;
+
+					animation: rotating-centered 2s linear infinite;
+					transition: opacity 150ms ease-in-out;
+				}
+
+					.uap #uap-review-banner__close.uap-review-banner__close--loading:before {
+						opacity: 1;
+					}
+
+				.uap .uap-review-banner__close-icon {
+					width: 14px;
+					height: 14px;
+
+					opacity: 1;
+
+					position: relative;
+
+					transition: opacity 150ms ease-in-out;
+				}
+
+					.uap .uap-review-banner__close--loading .uap-review-banner__close-icon {
+						opacity: 0;
+					}
+
+				.uap .uap-review-banner__close-icon:before,
+				.uap .uap-review-banner__close-icon:after {
+					content: '';
+
+					position: absolute;
+
+					top: 50%;
+					left: 50%;
+					transform-origin: center;
+
+					width: 100%;
+					height: 2px;
+					background: #90979c;
+				}
+
+				.uap .uap-review-banner__close-icon:before {
+					transform: translate(-50%,-50%) rotate(-45deg);
+				}
+
+				.uap .uap-review-banner__close-icon:after {
+					transform: translate(-50%,-50%) rotate(45deg);
+				}
+
+/* Keyframes */
+
+@keyframes rotating-centered {
+	from {
+		transform: translate(-50%,-50%) rotate(0deg);
+	}
+	to {
+		transform: translate(-50%,-50%) rotate(360deg);
+	}
+}

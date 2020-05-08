@@ -38,15 +38,16 @@ class WPLMS_COURSESTARTED {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* Translators: 1:Courses 2:Number of times*/
-			'sentence'            => sprintf( __( 'User starts {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			'select_option_name'  => __( 'User starts {{a course}}', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - WP LMS */
+			'sentence'            => sprintf( __( 'A user starts {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - WP LMS */
+			'select_option_name'  => __( 'A user starts {{a course}}', 'uncanny-automator' ),
 			'action'              => 'wplms_start_course',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wplms_course_started' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wplms->options->all_wplms_courses( __( 'Select a course', 'uncanny-automator' ), $this->trigger_meta ),
+				$uncanny_automator->helpers->recipe->wplms->options->all_wplms_courses( __( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);
