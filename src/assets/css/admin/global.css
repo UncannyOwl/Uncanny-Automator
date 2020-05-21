@@ -182,6 +182,8 @@
 	border: 0;
 	box-shadow: none;
 	background: none;
+
+	display: block !important;
 }
 
 	.uap .uap-review-banner {

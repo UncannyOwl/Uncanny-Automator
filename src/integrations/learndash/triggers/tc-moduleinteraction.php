@@ -61,12 +61,12 @@ class TC_MODULEINTERACTION {
 			'options'             => [
 				$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Module', 'uncanny-automator' ), $options ),
 				$uncanny_automator->helpers->recipe->field->select_field( 'TCVERB', _x( 'Verb', 'Tin Can verb', 'uncanny-automator' ), [
-					'completed'   => _x( 'Completed', 'Tin Can verb', 'uncanny-automator' ),
-					'passed'      => _x( 'Passed', 'Tin Can verb', 'uncanny-automator' ),
-					'failed'      => _x( 'Failed', 'Tin Can verb', 'uncanny-automator' ),
-					'answered'    => _x( 'Answered', 'Tin Can verb', 'uncanny-automator' ),
-					'attempted'   => _x( 'Attempted', 'Tin Can verb', 'uncanny-automator' ),
-					'experienced' => _x( 'Experienced', 'Tin Can verb', 'uncanny-automator' ),
+					'completed'   => 'Completed',
+					'passed'      => 'Passed',
+					'failed'      => 'Failed',
+					'answered'    => 'Answered',
+					'attempted'   => 'Attempted',
+					'experienced' => 'Experienced',
 				] ),
 			],
 		);

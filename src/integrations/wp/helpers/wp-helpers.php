@@ -220,7 +220,7 @@ class Wp_Helpers {
 			$post_types = get_post_types( $args, $output, $operator );
 			if ( ! empty( $post_types ) ) {
 				foreach ( $post_types as $post_type ) {
-					$options[ $post_type->name ] = esc_html( $post_type->label );
+					$options[ $post_type->name ] = esc_html( $post_type->labels->singular_name );
 				}
 			}
 		}

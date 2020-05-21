@@ -319,7 +319,7 @@ class Automator_Translations {
 				'warning'          => sprintf( __( 'This is a %1$s feature.', 'uncanny-automator' ), 'Pro' ),
 				// UncannyAutomator.i18n.proOnly.warning
 				/* translators: 1. Plugin name */
-				'multipleTriggers' => __( 'This recipe contains multiple triggers and requires %1$s.', 'uncanny-automator' ),
+				// 'multipleTriggers' => __( 'This recipe contains multiple triggers and requires %1$s.', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.proOnly.multipleTriggers
 				'proActive'        => __( 'Please ensure the plugin is installed and activated.', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.proOnly.proActive

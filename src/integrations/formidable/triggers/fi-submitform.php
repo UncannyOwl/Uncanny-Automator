@@ -42,12 +42,12 @@ class FI_SUBMITFORM {
 			'sentence'            => sprintf( __( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Formidable */
 			'select_option_name'  => __( 'A user submits {{a form}}', 'uncanny-automator' ),
-			'action'              => 'frm_process_entry',
+			'action'              => 'frm_after_create_entry',
 			'priority'            => 10,
-			'accepted_args'       => 4,
+			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'fi_submit_form' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->formidable->options->all_formidable_forms( null, $this->trigger_meta),
+				$uncanny_automator->helpers->recipe->formidable->options->all_formidable_forms( null, $this->trigger_meta ),
 			],
 		);
 
@@ -59,12 +59,10 @@ class FI_SUBMITFORM {
 	/**
 	 * Validation function when the trigger action is hit
 	 *
-	 * @param object $params params array.
-	 * @param object $errors errors array.
-	 * @param object $form form object.
-	 * @param object $args other settings.
+	 * @param $entry_id
+	 * @param $form_id
 	 */
-	public function fi_submit_form( $params, $errors, $form, $args ) {
+	public function fi_submit_form( $entry_id, $form_id ) {
 
 		global $uncanny_automator;
 
@@ -76,11 +74,31 @@ class FI_SUBMITFORM {
 		$args = [
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
-			'post_id' => intval( $form->id ),
+			'post_id' => intval( $form_id ),
 			'user_id' => intval( $user_id ),
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+
+		if ( $result ) {
+			foreach ( $result as $r ) {
+				if ( true === $r['result'] ) {
+					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
+						//Saving form values in trigger log meta for token parsing!
+						$fi_args = [
+							'trigger_id'     => (int) $r['args']['trigger_id'],
+							'meta_key'       => $this->trigger_meta,
+							'user_id'        => $user_id,
+							'trigger_log_id' => $r['args']['get_trigger_id'],
+							'run_number'     => $r['args']['run_number'],
+						];
+
+						$uncanny_automator->helpers->recipe->formidable->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
+					}
+					$uncanny_automator->maybe_trigger_complete( $r['args'] );
+				}
+			}
+		}
 
 	}
 }

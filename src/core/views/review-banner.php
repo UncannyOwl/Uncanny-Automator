@@ -1,4 +1,4 @@
-<div class="notice" id="uap-review-banner">
+<div class="notice" id="uap-review-banner" style="display: none">
 	
 	<div class="uap">
 		<div class="uap-review-banner">

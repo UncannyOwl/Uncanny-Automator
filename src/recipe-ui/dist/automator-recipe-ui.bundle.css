@@ -21,6 +21,13 @@
   clear: both; }
 
 /**
+ * Increase the size of the Publish metabox
+ */
+#post-body.columns-2 #postbox-container-1,
+#poststuff #post-body.columns-2 #side-sortables {
+  width: 282px; }
+
+/**
  * Main container
  */
 .post-type-uo-recipe #uap_items-sortables {
@@ -688,10 +695,10 @@ html.automator-modal-open body {
   text-align: right;
   padding-top: 15px; }
 
-.uap .modal__buttons > .btn:not(:last-child) {
+.uap .modal__buttons > .uap-btn:not(:last-child) {
   margin-right: 10px; }
 
-.uap .modal__buttons > .btn:last-child {
+.uap .modal__buttons > .uap-btn:last-child {
   margin-right: 0; }
 
 /*
@@ -863,7 +870,7 @@ html.automator-modal-open body {
   margin-top: 5px;
   margin-bottom: 5px; }
 
-.uap .publish-row__settings .btn:not(:last-child) {
+.uap .publish-row__settings .uap-btn:not(:last-child) {
   margin-right: 10px; }
 
 .uap #uap-publish-metabox .metabox__footer {
@@ -893,7 +900,7 @@ html.automator-modal-open body {
 /*
 * Buttons
 */
-.uap .btn {
+.uap .uap-btn {
   outline: none;
   display: inline-block;
   font-weight: 500;
@@ -912,81 +919,81 @@ html.automator-modal-open body {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
   position: relative; }
 
-.uap .btn--primary {
+.uap .uap-btn--primary {
   color: #0790e8;
   border-color: #0790e8; }
 
-.uap .btn--primary.btn--loading,
-.uap .btn--primary.btn--disabled,
-.uap .btn--primary:disabled,
-.uap .btn--primary:hover,
-.uap .btn--primary:focus {
+.uap .uap-btn--primary.uap-btn--loading,
+.uap .uap-btn--primary.uap-btn--disabled,
+.uap .uap-btn--primary:disabled,
+.uap .uap-btn--primary:hover,
+.uap .uap-btn--primary:focus {
   color: #fff;
   background-color: #0790e8; }
 
-.uap .btn--primary:not(.btn--disabled):active,
-.uap .btn--primary:not(.btn--disabled):focus {
+.uap .uap-btn--primary:not(.uap-btn--disabled):active,
+.uap .uap-btn--primary:not(.uap-btn--disabled):focus {
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5); }
 
-.uap .btn--secondary {
+.uap .uap-btn--secondary {
   color: #6c757d;
   border-color: #b7b7b7; }
 
-.uap .btn--secondary.btn--loading,
-.uap .btn--secondary.btn--disabled,
-.uap .btn--secondary:disabled,
-.uap .btn--secondary:hover,
-.uap .btn--secondary:focus {
+.uap .uap-btn--secondary.uap-btn--loading,
+.uap .uap-btn--secondary.uap-btn--disabled,
+.uap .uap-btn--secondary:disabled,
+.uap .uap-btn--secondary:hover,
+.uap .uap-btn--secondary:focus {
   color: #fff;
   border-color: #9e9e9e;
   background-color: #9e9e9e; }
 
-.uap .btn--secondary:not(.btn--disabled):active,
-.uap .btn--secondary:not(.btn--disabled):focus {
+.uap .uap-btn--secondary:not(.uap-btn--disabled):active,
+.uap .uap-btn--secondary:not(.uap-btn--disabled):focus {
   box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.2); }
 
-.uap .btn--red {
+.uap .uap-btn--red {
   color: #f16666;
   border-color: #ff9494; }
 
-.uap .btn--red.btn--loading,
-.uap .btn--red.btn--disabled,
-.uap .btn--red:disabled,
-.uap .btn--red:hover,
-.uap .btn--red:focus {
+.uap .uap-btn--red.uap-btn--loading,
+.uap .uap-btn--red.uap-btn--disabled,
+.uap .uap-btn--red:disabled,
+.uap .uap-btn--red:hover,
+.uap .uap-btn--red:focus {
   color: #fff;
   border-color: #f16666;
   background-color: #f16666; }
 
-.uap .btn--red:not(.btn--disabled):active,
-.uap .btn--red:not(.btn--disabled):focus {
+.uap .uap-btn--red:not(.uap-btn--disabled):active,
+.uap .uap-btn--red:not(.uap-btn--disabled):focus {
   box-shadow: 0 0 0 0.2rem rgba(241, 102, 102, 0.2); }
 
-.uap .btn--transparent {
+.uap .uap-btn--transparent {
   color: #6c757d;
   border-color: transparent;
   box-shadow: none;
   padding-left: 5px;
   padding-right: 5px; }
 
-.uap .btn--transparent.btn--loading,
-.uap .btn--transparent.btn--disabled,
-.uap .btn--transparent:disabled,
-.uap .btn--transparent:hover,
-.uap .btn--transparent:focus {
+.uap .uap-btn--transparent.uap-btn--loading,
+.uap .uap-btn--transparent.uap-btn--disabled,
+.uap .uap-btn--transparent:disabled,
+.uap .uap-btn--transparent:hover,
+.uap .uap-btn--transparent:focus {
   color: #575d63;
   border-color: transparent;
   background-color: transparent; }
 
-.uap .btn--disabled,
-.uap .btn:disabled {
+.uap .uap-btn--disabled,
+.uap .uap-btn:disabled {
   opacity: .6;
   cursor: not-allowed; }
 
-.uap .btn--loading {
+.uap .uap-btn--loading {
   color: transparent !important; }
 
-.uap .btn--loading:before {
+.uap .uap-btn--loading:before {
   content: '\e000';
   font-family: 'Uncanny Automator Icons';
   position: absolute;
@@ -997,10 +1004,10 @@ html.automator-modal-open body {
   font-size: 16px;
   animation: rotating-centered 2s linear infinite; }
 
-.uap .btn--loading:hover {
+.uap .uap-btn--loading:hover {
   color: transparent !important; }
 
-.uap .btn--small {
+.uap .uap-btn--small {
   padding: 2px 7px; }
 
 /*
@@ -1411,16 +1418,16 @@ html.automator-modal-open body {
 
 .uap .item-title__token--error {
   /* VALIDATION ERROR */
-  color: #fff;
-  background: #d9534f;
-  border-color: #d9534f; }
+  color: #fff !important;
+  background: #d9534f !important;
+  border-color: #d9534f !important; }
 
 .uap .item-title__token--error-shake {
   animation: shake__variable 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
 
 .uap .item-title__token--error:hover {
-  background: #be4a46;
-  border-color: #be4a46; }
+  background: #be4a46 !important;
+  border-color: #be4a46 !important; }
 
 @keyframes shake__variable {
   10%, 90% {
@@ -1454,15 +1461,15 @@ html.automator-modal-open body {
   opacity: .6; }
 
 /* Exception */
-.uap .item-title .btn {
+.uap .item-title .uap-btn {
   margin-top: 10px; }
 
-.uap .item-title .btn--secondary {
+.uap .item-title .uap-btn--secondary {
   color: #a3a3a3;
   border-color: #cdcdcd; }
 
-.uap .item-title .btn--secondary:hover,
-.uap .item-title .btn--secondary:focus {
+.uap .item-title .uap-btn--secondary:hover,
+.uap .item-title .uap-btn--secondary:focus {
   color: #fff;
   background: #adadad;
   border-color: #adadad; }
@@ -1639,7 +1646,7 @@ html.automator-modal-open body {
   text-align: right;
   flex-grow: 1; }
 
-.uap .item-options__buttons .btn:not(:last-child) {
+.uap .item-options__buttons .uap-btn:not(:last-child) {
   margin-right: 10px; }
 
 /* Item Task selector */
@@ -1656,7 +1663,7 @@ html.automator-modal-open body {
 .uap .item-task-selector__search-input {
   width: 100%;
   padding: 10px 15px;
-  color: #8a8a8a;
+  color: #444;
   outline: none !important;
   line-height: 1;
   border: 1px solid #cdcdcd;

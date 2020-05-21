@@ -2462,7 +2462,7 @@ class Automator_Options {
 	public function all_ec_rsvp_events( $label = null, $option_code = 'ECEVENTS' ) {
 
 		if ( ! $label ) {
-			$label = __( 'RSVP event', 'uncanny-automator' );
+			$label = __( 'Event', 'uncanny-automator' );
 		}
 
 		$args    = [
@@ -2498,9 +2498,9 @@ class Automator_Options {
 			//'default_value'      => 'Any post',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'RSVP event title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'RSVP event ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'RSVP event URL', 'uncanny-automator' ),
+				$option_code          => __( 'Event title', 'uncanny-automator' ),
+				$option_code . '_ID'  => __( 'Event ID', 'uncanny-automator' ),
+				$option_code . '_URL' => __( 'Event URL', 'uncanny-automator' ),
 			],
 		];
 

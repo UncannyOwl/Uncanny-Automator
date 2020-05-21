@@ -41,6 +41,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $formidable;
 	/**
+	 * @var Forminator_Helpers
+	 */
+	public $forminator;
+	/**
 	 * @var Gamipress_Helpers
 	 */
 	public $gamipress;
@@ -73,6 +77,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $ninja_forms;
 	/**
+	 * @var Paid_Memberships_Pro_Helpers
+	 */
+	public $paid_memberships_pro;
+	/**
 	 * @var Wp_Helpers
 	 */
 	public $wp;
@@ -96,10 +104,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Zapier_Helpers
 	 */
 	public $zapier;
-	/**
-	 * @var Forminator_Helpers
-	 */
-	public $forminator;
 
 	/**
 	 * @var Automator_Helpers_Recipe

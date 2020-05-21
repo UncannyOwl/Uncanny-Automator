@@ -105,32 +105,20 @@ class Nf_Tokens {
 	 *
 	 * @return null|string
 	 */
-	function nf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+	public function nf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
 			if ( in_array( 'NFFORMS', $pieces ) ) {
-				$token_info = explode( '|', $pieces[2] );
-				$form_id    = $token_info[0];
-				$meta_key   = $token_info[1];
-				//$user_id    = get_current_user_id();
-				// Saving data as post. Get post by current user and form id
-				$args  = array(
-					'post_type'      => 'nf_sub',
-					'post_status'    => 'publish',
-					'posts_per_page' => 1,
-					'author'         => $user_id,
-					'orderby'        => 'ID',
-					'order'          => 'DESC',
-					'meta_query'     => array(
-						array(
-							'key'   => '_form_id',
-							'value' => $form_id,
-						)
-					)
-				);
-				$posts = get_posts( $args );
-
-				$sub   = Ninja_Forms()->form()->sub( $posts[0]->ID )->get();
-				$value = $sub->get_field_value( $meta_key );
+				global $wpdb;
+				$trigger_id     = $pieces[0];
+				$trigger_meta   = $pieces[1];
+				$field          = $pieces[2];
+				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
+				$entry          = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = '$trigger_meta' AND automator_trigger_log_id = $trigger_log_id" );
+				$entry          = maybe_unserialize( $entry );
+				$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
+				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
+					$value = $entry[ $to_match ];
+				}
 			}
 		}
 

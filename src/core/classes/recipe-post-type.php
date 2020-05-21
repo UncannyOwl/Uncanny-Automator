@@ -1213,7 +1213,7 @@ class Recipe_Post_Type {
 					'items'   => [],
 					'publish' => array(
 						'timesPerUser' => empty( $recipe_completions_allowed ) ? 1 : $recipe_completions_allowed,
-						'createdOn'    => get_the_time( 'M j, Y @ G:i', $post_id ),
+						'createdOn'    => date_i18n( 'M j, Y @ G:i', get_the_time( 'U', $post_id ) ),
 						'moveToTrash'  => get_delete_post_link( $post_id )
 					),
 				),
@@ -1657,11 +1657,6 @@ class Recipe_Post_Type {
 					]
 				],
 				'actions' => [
-					[
-						/* translators: Action - WP Fusion */
-						'name' => __('Add {{a tag}} to the user', 'uncanny-automator')
-					],
-
 					[
 						/* translators: Action - WP Fusion */
 						'name' => __('Remove {{a tag}} from the user', 'uncanny-automator')

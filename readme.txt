@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.1
 Requires PHP: 7.0
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -36,6 +36,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/)
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/)
+- [Forminator](https://automatorplugin.com/integration/forminator/)
 - [GamiPress](https://automatorplugin.com/integration/gamipress/)
 - [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/)
 - [LearnDash](https://automatorplugin.com/integration/learndash/)
@@ -43,12 +44,16 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [LifterLMS](https://automatorplugin.com/integration/lifterlms/)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/)
+- [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
 - [WP LMS](https://automatorplugin.com/integration/wp-lms/)
 - [WPForms](https://automatorplugin.com/integration/wp-forms/)
+- [WP Fusion](https://automatorplugin.com/integration/wp-fusion/)
+- [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/)
+- [Zapier](https://automatorplugin.com/integration/zapier/)
 
 Dozens of triggers and actions are available for the plugins listed above in the free version. There's simple documentation to follow in our [Knowledge Base](https://automatorplugin.com/knowledge-base/), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
 
@@ -68,11 +73,7 @@ Uncanny Automator does all of this with a single plugin; there's no need to invi
 
 [Uncanny Automator Pro](https://automatorplugin.com/pricing/), our premium plugin, adds even more features and integrations, including the ability to create new users and posts, connect two separate WordPress sites together and connect your site to non-WordPress applications via webhooks.
 
-Besides more than tripling the number of available triggers and actions for your recipes compared to the free version, Automator Pro for WP adds support for these tools:
-
-- [H5P](https://automatorplugin.com/integration/h5p/)
-- [WP Fusion](https://automatorplugin.com/integration/wp-fusion/)
-- [Zapier](https://automatorplugin.com/integration/zapier/)
+Besides more than tripling the number of available triggers and actions for your recipes compared to the free version, Automator Pro for WP adds support for [H5P](https://automatorplugin.com/integration/h5p/) triggers.
 
 Here are some of the other really cool things you can do with Automator Pro:
 
@@ -88,7 +89,7 @@ For the full list of triggers and actions, make sure to check out [this list](ht
 
 Here's what other people are saying about Uncanny Automator:
 
-[Automator Your Workflows Like a Pro](https://www.wpexplorer.com/uncanny-automator-review/)
+[Automate Your Workflows Like a Pro](https://www.wpexplorer.com/uncanny-automator-review/)
 [Uncanny Automator - Zapier for WordPress](https://helpiewp.com/uncanny-automator/)
 [It's Like Zapier For Your WordPress Site](https://wplift.com/uncanny-automator-review)
 [Automate WordPress Like Zapier (Or With Zapier!)](https://wpmayor.com/uncanny-automator-review-automate-wordpress-like-zapier-or-with-zapier/)
@@ -103,10 +104,6 @@ You can learn more about Uncanny Automator on our website at [https://automatorp
 = How do I get started with my first recipe? =
 
 Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/). Don't forget to watch the video there. Hopefully it will be the first recipe of many!
-
-= Is Automator GDPR compliant? =
-
-Out of the box, yes. Keep in mind though that Uncanny Automator can store and use data; tokens are a big part of Automator and depending on how you set up recipes, personal data can be stored. Always make sure you only capture as much information as you need to run recipes and no more. Automator does include a tool to remove records if you receive a request to provide or delete someone's data.
 
 = Is Automator translation friendly? =
 
@@ -143,6 +140,15 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.1.5 =
+* Added: Paid Memberships Pro integration
+* Added: WP Fusion Lite integration
+* Added: Trigger: Paid Memberships Pro - A user purchases a membership
+* Added: Trigger: Paid Memberships Pro - A user cancels a membership
+* Added: Trigger: Paid Memberships Pro - A user's subscription to a membership expires
+* Added: Trigger: WP Fusion Lite - Add a tag to the user
+* Updated: Added workaround for Salient theme global CSS in wp-admin
 
 = 2.1.4 =
 * Added: Forminator integration

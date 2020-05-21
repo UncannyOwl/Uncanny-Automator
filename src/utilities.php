@@ -548,7 +548,7 @@ class Utilities {
 				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			]
-		]);
+		] );
 	}
 
 	/**
@@ -727,7 +727,7 @@ class Utilities {
 			}
 		}
 
-		$timestamp = date( self::get_date_time_format() );
+		$timestamp = date( self::get_date_time_format(), current_time( 'timestamp' ) );
 
 		$current_page_link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 

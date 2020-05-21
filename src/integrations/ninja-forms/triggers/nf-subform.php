@@ -79,6 +79,27 @@ class NF_SUBFORM {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+
+		if ( $result ) {
+			foreach ( $result as $r ) {
+				if ( true === $r['result'] ) {
+					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
+						//Saving form values in trigger log meta for token parsing!
+						$ninja_args = [
+							'trigger_id'     => (int) $r['args']['trigger_id'],
+							'meta_key'       => $this->trigger_meta,
+							'user_id'        => $user_id,
+							'trigger_log_id' => $r['args']['get_trigger_id'],
+							'run_number'     => $r['args']['run_number'],
+						];
+
+						$uncanny_automator->helpers->recipe->ninja_forms->extract_save_ninja_fields( $form, $ninja_args );
+					}
+
+					$uncanny_automator->maybe_trigger_complete( $r['args'] );
+				}
+			}
+		}
 	}
 }

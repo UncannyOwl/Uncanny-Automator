@@ -82,7 +82,12 @@ jQuery(function($){
 		},
 
 		closeBanner: function(){
-			this.$elements.container.slideUp( 500 );
+			// Reference to the object instance
+			let _this = this;
+
+			this.$elements.container.slideUp( 500, function(){
+				_this.$elements.container.remove();
+			});
 		},
 
 		hasBanner: function(){
