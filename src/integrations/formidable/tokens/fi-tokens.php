@@ -6,7 +6,7 @@ namespace Uncanny_Automator;
 /**
  * Class Fi_Tokens
  *
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Fi_Tokens {
 

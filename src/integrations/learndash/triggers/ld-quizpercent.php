@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_QUIZPERCENT
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class LD_QUIZPERCENT {
 

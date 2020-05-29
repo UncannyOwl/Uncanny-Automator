@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.1
 Requires PHP: 7.0
-Stable tag: 2.1.5
+Stable tag: 2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -47,6 +47,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/)
+- [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
 - [WP LMS](https://automatorplugin.com/integration/wp-lms/)
@@ -140,6 +141,18 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.2 =
+* Added: Ultimate Member integration
+* Added: Trigger: Ultimate Member - A user registers with a form
+* Added: Trigger: Ultimate Member - A user logs in with a form
+* Added: Trigger: Ultimate Member - A user becomes inactive
+* Added: Trigger: Ultimate Member - A user's role changes to a specific role
+* Fixed: WP Forms - Trigger tokens not resolving correctly
+* Fixed: Forminator - Trigger tokens not resolving correctly
+* Fixed: GamiPress - Award points to user action now accepts tokens
+* Fixed: Magic Button - Action now fires correctly when multiple recipes are using a Magic Button trigger
+* Fixed: Edit recipe page no longer reloads if a 403 error is received on an AJAX call
 
 = 2.1.5 =
 * Added: Paid Memberships Pro integration

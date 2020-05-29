@@ -81,6 +81,14 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $paid_memberships_pro;
 	/**
+	 * @var Popup_Maker_Helpers
+	 */
+	public $popup_maker;
+	/**
+	 * @var Ultimate_Member_Helpers
+	 */
+	public $ultimate_member;
+	/**
 	 * @var Wp_Helpers
 	 */
 	public $wp;
@@ -111,6 +119,9 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	public $options;
 	/*
 	 * Check for loading options.
+	 */
+	/**
+	 * @var bool
 	 */
 	public $load_helpers = false;
 
@@ -514,5 +525,40 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Replacing frequently used helpers function/query to
+	 * central so that it doesn't have to defined repeatedly
+	 *
+	 * @param $meta_key
+	 * @param $trigger_id
+	 * @param $trigger_log_id
+	 * @param null $user_id
+	 *
+	 * @return mixed|string
+	 * @version 2.2
+	 *
+	 * @author Saad
+	 */
+	public function get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id = null ) {
+		if ( empty( $meta_key ) || empty( $trigger_id ) || empty( $trigger_log_id ) ) {
+			return '';
+		}
+		global $wpdb;
+		$qry        = $wpdb->prepare( "SELECT meta_value 
+														FROM {$wpdb->prefix}uap_trigger_log_meta 
+														WHERE 1 = 1
+														AND user_id = %d 
+														AND meta_key = %s 
+														AND automator_trigger_id = %d 
+														AND automator_trigger_log_id = %d 
+														LIMIT 0,1", $user_id, $meta_key, $trigger_id, $trigger_log_id );
+		$meta_value = $wpdb->get_var( $qry );
+		if ( ! empty( $meta_value ) ) {
+			return maybe_unserialize( $meta_value );
+		}
+
+		return '';
 	}
 }

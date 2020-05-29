@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Options
- * @package uncanny_automator
+ * @package Uncanny_Automator
  * @deprecated since v2.1.0
  */
 class Automator_Options {

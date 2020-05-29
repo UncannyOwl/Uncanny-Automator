@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Set_Automator_Triggers
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Set_Up_Automator {
 
@@ -184,10 +184,10 @@ class Set_Up_Automator {
 									$class_name = implode( '_', $class_to_filename );
 
 									$class = __NAMESPACE__ . '\\' . $class_name;
-
-									$key = str_replace( '-', '_', basename( dirname( $directory ) ) );
-									Utilities::add_helper_instance( $key, new $class() );
-
+									$key   = str_replace( '-', '_', basename( dirname( $directory ) ) );
+									if ( class_exists( $class ) ) {
+										Utilities::add_helper_instance( $key, new $class() );
+									}
 								}
 							}
 						}
@@ -239,18 +239,20 @@ class Set_Up_Automator {
 										continue;
 									}
 
-									$reflection_class  = new \ReflectionClass( $class );
-									$static_properties = $reflection_class->getStaticProperties();
+									if ( class_exists( $class ) ) {
+										$reflection_class  = new \ReflectionClass( $class );
+										$static_properties = $reflection_class->getStaticProperties();
 
-									$status = 0;
+										$status = 0;
 
-									if ( key_exists( 'integration', $static_properties ) ) {
-										$integration = $reflection_class->getStaticPropertyValue( 'integration' );
-										$status      = $uncanny_automator->plugin_status->get( $integration );
-									}
+										if ( key_exists( 'integration', $static_properties ) ) {
+											$integration = $reflection_class->getStaticPropertyValue( 'integration' );
+											$status      = $uncanny_automator->plugin_status->get( $integration );
+										}
 
-									if ( 1 === (int) $status && class_exists( $class ) ) {
-										Utilities::add_class_instance( $class, new $class() );
+										if ( 1 === (int) $status && class_exists( $class ) ) {
+											Utilities::add_class_instance( $class, new $class() );
+										}
 									}
 								}
 							}

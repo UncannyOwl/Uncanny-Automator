@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Cf7_Integration
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Add_Cf7_Integration {
 

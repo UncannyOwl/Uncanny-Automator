@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WC_VIEWPRODUCT
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WC_VIEWPRODUCT {
 

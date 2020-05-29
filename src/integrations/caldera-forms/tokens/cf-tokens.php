@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 /**
  * Class Cf_Tokens
  *
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Cf_Tokens {
 

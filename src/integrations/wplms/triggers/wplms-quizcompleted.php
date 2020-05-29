@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPLMS_QUIZCOMPLETED
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WPLMS_QUIZCOMPLETED {
 

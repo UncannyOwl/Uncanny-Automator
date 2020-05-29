@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 /**
  * Class LP_MARKSECTIONDONE
  *
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class LP_MARKSECTIONDONE {
 

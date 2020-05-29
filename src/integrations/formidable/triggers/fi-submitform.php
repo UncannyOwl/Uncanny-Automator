@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class FI_SUBMITFORM
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class FI_SUBMITFORM {
 

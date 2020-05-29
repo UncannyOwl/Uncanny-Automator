@@ -49,7 +49,9 @@ class PMP_MEMBERSHIPPURCH {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - Paid Memberships Pro */
 			'sentence'            => sprintf( __( 'A user purchases {{a membership:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - Paid Memberships Pro */
 			'select_option_name'  => __( 'A user purchases {{a membership}}', 'uncanny-automator' ),
 			'action'              => 'pmpro_after_checkout',
 			'priority'            => 99,

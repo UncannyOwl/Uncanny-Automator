@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_MARKTOPICDONE
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class LD_MARKTOPICDONE {
 

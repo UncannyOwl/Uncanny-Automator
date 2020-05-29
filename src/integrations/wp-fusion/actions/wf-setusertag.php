@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class FUSION_SETUSERTAG
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WF_SETUSERTAG {
 

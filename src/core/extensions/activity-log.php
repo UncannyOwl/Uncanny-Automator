@@ -9,7 +9,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class Activity_Log
  *
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Activity_Log {
 

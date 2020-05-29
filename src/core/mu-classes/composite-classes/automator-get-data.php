@@ -4,10 +4,13 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Get_Data
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Automator_Get_Data {
 
+	/**
+	 * Automator_Get_Data constructor.
+	 */
 	public function __construct() {
 	}
 
@@ -881,6 +884,7 @@ class Automator_Get_Data {
 
 	/**
 	 * @param $check_trigger_code
+	 * @param null $recipe_id
 	 *
 	 * @return array
 	 */
@@ -993,5 +997,35 @@ class Automator_Get_Data {
 									AND run_number = $run_number
 									LIMIT 0,1" );
 
+	}
+
+	/**
+	 * @param $id
+	 *
+	 * @return int
+	 */
+	public function maybe_get_recipe_id( $id ) {
+		if ( is_object( $id ) ) {
+			$id = isset( $id->ID ) ? $id->ID : null;
+		}
+
+		if ( is_null( $id ) || ! is_numeric( $id ) ) {
+			return 0;
+		}
+
+		$allowed_post_types = [
+			'uo-recipe',
+			'uo-trigger',
+			'uo-action',
+			'uo-closure',
+		];
+
+		$post = get_post( $id );
+
+		if ( $post instanceof \WP_Post && in_array( $post->post_type, $allowed_post_types ) ) {
+			return (int) $post->post_parent;
+		}
+
+		return 0;
 	}
 }

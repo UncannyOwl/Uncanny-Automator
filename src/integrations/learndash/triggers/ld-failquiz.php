@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_FAILQUIZ
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class LD_FAILQUIZ {
 

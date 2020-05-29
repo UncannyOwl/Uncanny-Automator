@@ -7,7 +7,7 @@ namespace Uncanny_Automator;
  *
  * Hidden Post type to hold Closures
  *
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Closures_Post_Type {
 

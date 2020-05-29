@@ -124,14 +124,14 @@ class ZAPIER_SENDWEBHOOK {
 				[
 					'show_in'     => $this->action_meta,
 					'text'        => __( 'Documentation', 'uncanny-automator' ),
-					'css_classes' => 'btn btn--transparent',
+					'css_classes' => 'uap-btn uap-btn--transparent',
 					'on_click'    => 'function(){ window.open( "https://automatorplugin.com", "_blank" ); }',
 				],
 				[
 					'show_in'     => $this->action_meta,
 					/* translators: Non-personal infinitive verb */
 					'text'        => __( 'Send test', 'uncanny-automator' ),
-					'css_classes' => 'btn btn--red',
+					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => $this->send_test_js(),
 					'modules'     => [ 'markdown' ]
 				],
@@ -163,7 +163,7 @@ class ZAPIER_SENDWEBHOOK {
             // Do when the user clicks on send test
             function ($button, data, modules) {
                 // Add loading animation to the button
-                $button.addClass('btn--loading btn--disabled');
+                $button.addClass('uap-btn--loading uap-btn--disabled');
 
                 // Get the data we're going to send to the AJAX request
                 let dataToBeSent = {
@@ -184,7 +184,7 @@ class ZAPIER_SENDWEBHOOK {
 
                     success: function (response) {
                         // Remove loading animation from the button
-                        $button.removeClass('btn--loading btn--disabled');
+                        $button.removeClass('uap-btn--loading uap-btn--disabled');
 
                         // Create notice
                         // But first check if the message is defined

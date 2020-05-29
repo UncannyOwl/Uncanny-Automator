@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class FR_SUBMITFORM
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class FR_SUBMITFORM {
 
@@ -43,9 +43,9 @@ class FR_SUBMITFORM {
 			/* translators: Logged-in trigger - Forminator */
 			'select_option_name'  => __( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'forminator_custom_form_after_save_entry',
-			'priority'            => 10,
-			'accepted_args'       => 4,
-			'validation_function' => array( $this, 'fi_submit_form' ),
+			'priority'            => 100,
+			'accepted_args'       => 3,
+			'validation_function' => array( $this, 'fr_submit_form' ),
 			'options'             => [
 				$uncanny_automator->helpers->recipe->forminator->options->all_forminator_forms( null, $this->trigger_meta),
 			],
@@ -55,15 +55,15 @@ class FR_SUBMITFORM {
 
 		return;
 	}
-	
+
 	/**
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param int $form_id submitted form id.
 	 * @param array $response response array.
-	 * @param string $args form type.
+	 * @param $method
 	 */
-	public function fi_submit_form( $form_id, $response, $args ) {
+	public function fr_submit_form( $form_id, $response, $method ) {
 		if ( true === $response['success'] ) {
 			global $uncanny_automator;
 

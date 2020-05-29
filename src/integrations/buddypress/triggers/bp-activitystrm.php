@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class BP_ACTIVITYSTRM
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class BP_ACTIVITYSTRM {
 

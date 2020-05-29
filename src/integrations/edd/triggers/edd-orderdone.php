@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class EDD_ORDERDONE
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class EDD_ORDERDONE {
 

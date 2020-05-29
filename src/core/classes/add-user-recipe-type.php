@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_User_Recipe_Type
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Add_User_Recipe_Type {
 	public function __construct() {

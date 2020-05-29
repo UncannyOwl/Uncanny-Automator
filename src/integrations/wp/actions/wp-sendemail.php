@@ -3,7 +3,7 @@
 namespace Uncanny_Automator;
 /**
  * Class GEN_USERROLE
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WP_SENDEMAIL {
 

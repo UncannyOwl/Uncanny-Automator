@@ -90,9 +90,15 @@ class Pmp_Tokens {
 		if ( $pieces ) {
 			if ( in_array( 'PMPMEMBERSHIP', $pieces ) ) {
 				global $wpdb;
+				$trigger_id     = $pieces[0];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$qry            = "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = '$field' AND automator_trigger_log_id = $trigger_log_id";
+				$qry            = "SELECT meta_value 
+									FROM {$wpdb->prefix}uap_trigger_log_meta 
+									WHERE meta_key = '$field' 
+									AND automator_trigger_log_id = $trigger_log_id
+									AND automator_trigger_id = $trigger_id
+									LIMIT 0,1";
 				$entry          = $wpdb->get_var( $qry );
 				$entry          = maybe_unserialize( $entry );
 				if ( $entry ) {

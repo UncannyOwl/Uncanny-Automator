@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class PM_POPUPSHOW
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class PM_POPUPSHOW {
 

@@ -7,7 +7,7 @@ namespace Uncanny_Automator;
  *
  * Hidden Post Type to hold Triggers
  *
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Triggers_Post_Type {
 

@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class GP_AWARDPOINTS_A
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class GP_AWARDPOINTS_A {
 	

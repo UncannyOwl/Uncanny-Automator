@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Mp_Tokens
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Mp_Tokens {
 

@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class CF_SUBFORM
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class CF_SUBFORM {
 

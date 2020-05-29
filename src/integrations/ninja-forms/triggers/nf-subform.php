@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class NF_SUBFORM
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class NF_SUBFORM {
 

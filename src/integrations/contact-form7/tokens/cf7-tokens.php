@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Cf7_Tokens
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Cf7_Tokens {
 
@@ -54,9 +54,9 @@ class Cf7_Tokens {
 	 */
 	public function automator_save_cf7_form_func( \WPCF7_ContactForm $contact_form, $recipes, $args ) {
 		if ( is_array( $args ) ) {
-			foreach( $args as $trigger_result ) {
+			foreach ( $args as $trigger_result ) {
 				//$trigger_result = array_pop( $args );
-				if ( TRUE === $trigger_result['result'] ) {
+				if ( true === $trigger_result['result'] ) {
 					global $uncanny_automator;
 					if ( $recipes && $contact_form instanceof \WPCF7_ContactForm ) {
 						foreach ( $recipes as $recipe ) {
@@ -76,7 +76,7 @@ class Cf7_Tokens {
 												//$recipe_log_id  = absint( $recipe_log_id_raw['recipe_log_id'] );
 												$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 												$run_number     = (int) $trigger_result['args']['run_number'];
-												
+
 												$args = [
 													'user_id'        => $user_id,
 													'trigger_id'     => $trigger_id,
@@ -85,7 +85,7 @@ class Cf7_Tokens {
 													'run_number'     => $run_number, //get run number
 													'trigger_log_id' => $trigger_log_id,
 												];
-												
+
 												$uncanny_automator->insert_trigger_meta( $args );
 											}
 										}
@@ -223,7 +223,7 @@ class Cf7_Tokens {
 							$form_id        = $token_info[0];
 							$meta_key       = $token_info[1];
 							$meta_field     = $piece . '_' . $form_id;
-							$user_meta      = $this->get_form_data_from_trigger_meta( $user_id, $meta_field, $trigger_id, $trigger_log_id );
+							$user_meta      = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
 							if ( is_array( $user_meta ) && key_exists( trim( $meta_key ), $user_meta ) ) {
 								if ( is_array( $user_meta[ $meta_key ] ) ) {
 									$value = join( ', ', $user_meta[ $meta_key ] );
@@ -238,28 +238,6 @@ class Cf7_Tokens {
 		}
 
 		return $value;
-	}
-
-	/**
-	 * @param $user_id
-	 * @param $meta_key
-	 * @param $trigger_id
-	 * @param $trigger_log_id
-	 *
-	 * @return mixed|string
-	 */
-	public function get_form_data_from_trigger_meta( $user_id, $meta_key, $trigger_id, $trigger_log_id ) {
-		global $wpdb;
-		if ( empty( $user_id ) || empty( $meta_key ) || empty( $trigger_id ) || empty( $trigger_log_id ) ) {
-			return '';
-		}
-
-		$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d ORDER BY ID DESC LIMIT 0,1", $user_id, $meta_key, $trigger_id, $trigger_log_id ) );
-		if ( ! empty( $meta_value ) ) {
-			return maybe_unserialize( $meta_value );
-		}
-
-		return '';
 	}
 
 }

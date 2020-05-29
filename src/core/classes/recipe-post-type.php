@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Recipe_Post_Type
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Recipe_Post_Type {
 
@@ -155,7 +155,7 @@ class Recipe_Post_Type {
 
 		if ( ! post_type_exists( 'uo-recipe' ) ) {
 			$icon_url = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDI2LjQ1IDI5LjUxIj48cGF0aCBkPSJNMjIuODkgNS41N2MtLjE4LS4xOC0uMzYtLjM1LS41NS0uNTFsMi41NS0yLjU1YTEuNDcgMS40NyAwIDAwLjQzLTEuMDcgMS40OSAxLjQ5IDAgMDAtMi41NS0xbC0yLjk1IDNhMTIuMDkgMTIuMDkgMCAwMC01LjUyLTEuNDNoLTIuMTlhMTIgMTIgMCAwMC01LjUyIDEuMzNMMy42NC40NGExLjUgMS41IDAgMDAtMi4xLjMxIDEuNDkgMS40OSAwIDAwMCAxLjc2bDIuNTMgMi41NUExMi4wNyAxMi4wNyAwIDAwMCAxNC4xN2E0LjM0IDQuMzQgMCAwMDQuMyA0LjM0aDE3LjgxYTQuMzQgNC4zNCAwIDAwNC4zNC00LjM0IDEyLjE1IDEyLjE1IDAgMDAtMy41Ni04LjZ6TTcuMiA3LjUxYTEuNSAxLjUgMCAxMTEuNSAxLjUgMS41IDEuNSAwIDAxLTEuNS0xLjV6bTkuNTQgNS43MWE1IDUgMCAwMS03LjA3IDAgMSAxIDAgMDExLjQxLTEuNDEgMyAzIDAgMDA0LjI0IDAgMSAxIDAgMDExLjQxIDAgMSAxIDAgMDEuMDEgMS40MXptMS00LjIxYTEuNSAxLjUgMCAxMTEuNS0xLjUgMS41IDEuNSAwIDAxLTEuNSAxLjV6TTIyLjcgMjAuNTFoLTE5YTMuNzEgMy43MSAwIDAwLTMuNyAzLjd2MS42YTMuNzEgMy43MSAwIDAwMy43IDMuN2gxOWEzLjcxIDMuNzEgMCAwMDMuNy0zLjd2LTEuNmEzLjcxIDMuNzEgMCAwMC0zLjctMy43em0tNi41IDdoLTMuNXYtMmExIDEgMCAwMC0yIDB2MmgtLjVhMSAxIDAgMDEtMS0xIDQgNCAwIDAxOCAwIDEgMSAwIDAxLTEgMXoiIGZpbGw9IiM4Mjg3OEMiLz48Y2lyY2xlIGN4PSIxNC43IiBjeT0iMjUuNTEiIHI9IjEiIGZpbGw9IiM4Mjg3OEMiLz48L3N2Zz4=';
-			
+
 			$labels = array(
 				'name'                  => __( 'Recipes', 'uncanny-automator' ),
 				'singular_name'         => __( 'Recipe', 'uncanny-automator' ),
@@ -305,8 +305,8 @@ class Recipe_Post_Type {
 				$new_columns['triggers'] = __( 'Triggers', 'uncanny-automator' );
 				$new_columns['actions']  = __( 'Actions', 'uncanny-automator' );
 				/* translators: The number of times a recipe was completed */
-				$new_columns['runs']     = __( 'Completed runs', 'uncanny-automator' );
-				$new_columns[ $key ]     = $column;
+				$new_columns['runs'] = __( 'Completed runs', 'uncanny-automator' );
+				$new_columns[ $key ] = $column;
 
 			} else {
 				$new_columns[ $key ] = $column;
@@ -1093,7 +1093,7 @@ class Recipe_Post_Type {
 	 */
 	public function save_settings_permissions() {
 
-		$capability = apply_filters( 'modify_recipe', 'edit_posts' );
+		$capability = apply_filters( 'uap_roles_modify_recipe', 'edit_posts' );
 
 		// Restrict endpoint to only users who have the edit_posts capability.
 		if ( ! current_user_can( $capability ) ) {
@@ -1170,10 +1170,10 @@ class Recipe_Post_Type {
 				),
 
 				// 'recipe_types' => $uncanny_automator->get_recipe_types(),
-				'integrations'   => $uncanny_automator->get_integrations(),
-				'triggers'       => $uncanny_automator->get_triggers(),
-				'actions'        => $uncanny_automator->get_actions(),
-				'closures'       => $uncanny_automator->get_closures(),
+				'integrations' => $uncanny_automator->get_integrations(),
+				'triggers'     => $uncanny_automator->get_triggers(),
+				'actions'      => $uncanny_automator->get_actions(),
+				'closures'     => $uncanny_automator->get_closures(),
 
 				'i18n'           => $uncanny_automator->i18n->get_all(),
 				'recipes_object' => $uncanny_automator->get_recipes_data( true ),
@@ -1229,8 +1229,19 @@ class Recipe_Post_Type {
 		}
 	}
 
-	private function get_pro_items(){
+	private function get_pro_items() {
 		$pro_items = [
+			'BB' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - bbPress */
+						'name' => __('A user replies to {{a topic}}', 'uncanny-automator'),
+						'type' => 'logged-in'
+					]
+				],
+				'actions' => []
+			],
+
 			'BP' => [
 				'triggers' => [
 					[
@@ -1285,6 +1296,12 @@ class Recipe_Post_Type {
 					[
 						/* translators: Logged-in trigger - Formidable Forms */
 						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - Formidable Forms */
+						'name' => __('A user submits {{a form}} with payment', 'uncanny-automator'),
 						'type' => 'logged-in'
 					]
 				],
@@ -1364,7 +1381,12 @@ class Recipe_Post_Type {
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => []
+				'actions' => [
+					[
+						/* translators: Action - Gravity Forms */
+						'name' => __('Register a new user', 'uncanny-automator')
+					]
+				]
 			],
 
 			'H5P' => [
@@ -1551,6 +1573,22 @@ class Recipe_Post_Type {
 					[
 						/* translators: Action - The Events Calendar */
 						'name' => __('RSVP for {{an event}}', 'uncanny-automator')
+					]
+				]
+			],
+
+			'UM' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - Ultimate Member */
+						'name' => __('A user registers with {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'type' => 'logged-in'
+					]
+				],
+				'actions' => [
+					[
+						/* translators: Action - Ultimate Member */
+						'name' => __('Set the user\'s role to {{a specific role}}', 'uncanny-automator')
 					]
 				]
 			],
@@ -2030,16 +2068,20 @@ class Recipe_Post_Type {
 		?>
 
         <p>
-			Hi,
+            Hi,
         </p>
         <p>
-			This email is to let you know that the recipe "<?php echo $recipe->post_title; ?>" was automatically set to draft status because it contains multiple triggers and the Uncanny Automator Pro plugin is either not installed or not activated. To reactivate the recipe, ensure the Uncanny Automator Pro plugin is active, then edit the recipe to switch its status to Live.
+            This email is to let you know that the recipe "<?php echo $recipe->post_title; ?>" was automatically set to
+            draft status because it contains multiple triggers and the Uncanny Automator Pro plugin is either not
+            installed or not activated. To reactivate the recipe, ensure the Uncanny Automator Pro plugin is active,
+            then edit the recipe to switch its status to Live.
         </p>
         <p>
-			Recipe URL: <a href="<?php echo get_edit_post_link( $recipe->ID ); ?>"><?php echo $recipe->post_title; ?></a>
+            Recipe URL: <a
+                    href="<?php echo get_edit_post_link( $recipe->ID ); ?>"><?php echo $recipe->post_title; ?></a>
         </p>
         <p>
-			The Uncanny Automator Bot
+            The Uncanny Automator Bot
         </p>
 
 		<?php

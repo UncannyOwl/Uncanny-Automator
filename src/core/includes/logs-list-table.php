@@ -8,7 +8,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 /**
  * Class Logs_List_Table
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Logs_List_Table extends \WP_List_Table {
 

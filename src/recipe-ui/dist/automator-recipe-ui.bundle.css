@@ -1382,7 +1382,7 @@ html.automator-modal-open body {
   border: 1px solid #0790e8;
   color: #0790e8;
   font-size: 14px;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: 4px;
   font-weight: 500;
   cursor: pointer;
@@ -1811,6 +1811,9 @@ html.automator-modal-open body {
 
 .uap .form-element--nomargin {
   margin: 0 !important; }
+
+.uap .form-element--hidden {
+  display: none !important; }
 
 .uap .form-element--loading {
   /* Loading class */ }

@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wpf_Tokens
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Wpf_Tokens {
 
@@ -106,6 +106,8 @@ class Wpf_Tokens {
 	 * @param $pieces
 	 * @param $recipe_id
 	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
 	 *
 	 * @return null|string
 	 */
@@ -113,82 +115,42 @@ class Wpf_Tokens {
 		$piece = 'WPFFORMS';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				global $uncanny_automator, $wpdb;
-				if ( $trigger_data ) {
-					$trigger_id     = $replace_args['trigger_id'];
-					$trigger_log_id = $replace_args['trigger_log_id'];
-					$token_info     = explode( '|', $pieces[2] );
-					$form_id        = $token_info[0];
-					$meta_key       = $token_info[1];
-					$meta_field     = $piece . '_' . $form_id;
-					$user_meta      = $this->get_form_data_from_trigger_meta( $user_id, $meta_field, $trigger_id, $trigger_log_id );
-					if ( ! empty( $user_meta ) && key_exists( trim( $meta_key ), $user_meta ) ) {
-						$value = $user_meta[ $meta_key ]['value'];
-					}
+				global $wpdb;
+				$trigger_id     = $pieces[0];
+				$trigger_meta   = $pieces[1];
+				$field          = $pieces[2];
+				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
+				$entry          = $wpdb->get_var( "SELECT meta_value 
+													FROM {$wpdb->prefix}uap_trigger_log_meta 
+													WHERE meta_key = '{$trigger_meta}' 
+													AND automator_trigger_log_id = {$trigger_log_id} 
+													AND automator_trigger_id = {$trigger_id}
+													LIMIT 0,1" );
+				if ( empty( $entry ) ) {
+					$entry = $wpdb->get_var( "SELECT meta_value 
+												FROM {$wpdb->prefix}uap_trigger_log_meta 
+												WHERE meta_key = '$field' 
+												AND automator_trigger_log_id = $trigger_log_id 
+												AND automator_trigger_id = {$trigger_id}
+												LIMIT 0,1" );
+				}
+				$entry    = maybe_unserialize( $entry );
+				$to_match = "{$trigger_id}:{$trigger_meta}:{$field}";
+
+				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
+					$value = $entry[ $to_match ];
 				}
 			}
 		}
-
-		/*if ( $pieces ) {
-			if ( in_array( $piece, $pieces ) ) {
-				global $uncanny_automator;
-				//$user_id       = wp_get_current_user()->ID;
-				//$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id );
-				$recipe_log_id_raw = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id );
-				$recipe_log_id     = null;
-				if ( is_array( $recipe_log_id_raw ) && key_exists( 'recipe_log_id', $recipe_log_id_raw ) ) {
-					$recipe_log_id = absint( $recipe_log_id_raw['recipe_log_id'] );
-				}
-				if ( $trigger_data ) {
-					foreach ( $trigger_data as $trigger ) {
-						if ( key_exists( $piece, $trigger['meta'] ) ) {
-							$trigger_id     = $trigger['ID'];
-							$trigger_log_id = $uncanny_automator->maybe_get_trigger_id( $user_id, $trigger_id, $recipe_id, $recipe_log_id );
-							$trigger_log_id = $trigger_log_id['get_trigger_id'];
-							$token_info     = explode( '|', $pieces[2] );
-							$form_id        = $token_info[0];
-							$meta_key       = $token_info[1];
-							$meta_field     = $piece . '_' . $form_id;
-							$user_meta      = $this->get_form_data_from_trigger_meta( $user_id, $meta_field, $trigger_id, $trigger_log_id );
-
-							if ( key_exists( trim( $meta_key ), $user_meta ) ) {
-								$value = $user_meta[ $meta_key ]['value'];
-							}
-						}
-					}
-				}
-			}
-		}*/
 
 		return $value;
-	}
-
-	/**
-	 * @param $user_id
-	 * @param $meta_key
-	 * @param $trigger_id
-	 * @param $trigger_log_id
-	 *
-	 * @return mixed|string
-	 */
-	public function get_form_data_from_trigger_meta( $user_id, $meta_key, $trigger_id, $trigger_log_id ) {
-		global $wpdb;
-		if ( empty( $user_id ) || empty( $meta_key ) || empty( $trigger_id ) || empty( $trigger_log_id ) ) {
-			return '';
-		}
-
-		$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d ORDER BY ID DESC LIMIT 0,1", $user_id, $meta_key, $trigger_id, $trigger_log_id ) );
-		if ( ! empty( $meta_value ) ) {
-			return maybe_unserialize( $meta_value );
-		}
-
-		return '';
 	}
 
 	/**
 	 * @param $fields
 	 * @param $form_data
 	 * @param $recipes
+	 * @param $args
 	 *
 	 * @return null|string
 	 */
@@ -199,7 +161,6 @@ class Wpf_Tokens {
 				if ( true === $trigger_result['result'] ) {
 					global $uncanny_automator;
 					if ( $recipes ) {
-						$user_id = wp_get_current_user()->ID;
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];
 							if ( $triggers ) {

@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class LP_MARKLESSONDONE
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class LP_MARKLESSONDONE {
 

@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPLMS_COURSESTARTED
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WPLMS_COURSESTARTED {
 

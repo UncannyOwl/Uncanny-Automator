@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Utilities
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Automator_Utilities {
 

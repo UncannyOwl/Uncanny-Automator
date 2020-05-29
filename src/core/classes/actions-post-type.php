@@ -7,7 +7,7 @@ namespace Uncanny_Automator;
  *
  * Hidden Post type to hold Actions
  *
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Actions_Post_Type {
 

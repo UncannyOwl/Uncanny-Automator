@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPCW_COURSECOMPLETED
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WPCW_COURSECOMPLETED {
 

@@ -49,7 +49,9 @@ class PMP_MEMBERSHIPEXPIRES {
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - Paid Memberships Pro */
 			'sentence'            => sprintf( __( 'A user\'s subscription to {{a membership:%1$s}} expires', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - Paid Memberships Pro */
 			'select_option_name'  => __( 'A user\'s subscription to {{a membership}} expires', 'uncanny-automator' ),
 			'action'              => 'pmpro_subscription_expired',
 			'priority'            => 99,

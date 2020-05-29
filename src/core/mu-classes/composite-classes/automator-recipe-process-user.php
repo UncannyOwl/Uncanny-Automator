@@ -584,6 +584,7 @@ class Automator_Recipe_Process_User {
 
 		// Stop here if the trigger was already completed
 		$is_trigger_completed = $this->is_trigger_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
+
 		if ( $is_trigger_completed ) {
 			return [
 				'result' => false,
@@ -607,7 +608,7 @@ class Automator_Recipe_Process_User {
 		}
 
 		if ( intval( '-1' ) !== intval( $trigger_post_id ) ) {
-			if ( $trigger_post_id !== $post_id ) {
+			if ( $trigger_post_id != $post_id ) {
 				return [
 					'result' => false,
 					'error'  => 'Trigger not matched.',
@@ -890,10 +891,18 @@ class Automator_Recipe_Process_User {
 				'error'  => 'Recipe not matched.',
 			];
 		} elseif ( (int) $recipe_id === (int) $matched_recipe_id ) {
-			if ( ! key_exists( $trigger_meta, $trigger['meta'] ) ) {
+			/**
+			 * Added second part of code to check for MAGICBUTTON
+			 * since trigger meta of MAGICBUTTON is saved by
+			 * `code` instead of `meta`
+			 *
+			 * @version 2.1.6
+			 * @author Saad
+			 */
+			if ( ! isset( $trigger['meta'][ $trigger_meta ] ) && ! isset( $trigger['meta'][ $args['code'] ] ) ) {
 				return [
 					'result' => false,
-					'error'  => 'Trigger is completed.',
+					'error'  => 'Trigger meta not found.',
 				];
 			}
 		}

@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Url_Validation
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Automator_Input_Parser {
 

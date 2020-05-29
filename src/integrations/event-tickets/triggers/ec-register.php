@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class EC_REGISTER
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class EC_REGISTER {
 

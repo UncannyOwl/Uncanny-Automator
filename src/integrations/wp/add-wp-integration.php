@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Wp_Integration
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Add_Wp_Integration {
 
@@ -77,20 +77,12 @@ class Add_Wp_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'WordPress',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-wordpress-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-wordpress-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-wordpress-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-wordpress.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-wordpress@2x.png' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'integration-wordpress-icon.svg' ),
 		) );
 
 		$uncanny_automator->register->integration( 'UA', array(
 			'name'        => 'Uncanny Automator',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-uncannyautomator-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-uncannyautomator-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-uncannyautomator-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-uncannyautomator.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-uncannyautomator@2x.png' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'integration-uncanny-automator-icon.svg' ),
 		) );
 	}
 }

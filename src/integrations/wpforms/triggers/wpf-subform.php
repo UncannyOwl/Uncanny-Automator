@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPF_SUBFORM
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WPF_SUBFORM {
 

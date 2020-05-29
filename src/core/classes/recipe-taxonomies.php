@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Recipe_Post_Type
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Recipe_Taxonomies {
 

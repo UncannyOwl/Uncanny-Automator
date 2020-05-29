@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class CLOSURE_REDIRECT
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Closure_Redirect {
 

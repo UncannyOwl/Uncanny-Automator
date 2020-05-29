@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Nf_Tokens
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Nf_Tokens {
 
@@ -113,7 +113,12 @@ class Nf_Tokens {
 				$trigger_meta   = $pieces[1];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = '$trigger_meta' AND automator_trigger_log_id = $trigger_log_id" );
+				$entry          = $wpdb->get_var( "SELECT meta_value 
+													FROM {$wpdb->prefix}uap_trigger_log_meta 
+													WHERE meta_key = '$trigger_meta' 
+													AND automator_trigger_log_id = $trigger_log_id
+													AND automator_trigger_id = $trigger_id
+													LIMIT 0, 1" );
 				$entry          = maybe_unserialize( $entry );
 				$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
 				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {

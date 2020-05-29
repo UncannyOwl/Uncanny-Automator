@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class LF_QUIZATTEMPTED
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class LF_QUIZATTEMPTED {
 

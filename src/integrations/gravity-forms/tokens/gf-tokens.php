@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Gf_Tokens
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class Gf_Tokens {
 
@@ -50,30 +50,10 @@ class Gf_Tokens {
 	 * @param array $tokens
 	 * @param array $args
 	 *
-	 * @return mixed
-	 */
-	function gf_general_tokens( $tokens = [], $args = [] ) {
-		$trigger_integration = $args['integration'];
-		$trigger_meta        = $args['meta'];
-		$tokens[]            = [
-			'tokenId'         => '1|222',
-			'tokenName'       => 'Test Field',
-			'tokenType'       => 'text',
-			'tokenIdentifier' => $trigger_meta,
-		];
-
-		return $tokens;
-	}
-
-	/**
-	 * @param array $tokens
-	 * @param array $args
-	 *
 	 * @return array
 	 */
 	function gf_possible_tokens( $tokens = [], $args = [] ) {
 		$form_id             = $args['value'];
-		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
 		$form_ids = [];

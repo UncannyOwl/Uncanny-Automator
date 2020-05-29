@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WP_VIEWCUSTOMPOST
- * @package uncanny_automator
+ * @package Uncanny_Automator
  */
 class WP_VIEWCUSTOMPOST {
 
