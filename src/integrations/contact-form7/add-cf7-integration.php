@@ -77,12 +77,8 @@ class Add_Cf7_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'Contact Form 7',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-contactform7-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-contactform7-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-contactform7-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-contactform7.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-contactform7@2x.png' ),
+			'name'     => 'Contact Form 7',
+			'icon_svg' => Utilities::get_integration_icon( 'integration-contactform7-icon.svg' ),
 		) );
 	}
 }

@@ -3,16 +3,16 @@
 namespace Uncanny_Automator;
 
 /**
- * Class Add_Gf_Integration
+ * Class Add_Bo_Integration
  * @package Uncanny_Automator
  */
-class Add_Gf_Integration {
+class Add_Bo_Integration {
 
 	/**
 	 * Integration code
 	 * @var string
 	 */
-	public static $integration = 'GF';
+	public static $integration = 'BO';
 
 	/**
 	 * Add_Integration constructor.
@@ -43,7 +43,7 @@ class Add_Gf_Integration {
 	public function plugin_active( $status, $plugin ) {
 
 		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'GFFormsModel' ) ) {
+			if ( class_exists( 'BadgeOS' ) ) {
 				$status = true;
 			} else {
 				$status = false;
@@ -78,8 +78,8 @@ class Add_Gf_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'     => 'Gravity Forms',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-gravityforms-icon.svg' ),
+			'name'        => 'BadgeOS',
+			'icon_svg'     => Utilities::get_integration_icon( 'integration-badgeos-icon.svg' ),
 		) );
 	}
 }

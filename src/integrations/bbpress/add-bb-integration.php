@@ -79,11 +79,7 @@ class Add_Bb_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'bbPress',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-bbpress-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-bbpress-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-bbpress-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-bbpress.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-bbpress@2x.png' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'integration-bbpress-icon.svg' ),
 		) );
 	}
 }

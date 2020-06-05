@@ -310,20 +310,8 @@ class Automator_Recipe_Process_Complete {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'uap_action_log';
-		/*Utilities::log( [
-			'ala'   => array(
-				'date_time'               => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
-				'user_id'                 => $user_id,
-				'automator_action_id'     => $action_id,
-				'automator_recipe_id'     => $recipe_id,
-				'automator_recipe_log_id' => $recipe_log_id,
-				'completed'               => $completed,
-				'error_message'           => $error_message
-			),
-			'$args' => $args
-		], '', true, 'step3-a' );*/
 
-		$inserted = $wpdb->insert( $table_name,
+		$action_log_id = $wpdb->insert( $table_name,
 			array(
 				'date_time'               => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
 				'user_id'                 => $user_id,
@@ -341,6 +329,46 @@ class Automator_Recipe_Process_Complete {
 				'%d',
 				'%s',
 			) );
+
+		global $uncanny_automator;
+
+		$action_detail = $uncanny_automator->get->action_sentence( $action_id, 'action_detail' );
+
+		// Store action sentence details for the completion
+		$wpdb->insert(
+			$wpdb->prefix . 'uap_action_log_meta',
+			array(
+				'user_id'                  => $user_id,
+				'automator_action_log_id' => $action_log_id,
+				'automator_action_id'     => $action_id,
+				'meta_key'                 => 'complete_action_detail',
+				'meta_value'               => serialize( $action_detail ),
+			), array(
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+			)
+		);
+
+		// Store complete trigger sentence for the completion
+		$wpdb->insert(
+			$wpdb->prefix . 'uap_action_log_meta',
+			array(
+				'user_id'                  => $user_id,
+				'automator_action_log_id' => $action_log_id,
+				'automator_action_id'     => $action_id,
+				'meta_key'                 => 'complete_action_sentence',
+				'meta_value'               => $action_detail['complete_sentence'],
+			), array(
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+			)
+		);
 
 		// The actions is now completed
 		do_action( 'uap_action_completed', $user_id, $action_id, $recipe_id, $error_message, $args );

@@ -78,12 +78,8 @@ class Add_Edd_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'Easy Digital Downloads',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-easydigitaldownloads-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-easydigitaldownloads-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-easydigitaldownloads-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-easydigitaldownloads.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-easydigitaldownloads@2x.png' ),
+			'name'     => 'Easy Digital Downloads',
+			'icon_svg' => Utilities::get_integration_icon( 'integration-easydigitaldownloads-icon.svg' ),
 		) );
 	}
 }

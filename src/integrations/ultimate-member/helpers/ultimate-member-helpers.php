@@ -51,7 +51,7 @@ class Ultimate_Member_Helpers {
 
 		$options = [];
 		if ( $any ) {
-			$options['-1'] = __( 'Any Form', 'uncanny-automator' );
+			$options['-1'] = __( 'Any form', 'uncanny-automator' );
 		}
 		$args = array(
 			'posts_per_page'   => 999,

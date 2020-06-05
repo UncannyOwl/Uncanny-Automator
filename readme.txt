@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.1
 Requires PHP: 7.0
-Stable tag: 2.2
+Stable tag: 2.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,6 +30,7 @@ If you've used Zapier, setting things up will be intuitive. And if not, that's o
 
 The free version of Automator is incredibly powerful and comes with built-in support for all of these popular WordPress plugins:
 
+- [bbPress](https://automatorplugin.com/integration/badgeos/)
 - [bbPress](https://automatorplugin.com/integration/bbpress/)
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/)
@@ -142,6 +143,14 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.3 =
+* Added: BadgeOS integration
+* Added: Action: BadgeOS - Award an achievement to the user
+* Added: Action: BadgeOS - Award a rank to the user
+* Added: Action: BadgeOS - Award a number of a certain type of points to the user
+* Added: Additional tokens for Woocommerce triggers
+* Added: Post ID is now displayed next to post title in dropdowns
+
 = 2.2 =
 * Added: Ultimate Member integration
 * Added: Trigger: Ultimate Member - A user registers with a form
@@ -154,262 +163,4 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Fixed: Magic Button - Action now fires correctly when multiple recipes are using a Magic Button trigger
 * Fixed: Edit recipe page no longer reloads if a 403 error is received on an AJAX call
 
-= 2.1.5 =
-* Added: Paid Memberships Pro integration
-* Added: WP Fusion Lite integration
-* Added: Trigger: Paid Memberships Pro - A user purchases a membership
-* Added: Trigger: Paid Memberships Pro - A user cancels a membership
-* Added: Trigger: Paid Memberships Pro - A user's subscription to a membership expires
-* Added: Trigger: WP Fusion Lite - Add a tag to the user
-* Updated: Added workaround for Salient theme global CSS in wp-admin
-
-= 2.1.4 =
-* Added: Forminator integration
-* Added: Trigger: Forminator - User submits a form
-* Updated: A number of trigger/action sentences for consistency and improved localization
-* Updated: Renamed Trigger, Action, Recipe "report" to "log" in some places for consistency
-* Updated: Moved Action Scheduler library to Uncanny Automator Pro
-* Updated: Additional checks on recipe closures (redirect) when doing_ajax = true
-* Updated: Removed placeholders in trigger/action dropdown menus
-* Updated: Improved token handling for Contact Form 7 triggers
-* Fixed: Action: LearnPress - Enroll the user in a course not working correctly when course had a price assigned
-
-= 2.1.3 =
-* Fixed: Missing log menu entries
-
-= 2.1.2 =
-* Fixed: Automator menu entries were behaving inconsistently
-* Fixed: Undefined offset in automator-utilities.php on some older Automator Lite sites
-
-= 2.1.1 =
-* Updated: Trigger log now shows "(Reactivate Automator Pro to view)" for Automator Pro triggers when Automator Pro is deactivated
-* Fixed: Trigger: WordPress - User logs in now fires reliably
-
-= 2.1 =
-* Initial release on WordPress.org
-* Added: Email type fields in Ninja Forms, Caldera Forms, WP Forms and Formidable Forms now generate tokens for email type fields in Actions
-* Added: Trigger: LearnDash - A Tin Can verb is recorded from a Tin Can module now generates Course, Lesson and Topic tokens
-* Added: Global Tokens - Current date, Current time
-* Added: Category and Tag support for Recipes
-* Added: Support for redirects after some AJAX triggers including LearnDash quiz and H5P triggers
-* Added: Support for unlimited triggers per recipe
-* Updated: Trigger: LearnDash - Mark a course complete moved from Uncanny Automator Pro to Uncanny Automator
-* Updated: Action: WordPress - Send data to webhook moved from Uncanny Automator Pro to Uncanny Automator
-* Updated: Action: Zapier - Send data to Zapier moved from Uncanny Automator Pro to Uncanny Automator
-* Updated: Action: BuddyPress - Add user to a group moved from Uncanny Automator Pro to Uncanny Automator
-* Updated: automator-options.php file refactored into integration-specific helper files (internal)
-* Updated: select2 JavaScript library
-* Updated: Action fields now support multiple tokens per field
-* Updated: Webhook actions now use WordPress HTTP API instead of cURL
-* Updated: Most action fields now support the token selector
-* Updated: Centralized input sanitization functions
-* Updated: Removed EDD licensing code
-* Updated: Child posts (triggers, actions, redirects) are now set to draft status when a recipe is moved to the trash
-* Fixed: Token processing files no longer loading when not necessary 
-* Fixed: Trigger: LearnDash - User completes a topic/User completes a lesson - Course Title token now correctly displays course title
-* Fixed: Popup Maker - PHP warning: in_array() expects parameter 2 to be array
-* Fixed: Trigger: WordPress - User views a page PHP notice on non-post URLs 
-* Fixed: Recipe log database table not created on some sites
-* Fixed: Trigger: LearnDash - Some quiz triggers were not firing
-* Fixed: Trigger: All form integrations - Tokens for all form fields now appear even if Automator Pro is not activated
-* Fixed: Support links on triggers and actions now go to automatorplugin.com knowledge base
-
-
-= 2.0.3 =
-* Updated: EDD updater class
-* Updated: WooCommerce - User Purchases a Product trigger now fires more reliably
-* Updated: Many triggers now include Post ID as token (for future usage in actions)
-* Updated: GamiPress - Award Points action - Now supports tokens
-* Fixed: LearnDash - Quiz triggers were not firing on some sites
-* Fixed: Recipe/trigger/action log filter placeholder text no longer cut off on Chrome on Mac
-* Fixed: SQL syntax error in uncanny_automator\Automator_Input_Parser->parse_vars
-* Fixed: Select2 dropdowns with placeholders not working correctly in Firefox
-* Fixed: License activation page would show license as not activated even when activated successfully
-
-= 2.0.2 =
-Updated - Changed text "Anonymous triggers" to "Anonymous trigger" since Anonymous recipes support only a single trigger
-Fixed - Recipe log database table not created on some sites, preventing recipes from firing
-
-= 2.0.1 =
-* Updated: Core framework updates to support changes in Pro plugin version 2.0.1
-
-= 2.0 =
-* Added: Trigger: WordPress - User views a custom post type
-* Added: MemberPress - All registration form fields now available as tokens
-* Added: WordPress - User Submits a Comment on a Post - Tokens for author name and author email
-* Added: Excluded some actions when doing AJAX requests that caused problems; added filter to include additional actions (automator_post_actions_ignore_list)
-* Added: {{USERMETA:KEY}} token allows the use of any usermeta value in an action
-* Added: {{reset_pass_link}} token generates a user-specific password reset link
-* Updated: Placeholder text in "Times per user" field changed to "Unlimited"
-* Updated: Improved performance
-* Fixed: LearnPress - User is enrolled in a course trigger now working properly
-* Fixed: LearnDash - Quiz Triggers were using incorrect parameter values
-* Fixed: Trigger options now loading as expected on Multisite
-* Fixed: Fatal error on plugin reactivation if Automator posts are manually deleted from database
-* Fixed: Recipe completion count on recipe list page now more accurate
-
-= 1.5.2 =
-* Fixed: Removed debugging code and log files
-
-= 1.5.1 =
-* Fixed: Popup Maker - Popups not loading on non-Automator triggers
-
-= 1.5 =
-* Added: Beta performance setting - Enable performance mode - Reduce the number of queries Automator performs on each page load - Disabled by default
-* Added: Beta performance setting - Prevent Automator from initializing multiple times on some pages - Prevents Automator fro loading on AJAX and REST API calls - Enabled by default
-* Updated: Improved support for recipes executing correctly when an administrator performs a trigger action on an user (e.g. "User enrolls in a course")
-* Updated: WooCommerce - User Purchases a Product trigger - Now hooked to woocommerce_payment_complete action instead of woocommerce_pre_payment_complete action
-* Fixed: Bug that prevented child objects from loading in hierarchical dropdowns in triggers and actions
-
-= 1.4.1 =
-* Updated: Improved performance
-* Updated: Tweaked layout of Edit Recipe page
-* Fixed: WooCommerce: User Purchases a Product trigger would not fire on purchase
-
-= 1.4 =
-* Added: Action: LearnPress - Mark a lesson complete
-* Added: Action: LearnPress - Mark a section complete
-* Added: Action: Caldera Forms - User submits a form
-* Added: MemberPress Triggers: Added "Any" one-time/recurring subscription product options
-* Added: Trigger: LearnDash/Tin Canny - Integration moved to Automator Lite plugin from Automator Pro plugin
-* Updated: Trigger: LearnDash/Tin Canny - "Any module" option added
-* Fixed: Action: Send An Email - Proper token values now returned for triggers with "Any" option selected
-* Fixed: Number of Times token now returns a value
-
-= 1.3 =
-* Added: Trigger: LifterLMS - User fails a/any quiz
-* Added: Trigger: LifterLMS - User passes a/any quiz
-* Added: Trigger: LifterLMS - User attempts a/any quiz
-* Added: Trigger: LifterLMS - User completes a/any section
-* Added: Action: LifterLMS - Mark a section complete
-* Added: Action: LifterLMS - Mark a lesson complete
-* Added: Trigger: Formidable Forms - User submits a form
-* Updated: Minimized code updated to avoid malware false positive in WordFence
-* Updated: All plugin integration files moved to Automator Lite to support third-party/custom triggers/actions for all supported plugins
-
-= 1.2 =
-* Added: Action: GamiPress - Award Points
-* Added: Action: GamiPress - Award Rank
-* Added: Action: GamiPress - Award Achievement
-* Added: Trigger: MemberPress - User purchases a/any one-time subscription product
-* Added: Trigger: MemberPress - User purchases a/any recurring subscription product
-* Updated: Sanitized all incoming $_POST data
-* Updated: Moved core i18n support into "i18n" composite class
-* Updated: Move core registration functions into "register" composite class
-* Updated: Move core data fetch functions into "get" composite class
-* Updated: Move core general functions into "utilities" composite class
-* Updated: Changed minimized function name to avoid false-positive threat detection in Wordfence
-* Known Issue: Trigger: MemberPress - User purchases a/any recurring subscription product will not fire if the user does not pay for the subscription (e.g. uses a 100% off coupon) due to the way the MemberPress action is built
-
-= 1.1 =
-* Added: Trigger: WP Forms - User submits a form
-* Added: Trigger: Ninja Forms - User submits a form
-* Added: Ability for developers to add a button to trigger/action options panels
-* Added: Allow configuration priorities to be filtered
-* Updated: Changed SPL auto loader to check integration status before loading
-* Updated: Add integration filter
-* Updated: Feedback icon from bug to lightbulb
-* Updated: Instructions for activating a Pro license key
-
-= 1.0 =
-* Official Release
-* Beta Changelog
-
-= 0.6 =
-* Added: New triggers and actions for WP LMS, WP Courseware, LearnDash, Gravity Forms, Zapier, and BuddyPress
-* Added: Updates for compatibility with Uncanny Automator Pro
-* Added: Ability to dynamically generate tokens in the recipe UI
-* Added: Ability to dynamically generate token values from trigger meta
-* Added: Deleting a recipe deletes associated triggers, actions and log data
-* Updated: Tokens are now inserted at cursor position instead of at the end of the field content
-* Updated: Made post-recipe redirects draft by default
-* Updated: Recipe is now automatically set to draft if it becomes invalid (no valid or live triggers or actions)
-* Updated: Triggers and actions that are removed from the system now show an "item missing" message in the recipe UI
-* Fixed: Default value for recipe iterations is now 1
-* Fixed: Selects are now clickable after canceling a previous selection
-* Fixed: Sorting and searching in logs
-* Fixed: Add Media button now works in Send Email action
-* Fixed: Pasting text into email body field now registers new content in the field
-* Fixed: Bugs in some triggers and actions
-* Fixed: Recipe box no longer appears on non-recipe post types
-* Fixed: Action log table not created on some hosts
-
-= 0.5 =
-* Added: Triggers: User completes a course/lesson (LifterLMS and LearnPress), User is enrolled in a course (LifterLMS), User registers for an event (The Events Calendar + Event Tickets), User purchases a product (WooCommerce and Easy Digital Downloads), User submits a comment on a post
-* Added: Enroll user in course (LifterLMS and LearnPress), Remove user from course (LifterLMS)
-* Added: Recipe run number column to trigger and action logs
-* Added: Cancel button to "Select a Trigger" and "Select an Action" dialogs
-* Updated: Course > Lesson > Topic drilldown added to User completes a lesson and User completes a topic triggers (LearnDash)
-* Updated: Logs now load via AJAX
-* Updated: Current value is pre-selected in dropdown when modifying trigger/action options
-* Updated: Existing actions are no longer hidden when adding a new action
-* Updated: Send an Email action now supports multiple comma separated emails in all email fields
-* Updated: Improved translation support
-* Updated: The icon and integration tag next to triggers/actions is no longer clickable
-* Updated: Recipe status is now listed as "Completed with errors" in the recipe log if an action encounters an error
-* Updated: Plugin now prompts for confirmation when deleting or switching items to draft on live recipes
-* Updated: Default recipe iterations is now "1" instead of "unlimited"
-* Updated: Refactored UI JS
-* Fixed: Trigger and action log would fail to load in some environments
-* Fixed: Duplicates in trigger and action logs
-* Fixed: Actions in draft status no longer appear in logs
-* Fixed: Automator menu sometimes appeared twice in the WordPress admin dashboard
-* Fixed: Vertical alignment of column data on recipe list page
-* Known Issue: Log sorting and searching is not working
-* Known Issue: Default recipe iterations per user is "unlimited" even though it shows "1".  To change this, resave the iteration value
-* Known Issue: The Reset Course Progress action deletes quiz attempts for all quizzes in the course, including those attempts that may have been made in other courses (when "Shared Course Steps" is enabled)
-* Known Issue: Some actions may report being completed successfully, but may in fact have failed.  This is due to the plugin's function not returning error information on failure
-* Known Issue: Deleting a recipe will not delete the associated log entries
-* Known Issue: Attempting to leave the page after editing the recipe title will show a warning about unsaved data, even though all data has been saved
-
-= 0.4 =
-* Added: Each trigger and action now has its own draft/live switch
-* Added: Recipes now have a new Draft/Live switch instead of "Save Draft", "Publish" and "Update" buttons
-* Added: Ability to set the number of times a user can complete a recipe (default is unlimited)
-* Added: Gravity Forms trigger: User submits a form with a specific value in a specific field
-* Added: WooCommerce trigger: User completes an order with an order total greater than, less than or equal to a specific dollar amount
-* Added: Ability to add unlimited actions per recipe
-* Fixed: Issue with "Auto-draft" posts being created
-* Known Issue: The Reset Course Progress action deletes quiz attempts for all quizzes in the course, including those attempts that may have been made in other courses (when "Shared Course Steps" is enabled)
-* Known Issue: Some actions may report being completed successfully, but may in fact have failed.  This is due to the plugin's function not returning error information on failure
-* Known Issue: Deleting a recipe will not delete the associated log entries
-* Known Issue: Attempting to leave the page after editing the recipe title will show a warning about unsaved data, even though all data has been saved
-
-= 0.3 =
-* Added: Action: Set User Meta
-* Added: Action: Reset Course Progress
-* Added: Triggers, Actions and Completed Runs columns on Recipes page
-* Added: "Cancel" button in trigger/action option boxes
-* Added: Method to sort entries in trigger/action option dropdowns
-* Added: Error checking triggers/actions on recipe save
-* Added: Token selector UI on TinyMCE fields
-* Added: URL validation in redirect field
-* Updated: Trigger/action post title is now set to the corresponding trigger/action sentence to assist debugging and logging
-* Updated: "Any _____" options moved to top of trigger dropdowns
-* Updated: Removed redundant "Select a _______" placeholders from trigger/action option dropdowns
-* Updated: Recipes are ignored for logged-out users
-* Updated: Default sort order on logs is now most recent first
-* Updated: Refactored token and trigger-handling code
-* Updated: If a recipe tries to run an action in a plugin integration that is no longer active, an error is logged
-* Known Issue: The Reset Course Progress action deletes quiz attempts for all quizzes in the course, including those attempts that may have been made in other courses (when "Shared Course Steps" is enabled)
-* Known Issue: Some actions may report being completed successfully, but may in fact have failed.  This is due to the plugin's function not returning error information on failure
-* Known Issue: Deleting a recipe will not delete the associated log entries
-* Known Issue: Leaving a recipe open on its edit page will create a new Auto Draft post each time WordPress auto-saves the recipe
-
-= 0.2 =
-* Added: "Any" options to most LearnDash triggers (e.g. "Any Course", "Any Lesson", etc.)
-* Added: WordPress editor to "Send an email" action
-* Updated: Administrator users are no longer affected by "Change user role" action
-* Updated: If a recipe is created and a plugin that the recipe relies on is deactivated, the triggers and actions for that plugin will not be executed
-* Updated: Recipe, Trigger and Action log design and layout
-* Updated: Numerous internal framework improvements
-* Known Issue: Some actions may report being completed successfully, but may in fact have failed.  This is due to the plugin's function not returning error information on failure
-* Known Issue: Deleting a recipe will not delete the associated log entries
-* Known Issue: Recipes can be set to published status with invalid selections/data in triggers and actions. These recipes may exhibit unpredictable behaviour
-
-= 0.1 =
-* Known Issue: If a recipe is created and then a plugin that the recipe relies on is deactivated, the recipe may exhibit unpredictable behavior
-* Known Issue: Some actions may report being completed successfully, but may in fact have failed. This is due to the plugin's function not returning error information on failure
-* Known Issue: Deleting a recipe will not delete the associated log entries
-* Known Issue: Recipes can be set to published status with invalid selections/data in triggers and actions. These recipes may exhibit unpredictable behavior
-* Known Issue: "User views a page" trigger does not work on the WooCommerce shop page
+[View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

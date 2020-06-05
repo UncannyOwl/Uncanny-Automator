@@ -76,12 +76,8 @@ class Add_Wf_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'WP Fusion',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-wpfusion-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-wpfusion-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-wpfusion-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-wpfusion.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-wpfusion@2x.png' ),
+			'name'     => 'WP Fusion',
+			'icon_svg' => Utilities::get_integration_icon( 'integration-wpfusion-icon.svg' ),
 		) );
 	}
 }

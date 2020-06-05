@@ -79,12 +79,8 @@ class Add_Wpf_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'WP Forms',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-wpforms-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-wpforms-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-wpforms-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-wpforms.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-wpforms@2x.png' ),
+			'name'     => 'WP Forms',
+			'icon_svg' => Utilities::get_integration_icon( 'integration-wpforms-icon.svg' ),
 		) );
 	}
 }

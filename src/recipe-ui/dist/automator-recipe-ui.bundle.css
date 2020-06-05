@@ -2817,6 +2817,9 @@ html.automator-modal-open body {
   pointer-events: none;
   /* Prevent clicks */ }
 
+.uap-select2-item__meta {
+  opacity: .6; }
+
 .uap .form-group {
   width: 100%; }
   .uap .form-group:not(:last-child) {

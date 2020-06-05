@@ -37,17 +37,18 @@ class Recipe_Taxonomies {
 			'recipe_category', // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
 			'uo-recipe', // post type name
 			array(
-				'hierarchical' => true,
-				'label'        => __( 'Recipe category', 'uncanny-automator' ), // display name
-				'labels'        => array(
-					'menu_name' => __('Categories', 'uncanny-automator')
+				'hierarchical'      => true,
+				'label'             => __( 'Recipe category', 'uncanny-automator' ), // display name
+				'labels'            => array(
+					'menu_name' => __( 'Categories', 'uncanny-automator' )
 				),
-				'query_var'    => true,
-				'rewrite'      => array(
+				'query_var'         => true,
+				'rewrite'           => array(
 					'slug'       => 'uo-recipe', // This controls the base slug that will display before each term
 					'with_front' => false, // Don't display the category base before
 				),
-			)
+				'show_in_nav_menus' => false,
+			),
 		);
 
 		// Add recipe tag
@@ -55,16 +56,17 @@ class Recipe_Taxonomies {
 			'recipe_tag', // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
 			'uo-recipe', // post type name
 			array(
-				'hierarchical' => false,
-				'label'        => __( 'Recipe tag', 'uncanny-automator' ), // display name
-				'labels'        => array(
-					'menu_name' => __('Tags', 'uncanny-automator')
+				'hierarchical'      => false,
+				'label'             => __( 'Recipe tag', 'uncanny-automator' ), // display name
+				'labels'            => array(
+					'menu_name' => __( 'Tags', 'uncanny-automator' )
 				),
-				'query_var'    => true,
-				'rewrite'      => array(
+				'query_var'         => true,
+				'rewrite'           => array(
 					'slug'       => 'uo-recipe', // This controls the base slug that will display before each term
 					'with_front' => false, // Don't display the category base before
 				),
+				'show_in_nav_menus' => false,
 			)
 		);
 	}

@@ -58,6 +58,7 @@ class Automator_Get_Data {
 
 						$filter             = 'automator_maybe_trigger_' . $trigger_integration . '_tokens';
 						$filter             = str_replace( '__', '_', $filter );
+
 						$filters[ $filter ] = [
 							'integration' => strtoupper( $trigger_integration ),
 							'meta'        => strtoupper( $trigger_meta ),
@@ -68,6 +69,7 @@ class Automator_Get_Data {
 					if ( ! empty( $trigger_integration ) && ! empty( $triggers_meta ) ) {
 						$filter             = 'automator_maybe_trigger_' . $trigger_integration . '_' . $trigger_meta . '_tokens';
 						$filter             = str_replace( '__', '_', $filter );
+
 						$filters[ $filter ] = [
 							'value'       => $trigger_value,
 							'integration' => strtoupper( $trigger_integration ),
@@ -262,6 +264,87 @@ class Automator_Get_Data {
 		}
 
 		return $action_title;
+	}
+
+	/**
+	 * @param        $id
+	 * @param string $type
+	 *
+	 * @return array|mixed|string
+	 */
+	public function action_sentence( $id, $type = '' ) {
+
+		global $wpdb;
+
+		if ( 0 === absint( $id ) ) {
+			return '';
+		}
+
+
+		$action_meta = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d",
+				$id
+			)
+		);
+
+		if ( empty( $action_meta ) ) {
+			return '';
+		}
+
+		$code         = false;
+		$raw_sentence = false;
+
+		foreach ( $action_meta as $action ) {
+			if ( 'code' === $action->meta_key ) {
+				$code = $action->meta_value;
+			}
+			if ( 'sentence' === $action->meta_key ) {
+				$raw_sentence = $action->meta_value;
+			}
+		}
+
+		if ( false == $code || false === $raw_sentence ) {
+			return '';
+		}
+
+		$re = '/\{\{(.*?)\}\}/m';
+		preg_match_all( $re, $raw_sentence, $matches, PREG_SET_ORDER, 0 );
+
+		$tokens = [];
+		foreach ( $matches as $key => $match ) {
+			$tokens[ $key ]['brackets']       = $match[0];
+			$tokens[ $key ]['inner_brackets'] = $match[1];
+			$token                            = explode( ':', $match[1] );
+			$tokens[ $key ]['token']          = $token[1];
+			foreach ( $action_meta as $action ) {
+				if ( $token[1] === $action->meta_key ) {
+					$tokens[ $key ]['token_value'] = $action->meta_value;
+				}
+			}
+		}
+
+		$complete_sentence = $raw_sentence;
+		foreach ( $tokens as $token ) {
+			if ( key_exists( 'token', $token ) && key_exists( 'token_value', $token ) ) {
+				$complete_sentence = str_replace( $token['token'], $token['token_value'], $complete_sentence );
+			}
+		}
+
+		$sentence = [
+			'code'              => $code,
+			'raw_sentence'      => $raw_sentence,
+			'tokens'            => $tokens,
+			'complete_sentence' => $complete_sentence,
+		];
+
+		$sentence = apply_filters( 'get_action_sentence', $sentence, $type, $action_meta );
+
+		if ( in_array( $type, array_keys( $sentence ), true ) ) {
+			return $sentence[ $type ];
+		}
+
+		return $sentence;
 	}
 
 	/**

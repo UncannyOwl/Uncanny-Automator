@@ -51,7 +51,7 @@ class WC_PURCHPROD {
 				'woocommerce_thankyou',
 				'woocommerce_payment_complete',
 			],
-			'priority'            => 9999,
+			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'payment_completed' ),
 			'options'             => [
@@ -87,7 +87,13 @@ class WC_PURCHPROD {
 			return;
 		}
 
-		$user_id            = $order->get_user_id();
+		$user_id = $order->get_user_id();
+		if ( 0 === $user_id ) {
+			// Its a logged in recipe and
+			// user ID is 0. Skip process
+			return;
+		}
+
 		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_product   = $uncanny_automator->get->meta_from_recipes( $recipes, 'WOOPRODUCT' );
 		$matched_recipe_ids = [];
@@ -96,18 +102,21 @@ class WC_PURCHPROD {
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
-				if ( - 1 === intval( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
-					$matched_recipe_ids[] = [
-						'recipe_id'  => $recipe_id,
-						'trigger_id' => $trigger_id,
-					];
+				if ( isset( $required_product[ $recipe_id ] ) && isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
+					if ( - 1 === intval( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
+						$matched_recipe_ids[] = [
+							'recipe_id'  => $recipe_id,
+							'trigger_id' => $trigger_id,
+						];
 
-					break;
+						break;
+					}
 				}
 			}
 		}
 		$items       = $order->get_items();
 		$product_ids = array();
+		/** @var \WC_Order_Item_Product $item */
 		foreach ( $items as $item ) {
 			$product_ids[] = $item->get_product_id();
 		}
@@ -115,17 +124,20 @@ class WC_PURCHPROD {
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
-				if ( in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
-					$matched_recipe_ids[] = [
-						'recipe_id'  => $recipe_id,
-						'trigger_id' => $trigger_id,
-					];
+				if ( isset( $required_product[ $recipe_id ] ) && isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
+					if ( in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
+						$matched_recipe_ids[] = [
+							'recipe_id'  => $recipe_id,
+							'trigger_id' => $trigger_id,
+						];
+					}
 				}
 			}
 		}
+
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$args = [
+				$pass_args = [
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
@@ -133,8 +145,21 @@ class WC_PURCHPROD {
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
 				];
-				$uncanny_automator->maybe_add_trigger_entry( $args );
+
+				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+
+				//Adding an action to save order id in trigger meta
+				do_action( 'uap_wc_trigger_save_meta', $order_id, $matched_recipe_id['recipe_id'], $args, 'product' );
+
+				if ( $args ) {
+					foreach ( $args as $result ) {
+						if ( true === $result['result'] ) {
+							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+						}
+					}
+				}
 			}
+
 		}
 
 		return;

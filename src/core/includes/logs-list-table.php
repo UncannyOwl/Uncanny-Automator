@@ -255,29 +255,32 @@ class Logs_List_Table extends \WP_List_Table {
 			$search_conditions .= " AND ( (pt.post_title LIKE '%{$search_key}%') OR (p.post_title LIKE '%{$search_key}%') OR (u.display_name  LIKE '%{$search_key}%' ) OR (u.user_email  LIKE '%{$search_key}%' ) ) ";
 		}
 
-		$query = "SELECT t.automator_trigger_id, 
-							t.date_time AS trigger_date,  
-					        t.completed AS trigger_completed, 
-					        t.automator_recipe_id,
-					        t.ID,
-							r.date_time AS recipe_date_time, 
-							r.completed AS recipe_completed, 
-							r.run_number AS recipe_run_number,
-					        p.post_title AS recipe_title, 
-					        pt.post_title AS trigger_title,
-					        u.ID AS user_id, 
-					        u.user_email, 
-							u.display_name
-					FROM {$wpdb->prefix}uap_trigger_log t
-					LEFT JOIN {$wpdb->prefix}uap_recipe_log r
-					ON t.automator_recipe_log_id = r.ID
-					LEFT JOIN {$wpdb->posts} p
-					ON p.ID = t.automator_recipe_id
-					LEFT JOIN {$wpdb->posts} pt
-					ON pt.ID = t.automator_trigger_id
-					LEFT JOIN {$wpdb->users} u
-					ON t.user_id = u.ID
-					WHERE t.completed = 1 AND ({$search_conditions})";
+		$query = "SELECT u.ID AS user_id, u.user_email, 
+                            u.display_name, 
+                            t.automator_trigger_id, 
+                            t.date_time AS trigger_date, 
+                            t.completed AS trigger_completed, 
+                            t.automator_recipe_id, 
+                            t.ID, 
+                            pt.post_title AS trigger_title, 
+                            tm.meta_value AS trigger_sentence, 
+                            p.post_title AS recipe_title, 
+                            r.date_time AS recipe_date_time, 
+                            r.completed AS recipe_completed, 
+                            r.run_number AS recipe_run_number
+                        FROM {$wpdb->prefix}uap_trigger_log t
+                        LEFT JOIN {$wpdb->users} u
+                        ON u.ID = t.user_id
+                        LEFT JOIN {$wpdb->posts} p
+                        ON p.ID = t.automator_recipe_id
+                        LEFT JOIN {$wpdb->posts} pt
+                        ON pt.ID = t.automator_trigger_id
+                        LEFT JOIN {$wpdb->prefix}uap_trigger_log_meta tm
+						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'complete_trigger_sentence'
+                        LEFT JOIN {$wpdb->prefix}uap_recipe_log r
+                        ON t.automator_recipe_log_id = r.ID
+                        WHERE ({$search_conditions}) ";
+
 
 		return $query;
 	}
@@ -303,7 +306,8 @@ class Logs_List_Table extends \WP_List_Table {
 					r.date_time AS recipe_date_time, 
 					r.completed AS recipe_completed, 
 					r.run_number AS recipe_run_number,
-					pa.post_title AS action_title, 
+					pa.post_title AS action_title,
+					am.meta_value AS action_sentence, 
 					p.post_title AS recipe_title, 
 					u.ID AS user_id, 
 					u.user_email, 
@@ -315,6 +319,8 @@ class Logs_List_Table extends \WP_List_Table {
 			ON p.ID = a.automator_recipe_id
 			JOIN {$wpdb->posts} pa
 			ON pa.ID = a.automator_action_id
+			LEFT JOIN {$wpdb->prefix}uap_action_log_meta am
+			ON am.automator_action_log_id = a.ID AND am.meta_key = 'complete_action_sentence'
 			LEFT JOIN {$wpdb->users} u
 			ON a.user_id = u.ID
 			WHERE ({$search_conditions})";
@@ -459,20 +465,22 @@ class Logs_List_Table extends \WP_List_Table {
 
 			if ( $trigger_code ) {
 				// get the trigger title
-				$trigger_title = $uncanny_automator->get->trigger_title_from_trigger_code( $trigger_code );
+				$trigger_title = $trigger->trigger_title;
 				// get the triggers completed sentence
-				$trigger_sentence = $uncanny_automator->get->trigger_meta( $trigger->user_id, $trigger->automator_trigger_id, 'complete_trigger_sentence', $trigger->ID );
+				$trigger_sentence = $trigger->trigger_sentence;
 				if ( empty( $trigger_title ) && ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
 					/* translators: 1. Trademarked term */
 					$trigger_name = sprintf( __( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
 				} else {
-					$trigger_name = '<span style="cursor: help;color: #0073aa;" title="' . $trigger_sentence . '">' . $trigger_title . '</span>';
+					if( empty( $trigger_sentence )){
+						$trigger_name = $trigger_title;
+					}else{
+						$trigger_name = '<span style="cursor: help;color: #0073aa;" title="' . $trigger_sentence . '">' . $trigger_title . '</span>';
+					}
+					$trigger_name = $trigger_title;
 				}
 			}
 
-			if ( empty( $trigger_name ) ) {
-
-			}
 			$recipe_run_number = $trigger->recipe_run_number;
 
 
@@ -515,7 +523,26 @@ class Logs_List_Table extends \WP_List_Table {
 			}
 			$action_code           = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
 			/* translators: 1. Action ID */
-			$action_name           = ( $action_code ) ? $uncanny_automator->get->action_title_from_action_code( $action_code ) : sprintf( __( 'Action deleted: %1$s', 'uncanny-automator' ), $action->automator_action_id );
+
+			$action_name = sprintf( __( 'Action deleted: %1$s', 'uncanny-automator' ), $action->automator_action_id );
+
+			if ( $action_code ) {
+				// get the action title
+				$action_title = $action->action_title;
+				// get the action completed sentence
+				$action_sentence = $action->action_sentence;
+				if ( empty( $action_title ) && ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
+					/* translators: 1. Trademarked term */
+					$action_name = sprintf( __( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
+				} else {
+					if( empty( $action_sentence )){
+						$action_name = $action_title;
+					}else{
+						$action_name = '<span style="cursor: help;color: #0073aa;" title="' . $action_sentence . '">' . $action_title . '</span>';
+					}
+				}
+			}
+
 			$action_date_completed = $action->action_date;
 			$action_status         = $st;
 			$error_message         = $action->error_message;

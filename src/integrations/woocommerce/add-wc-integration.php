@@ -78,12 +78,8 @@ class Add_Wc_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'WooCommerce',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-woocommerce-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-woocommerce-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-woocommerce-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-woocommerce.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-woocommerce@2x.png' ),
+			'name'     => 'WooCommerce',
+			'icon_svg' => Utilities::get_integration_icon( 'integration-woocommerce-icon.svg' ),
 		) );
 	}
 }

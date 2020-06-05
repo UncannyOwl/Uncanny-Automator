@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Uncanny Automator plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 2.2\n"
+"Project-Id-Version: Uncanny Automator 2.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-05-29T17:14:30+00:00\n"
+"POT-Creation-Date: 2020-06-05T14:53:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
@@ -551,26 +551,26 @@ msgid "Recipe category"
 msgstr ""
 
 #: src/core/classes/recipe-taxonomies.php:43
-#: src/core/classes/recipe-taxonomies.php:123
+#: src/core/classes/recipe-taxonomies.php:125
 msgid "Categories"
 msgstr ""
 
-#: src/core/classes/recipe-taxonomies.php:59
+#: src/core/classes/recipe-taxonomies.php:60
 msgid "Recipe tag"
 msgstr ""
 
-#: src/core/classes/recipe-taxonomies.php:61
-#: src/core/classes/recipe-taxonomies.php:136
+#: src/core/classes/recipe-taxonomies.php:62
+#: src/core/classes/recipe-taxonomies.php:138
 msgid "Tags"
 msgstr ""
 
 #. translators: 1: Post ID
-#: src/core/includes/logs-list-table.php:345
-#: src/core/includes/logs-list-table.php:428
+#: src/core/includes/logs-list-table.php:351
+#: src/core/includes/logs-list-table.php:434
 #: src/core/mu-classes/composite-classes/automator-options.php:855
 #: src/core/mu-classes/composite-classes/automator-options.php:1399
 #: src/core/mu-classes/composite-classes/automator-options.php:2483
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:521
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:525
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:103
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:75
 #: src/integrations/wp/helpers/wp-helpers.php:70
@@ -578,116 +578,116 @@ msgid "ID: %1$s (no title)"
 msgstr ""
 
 #. translators: User type
-#: src/core/includes/logs-list-table.php:352
-#: src/core/includes/logs-list-table.php:451
-#: src/core/includes/logs-list-table.php:546
+#: src/core/includes/logs-list-table.php:358
+#: src/core/includes/logs-list-table.php:457
+#: src/core/includes/logs-list-table.php:573
 msgctxt "User"
 msgid "Anonymous"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:360
+#: src/core/includes/logs-list-table.php:366
 msgctxt "Recipe"
 msgid "Completed"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:363
+#: src/core/includes/logs-list-table.php:369
 msgctxt "Recipe"
 msgid "Completed with errors"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:366
+#: src/core/includes/logs-list-table.php:372
 msgctxt "Recipe"
 msgid "Completed - do nothing"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:369
+#: src/core/includes/logs-list-table.php:375
 msgctxt "Recipe"
 msgid "In progress"
 msgstr ""
 
 #. translators: Recipe type. Logged-in recipes are triggered only by logged-in users
-#: src/core/includes/logs-list-table.php:377
-#: src/core/includes/logs-list-table.php:381
+#: src/core/includes/logs-list-table.php:383
+#: src/core/includes/logs-list-table.php:387
 #: src/core/mu-classes/composite-classes/automator-translations.php:357
 msgctxt "Recipe"
 msgid "Logged-in"
 msgstr ""
 
 #. translators: Recipe type. Anonymous recipes can be triggered by logged-in or anonymous users. Anonymous recipes can create new users or modify existing users.
-#: src/core/includes/logs-list-table.php:385
+#: src/core/includes/logs-list-table.php:391
 msgctxt "Recipe"
 msgid "Anonymous"
 msgstr ""
 
 #. translators: Trigger status
-#: src/core/includes/logs-list-table.php:436
-msgctxt "Trigger"
-msgid "Completed"
-msgstr ""
-
-#. translators: Trigger status
-#: src/core/includes/logs-list-table.php:439
-msgctxt "Trigger"
-msgid "Completed with errors"
-msgstr ""
-
-#. translators: Trigger status
 #: src/core/includes/logs-list-table.php:442
 msgctxt "Trigger"
-msgid "Completed, do nothing"
+msgid "Completed"
 msgstr ""
 
 #. translators: Trigger status
 #: src/core/includes/logs-list-table.php:445
 msgctxt "Trigger"
+msgid "Completed with errors"
+msgstr ""
+
+#. translators: Trigger status
+#: src/core/includes/logs-list-table.php:448
+msgctxt "Trigger"
+msgid "Completed, do nothing"
+msgstr ""
+
+#. translators: Trigger status
+#: src/core/includes/logs-list-table.php:451
+msgctxt "Trigger"
 msgid "In progress"
 msgstr ""
 
 #. translators: 1. Trigger ID
-#: src/core/includes/logs-list-table.php:458
+#: src/core/includes/logs-list-table.php:464
 msgid "Trigger deleted: %1$s"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/includes/logs-list-table.php:467
+#: src/core/includes/logs-list-table.php:473
+#: src/core/includes/logs-list-table.php:536
 msgid "(Reactivate %1$s to view)"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:508
+#: src/core/includes/logs-list-table.php:516
 msgid "Error"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:511
-#: src/core/includes/logs-list-table.php:527
+#: src/core/includes/logs-list-table.php:519
+#: src/core/includes/logs-list-table.php:554
 msgctxt "Action"
 msgid "Completed"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:514
-#: src/core/includes/logs-list-table.php:533
+#: src/core/includes/logs-list-table.php:522
+#: src/core/includes/logs-list-table.php:560
 msgctxt "Action"
 msgid "Completed, do nothing"
 msgstr ""
 
-#. translators: 1. Action ID
-#: src/core/includes/logs-list-table.php:518
+#: src/core/includes/logs-list-table.php:527
 msgid "Action deleted: %1$s"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:530
+#: src/core/includes/logs-list-table.php:557
 msgctxt "Action"
 msgid "Completed with errors"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:536
+#: src/core/includes/logs-list-table.php:563
 msgctxt "Action"
 msgid "In progress"
 msgstr ""
@@ -732,7 +732,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:133
 #: src/core/mu-classes/composite-classes/automator-options.php:372
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers-field.php:37
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:323
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:327
 msgid "Example: 1"
 msgstr ""
 
@@ -754,43 +754,49 @@ msgid "Option"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:364
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:315
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:319
 msgid "Number of times"
 msgstr ""
 
 #. translators: Noun
 #: src/core/mu-classes/composite-classes/automator-options.php:395
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:346
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:350
 msgid "Condition"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:400
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:351
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:355
+#: src/integrations/woocommerce/tokens/wc-tokens.php:264
 msgid "equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:401
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:352
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:356
+#: src/integrations/woocommerce/tokens/wc-tokens.php:267
 msgid "not equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:402
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:353
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:357
+#: src/integrations/woocommerce/tokens/wc-tokens.php:258
 msgid "less than"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:403
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:354
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:358
+#: src/integrations/woocommerce/tokens/wc-tokens.php:261
 msgid "greater than"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:404
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:355
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:359
+#: src/integrations/woocommerce/tokens/wc-tokens.php:270
 msgid "greater or equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:405
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:356
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:360
+#: src/integrations/woocommerce/tokens/wc-tokens.php:273
 msgid "less or equal to"
 msgstr ""
 
@@ -802,7 +808,7 @@ msgid "Post"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:433
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:435
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:439
 #: src/integrations/wp/helpers/wp-helpers.php:105
 msgid "Any post"
 msgstr ""
@@ -828,8 +834,8 @@ msgid "Page"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:471
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:403
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:427
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:407
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:431
 msgid "Any page"
 msgstr ""
 
@@ -876,7 +882,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1264
 #: src/core/mu-classes/composite-classes/automator-options.php:1553
 #: src/core/mu-classes/composite-classes/automator-options.php:1595
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:443
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:447
 #: src/integrations/learndash/actions/ld-marklessondone.php:45
 #: src/integrations/learndash/actions/ld-marktopicdone.php:48
 #: src/integrations/learndash/helpers/learndash-helpers.php:72
@@ -955,7 +961,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:548
 #: src/core/mu-classes/composite-classes/automator-options.php:1222
 #: src/core/mu-classes/composite-classes/automator-options.php:1305
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:451
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:455
 #: src/integrations/learndash/actions/ld-marktopicdone.php:58
 #: src/integrations/learndash/helpers/learndash-helpers.php:111
 #: src/integrations/learndash/helpers/learndash-helpers.php:284
@@ -1006,7 +1012,7 @@ msgid "Topic"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:586
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:459
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:463
 #: src/integrations/learndash/helpers/learndash-helpers.php:150
 #: src/integrations/learndash/helpers/learndash-helpers.php:383
 msgid "Any topic"
@@ -1072,7 +1078,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:666
 #: src/core/mu-classes/composite-classes/automator-options.php:1677
 #: src/core/mu-classes/composite-classes/automator-options.php:2352
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:467
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:471
 #: src/integrations/learndash/helpers/learndash-helpers.php:231
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:226
 #: src/integrations/wplms/helpers/wplms-helpers.php:56
@@ -1261,7 +1267,7 @@ msgid "Event URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1144
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:373
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:377
 msgid "Redirect URL"
 msgstr ""
 
@@ -1304,7 +1310,7 @@ msgid "Any %s"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1428
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:483
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:487
 #: src/integrations/edd/helpers/edd-helpers.php:53
 msgid "Any download"
 msgstr ""
@@ -1333,7 +1339,7 @@ msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1469
 #: src/core/mu-classes/composite-classes/automator-options.php:1636
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:491
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:495
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:143
 #: src/integrations/wplms/helpers/wplms-helpers.php:141
 msgid "Any unit"
@@ -1394,6 +1400,8 @@ msgid "Post type"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1942
+#: src/integrations/badgeos/actions/bo-awardachievement-a.php:52
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:56
 #: src/integrations/gamipress/actions/gp-awardachievement-a.php:52
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:56
 msgid "Achievement type"
@@ -1418,17 +1426,21 @@ msgid "Rank requirement"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1999
+#: src/integrations/badgeos/actions/bo-awardpoints-a.php:51
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:108
 #: src/integrations/gamipress/actions/gp-awardpoints-a.php:52
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:113
 msgid "Point type"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2011
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:120
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:125
 msgid "All point types"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2056
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:165
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:170
 msgid "Rank type"
 msgstr ""
@@ -1452,6 +1464,7 @@ msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2287
 #: src/integrations/forminator/helpers/forminator-helpers.php:50
+#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:54
 #: src/integrations/ultimate-member/triggers/um-userlogsin.php:43
 #: src/integrations/ultimate-member/triggers/um-userregister.php:44
 msgid "Any form"
@@ -1483,36 +1496,36 @@ msgstr ""
 msgid "Membership URL"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:425
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:429
 #: src/integrations/wp/helpers/wp-helpers.php:145
 msgid "All pages"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:433
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:437
 msgid "All posts"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:441
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:445
 msgid "All courses"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:449
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:453
 msgid "All lessons"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:457
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:461
 msgid "All topics"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:465
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:469
 msgid "All quizzes"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:473
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:477
 msgid "All memberships"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:475
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:479
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:184
 #: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:53
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershipcancel.php:45
@@ -1521,28 +1534,28 @@ msgstr ""
 msgid "Any membership"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:481
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:485
 msgid "All downloads"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:489
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:493
 msgid "All units"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:497
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:501
 msgid "All popups"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:499
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:503
 #: src/integrations/popup-maker/actions/pm-popupshow.php:51
 msgid "Any popup"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:505
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:509
 msgid "All awards"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:507
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:511
 msgid "Any award"
 msgstr ""
 
@@ -2287,6 +2300,72 @@ msgctxt "Reviews banner"
 msgid "(Plot twist, it does)"
 msgstr ""
 
+#. translators: Action - BadgeOS
+#. translators: Action - GamiPress
+#: src/integrations/badgeos/actions/bo-awardachievement-a.php:43
+#: src/integrations/gamipress/actions/gp-awardachievement-a.php:43
+msgid "Award {{an achievement:%1$s}} to the user"
+msgstr ""
+
+#. translators: Action - BadgeOS
+#. translators: Action - GamiPress
+#: src/integrations/badgeos/actions/bo-awardachievement-a.php:45
+#: src/integrations/gamipress/actions/gp-awardachievement-a.php:45
+msgid "Award {{an achievement}} to the user"
+msgstr ""
+
+#. translators: Noun
+#: src/integrations/badgeos/actions/bo-awardachievement-a.php:64
+#: src/integrations/gamipress/actions/gp-awardachievement-a.php:64
+msgid "Award"
+msgstr ""
+
+#. translators: Action - BadgeOS
+#. translators: Action - GamiPress
+#: src/integrations/badgeos/actions/bo-awardpoints-a.php:42
+#: src/integrations/gamipress/actions/gp-awardpoints-a.php:43
+msgid "Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user"
+msgstr ""
+
+#. translators: Action - BadgeOS
+#. translators: Action - GamiPress
+#: src/integrations/badgeos/actions/bo-awardpoints-a.php:44
+#: src/integrations/gamipress/actions/gp-awardpoints-a.php:45
+msgid "Award {{points}} to the user"
+msgstr ""
+
+#: src/integrations/badgeos/actions/bo-awardpoints-a.php:61
+#: src/integrations/gamipress/actions/gp-awardpoints-a.php:62
+msgid "Points"
+msgstr ""
+
+#. translators: Action - BadgeOS
+#. translators: Action - GamiPress
+#: src/integrations/badgeos/actions/bo-awardrank-a.php:43
+#: src/integrations/gamipress/actions/gp-awardrank-a.php:44
+msgid "Award {{a rank:%1$s}} to the user"
+msgstr ""
+
+#. translators: Action - BadgeOS
+#. translators: Action - GamiPress
+#: src/integrations/badgeos/actions/bo-awardrank-a.php:45
+#: src/integrations/gamipress/actions/gp-awardrank-a.php:46
+msgid "Award {{a rank}} to the user"
+msgstr ""
+
+#. translators: Noun
+#: src/integrations/badgeos/actions/bo-awardrank-a.php:63
+#: src/integrations/gamipress/actions/gp-awardrank-a.php:64
+msgid "Rank"
+msgstr ""
+
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:227
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:261
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:232
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:266
+msgid "Any awards"
+msgstr ""
+
 #. translators: Logged-in trigger - bbPress
 #: src/integrations/bbpress/triggers/bb-newtopic.php:42
 msgid "A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} times"
@@ -2385,55 +2464,6 @@ msgstr ""
 #: src/integrations/formidable/triggers/fi-submitform.php:42
 #: src/integrations/forminator/triggers/fr-submitform.php:42
 msgid "A user submits {{a form:%1$s}}"
-msgstr ""
-
-#. translators: Action - GamiPress
-#: src/integrations/gamipress/actions/gp-awardachievement-a.php:43
-msgid "Award {{an achievement:%1$s}} to the user"
-msgstr ""
-
-#. translators: Action - GamiPress
-#: src/integrations/gamipress/actions/gp-awardachievement-a.php:45
-msgid "Award {{an achievement}} to the user"
-msgstr ""
-
-#. translators: Noun
-#: src/integrations/gamipress/actions/gp-awardachievement-a.php:64
-msgid "Award"
-msgstr ""
-
-#. translators: Action - GamiPress
-#: src/integrations/gamipress/actions/gp-awardpoints-a.php:43
-msgid "Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user"
-msgstr ""
-
-#. translators: Action - GamiPress
-#: src/integrations/gamipress/actions/gp-awardpoints-a.php:45
-msgid "Award {{points}} to the user"
-msgstr ""
-
-#: src/integrations/gamipress/actions/gp-awardpoints-a.php:62
-msgid "Points"
-msgstr ""
-
-#. translators: Action - GamiPress
-#: src/integrations/gamipress/actions/gp-awardrank-a.php:44
-msgid "Award {{a rank:%1$s}} to the user"
-msgstr ""
-
-#. translators: Action - GamiPress
-#: src/integrations/gamipress/actions/gp-awardrank-a.php:46
-msgid "Award {{a rank}} to the user"
-msgstr ""
-
-#. translators: Noun
-#: src/integrations/gamipress/actions/gp-awardrank-a.php:64
-msgid "Rank"
-msgstr ""
-
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:232
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:266
-msgid "Any awards"
 msgstr ""
 
 #. translators: Action - LearnDash
@@ -2729,10 +2759,6 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:54
-msgid "Any Form"
-msgstr ""
-
 #. translators: Logged-in trigger - Ultimate Member
 #: src/integrations/ultimate-member/triggers/um-userinactive.php:44
 #: src/integrations/ultimate-member/triggers/um-userinactive.php:46
@@ -2767,6 +2793,130 @@ msgstr ""
 #. translators: Logged-in trigger - Ultimate Member
 #: src/integrations/ultimate-member/triggers/um-userrolechange.php:50
 msgid "A user's role changes to {{a specific role}}"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:27
+msgid "Billing first name"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:28
+msgid "Billing last name"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:29
+msgid "Billing company"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:30
+msgid "Billing country"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:31
+msgid "Billing address line 1"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:32
+msgid "Billing address line 2"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:33
+msgid "Billing city"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:34
+msgid "Billing state"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:35
+msgid "Billing postcode"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:36
+msgid "Billing phone"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:37
+msgid "Billing email"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:38
+msgid "Shipping first name"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:39
+msgid "Shipping last name"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:40
+msgid "Shipping company"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:41
+msgid "Shipping country"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:42
+msgid "Shipping address line 1"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:43
+msgid "Shipping address line 2"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:44
+msgid "Shipping city"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:45
+msgid "Shipping state"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:46
+msgid "Shipping postcode"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:47
+msgid "Order ID"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:48
+msgid "Order comments"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:49
+msgid "Order total"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:50
+msgid "Order status"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:51
+msgid "Order subtotal"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:52
+msgid "Order tax"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:53
+msgid "Order discounts"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:54
+msgid "Order coupons"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:55
+msgid "Order products"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:56
+msgid "Order products and quantity"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:57
+msgid "Payment method"
 msgstr ""
 
 #. translators: Logged-in trigger - WooCommerce

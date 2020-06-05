@@ -112,6 +112,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Zapier_Helpers
 	 */
 	public $zapier;
+	/**
+	 * @var Badgeos_Helpers
+	 */
+	public $badgeos;
 
 	/**
 	 * @var Automator_Helpers_Recipe
