@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-06-12T17:45:50+00:00\n"
+"POT-Creation-Date: 2020-06-12T18:02:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2121,11 +2121,15 @@ msgstr ""
 msgid "If no user matches the unique field and value then the actions are not going to be executed."
 msgstr ""
 
+#. translators: First Name field
 #: src/core/mu-classes/composite-classes/automator-translations.php:438
+#: src/integrations/wp/actions/wp-createuser.php:59
 msgid "First name"
 msgstr ""
 
+#. translators: Last Name field
 #: src/core/mu-classes/composite-classes/automator-translations.php:440
+#: src/integrations/wp/actions/wp-createuser.php:61
 msgid "Last name"
 msgstr ""
 
@@ -3066,17 +3070,7 @@ msgstr ""
 
 #. translators: First Name field
 #: src/integrations/wp/actions/wp-createuser.php:59
-msgid "First Name"
-msgstr ""
-
-#. translators: First Name field
-#: src/integrations/wp/actions/wp-createuser.php:59
 msgid "The user's first name."
-msgstr ""
-
-#. translators: Last Name field
-#: src/integrations/wp/actions/wp-createuser.php:61
-msgid "Last Name"
 msgstr ""
 
 #. translators: Last Name field
@@ -3101,7 +3095,7 @@ msgstr ""
 
 #. translators: Send User Notification Name field
 #: src/integrations/wp/actions/wp-createuser.php:69
-msgid "Send User Notification"
+msgid "Send user notification"
 msgstr ""
 
 #. translators: Send User Notification Name field
@@ -3109,10 +3103,33 @@ msgstr ""
 msgid "Send the new user an email about their account."
 msgstr ""
 
+#. translators: User Meta field
+#: src/integrations/wp/actions/wp-createuser.php:74
+msgid "User meta"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createuser.php:75
+msgid "The user meta values keyed by their user meta key."
+msgstr ""
+
 #: src/integrations/wp/actions/wp-createuser.php:81
 #: src/integrations/wp/actions/wp-sendwebhook.php:100
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:100
 msgid "Key"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/wp/actions/wp-createuser.php:93
+#: src/integrations/wp/actions/wp-sendwebhook.php:117
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:117
+msgid "Add pair"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/wp/actions/wp-createuser.php:94
+#: src/integrations/wp/actions/wp-sendwebhook.php:119
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:119
+msgid "Remove pair"
 msgstr ""
 
 #: src/integrations/wp/actions/wp-createuser.php:120
@@ -3133,7 +3150,7 @@ msgid "Failed to create a user."
 msgstr ""
 
 #: src/integrations/wp/actions/wp-createuser.php:194
-msgid "meta keys failed to update:  %1$s }"
+msgid "meta keys failed to update: %1$s"
 msgstr ""
 
 #. translators: Action - WordPress
@@ -3211,18 +3228,6 @@ msgstr ""
 #: src/integrations/wp/actions/wp-sendwebhook.php:92
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:92
 msgid "Fields"
-msgstr ""
-
-#. translators: Non-personal infinitive verb
-#: src/integrations/wp/actions/wp-sendwebhook.php:117
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:117
-msgid "Add pair"
-msgstr ""
-
-#. translators: Non-personal infinitive verb
-#: src/integrations/wp/actions/wp-sendwebhook.php:119
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:119
-msgid "Remove pair"
 msgstr ""
 
 #: src/integrations/wp/actions/wp-sendwebhook.php:126

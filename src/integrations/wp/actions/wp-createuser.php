@@ -56,9 +56,9 @@ class WP_CREATEUSER {
 					/* translators: Email field */
 					$uncanny_automator->helpers->recipe->field->text_field( 'EMAIL', __( 'Email', 'uncanny-automator' ), true, 'text', '', true, __( 'The user email address.', 'uncanny-automator' ) ),
 					/* translators: First Name field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'FIRSTNAME', __( 'First Name', 'uncanny-automator' ), true, 'text', '', false, __( 'The user\'s first name.', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'FIRSTNAME', __( 'First name', 'uncanny-automator' ), true, 'text', '', false, __( 'The user\'s first name.', 'uncanny-automator' ) ),
 					/* translators: Last Name field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'LASTNAME', __( 'Last Name', 'uncanny-automator' ), true, 'text', '', false, __( 'The user\'s last name.', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'LASTNAME', __( 'Last name', 'uncanny-automator' ), true, 'text', '', false, __( 'The user\'s last name.', 'uncanny-automator' ) ),
 					/* translators: Website field */
 					$uncanny_automator->helpers->recipe->field->text_field( 'WEBSITE', __( 'Website', 'uncanny-automator' ), true, 'text', '', false, __( 'The user URL.', 'uncanny-automator' ) ),
 					/* translators: Password field */
@@ -66,13 +66,13 @@ class WP_CREATEUSER {
 					/* translators: Role field */
 					$uncanny_automator->helpers->recipe->wp->options->wp_user_roles(),
 					/* translators: Send User Notification Name field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'SENDREGEMAIL', __( 'Send User Notification', 'uncanny-automator' ), true, 'checkbox', '', false, __( 'Send the new user an email about their account.', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'SENDREGEMAIL', __( 'Send user notification', 'uncanny-automator' ), true, 'checkbox', '', false, __( 'Send the new user an email about their account.', 'uncanny-automator' ) ),
 					[
 						'input_type'        => 'repeater',
 						'option_code'       => 'USERMETA_PAIRS',
 						/* translators: User Meta field */
-						'label'             => __( 'User Meta', 'uncanny-automator-pro' ),
-						'description'       => __( 'The user meta values keyed by their user meta key.', 'uncanny-automator-pro' ),
+						'label'             => __( 'User meta', 'uncanny-automator' ),
+						'description'       => __( 'The user meta values keyed by their user meta key.', 'uncanny-automator' ),
 						'required'          => false,
 						'fields'            => [
 							[
@@ -90,8 +90,8 @@ class WP_CREATEUSER {
 								'required'        => true,
 							],
 						],
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator-pro' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator-pro' ),
+						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
+						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
 					],
 				],
 			],
@@ -191,7 +191,7 @@ class WP_CREATEUSER {
 
 		if ( ! empty( $failed_meta_updates ) ) {
 			$failed_keys = "'" . implode( "','", array_keys( $failed_meta_updates ) ) . "'";
-			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id, sprintf( __( 'meta keys failed to update:  %1$s }', 'uncanny-automator' ), $failed_keys ) );
+			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id, sprintf( __( 'meta keys failed to update: %1$s', 'uncanny-automator' ), $failed_keys ) );
 		}
 
 		wp_new_user_notification( $user_id, NULL, 'both' );
