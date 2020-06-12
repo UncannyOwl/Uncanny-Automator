@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
-Tested up to: 5.4.1
+Tested up to: 5.4.2
 Requires PHP: 7.0
-Stable tag: 2.3
+Stable tag: 2.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,12 +30,13 @@ If you've used Zapier, setting things up will be intuitive. And if not, that's o
 
 The free version of Automator is incredibly powerful and comes with built-in support for all of these popular WordPress plugins:
 
-- [bbPress](https://automatorplugin.com/integration/badgeos/)
+- [BadgeOS](https://automatorplugin.com/integration/badgeos/)
 - [bbPress](https://automatorplugin.com/integration/bbpress/)
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/)
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/)
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/)
+- [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/)
 - [Forminator](https://automatorplugin.com/integration/forminator/)
 - [GamiPress](https://automatorplugin.com/integration/gamipress/)
@@ -48,6 +49,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/)
+- [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
@@ -143,6 +145,20 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.4 =
+* Added: New Integration - Tutor LMS
+* Added: New Integration - Fluent Forms
+* Added: Trigger: Tutor LMS - A user passes a quiz
+* Added: Trigger: Tutor LMS - A user fails a quiz
+* Added: Trigger: Tutor LMS - A user attempts a quiz
+* Added: Trigger: Tutor LMS - A user completes a course
+* Added: Trigger: Tutor LMS - A user completes a lesson
+* Added: Trigger: Fluent Forms - A user submits a form
+* Added: Action: WordPress Core - Create a user
+* Added: Settings page
+* Added: Transient cache on edit recipe page to temporarily cache frequent queries (edited)
+* Fixed: Trigger: Paid Memberships Pro - Membership expires now fires consistently
+
 = 2.3 =
 * Added: BadgeOS integration
 * Added: Action: BadgeOS - Award an achievement to the user
@@ -151,16 +167,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Added: Additional tokens for Woocommerce triggers
 * Added: Post ID is now displayed next to post title in dropdowns
 
-= 2.2 =
-* Added: Ultimate Member integration
-* Added: Trigger: Ultimate Member - A user registers with a form
-* Added: Trigger: Ultimate Member - A user logs in with a form
-* Added: Trigger: Ultimate Member - A user becomes inactive
-* Added: Trigger: Ultimate Member - A user's role changes to a specific role
-* Fixed: WP Forms - Trigger tokens not resolving correctly
-* Fixed: Forminator - Trigger tokens not resolving correctly
-* Fixed: GamiPress - Award points to user action now accepts tokens
-* Fixed: Magic Button - Action now fires correctly when multiple recipes are using a Magic Button trigger
-* Fixed: Edit recipe page no longer reloads if a 403 error is received on an AJAX call
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

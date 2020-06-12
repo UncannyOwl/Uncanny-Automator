@@ -79,7 +79,7 @@ class Add_Fr_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'Forminator',
-			'icon_svg'    => Utilities::get_integration_icon( 'integration-forminator-icon.svg' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'forminator-icon.svg' ),
 		) );
 	}
 }

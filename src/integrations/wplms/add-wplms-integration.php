@@ -79,7 +79,7 @@ class Add_WPLMS_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'WP LMS',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-wplms-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'wplms-icon.svg' ),
 		) );
 	}
 }

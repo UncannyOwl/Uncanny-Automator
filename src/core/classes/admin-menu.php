@@ -9,34 +9,79 @@ namespace Uncanny_Automator;
  */
 class Admin_Menu {
 
-	/*
-	 * Setting Page title
-	 */
 	/**
+	 * Setting Page title
 	 * @var
 	 */
 	public $settings_page_slug;
 
 	/**
+	 * @var array
+	 */
+	public static $tabs = [];
+
+	/**
 	 * class constructor
 	 */
-	function __construct() {
+	public function __construct() {
 
 		// Setup Theme Options Page Menu in Admin
 		if ( is_admin() ) {
+
+
+			add_action( 'admin_init', array( $this, 'plugins_loaded' ), 1 );
 			add_action( 'admin_menu', array( $this, 'register_options_menu_page' ) );
-			add_action( 'admin_menu', array( $this, 'override_pro_menu' ), 10 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ) );
 			// add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ), 2 );
-			add_action( 'admin_footer', [ $this, 'override_pro_filters' ] );
+			//add_action( 'admin_footer', [ $this, 'override_pro_filters' ] );
+			//add_action( 'admin_init', array( $this, 'uap_automator_register_option' ), 999 );
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function plugins_loaded() {
+		$tabs = [
+			'settings' => [
+				'name'        => __( 'Settings', 'uncanny_automator' ),
+				'title'       => __( 'Auto-prune activity logs', 'uncanny-automator' ),
+				'description' => __( 'Enter a number of days below to have trigger and action log entries older than the specified number of days automatically deleted from your site daily. Trigger and action log entries will only be deleted for recipes with "Completed" status.', 'uncanny-automator' ),
+				'is_pro'      => true,
+				'fields'      => [ /* see implementation in pro*/ ],
+			],
+		];
+
+		self::$tabs = apply_filters( 'uap_settings_tabs', $tabs );
+		if ( self::$tabs ) {
+			$tabs = json_decode( json_encode( self::$tabs ), false );
+			foreach ( $tabs as $tab => $tab_settings ) {
+				if ( $tab_settings->fields ) {
+					foreach ( $tab_settings->fields as $field_id => $field_settings ) {
+						$args = isset( $field_settings->field_args ) ? $field_settings->field_args : [];
+						if ( empty( $args ) ) {
+							register_setting( $tab_settings->settings_field, $field_id );
+						} else {
+							register_setting( $tab_settings->settings_field, $field_id, $args );
+						}
+					}
+				}
+			}
 		}
 	}
 
 	/**
 	 * TODO: Remove this function after pro 2.1.1 release
+	 * @deprecated v2.3
+	 *
 	 */
 	public function override_pro_filters() {
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+		    $pro_version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+			if ( $pro_version > 2.1 ) {
+				return;
+			}
+
 			$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( $_GET['post_type'] ) : 'uo-recipe';
 			$page      = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : 'uncanny-automator-recipe-log';
 
@@ -61,26 +106,15 @@ class Admin_Menu {
 			Utilities::enqueue_global_assets();
 			// Automator assets
 			wp_enqueue_style( 'uap-logs-free', Utilities::get_css( 'admin/logs.css' ), array(), Utilities::get_version() );
+
+			$custom_css = ".triggername{cursor: pointer;}.triggerdetail{display:none;}.triggername:hover+.triggerdetail{display:block;color:#00a0d2;}";
+			wp_add_inline_style( 'uap-logs-free', $custom_css );
 		}
-	}
 
-	/**
-	 * Override license menu in free so that its not broken in older pro plugin
-	 */
-	public function override_pro_menu() {
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
-			if ( class_exists( '\Uncanny_Automator_Pro\Boot' ) ) {
-				$boot = \Uncanny_Automator_Pro\Boot::get_instance();
-				remove_action( 'admin_menu', [ $boot, 'uap_automator_license_menu' ], 11 );
-			}
-
-			add_submenu_page( $this->settings_page_slug,
-				/* translators: 1. Trademarked term */
-				sprintf( __( '%1$s license activation', 'uncanny-automator' ), 'Uncanny Automator' ),
-				__( 'License activation', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-license-activation', array(
-				$boot,
-				'uap_automator_license_page'
-			) );
+		if ( 'uo-recipe_page_uncanny-automator-settings' === (string) $hook ) {
+			Utilities::enqueue_global_assets();
+			// Automator assets.
+			wp_enqueue_style( 'uap-admin-settings', Utilities::get_css( 'admin/performance.css' ), array(), Utilities::get_version() );
 		}
 	}
 
@@ -88,35 +122,35 @@ class Admin_Menu {
 	 * Create Plugin options menu
 	 */
 	public function register_options_menu_page() {
-
-		//$page_title = __( 'Uncanny Automator', 'uncanny-automator' );
-
-		//$capability = 'manage_options';
-
-		//$menu_title               = $page_title;
 		$parent_slug              = 'edit.php?post_type=uo-recipe';
 		$this->settings_page_slug = $parent_slug;
-		$function                 = array( $this, 'options_menu_page_output' );
-
-		//$icon_url = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDU4MSA2NDAiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDU4MSA2NDAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTUyNi40IDM0LjFjMC42IDUgMSAxMC4xIDEuMyAxNS4xIDAuNSAxMC4zIDEuMiAyMC42IDAuOCAzMC45LTAuNSAxMS41LTEgMjMtMi4xIDM0LjQtMi42IDI2LjctNy44IDUzLjMtMTYuNSA3OC43LTcuMyAyMS4zLTE3LjEgNDEuOC0yOS45IDYwLjQtMTIgMTcuNS0yNi44IDMzLTQzLjggNDUuOS0xNy4yIDEzLTM2LjcgMjMtNTcuMSAyOS45LTI1LjEgOC41LTUxLjUgMTIuNy03Ny45IDEzLjggNzAuMyAyNS4zIDEwNi45IDEwMi44IDgxLjYgMTczLjEtMTguOSA1Mi42LTY4LjEgODguMS0xMjQgODkuNWgtNi4xYy0xMS4xLTAuMi0yMi4xLTEuOC0zMi45LTQuNy0yOS40LTcuOS01NS45LTI2LjMtNzMuNy01MC45LTI5LjItNDAuMi0zNC4xLTkzLjEtMTIuNi0xMzgtMjUgMjUuMS00NC41IDU1LjMtNTkuMSA4Ny40LTguOCAxOS43LTE2LjEgNDAuMS0yMC44IDYxLjEtMS4yLTE0LjMtMS4yLTI4LjYtMC42LTQyLjkgMS4zLTI2LjYgNS4xLTUzLjIgMTIuMi03OC45IDUuOC0yMS4yIDEzLjktNDEuOCAyNC43LTYwLjlzMjQuNC0zNi42IDQwLjYtNTEuM2MxNy4zLTE1LjcgMzcuMy0yOC4xIDU5LjEtMzYuOCAyNC41LTkuOSA1MC42LTE1LjIgNzYuOC0xNy4yIDEzLjMtMS4xIDI2LjctMC44IDQwLjEtMi4zIDI0LjUtMi40IDQ4LjgtOC40IDcxLjMtMTguMyAyMS05LjIgNDAuNC0yMS44IDU3LjUtMzcuMiAxNi41LTE0LjkgMzAuOC0zMi4xIDQyLjgtNTAuOCAxMy0yMC4yIDIzLjQtNDIuMSAzMS42LTY0LjcgNy42LTIxLjEgMTMuNC00Mi45IDE2LjctNjUuM3ptLTI3OS40IDMyOS41Yy0xOC42IDEuOC0zNi4yIDguOC01MC45IDIwLjQtMTcuMSAxMy40LTI5LjggMzIuMi0zNi4yIDUyLjktNy40IDIzLjktNi44IDQ5LjUgMS43IDczIDcuMSAxOS42IDE5LjkgMzcuMiAzNi44IDQ5LjYgMTQuMSAxMC41IDMwLjkgMTYuOSA0OC40IDE4LjZzMzUuMi0xLjYgNTEtOS40YzEzLjUtNi43IDI1LjQtMTYuMyAzNC44LTI4LjEgMTAuNi0xMy40IDE3LjktMjkgMjEuNS00NS43IDQuOC0yMi40IDIuOC00NS43LTUuOC02Ni45LTguMS0yMC0yMi4yLTM3LjYtNDAuMy00OS4zLTE4LTExLjctMzkuNS0xNy02MS0xNS4xeiIgZmlsbD0iIzgyODc4QyIvPjxwYXRoIGQ9Im0yNDIuNiA0MDIuNmM2LjItMS4zIDEyLjYtMS44IDE4LjktMS41LTExLjQgMTEuNC0xMi4yIDI5LjctMS44IDQyIDExLjIgMTMuMyAzMS4xIDE1LjEgNDQuNCAzLjkgNS4zLTQuNCA4LjktMTAuNCAxMC41LTE3LjEgMTIuNCAxNi44IDE2LjYgMzkuNCAxMSA1OS41LTUgMTguNS0xOCAzNC42LTM1IDQzLjUtMzQuNSAxOC4yLTc3LjMgNS4xLTk1LjUtMjkuNS0xLTItMi00LTIuOS02LjEtOC4xLTE5LjYtNi41LTQzIDQuMi02MS4zIDEwLTE3IDI2LjgtMjkuMiA0Ni4yLTMzLjR6IiBmaWxsPSIjODI4NzhDIi8+PC9zdmc+';
-
-		//$position = 81; // 81 - Above Settings Menu
-
-		//add_menu_page( $page_title, $menu_title, $capability, $parent_slug, '', $icon_url, $position );
-
-		//add_submenu_page( $parent_slug, __( 'All Recipes', 'uncanny-automator' ), __( 'All Recipes', 'uncanny-automator' ), 'manage_options', $parent_slug );
-		//add_submenu_page( $parent_slug, __( 'New Recipe', 'uncanny-automator' ), __( 'New Recipe', 'uncanny-automator' ), 'manage_options', 'post-new.php?post_type=uo-recipe' );
-		//add_submenu_page( $parent_slug, __( 'Categories', 'uncanny-automator' ), __( 'Categories', 'uncanny-automator' ), 'manage_options', 'edit-tags.php?taxonomy=recipe_category&post_type=uo-recipe' );
-		//add_submenu_page( $parent_slug, __( 'Tags', 'uncanny-automator' ), __( 'Tags', 'uncanny-automator' ), 'manage_options', 'edit-tags.php?taxonomy=recipe_tag&post_type=uo-recipe' );
+		$function                 = array( $this, 'logs_options_menu_page_output' );
 		add_submenu_page( $parent_slug, __( 'Recipe log', 'uncanny-automator' ), __( 'Recipe log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
 		add_submenu_page( $parent_slug, __( 'Trigger log', 'uncanny-automator' ), __( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
 		add_submenu_page( $parent_slug, __( 'Action log', 'uncanny-automator' ), __( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
+
+		if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+			$pro_version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+			if ( $pro_version < 2.3 ) {
+				return;
+			}
+		}
+		/** Add settings page */
+		$page_title               = __( 'Uncanny Automator settings', 'uncanny-automator' );
+		$capability               = 'manage_options';
+		$menu_title               = __( 'Settings', 'uncanny-automator' );
+		$menu_slug                = 'uncanny-automator-settings';
+		$this->settings_page_slug = $menu_slug;
+		$function                 = array( $this, 'options_menu_settings_page_output' );
+
+		add_submenu_page( 'edit.php?post_type=uo-recipe', $page_title, $menu_title, $capability, $menu_slug, $function );
+
 	}
 
 	/**
 	 * Create Page view
 	 */
-	public function options_menu_page_output() {
+	public function logs_options_menu_page_output() {
 		$current_tab = 'recipe-log';
 		//isset( $_GET['page'] ) ? str_replace( 'uncanny-automator-', '', sanitize_text_field( $_GET['page'] ) ) : 'recipe-log';
 		$available_tabs = array(
@@ -164,7 +198,7 @@ class Admin_Menu {
 								/* translators: Log column. Noun. The recipe iteration */
 								'run_number'       => __( 'Run #', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'display_name'     => __( 'User', 'uncanny-automator' ), 
+								'display_name'     => __( 'User', 'uncanny-automator' ),
 							);
 
 							$sortables = array(
@@ -237,7 +271,7 @@ class Admin_Menu {
 								/* translators: Log column. */
 								'error_message'     => __( 'Notes', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_title'      => __( 'Recipe', 'uncanny-automator' ), 
+								'recipe_title'      => __( 'Recipe', 'uncanny-automator' ),
 								/* translators: Log column. */
 								'recipe_completed'  => __( 'Recipe status', 'uncanny-automator' ),
 								/* translators: Log column. */
@@ -285,4 +319,34 @@ class Admin_Menu {
 		<?php
 	}
 
+	/**
+	 *
+	 */
+	public function options_menu_settings_page_output() {
+		$this->settings_tabs();
+		include( Utilities::get_include( 'automator-settings.php' ) );
+	}
+
+	/**
+	 * @param string $current
+	 */
+	public function settings_tabs( $current = 'settings' ) {
+
+		//self::$tabs = apply_filters( 'uap_settings_tabs', self::$tabs );
+		$tabs = json_decode( json_encode( self::$tabs ), false );
+		if ( isset( $_GET['tab'] ) ) {
+			$current = esc_html( $_GET['tab'] );
+		}
+
+		if ( $tabs ) {
+			$html = '<h2 class="nav-tab-wrapper">';
+			foreach ( $tabs as $tab => $tab_settings ) {
+				$class = ( (string) $tab === (string) $current ) ? 'nav-tab-active' : '';
+				$url   = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings';
+				$html  .= '<a class="nav-tab ' . $class . '" href="' . $url . '&tab=' . $tab . '">' . $tab_settings->name . '</a>';
+			}
+			$html .= '</h2>';
+			echo $html;
+		}
+	}
 }

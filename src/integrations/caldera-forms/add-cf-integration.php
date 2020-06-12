@@ -78,7 +78,7 @@ class Add_Cf_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'Caldera Forms',
-			'icon_svg'    => Utilities::get_integration_icon( 'integration-calderaforms-icon.svg' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'caldera-forms-icon.svg' ),
 		) );
 	}
 }

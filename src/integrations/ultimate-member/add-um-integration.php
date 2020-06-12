@@ -77,7 +77,7 @@ class Add_Um_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'Ultimate Member',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-ultimate-member-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'ultimate-member-icon.svg' ),
 		) );
 	}
 }

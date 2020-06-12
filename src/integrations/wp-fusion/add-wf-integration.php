@@ -77,7 +77,7 @@ class Add_Wf_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'WP Fusion',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-wpfusion-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'wp-fusion-icon.svg' ),
 		) );
 	}
 }

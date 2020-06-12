@@ -48,7 +48,7 @@ class Recipe_Taxonomies {
 					'with_front' => false, // Don't display the category base before
 				),
 				'show_in_nav_menus' => false,
-			),
+			)
 		);
 
 		// Add recipe tag

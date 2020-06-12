@@ -79,7 +79,7 @@ class Add_Edd_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'Easy Digital Downloads',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-easydigitaldownloads-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'easy-digital-downloads-icon.svg' ),
 		) );
 	}
 }

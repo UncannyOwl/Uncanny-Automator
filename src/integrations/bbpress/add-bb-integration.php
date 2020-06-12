@@ -79,7 +79,7 @@ class Add_Bb_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'bbPress',
-			'icon_svg'    => Utilities::get_integration_icon( 'integration-bbpress-icon.svg' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'bbpress-icon.svg' ),
 		) );
 	}
 }

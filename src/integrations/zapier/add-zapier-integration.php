@@ -70,7 +70,7 @@ class Add_Zapier_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'Zapier',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-zapier-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'zapier-icon.svg' ),
 		) );
 	}
 }

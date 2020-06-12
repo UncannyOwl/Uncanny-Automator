@@ -78,12 +78,8 @@ class Add_Lp_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'LearnPress',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-learnpress-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-learnpress-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-learnpress-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-learnpress.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-learnpress@2x.png' ),
+			'name'      => 'LearnPress',
+			'icon_svg'  => Utilities::get_integration_icon( 'learnpress-icon.svg' ),
 		) );
 	}
 }

@@ -79,11 +79,7 @@ class Add_Gp_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'GamiPress',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-gamipress-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-gamipress-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-gamipress-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-gamipress.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-gamipress@2x.png' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'gamipress-icon.svg' ),
 		) );
 	}
 }

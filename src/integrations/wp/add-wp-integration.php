@@ -77,12 +77,12 @@ class Add_Wp_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'WordPress',
-			'icon_svg'    => Utilities::get_integration_icon( 'integration-wordpress-icon.svg' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'wordpress-icon.svg' ),
 		) );
 
 		$uncanny_automator->register->integration( 'UA', array(
 			'name'        => 'Uncanny Automator',
-			'icon_svg'    => Utilities::get_integration_icon( 'integration-uncanny-automator-icon.svg' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'uncanny-automator-icon.svg' ),
 		) );
 	}
 }

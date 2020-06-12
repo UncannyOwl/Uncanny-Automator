@@ -79,7 +79,7 @@ class Add_Lf_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'LifterLMS',
-			'icon_svg'    => Utilities::get_integration_icon( 'integration-lifterlms-icon.svg' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'lifterlms-icon.svg' ),
 			'logo_svg'    => Utilities::get_integration_icon( 'integration-lifterlms.svg' ),
 		) );
 	}

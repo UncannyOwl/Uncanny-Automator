@@ -79,7 +79,7 @@ class Add_H5P_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'H5P',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-h5p-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'h5p-icon.svg' ),
 		) );
 	}
 }

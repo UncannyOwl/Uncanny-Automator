@@ -62,8 +62,8 @@ class Paid_Memberships_Pro_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Membership title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Membership ID', 'uncanny-automator' ),
+				$option_code         => __( 'Membership title', 'uncanny-automator' ),
+				$option_code . '_ID' => __( 'Membership ID', 'uncanny-automator' ),
 				//$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
 			],
 		];

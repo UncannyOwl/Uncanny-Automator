@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.3
+ * Version:             2.4
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -23,21 +23,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
 	define( 'AUTOMATOR_BASE_FILE', __FILE__ );
-	//fallback for older pro version. TODO remove below line after couple releases
-}
-
-//fallback for older pro version. TODO remove below line after couple releases
-if ( ! defined( 'UAP_AUTOMATOR_FILE_' ) ) {
-	define( 'UAP_AUTOMATOR_FILE_', __FILE__ );
 }
 
 if ( ! defined( 'AUTOMATOR_REST_API_END_POINT' ) ) {
-	define( 'AUTOMATOR_REST_API_END_POINT', 'uap/v2/' );
-}
-
-//fallback for older pro version. TODO remove below line after couple releases
-if ( ! defined( 'REST_API_END_POINT' ) ) {
-	define( 'REST_API_END_POINT', 'uap/v2/' );
+	define( 'AUTOMATOR_REST_API_END_POINT', 'automator/v2' );
 }
 
 if ( ! defined( 'AUTOMATOR_CONFIGURATION_PRIORITY' ) ) {
@@ -98,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.3';
+	const PLUGIN_VERSION = '2.4';
 
 	/**
 	 * The database version number
@@ -157,17 +146,25 @@ class InitializePlugin {
 	 */
 	private function __construct() {
 
-		// Load text domain
-		add_action( 'plugins_loaded', array( $this, 'automator_load_textdomain' ) );
+		if ( isset( $_REQUEST['action'] ) && 'heartbeat' === sanitize_text_field( $_REQUEST['action'] ) ) {
+			//Ignore
+			return;
+		} elseif ( isset( $_REQUEST['wc-ajax'] ) ) {
+			//Ignore
+			return;
+		} else {
+			// Load text domain
+			add_action( 'plugins_loaded', array( $this, 'automator_load_textdomain' ) );
 
-		// Load Utilities
-		$this->initialize_utilities();
+			// Load Utilities
+			$this->initialize_utilities();
 
-		// Load Configuration
-		$this->initialize_config();
+			// Load Configuration
+			$this->initialize_config();
 
-		// Load the plugin files
-		$this->boot_plugin();
+			// Load the plugin files
+			$this->boot_plugin();
+		}
 	}
 
 

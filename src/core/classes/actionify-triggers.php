@@ -12,49 +12,38 @@ class Actionify_Triggers {
 	 * Constructor
 	 */
 	public function __construct() {
-		//$ajax_prevent = get_option( 'uap_automator_ajax_prevent', 1 );
-		//Always enabled
-		$ajax_prevent = 1;
-		if ( 1 === absint( $ajax_prevent ) ) {
-			///New Method to prevent ajax etc, unnecessary calls
-			if ( isset( $_REQUEST['doing_rest'] ) ) {
+
+		$run_automator_actions = true;
+		$cron_actions_to_match = apply_filters( 'uap_cron_action_exception', [] );
+
+		if ( isset( $_REQUEST['doing_rest'] ) ) {
+			//Ignore
+			$run_automator_actions = false;
+		} elseif ( isset( $_REQUEST['action'] ) && 'heartbeat' === sanitize_text_field( $_REQUEST['action'] ) ) {
+			//Ignore
+			$run_automator_actions = false;
+		} elseif ( isset( $_REQUEST['wc-ajax'] ) ) {
+			//Ignore
+			$run_automator_actions = false;
+		} elseif ( 'admin-ajax.php' === basename( $_SERVER['REQUEST_URI'] ) && ! isset( $_REQUEST['action'] ) ) {
+			//Ignore
+			$run_automator_actions = false;
+		} elseif ( isset( $_REQUEST['action'] ) && 'run-cron' === sanitize_text_field( $_REQUEST['action'] ) ) {
+			if ( ( isset( $_REQUEST['id'] ) && ! in_array( $_REQUEST['id'], $cron_actions_to_match ) ) ) {
 				//Ignore
-				return;
-			} elseif ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] ) {
-				//Ignore
-				return;
-			} elseif ( isset( $_REQUEST['wc-ajax'] ) ) {
-				//Ignore
-				return;
-			} elseif ( isset( $_REQUEST['doing_wp_cron'] ) ) {
-				//Ignore
-				return;
-			} elseif ( 'admin-ajax.php' === basename( $_SERVER['REQUEST_URI'] ) && ! isset( $_REQUEST['action'] ) ) {
-				//Ignore
-				return;
-			} else {
-				add_action( 'plugins_loaded', array(
-					$this,
-					'actionify_triggers'
-				), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
+				$run_automator_actions = false;
 			}
-		} else {
-			//Old  Method
-			if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+		} elseif ( isset( $_REQUEST['control_name'] ) ) {
+			if ( ! in_array( $_REQUEST['control_name'], $cron_actions_to_match ) ) {
 				//Ignore
-				return;
-			} elseif ( isset( $_REQUEST['doing_rest'] ) ) {
-				//Ignore
-				return;
-			} elseif ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] ) {
-				//Ignore
-				return;
-			} else {
-				add_action( 'plugins_loaded', array(
-					$this,
-					'actionify_triggers'
-				), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
+				$run_automator_actions = false;
 			}
+		}
+
+		$run_automator_actions = apply_filters( 'uap_run_automator_actions', $run_automator_actions, $_REQUEST );
+
+		if ( $run_automator_actions ) {
+			add_action( 'plugins_loaded', array( $this, 'actionify_triggers' ), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
 		}
 	}
 

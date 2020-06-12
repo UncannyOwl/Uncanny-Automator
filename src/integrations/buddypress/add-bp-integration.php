@@ -79,7 +79,7 @@ class Add_Bp_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'BuddyPress',
-			'icon_svg'    => Utilities::get_integration_icon( 'integration-buddypress-icon.svg' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'buddypress-icon.svg' ),
 		) );
 	}
 }

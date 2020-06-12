@@ -79,7 +79,7 @@ class Add_Bo_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'BadgeOS',
-			'icon_svg'     => Utilities::get_integration_icon( 'integration-badgeos-icon.svg' ),
+			'icon_svg'     => Utilities::get_integration_icon( 'badgeos-icon.svg' ),
 		) );
 	}
 }

@@ -83,12 +83,8 @@ class Add_Popup_Maker_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'Popup Maker',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-popupmaker-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-popupmaker-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-popupmaker-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-popupmaker.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-popupmaker@2x.png' ),
+			'name'     => 'Popup Maker',
+			'icon_svg' => Utilities::get_integration_icon( 'popup-maker-icon.svg' ),
 		) );
 	}
 

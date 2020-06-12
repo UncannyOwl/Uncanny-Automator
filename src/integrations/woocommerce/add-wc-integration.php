@@ -79,7 +79,7 @@ class Add_Wc_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'WooCommerce',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-woocommerce-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'woocommerce-icon.svg' ),
 		) );
 	}
 }

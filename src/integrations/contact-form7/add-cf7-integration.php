@@ -78,7 +78,7 @@ class Add_Cf7_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'Contact Form 7',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-contactform7-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'contact-form-7-icon.svg' ),
 		) );
 	}
 }

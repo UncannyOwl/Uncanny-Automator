@@ -79,11 +79,7 @@ class Add_Fi_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'Formidable',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-formidableforms-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-formidableforms-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-formidableforms-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-formidableforms.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-formidableforms@2x.png' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'formidable-forms-icon.svg' ),
 		) );
 	}
 }

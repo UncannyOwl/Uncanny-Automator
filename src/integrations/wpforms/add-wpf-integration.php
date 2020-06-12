@@ -80,7 +80,7 @@ class Add_Wpf_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'WP Forms',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-wpforms-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'wpforms-icon.svg' ),
 		) );
 	}
 }

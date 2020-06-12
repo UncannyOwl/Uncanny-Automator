@@ -113,7 +113,7 @@ class Boot {
 			if ( ! empty( $check_closure ) ) {
 				$user_id   = wp_get_current_user()->ID;
 				$api_setup = [
-					'root'              => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT . 'uoa_redirect/' ),
+					'root'              => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT . '/uoa_redirect/' ),
 					'nonce'             => \wp_create_nonce( 'wp_rest' ),
 					'user_id'           => $user_id,
 					'client_secret_key' => md5( 'l6fsX3vAAiJbSXticLBd' . $user_id ),

@@ -281,7 +281,6 @@ class Logs_List_Table extends \WP_List_Table {
                         ON t.automator_recipe_log_id = r.ID
                         WHERE ({$search_conditions}) ";
 
-
 		return $query;
 	}
 
@@ -320,7 +319,7 @@ class Logs_List_Table extends \WP_List_Table {
 			JOIN {$wpdb->posts} pa
 			ON pa.ID = a.automator_action_id
 			LEFT JOIN {$wpdb->prefix}uap_action_log_meta am
-			ON am.automator_action_log_id = a.ID AND am.meta_key = 'complete_action_sentence'
+			ON am.automator_action_id = a.automator_action_id  AND am.meta_key = 'complete_action_sentence'
 			LEFT JOIN {$wpdb->users} u
 			ON a.user_id = u.ID
 			WHERE ({$search_conditions})";
@@ -475,9 +474,8 @@ class Logs_List_Table extends \WP_List_Table {
 					if( empty( $trigger_sentence )){
 						$trigger_name = $trigger_title;
 					}else{
-						$trigger_name = '<span style="cursor: help;color: #0073aa;" title="' . $trigger_sentence . '">' . $trigger_title . '</span>';
+						$trigger_name = '<div class="triggername">' . $trigger_title . '</div><div class="triggerdetail">' . $trigger_sentence . '</div>';
 					}
-					$trigger_name = $trigger_title;
 				}
 			}
 
@@ -523,7 +521,6 @@ class Logs_List_Table extends \WP_List_Table {
 			}
 			$action_code           = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
 			/* translators: 1. Action ID */
-
 			$action_name = sprintf( __( 'Action deleted: %1$s', 'uncanny-automator' ), $action->automator_action_id );
 
 			if ( $action_code ) {
@@ -538,7 +535,7 @@ class Logs_List_Table extends \WP_List_Table {
 					if( empty( $action_sentence )){
 						$action_name = $action_title;
 					}else{
-						$action_name = '<span style="cursor: help;color: #0073aa;" title="' . $action_sentence . '">' . $action_title . '</span>';
+						$action_name = '<div class="triggername">' . $action_title . '</div><div class="triggerdetail">' . $action_sentence . '</div>';
 					}
 				}
 			}

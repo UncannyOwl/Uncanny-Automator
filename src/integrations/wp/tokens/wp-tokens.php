@@ -6,7 +6,7 @@ namespace Uncanny_Automator;
  * Class WP_Anon_Tokens
  * @package Uncanny_Automator_Pro
  */
-class WP_Tokens {
+class Wp_Tokens {
 	
 	
 	/**

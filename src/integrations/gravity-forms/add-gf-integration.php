@@ -79,7 +79,7 @@ class Add_Gf_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'Gravity Forms',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-gravityforms-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'gravity-forms-icon.svg' ),
 		) );
 	}
 }

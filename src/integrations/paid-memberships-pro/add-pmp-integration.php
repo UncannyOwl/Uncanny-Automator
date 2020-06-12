@@ -77,7 +77,7 @@ class Add_Pmp_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'Paid Memberships Pro',
-			'icon_svg' => Utilities::get_integration_icon( 'integration-paid-memberships-pro-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'paid-memberships-pro-icon.svg' ),
 		) );
 	}
 }
