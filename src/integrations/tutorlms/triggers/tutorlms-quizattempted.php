@@ -52,9 +52,9 @@ class TUTORLMS_QUIZATTEMPTED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - TutorLMS */
-			'sentence'            => sprintf( __( 'A user attempts {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( __( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - TutorLMS */
-			'select_option_name'  => __( 'A user attempts {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  => __( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'tutor_quiz/attempt_ended',
 			'priority'            => 10,
 			'accepted_args'       => 1,

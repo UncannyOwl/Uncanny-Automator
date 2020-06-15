@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.4
+ * Version:             2.4.1
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -26,7 +26,7 @@ if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
 }
 
 if ( ! defined( 'AUTOMATOR_REST_API_END_POINT' ) ) {
-	define( 'AUTOMATOR_REST_API_END_POINT', 'automator/v2' );
+	define( 'AUTOMATOR_REST_API_END_POINT', 'uap/v2' );
 }
 
 if ( ! defined( 'AUTOMATOR_CONFIGURATION_PRIORITY' ) ) {
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.4';
+	const PLUGIN_VERSION = '2.4.1';
 
 	/**
 	 * The database version number

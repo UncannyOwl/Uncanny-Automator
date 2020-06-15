@@ -39,9 +39,9 @@ class LF_QUIZATTEMPTED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LifterLMS */
-			'sentence'            => sprintf( __( 'A user attempts {{a/any quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( __( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LifterLMS */
-			'select_option_name'  => __( 'A user attempts {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  => __( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'lifterlms_quiz_completed',
 			'priority'            => 20,
 			'accepted_args'       => 3,
