@@ -322,7 +322,8 @@ class Logs_List_Table extends \WP_List_Table {
 			ON am.automator_action_id = a.automator_action_id  AND am.meta_key = 'complete_action_sentence'
 			LEFT JOIN {$wpdb->users} u
 			ON a.user_id = u.ID
-			WHERE ({$search_conditions})";
+			WHERE ({$search_conditions})
+			GROUP BY a.ID";
 
 		return $query;
 	}

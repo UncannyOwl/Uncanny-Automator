@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.2
 Requires PHP: 7.0
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -145,6 +145,11 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.4.2 =
+* Fixed: Ultimate Member - Tokens for select, multi select, checkbox and radio fields now pass values properly
+* Fixed: Trigger/Action values that are very large integers now handled correctly
+* Fixed: Action log showing duplicate entries for some recipes
+
 = 2.4.1 =
 * Updated: Strings tweaked for improved consistency
 * Fixed: REST API route for incoming webhook triggers
@@ -162,14 +167,6 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Added: Settings page
 * Added: Transient cache on edit recipe page to temporarily cache frequent queries (edited)
 * Fixed: Trigger: Paid Memberships Pro - Membership expires now fires consistently
-
-= 2.3 =
-* Added: BadgeOS integration
-* Added: Action: BadgeOS - Award an achievement to the user
-* Added: Action: BadgeOS - Award a rank to the user
-* Added: Action: BadgeOS - Award a number of a certain type of points to the user
-* Added: Additional tokens for Woocommerce triggers
-* Added: Post ID is now displayed next to post title in dropdowns
 
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

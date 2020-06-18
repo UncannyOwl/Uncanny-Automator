@@ -37,7 +37,7 @@ class Tutorlms_Helpers {
 	 *
 	 * @since 2.4.0
 	 */
-	public function all_tutorlms_lessons( $label = null, $option_code = 'TUTORLMSLESSON', $any_option = true ) {
+	public function all_tutorlms_lessons( $label = null, $option_code = 'TUTORLMSLESSON', $any_option = false ) {
 
 		if ( ! $label ) {
 			$label = __( 'Lesson', 'uncanny-automator' );
@@ -81,7 +81,7 @@ class Tutorlms_Helpers {
 	 *
 	 * @since 2.4.0
 	 */
-	public function all_tutorlms_courses( $label = null, $option_code = 'TUTORLMSCOURSE', $any_option = true ) {
+	public function all_tutorlms_courses( $label = null, $option_code = 'TUTORLMSCOURSE', $any_option = false ) {
 
 		if ( ! $label ) {
 			$label = __( 'Course', 'uncanny-automator' );
@@ -125,7 +125,7 @@ class Tutorlms_Helpers {
 	 *
 	 * @since 2.4.0
 	 */
-	public function all_tutorlms_quizzes( $label = null, $option_code = 'TUTORLMSQUIZ', $any_option = true ) {
+	public function all_tutorlms_quizzes( $label = null, $option_code = 'TUTORLMSQUIZ', $any_option = false ) {
 
 		if ( ! $label ) {
 			$label = __( 'Quiz', 'uncanny-automator' );

@@ -14,7 +14,10 @@ class Wp_Tokens {
 	 * @var string
 	 */
 	public static $integration = 'WP';
-	
+
+	/**
+	 * Wp_Tokens constructor.
+	 */
 	public function __construct() {
 		
 		add_filter( 'automator_maybe_trigger_wp_wppostcomments_tokens', [ $this, 'wp_possible_tokens' ], 20, 2 );
@@ -74,6 +77,9 @@ class Wp_Tokens {
 	 * @param $pieces
 	 * @param $recipe_id
 	 * @param $trigger_data
+	 *
+	 * @param int $user_id
+	 * @param $replace_args
 	 *
 	 * @return mixed
 	 */

@@ -39,7 +39,6 @@ class Um_Tokens {
 		$trigger_meta = $args['meta'];
 		if ( function_exists( 'UM' ) ) {
 			$um_fields = UM()->query()->get_attr( 'custom_fields', $form_id );
-
 			if ( $um_fields ) {
 				$fields = [];
 				foreach ( $um_fields as $field ) {
@@ -116,9 +115,29 @@ class Um_Tokens {
 							$form_id    = $token_info[0];
 							$meta_key   = $token_info[1];
 							$match      = "{$meta_key}-{$form_id}";
-
 							if ( isset( $_POST[ $match ] ) ) {
 								$value = sanitize_text_field( $_POST[ $match ] );
+							} else {
+								if ( isset( $_POST[ $meta_key ] ) && ! is_array( $_POST[ $meta_key ] ) ) {
+									$value = sanitize_text_field( $_POST[ $meta_key ] );
+								} elseif ( isset( $_POST[ $meta_key ] ) && is_array( $_POST[ $meta_key ] ) ) {
+									$value = sanitize_text_field( join( ', ', $_POST[ $meta_key ] ) );
+								} elseif ( isset( $_POST["{$meta_key}_select"] ) ) {
+									if ( is_array( $_POST["{$meta_key}_select"] ) ) {
+										$value = sanitize_text_field( join( ', ', $_POST["{$meta_key}_select"] ) );
+									} else {
+										$value = sanitize_text_field( $_POST["{$meta_key}_select"] );
+									}
+								} else {
+									$m_k = str_replace( '_select', '', $meta_key );
+									if ( isset( $_POST[ $m_k ] ) ) {
+										if ( is_array( $_POST[ $m_k ] ) ) {
+											$value = sanitize_text_field( join( ', ', $_POST[ $m_k ] ) );
+										} else {
+											$value = sanitize_text_field( $_POST[ $m_k ] );
+										}
+									}
+								}
 							}
 						}
 					}

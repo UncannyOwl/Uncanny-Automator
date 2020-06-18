@@ -61,7 +61,7 @@ class TUTORLMS_LESSONCOMPLETED {
 			'validation_function' => array( $this, 'complete' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => [
-				$uncanny_automator->helpers->recipe->tutorlms->options->all_tutorlms_lessons( null, $this->trigger_meta ),
+				$uncanny_automator->helpers->recipe->tutorlms->options->all_tutorlms_lessons( null, $this->trigger_meta, true ),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);

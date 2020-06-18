@@ -61,7 +61,7 @@ class WP_CREATEUSER {
 					
 					$uncanny_automator->helpers->recipe->field->text_field( 'WEBSITE', __( 'Website', 'uncanny-automator' ), true, 'text', '', false, '' ),
 					
-					$uncanny_automator->helpers->recipe->field->text_field( 'PASSWORD', __( 'Password', 'uncanny-automator' ), true, 'text', '', false, __( 'Leave blank to get password will get automatically generated.', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'PASSWORD', __( 'Password', 'uncanny-automator' ), true, 'text', '', false, __( 'Leave blank to automatically generate a password', 'uncanny-automator' ) ),
 					
 					$uncanny_automator->helpers->recipe->wp->options->wp_user_roles(),
 					

@@ -412,152 +412,185 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public function wp_query( $args, $add_any_option = false, $add_any_option_label = null, $is_all_label = false ) {
 
+		// set up a default label.
 		if ( is_null( $add_any_option_label ) ) {
 			$add_any_option_label = __( 'Any page', 'uncanny-automator' );
 		}
 
+		// bail, if we aren't supposed to do this at all.
 		if ( ! $this->load_helpers ) {
 			return [];
 		}
 
+		// bail if no arguments are supplied.
 		if ( empty( $args ) ) {
 			return [];
 		}
 
+		// prepare transient key.
+		$transient_key = "uap_transient";
+
+		// suffix post type is needed.
 		if ( isset( $args['post_type'] ) ) {
-			$transient = "uap_transient_{$args['post_type']}";
-		} else {
-			$transient = "uap_transient";
+			$transient_key .= "_{$args['post_type']}";
 		}
-		$get_transient = get_transient( $transient );
-		if ( $get_transient ) {
-			$options = $get_transient;
-		} else {
-			$posts = get_posts( $args );
 
-			$options = [];
-			if ( $add_any_option ) {
-				//switch statement is for pre-v2.1.4
-				//default statement is v2.1.4+ in which
-				//__() is passed to $add_any_option_label
-				switch ( $add_any_option_label ) {
-					case 'page':
-					case 'pages':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All pages', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any page', 'uncanny-automator' );
-						}
-						break;
-					case 'post':
-					case 'posts':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All posts', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any post', 'uncanny-automator' );
-						}
-						break;
-					case 'course':
-					case 'courses':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All courses', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any course', 'uncanny-automator' );
-						}
-						break;
-					case 'lesson':
-					case 'lessons':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All lessons', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any lesson', 'uncanny-automator' );
-						}
-						break;
-					case 'topic':
-					case 'topics':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All topics', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any topic', 'uncanny-automator' );
-						}
-						break;
-					case 'quiz':
-					case 'quizzes':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All quizzes', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any quiz', 'uncanny-automator' );
-						}
-						break;
-					case 'membership':
-					case 'memberships':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All memberships', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any membership', 'uncanny-automator' );
-						}
-						break;
-					case 'download':
-					case 'downloads':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All downloads', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any download', 'uncanny-automator' );
-						}
-						break;
-					case 'unit':
-					case 'units':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All units', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any unit', 'uncanny-automator' );
-						}
-						break;
-					case 'popup':
-					case 'popups':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All popups', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any popup', 'uncanny-automator' );
-						}
-						break;
-					case 'award':
-					case 'awards':
-						if ( $is_all_label ) {
-							$options['-1'] = __( 'All awards', 'uncanny-automator' );
-						} else {
-							$options['-1'] = __( 'Any award', 'uncanny-automator' );
-						}
-						break;
-					default:
-						//fallback, assuming __() string is passed
-						$options['-1'] = $add_any_option_label;
-						break;
-				}
-			}
+		// attempt fetching options from transient.
+		$options = get_transient( $transient_key );
 
+		// if the transient is empty, generate options afresh.
+		if ( empty( $options ) ) {
+
+			// fetch all the posts.
+			$posts   = get_posts( $args );
+
+			// type set to array.
+			$options = array();
+
+			// if posts were found.
 			if ( $posts ) {
+
+				// loop through each post to set up individual options.
 				foreach ( $posts as $post ) {
 					$title = $post->post_title;
 
+					// set up a descriptive title for posts with no title.
 					if ( empty( $title ) ) {
 						$title = sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
 					}
 
+					// add post as an option.
 					$options[ $post->ID ] = $title;
 				}
 
-				/**
-				 * Hold data in transient for X mins
-				 * so that edit recipe page speeds up.
-				 *
-				 * @version 2.4
-				 * @author Saad
-				 *
-				 */
-				set_transient( $transient, $options, 5 * MINUTE_IN_SECONDS );
-
+				// save fetched posts in a transient for 5 minutes for performance gains.
+				set_transient( $transient_key, $options, 5 * MINUTE_IN_SECONDS );
 			}
+		}
+
+		// do we need to add an any/all posts option
+		if ( $add_any_option ) {
+
+			// get extra option.
+			$any_option = $this->maybe_add_any_option( $add_any_option_label, $is_all_label );
+			$options = $any_option + $options;
+		}
+
+		return $options;
+	}
+
+	/**
+	 * switch statement is for pre-v2.1.4
+	 * default statement is v2.1.4+ in which
+	 * __() is passed to $add_any_option_label
+	 *
+	 * @param $add_any_option_label
+	 * @param $is_all_label
+	 *
+	 * @return mixed
+	 */
+	public function maybe_add_any_option( $add_any_option_label, $is_all_label ) {
+		switch ( $add_any_option_label ) {
+			case 'page':
+			case 'pages':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All pages', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any page', 'uncanny-automator' );
+				}
+				break;
+			case 'post':
+			case 'posts':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All posts', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any post', 'uncanny-automator' );
+				}
+				break;
+			case 'course':
+			case 'courses':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All courses', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any course', 'uncanny-automator' );
+				}
+				break;
+			case 'lesson':
+			case 'lessons':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All lessons', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any lesson', 'uncanny-automator' );
+				}
+				break;
+			case 'topic':
+			case 'topics':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All topics', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any topic', 'uncanny-automator' );
+				}
+				break;
+			case 'quiz':
+			case 'quizzes':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All quizzes', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any quiz', 'uncanny-automator' );
+				}
+				break;
+			case 'membership':
+			case 'memberships':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All memberships', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any membership', 'uncanny-automator' );
+				}
+				break;
+			case 'download':
+			case 'downloads':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All downloads', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any download', 'uncanny-automator' );
+				}
+				break;
+			case 'unit':
+			case 'units':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All units', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any unit', 'uncanny-automator' );
+				}
+				break;
+			case 'popup':
+			case 'popups':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All popups', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any popup', 'uncanny-automator' );
+				}
+				break;
+			case 'product':
+			case 'products':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All products', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any product', 'uncanny-automator' );
+				}
+				break;
+			case 'award':
+			case 'awards':
+				if ( $is_all_label ) {
+					$options['-1'] = __( 'All awards', 'uncanny-automator' );
+				} else {
+					$options['-1'] = __( 'Any award', 'uncanny-automator' );
+				}
+				break;
+			default:
+				//fallback, assuming __() string is passed
+				$options['-1'] = $add_any_option_label;
+				break;
 		}
 
 		return $options;
@@ -582,13 +615,13 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			return '';
 		}
 		global $wpdb;
-		$qry        = $wpdb->prepare( "SELECT meta_value 
-														FROM {$wpdb->prefix}uap_trigger_log_meta 
+		$qry        = $wpdb->prepare( "SELECT meta_value
+														FROM {$wpdb->prefix}uap_trigger_log_meta
 														WHERE 1 = 1
-														AND user_id = %d 
-														AND meta_key = %s 
-														AND automator_trigger_id = %d 
-														AND automator_trigger_log_id = %d 
+														AND user_id = %d
+														AND meta_key = %s
+														AND automator_trigger_id = %d
+														AND automator_trigger_log_id = %d
 														LIMIT 0,1", $user_id, $meta_key, $trigger_id, $trigger_log_id );
 		$meta_value = $wpdb->get_var( $qry );
 		if ( ! empty( $meta_value ) ) {

@@ -54,7 +54,7 @@ class Woocommerce_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any product', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,

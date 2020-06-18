@@ -135,8 +135,8 @@ class Admin_Menu {
 				return;
 			}
 		}
-		/** Add settings page */
-		$page_title               = __( 'Uncanny Automator settings', 'uncanny-automator' );
+		/* translators: 1. Trademarked term */
+		$page_title               = sprintf( __( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' );
 		$capability               = 'manage_options';
 		$menu_title               = __( 'Settings', 'uncanny-automator' );
 		$menu_slug                = 'uncanny-automator-settings';
