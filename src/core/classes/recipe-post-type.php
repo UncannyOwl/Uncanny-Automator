@@ -733,6 +733,17 @@ class Recipe_Post_Type {
 			$meta_key   = (string) $uncanny_automator->uap_sanitize( $_POST['optionCode'] );
 			$meta_value = $uncanny_automator->uap_sanitize( $_POST['optionValue'], 'mixed' );
 
+
+			/*
+			 * Save human readable sentence that will be stored as trigger and action meta.
+			 * Once a trigger is completed, the human readable post meta value will be saved as trigger or action log
+			 * meta fr the user to have more detail about it in the logs.
+			 */
+			if(isset($_POST['sentence_human_readable'])){
+				$human_readable = $_POST['sentence_human_readable'];
+				update_post_meta( $item_id, 'sentence_human_readable', $human_readable );
+			}
+
 			// Make sure the parent post exists
 			$item = get_post( $item_id );
 
@@ -877,6 +888,17 @@ class Recipe_Post_Type {
 			$post_ID     = absint( $_POST['post_ID'] );
 
 			if ( in_array( $post_status, $status_types ) && $post_ID ) {
+
+
+				/*
+				 * Save human readable sentence that will be stored as trigger and action meta.
+				 * Once a trigger is completed, the human readable post meta value will be saved as trigger or action log
+				 * meta fr the user to have more detail about it in the logs.
+				 */
+				if(isset($_POST['sentence_human_readable'])){
+					$human_readable = $_POST['sentence_human_readable'];
+					update_post_meta( $post_ID, 'sentence_human_readable', $human_readable );
+				}
 
 				$post = array(
 					'ID'          => $post_ID,

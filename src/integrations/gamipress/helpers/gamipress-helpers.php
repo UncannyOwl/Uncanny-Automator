@@ -51,7 +51,15 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_award_types( $label = null, $option_code = 'GPAWARDTYPES', $args = [] ) {
-
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
+		}
 		if ( ! $label ) {
 			$label = __( 'Achievement type', 'uncanny-automator' );
 		}
@@ -108,7 +116,15 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_points_types( $label = null, $option_code = 'GPPOINTSTYPES', $args = [] ) {
-
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
+		}
 		if ( ! $label ) {
 			$label = __( 'Point type', 'uncanny-automator' );
 		}
@@ -165,7 +181,15 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_rank_types( $label = null, $option_code = 'GPRANKTYPES', $args = [] ) {
-
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
+		}
 		if ( ! $label ) {
 			$label = __( 'Rank type', 'uncanny-automator' );
 		}

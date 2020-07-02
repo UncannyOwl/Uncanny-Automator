@@ -125,6 +125,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $badgeos;
 	/**
+	 * @var Mycred_Helpers
+	 */
+	public $mycred;
+	/**
 	 * @var Automator_Helpers_Recipe
 	 */
 	public $options;
@@ -442,7 +446,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		if ( empty( $options ) ) {
 
 			// fetch all the posts.
-			$posts   = get_posts( $args );
+			$posts = get_posts( $args );
 
 			// type set to array.
 			$options = array();
@@ -473,7 +477,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 			// get extra option.
 			$any_option = $this->maybe_add_any_option( $add_any_option_label, $is_all_label );
-			$options = $any_option + $options;
+			$options    = $any_option + $options;
 		}
 
 		return $options;

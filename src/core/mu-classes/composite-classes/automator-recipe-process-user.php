@@ -187,7 +187,11 @@ class Automator_Recipe_Process_User {
 	public function maybe_create_recipe_log_entry( $recipe_id, $user_id, $create_recipe = true, $args = [], $maybe_simulate = false, $maybe_add_log_id = null ) {
 		global $wpdb;
 
-		$recipe_log_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}uap_recipe_log WHERE completed != %d  AND automator_recipe_id = %d AND user_id = %d", 1, $recipe_id, $user_id ) );
+		$recipe_log_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID 
+															FROM {$wpdb->prefix}uap_recipe_log 
+															WHERE completed NOT IN(1,2,9) 
+															AND automator_recipe_id = %d 
+															AND user_id = %d", $recipe_id, $user_id ) );
 		if ( $recipe_log_id && 0 !== absint( $user_id ) ) {
 			return [ 'existing' => true, 'recipe_log_id' => $recipe_log_id, ];
 		} elseif ( true === $maybe_simulate ) {
@@ -501,7 +505,14 @@ class Automator_Recipe_Process_User {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'uap_recipe_log';
 
-		$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(completed) FROM $table_name WHERE user_id = %d AND automator_recipe_id = %d", $user_id, $recipe_id ) );
+		$results = $wpdb->get_var( $wpdb->prepare(
+			"SELECT 
+				COUNT(completed) 
+				FROM $table_name 
+				WHERE 1=1
+				AND completed = 1
+				AND user_id = %d 
+				AND automator_recipe_id = %d", $user_id, $recipe_id ) );
 		if ( 0 !== absint( $user_id ) ) {
 			$num_times_recipe_run = $uncanny_automator->utilities->recipe_number_times_completed( $recipe_id, $results );
 		} else {
@@ -626,24 +637,17 @@ class Automator_Recipe_Process_User {
 	 * @param $trigger_id    null||int
 	 * @param $recipe_id     null||int
 	 * @param $recipe_log_id null||int
-	 *
 	 * @param array $args
+	 * @param bool $process_recipe
 	 *
 	 * @return null|bool
 	 */
-	public function is_trigger_completed( $user_id = null, $trigger_id = null, $recipe_id = null, $recipe_log_id = null, $args = [] ) {
+	public function is_trigger_completed( $user_id = null, $trigger_id = null, $recipe_id = null, $recipe_log_id = null, $args = [], $process_recipe = false ) {
 
 		// Set user ID
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
-
-		// No user id is available.
-		/*if ( 0 === $user_id ) {
-			Utilities::log( 'ERROR: You are trying to check if a trigger is completed when a there is no logged in user.', 'is_trigger_completed ERROR', false, 'uap-errors' );
-
-			return false;
-		}*/
 
 		if ( null === $trigger_id || ! is_numeric( $trigger_id ) ) {
 			Utilities::log( 'ERROR: You are trying to check if a trigger is completed without providing a trigger_id', 'is_trigger_completed ERROR', false, 'uap-errors' );
@@ -658,9 +662,37 @@ class Automator_Recipe_Process_User {
 		}
 
 		global $wpdb;
+		/**
+		 * Allow user to trigger again if recipe failed previously
+		 *
+		 * @author Saad
+		 * @version 2.5
+		 *
+		 */
+
 		$table_name = $wpdb->prefix . 'uap_trigger_log';
-		$q          = "SELECT completed FROM $table_name WHERE user_id = %d AND automator_trigger_id = %d AND automator_recipe_id = %d AND automator_recipe_log_id = %d";
-		$results    = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) );
+		if ( $process_recipe ) {
+			$q = "SELECT completed FROM $table_name
+						WHERE user_id = %d
+						AND automator_trigger_id = %d
+						AND automator_recipe_id = %d
+						AND automator_recipe_log_id = %d";
+		} else {
+			$q = "SELECT t.completed AS trigger_completed
+							FROM $table_name t
+							LEFT JOIN {$wpdb->prefix}uap_recipe_log r
+							ON t.automator_recipe_log_id = r.ID
+							LEFT JOIN {$wpdb->prefix}uap_action_log a
+							ON t.automator_recipe_log_id = a.automator_recipe_log_id
+							WHERE 1=1 
+							AND t.user_id = %d 
+							AND t.automator_trigger_id = %d 
+							AND t.automator_recipe_id = %d 
+							AND t.automator_recipe_log_id = %d
+							AND r.completed = 1
+							AND a.completed = 1";
+		}
+		$results = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) );
 
 		$return = false;
 		if ( empty( $results ) ) {

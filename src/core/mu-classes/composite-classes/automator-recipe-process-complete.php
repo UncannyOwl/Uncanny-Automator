@@ -138,6 +138,29 @@ class Automator_Recipe_Process_Complete {
 			)
 		);
 
+		$run_number   = $uncanny_automator->get->trigger_run_number( $trigger_id, $trigger_log_id, $user_id );
+		$sentence_human_readable = $uncanny_automator->get->trigger_sentence( $trigger_id, 'sentence_human_readable' );
+
+		// Store trigger sentence details for the completion
+		$wpdb->insert(
+			$wpdb->prefix . 'uap_trigger_log_meta',
+			array(
+				'user_id'                  => $user_id,
+				'automator_trigger_log_id' => $trigger_log_id,
+				'automator_trigger_id'     => $trigger_id,
+				'run_number'               => $run_number,
+				'meta_key'                 => 'sentence_human_readable',
+				'meta_value'               => $sentence_human_readable,
+			), array(
+				'%d',
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+			)
+		);
+
 		// Store complete trigger sentence for the completion
 		$wpdb->insert(
 			$wpdb->prefix . 'uap_trigger_log_meta',
@@ -174,8 +197,6 @@ class Automator_Recipe_Process_Complete {
 
 		extract( $process_further, EXTR_OVERWRITE );
 
-		//Utilities::log( [ '$arr' => $arr, 'process_further' => $process_further ], '', true, 'log' );
-
 		// The trigger is now completed
 		do_action( 'uap_trigger_completed', $process_further );
 
@@ -209,13 +230,6 @@ class Automator_Recipe_Process_Complete {
 			$user_id = get_current_user_id();
 		}
 
-		// No user id is aviable.
-		/*if ( 0 === $user_id ) {
-			Utilities::log( 'ERROR: You are trying to check if triggers are completed when a there is no logged in user.', 'triggers_completed ERROR', false, 'uap-errors' );
-
-			return null;
-		}*/
-
 		$recipe_triggers = $uncanny_automator->get_recipe_data( 'uo-trigger', $recipe_id );
 
 		// By default the recipe will complete unless there is a trigger that is live(publish status) and its NOT completed
@@ -230,7 +244,7 @@ class Automator_Recipe_Process_Complete {
 					Utilities::log( 'ERROR: You are trying to complete ' . $recipe_trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. @recipe_id ' . $recipe_id, 'complete_trigger ERROR', false, 'uap-errors' );
 				}
 
-				$trigger_completed = $uncanny_automator->is_trigger_completed( $user_id, $recipe_trigger['ID'], $recipe_id, $recipe_log_id, $args );
+				$trigger_completed = $uncanny_automator->is_trigger_completed( $user_id, $recipe_trigger['ID'], $recipe_id, $recipe_log_id, $args, true );
 				if ( ! $trigger_completed ) {
 					return false;
 				}
@@ -331,6 +345,26 @@ class Automator_Recipe_Process_Complete {
 			) );
 
 		global $uncanny_automator;
+
+		$sentence_human_readable = $uncanny_automator->get->action_sentence( $action_id, 'sentence_human_readable' );
+
+		// Store action sentence details for the completion
+		$wpdb->insert(
+			$wpdb->prefix . 'uap_action_log_meta',
+			array(
+				'user_id'                  => $user_id,
+				'automator_action_log_id' => $action_log_id,
+				'automator_action_id'     => $action_id,
+				'meta_key'                 => 'sentence_human_readable',
+				'meta_value'               => $sentence_human_readable,
+			), array(
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+			)
+		);
 
 		$action_detail = $uncanny_automator->get->action_sentence( $action_id, 'action_detail' );
 

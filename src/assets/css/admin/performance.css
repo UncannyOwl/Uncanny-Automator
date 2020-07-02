@@ -84,11 +84,6 @@
 	border: 0;
 }
 
-.uo-settings-content-mobile-buttons {
-	margin-top: 15px;
-	display: none;
-}
-
 .uo-settings-content-top {
 	display: flex;
 }
@@ -366,13 +361,5 @@
 
 		top: 0;
 		left: 40px;
-	}
-
-	.uo-settings-content-mobile-buttons {
-		display: block;
-	}
-
-	.uo-settings-content-footer {
-		display: none;
 	}
 }

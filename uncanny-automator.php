@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.4.2
+ * Version:             2.5
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.4.2';
+	const PLUGIN_VERSION = '2.5';
 
 	/**
 	 * The database version number
@@ -96,7 +96,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const DATABASE_VERSION = '1.0';
+	const DATABASE_VERSION = '2.5';
 
 	/**
 	 * The full path and filename
@@ -200,6 +200,10 @@ class InitializePlugin {
 
 		$config_instance = Config::get_instance();
 		$config_instance->configure_plugin_before_boot( self::PLUGIN_NAME, self::PLUGIN_PREFIX, self::PLUGIN_VERSION, self::MAIN_FILE, $this->log_debug_messages );
+
+		if ( InitializePlugin::DATABASE_VERSION !== get_option( 'uap_database_version', 0 ) ) {
+			$config_instance->activation();
+		}
 	}
 
 	/**

@@ -997,14 +997,14 @@ class Automator_Functions {
 	 * @param $trigger_id    null||int
 	 * @param $recipe_id     null||int
 	 * @param $recipe_log_id null||int
-	 *
 	 * @param array $args
+	 * @param bool $process_recipe
 	 *
 	 * @return null|bool
 	 */
-	public function is_trigger_completed( $user_id = null, $trigger_id = null, $recipe_id = null, $recipe_log_id = null, $args = [] ) {
+	public function is_trigger_completed( $user_id = null, $trigger_id = null, $recipe_id = null, $recipe_log_id = null, $args = [], $process_recipe = false ) {
 
-		return $this->process->user->is_trigger_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
+		return $this->process->user->is_trigger_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args, $process_recipe );
 	}
 
 	/**

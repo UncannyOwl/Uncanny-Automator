@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.2
 Requires PHP: 7.0
-Stable tag: 2.4.2
+Stable tag: 2.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -14,7 +14,7 @@ Uncanny Automator connects your WordPress plugins and sites together automatical
 
 Uncanny Automator is the easiest way to connect things on your WordPress site together. Widely used and trusted on elearning, membership and ecommerce sites since 2018, Automator is free for the first time to everyone!
 
-Here's how Uncanny Automator works: 
+Here's how Uncanny Automator works:
 
 When one thing happens, Automator can make other things happen.
 
@@ -45,6 +45,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [LearnPress](https://automatorplugin.com/integration/learnpress/)
 - [LifterLMS](https://automatorplugin.com/integration/lifterlms/)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/)
+- [myCred](https://automatorplugin.com/integration/mycred/)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/)
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/)
@@ -55,6 +56,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
 - [WP LMS](https://automatorplugin.com/integration/wp-lms/)
 - [WPForms](https://automatorplugin.com/integration/wp-forms/)
+- [wpForo](https://automatorplugin.com/integration/wp-foro/)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/)
 - [Zapier](https://automatorplugin.com/integration/zapier/)
@@ -87,7 +89,7 @@ Here are some of the other really cool things you can do with Automator Pro:
 - Set up buttons that can trigger any recipe on click
 - Set custom usermeta
 
-An Automator Pro license also includes access to our world-class premium support. 
+An Automator Pro license also includes access to our world-class premium support.
 
 For the full list of triggers and actions, make sure to check out [this list](https://automatorplugin.com/all-triggers-and-actions/).
 
@@ -119,7 +121,7 @@ Uncanny Automator was actually launched in September 2018 and has been constantl
 
 = How can I request an integration for a plugin? =
 
-The best thing you can do is reach out to the creator of the plugin that you want an integration for.  Let them know you're using Uncanny Automator and that they could greatly extend the capabilities of their plugin by helping us develop an integration for it. As more plugin authors become aware of Uncanny Automator and realize its potential for their users, we'll be able to continue to invest in expanding Uncanny Automator's capabilities! Also, fill out [this form](https://automatorplugin.com/feedback/) on our site to let us know what you're looking for. 
+The best thing you can do is reach out to the creator of the plugin that you want an integration for.  Let them know you're using Uncanny Automator and that they could greatly extend the capabilities of their plugin by helping us develop an integration for it. As more plugin authors become aware of Uncanny Automator and realize its potential for their users, we'll be able to continue to invest in expanding Uncanny Automator's capabilities! Also, fill out [this form](https://automatorplugin.com/feedback/) on our site to let us know what you're looking for.
 
 = How can I add an integration for my plugin? =
 
@@ -145,28 +147,31 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
-= 2.4.2 =
+= 2.5 [2020-07-02] =
+
+* Added: WP Foro integration
+* Added: Trigger: WP Foro - A user creates a new topic in a forum
+* Added: Action: WP Foro - Set user reputation
+* Added: Action: WP Foro - Add the user to a group
+* Added: myCred integration
+* Added: Action: myCred - Award a badge to the user
+* Added: Action: myCred - Award a rank to the user
+* Added: Action: myCred - Award points to the user
+* Updated: Improved performance of BuddyPress and GamiPress integrations
+* Updated: Database code cleanup, table engine switched from myisam to innodb, updated indexes
+* Updated: Action: Send an email - Added support for shortcodes in email subject and body
+* Updated: Added additional detail to new trigger and action log entries on hover
+* Fixed: Button on settings pages not showing on mobile
+* Fixed: PHP warning on create post action when post status is registered
+* Fixed: Recipe completions with status "Completed with errors" can now be re-completed by the same user (if "Times per user" supports additional completions)
+
+= 2.4.2 [2020-06-18] =
 * Fixed: Ultimate Member - Tokens for select, multi select, checkbox and radio fields now pass values properly
 * Fixed: Trigger/Action values that are very large integers now handled correctly
 * Fixed: Action log showing duplicate entries for some recipes
 
-= 2.4.1 =
+= 2.4.1 [2020-06-15] =
 * Updated: Strings tweaked for improved consistency
 * Fixed: REST API route for incoming webhook triggers
-
-= 2.4 =
-* Added: New Integration - Tutor LMS
-* Added: New Integration - Fluent Forms
-* Added: Trigger: Tutor LMS - A user passes a quiz
-* Added: Trigger: Tutor LMS - A user fails a quiz
-* Added: Trigger: Tutor LMS - A user attempts a quiz
-* Added: Trigger: Tutor LMS - A user completes a course
-* Added: Trigger: Tutor LMS - A user completes a lesson
-* Added: Trigger: Fluent Forms - A user submits a form
-* Added: Action: WordPress Core - Create a user
-* Added: Settings page
-* Added: Transient cache on edit recipe page to temporarily cache frequent queries (edited)
-* Fixed: Trigger: Paid Memberships Pro - Membership expires now fires consistently
-
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

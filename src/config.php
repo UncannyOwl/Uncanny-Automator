@@ -138,7 +138,13 @@ class Config {
 
 	/**
 	 * The code that runs during plugin activation.
+	 *
+	 * Update DB code to use InnoDB Engine instead of MyISAM.
+	 * Indexes updated
+	 *
 	 * @since    1.0.0
+	 * @version 2.5
+	 * @author Saad
 	 */
 	public function activation() {
 
@@ -154,8 +160,8 @@ class Config {
 			$table_name = $wpdb->prefix . 'uap_recipe_log';
 
 
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_recipe_id, DROP INDEX completed;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_recipe_id, DROP INDEX completed;';
+			//dbDelta( $sql );
 
 			$sql = 'CREATE TABLE ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
@@ -166,22 +172,23 @@ class Config {
 				run_number mediumint(8) unsigned NOT NULL DEFAULT "1",
 				PRIMARY KEY  (ID),
 				KEY completed (completed),
-				KEY user_id (user_id)
-				) COLLATE ' . $wpdb_collate . ';';
+				KEY user_id (user_id),
+				KEY automator_recipe_id (automator_recipe_id)
+				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
 
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP count;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' DROP count;';
+			//dbDelta( $sql );
 			//Change Engine to MyISAM
-			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
+			//dbDelta( $sql );
 
 			// Automator Trigger log
 			$table_name = $wpdb->prefix . 'uap_trigger_log';
 
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_trigger_id, DROP INDEX automator_recipe_id, DROP INDEX automator_recipe_log_id, DROP INDEX completed;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_trigger_id, DROP INDEX automator_recipe_id, DROP INDEX automator_recipe_log_id, DROP INDEX completed;';
+			//dbDelta( $sql );
 
 			$sql = 'CREATE TABLE ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
@@ -194,19 +201,20 @@ class Config {
 				PRIMARY KEY  (ID),
 				KEY user_id (user_id),
 				KEY completed (completed),
+				KEY automator_recipe_id (automator_recipe_id),
 				KEY automator_recipe_log_id (automator_recipe_log_id)
-				) COLLATE ' . $wpdb_collate . ';';
+				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
 			//Change Engine to MyISAM
-			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
+			//dbDelta( $sql );
 
 			//Automator trigger meta data log
 			$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
 
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_trigger_log_id, DROP INDEX automator_trigger_id, DROP INDEX meta_key;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_trigger_log_id, DROP INDEX automator_trigger_id, DROP INDEX meta_key;';
+			//dbDelta( $sql );
 
 			$sql = 'CREATE TABLE ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
@@ -218,20 +226,25 @@ class Config {
 				run_number mediumint(8) unsigned NOT NULL DEFAULT "1",
 				PRIMARY KEY  (ID),
 				KEY user_id (user_id),
+				KEY automator_trigger_id (automator_trigger_id),
 				KEY automator_trigger_log_id (automator_trigger_log_id),
 				KEY meta_key (meta_key(20))
-				) COLLATE ' . $wpdb_collate . ';';
+				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
 			//Change Engine to MyISAM
-			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
+			//dbDelta( $sql );
 
 			// Automator Action log
 			$table_name = $wpdb->prefix . 'uap_action_log';
-
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX error_message, DROP INDEX completed, DROP INDEX automator_recipe_log_id, DROP INDEX automator_recipe_id, DROP INDEX automator_action_id ;';
-			dbDelta( $sql );
+			global $wpdb;
+			if ( $wpdb->get_results( "SHOW TABLES LIKE '$table_name';" ) ) {
+				if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
+					$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
+				}
+				$wpdb->query( $sql );
+			}
 
 			$sql = 'CREATE TABLE ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
@@ -246,20 +259,20 @@ class Config {
 				KEY user_id (user_id),
 				KEY completed (completed),
 				KEY automator_recipe_log_id (automator_recipe_log_id),
-				KEY automator_recipe_id (automator_recipe_id),
-				KEY error_message (error_message(15))
-				) COLLATE ' . $wpdb_collate . ';';
+				KEY automator_recipe_id (automator_recipe_id)
+				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
+
 			//Change Engine to MyISAM
-			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
+			//dbDelta( $sql );
 
 			//Automator action meta data log
 			$table_name = $wpdb->prefix . 'uap_action_log_meta';
 
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_action_id, DROP INDEX automator_action_log_id, DROP INDEX meta_key;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_action_id, DROP INDEX automator_action_log_id, DROP INDEX meta_key;';
+			//dbDelta( $sql );
 
 			$sql = 'CREATE TABLE ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
@@ -272,18 +285,18 @@ class Config {
 				KEY user_id (user_id),
 				KEY automator_action_log_id (automator_action_log_id),
 				KEY meta_key (meta_key(20))
-				) COLLATE ' . $wpdb_collate . ';';
+				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
 			//Change Engine to MyISAM
-			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
+			//dbDelta( $sql );
 
 			// Automator Closure Log
 			$table_name = $wpdb->prefix . 'uap_closure_log';
 
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_closure_id, DROP INDEX automator_recipe_id, DROP INDEX completed;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_closure_id, DROP INDEX automator_recipe_id, DROP INDEX completed;';
+			//dbDelta( $sql );
 
 			$sql = 'CREATE TABLE ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
@@ -296,18 +309,18 @@ class Config {
 				KEY user_id (user_id),
 				KEY automator_recipe_id (automator_recipe_id),
 				KEY completed (completed)
-				) COLLATE ' . $wpdb_collate . ';';
+				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
 			//Change Engine to MyISAM
-			$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
+			//dbDelta( $sql );
 
 			//Automator closure meta data log
 			$table_name = $wpdb->prefix . 'uap_closure_log_meta';
 
-			$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_closure_id, DROP INDEX meta_key;';
-			dbDelta( $sql );
+			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_closure_id, DROP INDEX meta_key;';
+			//dbDelta( $sql );
 
 			$sql = 'CREATE TABLE ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
@@ -318,20 +331,20 @@ class Config {
 				PRIMARY KEY  (ID),
 				KEY user_id (user_id),
 				KEY meta_key (meta_key(15))
-				)  COLLATE ' . $wpdb_collate . ';';
+				)  ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
 			//Change Engine to MyISAM
-			$sql = "ALTER TABLE {$table_name} ENGINE=MyISAM;";
-			dbDelta( $sql );
+			//$sql = "ALTER TABLE {$table_name} ENGINE=MyISAM;";
+			//dbDelta( $sql );
 
 
-			$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'trigger_code', 'code')" );
-			$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'trigger_integration', 'integration')" );
-			$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'action_code', 'code')" );
-			$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'action_integration', 'integration')" );
-			$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'closure_code', 'code')" );
-			$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'closure_integration', 'integration')" );
+			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'trigger_code', 'code')" );
+			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'trigger_integration', 'integration')" );
+			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'action_code', 'code')" );
+			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'action_integration', 'integration')" );
+			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'closure_code', 'code')" );
+			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'closure_integration', 'integration')" );
 
 			update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
 		}

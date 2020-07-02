@@ -95,6 +95,15 @@ class Buddypress_Helpers {
 	 * @return mixed
 	 */
 	public function all_buddypress_users( $label = null, $option_code = 'BPUSERS', $args = array() ) {
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
+		}
 		if ( ! $label ) {
 			$label = __( 'User', 'uncanny-automator' );
 		}
@@ -112,8 +121,9 @@ class Buddypress_Helpers {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
+			global $wpdb;
 
-			$users = get_users();
+			$users = $wpdb->get_results( "SELECT ID, display_name FROM $wpdb->users ORDER BY display_name ASC" );
 
 			foreach ( $users as $user ) {
 				$options[ $user->ID ] = $user->display_name;

@@ -276,7 +276,7 @@ class Logs_List_Table extends \WP_List_Table {
                         LEFT JOIN {$wpdb->posts} pt
                         ON pt.ID = t.automator_trigger_id
                         LEFT JOIN {$wpdb->prefix}uap_trigger_log_meta tm
-						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'complete_trigger_sentence'
+						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'sentence_human_readable'
                         LEFT JOIN {$wpdb->prefix}uap_recipe_log r
                         ON t.automator_recipe_log_id = r.ID
                         WHERE ({$search_conditions}) ";
@@ -319,7 +319,7 @@ class Logs_List_Table extends \WP_List_Table {
 			JOIN {$wpdb->posts} pa
 			ON pa.ID = a.automator_action_id
 			LEFT JOIN {$wpdb->prefix}uap_action_log_meta am
-			ON am.automator_action_id = a.automator_action_id  AND am.meta_key = 'complete_action_sentence'
+			ON am.automator_action_id = a.automator_action_id  AND am.meta_key = 'sentence_human_readable'
 			LEFT JOIN {$wpdb->users} u
 			ON a.user_id = u.ID
 			WHERE ({$search_conditions})
@@ -475,7 +475,8 @@ class Logs_List_Table extends \WP_List_Table {
 					if( empty( $trigger_sentence )){
 						$trigger_name = $trigger_title;
 					}else{
-						$trigger_name = '<div class="triggername">' . $trigger_title . '</div><div class="triggerdetail">' . $trigger_sentence . '</div>';
+
+						$trigger_name = '<div class="triggername">' . $trigger_title . '</div><div class="triggerdetail">' . $this->format_human_readable_senctence( $trigger_sentence ) . '</div>';
 					}
 				}
 			}
@@ -536,7 +537,7 @@ class Logs_List_Table extends \WP_List_Table {
 					if( empty( $action_sentence )){
 						$action_name = $action_title;
 					}else{
-						$action_name = '<div class="triggername">' . $action_title . '</div><div class="triggerdetail">' . $action_sentence . '</div>';
+						$action_name = '<div class="triggername">' . $action_title . '</div><div class="triggerdetail">' .  $this->format_human_readable_senctence($action_sentence ) . '</div>';
 					}
 				}
 			}
@@ -584,6 +585,24 @@ class Logs_List_Table extends \WP_List_Table {
 		}
 
 		return $data;
+	}
+
+	private function format_human_readable_senctence($sentence = ''){
+		if(empty($sentence)){
+			return '';
+		}
+
+		$opening = '<span class="uap-logs-table__item-name">';
+		$closing = '</span>';
+
+		$opening_replace = '<span class="uap-logs-table-item-name__token">';
+		$closing_replace = '</span>';
+
+
+		$sentence = str_replace(array('{{{{{{{{{{', '{{{{{{{{', '{{{{{{', '{{{{', '{{'), $opening_replace, $sentence);
+		$sentence = str_replace(array('}}}}}}}}}}', '}}}}}}}}', '}}}}}}', '}}}}', '}}'), $closing_replace, $sentence);
+		return $opening . $sentence . $closing;
+
 	}
 
 	/**
