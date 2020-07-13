@@ -90,6 +90,13 @@ class Mycred_Helpers {
 		return apply_filters( 'uap_option_list_mycred_points_types', $option );
 	}
 
+	/**
+	 * @param null $label
+	 * @param string $option_code
+	 * @param array $args
+	 *
+	 * @return mixed|void
+	 */
 	public function list_mycred_rank_types( $label = null, $option_code = 'MYCREDRANKTYPES', $args = [] ) {
 		if ( ! $label ) {
 			$label = __( 'Ranks', 'uncanny-automator' );

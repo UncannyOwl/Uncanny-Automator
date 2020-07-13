@@ -138,6 +138,31 @@ class Utilities {
 	private static $plugin_initialization;
 
 	/**
+	 * The instance of the class
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      Boot
+	 */
+	private static $instance = null;
+
+	/**
+	 * Creates singleton instance of class
+	 *
+	 * @return Utilities $instance
+	 * @since 1.0.0
+	 *
+	 */
+	public static function get_instance() {
+
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
 	 * Set the name of the plugin
 	 *
 	 * @param string $plugin_name The name of the plugin

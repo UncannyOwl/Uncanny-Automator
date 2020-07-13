@@ -63,7 +63,7 @@ class Logs_List_Table extends \WP_List_Table {
 			if ( class_exists( '\uncanny_automator_pro\Pro_Filters' ) ) {
 				$filter_html = \uncanny_automator_pro\Pro_Filters::activities_filters_html( $this->tab );
 			} else {
-				$GLOBALS[ 'ua_current_tab' ] = $this->tab;
+				$GLOBALS['ua_current_tab'] = $this->tab;
 
 				// Start output
 				ob_start();
@@ -160,10 +160,12 @@ class Logs_List_Table extends \WP_List_Table {
 
 		/* -- Ordering parameters -- */
 		$order = ! empty( $_GET["order"] ) ? $wpdb->_real_escape( $_GET["order"] ) : 'DESC';
+
 		if ( 'recipe-log' === $this->tab ) {
 			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'r.ID';
 		} elseif ( 'trigger-log' === $this->tab ) {
-			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 't.ID';
+			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 't.ID DESC, tm.run_number DESC';
+			$order = ' ';
 		} elseif ( 'action-log' === $this->tab ) {
 			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'a.ID';
 		}
@@ -263,7 +265,10 @@ class Logs_List_Table extends \WP_List_Table {
                             t.automator_recipe_id, 
                             t.ID, 
                             pt.post_title AS trigger_title, 
-                            tm.meta_value AS trigger_sentence, 
+                            tm.meta_value AS trigger_sentence,
+                            tm.run_number AS trigger_run_number,
+                            tm.run_time AS trigger_run_time,
+                            pm.meta_value AS trigger_total_times,
                             p.post_title AS recipe_title, 
                             r.date_time AS recipe_date_time, 
                             r.completed AS recipe_completed, 
@@ -279,7 +284,9 @@ class Logs_List_Table extends \WP_List_Table {
 						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'sentence_human_readable'
                         LEFT JOIN {$wpdb->prefix}uap_recipe_log r
                         ON t.automator_recipe_log_id = r.ID
-                        WHERE ({$search_conditions}) ";
+                        LEFT JOIN wp_postmeta pm
+                        ON pm.post_id = t.automator_trigger_id AND pm.meta_key = 'NUMTIMES'
+                        WHERE ({$search_conditions})";
 
 		return $query;
 	}
@@ -380,19 +387,18 @@ class Logs_List_Table extends \WP_List_Table {
 			$current_type          = $uncanny_automator->utilities->get_recipe_type( $recipe_id );
 
 			/* translators: Recipe type. Logged-in recipes are triggered only by logged-in users */
-			$recipe_type_name      = _x( 'Logged-in', 'Recipe', 'uncanny-automator' );
-			if ( ! empty( $current_type ) ){
-				if ( $current_type == 'user' ){
+			$recipe_type_name = _x( 'Logged-in', 'Recipe', 'uncanny-automator' );
+			if ( ! empty( $current_type ) ) {
+				if ( $current_type == 'user' ) {
 					/* translators: Recipe type. Logged-in recipes are triggered only by logged-in users */
 					$recipe_type_name = _x( 'Logged-in', 'Recipe', 'uncanny-automator' );
-				}
-				elseif ( $current_type == 'anonymous' ){
+				} elseif ( $current_type == 'anonymous' ) {
 					/* translators: Recipe type. Anonymous recipes can be triggered by logged-in or anonymous users. Anonymous recipes can create new users or modify existing users. */
 					$recipe_type_name = _x( 'Anonymous', 'Recipe', 'uncanny-automator' );
 				}
 			}
 
-			$data[]                = array(
+			$data[] = array(
 				'recipe_type'      => $recipe_type_name,
 				'recipe_title'     => $recipe_name,
 				'recipe_date_time' => $recipe_date_completed,
@@ -422,14 +428,18 @@ class Logs_List_Table extends \WP_List_Table {
 		foreach ( $triggers as $trigger ) {
 
 			// Log only completed Triggers
-			if ( 1 !== absint( $trigger->trigger_completed ) ) {
+			/*if ( 1 !== absint( $trigger->trigger_completed ) ) {
 				continue;
-			}
+			}*/
 
 			$trigger_code = $this->item_code( $recipes_data, absint( $trigger->automator_trigger_id ) );
 
 			$trigger_date_completed = $trigger->trigger_date;
-			$recipe_link            = get_edit_post_link( absint( $trigger->automator_recipe_id ) );
+			if ( '0000-00-00 00:00:00' !== (string) $trigger->trigger_run_time ) {
+				$trigger_date_completed = $trigger->trigger_run_time;
+			}
+
+			$recipe_link = get_edit_post_link( absint( $trigger->automator_recipe_id ) );
 			/* translators: 1: Post ID */
 			$recipe_name = ! empty( $trigger->recipe_title ) ? $trigger->recipe_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $trigger->automator_recipe_id );
 
@@ -472,27 +482,29 @@ class Logs_List_Table extends \WP_List_Table {
 					/* translators: 1. Trademarked term */
 					$trigger_name = sprintf( __( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
 				} else {
-					if( empty( $trigger_sentence )){
+					if ( empty( $trigger_sentence ) ) {
 						$trigger_name = $trigger_title;
-					}else{
+					} else {
 
 						$trigger_name = '<div class="triggername">' . $trigger_title . '</div><div class="triggerdetail">' . $this->format_human_readable_senctence( $trigger_sentence ) . '</div>';
 					}
 				}
 			}
 
-			$recipe_run_number = $trigger->recipe_run_number;
-
+			$recipe_run_number   = absint( $trigger->recipe_run_number );
+			$trigger_run_number  = absint( $trigger->trigger_run_number );
+			$trigger_total_times = ( 0 === absint( $trigger->trigger_total_times ) || empty( $trigger->trigger_total_times ) ) ? 1 : $trigger->trigger_total_times;
 
 			$data[] = array(
-				'trigger_id'        => $trigger->ID,
-				'trigger_title'     => $trigger_name,
-				'trigger_date'      => $trigger_date_completed,
-				'recipe_title'      => $recipe_name,
-				'recipe_completed'  => $recipe_status,
-				'recipe_date_time'  => $recipe_date_completed,
-				'recipe_run_number' => $recipe_run_number,
-				'display_name'      => $user_name,
+				'trigger_id'         => $trigger->ID,
+				'trigger_title'      => $trigger_name,
+				'trigger_date'       => $trigger_date_completed,
+				'recipe_title'       => $recipe_name,
+				'recipe_completed'   => $recipe_status,
+				'recipe_date_time'   => $recipe_date_completed,
+				'recipe_run_number'  => $recipe_run_number,
+				'trigger_run_number' => sprintf( __( '%d of %d', 'uncanny-automator' ), $trigger_run_number, $trigger_total_times ),
+				'display_name'       => $user_name,
 			);
 		}
 
@@ -521,7 +533,7 @@ class Logs_List_Table extends \WP_List_Table {
 				/* translators: Action status */
 				$st = _x( 'Completed, do nothing', 'Action', 'uncanny-automator' );
 			}
-			$action_code           = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
+			$action_code = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
 			/* translators: 1. Action ID */
 			$action_name = sprintf( __( 'Action deleted: %1$s', 'uncanny-automator' ), $action->automator_action_id );
 
@@ -534,10 +546,10 @@ class Logs_List_Table extends \WP_List_Table {
 					/* translators: 1. Trademarked term */
 					$action_name = sprintf( __( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
 				} else {
-					if( empty( $action_sentence )){
+					if ( empty( $action_sentence ) ) {
 						$action_name = $action_title;
-					}else{
-						$action_name = '<div class="triggername">' . $action_title . '</div><div class="triggerdetail">' .  $this->format_human_readable_senctence($action_sentence ) . '</div>';
+					} else {
+						$action_name = '<div class="triggername">' . $action_title . '</div><div class="triggerdetail">' . $this->format_human_readable_senctence( $action_sentence ) . '</div>';
 					}
 				}
 			}
@@ -587,8 +599,13 @@ class Logs_List_Table extends \WP_List_Table {
 		return $data;
 	}
 
-	private function format_human_readable_senctence($sentence = ''){
-		if(empty($sentence)){
+	/**
+	 * @param string $sentence
+	 *
+	 * @return string
+	 */
+	private function format_human_readable_senctence( $sentence = '' ) {
+		if ( empty( $sentence ) ) {
 			return '';
 		}
 
@@ -599,8 +616,21 @@ class Logs_List_Table extends \WP_List_Table {
 		$closing_replace = '</span>';
 
 
-		$sentence = str_replace(array('{{{{{{{{{{', '{{{{{{{{', '{{{{{{', '{{{{', '{{'), $opening_replace, $sentence);
-		$sentence = str_replace(array('}}}}}}}}}}', '}}}}}}}}', '}}}}}}', '}}}}', '}}'), $closing_replace, $sentence);
+		$sentence = str_replace( array(
+			'{{{{{{{{{{',
+			'{{{{{{{{',
+			'{{{{{{',
+			'{{{{',
+			'{{'
+		), $opening_replace, $sentence );
+		$sentence = str_replace( array(
+			'}}}}}}}}}}',
+			'}}}}}}}}',
+			'}}}}}}',
+			'}}}}',
+			'}}'
+		), $closing_replace, $sentence );
+
 		return $opening . $sentence . $closing;
 
 	}

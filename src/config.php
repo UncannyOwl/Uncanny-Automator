@@ -27,7 +27,7 @@ class Config {
 	/**
 	 * Creates singleton instance of class
 	 *
-	 * @return Config $instance The UncannyLearnDashGroupManagement Class
+	 * @return Config $instance
 	 * @since 1.0.0
 	 *
 	 */
@@ -159,11 +159,7 @@ class Config {
 			// Automator Recipe log
 			$table_name = $wpdb->prefix . 'uap_recipe_log';
 
-
-			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_recipe_id, DROP INDEX completed;';
-			//dbDelta( $sql );
-
-			$sql = 'CREATE TABLE ' . $table_name . ' (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
 				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
 				user_id bigint(20) unsigned NOT NULL,
@@ -178,19 +174,10 @@ class Config {
 
 			dbDelta( $sql );
 
-			//$sql = 'ALTER TABLE ' . $table_name . ' DROP count;';
-			//dbDelta( $sql );
-			//Change Engine to MyISAM
-			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			//dbDelta( $sql );
-
 			// Automator Trigger log
 			$table_name = $wpdb->prefix . 'uap_trigger_log';
 
-			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_trigger_id, DROP INDEX automator_recipe_id, DROP INDEX automator_recipe_log_id, DROP INDEX completed;';
-			//dbDelta( $sql );
-
-			$sql = 'CREATE TABLE ' . $table_name . ' (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
 				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
 				user_id bigint(20) unsigned NOT NULL,
@@ -206,17 +193,12 @@ class Config {
 				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
-			//Change Engine to MyISAM
-			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			//dbDelta( $sql );
 
 			//Automator trigger meta data log
 			$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
 
-			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_trigger_log_id, DROP INDEX automator_trigger_id, DROP INDEX meta_key;';
-			//dbDelta( $sql );
 
-			$sql = 'CREATE TABLE ' . $table_name . ' (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
 				user_id bigint(20) unsigned NOT NULL,
 				automator_trigger_log_id bigint(20) unsigned NULL,
@@ -224,6 +206,7 @@ class Config {
 				meta_key varchar(255) DEFAULT "" NOT NULL,
 				meta_value longtext DEFAULT "" NOT NULL,
 				run_number mediumint(8) unsigned NOT NULL DEFAULT "1",
+				run_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
 				PRIMARY KEY  (ID),
 				KEY user_id (user_id),
 				KEY automator_trigger_id (automator_trigger_id),
@@ -232,9 +215,6 @@ class Config {
 				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
-			//Change Engine to MyISAM
-			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			//dbDelta( $sql );
 
 			// Automator Action log
 			$table_name = $wpdb->prefix . 'uap_action_log';
@@ -246,7 +226,7 @@ class Config {
 				$wpdb->query( $sql );
 			}
 
-			$sql = 'CREATE TABLE ' . $table_name . ' (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
 				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
 				user_id bigint(20) unsigned NOT NULL,
@@ -264,17 +244,10 @@ class Config {
 
 			dbDelta( $sql );
 
-			//Change Engine to MyISAM
-			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			//dbDelta( $sql );
-
 			//Automator action meta data log
 			$table_name = $wpdb->prefix . 'uap_action_log_meta';
 
-			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_action_id, DROP INDEX automator_action_log_id, DROP INDEX meta_key;';
-			//dbDelta( $sql );
-
-			$sql = 'CREATE TABLE ' . $table_name . ' (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
 				user_id bigint(20) unsigned NOT NULL,
 				automator_action_log_id bigint(20) unsigned NULL,
@@ -288,17 +261,11 @@ class Config {
 				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
-			//Change Engine to MyISAM
-			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			//dbDelta( $sql );
 
 			// Automator Closure Log
 			$table_name = $wpdb->prefix . 'uap_closure_log';
 
-			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_closure_id, DROP INDEX automator_recipe_id, DROP INDEX completed;';
-			//dbDelta( $sql );
-
-			$sql = 'CREATE TABLE ' . $table_name . ' (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
 				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
 				user_id bigint(20) unsigned NOT NULL,
@@ -312,17 +279,11 @@ class Config {
 				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
-			//Change Engine to MyISAM
-			//$sql = 'ALTER TABLE ' . $table_name . ' ENGINE=MyISAM;';
-			//dbDelta( $sql );
 
 			//Automator closure meta data log
 			$table_name = $wpdb->prefix . 'uap_closure_log_meta';
 
-			//$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX user_id, DROP INDEX automator_closure_id, DROP INDEX meta_key;';
-			//dbDelta( $sql );
-
-			$sql = 'CREATE TABLE ' . $table_name . ' (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
 				ID mediumint(8) unsigned NOT NULL auto_increment,
 				user_id bigint(20) unsigned NOT NULL,
 				automator_closure_id bigint(20) unsigned NOT NULL,
@@ -334,17 +295,6 @@ class Config {
 				)  ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
 
 			dbDelta( $sql );
-			//Change Engine to MyISAM
-			//$sql = "ALTER TABLE {$table_name} ENGINE=MyISAM;";
-			//dbDelta( $sql );
-
-
-			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'trigger_code', 'code')" );
-			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'trigger_integration', 'integration')" );
-			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'action_code', 'code')" );
-			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'action_integration', 'integration')" );
-			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'closure_code', 'code')" );
-			//$wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = replace(meta_key, 'closure_integration', 'integration')" );
 
 			update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
 		}
@@ -352,6 +302,196 @@ class Config {
 		do_action( Utilities::get_prefix() . '_activation_after' );
 	}
 
+	/**
+	 * The code that runs during plugin activation/upgrade.
+	 *
+	 * Run for database updates
+	 *
+	 * @since   2.5.1
+	 * @version 2.5.1
+	 * @author Saad
+	 */
+	public function upgrade() {
+
+		do_action( Utilities::get_prefix() . '_activation_before' );
+
+		if ( InitializePlugin::DATABASE_VERSION !== get_option( 'uap_database_version', 0 ) ) {
+			global $wpdb;
+			$wpdb_collate = $wpdb->collate;
+
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+			// Automator Recipe log
+			$table_name = $wpdb->prefix . 'uap_recipe_log';
+
+			// Change table db to InnoDB
+			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+			$wpdb->query( $sql );
+
+			// Automator Trigger log
+			$table_name = $wpdb->prefix . 'uap_trigger_log';
+
+			// Change table db to InnoDB
+			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+			$wpdb->query( $sql );
+
+			//Automator trigger meta data log
+			$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
+
+			// Change table db to InnoDB
+			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+			$wpdb->query( $sql );
+
+			// Alter table and add run_tim
+			if ( empty( $wpdb->get_var( "SELECT COLUMN_NAME
+										FROM INFORMATION_SCHEMA.COLUMNS
+										WHERE table_name = '$table_name'
+										AND table_schema = '" . DB_NAME . "'
+										AND column_name = 'run_time'" ) ) ) {
+				$sql = "ALTER TABLE  $table_name ADD COLUMN run_time datetime DEFAULT \"0000-00-00 00:00:00\" NOT NULL;";
+				$wpdb->query( $sql );
+			}
+
+			// Automator Action log
+			$table_name = $wpdb->prefix . 'uap_action_log';
+			global $wpdb;
+			if ( $wpdb->get_results( "SHOW TABLES LIKE '$table_name';" ) ) {
+				if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
+					$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
+				}
+				$wpdb->query( $sql );
+			}
+
+			// Change table db to InnoDB
+			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+			$wpdb->query( $sql );
+
+
+			//Automator action meta data log
+			$table_name = $wpdb->prefix . 'uap_action_log_meta';
+
+			// Change table db to InnoDB
+			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+			$wpdb->query( $sql );
+
+			// Automator Closure Log
+			$table_name = $wpdb->prefix . 'uap_closure_log';
+
+			// Change table db to InnoDB
+			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+			$wpdb->query( $sql );
+
+			//Automator closure meta data log
+			$table_name = $wpdb->prefix . 'uap_closure_log_meta';
+
+			// Change table db to InnoDB
+			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+			$wpdb->query( $sql );
+
+			update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
+		}
+
+		do_action( Utilities::get_prefix() . '_activation_after' );
+	}
+
+	/**
+	 * Call views instead of complex queries on log pages
+	 *
+	 * @version 2.5.1
+	 * @author Saad
+	 */
+	public function automator_generate_views() {
+
+		do_action( Utilities::get_prefix() . '_database_views_before' );
+
+		if ( InitializePlugin::DATABASE_VIEWS_VERSION !== get_option( 'uap_database_views_version', 0 ) ) {
+			global $wpdb;
+
+			$recipe_view       = "{$wpdb->prefix}uap_recipe_logs_view";
+			$recipe_view_query = "SELECT r.user_id, 
+							r.date_time AS recipe_date_time, 
+							r.completed AS recipe_completed, 
+							r.run_number, 
+							r.automator_recipe_id, 
+							u.user_email, 
+							u.display_name, 
+							p.post_title AS recipe_title 
+					FROM {$wpdb->prefix}uap_recipe_log r
+					LEFT JOIN {$wpdb->users} u
+					ON u.ID = r.user_id  
+					JOIN {$wpdb->posts} p
+					ON p.ID = r.automator_recipe_id";
+			$wpdb->query( "CREATE OR REPLACE VIEW $recipe_view AS $recipe_view_query" );
+
+			$trigger_view       = "{$wpdb->prefix}uap_trigger_logs_view";
+			$trigger_view_query = "SELECT u.ID AS user_id, u.user_email, 
+                            u.display_name, 
+                            t.automator_trigger_id, 
+                            t.date_time AS trigger_date, 
+                            t.completed AS trigger_completed, 
+                            t.automator_recipe_id, 
+                            t.ID, 
+                            pt.post_title AS trigger_title, 
+                            tm.meta_value AS trigger_sentence,
+                            tm.run_number AS trigger_run_number,
+                            tm.run_time AS trigger_run_time,
+                            pm.meta_value AS trigger_total_times,
+                            p.post_title AS recipe_title, 
+                            r.date_time AS recipe_date_time, 
+                            r.completed AS recipe_completed, 
+                            r.run_number AS recipe_run_number
+                        FROM {$wpdb->prefix}uap_trigger_log t
+                        LEFT JOIN {$wpdb->users} u
+                        ON u.ID = t.user_id
+                        LEFT JOIN {$wpdb->posts} p
+                        ON p.ID = t.automator_recipe_id
+                        LEFT JOIN {$wpdb->posts} pt
+                        ON pt.ID = t.automator_trigger_id
+                        LEFT JOIN {$wpdb->prefix}uap_trigger_log_meta tm
+						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'sentence_human_readable'
+                        LEFT JOIN {$wpdb->prefix}uap_recipe_log r
+                        ON t.automator_recipe_log_id = r.ID
+                        LEFT JOIN wp_postmeta pm
+                        ON pm.post_id = t.automator_trigger_id AND pm.meta_key = 'NUMTIMES'";
+
+			$wpdb->query( "CREATE OR REPLACE VIEW $trigger_view AS $trigger_view_query" );
+
+			$action_view       = "{$wpdb->prefix}uap_action_logs_view";
+			$action_view_query = "SELECT a.automator_action_id,
+					a.date_time AS action_date, 
+					a.completed AS action_completed, 
+					a.error_message, 
+					a.automator_recipe_id,
+					r.date_time AS recipe_date_time, 
+					r.completed AS recipe_completed, 
+					r.run_number AS recipe_run_number,
+					pa.post_title AS action_title,
+					am.meta_value AS action_sentence, 
+					p.post_title AS recipe_title, 
+					u.ID AS user_id, 
+					u.user_email, 
+					u.display_name            
+			FROM {$wpdb->prefix}uap_action_log a
+			LEFT JOIN {$wpdb->prefix}uap_recipe_log r
+			ON a.automator_recipe_log_id = r.ID
+			LEFT JOIN {$wpdb->posts} p
+			ON p.ID = a.automator_recipe_id
+			JOIN {$wpdb->posts} pa
+			ON pa.ID = a.automator_action_id
+			LEFT JOIN {$wpdb->prefix}uap_action_log_meta am
+			ON am.automator_action_id = a.automator_action_id  AND am.meta_key = 'sentence_human_readable'
+			LEFT JOIN {$wpdb->users} u
+			ON a.user_id = u.ID";
+
+			$wpdb->query( "CREATE OR REPLACE VIEW $action_view AS $action_view_query" );
+
+			update_option( 'uap_database_views_version', InitializePlugin::DATABASE_VIEWS_VERSION );
+
+		}
+
+		do_action( Utilities::get_prefix() . '_activation_views_after' );
+
+	}
 
 	/**
 	 * The code that runs during plugin deactivation.

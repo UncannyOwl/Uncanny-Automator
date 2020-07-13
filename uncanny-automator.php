@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.5
+ * Version:             2.5.1
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.5';
+	const PLUGIN_VERSION = '2.5.1';
 
 	/**
 	 * The database version number
@@ -96,7 +96,16 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const DATABASE_VERSION = '2.5';
+	const DATABASE_VERSION = '2.5.1';
+
+	/**
+	 * The database views version number
+	 *
+	 * @since    2.5.1
+	 * @access   private
+	 * @var      string
+	 */
+	const DATABASE_VIEWS_VERSION = '2.5.1';
 
 	/**
 	 * The full path and filename
@@ -185,6 +194,7 @@ class InitializePlugin {
 	private function initialize_utilities() {
 
 		include_once( dirname( __FILE__ ) . '/src/utilities.php' );
+		Utilities::get_instance();
 		Utilities::set_date_time_format();
 
 	}
@@ -201,8 +211,19 @@ class InitializePlugin {
 		$config_instance = Config::get_instance();
 		$config_instance->configure_plugin_before_boot( self::PLUGIN_NAME, self::PLUGIN_PREFIX, self::PLUGIN_VERSION, self::MAIN_FILE, $this->log_debug_messages );
 
-		if ( InitializePlugin::DATABASE_VERSION !== get_option( 'uap_database_version', 0 ) ) {
-			$config_instance->activation();
+		$db_version = get_option( 'uap_database_version', 0 );
+		if ( InitializePlugin::DATABASE_VERSION !== $db_version ) {
+			if ( 0 === absint( $db_version ) ) {
+				// new installation
+				$config_instance->activation();
+			} else {
+				// update
+				$config_instance->upgrade();
+			}
+		}
+
+		if ( InitializePlugin::DATABASE_VIEWS_VERSION !== get_option( 'uap_database_views_version', 0 ) ) {
+			$config_instance->automator_generate_views();
 		}
 	}
 

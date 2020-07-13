@@ -56,8 +56,8 @@ class Automator_Get_Data {
 					//Add general Integration based filter, like automator_maybe_trigger_gf_tokens
 					if ( ! empty( $trigger_integration ) ) {
 
-						$filter             = 'automator_maybe_trigger_' . $trigger_integration . '_tokens';
-						$filter             = str_replace( '__', '_', $filter );
+						$filter = 'automator_maybe_trigger_' . $trigger_integration . '_tokens';
+						$filter = str_replace( '__', '_', $filter );
 
 						$filters[ $filter ] = [
 							'integration' => strtoupper( $trigger_integration ),
@@ -67,8 +67,8 @@ class Automator_Get_Data {
 
 					//Add trigger code specific filter, like automator_maybe_trigger_gf_gfforms_tokens
 					if ( ! empty( $trigger_integration ) && ! empty( $triggers_meta ) ) {
-						$filter             = 'automator_maybe_trigger_' . $trigger_integration . '_' . $trigger_meta . '_tokens';
-						$filter             = str_replace( '__', '_', $filter );
+						$filter = 'automator_maybe_trigger_' . $trigger_integration . '_' . $trigger_meta . '_tokens';
+						$filter = str_replace( '__', '_', $filter );
 
 						$filters[ $filter ] = [
 							'value'       => $trigger_value,
@@ -336,10 +336,10 @@ class Automator_Get_Data {
 		}
 
 		$sentence = [
-			'code'              => $code,
-			'raw_sentence'      => $raw_sentence,
-			'tokens'            => $tokens,
-			'complete_sentence' => $complete_sentence,
+			'code'                    => $code,
+			'raw_sentence'            => $raw_sentence,
+			'tokens'                  => $tokens,
+			'complete_sentence'       => $complete_sentence,
 			'sentence_human_readable' => $sentence_human_readable
 		];
 
@@ -736,14 +736,6 @@ class Automator_Get_Data {
 			$user_id = get_current_user_id();
 		}
 
-		// No user id is aviable.
-		/*if ( 0 === $user_id ) {
-			Utilities::log( 'ERROR: You are trying to a trigger log ID when a there is no logged in user.', 'get_trigger_log_id ERROR', false, 'uap-errors' );
-
-			return null;
-		}*/
-
-
 		if ( null === $trigger_id || ! is_numeric( $trigger_id ) ) {
 			Utilities::log( 'ERROR: You are trying to get a trigger log ID without providing a trigger_id', 'get_trigger_log_id ERROR', false, 'uap-errors' );
 
@@ -809,21 +801,13 @@ class Automator_Get_Data {
 		$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
 		$results    = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT tm.meta_value 
-					FROM $table_name tm
-					LEFT JOIN {$wpdb->prefix}uap_trigger_log t
-					ON tm.automator_trigger_log_id = t.ID
-					LEFT JOIN {$wpdb->prefix}uap_recipe_log r
-					ON t.automator_recipe_log_id = r.ID
-					LEFT JOIN {$wpdb->prefix}uap_action_log a
-					ON t.automator_recipe_log_id = a.automator_recipe_log_id
+				"SELECT COUNT(meta_value) 
+					FROM $table_name 
 					WHERE 1=1 
-					AND tm.user_id = %d 
-					AND tm.meta_key LIKE %s 
-					AND tm.automator_trigger_id = %d 
-					AND tm.automator_trigger_log_id = %d
-					AND r.completed = 1
-					AND a.completed = 1",
+					AND user_id = %d 
+					AND meta_key LIKE %s 
+					AND automator_trigger_id = %d 
+					AND automator_trigger_log_id = %d",
 				$user_id,
 				$meta_key,
 				$trigger_id,
@@ -897,8 +881,8 @@ class Automator_Get_Data {
 			return '';
 		}
 
-		$code         = false;
-		$raw_sentence = false;
+		$code                    = false;
+		$raw_sentence            = false;
 		$sentence_human_readable = false;
 
 		foreach ( $trigger_meta as $trigger ) {
@@ -941,10 +925,10 @@ class Automator_Get_Data {
 		}
 
 		$sentence = [
-			'code'              => $code,
-			'raw_sentence'      => $raw_sentence,
-			'tokens'            => $tokens,
-			'complete_sentence' => $complete_sentence,
+			'code'                    => $code,
+			'raw_sentence'            => $raw_sentence,
+			'tokens'                  => $tokens,
+			'complete_sentence'       => $complete_sentence,
 			'sentence_human_readable' => $sentence_human_readable,
 
 		];
@@ -971,22 +955,15 @@ class Automator_Get_Data {
 		}
 
 		global $wpdb;
+
 		$run_number = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT MAX(tm.run_number) AS run_number 
-					FROM {$wpdb->prefix}uap_trigger_log_meta tm
-					LEFT JOIN {$wpdb->prefix}uap_trigger_log t
-					ON tm.automator_trigger_log_id = t.ID
-					LEFT JOIN {$wpdb->prefix}uap_recipe_log r
-					ON t.automator_recipe_log_id = r.ID
-					LEFT JOIN {$wpdb->prefix}uap_action_log a
-					ON t.automator_recipe_log_id = a.automator_recipe_log_id 
+				"SELECT MAX(run_number) 
+					FROM {$wpdb->prefix}uap_trigger_log_meta 
 					WHERE 1=1 
-					AND tm.user_id = %d 
-					AND tm.automator_trigger_id = %d 
-					AND tm.automator_trigger_log_id = %d
-					AND r.completed = 1
-					AND a.completed = 1",
+					AND user_id = %d 
+					AND automator_trigger_id = %d 
+					AND automator_trigger_log_id = %d",
 				$user_id,
 				$trigger_id,
 				$trigger_log_id

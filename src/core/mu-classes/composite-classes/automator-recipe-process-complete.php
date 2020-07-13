@@ -35,6 +35,7 @@ class Automator_Recipe_Process_Complete {
 		$recipe_id      = absint( $args['recipe_id'] );
 		$trigger_log_id = absint( $args['get_trigger_id'] );
 		$recipe_log_id  = absint( $args['recipe_log_id'] );
+		$run_number     = absint( $args['run_number'] );
 
 		// Set user ID
 		if ( is_null( $user_id ) ) {
@@ -112,73 +113,6 @@ class Automator_Recipe_Process_Complete {
 			$where,
 			$update_format,
 			$where_format
-		);
-
-
-		$run_number   = $uncanny_automator->get->trigger_run_number( $trigger_id, $trigger_log_id, $user_id );
-		$trigger_data = $uncanny_automator->get->trigger_sentence( $trigger_id, 'trigger_detail' );
-
-		// Store trigger sentence details for the completion
-		$wpdb->insert(
-			$wpdb->prefix . 'uap_trigger_log_meta',
-			array(
-				'user_id'                  => $user_id,
-				'automator_trigger_log_id' => $trigger_log_id,
-				'automator_trigger_id'     => $trigger_id,
-				'run_number'               => $run_number,
-				'meta_key'                 => 'complete_trigger_detail',
-				'meta_value'               => serialize( $trigger_data ),
-			), array(
-				'%d',
-				'%d',
-				'%d',
-				'%d',
-				'%s',
-				'%s',
-			)
-		);
-
-		$run_number   = $uncanny_automator->get->trigger_run_number( $trigger_id, $trigger_log_id, $user_id );
-		$sentence_human_readable = $uncanny_automator->get->trigger_sentence( $trigger_id, 'sentence_human_readable' );
-
-		// Store trigger sentence details for the completion
-		$wpdb->insert(
-			$wpdb->prefix . 'uap_trigger_log_meta',
-			array(
-				'user_id'                  => $user_id,
-				'automator_trigger_log_id' => $trigger_log_id,
-				'automator_trigger_id'     => $trigger_id,
-				'run_number'               => $run_number,
-				'meta_key'                 => 'sentence_human_readable',
-				'meta_value'               => $sentence_human_readable,
-			), array(
-				'%d',
-				'%d',
-				'%d',
-				'%d',
-				'%s',
-				'%s',
-			)
-		);
-
-		// Store complete trigger sentence for the completion
-		$wpdb->insert(
-			$wpdb->prefix . 'uap_trigger_log_meta',
-			array(
-				'user_id'                  => $user_id,
-				'automator_trigger_log_id' => $trigger_log_id,
-				'automator_trigger_id'     => $trigger_id,
-				'run_number'               => $run_number,
-				'meta_key'                 => 'complete_trigger_sentence',
-				'meta_value'               => $trigger_data['complete_sentence'],
-			), array(
-				'%d',
-				'%d',
-				'%d',
-				'%d',
-				'%s',
-				'%s',
-			)
 		);
 
 		$maybe_continue_recipe_process = true;
@@ -352,11 +286,11 @@ class Automator_Recipe_Process_Complete {
 		$wpdb->insert(
 			$wpdb->prefix . 'uap_action_log_meta',
 			array(
-				'user_id'                  => $user_id,
+				'user_id'                 => $user_id,
 				'automator_action_log_id' => $action_log_id,
 				'automator_action_id'     => $action_id,
-				'meta_key'                 => 'sentence_human_readable',
-				'meta_value'               => $sentence_human_readable,
+				'meta_key'                => 'sentence_human_readable',
+				'meta_value'              => $sentence_human_readable,
 			), array(
 				'%d',
 				'%d',
@@ -372,11 +306,11 @@ class Automator_Recipe_Process_Complete {
 		$wpdb->insert(
 			$wpdb->prefix . 'uap_action_log_meta',
 			array(
-				'user_id'                  => $user_id,
+				'user_id'                 => $user_id,
 				'automator_action_log_id' => $action_log_id,
 				'automator_action_id'     => $action_id,
-				'meta_key'                 => 'complete_action_detail',
-				'meta_value'               => serialize( $action_detail ),
+				'meta_key'                => 'complete_action_detail',
+				'meta_value'              => serialize( $action_detail ),
 			), array(
 				'%d',
 				'%d',
@@ -390,11 +324,11 @@ class Automator_Recipe_Process_Complete {
 		$wpdb->insert(
 			$wpdb->prefix . 'uap_action_log_meta',
 			array(
-				'user_id'                  => $user_id,
+				'user_id'                 => $user_id,
 				'automator_action_log_id' => $action_log_id,
 				'automator_action_id'     => $action_id,
-				'meta_key'                 => 'complete_action_sentence',
-				'meta_value'               => $action_detail['complete_sentence'],
+				'meta_key'                => 'complete_action_sentence',
+				'meta_value'              => $action_detail['complete_sentence'],
 			), array(
 				'%d',
 				'%d',

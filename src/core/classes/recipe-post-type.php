@@ -739,8 +739,8 @@ class Recipe_Post_Type {
 			 * Once a trigger is completed, the human readable post meta value will be saved as trigger or action log
 			 * meta fr the user to have more detail about it in the logs.
 			 */
-			if(isset($_POST['sentence_human_readable'])){
-				$human_readable = $_POST['sentence_human_readable'];
+			if ( isset( $_POST['sentence_human_readable'] ) ) {
+				$human_readable = sanitize_text_field( $_POST['sentence_human_readable'] );
 				update_post_meta( $item_id, 'sentence_human_readable', $human_readable );
 			}
 
@@ -895,8 +895,8 @@ class Recipe_Post_Type {
 				 * Once a trigger is completed, the human readable post meta value will be saved as trigger or action log
 				 * meta fr the user to have more detail about it in the logs.
 				 */
-				if(isset($_POST['sentence_human_readable'])){
-					$human_readable = $_POST['sentence_human_readable'];
+				if ( isset( $_POST['sentence_human_readable'] ) ) {
+					$human_readable = sanitize_text_field( $_POST['sentence_human_readable'] );
 					update_post_meta( $post_ID, 'sentence_human_readable', $human_readable );
 				}
 
@@ -1251,48 +1251,59 @@ class Recipe_Post_Type {
 		}
 	}
 
+	/**
+     * List of Pro features to upsell Automator Pro
+     *
+	 * @return array
+	 */
 	private function get_pro_items() {
+
 		$pro_items = [
 			'BB' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - bbPress */
-						'name' => __('A user replies to {{a topic}}', 'uncanny-automator'),
+						'name' => __( 'A user replies to {{a topic}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => []
+				'actions'  => []
 			],
 
 			'BP' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __('A user joins {{a public group}}', 'uncanny-automator'),
+						'name' => __( 'A user joins {{a public group}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __('A user leaves {{a group}}', 'uncanny-automator'),
+						'name' => __( 'A user leaves {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => []
+				'actions'  => [
+					[
+						/* translators: Action - BuddyPress */
+						'name' => __( 'Remove the user from {{a group}}', 'uncanny-automator' )
+					]
+				]
 			],
 
 			'CF' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Caldera Forms */
-						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - Caldera Forms */
-						'name' => __('Register a new user', 'uncanny-automator')
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1301,14 +1312,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Contact Form 7 */
-						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - Contact Form 7 */
-						'name' => __('Register a new user', 'uncanny-automator')
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1317,20 +1328,20 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Formidable Forms */
-						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - Formidable Forms */
-						'name' => __('A user submits {{a form}} with payment', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - Formidable Forms */
-						'name' => __('Register a new user', 'uncanny-automator')
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1339,52 +1350,87 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Forminator */
-						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => []
+				'actions'  => [
+					[
+						/* translators: Action - Forminator */
+						'name' => __( 'Register a new user', 'uncanny-automator' )
+					]
+				]
 			],
 
 			'GP' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => __('A user earns {{an achievement}}', 'uncanny-automator'),
+						'name' => __( 'A user earns {{an achievement}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => __('A user earns {{a number}} {{of a specfic type of}} points', 'uncanny-automator'),
+						'name' => __( 'A user earns {{a number}} {{of a specfic type of}} points', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => __('A user attains {{a rank}}', 'uncanny-automator'),
+						'name' => __( 'A user attains {{a rank}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - GamiPress */
-						'name' => __('Revoke {{an achievement}} from the user', 'uncanny-automator')
+						'name' => __( 'Revoke {{an achievement}} from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GamiPress */
-						'name' => __('Revoke {{a rank}} from the user', 'uncanny-automator')
+						'name' => __( 'Revoke {{a rank}} from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GamiPress */
-						'name' => __('Revoke {{a number}} {{of a certain type of}} points from the user', 'uncanny-automator')
+						'name' => __( 'Revoke {{a number}} {{of a certain type of}} points from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GamiPress */
-						'name' => __('Revoke all {{of a certain type of}} points from the user', 'uncanny-automator')
+						'name' => __( 'Revoke all {{of a certain type of}} points from the user', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'GTT' => [
+				'triggers' => [],
+				'actions'  => [
+					[
+						/* translators: Action - GoToTraining */
+						'name' => __( 'Add the user to a {{training session}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - GoToTraining */
+						'name' => __( 'Remove the user from a {{training session}}', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'GTM' => [
+				'triggers' => [],
+				'actions'  => [
+					[
+						/* translators: Action - GoToWebinar */
+						'name' => __( 'Add the user to {{a webinar}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - GoToWebinar */
+						'name' => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1393,176 +1439,213 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Gravity Forms */
-						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - Gravity Forms */
-						'name' => __('A user submits {{a form}} with payment', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - Gravity Forms */
-						'name' => __('Register a new user', 'uncanny-automator')
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
+			],
+
+			'GH' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - Groundhogg */
+						'name' => __( '{{A tag}} is added to a user', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - Groundhogg */
+						'name' => __( '{{A tag}} is remove from a user', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					]
+				],
+				'actions'  => []
 			],
 
 			'H5P' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - H5P */
-						'name' => __('A user completes {{H5P content}}', 'uncanny-automator'),
+						'name' => __( 'A user completes {{H5P content}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - H5P */
-						'name' => __('A user completes any {{of a specific type of}} H5P content', 'uncanny-automator'),
+						'name' => __( 'A user completes any {{of a specific type of}} H5P content', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - H5P */
-						'name' => __('A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{H5P content}}', 'uncanny-automator'),
+						'name' => __( 'A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{H5P content}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => []
+				'actions'  => []
 			],
 
 			'LD' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => __('A user submits an assignment for {{a lesson or topic}}', 'uncanny-automator'),
+						'name' => __( 'A user submits an assignment for {{a lesson or topic}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => __('A user is enrolled in {{a course}}', 'uncanny-automator'),
+						'name' => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => __('A user is added to {{a group}}', 'uncanny-automator'),
+						'name' => __( 'A user is added to {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Unenroll the user from {{a course}}', 'uncanny-automator')
+						'name' => __( 'Unenroll the user from {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Reset the user\'s progress in {{a course}}', 'uncanny-automator')
+						'name' => __( 'Reset the user\'s progress in {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator')
+						'name' => __( 'Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Add the user to {{a group}}', 'uncanny-automator')
+						'name' => __( 'Add the user to {{a group}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Remove the user from {{a group}}', 'uncanny-automator')
+						'name' => __( 'Remove the user from {{a group}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Send an {{email}} to the user\'s group leader(s)', 'uncanny-automator')
+						'name' => __( 'Send an {{email}} to the user\'s group leader(s)', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Mark {{a lesson}} not complete for the user', 'uncanny-automator')
+						'name' => __( 'Mark {{a lesson}} not complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => __('Mark {{a topic}} not complete for the user', 'uncanny-automator')
+						'name' => __( 'Mark {{a topic}} not complete for the user', 'uncanny-automator' )
 					]
 				]
 			],
 
 			'LP' => [
 				'triggers' => [],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - LearnPress */
-						'name' => __('Enroll the user in {{a course}}', 'uncanny-automator')
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnPress */
-						'name' => __('Mark {{a course}} complete for the user', 'uncanny-automator')
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnPress */
-						'name' => __('Remove the user from {{a course}}', 'uncanny-automator')
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' )
 					]
 				]
 			],
 
 			'LF' => [
 				'triggers' => [],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - LifterLMS */
-						'name' => __('Remove the user from {{a course}}', 'uncanny-automator')
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => __('Enroll the user in {{a course}}', 'uncanny-automator')
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => __('Mark {{a course}} complete for the user', 'uncanny-automator')
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => __('Remove the user from {{a membership}}', 'uncanny-automator')
+						'name' => __( 'Remove the user from {{a membership}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => __('Enroll the user in {{a membership}}', 'uncanny-automator')
+						'name' => __( 'Enroll the user in {{a membership}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => __('Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator')
+						'name' => __( 'Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator' )
 					]
 				]
 			],
 
 			'MP' => [
 				'triggers' => [],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - MemberPress */
-						'name' => __('Add the user to {{a membership}}', 'uncanny-automator')
+						'name' => __( 'Add the user to {{a membership}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - MemberPress */
-						'name' => __('Remove the user from {{a membership}}', 'uncanny-automator')
+						'name' => __( 'Remove the user from {{a membership}}', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'MYCRED' => [
+				'triggers' => [],
+				'actions'  => [
+					[
+						/* translators: Action - myCred */
+						'name' => __( 'Revoke {{a number of}} {{a specific type of}} points from the user', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - myCred */
+						'name' => __( 'Revoke all {{of a specific type of}} points from the user', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - myCred */
+						'name' => __( 'Revoke {{a badge}} from the user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1571,14 +1654,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Ninja Forms */
-						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - Ninja Forms */
-						'name' => __('Register a new user', 'uncanny-automator')
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1587,14 +1670,56 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - The Events Calendar */
-						'name' => __('A user attends {{an event}}', 'uncanny-automator'),
+						'name' => __( 'A user attends {{an event}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - The Events Calendar */
-						'name' => __('RSVP for {{an event}}', 'uncanny-automator')
+						'name' => __( 'RSVP for {{an event}}', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'TUTORLMS' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - Tutor LMS */
+						'name' => __( 'A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on a quiz', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - Tutor LMS */
+						'name' => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					]
+				],
+				'actions'  => [
+					[
+						/* translators: Action - Tutor LMS */
+						'name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - Tutor LMS */
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - Tutor LMS */
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'TWILIO' => [
+				'triggers' => [],
+				'actions'  => [
+					[
+						/* translators: Action - Twilio */
+						'name' => __( 'Send an SMS message to {{a number}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1603,14 +1728,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Ultimate Member */
-						'name' => __('A user registers with {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user registers with {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - Ultimate Member */
-						'name' => __('Set the user\'s role to {{a specific role}}', 'uncanny-automator')
+						'name' => __( 'Set the user\'s role to {{a specific role}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1619,91 +1744,127 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __('A user completes {{an order}}', 'uncanny-automator'),
+						'name' => __( 'A user completes {{an order}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __('A user\'s order status changes to {{a specific status}}', 'uncanny-automator'),
+						'name' => __( 'A user\'s order status changes to {{a specific status}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __('A user\'s subscription to {{a product}} expires', 'uncanny-automator'),
+						'name' => __( 'A user\'s subscription to {{a product}} expires', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __('A user cancels a subscription to {{a product}}', 'uncanny-automator'),
+						'name' => __( 'A user cancels a subscription to {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __('A user renews a subscription to {{a product}}', 'uncanny-automator'),
+						'name' => __( 'A user renews a subscription to {{a product}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Anonymous trigger - WooCommerce */
+						'name' => __( '{{A product}} is purchased via guest checkout', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					],
+
+					[
+						/* translators: Logged-in trigger - WooCommerce */
+						'name' => __( 'A user purchases a product with {{a tag}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - WooCommerce */
+						'name' => __( 'A user purchases a product in {{a category}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - WooCommerce */
+						'name' => __( 'A user purchases {{a variable product}} with {{a variation}} selected', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => []
+				'actions'  => []
 			],
 
 			'WP' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __('A user is created', 'uncanny-automator'),
+						'name' => __( 'A user is created', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __('A user clicks a {{magic button}}', 'uncanny-automator'),
+						'name' => __( 'A user clicks a {{magic button}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __('Receive data from {{a webhook}}', 'uncanny-automator'),
+						'name' => __( 'Receive data from {{a webhook}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - WordPress Core */
+						'name' => __( '{{A post}} is updated', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - WordPress Core */
+						'name' => __( 'A user resets their password', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - WordPress Core */
-						'name' => __('Remove {{a role}} from the user\'s roles', 'uncanny-automator')
+						'name' => __( 'Remove {{a role}} from the user\'s roles', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - WordPress Core */
-						'name' => __('Create {{a post}}', 'uncanny-automator')
+						'name' => __( 'Create {{a post}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - WordPress Core */
-						'name' => __('Set {{post meta}}', 'uncanny-automator')
+						'name' => __( 'Set {{post meta}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - WordPress Core */
-						'name' => __('Set {{user meta}}', 'uncanny-automator')
+						'name' => __( 'Set {{user meta}}', 'uncanny-automator' )
 					]
 				]
 			],
 
 			'WPCW' => [
 				'triggers' => [],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - WP Courseware */
-						'name' => __('Remove the user from {{a course}}', 'uncanny-automator')
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - WP Courseware */
-						'name' => __('Enroll the user in {{a course}}', 'uncanny-automator')
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1712,14 +1873,20 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WP Fusion */
-						'name' => __('{{A tag}} is added to a user', 'uncanny-automator'),
+						'name' => __( '{{A tag}} is added to a user', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - WP Fusion */
+						'name' => __( '{{A tag}} is removed from a user', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - WP Fusion */
-						'name' => __('Remove {{a tag}} from the user', 'uncanny-automator')
+						'name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1728,27 +1895,68 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WPForms */
-						'name' => __('A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator'),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
-				'actions' => [
+				'actions'  => [
 					[
 						/* translators: Action - WPForms */
-						'name' => __('Register a new user', 'uncanny-automator')
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
+			],
+
+			'WPFORO' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - wpForo */
+						'name' => __( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					]
+				],
+				'actions'  => []
 			],
 
 			'ZAPIER' => [
 				'triggers' => [
 					[
 						/* translators: Anonymous trigger - Zapier */
-						'name' => __('Receive data from Zapier webhook', 'uncanny-automator'),
+						'name' => __( 'Receive data from Zapier webhook', 'uncanny-automator' ),
 						'type' => 'anonymous'
 					]
 				],
-				'actions' => []
+				'actions'  => []
+			],
+
+			'ZOOM' => [
+				'triggers' => [],
+				'actions'  => [
+					[
+						/* translators: Action - Zoom Meetings */
+						'name' => __( 'Add the user to {{a meeting}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - Zoom Meetings */
+						'name' => __( 'Remove the user from {{a meeting}}', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'ZOOMWEBINAR' => [
+				'triggers' => [],
+				'actions'  => [
+					[
+						/* translators: Action - Zoom Webinars */
+						'name' => __( 'Add the user to {{a webinar}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - Zoom Webinars */
+						'name' => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' )
+					]
+				]
 			]
 		];
 

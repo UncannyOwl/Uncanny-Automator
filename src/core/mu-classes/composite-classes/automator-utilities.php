@@ -123,19 +123,17 @@ class Automator_Utilities {
 	 * @return bool
 	 */
 	public function recipe_number_times_completed( $recipe_id = null, $recipe_completed_times = 0 ) {
-		$return                     = false;
+		if ( is_null( $recipe_id ) ) {
+			return false;
+		}
 		$post_meta                  = get_post_meta( $recipe_id, 'recipe_completions_allowed', true );
 		$recipe_completions_allowed = empty( $post_meta ) ? 1 : $post_meta;
 
-		//if ( empty( $recipe_completions_allowed ) ) {
 		$return = false;
-		if ( (int) $recipe_completed_times === (int) $recipe_completions_allowed ) {
+
+		if ( (int) $recipe_completed_times >= (int) $recipe_completions_allowed ) {
 			$return = true;
-		} /*elseif ( '-1' === (int) $recipe_completions_allowed && 0 === (int) $recipe_completed_times ) {
-			$return = false;
-		} elseif ( (int) $recipe_completed_times < (int) $recipe_completions_allowed ) {
-			$return = false;
-		}*/
+		}
 
 		return $return;
 	}
@@ -180,15 +178,6 @@ class Automator_Utilities {
 		$results = [];
 		foreach ( $times_to_complete as $recipe_id => $recipe_completions_allowed ) {
 			$time_to_complete = false;
-			/*if ( empty( $recipe_completions_allowed ) ) {
-				$time_to_complete = false;
-			} elseif ( (int) $recipes_completed_times[ $recipe_id ] === (int) $recipe_completions_allowed ) {
-				$time_to_complete = true;
-			} elseif ( '-1' === (int) $recipe_completions_allowed && 0 === (int) $recipes_completed_times[ $recipe_id ] ) {
-				$time_to_complete = false;
-			} elseif ( (int) $recipes_completed_times[ $recipe_id ] < (int) $recipe_completions_allowed ) {
-				$time_to_complete = false;
-			}*/
 			//Only added condition that changes value to true.
 			if ( is_array( $recipes_completed_times ) && key_exists( $recipe_id, $recipes_completed_times ) && (int) $recipes_completed_times[ $recipe_id ] === (int) $recipe_completions_allowed ) {
 				$time_to_complete = true;

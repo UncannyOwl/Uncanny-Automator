@@ -778,7 +778,12 @@ class Automator_Functions {
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'uap_recipe_log';
-		$results    = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(completed) FROM $table_name WHERE user_id = %d AND automator_recipe_id = %d AND completed = 1", $user_id, $recipe_id ) );
+		$results    = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(completed) AS num_times_completed 
+														FROM $table_name 
+														WHERE 1=1 
+														AND user_id = %d 
+														AND automator_recipe_id = %d 
+														AND completed = 1", $user_id, $recipe_id ) );
 
 		if ( 0 === $results ) {
 			return false;

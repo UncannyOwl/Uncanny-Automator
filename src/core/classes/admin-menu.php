@@ -77,7 +77,7 @@ class Admin_Menu {
 	 */
 	public function override_pro_filters() {
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
-		    $pro_version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+			$pro_version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
 			if ( $pro_version > 2.1 ) {
 				return;
 			}
@@ -225,29 +225,32 @@ class Admin_Menu {
 						case 'trigger-log':
 							$headings = array(
 								/* translators: Log column. */
-								'trigger_title'     => __( 'Trigger', 'uncanny-automator' ),
+								'trigger_title'      => __( 'Trigger', 'uncanny-automator' ),
 								/* translators: Log column. The trigger completion date */
-								'trigger_date'      => __( 'Completion date', 'uncanny-automator' ),
+								'trigger_date'       => __( 'Completion date', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_title'      => __( 'Recipe', 'uncanny-automator' ),
+								'recipe_title'       => __( 'Recipe', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_completed'  => __( 'Recipe status', 'uncanny-automator' ),
+								'recipe_completed'   => __( 'Recipe status', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_date_time'  => __( 'Recipe completion date', 'uncanny-automator' ),
+								'recipe_date_time'   => __( 'Recipe completion date', 'uncanny-automator' ),
 								/* translators: Log column. Noun. The recipe iteration */
-								'recipe_run_number' => __( 'Recipe run #', 'uncanny-automator' ),
+								'recipe_run_number'  => __( 'Recipe run #', 'uncanny-automator' ),
+								/* translators: Log column. Noun. The trigger iteration */
+								'trigger_run_number' => __( 'Trigger run #', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'display_name'      => __( 'User', 'uncanny-automator' ),
+								'display_name'       => __( 'User', 'uncanny-automator' ),
 							);
 
 							$sortables = array(
-								'trigger_title'     => array( 'trigger_title', true ),
-								'trigger_date'      => array( 'trigger_date', true ),
-								'recipe_title'      => array( 'recipe_title', true ),
-								'recipe_completed'  => array( 'recipe_completed', true ), // linked
-								'recipe_date_time'  => array( 'recipe_date_time', true ),
-								'recipe_run_number' => array( 'recipe_run_number', true ),
-								'display_name'      => array( 'display_name', true ),
+								'trigger_title'      => array( 'trigger_title', true ),
+								'trigger_date'       => array( 'trigger_date', true ),
+								'recipe_title'       => array( 'recipe_title', true ),
+								'recipe_completed'   => array( 'recipe_completed', true ), // linked
+								'recipe_date_time'   => array( 'recipe_date_time', true ),
+								'recipe_run_number'  => array( 'recipe_run_number', true ),
+								'trigger_run_number' => array( 'trigger_run_number', false ),
+								'display_name'       => array( 'display_name', true ),
 
 							);
 
