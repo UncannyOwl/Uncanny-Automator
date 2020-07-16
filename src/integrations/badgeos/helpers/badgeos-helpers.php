@@ -12,6 +12,9 @@ class Badgeos_Helpers {
 	 * Badgeos_Helpers constructor.
 	 */
 	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
 		add_action( 'wp_ajax_select_achievements_from_types_BOAWARDACHIEVEMENT', [
 			$this,
 			'select_achievements_from_types_func'
@@ -28,6 +31,11 @@ class Badgeos_Helpers {
 	 * @var \Uncanny_Automator_Pro\Badgeos_Pro_Helpers
 	 */
 	public $pro;
+
+	/**
+	 * @var bool
+	 */
+	public $load_options;
 
 	/**
 	 * @param Badgeos_Helpers $options
@@ -51,6 +59,11 @@ class Badgeos_Helpers {
 	 * @return mixed
 	 */
 	public function list_bo_award_types( $label = null, $option_code = 'BOAWARDTYPES', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			$label = __( 'Achievement type', 'uncanny-automator' );
@@ -64,10 +77,8 @@ class Badgeos_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			$posts = get_posts( [
-				'post_type'      => 'achievement-type',
-				'posts_per_page' => 9999,
-			] );
+
+			$posts = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'achievement-type' ] );
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -76,7 +87,7 @@ class Badgeos_Helpers {
 					}
 				}
 			}
-			
+
 		}
 		$type = 'select';
 
@@ -103,6 +114,11 @@ class Badgeos_Helpers {
 	 * @return mixed
 	 */
 	public function list_bo_points_types( $label = null, $option_code = 'BOPOINTSTYPES', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			$label = __( 'Point type', 'uncanny-automator' );
@@ -122,10 +138,8 @@ class Badgeos_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			$posts = get_posts( [
-				'post_type'      => 'point_type',
-				'posts_per_page' => 9999,
-			] );
+
+			$posts = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'point_type' ] );
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -160,6 +174,11 @@ class Badgeos_Helpers {
 	 * @return mixed
 	 */
 	public function list_bo_rank_types( $label = null, $option_code = 'BORANKTYPES', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			$label = __( 'Rank type', 'uncanny-automator' );
@@ -173,10 +192,8 @@ class Badgeos_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			$posts = get_posts( [
-				'post_type'      => 'rank_types',
-				'posts_per_page' => 9999,
-			] );
+
+			$posts = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'rank_types' ] );
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -224,7 +241,7 @@ class Badgeos_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, FALSE, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [
@@ -258,7 +275,7 @@ class Badgeos_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, FALSE, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [

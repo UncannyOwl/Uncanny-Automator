@@ -19,6 +19,11 @@ class Forminator_Helpers {
 	public $pro;
 
 	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
 	 * @param Forminator_Helpers $options
 	 */
 	public function setOptions( Forminator_Helpers $options ) {
@@ -33,6 +38,14 @@ class Forminator_Helpers {
 	}
 
 	/**
+	 * Forminator_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -40,6 +53,12 @@ class Forminator_Helpers {
 	 * @return mixed
 	 */
 	public function all_forminator_forms( $label = null, $option_code = 'FRFORMS', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );
 		}
@@ -59,9 +78,9 @@ class Forminator_Helpers {
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
-				$options[-1] = $args['uo_any_label'];
+				$options[ - 1 ] = $args['uo_any_label'];
 			}
-			$forms = \Forminator_API::get_forms(null, 1, 999);
+			$forms = \Forminator_API::get_forms( null, 1, 999 );
 
 			//$forms = forminator_cform_modules( 999, 'publish' );
 			if ( ! empty( $forms ) ) {

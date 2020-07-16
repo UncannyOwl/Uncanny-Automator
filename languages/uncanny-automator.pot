@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Uncanny Automator plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 2.5.1\n"
+"Project-Id-Version: Uncanny Automator 2.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-07-13T17:35:05+00:00\n"
+"POT-Creation-Date: 2020-07-16T15:54:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
@@ -42,44 +42,44 @@ msgstr ""
 msgid "Enter a number of days below to have trigger and action log entries older than the specified number of days automatically deleted from your site daily. Trigger and action log entries will only be deleted for recipes with \"Completed\" status."
 msgstr ""
 
-#: src/core/classes/admin-menu.php:128
-#: src/core/classes/admin-menu.php:170
+#: src/core/classes/admin-menu.php:125
+#: src/core/classes/admin-menu.php:167
 #: src/core/classes/recipe-post-type.php:67
 msgid "Recipe log"
 msgstr ""
 
-#: src/core/classes/admin-menu.php:129
-#: src/core/classes/admin-menu.php:174
+#: src/core/classes/admin-menu.php:126
+#: src/core/classes/admin-menu.php:171
 #: src/core/classes/recipe-post-type.php:70
 msgid "Trigger log"
 msgstr ""
 
-#: src/core/classes/admin-menu.php:130
-#: src/core/classes/admin-menu.php:178
+#: src/core/classes/admin-menu.php:127
+#: src/core/classes/admin-menu.php:175
 #: src/core/classes/recipe-post-type.php:73
 msgid "Action log"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/classes/admin-menu.php:139
+#: src/core/classes/admin-menu.php:136
 msgid "%1$s settings"
 msgstr ""
 
-#: src/core/classes/admin-menu.php:141
+#: src/core/classes/admin-menu.php:138
 #: src/integrations/popup-maker/add-popup-maker-integration.php:103
 msgid "Settings"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:190
+#: src/core/classes/admin-menu.php:187
 #: src/core/classes/recipe-post-type.php:304
 msgid "Recipe type"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:192
-#: src/core/classes/admin-menu.php:232
-#: src/core/classes/admin-menu.php:277
+#: src/core/classes/admin-menu.php:189
+#: src/core/classes/admin-menu.php:229
+#: src/core/classes/admin-menu.php:274
 #: src/core/classes/recipe-post-type.php:161
 #: src/core/classes/recipe-post-type.php:197
 #: src/core/classes/recipe-post-type.php:430
@@ -89,49 +89,50 @@ msgstr ""
 
 #. translators: Log column. The recipe status
 #. translators: Log column. The action status
-#: src/core/classes/admin-menu.php:194
-#: src/core/classes/admin-menu.php:273
+#: src/core/classes/admin-menu.php:191
+#: src/core/classes/admin-menu.php:270
+#: src/integrations/wp/actions/wp-createpost.php:107
 msgid "Status"
 msgstr ""
 
 #. translators: Log column. The recipe completion date
 #. translators: Log column. The trigger completion date
 #. translators: Log column. The action completion date
-#: src/core/classes/admin-menu.php:196
-#: src/core/classes/admin-menu.php:230
-#: src/core/classes/admin-menu.php:271
+#: src/core/classes/admin-menu.php:193
+#: src/core/classes/admin-menu.php:227
+#: src/core/classes/admin-menu.php:268
 msgid "Completion date"
 msgstr ""
 
 #. translators: Log column. Noun. The recipe iteration
-#: src/core/classes/admin-menu.php:199
+#: src/core/classes/admin-menu.php:196
 msgid "Run #"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:201
-#: src/core/classes/admin-menu.php:242
-#: src/core/classes/admin-menu.php:285
+#: src/core/classes/admin-menu.php:198
+#: src/core/classes/admin-menu.php:239
+#: src/core/classes/admin-menu.php:282
 #: src/core/mu-classes/composite-classes/automator-options.php:747
-#: src/integrations/buddypress/helpers/buddypress-helpers.php:108
+#: src/integrations/buddypress/helpers/buddypress-helpers.php:125
 msgid "User"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:228
+#: src/core/classes/admin-menu.php:225
 #: src/core/mu-classes/composite-classes/automator-translations.php:63
 msgid "Trigger"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:234
-#: src/core/classes/admin-menu.php:279
+#: src/core/classes/admin-menu.php:231
+#: src/core/classes/admin-menu.php:276
 msgid "Recipe status"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:236
-#: src/core/classes/admin-menu.php:281
+#: src/core/classes/admin-menu.php:233
+#: src/core/classes/admin-menu.php:278
 #: src/core/views/filters.php:39
 #: src/core/views/filters.php:78
 #: src/core/views/filters.php:121
@@ -139,24 +140,24 @@ msgid "Recipe completion date"
 msgstr ""
 
 #. translators: Log column. Noun. The recipe iteration
-#: src/core/classes/admin-menu.php:238
-#: src/core/classes/admin-menu.php:283
+#: src/core/classes/admin-menu.php:235
+#: src/core/classes/admin-menu.php:280
 msgid "Recipe run #"
 msgstr ""
 
 #. translators: Log column. Noun. The trigger iteration
-#: src/core/classes/admin-menu.php:240
+#: src/core/classes/admin-menu.php:237
 msgid "Trigger run #"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:269
+#: src/core/classes/admin-menu.php:266
 #: src/core/mu-classes/composite-classes/automator-translations.php:87
 msgid "Action"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/classes/admin-menu.php:275
+#: src/core/classes/admin-menu.php:272
 msgid "Notes"
 msgstr ""
 
@@ -665,7 +666,9 @@ msgid "{{A tag}} is removed from a user"
 msgstr ""
 
 #. translators: Action - WP Fusion
+#. translators: Action - Groundhogg
 #: src/core/classes/recipe-post-type.php:1889
+#: src/integrations/groundhogg/actions/gh-removetag.php:58
 msgid "Remove {{a tag}} from the user"
 msgstr ""
 
@@ -704,6 +707,8 @@ msgstr ""
 
 #: src/core/classes/recipe-taxonomies.php:62
 #: src/core/classes/recipe-taxonomies.php:138
+#: src/integrations/groundhogg/actions/gh-addtag.php:44
+#: src/integrations/groundhogg/actions/gh-removetag.php:44
 msgid "Tags"
 msgstr ""
 
@@ -725,134 +730,134 @@ msgid "Something went wrong while connecting to application. Please try again."
 msgstr ""
 
 #. translators: 1: Post ID
-#: src/core/includes/logs-list-table.php:358
-#: src/core/includes/logs-list-table.php:444
+#: src/core/includes/logs-list-table.php:359
+#: src/core/includes/logs-list-table.php:447
 #: src/core/mu-classes/composite-classes/automator-options.php:855
 #: src/core/mu-classes/composite-classes/automator-options.php:1399
 #: src/core/mu-classes/composite-classes/automator-options.php:2483
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:463
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:103
-#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:75
-#: src/integrations/wp/helpers/wp-helpers.php:70
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:550
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:127
+#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:99
+#: src/integrations/wp/helpers/wp-helpers.php:80
 msgid "ID: %1$s (no title)"
 msgstr ""
 
 #. translators: User type
-#: src/core/includes/logs-list-table.php:365
-#: src/core/includes/logs-list-table.php:467
-#: src/core/includes/logs-list-table.php:584
+#: src/core/includes/logs-list-table.php:366
+#: src/core/includes/logs-list-table.php:470
+#: src/core/includes/logs-list-table.php:589
 msgctxt "User"
 msgid "Anonymous"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:373
+#: src/core/includes/logs-list-table.php:374
 msgctxt "Recipe"
 msgid "Completed"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:376
+#: src/core/includes/logs-list-table.php:377
 msgctxt "Recipe"
 msgid "Completed with errors"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:379
+#: src/core/includes/logs-list-table.php:380
 msgctxt "Recipe"
 msgid "Completed - do nothing"
 msgstr ""
 
 #. translators: Recipe status
-#: src/core/includes/logs-list-table.php:382
+#: src/core/includes/logs-list-table.php:383
 msgctxt "Recipe"
 msgid "In progress"
 msgstr ""
 
 #. translators: Recipe type. Logged-in recipes are triggered only by logged-in users
-#: src/core/includes/logs-list-table.php:390
-#: src/core/includes/logs-list-table.php:394
-#: src/core/mu-classes/composite-classes/automator-translations.php:357
+#: src/core/includes/logs-list-table.php:391
+#: src/core/includes/logs-list-table.php:395
+#: src/core/mu-classes/composite-classes/automator-translations.php:360
 msgctxt "Recipe"
 msgid "Logged-in"
 msgstr ""
 
 #. translators: Recipe type. Anonymous recipes can be triggered by logged-in or anonymous users. Anonymous recipes can create new users or modify existing users.
-#: src/core/includes/logs-list-table.php:397
+#: src/core/includes/logs-list-table.php:399
 msgctxt "Recipe"
 msgid "Anonymous"
 msgstr ""
 
 #. translators: Trigger status
-#: src/core/includes/logs-list-table.php:452
-msgctxt "Trigger"
-msgid "Completed"
-msgstr ""
-
-#. translators: Trigger status
 #: src/core/includes/logs-list-table.php:455
 msgctxt "Trigger"
-msgid "Completed with errors"
+msgid "Completed"
 msgstr ""
 
 #. translators: Trigger status
 #: src/core/includes/logs-list-table.php:458
 msgctxt "Trigger"
-msgid "Completed, do nothing"
+msgid "Completed with errors"
 msgstr ""
 
 #. translators: Trigger status
 #: src/core/includes/logs-list-table.php:461
 msgctxt "Trigger"
+msgid "Completed, do nothing"
+msgstr ""
+
+#. translators: Trigger status
+#: src/core/includes/logs-list-table.php:464
+msgctxt "Trigger"
 msgid "In progress"
 msgstr ""
 
 #. translators: 1. Trigger ID
-#: src/core/includes/logs-list-table.php:474
+#: src/core/includes/logs-list-table.php:477
 msgid "Trigger deleted: %1$s"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/includes/logs-list-table.php:483
-#: src/core/includes/logs-list-table.php:547
+#: src/core/includes/logs-list-table.php:486
+#: src/core/includes/logs-list-table.php:551
 msgid "(Reactivate %1$s to view)"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:506
+#: src/core/includes/logs-list-table.php:509
 msgid "%d of %d"
 msgstr ""
 
-#: src/core/includes/logs-list-table.php:528
+#: src/core/includes/logs-list-table.php:531
 msgid "Error"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:531
-#: src/core/includes/logs-list-table.php:565
+#: src/core/includes/logs-list-table.php:534
+#: src/core/includes/logs-list-table.php:570
 msgctxt "Action"
 msgid "Completed"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:534
-#: src/core/includes/logs-list-table.php:571
+#: src/core/includes/logs-list-table.php:537
+#: src/core/includes/logs-list-table.php:576
 msgctxt "Action"
 msgid "Completed, do nothing"
 msgstr ""
 
 #. translators: 1. Action ID
-#: src/core/includes/logs-list-table.php:538
+#: src/core/includes/logs-list-table.php:541
 msgid "Action deleted: %1$s"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:568
+#: src/core/includes/logs-list-table.php:573
 msgctxt "Action"
 msgid "Completed with errors"
 msgstr ""
 
 #. translators: Action status
-#: src/core/includes/logs-list-table.php:574
+#: src/core/includes/logs-list-table.php:579
 msgctxt "Action"
 msgid "In progress"
 msgstr ""
@@ -879,11 +884,11 @@ msgid "An error occurred while running this action."
 msgstr ""
 
 #. translators: Article. Fallback. Any type of content (post, page, media, etc)
-#: src/core/mu-classes/composite-classes/automator-input-parser.php:385
+#: src/core/mu-classes/composite-classes/automator-input-parser.php:398
 msgid "Any"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-input-parser.php:429
+#: src/core/mu-classes/composite-classes/automator-input-parser.php:442
 msgid "Click here to reset your password."
 msgstr ""
 
@@ -897,7 +902,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:133
 #: src/core/mu-classes/composite-classes/automator-options.php:372
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers-field.php:37
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:338
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:347
 msgid "Example: 1"
 msgstr ""
 
@@ -919,103 +924,103 @@ msgid "Option"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:364
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:330
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:339
 msgid "Number of times"
 msgstr ""
 
 #. translators: Noun
 #: src/core/mu-classes/composite-classes/automator-options.php:395
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:361
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:370
 msgid "Condition"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:400
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:366
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:375
 #: src/integrations/woocommerce/tokens/wc-tokens.php:264
 msgid "equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:401
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:367
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:376
 #: src/integrations/woocommerce/tokens/wc-tokens.php:267
 msgid "not equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:402
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:368
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:377
 #: src/integrations/woocommerce/tokens/wc-tokens.php:258
 msgid "less than"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:403
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:369
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:378
 #: src/integrations/woocommerce/tokens/wc-tokens.php:261
 msgid "greater than"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:404
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:370
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:379
 #: src/integrations/woocommerce/tokens/wc-tokens.php:270
 msgid "greater or equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:405
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:371
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:380
 #: src/integrations/woocommerce/tokens/wc-tokens.php:273
 msgid "less or equal to"
 msgstr ""
 
 #. translators: Noun
 #: src/core/mu-classes/composite-classes/automator-options.php:422
-#: src/integrations/wp/helpers/wp-helpers.php:93
+#: src/integrations/wp/helpers/wp-helpers.php:108
 #: src/integrations/wp/triggers/wp-viewcustompost.php:79
 msgid "Post"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:433
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:511
-#: src/integrations/wp/helpers/wp-helpers.php:105
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:626
+#: src/integrations/wp/helpers/wp-helpers.php:120
 msgid "Any post"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:442
-#: src/integrations/wp/helpers/wp-helpers.php:114
+#: src/integrations/wp/helpers/wp-helpers.php:129
 msgid "Post title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:443
-#: src/integrations/wp/helpers/wp-helpers.php:115
+#: src/integrations/wp/helpers/wp-helpers.php:130
 msgid "Post ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:444
-#: src/integrations/wp/helpers/wp-helpers.php:116
+#: src/integrations/wp/helpers/wp-helpers.php:131
 msgid "Post URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:460
-#: src/integrations/wp/helpers/wp-helpers.php:133
+#: src/integrations/wp/helpers/wp-helpers.php:153
 msgid "Page"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:471
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:421
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:503
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:430
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:618
 msgid "Any page"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:480
-#: src/integrations/wp/helpers/wp-helpers.php:154
+#: src/integrations/wp/helpers/wp-helpers.php:174
 msgid "Page title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:481
-#: src/integrations/wp/helpers/wp-helpers.php:155
+#: src/integrations/wp/helpers/wp-helpers.php:175
 msgid "Page ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:482
-#: src/integrations/wp/helpers/wp-helpers.php:156
+#: src/integrations/wp/helpers/wp-helpers.php:176
 msgid "Page URL"
 msgstr ""
 
@@ -1026,19 +1031,19 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1584
 #: src/integrations/learndash/actions/ld-marklessondone.php:63
 #: src/integrations/learndash/actions/ld-marktopicdone.php:76
-#: src/integrations/learndash/helpers/learndash-helpers.php:61
+#: src/integrations/learndash/helpers/learndash-helpers.php:81
 #: src/integrations/learndash/triggers/ld-lessondone.php:77
 #: src/integrations/learndash/triggers/ld-topicdone.php:91
 #: src/integrations/learnpress/actions/lp-marklessondone.php:60
 #: src/integrations/learnpress/actions/lp-marksectiondone.php:62
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:63
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:77
 #: src/integrations/learnpress/triggers/lp-courseenrolled.php:50
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:46
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:65
 #: src/integrations/lifterlms/triggers/lf-courseenrolled.php:50
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:87
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:46
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:111
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:64
 #: src/integrations/wp-courseware/triggers/wpcw-userenrolled.php:50
-#: src/integrations/wplms/helpers/wplms-helpers.php:88
+#: src/integrations/wplms/helpers/wplms-helpers.php:112
 #: src/integrations/wplms/triggers/wplms-coursestarted.php:50
 msgid "Course"
 msgstr ""
@@ -1048,20 +1053,20 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1264
 #: src/core/mu-classes/composite-classes/automator-options.php:1553
 #: src/core/mu-classes/composite-classes/automator-options.php:1595
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:519
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:634
 #: src/integrations/learndash/actions/ld-marklessondone.php:45
 #: src/integrations/learndash/actions/ld-marktopicdone.php:48
-#: src/integrations/learndash/helpers/learndash-helpers.php:72
+#: src/integrations/learndash/helpers/learndash-helpers.php:92
 #: src/integrations/learndash/triggers/ld-lessondone.php:45
 #: src/integrations/learndash/triggers/ld-topicdone.php:45
 #: src/integrations/learndash/triggers/ld-topicdone.php:55
 #: src/integrations/learnpress/actions/lp-marklessondone.php:42
 #: src/integrations/learnpress/actions/lp-marksectiondone.php:44
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:75
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:58
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:101
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:57
-#: src/integrations/wplms/helpers/wplms-helpers.php:99
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:89
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:77
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:125
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:75
+#: src/integrations/wplms/helpers/wplms-helpers.php:123
 msgid "Any course"
 msgstr ""
 
@@ -1070,14 +1075,14 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1276
 #: src/core/mu-classes/composite-classes/automator-options.php:1565
 #: src/core/mu-classes/composite-classes/automator-options.php:1607
-#: src/integrations/learndash/helpers/learndash-helpers.php:81
+#: src/integrations/learndash/helpers/learndash-helpers.php:101
 #: src/integrations/learndash/triggers/ld-lessondone.php:47
 #: src/integrations/learndash/triggers/ld-topicdone.php:57
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:87
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:70
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:113
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:69
-#: src/integrations/wplms/helpers/wplms-helpers.php:111
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:101
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:89
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:137
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:87
+#: src/integrations/wplms/helpers/wplms-helpers.php:135
 msgid "Course title"
 msgstr ""
 
@@ -1086,14 +1091,14 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1277
 #: src/core/mu-classes/composite-classes/automator-options.php:1566
 #: src/core/mu-classes/composite-classes/automator-options.php:1608
-#: src/integrations/learndash/helpers/learndash-helpers.php:82
+#: src/integrations/learndash/helpers/learndash-helpers.php:102
 #: src/integrations/learndash/triggers/ld-lessondone.php:48
 #: src/integrations/learndash/triggers/ld-topicdone.php:58
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:88
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:71
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:114
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:70
-#: src/integrations/wplms/helpers/wplms-helpers.php:112
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:102
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:90
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:138
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:88
+#: src/integrations/wplms/helpers/wplms-helpers.php:136
 msgid "Course ID"
 msgstr ""
 
@@ -1102,14 +1107,14 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1278
 #: src/core/mu-classes/composite-classes/automator-options.php:1567
 #: src/core/mu-classes/composite-classes/automator-options.php:1609
-#: src/integrations/learndash/helpers/learndash-helpers.php:83
+#: src/integrations/learndash/helpers/learndash-helpers.php:103
 #: src/integrations/learndash/triggers/ld-lessondone.php:49
 #: src/integrations/learndash/triggers/ld-topicdone.php:59
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:89
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:72
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:115
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:71
-#: src/integrations/wplms/helpers/wplms-helpers.php:113
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:103
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:91
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:139
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:89
+#: src/integrations/wplms/helpers/wplms-helpers.php:137
 msgid "Course URL"
 msgstr ""
 
@@ -1118,182 +1123,182 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1294
 #: src/integrations/learndash/actions/ld-marklessondone.php:74
 #: src/integrations/learndash/actions/ld-marktopicdone.php:89
-#: src/integrations/learndash/helpers/learndash-helpers.php:100
+#: src/integrations/learndash/helpers/learndash-helpers.php:126
 #: src/integrations/learndash/triggers/ld-lessondone.php:89
 #: src/integrations/learndash/triggers/ld-topicdone.php:105
 #: src/integrations/learnpress/actions/lp-marklessondone.php:83
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:105
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:125
 #: src/integrations/lifterlms/actions/lf-marklessondone.php:49
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:88
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:43
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:113
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:62
 msgid "Lesson"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:548
 #: src/core/mu-classes/composite-classes/automator-options.php:1222
 #: src/core/mu-classes/composite-classes/automator-options.php:1305
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:527
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:642
 #: src/integrations/learndash/actions/ld-marktopicdone.php:58
-#: src/integrations/learndash/helpers/learndash-helpers.php:111
-#: src/integrations/learndash/helpers/learndash-helpers.php:284
-#: src/integrations/learndash/helpers/learndash-helpers.php:349
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:117
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:100
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:57
+#: src/integrations/learndash/helpers/learndash-helpers.php:137
+#: src/integrations/learndash/helpers/learndash-helpers.php:328
+#: src/integrations/learndash/helpers/learndash-helpers.php:394
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:137
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:125
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:76
 msgid "Any lesson"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:557
 #: src/core/mu-classes/composite-classes/automator-options.php:1234
 #: src/core/mu-classes/composite-classes/automator-options.php:1317
-#: src/integrations/learndash/helpers/learndash-helpers.php:120
+#: src/integrations/learndash/helpers/learndash-helpers.php:146
 #: src/integrations/learndash/triggers/ld-lessondone.php:52
 #: src/integrations/learndash/triggers/ld-topicdone.php:62
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:129
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:112
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:69
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:149
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:137
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:88
 msgid "Lesson title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:558
 #: src/core/mu-classes/composite-classes/automator-options.php:1235
 #: src/core/mu-classes/composite-classes/automator-options.php:1318
-#: src/integrations/learndash/helpers/learndash-helpers.php:121
+#: src/integrations/learndash/helpers/learndash-helpers.php:147
 #: src/integrations/learndash/triggers/ld-lessondone.php:53
 #: src/integrations/learndash/triggers/ld-topicdone.php:63
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:130
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:113
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:70
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:150
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:138
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:89
 msgid "Lesson ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:559
 #: src/core/mu-classes/composite-classes/automator-options.php:1236
 #: src/core/mu-classes/composite-classes/automator-options.php:1319
-#: src/integrations/learndash/helpers/learndash-helpers.php:122
+#: src/integrations/learndash/helpers/learndash-helpers.php:148
 #: src/integrations/learndash/triggers/ld-lessondone.php:54
 #: src/integrations/learndash/triggers/ld-topicdone.php:64
-#: src/integrations/learnpress/helpers/learnpress-helpers.php:131
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:114
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:71
+#: src/integrations/learnpress/helpers/learnpress-helpers.php:151
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:139
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:90
 msgid "Lesson URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:575
 #: src/integrations/learndash/actions/ld-marktopicdone.php:100
-#: src/integrations/learndash/helpers/learndash-helpers.php:139
+#: src/integrations/learndash/helpers/learndash-helpers.php:171
 #: src/integrations/learndash/triggers/ld-topicdone.php:117
 msgid "Topic"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:586
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:535
-#: src/integrations/learndash/helpers/learndash-helpers.php:150
-#: src/integrations/learndash/helpers/learndash-helpers.php:383
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:650
+#: src/integrations/learndash/helpers/learndash-helpers.php:182
+#: src/integrations/learndash/helpers/learndash-helpers.php:430
 msgid "Any topic"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:595
-#: src/integrations/learndash/helpers/learndash-helpers.php:159
+#: src/integrations/learndash/helpers/learndash-helpers.php:191
 #: src/integrations/learndash/triggers/ld-topicdone.php:67
 msgid "Topic title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:596
-#: src/integrations/learndash/helpers/learndash-helpers.php:160
+#: src/integrations/learndash/helpers/learndash-helpers.php:192
 #: src/integrations/learndash/triggers/ld-topicdone.php:68
 msgid "Topic ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:597
-#: src/integrations/learndash/helpers/learndash-helpers.php:161
+#: src/integrations/learndash/helpers/learndash-helpers.php:193
 #: src/integrations/learndash/triggers/ld-topicdone.php:69
 msgid "Topic URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:613
 #: src/core/mu-classes/composite-classes/automator-options.php:699
-#: src/integrations/buddypress/helpers/buddypress-helpers.php:50
-#: src/integrations/learndash/helpers/learndash-helpers.php:177
+#: src/integrations/buddypress/helpers/buddypress-helpers.php:68
+#: src/integrations/learndash/helpers/learndash-helpers.php:215
 msgid "Group"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:627
 #: src/core/mu-classes/composite-classes/automator-options.php:694
-#: src/integrations/buddypress/helpers/buddypress-helpers.php:45
-#: src/integrations/learndash/helpers/learndash-helpers.php:189
-#: src/integrations/learndash/helpers/learndash-helpers.php:191
+#: src/integrations/buddypress/helpers/buddypress-helpers.php:63
+#: src/integrations/learndash/helpers/learndash-helpers.php:227
+#: src/integrations/learndash/helpers/learndash-helpers.php:229
 msgid "Any group"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:637
-#: src/integrations/learndash/helpers/learndash-helpers.php:201
+#: src/integrations/learndash/helpers/learndash-helpers.php:239
 msgid "Group title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:638
-#: src/integrations/learndash/helpers/learndash-helpers.php:202
+#: src/integrations/learndash/helpers/learndash-helpers.php:240
 msgid "Group ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:639
-#: src/integrations/learndash/helpers/learndash-helpers.php:203
+#: src/integrations/learndash/helpers/learndash-helpers.php:241
 msgid "Group URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:655
 #: src/core/mu-classes/composite-classes/automator-options.php:1666
 #: src/core/mu-classes/composite-classes/automator-options.php:2341
-#: src/integrations/learndash/helpers/learndash-helpers.php:220
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:214
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:131
-#: src/integrations/wplms/helpers/wplms-helpers.php:45
+#: src/integrations/learndash/helpers/learndash-helpers.php:264
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:257
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:161
+#: src/integrations/wplms/helpers/wplms-helpers.php:64
 msgid "Quiz"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:666
 #: src/core/mu-classes/composite-classes/automator-options.php:1677
 #: src/core/mu-classes/composite-classes/automator-options.php:2352
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:543
-#: src/integrations/learndash/helpers/learndash-helpers.php:231
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:226
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:145
-#: src/integrations/wplms/helpers/wplms-helpers.php:56
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:658
+#: src/integrations/learndash/helpers/learndash-helpers.php:275
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:269
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:175
+#: src/integrations/wplms/helpers/wplms-helpers.php:75
 msgid "Any quiz"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:675
 #: src/core/mu-classes/composite-classes/automator-options.php:1689
 #: src/core/mu-classes/composite-classes/automator-options.php:2364
-#: src/integrations/learndash/helpers/learndash-helpers.php:240
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:238
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:157
-#: src/integrations/wplms/helpers/wplms-helpers.php:68
+#: src/integrations/learndash/helpers/learndash-helpers.php:284
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:281
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:187
+#: src/integrations/wplms/helpers/wplms-helpers.php:87
 msgid "Quiz title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:676
 #: src/core/mu-classes/composite-classes/automator-options.php:1690
 #: src/core/mu-classes/composite-classes/automator-options.php:2365
-#: src/integrations/learndash/helpers/learndash-helpers.php:241
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:239
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:158
-#: src/integrations/wplms/helpers/wplms-helpers.php:69
+#: src/integrations/learndash/helpers/learndash-helpers.php:285
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:282
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:188
+#: src/integrations/wplms/helpers/wplms-helpers.php:88
 msgid "Quiz ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:677
 #: src/core/mu-classes/composite-classes/automator-options.php:1691
 #: src/core/mu-classes/composite-classes/automator-options.php:2366
-#: src/integrations/learndash/helpers/learndash-helpers.php:242
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:240
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:159
-#: src/integrations/wplms/helpers/wplms-helpers.php:70
+#: src/integrations/learndash/helpers/learndash-helpers.php:286
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:283
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:189
+#: src/integrations/wplms/helpers/wplms-helpers.php:89
 msgid "Quiz URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:753
-#: src/integrations/buddypress/helpers/buddypress-helpers.php:114
+#: src/integrations/buddypress/helpers/buddypress-helpers.php:131
 msgid "Any user"
 msgstr ""
 
@@ -1302,12 +1307,14 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2105
 #: src/core/mu-classes/composite-classes/automator-options.php:2166
 #: src/core/mu-classes/composite-classes/automator-options.php:2227
-#: src/integrations/edd/helpers/edd-helpers.php:41
+#: src/integrations/edd/helpers/edd-helpers.php:63
 #: src/integrations/edd/triggers/edd-productpurchase.php:50
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:44
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:99
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:161
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:45
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:63
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:125
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:193
+#: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:63
+#: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:50
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:60
 #: src/integrations/woocommerce/triggers/wc-purchprod.php:36
 msgid "Product"
 msgstr ""
@@ -1317,10 +1324,11 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2147
 #: src/core/mu-classes/composite-classes/automator-options.php:2208
 #: src/core/mu-classes/composite-classes/automator-options.php:2262
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:80
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:142
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:204
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:66
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:100
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:168
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:236
+#: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:84
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:81
 msgid "Product title"
 msgstr ""
 
@@ -1329,10 +1337,11 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2148
 #: src/core/mu-classes/composite-classes/automator-options.php:2209
 #: src/core/mu-classes/composite-classes/automator-options.php:2263
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:81
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:143
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:205
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:67
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:101
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:169
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:237
+#: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:85
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:82
 msgid "Product ID"
 msgstr ""
 
@@ -1341,10 +1350,11 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2149
 #: src/core/mu-classes/composite-classes/automator-options.php:2210
 #: src/core/mu-classes/composite-classes/automator-options.php:2264
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:82
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:144
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:206
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:68
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:102
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:170
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:238
+#: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:86
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:83
 msgid "Product URL"
 msgstr ""
 
@@ -1362,93 +1372,93 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1842
 #: src/core/mu-classes/composite-classes/automator-options.php:2281
 #: src/core/mu-classes/composite-classes/automator-options.php:2423
-#: src/integrations/caldera-forms/helpers/caldera-helpers.php:44
-#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:41
-#: src/integrations/formidable/helpers/formidable-helpers.php:44
-#: src/integrations/forminator/helpers/forminator-helpers.php:44
-#: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:44
-#: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:45
-#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:43
+#: src/integrations/caldera-forms/helpers/caldera-helpers.php:62
+#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:63
+#: src/integrations/formidable/helpers/formidable-helpers.php:63
+#: src/integrations/forminator/helpers/forminator-helpers.php:63
+#: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:62
+#: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:64
+#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:62
 #: src/integrations/ultimate-member/triggers/um-userlogsin.php:41
 #: src/integrations/ultimate-member/triggers/um-userregister.php:42
-#: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:44
-#: src/integrations/wpforms/helpers/wpforms-helpers.php:48
+#: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:63
+#: src/integrations/wpforms/helpers/wpforms-helpers.php:66
 msgid "Form"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:923
-#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:78
-#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:92
+#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:94
+#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:116
 msgid "Form title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:924
-#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:79
-#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:93
+#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:95
+#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:117
 msgid "Form ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:925
-#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:80
+#: src/integrations/contact-form7/helpers/contact-form7-helpers.php:96
 msgid "Form URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:941
-#: src/integrations/bbpress/helpers/bbpress-helpers.php:44
+#: src/integrations/bbpress/helpers/bbpress-helpers.php:63
 msgid "Forum"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:961
-#: src/integrations/bbpress/helpers/bbpress-helpers.php:65
+#: src/integrations/bbpress/helpers/bbpress-helpers.php:84
 msgid "Forum title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:962
-#: src/integrations/bbpress/helpers/bbpress-helpers.php:66
+#: src/integrations/bbpress/helpers/bbpress-helpers.php:85
 msgid "Forum ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:963
-#: src/integrations/bbpress/helpers/bbpress-helpers.php:67
+#: src/integrations/bbpress/helpers/bbpress-helpers.php:86
 msgid "Forum URL"
 msgstr ""
 
 #. translators: WordPress role
 #: src/core/mu-classes/composite-classes/automator-options.php:1007
-#: src/integrations/wp/helpers/wp-helpers.php:173
+#: src/integrations/wp/helpers/wp-helpers.php:198
 msgid "Role"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1081
 #: src/core/mu-classes/composite-classes/automator-options.php:2465
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:44
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:84
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:62
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:107
 msgid "Event"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1102
 #: src/core/mu-classes/composite-classes/automator-options.php:2501
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:66
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:121
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:84
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:145
 msgid "Event title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1103
 #: src/core/mu-classes/composite-classes/automator-options.php:2502
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:67
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:122
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:85
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:146
 msgid "Event ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1104
 #: src/core/mu-classes/composite-classes/automator-options.php:2503
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:68
-#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:123
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:86
+#: src/integrations/event-tickets/helpers/event-tickets-helpers.php:147
 msgid "Event URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1144
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:388
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:397
 msgid "Redirect URL"
 msgstr ""
 
@@ -1456,27 +1466,27 @@ msgstr ""
 #: src/integrations/learnpress/actions/lp-marklessondone.php:73
 #: src/integrations/learnpress/actions/lp-marksectiondone.php:73
 #: src/integrations/lifterlms/actions/lf-marksectiondone.php:49
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:130
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:161
 msgid "Section"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1346
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:142
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:173
 msgid "Any section"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1358
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:154
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:185
 msgid "Section title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1359
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:155
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:186
 msgid "Section ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1360
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:156
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:187
 msgid "Section URL"
 msgstr ""
 
@@ -1491,75 +1501,76 @@ msgid "Any %s"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1428
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:559
-#: src/integrations/edd/helpers/edd-helpers.php:53
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:674
+#: src/integrations/edd/helpers/edd-helpers.php:75
 msgid "Any download"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1440
-#: src/integrations/edd/helpers/edd-helpers.php:65
+#: src/integrations/edd/helpers/edd-helpers.php:87
 msgid "Download title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1441
-#: src/integrations/edd/helpers/edd-helpers.php:66
+#: src/integrations/edd/helpers/edd-helpers.php:88
 msgid "Download ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1442
-#: src/integrations/edd/helpers/edd-helpers.php:67
+#: src/integrations/edd/helpers/edd-helpers.php:89
 msgid "Download URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1458
 #: src/core/mu-classes/composite-classes/automator-options.php:1625
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:131
-#: src/integrations/wplms/helpers/wplms-helpers.php:130
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:161
+#: src/integrations/wplms/helpers/wplms-helpers.php:159
 msgid "Unit"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1469
 #: src/core/mu-classes/composite-classes/automator-options.php:1636
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:567
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:143
-#: src/integrations/wplms/helpers/wplms-helpers.php:141
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:682
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:173
+#: src/integrations/wplms/helpers/wplms-helpers.php:170
 msgid "Any unit"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1481
 #: src/core/mu-classes/composite-classes/automator-options.php:1648
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:155
-#: src/integrations/wplms/helpers/wplms-helpers.php:153
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:185
+#: src/integrations/wplms/helpers/wplms-helpers.php:182
 msgid "Unit title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1482
 #: src/core/mu-classes/composite-classes/automator-options.php:1649
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:156
-#: src/integrations/wplms/helpers/wplms-helpers.php:154
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:186
+#: src/integrations/wplms/helpers/wplms-helpers.php:183
 msgid "Unit ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1483
 #: src/core/mu-classes/composite-classes/automator-options.php:1650
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:157
-#: src/integrations/wplms/helpers/wplms-helpers.php:155
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:187
+#: src/integrations/wplms/helpers/wplms-helpers.php:184
 msgid "Unit URL"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1500
 #: src/integrations/learndash/triggers/tc-moduleinteraction.php:62
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:90
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:114
 msgid "Module"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1510
 #: src/integrations/learndash/triggers/tc-moduleinteraction.php:42
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:100
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:124
 msgid "Any module"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1707
+#: src/integrations/wp/actions/wp-createpost.php:128
 msgid "Content"
 msgstr ""
 
@@ -1576,89 +1587,90 @@ msgid "Any content type"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1889
-#: src/integrations/wp/helpers/wp-helpers.php:202
+#: src/integrations/wp/helpers/wp-helpers.php:233
 msgid "Post type"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1942
 #: src/integrations/badgeos/actions/bo-awardachievement-a.php:52
-#: src/integrations/badgeos/helpers/badgeos-helpers.php:56
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:69
 #: src/integrations/gamipress/actions/gp-awardachievement-a.php:52
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:64
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:69
 msgid "Achievement type"
 msgstr ""
 
 #. translators: GamiPress achievement type
 #: src/core/mu-classes/composite-classes/automator-options.php:1965
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:88
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:91
 msgid "Points awards"
 msgstr ""
 
 #. translators: GamiPress achievement type
 #: src/core/mu-classes/composite-classes/automator-options.php:1967
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:90
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:93
 msgid "Step"
 msgstr ""
 
 #. translators: GamiPress achievement type
 #: src/core/mu-classes/composite-classes/automator-options.php:1969
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:92
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:95
 msgid "Rank requirement"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:1999
 #: src/integrations/badgeos/actions/bo-awardpoints-a.php:51
-#: src/integrations/badgeos/helpers/badgeos-helpers.php:108
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:124
 #: src/integrations/gamipress/actions/gp-awardpoints-a.php:52
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:129
 #: src/integrations/mycred/actions/mycred-awardpoints-a.php:51
-#: src/integrations/mycred/helpers/mycred-helpers.php:51
+#: src/integrations/mycred/helpers/mycred-helpers.php:62
 msgid "Point type"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2011
-#: src/integrations/badgeos/helpers/badgeos-helpers.php:120
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:136
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:141
-#: src/integrations/mycred/helpers/mycred-helpers.php:63
+#: src/integrations/mycred/helpers/mycred-helpers.php:74
 msgid "All point types"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2056
-#: src/integrations/badgeos/helpers/badgeos-helpers.php:165
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:194
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:184
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:189
 msgid "Rank type"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2111
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:105
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:131
 msgid "Any one-time subscription product"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2172
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:167
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:199
 msgid "Any recurring subscription product"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2233
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:583
-#: src/integrations/formidable/helpers/formidable-helpers.php:50
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:50
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:57
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:698
+#: src/integrations/formidable/helpers/formidable-helpers.php:69
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:69
+#: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:75
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:72
 #: src/integrations/woocommerce/triggers/wc-purchprod.php:38
 msgid "Any product"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2287
-#: src/integrations/forminator/helpers/forminator-helpers.php:50
-#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:54
+#: src/integrations/forminator/helpers/forminator-helpers.php:69
+#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:73
 #: src/integrations/ultimate-member/triggers/um-userlogsin.php:43
 #: src/integrations/ultimate-member/triggers/um-userregister.php:44
 msgid "Any form"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2382
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:172
-#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:45
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:209
+#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:64
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershipcancel.php:43
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershipexpires.php:43
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershippurch.php:43
@@ -1666,86 +1678,86 @@ msgid "Membership"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2405
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:196
-#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:65
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:233
+#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:84
 msgid "Membership title"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2406
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:197
-#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:66
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:234
+#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:85
 msgid "Membership ID"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:2407
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:198
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:235
 msgid "Membership URL"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:501
-#: src/integrations/wp/helpers/wp-helpers.php:145
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:616
+#: src/integrations/wp/helpers/wp-helpers.php:165
 msgid "All pages"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:509
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:624
 msgid "All posts"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:517
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:632
 msgid "All courses"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:525
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:640
 msgid "All lessons"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:533
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:648
 msgid "All topics"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:541
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:656
 msgid "All quizzes"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:549
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:664
 msgid "All memberships"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:551
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:184
-#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:53
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:666
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:221
+#: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:72
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershipcancel.php:45
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershipexpires.php:45
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershippurch.php:45
 msgid "Any membership"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:557
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:672
 msgid "All downloads"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:565
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:680
 msgid "All units"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:573
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:688
 msgid "All popups"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:575
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:690
 #: src/integrations/popup-maker/actions/pm-popupshow.php:51
 msgid "Any popup"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:581
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:696
 msgid "All products"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:589
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:704
 msgid "All awards"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:591
+#: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:706
 msgid "Any award"
 msgstr ""
 
@@ -2050,377 +2062,388 @@ msgstr ""
 #. translators: Token name
 #: src/core/mu-classes/composite-classes/automator-translations.php:272
 msgctxt "Token"
-msgid "Current date"
+msgid "Automatic login link"
 msgstr ""
 
 #. translators: Token name
 #: src/core/mu-classes/composite-classes/automator-translations.php:275
 msgctxt "Token"
+msgid "Current date"
+msgstr ""
+
+#. translators: Token name
+#: src/core/mu-classes/composite-classes/automator-translations.php:278
+msgctxt "Token"
 msgid "Current time"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/mu-classes/composite-classes/automator-translations.php:281
+#: src/core/mu-classes/composite-classes/automator-translations.php:284
 msgid "Select an integration"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/mu-classes/composite-classes/automator-translations.php:284
+#: src/core/mu-classes/composite-classes/automator-translations.php:287
 msgid "Discover more awesome integrations."
 msgstr ""
 
 #. translators: Number of times the recipe can be triggered per user
-#: src/core/mu-classes/composite-classes/automator-translations.php:289
+#: src/core/mu-classes/composite-classes/automator-translations.php:292
 msgid "Times per user:"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/mu-classes/composite-classes/automator-translations.php:292
+#: src/core/mu-classes/composite-classes/automator-translations.php:295
 msgid "Leave empty for unlimited times"
 msgstr ""
 
 #. translators: Unlimited times
-#: src/core/mu-classes/composite-classes/automator-translations.php:295
+#: src/core/mu-classes/composite-classes/automator-translations.php:298
 msgctxt "Publish"
 msgid "Unlimited"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:297
+#: src/core/mu-classes/composite-classes/automator-translations.php:300
 msgid "This number has to be 1 or bigger"
 msgstr ""
 
 #. translators: Recipe creation date
-#: src/core/mu-classes/composite-classes/automator-translations.php:300
+#: src/core/mu-classes/composite-classes/automator-translations.php:303
 msgctxt "Recipe"
 msgid "Created on:"
 msgstr ""
 
 #. translators: Recipe type
-#: src/core/mu-classes/composite-classes/automator-translations.php:303
+#: src/core/mu-classes/composite-classes/automator-translations.php:306
 msgctxt "Recipe"
 msgid "Type:"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:307
+#: src/core/mu-classes/composite-classes/automator-translations.php:310
 msgid "Are you sure?"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:309
+#: src/core/mu-classes/composite-classes/automator-translations.php:312
 msgid "Deleting items in a {{live}} recipe can lead to unexpected behaviors."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:311
+#: src/core/mu-classes/composite-classes/automator-translations.php:314
 msgid "Setting items to draft in a {{live}} recipe can lead to unexpected behaviors."
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/mu-classes/composite-classes/automator-translations.php:319
+#: src/core/mu-classes/composite-classes/automator-translations.php:322
 msgid "This is a %1$s feature."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:324
+#: src/core/mu-classes/composite-classes/automator-translations.php:327
 msgid "Please ensure the plugin is installed and activated."
 msgstr ""
 
 #. translators: 1. Plugin name
-#: src/core/mu-classes/composite-classes/automator-translations.php:327
+#: src/core/mu-classes/composite-classes/automator-translations.php:330
 msgid "Please install %1$s to activate this recipe."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:330
+#: src/core/mu-classes/composite-classes/automator-translations.php:333
 msgid "Move to trash"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/mu-classes/composite-classes/automator-translations.php:337
+#: src/core/mu-classes/composite-classes/automator-translations.php:340
 msgid "Requires %1$s"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:342
+#: src/core/mu-classes/composite-classes/automator-translations.php:345
 msgid "Send feedback"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/mu-classes/composite-classes/automator-translations.php:354
+#: src/core/mu-classes/composite-classes/automator-translations.php:357
 msgid "Select a recipe type"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:359
+#: src/core/mu-classes/composite-classes/automator-translations.php:362
 msgid "Triggered by logged-in users; supports multiple triggers and many integrations"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:361
+#: src/core/mu-classes/composite-classes/automator-translations.php:364
 msgid "Note: Recipe type cannot be changed later."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:363
+#: src/core/mu-classes/composite-classes/automator-translations.php:366
 msgid "Please select an option."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:365
+#: src/core/mu-classes/composite-classes/automator-translations.php:368
 msgid "Error when saving value."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:367
+#: src/core/mu-classes/composite-classes/automator-translations.php:370
 msgid "Sorry, something went wrong. Please try again."
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/mu-classes/composite-classes/automator-translations.php:372
+#: src/core/mu-classes/composite-classes/automator-translations.php:375
 msgid "Choose who will do the actions"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/mu-classes/composite-classes/automator-translations.php:375
+#: src/core/mu-classes/composite-classes/automator-translations.php:378
 msgid "Set user data"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:377
+#: src/core/mu-classes/composite-classes/automator-translations.php:380
 msgid "Actions will be run on..."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:379
+#: src/core/mu-classes/composite-classes/automator-translations.php:382
 msgid "Log the new user in?"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:382
+#: src/core/mu-classes/composite-classes/automator-translations.php:385
 msgid "Existing user"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:384
+#: src/core/mu-classes/composite-classes/automator-translations.php:387
 msgid "New user"
 msgstr ""
 
 #. translators: 1. Field name, 2. Field value
-#: src/core/mu-classes/composite-classes/automator-translations.php:389
+#: src/core/mu-classes/composite-classes/automator-translations.php:392
 msgctxt "User selector"
 msgid "%1$s matches %2$s"
 msgstr ""
 
 #. translators: 1. An email address
-#: src/core/mu-classes/composite-classes/automator-translations.php:398
+#: src/core/mu-classes/composite-classes/automator-translations.php:401
 msgctxt "User selector"
 msgid "With the email %1$s"
 msgstr ""
 
 #. translators: 1. An action
-#: src/core/mu-classes/composite-classes/automator-translations.php:401
+#: src/core/mu-classes/composite-classes/automator-translations.php:404
 msgctxt "User selector"
 msgid "Otherwise, %1$s"
 msgstr ""
 
 #. translators: Non-personal infinitive verb. It's used after "Otherwise, %1$s"
-#: src/core/mu-classes/composite-classes/automator-translations.php:404
+#: src/core/mu-classes/composite-classes/automator-translations.php:407
 msgctxt "User selector"
 msgid "do nothing"
 msgstr ""
 
 #. translators: Non-personal infinitive verb. It's used after "Otherwise, %1$s"
-#: src/core/mu-classes/composite-classes/automator-translations.php:407
+#: src/core/mu-classes/composite-classes/automator-translations.php:410
 msgctxt "User selector"
 msgid "create a new user"
 msgstr ""
 
 #. translators: Non-personal infinitive verb. It's used after "Otherwise, %1$s"
-#: src/core/mu-classes/composite-classes/automator-translations.php:410
+#: src/core/mu-classes/composite-classes/automator-translations.php:413
 msgctxt "User selector"
 msgid "select an existing user"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:414
+#: src/core/mu-classes/composite-classes/automator-translations.php:417
 msgid "Unique field"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:416
-#: src/core/mu-classes/composite-classes/automator-translations.php:442
+#: src/core/mu-classes/composite-classes/automator-translations.php:419
+#: src/core/mu-classes/composite-classes/automator-translations.php:445
 #: src/integrations/wp/actions/wp-createuser.php:56
 msgid "Email"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:418
+#: src/core/mu-classes/composite-classes/automator-translations.php:421
 msgid "ID"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:420
-#: src/core/mu-classes/composite-classes/automator-translations.php:444
+#: src/core/mu-classes/composite-classes/automator-translations.php:423
+#: src/core/mu-classes/composite-classes/automator-translations.php:447
 #: src/integrations/wp/actions/wp-createuser.php:54
 msgid "Username"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:422
+#: src/core/mu-classes/composite-classes/automator-translations.php:425
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:111
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:146
+#: src/integrations/wp/actions/wp-createpost.php:145
 #: src/integrations/wp/actions/wp-createuser.php:85
-#: src/integrations/wp/actions/wp-sendwebhook.php:109
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:109
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:111
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:146
 msgid "Value"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:424
+#: src/core/mu-classes/composite-classes/automator-translations.php:427
 msgid "Value of the unique field"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:426
+#: src/core/mu-classes/composite-classes/automator-translations.php:429
 msgid "What to do if the user doesn't exist"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:429
+#: src/core/mu-classes/composite-classes/automator-translations.php:432
 msgid "Create new user"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:432
-#: src/core/mu-classes/composite-classes/automator-translations.php:461
+#: src/core/mu-classes/composite-classes/automator-translations.php:435
+#: src/core/mu-classes/composite-classes/automator-translations.php:464
 msgid "Do nothing"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:434
+#: src/core/mu-classes/composite-classes/automator-translations.php:437
 msgid "If no user matches the unique field and value then the actions are not going to be executed."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:438
+#: src/core/mu-classes/composite-classes/automator-translations.php:441
 #: src/integrations/wp/actions/wp-createuser.php:58
 msgid "First name"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:440
+#: src/core/mu-classes/composite-classes/automator-translations.php:443
 #: src/integrations/wp/actions/wp-createuser.php:60
 msgid "Last name"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:446
+#: src/core/mu-classes/composite-classes/automator-translations.php:449
 msgid "Display name"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:448
+#: src/core/mu-classes/composite-classes/automator-translations.php:451
 #: src/integrations/wp/actions/wp-createuser.php:64
 msgid "Password"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:450
+#: src/core/mu-classes/composite-classes/automator-translations.php:453
 msgid "If left empty, you will need to create an action to send the automatically generated password to the user."
 msgstr ""
 
 #. translators: WordPress roles
-#: src/core/mu-classes/composite-classes/automator-translations.php:453
+#: src/core/mu-classes/composite-classes/automator-translations.php:456
 msgid "Roles"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:455
+#: src/core/mu-classes/composite-classes/automator-translations.php:458
 msgid "What to do if the user already exists"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:458
+#: src/core/mu-classes/composite-classes/automator-translations.php:461
 msgid "Select existing user"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:463
+#: src/core/mu-classes/composite-classes/automator-translations.php:466
 msgid "If there is already a user with the defined email address or username, the actions are not going to be executed."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:465
+#: src/core/mu-classes/composite-classes/automator-translations.php:468
 msgid "Prioritized field"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:467
+#: src/core/mu-classes/composite-classes/automator-translations.php:470
 msgid "Select the field that should be prioritized if, during creation of the user, two different users are found (one that matches the email field and another one that matches the username field)."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:472
+#: src/core/mu-classes/composite-classes/automator-translations.php:475
 msgid "Saving title"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:477
+#: src/core/mu-classes/composite-classes/automator-translations.php:480
 msgid "No results found"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:480
+#: src/core/mu-classes/composite-classes/automator-translations.php:483
 msgid "Save"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:483
+#: src/core/mu-classes/composite-classes/automator-translations.php:486
 #: src/core/views/filters.php:161
 msgid "Search"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:485
+#: src/core/mu-classes/composite-classes/automator-translations.php:488
 msgid "Searching"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:488
+#: src/core/mu-classes/composite-classes/automator-translations.php:491
 msgid "Confirm"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:491
+#: src/core/mu-classes/composite-classes/automator-translations.php:494
 msgid "Cancel"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:494
+#: src/core/mu-classes/composite-classes/automator-translations.php:497
 msgid "Delete"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:497
+#: src/core/mu-classes/composite-classes/automator-translations.php:500
 msgid "Edit"
 msgstr ""
 
 #. translators: Noun
-#: src/core/mu-classes/composite-classes/automator-translations.php:500
+#: src/core/mu-classes/composite-classes/automator-translations.php:503
 msgctxt "Item options"
 msgid "Support"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
 #. translators: 1. Learn more
-#: src/core/mu-classes/composite-classes/automator-translations.php:503
-#: src/integrations/wp/actions/wp-sendwebhook.php:72
+#: src/core/mu-classes/composite-classes/automator-translations.php:506
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:72
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:94
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:72
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:94
 msgid "Learn more"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:505
+#: src/core/mu-classes/composite-classes/automator-translations.php:508
 msgid "True"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:507
+#: src/core/mu-classes/composite-classes/automator-translations.php:510
 msgid "False"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:509
+#: src/core/mu-classes/composite-classes/automator-translations.php:512
 msgid "Loading more results..."
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:511
+#: src/core/mu-classes/composite-classes/automator-translations.php:514
 msgid "This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:514
+#: src/core/mu-classes/composite-classes/automator-translations.php:517
 msgid "Add row"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/mu-classes/composite-classes/automator-translations.php:517
+#: src/core/mu-classes/composite-classes/automator-translations.php:520
 msgid "Remove row"
 msgstr ""
 
 #. translators: 1. Row number
-#: src/core/mu-classes/composite-classes/automator-translations.php:520
+#: src/core/mu-classes/composite-classes/automator-translations.php:523
 msgid "Row %1$s"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:522
+#: src/core/mu-classes/composite-classes/automator-translations.php:525
 msgid "Yes"
 msgstr ""
 
-#: src/core/mu-classes/composite-classes/automator-translations.php:524
+#: src/core/mu-classes/composite-classes/automator-translations.php:527
 msgid "No"
 msgstr ""
 
@@ -2561,18 +2584,21 @@ msgstr ""
 #. translators: Noun
 #: src/integrations/badgeos/actions/bo-awardrank-a.php:63
 #: src/integrations/gamipress/actions/gp-awardrank-a.php:64
+#: src/integrations/mycred/actions/mycred-awardrank-a.php:53
 msgid "Rank"
 msgstr ""
 
-#: src/integrations/badgeos/helpers/badgeos-helpers.php:227
-#: src/integrations/badgeos/helpers/badgeos-helpers.php:261
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:256
-#: src/integrations/gamipress/helpers/gamipress-helpers.php:290
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:244
+#: src/integrations/badgeos/helpers/badgeos-helpers.php:278
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:249
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:283
 msgid "Any awards"
 msgstr ""
 
 #. translators: Logged-in trigger - bbPress
+#. translators: Logged-in trigger - wpForo
 #: src/integrations/bbpress/triggers/bb-newtopic.php:42
+#: src/integrations/wpforo/triggers/wpf-addedtopic.php:58
 msgid "A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} times"
 msgstr ""
 
@@ -2652,8 +2678,10 @@ msgid "A user purchases {{a product:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Easy Digital Downloads
+#. translators: Logged-in trigger - Upsell
 #. translators: Logged-in trigger - WooCommerce
 #: src/integrations/edd/triggers/edd-productpurchase.php:44
+#: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:44
 #: src/integrations/woocommerce/triggers/wc-purchprod.php:48
 msgid "A user purchases {{a product}}"
 msgstr ""
@@ -2673,6 +2701,21 @@ msgstr ""
 #: src/integrations/formidable/triggers/fi-submitform.php:42
 #: src/integrations/forminator/triggers/fr-submitform.php:42
 msgid "A user submits {{a form:%1$s}}"
+msgstr ""
+
+#. translators: Action - Groundhogg
+#: src/integrations/groundhogg/actions/gh-addtag.php:56
+msgid "Apply {{a tag:%1$s}} to the user"
+msgstr ""
+
+#. translators: Action - Groundhogg
+#: src/integrations/groundhogg/actions/gh-addtag.php:58
+msgid "Apply {{a tag}} to the user"
+msgstr ""
+
+#. translators: Action - Groundhogg
+#: src/integrations/groundhogg/actions/gh-removetag.php:56
+msgid "Remove {{a tag:%1$s}} from the user"
 msgstr ""
 
 #. translators: Action - LearnDash
@@ -2930,19 +2973,23 @@ msgstr ""
 msgid "Award {{a badge}} to the user"
 msgstr ""
 
-#: src/integrations/mycred/helpers/mycred-helpers.php:102
+#: src/integrations/mycred/actions/mycred-awardbadge-a.php:56
+msgid "Badge"
+msgstr ""
+
+#: src/integrations/mycred/helpers/mycred-helpers.php:118
 msgid "Ranks"
 msgstr ""
 
-#: src/integrations/mycred/helpers/mycred-helpers.php:115
+#: src/integrations/mycred/helpers/mycred-helpers.php:131
 msgid "All ranks"
 msgstr ""
 
-#: src/integrations/mycred/helpers/mycred-helpers.php:152
+#: src/integrations/mycred/helpers/mycred-helpers.php:179
 msgid "Badges"
 msgstr ""
 
-#: src/integrations/mycred/helpers/mycred-helpers.php:163
+#: src/integrations/mycred/helpers/mycred-helpers.php:190
 msgid "All badges"
 msgstr ""
 
@@ -3029,6 +3076,138 @@ msgstr ""
 #. translators: Logged-in trigger - Ultimate Member
 #: src/integrations/ultimate-member/triggers/um-userrolechange.php:50
 msgid "A user's role changes to {{a specific role}}"
+msgstr ""
+
+#. translators: Action - WordPress
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:46
+msgid "Send data to {{a webhook:%1$s}}"
+msgstr ""
+
+#. translators: Action - WordPress
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:48
+msgid "Send data to {{a webhook}}"
+msgstr ""
+
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:59
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:59
+msgid "URL"
+msgstr ""
+
+#. translators: HTTP request method
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:70
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:70
+msgid "Request method"
+msgstr ""
+
+#. translators: 1. Learn more
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:72
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:72
+msgid "%1$s about each different HTTP method."
+msgstr ""
+
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:92
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:92
+msgid "Headers"
+msgstr ""
+
+#. translators: 1. Learn more
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:94
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:94
+msgid "%1$s about HTTP headers."
+msgstr ""
+
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:102
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:102
+msgid "Name"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:119
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:119
+msgid "Add header"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:121
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:121
+msgid "Remove header"
+msgstr ""
+
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:129
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:129
+msgid "Fields"
+msgstr ""
+
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:137
+#: src/integrations/wp/actions/wp-createpost.php:138
+#: src/integrations/wp/actions/wp-createuser.php:78
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:137
+msgid "Key"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:154
+#: src/integrations/wp/actions/wp-createpost.php:150
+#: src/integrations/wp/actions/wp-createuser.php:90
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:154
+msgid "Add pair"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:156
+#: src/integrations/wp/actions/wp-createpost.php:151
+#: src/integrations/wp/actions/wp-createuser.php:91
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:156
+msgid "Remove pair"
+msgstr ""
+
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:163
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:163
+msgid "Documentation"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:170
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:170
+msgid "Send test"
+msgstr ""
+
+#. translators: 1. Webhook URL
+#: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:389
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:144
+#: src/integrations/wp/helpers/wp-helpers.php:353
+#: src/integrations/zapier/actions/zapier-sendwebhook.php:388
+#: src/integrations/zapier/helpers/zapier-helpers.php:158
+msgid "An error was found in the webhook (%1$s) response."
+msgstr ""
+
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:69
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:85
+#: src/integrations/wp/helpers/wp-helpers.php:294
+#: src/integrations/wp/helpers/wp-helpers.php:310
+#: src/integrations/zapier/helpers/zapier-helpers.php:84
+#: src/integrations/zapier/helpers/zapier-helpers.php:102
+msgid "Please enter a valid webhook URL."
+msgstr ""
+
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:92
+#: src/integrations/wp/helpers/wp-helpers.php:317
+#: src/integrations/zapier/helpers/zapier-helpers.php:109
+msgid "Please enter valid fields."
+msgstr ""
+
+#. translators: 1. Webhook URL
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:152
+#: src/integrations/wp/helpers/wp-helpers.php:361
+#: src/integrations/zapier/helpers/zapier-helpers.php:166
+msgid "Successfully sent data on %1$s."
+msgstr ""
+
+#. translators: Logged-in trigger - Upsell
+#. translators: Logged-in trigger - WooCommerce
+#: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:42
+#: src/integrations/woocommerce/triggers/wc-purchprod.php:46
+msgid "A user purchases {{a product:%1$s}} {{a number of:%2$s}} times"
 msgstr ""
 
 #: src/integrations/woocommerce/tokens/wc-tokens.php:27
@@ -3156,11 +3335,6 @@ msgid "Payment method"
 msgstr ""
 
 #. translators: Logged-in trigger - WooCommerce
-#: src/integrations/woocommerce/triggers/wc-purchprod.php:46
-msgid "A user purchases {{a product:%1$s}} {{a number of:%2$s}} times"
-msgstr ""
-
-#. translators: Logged-in trigger - WooCommerce
 #: src/integrations/woocommerce/triggers/wc-viewproduct.php:41
 msgid "A user views {{a product:%1$s}} {{a number of:%2$s}} times"
 msgstr ""
@@ -3218,6 +3392,41 @@ msgstr ""
 msgid "Add {{a new role}} to the user's roles"
 msgstr ""
 
+#: src/integrations/wp/actions/wp-createpost.php:44
+msgid "Type"
+msgstr ""
+
+#. translators: Action - WordPress Core
+#: src/integrations/wp/actions/wp-createpost.php:115
+msgid "Create {{post:%1$s}}"
+msgstr ""
+
+#. translators: Action - WordPress Core
+#: src/integrations/wp/actions/wp-createpost.php:117
+msgid "Create {{post}}"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:125
+msgid "Author"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:125
+msgid "Accepts user ID, email or username"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:126
+msgid "Title"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:127
+msgid "Slug"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:132
+#: src/integrations/wp/actions/wp-createuser.php:72
+msgid "Meta"
+msgstr ""
+
 #. translators: Action - WordPress
 #: src/integrations/wp/actions/wp-createuser.php:45
 msgid "Create the user {{username:%1$s}}"
@@ -3246,30 +3455,6 @@ msgstr ""
 
 #: src/integrations/wp/actions/wp-createuser.php:68
 msgid "Send the new user an email about their account."
-msgstr ""
-
-#: src/integrations/wp/actions/wp-createuser.php:72
-msgid "Meta"
-msgstr ""
-
-#: src/integrations/wp/actions/wp-createuser.php:78
-#: src/integrations/wp/actions/wp-sendwebhook.php:100
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:100
-msgid "Key"
-msgstr ""
-
-#. translators: Non-personal infinitive verb
-#: src/integrations/wp/actions/wp-createuser.php:90
-#: src/integrations/wp/actions/wp-sendwebhook.php:117
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:117
-msgid "Add pair"
-msgstr ""
-
-#. translators: Non-personal infinitive verb
-#: src/integrations/wp/actions/wp-createuser.php:91
-#: src/integrations/wp/actions/wp-sendwebhook.php:119
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:119
-msgid "Remove pair"
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
@@ -3344,57 +3529,6 @@ msgid "Body"
 msgstr ""
 
 #. translators: Action - WordPress
-#: src/integrations/wp/actions/wp-sendwebhook.php:46
-msgid "Send data to {{a webhook:%1$s}}"
-msgstr ""
-
-#. translators: Action - WordPress
-#: src/integrations/wp/actions/wp-sendwebhook.php:48
-msgid "Send data to {{a webhook}}"
-msgstr ""
-
-#: src/integrations/wp/actions/wp-sendwebhook.php:59
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:59
-msgid "URL"
-msgstr ""
-
-#. translators: HTTP request method
-#: src/integrations/wp/actions/wp-sendwebhook.php:70
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:70
-msgid "Request method"
-msgstr ""
-
-#. translators: 1. Learn more
-#: src/integrations/wp/actions/wp-sendwebhook.php:72
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:72
-msgid "%1$s about each different HTTP method."
-msgstr ""
-
-#: src/integrations/wp/actions/wp-sendwebhook.php:92
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:92
-msgid "Fields"
-msgstr ""
-
-#: src/integrations/wp/actions/wp-sendwebhook.php:126
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:126
-msgid "Documentation"
-msgstr ""
-
-#. translators: Non-personal infinitive verb
-#: src/integrations/wp/actions/wp-sendwebhook.php:133
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:133
-msgid "Send test"
-msgstr ""
-
-#. translators: 1. Webhook URL
-#: src/integrations/wp/actions/wp-sendwebhook.php:333
-#: src/integrations/wp/helpers/wp-helpers.php:322
-#: src/integrations/zapier/actions/zapier-sendwebhook.php:332
-#: src/integrations/zapier/helpers/zapier-helpers.php:134
-msgid "An error was found in the webhook (%1$s) response."
-msgstr ""
-
-#. translators: Action - WordPress
 #: src/integrations/wp/actions/wp-userrole.php:42
 msgid "Change the user's role to {{a new role:%1$s}}"
 msgstr ""
@@ -3418,22 +3552,16 @@ msgstr ""
 msgid "Redirect when recipe is completed"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:263
-#: src/integrations/wp/helpers/wp-helpers.php:279
-#: src/integrations/zapier/helpers/zapier-helpers.php:76
-#: src/integrations/zapier/helpers/zapier-helpers.php:94
-msgid "Please enter a valid webhook URL."
+#: src/integrations/wp/tokens/wp-auto-login-token.php:62
+msgid "The user you tried to login as does not exist."
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:286
-#: src/integrations/zapier/helpers/zapier-helpers.php:101
-msgid "Please enter valid fields."
+#: src/integrations/wp/tokens/wp-auto-login-token.php:67
+msgid "The auto login link has expired."
 msgstr ""
 
-#. translators: 1. Webhook URL
-#: src/integrations/wp/helpers/wp-helpers.php:330
-#: src/integrations/zapier/helpers/zapier-helpers.php:142
-msgid "Successfully sent data on %1$s."
+#: src/integrations/wp/tokens/wp-auto-login-token.php:72
+msgid "The auto login link is incorrect."
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
@@ -3501,16 +3629,11 @@ msgstr ""
 
 #. translators: Action - wpForo
 #: src/integrations/wpforo/actions/wpf-userreputation.php:60
-msgid "Award {{a reputation}} to the user"
+msgid "Set the user's reputation to {{a reputation}}"
 msgstr ""
 
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:46
 msgid "Forums"
-msgstr ""
-
-#. translators: Logged-in trigger - wpForo
-#: src/integrations/wpforo/triggers/wpf-addedtopic.php:58
-msgid "A user creates a topic in {{forum:%1$s}} {{a number of:%2$s}} times"
 msgstr ""
 
 #. translators: Logged-in trigger - wpForo

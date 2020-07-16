@@ -3,16 +3,16 @@
 namespace Uncanny_Automator;
 
 /**
- * Class WP_SENDWEBHOOK
+ * Class UOA_SENDWEBHOOK
  * @package Uncanny_Automator
  */
-class WP_SENDWEBHOOK {
+class UOA_SENDWEBHOOK {
 
 	/**
 	 * Integration code
 	 * @var string
 	 */
-	public static $integration = 'WP';
+	public static $integration = 'UOA';
 
 	private $action_code;
 	private $action_meta;
@@ -82,6 +82,43 @@ class WP_SENDWEBHOOK {
 
 						'supports_custom_value' => false,
 						'supports_tokens'       => false,
+					],
+					// Header
+					[
+						'input_type' => 'repeater',
+
+						'option_code' => 'WEBHOOK_HEADERS',
+
+						'label' => __( 'Headers', 'uncanny-automator' ),
+						/* translators: 1. Learn more */
+						'description' => sprintf( __( '%1$s about HTTP headers.', 'uncanny-automator' ), '<a href="#" target="_blank">' . __( 'Learn more', 'uncanny-automator' ) . '</a>' ),
+
+						'required' => false,
+						'fields'   => [
+							[
+								'input_type' => 'text',
+
+								'option_code' => 'NAME',
+								'label'       => __( 'Name', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true
+							],
+							[
+								'input_type' => 'text',
+
+								'option_code' => 'VALUE',
+								'label'       => __( 'Value', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true
+							],
+						],
+
+						/* translators: Non-personal infinitive verb */
+						'add_row_button'    => __( 'Add header', 'uncanny-automator' ),
+						/* translators: Non-personal infinitive verb */
+						'remove_row_button' => __( 'Remove header', 'uncanny-automator' ),
 					],
 					// Fields
 					[
@@ -167,7 +204,7 @@ class WP_SENDWEBHOOK {
 
                 // Get the data we're going to send to the AJAX request
                 let dataToBeSent = {
-                    action: 'sendtest_wp_webhook',
+                    action: 'sendtest_uoa_webhook',
                     nonce: UncannyAutomator.nonce,
 
                     integration_id: data.item.integrationCode,
@@ -286,12 +323,13 @@ class WP_SENDWEBHOOK {
 
 		global $uncanny_automator;
 		$key_values   = [];
+		$headers      = [];
 		$request_type = 'POST';
 		$webhook_url  = null;
 		if ( isset( $action_data['meta']['WEBHOOKURL'] ) ) {
 			$webhook_url = $uncanny_automator->parse->text( $action_data['meta']['WEBHOOKURL'], $recipe_id, $user_id, $args );
 
-			for ( $i = 1; $i <= WP_SENDWEBHOOK::$number_of_keys; $i ++ ) {
+			for ( $i = 1; $i <= UOA_SENDWEBHOOK::$number_of_keys; $i ++ ) {
 
 				$key                = $uncanny_automator->parse->text( $action_data['meta'][ 'KEY' . $i ], $recipe_id, $user_id, $args );
 				$value              = $uncanny_automator->parse->text( $action_data['meta'][ 'VALUE' . $i ], $recipe_id, $user_id, $args );
@@ -309,6 +347,20 @@ class WP_SENDWEBHOOK {
 				$key_values[ $key ] = $value;
 			}
 
+			if ( isset( $action_data['meta']['WEBHOOK_HEADERS'] ) ) {
+				$header_meta = json_decode( $action_data['meta']['WEBHOOK_HEADERS'], true );
+			}
+
+			for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
+				$key = isset( $header_meta[ $i ]['NAME'] ) ? sanitize_text_field( $header_meta[ $i ]['NAME'] ) : null;
+				// remove colon if user added in NAME
+				$key   = str_replace( ':', '', $key );
+				$value = isset( $header_meta[ $i ]['VALUE'] ) ? sanitize_text_field( $header_meta[ $i ]['VALUE'] ) : null;
+				if ( ! is_null( $key ) && ! is_null( $value ) ) {
+					$headers[ $key ] = $value;
+				}
+			}
+			
 			if ( 'POST' === (string) $action_data['meta']['ACTION_EVENT'] || 'CUSTOM' === (string) $action_data['meta']['ACTION_EVENT'] ) {
 				$request_type = 'POST';
 			} elseif ( 'GET' === (string) $action_data['meta']['ACTION_EVENT'] ) {
@@ -325,6 +377,10 @@ class WP_SENDWEBHOOK {
 				'timeout'  => '30',
 				'blocking' => false,
 			);
+
+			if ( ! empty( $headers ) ) {
+				$args['headers'] = $headers;
+			}
 
 			$response = wp_remote_request( $webhook_url, $args );
 

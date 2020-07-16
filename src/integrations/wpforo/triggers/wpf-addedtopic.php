@@ -55,7 +55,7 @@ class WPF_ADDEDTOPIC {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - wpForo */
-			'sentence'            => sprintf( __( 'A user creates a topic in {{forum:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( __( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - wpForo */
 			'select_option_name'  => __( 'A user creates a {{new topic}}', 'uncanny-automator' ),
 			'action'              => 'wpforo_after_add_topic',

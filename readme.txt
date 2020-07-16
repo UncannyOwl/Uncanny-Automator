@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.2
 Requires PHP: 7.0
-Stable tag: 2.5.1
+Stable tag: 2.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -41,6 +41,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Forminator](https://automatorplugin.com/integration/forminator/)
 - [GamiPress](https://automatorplugin.com/integration/gamipress/)
 - [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/)
+- [Groundhogg](https://automatorplugin.com/integration/groundhogg/)
 - [LearnDash](https://automatorplugin.com/integration/learndash/)
 - [LearnPress](https://automatorplugin.com/integration/learnpress/)
 - [LifterLMS](https://automatorplugin.com/integration/lifterlms/)
@@ -52,6 +53,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/)
+- [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
 - [WP LMS](https://automatorplugin.com/integration/wp-lms/)
@@ -147,9 +149,25 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.6 [2020-07-16] =
+
+* Added: Groundhogg integration
+* Added: Upsell Plugin integration
+* Added: Trigger: Upsell Plugin - A user purchases a product
+* Added: Action: WordPress Core - Create a post
+* Added: Action: Groundhogg - Apply a tag to the user
+* Added: Action: Groundhogg - Remove a tag from the user
+* Added: Action: Send data to webhook - Now supports headers
+* Updated: Trigger: Send data to a webhook is now found in the Uncanny Automator integration
+* Updated: Trigger and Action log entries now display full sentences with saved values
+* Updated: Further improved performance for BuddyPress, GamiPress, MyCred and BadgeOS users
+* Updated: Improved consistency of strings across the plugin
+* Updated: Additional detail is now shown by default in trigger and action logs
+
 = 2.5.1 [2020-07-13] =
 
 * Updated: Trigger log now shows trigger run #
+* Updated: Database structure and added Views for complex queries
 * Fixed: Number of times not working for some triggers
 * Fixed: In-progress triggers not showing up in trigger log
 
@@ -175,9 +193,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Fixed: Ultimate Member - Tokens for select, multi select, checkbox and radio fields now pass values properly
 * Fixed: Trigger/Action values that are very large integers now handled correctly
 * Fixed: Action log showing duplicate entries for some recipes
-
-= 2.4.1 [2020-06-15] =
-* Updated: Strings tweaked for improved consistency
-* Fixed: REST API route for incoming webhook triggers
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

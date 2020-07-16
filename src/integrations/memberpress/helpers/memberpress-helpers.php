@@ -19,6 +19,11 @@ class Memberpress_Helpers {
 	public $pro;
 
 	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
 	 * @param Memberpress_Helpers $options
 	 */
 	public function setOptions( Memberpress_Helpers $options ) {
@@ -33,6 +38,14 @@ class Memberpress_Helpers {
 	}
 
 	/**
+	 * Memberpress_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -40,6 +53,12 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Product', 'uncanny-automator' );
 		}
@@ -58,11 +77,12 @@ class Memberpress_Helpers {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
 
-			$posts = get_posts( [
+			/*$posts = get_posts( [
 				'post_type'      => 'memberpressproduct',
 				'posts_per_page' => 999,
 				'post_status'    => 'publish',
-			] );
+			] );*/
+			$posts = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'memberpressproduct', ] );
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -95,6 +115,12 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Product', 'uncanny-automator' );
 		}
@@ -157,6 +183,12 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Product', 'uncanny-automator' );
 		}

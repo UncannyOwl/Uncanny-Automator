@@ -12,6 +12,9 @@ class Learnpress_Helpers {
 	 * Learnpress_Helpers constructor.
 	 */
 	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
 		add_action( 'wp_ajax_select_section_from_course_LPMARKLESSONDONE', array(
 			$this,
 			'select_section_from_course_func'
@@ -37,6 +40,11 @@ class Learnpress_Helpers {
 	public $pro;
 
 	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
 	 * @param Learnpress_Helpers $options
 	 */
 	public function setOptions( Learnpress_Helpers $options ) {
@@ -58,6 +66,12 @@ class Learnpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_lp_courses( $label = null, $option_code = 'LPCOURSE', $any_option = true ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 
 		if ( ! $label ) {
 			$label = __( 'Course', 'uncanny-automator' );
@@ -100,6 +114,12 @@ class Learnpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_lp_lessons( $label = null, $option_code = 'LPLESSON', $any_option = true ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 
 		if ( ! $label ) {
 			$label = __( 'Lesson', 'uncanny-automator' );
