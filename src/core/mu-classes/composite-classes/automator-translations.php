@@ -267,9 +267,6 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.tokens.global.advanced
 					/* translators: Token name */
 					'userMetaKey'       => _x( 'User meta key', 'Token', 'uncanny-automator' ),
-					// UncannyAutomator.i18n.tokens.global.advanced
-					/* translators: Token name */
-					'autoLoginLink'       => _x( 'Automatic login link', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userMetaKey
 					/* translators: Token name */
 					'currentDate'       => _x( 'Current date', 'Token', 'uncanny-automator' ),

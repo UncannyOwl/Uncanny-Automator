@@ -106,6 +106,9 @@ class Admin_Menu {
 			Utilities::enqueue_global_assets();
 			// Automator assets
 			wp_enqueue_style( 'uap-logs-free', Utilities::get_css( 'admin/logs.css' ), array(), Utilities::get_version() );
+
+			$custom_css = ".triggername{cursor: pointer;}.triggerdetail{display:none;}.triggername:hover+.triggerdetail{display:block;color:#00a0d2;}";
+			wp_add_inline_style( 'uap-logs-free', $custom_css );
 		}
 
 		if ( 'uo-recipe_page_uncanny-automator-settings' === (string) $hook ) {

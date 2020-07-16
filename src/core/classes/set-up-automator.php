@@ -16,21 +16,12 @@ class Set_Up_Automator {
 	 * @var      array
 	 */
 	public $auto_loaded_directories = null;
-	/**
-	 * @var array|string[]
-	 */
 	public $default_directories = [];
 
-
 	/**
-	 * Set_Up_Automator constructor.
+	 * SetAutomatorTriggers constructor.
 	 */
 	public function __construct() {
-		if ( isset( $_SERVER['REQUEST_URI'] ) && 'favicon.ico' === basename( $_SERVER['REQUEST_URI'] ) ) {
-			// bail out if it's favicon.ico
-			return;
-		}
-
 		$this->default_directories = [ 'actions', 'helpers', 'tokens', 'triggers', 'closures' ];
 		add_action( 'plugins_loaded', array( $this, 'automator_configure' ), AUTOMATOR_CONFIGURATION_PRIORITY );
 		add_action( 'automator_configuration_complete', array(
@@ -164,6 +155,7 @@ class Set_Up_Automator {
 	 */
 	public function initialize_integration_helpers() {
 
+		global $uncanny_automator;
 		if ( $this->auto_loaded_directories ) {
 			// Check each directory
 			foreach ( $this->auto_loaded_directories as $directory ) {

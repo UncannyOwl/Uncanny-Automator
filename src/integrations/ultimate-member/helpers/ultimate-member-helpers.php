@@ -18,11 +18,6 @@ class Ultimate_Member_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Ultimate_Member_Helpers $options
 	 */
 	public function setOptions( Ultimate_Member_Helpers $options ) {
@@ -37,14 +32,6 @@ class Ultimate_Member_Helpers {
 	}
 
 	/**
-	 * Ultimate_Member_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
-
-	/**
 	 * @param null $label
 	 * @param string $option_code
 	 * @param string $type
@@ -52,12 +39,6 @@ class Ultimate_Member_Helpers {
 	 * @return mixed|void
 	 */
 	public function get_um_forms( $label = null, $option_code = 'UMFORM', $type = 'register', $params = [] ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );
 		}
@@ -81,18 +62,13 @@ class Ultimate_Member_Helpers {
 			'suppress_filters' => true,
 			'fields'           => array( 'ids', 'titles' ),
 		);
-
 		if ( 'any' !== $type ) {
-			$args['meta_query'] = [
-				'key'     => '_um_mode',
-				'value'   => $type,
-				'compare' => 'LIKE'
-			];
+			$args['meta_key']     = '_um_mode';
+			$args['meta_value']   = $type;
+			$args['meta_compare'] = 'LIKE';
 		}
 
-		//$forms_list = get_posts( $args );
-		global $uncanny_automator;
-		$forms_list = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+		$forms_list = get_posts( $args );
 		if ( ! empty( $forms_list ) ) {
 			foreach ( $forms_list as $form ) {
 				// Check if the form title is defined

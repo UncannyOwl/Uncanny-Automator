@@ -12,9 +12,6 @@ class Gamipress_Helpers {
 	 * Gamipress_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-
 		add_action( 'wp_ajax_select_achievements_from_types_AWARDACHIEVEMENT', [
 			$this,
 			'select_achievements_from_types_func'
@@ -31,11 +28,6 @@ class Gamipress_Helpers {
 	 * @var \Uncanny_Automator_Pro\Gamipress_Pro_Helpers
 	 */
 	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
 
 	/**
 	 * @param Gamipress_Helpers $options
@@ -59,12 +51,15 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_award_types( $label = null, $option_code = 'GPAWARDTYPES', $args = [] ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
 		}
-
 		if ( ! $label ) {
 			$label = __( 'Achievement type', 'uncanny-automator' );
 		}
@@ -77,8 +72,10 @@ class Gamipress_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-
-			$posts = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'achievement-type' ] );
+			$posts = get_posts( [
+				'post_type'      => 'achievement-type',
+				'posts_per_page' => 9999,
+			] );
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -88,9 +85,9 @@ class Gamipress_Helpers {
 				}
 			}
 			/* translators: GamiPress achievement type */
-			$options['points-award'] = __( 'Points awards', 'uncanny-automator' );
+			$options['points-award']     = __( 'Points awards', 'uncanny-automator' );
 			/* translators: GamiPress achievement type */
-			$options['step'] = __( 'Step', 'uncanny-automator' );
+			$options['step']             = __( 'Step', 'uncanny-automator' );
 			/* translators: GamiPress achievement type */
 			$options['rank-requirement'] = __( 'Rank requirement', 'uncanny-automator' );
 		}
@@ -119,12 +116,15 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_points_types( $label = null, $option_code = 'GPPOINTSTYPES', $args = [] ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
 		}
-
 		if ( ! $label ) {
 			$label = __( 'Point type', 'uncanny-automator' );
 		}
@@ -143,8 +143,10 @@ class Gamipress_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-
-			$posts = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'points-type' ] );
+			$posts = get_posts( [
+				'post_type'      => 'points-type',
+				'posts_per_page' => 9999,
+			] );
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -179,12 +181,15 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_rank_types( $label = null, $option_code = 'GPRANKTYPES', $args = [] ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
 		}
-
 		if ( ! $label ) {
 			$label = __( 'Rank type', 'uncanny-automator' );
 		}
@@ -197,8 +202,10 @@ class Gamipress_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-
-			$posts = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'rank-type' ] );
+			$posts = get_posts( [
+				'post_type'      => 'rank-type',
+				'posts_per_page' => 9999,
+			] );
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -246,7 +253,7 @@ class Gamipress_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, FALSE, __( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [
@@ -280,7 +287,7 @@ class Gamipress_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, FALSE, __( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [

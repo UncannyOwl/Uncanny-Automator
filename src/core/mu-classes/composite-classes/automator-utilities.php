@@ -131,9 +131,7 @@ class Automator_Utilities {
 
 		$return = false;
 
-		if ( intval( '-1' ) === intval( $recipe_completions_allowed ) ) {
-			$return = false;
-		} else if ( (int) $recipe_completed_times >= (int) $recipe_completions_allowed ) {
+		if ( (int) $recipe_completed_times >= (int) $recipe_completions_allowed ) {
 			$return = true;
 		}
 

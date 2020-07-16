@@ -20,11 +20,6 @@ class Wp_Courseware_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Wp_Courseware_Helpers $options
 	 */
 	public function setOptions( Wp_Courseware_Helpers $options ) {
@@ -39,25 +34,12 @@ class Wp_Courseware_Helpers {
 	}
 
 	/**
-	 * Wp_Courseware_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
-
-	/**
 	 * @param string $label
 	 * @param string $option_code
 	 *
 	 * @return mixed
 	 */
 	public function all_wpcw_courses( $label = null, $option_code = 'WPCW_COURSE', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		global $uncanny_automator;
 		if ( ! $label ) {
@@ -102,12 +84,6 @@ class Wp_Courseware_Helpers {
 	 */
 
 	public function all_wpcw_modules( $label = null, $option_code = 'WPCW_MODULE', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 
 		global $uncanny_automator;
 		if ( ! $label ) {
@@ -150,12 +126,6 @@ class Wp_Courseware_Helpers {
 	 * @return mixed
 	 */
 	public function all_wpcw_units( $label = null, $option_code = 'WPCW_UNIT', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 
 		if ( ! $label ) {
 			$label = __( 'Unit', 'uncanny-automator' );

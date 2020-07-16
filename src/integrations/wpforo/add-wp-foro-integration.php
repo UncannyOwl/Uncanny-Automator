@@ -73,7 +73,7 @@ class Add_Wp_Foro_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'     => 'wpForo',
+			'name'     => 'wpForo Forum',
 			'icon_svg' => Utilities::get_integration_icon( 'wpforo-icon.svg' ),
 		) );
 	}

@@ -19,11 +19,6 @@ class Bbpress_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Bbpress_Helpers $options
 	 */
 	public function setOptions( Bbpress_Helpers $options ) {
@@ -38,26 +33,12 @@ class Bbpress_Helpers {
 	}
 
 	/**
-	 * Bbpress_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
-
-
-	/**
 	 * @param string $label
 	 * @param string $option_code
 	 *
 	 * @return mixed
 	 */
 	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS' ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = __( 'Forum', 'uncanny-automator' );

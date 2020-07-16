@@ -281,26 +281,25 @@ class Automator_Recipe_Process_Complete {
 		global $uncanny_automator;
 
 		$sentence_human_readable = $uncanny_automator->get->action_sentence( $action_id, 'sentence_human_readable' );
-		
-		if ( ! empty( $sentence_human_readable ) ) {
-			// Store action sentence details for the completion
-			$wpdb->insert(
-				$wpdb->prefix . 'uap_action_log_meta',
-				[
-					'user_id'                 => $user_id,
-					'automator_action_log_id' => $action_log_id,
-					'automator_action_id'     => $action_id,
-					'meta_key'                => 'sentence_human_readable',
-					'meta_value'              => $sentence_human_readable,
-				], [
-					'%d',
-					'%d',
-					'%d',
-					'%s',
-					'%s',
-				]
-			);
-		}
+
+		// Store action sentence details for the completion
+		$wpdb->insert(
+			$wpdb->prefix . 'uap_action_log_meta',
+			array(
+				'user_id'                 => $user_id,
+				'automator_action_log_id' => $action_log_id,
+				'automator_action_id'     => $action_id,
+				'meta_key'                => 'sentence_human_readable',
+				'meta_value'              => $sentence_human_readable,
+			), array(
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+			)
+		);
+
 		$action_detail = $uncanny_automator->get->action_sentence( $action_id, 'action_detail' );
 
 		// Store action sentence details for the completion

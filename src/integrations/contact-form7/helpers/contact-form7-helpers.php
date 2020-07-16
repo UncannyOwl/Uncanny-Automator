@@ -4,10 +4,6 @@
 namespace Uncanny_Automator;
 
 
-/**
- * Class Contact_Form7_Helpers
- * @package Uncanny_Automator
- */
 class Contact_Form7_Helpers {
 	/**
 	 * @var Contact_Form7_Helpers
@@ -18,11 +14,6 @@ class Contact_Form7_Helpers {
 	 * @var \Uncanny_Automator_Pro\Contact_Form7_Pro_Helpers
 	 */
 	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
 
 	/**
 	 * @param Contact_Form7_Helpers $options
@@ -39,25 +30,12 @@ class Contact_Form7_Helpers {
 	}
 
 	/**
-	 * Contact_Form7_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
-
-	/**
 	 * @param string $label
 	 * @param string $option_code
 	 *
 	 * @return mixed
 	 */
 	public function list_contact_form7_forms( $label = null, $option_code = 'CF7FORMS', $args = [] ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );
@@ -79,7 +57,13 @@ class Contact_Form7_Helpers {
 		global $uncanny_automator;
 		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args );
 		$type    = 'select';
-
+//		$option = [
+//			'option_code' => $option_code,
+//			'label'       => $label,
+//			'input_type'  => 'select',
+//			'required'    => true,
+//			'options'     => $options,
+//		];
 		$option = [
 			'option_code'     => $option_code,
 			'label'           => $label,

@@ -4,10 +4,6 @@
 namespace Uncanny_Automator;
 
 
-/**
- * Class Edd_Helpers
- * @package Uncanny_Automator
- */
 class Edd_Helpers {
 	/**
 	 * @var Edd_Helpers
@@ -20,23 +16,10 @@ class Edd_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Edd_Helpers $options
 	 */
 	public function setOptions( Edd_Helpers $options ) {
 		$this->options = $options;
-	}
-
-	/**
-	 * Edd_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -53,11 +36,6 @@ class Edd_Helpers {
 	 * @return mixed
 	 */
 	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = __( 'Product', 'uncanny-automator' );

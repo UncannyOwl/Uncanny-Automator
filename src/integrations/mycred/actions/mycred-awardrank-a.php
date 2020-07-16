@@ -48,9 +48,8 @@ class MYCRED_AWARDRANK_A {
 			'options'            => [],
 			'options_group'      => [
 				$this->action_meta => [
-					/* translators: Noun */
 					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_rank_types(
-						__( 'Rank', 'uncanny-automator' ),
+						'Rank',
 						$this->action_meta,
 						[
 							'token'        => false,

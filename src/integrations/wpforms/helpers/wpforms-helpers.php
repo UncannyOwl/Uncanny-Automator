@@ -20,11 +20,6 @@ class Wpforms_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Wpforms_Helpers $options
 	 */
 	public function setOptions( Wpforms_Helpers $options ) {
@@ -39,14 +34,6 @@ class Wpforms_Helpers {
 	}
 
 	/**
-	 * Wpforms_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
-
-	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -55,11 +42,6 @@ class Wpforms_Helpers {
 	 */
 
 	public function list_wp_forms( $label = null, $option_code = 'WPFFORMS', $args = [] ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		global $uncanny_automator;
 		if ( ! $label ) {

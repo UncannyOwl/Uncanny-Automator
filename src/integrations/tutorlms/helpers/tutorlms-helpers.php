@@ -19,11 +19,6 @@ class Tutorlms_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Tutorlms_Helpers $options
 	 */
 	public function setOptions( Tutorlms_Helpers $options ) {
@@ -38,25 +33,11 @@ class Tutorlms_Helpers {
 	}
 
 	/**
-	 * Tutorlms_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
-
-	/**
 	 * Creates options for trigger.
 	 *
 	 * @since 2.4.0
 	 */
 	public function all_tutorlms_lessons( $label = null, $option_code = 'TUTORLMSLESSON', $any_option = false ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 
 		if ( ! $label ) {
 			$label = __( 'Lesson', 'uncanny-automator' );
@@ -101,11 +82,6 @@ class Tutorlms_Helpers {
 	 * @since 2.4.0
 	 */
 	public function all_tutorlms_courses( $label = null, $option_code = 'TUTORLMSCOURSE', $any_option = false ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = __( 'Course', 'uncanny-automator' );
@@ -150,12 +126,6 @@ class Tutorlms_Helpers {
 	 * @since 2.4.0
 	 */
 	public function all_tutorlms_quizzes( $label = null, $option_code = 'TUTORLMSQUIZ', $any_option = false ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 
 		if ( ! $label ) {
 			$label = __( 'Quiz', 'uncanny-automator' );

@@ -51,9 +51,8 @@ class MYCRED_AWARDBADGE_A {
 			'options'            => [],
 			'options_group'      => [
 				$this->action_meta => [
-					/* translators: Noun */
 					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_badges(
-						__( 'Badge', 'uncanny-automator' ),
+						'Badge',
 						$this->action_meta,
 						[
 							'token'        => false,

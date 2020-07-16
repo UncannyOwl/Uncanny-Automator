@@ -19,11 +19,6 @@ class Buddypress_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param \Uncanny_Automator_Pro\Buddypress_Pro_Helpers $pro
 	 */
 	public function setPro( \Uncanny_Automator_Pro\Buddypress_Pro_Helpers $pro ) {
@@ -38,25 +33,12 @@ class Buddypress_Helpers {
 	}
 
 	/**
-	 * Buddypress_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
-
-	/**
 	 * @param string $label
 	 * @param string $option_code
 	 *
 	 * @return mixed
 	 */
 	public function all_buddypress_groups( $label = null, $option_code = 'BPGROUPS', $args = array() ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		$args = wp_parse_args( $args, array(
 			'uo_include_any' => false,
@@ -85,8 +67,7 @@ class Buddypress_Helpers {
 					"SELECT * FROM {$wpdb->prefix}bp_groups WHERE status IN ($in_str)",
 					$args['status']
 				);
-
-				$results = $wpdb->get_results( $group_qry );
+				$results    = $wpdb->get_results( $group_qry );
 
 				if ( $results ) {
 					foreach ( $results as $result ) {
@@ -95,7 +76,6 @@ class Buddypress_Helpers {
 				}
 			}
 		}
-
 		$option = [
 			'option_code' => $option_code,
 			'label'       => $label,
@@ -115,12 +95,15 @@ class Buddypress_Helpers {
 	 * @return mixed
 	 */
 	public function all_buddypress_users( $label = null, $option_code = 'BPUSERS', $args = array() ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		if ( ! is_admin() ) {
+			return $option = [
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => [],
+			];
 		}
-
 		if ( ! $label ) {
 			$label = __( 'User', 'uncanny-automator' );
 		}
@@ -138,14 +121,14 @@ class Buddypress_Helpers {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
+			global $wpdb;
 
-			$users = $uncanny_automator->helpers->recipe->wp_users();
+			$users = $wpdb->get_results( "SELECT ID, display_name FROM $wpdb->users ORDER BY display_name ASC" );
 
 			foreach ( $users as $user ) {
 				$options[ $user->ID ] = $user->display_name;
 			}
 		}
-
 		$option = [
 			'option_code' => $option_code,
 			'label'       => $label,

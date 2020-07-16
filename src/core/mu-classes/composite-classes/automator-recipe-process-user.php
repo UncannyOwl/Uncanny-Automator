@@ -327,18 +327,17 @@ class Automator_Recipe_Process_User {
 		$sentence_human_readable = $uncanny_automator->get->trigger_sentence( $trigger_id, 'sentence_human_readable' );
 
 		// Store trigger sentence details for the completion
-		if ( ! empty( $sentence_human_readable ) ) {
-			$save_meta = [
-				'user_id'        => $user_id,
-				'trigger_id'     => $trigger_id,
-				'trigger_log_id' => $trigger_log_id,
-				'run_number'     => $run_number,
-				'meta_key'       => 'sentence_human_readable',
-				'meta_value'     => $sentence_human_readable,
-			];
+		$save_meta = [
+			'user_id'        => $user_id,
+			'trigger_id'     => $trigger_id,
+			'trigger_log_id' => $trigger_log_id,
+			'run_number'     => $run_number,
+			'meta_key'       => 'sentence_human_readable',
+			'meta_value'     => $sentence_human_readable,
+		];
 
-			$uncanny_automator->insert_trigger_meta( $save_meta );
-		}
+		$uncanny_automator->insert_trigger_meta( $save_meta );
+
 		/**  */
 
 		//change completed from -1 to 0

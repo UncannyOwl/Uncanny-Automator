@@ -214,6 +214,12 @@ class Automator_Registration {
 				return null;
 			}
 
+			// Sanity check that trigger_name is unique
+			/*if ( $existing_trigger['name'] === $trigger['name'] ) {
+				Utilities::log( 'ERROR: You are try to register a trigger with a trigger_name that was already registered.', 'register_trigger ERROR', false, 'uap-errors' );
+
+				return null;
+			}*/
 		}
 
 		// Register the trigger into the system

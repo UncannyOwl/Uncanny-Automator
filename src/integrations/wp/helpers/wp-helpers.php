@@ -9,6 +9,15 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Wp_Helpers {
+	/**
+	 * Wp_Helpers constructor.
+	 */
+	public function __construct() {
+		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
+
+		add_action( 'wp_ajax_nopriv_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
+		add_action( 'wp_ajax_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
+	}
 
 	/**
 	 * @var Wp_Helpers
@@ -18,24 +27,6 @@ class Wp_Helpers {
 	 * @var \Uncanny_Automator_Pro\Wp_Pro_Helpers
 	 */
 	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
-	 * Wp_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-
-		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
-
-		add_action( 'wp_ajax_nopriv_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
-		add_action( 'wp_ajax_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
-	}
 
 	/**
 	 * @param Wp_Helpers $options
@@ -62,7 +53,7 @@ class Wp_Helpers {
 		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
 			$post_type = sanitize_text_field( $_POST['value'] );
 
-			$args = array(
+			$args       = array(
 				'posts_per_page'   => 999,
 				'orderby'          => 'title',
 				'order'            => 'ASC',
@@ -71,9 +62,8 @@ class Wp_Helpers {
 				'suppress_filters' => true,
 				'fields'           => array( 'ids', 'titles' ),
 			);
+			$posts_list = get_posts( $args );
 
-			//$posts_list = get_posts( $args );
-			$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args );
 			if ( ! empty( $posts_list ) ) {
 				foreach ( $posts_list as $post ) {
 					// Check if the post title is defined
@@ -97,11 +87,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			/* translators: Noun */
@@ -143,11 +128,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_pages( $label = null, $option_code = 'WPPAGE', $any_option = false ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = __( 'Page', 'uncanny-automator' );
@@ -187,11 +167,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE' ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			/* translators: WordPress role */
@@ -223,12 +198,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = [] ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			$label = __( 'Post type', 'uncanny-automator' );
 		}
