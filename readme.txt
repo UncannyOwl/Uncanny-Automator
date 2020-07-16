@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.2
 Requires PHP: 7.0
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -147,9 +147,14 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.5.2 [2020-07-16] =
+
+* Fixed: Recipes set to "Unlimited" times per user now fire correctly
+
 = 2.5.1 [2020-07-13] =
 
 * Updated: Trigger log now shows trigger run #
+* Updated: Database structure and added Views for complex queries
 * Fixed: Number of times not working for some triggers
 * Fixed: In-progress triggers not showing up in trigger log
 
