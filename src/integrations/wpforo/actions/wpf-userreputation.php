@@ -57,7 +57,7 @@ class WPF_USERREPUTATION {
 			/* translators: Action - wpForo */
 			'sentence'           => sprintf( __( 'Set user reputation as {{a reputation:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - wpForo */
-			'select_option_name' => __( 'Award {{a reputation}} to the user', 'uncanny-automator' ),
+			'select_option_name' => __( 'Set the user\'s reputation to {{a reputation}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'set_reputation' ),

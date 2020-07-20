@@ -292,8 +292,9 @@ class Automator_Get_Data {
 			return '';
 		}
 
-		$code         = false;
-		$raw_sentence = false;
+		$code                    = false;
+		$raw_sentence            = false;
+		$sentence_human_readable = false;
 
 		foreach ( $action_meta as $action ) {
 			if ( 'code' === $action->meta_key ) {

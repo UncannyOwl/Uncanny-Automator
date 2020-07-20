@@ -68,8 +68,7 @@ class ZAPIER_SENDWEBHOOK {
 						'option_code' => 'ACTION_EVENT',
 						/* translators: HTTP request method */
 						'label'       => __( 'Request method', 'uncanny-automator' ),
-						/* translators: 1. Learn more */
-						'description' => sprintf( __( '%1$s about each different HTTP method.', 'uncanny-automator' ), '<a href="#" target="_blank">' . __( 'Learn more', 'uncanny-automator' ) . '</a>' ),
+						'description' => __( 'Select the HTTP request method supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues.', 'uncanny-automator' ),
 
 						'required' => true,
 
@@ -82,6 +81,42 @@ class ZAPIER_SENDWEBHOOK {
 
 						'supports_custom_value' => false,
 						'supports_tokens'       => false,
+					],
+					// Header
+					[
+						'input_type' => 'repeater',
+
+						'option_code' => 'WEBHOOK_HEADERS',
+
+						'label' => __( 'Headers', 'uncanny-automator' ),
+						'description' => __( 'Add any HTTP request headers required by the webhook destination.', 'uncanny-automator' ),
+
+						'required' => false,
+						'fields'   => [
+							[
+								'input_type' => 'text',
+
+								'option_code' => 'NAME',
+								'label'       => __( 'Name', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true
+							],
+							[
+								'input_type' => 'text',
+
+								'option_code' => 'VALUE',
+								'label'       => __( 'Value', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true
+							],
+						],
+
+						/* translators: Non-personal infinitive verb */
+						'add_row_button'    => __( 'Add header', 'uncanny-automator' ),
+						/* translators: Non-personal infinitive verb */
+						'remove_row_button' => __( 'Remove header', 'uncanny-automator' ),
 					],
 					// Fields
 					[
@@ -287,6 +322,7 @@ class ZAPIER_SENDWEBHOOK {
 
 		global $uncanny_automator;
 		$key_values   = [];
+        $headers      = [];
 		$request_type = 'POST';
 		if ( isset( $action_data['meta']['WEBHOOKURL'] ) ) {
 			$webhook_url = $uncanny_automator->parse->text( $action_data['meta']['WEBHOOKURL'], $recipe_id, $user_id, $args );
@@ -308,6 +344,21 @@ class ZAPIER_SENDWEBHOOK {
 				$key_values[ $key ] = $value;
 			}
 
+			if ( isset( $action_data['meta']['WEBHOOK_HEADERS'] ) ) {
+				$header_meta = json_decode( $action_data['meta']['WEBHOOK_HEADERS'], true );
+				if ( ! empty( $header_meta ) ) {
+					for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
+						$key = isset( $header_meta[ $i ]['NAME'] ) ? $uncanny_automator->parse->text( $header_meta[ $i ]['NAME'], $recipe_id, $user_id, $args ) : null;
+						// remove colon if user added in NAME
+						$key   = str_replace( ':', '', $key );
+						$value = isset( $header_meta[ $i ]['VALUE'] ) ? $uncanny_automator->parse->text( $header_meta[ $i ]['VALUE'], $recipe_id, $user_id, $args ) : null;
+						if ( ! is_null( $key ) && ! is_null( $value ) ) {
+							$headers[ $key ] = $value;
+						}
+					}
+				}
+			}
+
 			if ( 'POST' === (string) $action_data['meta']['ACTION_EVENT'] || 'CUSTOM' === (string) $action_data['meta']['ACTION_EVENT'] ) {
 				$request_type = 'POST';
 			} elseif ( 'GET' === (string) $action_data['meta']['ACTION_EVENT'] ) {
@@ -324,6 +375,10 @@ class ZAPIER_SENDWEBHOOK {
 				'timeout'  => '30',
 				'blocking' => false,
 			];
+			
+			if ( ! empty( $headers ) ) {
+				$args['headers'] = $headers;
+			}
 
 			$response = wp_remote_request( $webhook_url, $args );
 

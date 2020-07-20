@@ -218,7 +218,6 @@ class Config {
 
 			// Automator Action log
 			$table_name = $wpdb->prefix . 'uap_action_log';
-			global $wpdb;
 			if ( $wpdb->get_results( "SHOW TABLES LIKE '$table_name';" ) ) {
 				if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
 					$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
@@ -317,9 +316,10 @@ class Config {
 
 		if ( InitializePlugin::DATABASE_VERSION !== get_option( 'uap_database_version', 0 ) ) {
 			global $wpdb;
-			$wpdb_collate = $wpdb->collate;
 
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+			$db_name = DB_NAME;
 
 			// Automator Recipe log
 			$table_name = $wpdb->prefix . 'uap_recipe_log';
@@ -343,19 +343,17 @@ class Config {
 			$wpdb->query( $sql );
 
 			// Alter table and add run_tim
-			if ( empty( $wpdb->get_var( "SELECT COLUMN_NAME
-										FROM INFORMATION_SCHEMA.COLUMNS
-										WHERE table_name = '$table_name'
-										AND table_schema = '" . DB_NAME . "'
-										AND column_name = 'run_time'" ) ) ) {
-				$sql = "ALTER TABLE  $table_name ADD COLUMN run_time datetime DEFAULT \"0000-00-00 00:00:00\" NOT NULL;";
-				$wpdb->query( $sql );
+			if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
+				if ( ! $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE  WHERE Field LIKE 'run_time'" ) ) {
+					$sql = "ALTER TABLE  $table_name ADD COLUMN run_time datetime DEFAULT \"0000-00-00 00:00:00\" NOT NULL;";
+					$wpdb->query( $sql );
+				}
 			}
 
 			// Automator Action log
 			$table_name = $wpdb->prefix . 'uap_action_log';
-			global $wpdb;
-			if ( $wpdb->get_results( "SHOW TABLES LIKE '$table_name';" ) ) {
+
+			if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
 				if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
 					$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
 				}
@@ -412,6 +410,7 @@ class Config {
 							r.date_time AS recipe_date_time, 
 							r.completed AS recipe_completed, 
 							r.run_number, 
+							r.completed, 
 							r.automator_recipe_id, 
 							u.user_email, 
 							u.display_name, 
@@ -432,7 +431,7 @@ class Config {
                             t.automator_recipe_id, 
                             t.ID, 
                             pt.post_title AS trigger_title, 
-                            tm.meta_value AS trigger_sentence,
+                            tm.meta_value AS trigger_sentence, 
                             tm.run_number AS trigger_run_number,
                             tm.run_time AS trigger_run_time,
                             pm.meta_value AS trigger_total_times,
@@ -481,7 +480,8 @@ class Config {
 			LEFT JOIN {$wpdb->prefix}uap_action_log_meta am
 			ON am.automator_action_id = a.automator_action_id  AND am.meta_key = 'sentence_human_readable'
 			LEFT JOIN {$wpdb->users} u
-			ON a.user_id = u.ID";
+			ON a.user_id = u.ID
+			GROUP BY a.ID";
 
 			$wpdb->query( "CREATE OR REPLACE VIEW $action_view AS $action_view_query" );
 

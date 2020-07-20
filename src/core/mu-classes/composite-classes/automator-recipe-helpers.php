@@ -128,6 +128,15 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Mycred_Helpers
 	 */
 	public $mycred;
+
+	/**
+	 * @var Upsell_Plugin_Helpers
+	 */
+	public $upsell_plugin;
+	/**
+	 * @var Uoa_Helpers
+	 */
+	public $uoa;
 	/**
 	 * @var Automator_Helpers_Recipe
 	 */
@@ -410,7 +419,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @version 2.1.4 - changes made to pass __('All pages', 'uncanny-automator') as string instead of
 	 * page, post, course etc
 	 * @version 2.4 - Added transients
-	 *
+	 * @version 2.6 - Changed get_posts() to wpdb
 	 *
 	 * @version 1.0 - added
 	 */
@@ -431,6 +440,16 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			return [];
 		}
 
+		/**
+		 * Allow developers to modify $args
+		 *
+		 * @author Saad
+		 * @version 2.6
+		 */
+		$args = apply_filters( 'automator_wp_query_args', $args );
+
+		extract( $args );
+
 		// prepare transient key.
 		$transient_key = "uap_transient";
 
@@ -442,12 +461,109 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		// attempt fetching options from transient.
 		$options = get_transient( $transient_key );
 
+		// if meta query is set, its better to re-run query instead of transient
+		if ( isset( $args['meta_query'] ) && ! empty( $args['meta_query'] ) ) {
+			$options = [];
+		}
 		// if the transient is empty, generate options afresh.
 		if ( empty( $options ) ) {
-
 			// fetch all the posts.
-			$posts = get_posts( $args );
+			global $wpdb;
+			if ( isset( $args['meta_query'] ) && ( isset( $args['meta_query']['relation'] ) || count( $args['meta_query'] ) > 1 ) ) {
+				$posts = get_posts( $args );
+			} else {
+				$join = '';
+				// basic query begins
+				$query = "SELECT p.ID, p.post_title 
+						FROM $wpdb->posts p";
 
+				// check if there's meta query.. which means
+				// we have to join postmeta table
+				if ( isset( $meta_query ) ) {
+					$mq         = array_shift( $meta_query );
+					$meta_key   = sanitize_text_field( $mq['key'] );
+					$meta_value = sanitize_text_field( $mq['value'] );
+					$compare    = isset( $mq['compare'] ) ? $mq['compare'] : 'LIKE';
+					$join       .= " 
+									INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id 
+									AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'
+								";
+				}
+
+				// Join tables
+				$query .= $join;
+
+				// basic where 1=1 so all other
+				// where clauses can be joined via AND
+				$query .= " WHERE 1=1 ";
+
+				// include post_type with fallback to publish
+				if ( isset( $post_status ) ) {
+					if ( ! empty( $post_status ) && ! is_array( $post_status ) ) {
+						$query .= " AND p.post_status = '$post_status' ";
+					} elseif ( ! empty( $post_status ) && is_array( $post_status ) ) {
+						$comma_separated = implode( "','", $post_status );
+						$comma_separated = "'" . $comma_separated . "'";
+						$query           .= "AND p.post_status IN ({$comma_separated}) ";
+					} else {
+						$query .= " AND p.post_status = 'publish' ";
+					}
+				} else {
+					$query .= " AND p.post_status = 'publish' ";
+				}
+
+				// filter by post_type with fallback to 'page' only
+				if ( isset( $post_type ) && ! is_array( $post_type ) ) {
+					$query .= " AND p.post_type = '{$post_type}'";
+				} elseif ( isset( $post_type ) && is_array( $post_type ) ) {
+					$comma_separated = implode( "','", $post_type );
+					$comma_separated = "'" . $comma_separated . "'";
+					$query           .= " AND p.post_type = '{$comma_separated}'";
+				} else {
+					$query .= " AND p.post_type = 'page'";
+				}
+
+				// order by provided argument, fallback to title
+				if ( isset( $orderby ) && ! empty( $orderby ) ) {
+					switch ( $orderby ) {
+						case 'ID':
+							$order_by = 'p.ID';
+							break;
+						case 'title':
+						default:
+							$order_by = 'p.post_title';
+							break;
+
+					}
+					$query .= " ORDER BY $order_by";
+				} else {
+					$query .= " ORDER BY p.post_title";
+				}
+
+				if ( isset( $order ) && empty( $order ) ) {
+					$query .= " $order";
+				} else {
+					$query .= " ASC";
+				}
+
+				if ( isset( $posts_per_page ) ) {
+					$query .= " LIMIT 0, $posts_per_page";
+				}
+
+				//Utilities::log( [ $args, $query ], '', true, '$meta_query' );
+				/**
+				 * dropped get_posts() and used direct query to reduce load time
+				 *
+				 * @version 2.6
+				 * @author Saad
+				 *
+				 * @var  $query mysql query
+				 * @var  $args array of arguments passed to function
+				 */
+				$query = apply_filters( 'automator_maybe_modify_wp_query', $query, $args );
+
+				$posts = $wpdb->get_results( $query );
+			}
 			// type set to array.
 			$options = array();
 
@@ -468,7 +584,14 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 				}
 
 				// save fetched posts in a transient for 5 minutes for performance gains.
-				set_transient( $transient_key, $options, 5 * MINUTE_IN_SECONDS );
+				/**
+				 * Allow developers to modify transient times
+				 *
+				 * @author Saad
+				 * @version 2.6
+				 */
+				$transient_time = apply_filters( 'automator_transient_time', 5 * MINUTE_IN_SECONDS );
+				set_transient( $transient_key, $options, $transient_time );
 			}
 		}
 
@@ -480,7 +603,35 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			$options    = $any_option + $options;
 		}
 
-		return $options;
+		return apply_filters( 'automator_modify_option_results', $options, $args );
+	}
+
+	/**
+	 * @param string $limit
+	 *
+	 * @return array
+	 * @author Saad
+	 * @version 2.6 - this function replaces wp's get_users()
+	 */
+	public function wp_users( $limit = '99999' ) {
+		global $wpdb;
+		// prepare transient key.
+		$transient_key = "uap_transient_users";
+
+		// attempt fetching options from transient.
+		$users = get_transient( $transient_key );
+		if ( empty( $users ) ) {
+			$query = apply_filters( 'automator_get_users_query', "SELECT ID, display_name 
+																FROM $wpdb->users 
+																ORDER BY display_name ASC
+																LIMIT 0, $limit" );
+			$users = $wpdb->get_results( $query );
+
+			// save fetched posts in a transient for 5 minutes for performance gains.
+			set_transient( $transient_key, $users, 3 * MINUTE_IN_SECONDS );
+		}
+
+		return apply_filters( 'automator_modify_user_results', $users );
 	}
 
 	/**
@@ -633,5 +784,38 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 
 		return '';
+	}
+
+	/**
+	 * @param string $class
+	 *
+	 * @return bool
+	 */
+	public function maybe_load_trigger_options( $class = '' ) {
+		if ( is_user_logged_in() && is_admin() && isset( $_GET['action'] ) && 'edit' === $_GET['action'] ) {
+			$post_id = absint( $_GET['post'] );
+			$post    = get_post( $post_id );
+			if ( $post && $post instanceof \WP_Post && 'uo-recipe' === $post->post_type ) {
+				return apply_filters( 'automator_do_load_options', true, $class );
+			}
+		}
+
+		return apply_filters( 'automator_do_load_options', false, $class );
+	}
+
+	/**
+	 * @param string $label
+	 * @param string $option_code
+	 *
+	 * @return array
+	 */
+	public function build_default_options_array( $label = 'Sample Label', $option_code = 'SAMPLE' ) {
+		return apply_filters( 'automator_default_options_array', [
+			'option_code' => $option_code,
+			'label'       => $label,
+			'input_type'  => '',
+			'required'    => true,
+			'options'     => [],
+		] );
 	}
 }

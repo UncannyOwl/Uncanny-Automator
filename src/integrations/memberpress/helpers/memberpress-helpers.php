@@ -19,6 +19,11 @@ class Memberpress_Helpers {
 	public $pro;
 
 	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
 	 * @param Memberpress_Helpers $options
 	 */
 	public function setOptions( Memberpress_Helpers $options ) {
@@ -33,6 +38,14 @@ class Memberpress_Helpers {
 	}
 
 	/**
+	 * Memberpress_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -40,6 +53,12 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Product', 'uncanny-automator' );
 		}
@@ -53,23 +72,14 @@ class Memberpress_Helpers {
 
 		$options = [];
 		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			if ( $args['uo_include_any'] ) {
-				$options[ - 1 ] = $args['uo_any_label'];
-			}
 
-			$posts = get_posts( [
-				'post_type'      => 'memberpressproduct',
-				'posts_per_page' => 999,
-				'post_status'    => 'publish',
-			] );
-
-			if ( ! empty( $posts ) ) {
-				foreach ( $posts as $post ) {
-					$options[ $post->ID ] = $post->post_title;
-				}
-			}
+		if ( $args['uo_include_any'] ) {
+			$options[ - 1 ] = $args['uo_any_label'];
 		}
+
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'memberpressproduct', ] );
+
+
 		$option = [
 			'option_code'     => $option_code,
 			'label'           => $label,
@@ -95,6 +105,12 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Product', 'uncanny-automator' );
 		}
@@ -108,30 +124,25 @@ class Memberpress_Helpers {
 
 		$options = [];
 		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			if ( $args['uo_include_any'] ) {
-				$options[ - 1 ] = $args['uo_any_label'];
-			}
-
-			$posts = get_posts( [
-				'post_type'      => 'memberpressproduct',
-				'posts_per_page' => 999,
-				'post_status'    => 'publish',
-				'meta_query'     => [
-					[
-						'key'     => '_mepr_product_period_type',
-						'value'   => 'lifetime',
-						'compare' => '=',
-					]
-				]
-			] );
-
-			if ( ! empty( $posts ) ) {
-				foreach ( $posts as $post ) {
-					$options[ $post->ID ] = $post->post_title;
-				}
-			}
+		if ( $args['uo_include_any'] ) {
+			$options[ - 1 ] = $args['uo_any_label'];
 		}
+
+		//$posts   = get_posts( );
+		$query_args = [
+			'post_type'      => 'memberpressproduct',
+			'posts_per_page' => 999,
+			'post_status'    => 'publish',
+			'meta_query'     => [
+				[
+					'key'     => '_mepr_product_period_type',
+					'value'   => 'lifetime',
+					'compare' => '=',
+				]
+			]
+		];
+		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+
 		$option = [
 			'option_code'     => $option_code,
 			'label'           => $label,
@@ -157,6 +168,12 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Product', 'uncanny-automator' );
 		}
@@ -170,30 +187,24 @@ class Memberpress_Helpers {
 
 		$options = [];
 		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			if ( $args['uo_include_any'] ) {
-				$options[ - 1 ] = $args['uo_any_label'];
-			}
-
-			$posts = get_posts( [
-				'post_type'      => 'memberpressproduct',
-				'posts_per_page' => 999,
-				'post_status'    => 'publish',
-				'meta_query'     => [
-					[
-						'key'     => '_mepr_product_period_type',
-						'value'   => 'lifetime',
-						'compare' => '!=',
-					]
-				]
-			] );
-
-			if ( ! empty( $posts ) ) {
-				foreach ( $posts as $post ) {
-					$options[ $post->ID ] = $post->post_title;
-				}
-			}
+		if ( $args['uo_include_any'] ) {
+			$options[ - 1 ] = $args['uo_any_label'];
 		}
+
+		$query_args = [
+			'post_type'      => 'memberpressproduct',
+			'posts_per_page' => 999,
+			'post_status'    => 'publish',
+			'meta_query'     => [
+				[
+					'key'     => '_mepr_product_period_type',
+					'value'   => 'lifetime',
+					'compare' => '!=',
+				]
+			]
+		];
+		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+
 		$option = [
 			'option_code'     => $option_code,
 			'label'           => $label,

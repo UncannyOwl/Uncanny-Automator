@@ -20,9 +20,16 @@ class Zapier_Helpers {
 	public $pro;
 
 	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
 	 * Zapier_Pro_Helpers constructor.
 	 */
 	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_nopriv_sendtest_zp_webhook', array( $this, 'sendtest_webhook' ) );
 		add_action( 'wp_ajax_sendtest_zp_webhook', array( $this, 'sendtest_webhook' ) );
@@ -53,6 +60,7 @@ class Zapier_Helpers {
 		$uncanny_automator->utilities->ajax_auth_check( $_POST );
 
 		$key_values = [];
+		$headers    = [];
 		$values     = (array) $uncanny_automator->uap_sanitize( $_POST['values'], 'mixed' );
 		// Sanitizing webhook key pairs
 		$pairs          = [];
@@ -109,6 +117,19 @@ class Zapier_Helpers {
 				$key_values[ $key ] = $value;
 			}
 
+			$header_meta = isset( $values['WEBHOOK_HEADERS'] ) ? $values['WEBHOOK_HEADERS'] : [];
+			if ( ! empty( $header_meta ) ) {
+				for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
+					$key = isset( $header_meta[ $i ]['NAME'] ) ? sanitize_text_field( $header_meta[ $i ]['NAME'] ) : null;
+					// remove colon if user added in NAME
+					$key   = str_replace( ':', '', $key );
+					$value = isset( $header_meta[ $i ]['VALUE'] ) ? sanitize_text_field( $header_meta[ $i ]['VALUE'] ) : null;
+					if ( ! is_null( $key ) && ! is_null( $value ) ) {
+						$headers[ $key ] = $value;
+					}
+				}
+			}
+
 			if ( 'POST' === (string) $values['ACTION_EVENT'] || 'CUSTOM' === (string) $values['ACTION_EVENT'] ) {
 				$request_type = 'POST';
 			} elseif ( 'GET' === (string) $values['ACTION_EVENT'] ) {
@@ -126,6 +147,10 @@ class Zapier_Helpers {
 				'timeout'  => '30',
 				'blocking' => false,
 			);
+
+			if ( ! empty( $headers ) ) {
+				$args['headers'] = $headers;
+			}
 
 			$response = wp_remote_request( $webhook_url, $args );
 
@@ -147,4 +172,11 @@ class Zapier_Helpers {
 			) );
 		}
 	}
+	/**
+	 *        if ( ! $this->load_options ) {
+	 * global $uncanny_automator;
+	 *
+	 * return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+	 * }
+	 */
 }

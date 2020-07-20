@@ -18,6 +18,11 @@ class Ultimate_Member_Helpers {
 	public $pro;
 
 	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
 	 * @param Ultimate_Member_Helpers $options
 	 */
 	public function setOptions( Ultimate_Member_Helpers $options ) {
@@ -32,6 +37,14 @@ class Ultimate_Member_Helpers {
 	}
 
 	/**
+	 * Ultimate_Member_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param null $label
 	 * @param string $option_code
 	 * @param string $type
@@ -39,6 +52,12 @@ class Ultimate_Member_Helpers {
 	 * @return mixed|void
 	 */
 	public function get_um_forms( $label = null, $option_code = 'UMFORM', $type = 'register', $params = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );
 		}
@@ -62,20 +81,27 @@ class Ultimate_Member_Helpers {
 			'suppress_filters' => true,
 			'fields'           => array( 'ids', 'titles' ),
 		);
-		if ( 'any' !== $type ) {
-			$args['meta_key']     = '_um_mode';
-			$args['meta_value']   = $type;
-			$args['meta_compare'] = 'LIKE';
+
+		if ( 'any' !== (string) $type ) {
+			$args['meta_query'] = [
+				[
+					'key'     => '_um_mode',
+					'value'   => $type,
+					'compare' => 'LIKE'
+				]
+			];
 		}
 
-		$forms_list = get_posts( $args );
-		if ( ! empty( $forms_list ) ) {
+		//$forms_list = get_posts( $args );
+		global $uncanny_automator;
+		$forms_list = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+		/*if ( ! empty( $forms_list ) ) {
 			foreach ( $forms_list as $form ) {
 				// Check if the form title is defined
 				$post_title           = ! empty( $form->post_title ) ? $form->post_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $form->ID );
 				$options[ $form->ID ] = $post_title;
 			}
-		}
+		}*/
 
 
 		$option = [
@@ -87,7 +113,7 @@ class Ultimate_Member_Helpers {
 			'is_ajax'         => $is_ajax,
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
-			'options'         => $options,
+			'options'         => $forms_list,
 			'relevant_tokens' => [
 				$option_code         => __( 'Form title', 'uncanny-automator' ),
 				$option_code . '_ID' => __( 'Form ID', 'uncanny-automator' ),

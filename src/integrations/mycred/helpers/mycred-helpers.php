@@ -12,6 +12,8 @@ class Mycred_Helpers {
 	 * Mycred_Helpers constructor.
 	 */
 	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -23,6 +25,11 @@ class Mycred_Helpers {
 	 * @var \Uncanny_Automator_Pro\Mycred_Pro_Helpers
 	 */
 	public $pro;
+
+	/**
+	 * @var bool
+	 */
+	public $load_options;
 
 	/**
 	 * @param Mycred_Helpers $options
@@ -46,7 +53,11 @@ class Mycred_Helpers {
 	 * @return mixed
 	 */
 	public function list_mycred_points_types( $label = null, $option_code = 'MYCREDPOINTSTYPES', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
 
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 		if ( ! $label ) {
 			$label = __( 'Point type', 'uncanny-automator' );
 		}
@@ -98,6 +109,11 @@ class Mycred_Helpers {
 	 * @return mixed|void
 	 */
 	public function list_mycred_rank_types( $label = null, $option_code = 'MYCREDRANKTYPES', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 		if ( ! $label ) {
 			$label = __( 'Ranks', 'uncanny-automator' );
 		}
@@ -115,7 +131,7 @@ class Mycred_Helpers {
 			$options['ua-all-mycred-ranks'] = __( 'All ranks', 'uncanny-automator' );
 		}
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		/*if ( $uncanny_automator->helpers->recipe->load_helpers ) {
 			$posts = get_posts( [
 				'post_type'      => 'mycred_rank',
 				'posts_per_page' => 9999,
@@ -129,8 +145,14 @@ class Mycred_Helpers {
 					}
 				}
 			}
-		}
-		$type = 'select';
+		}*/
+		$query_args = [
+			'post_type'      => 'mycred_rank',
+			'posts_per_page' => 9999,
+			'post_status'    => 'publish'
+		];
+		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+		$type       = 'select';
 
 		$option = [
 			'option_code'     => $option_code,
@@ -148,6 +170,11 @@ class Mycred_Helpers {
 	}
 
 	public function list_mycred_badges( $label = null, $option_code = 'MYCREDBADGETYPES', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 		if ( ! $label ) {
 			$label = __( 'Badges', 'uncanny-automator' );
 		}
@@ -164,7 +191,7 @@ class Mycred_Helpers {
 		}
 
 		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		/*if ( $uncanny_automator->helpers->recipe->load_helpers ) {
 			$posts = get_posts( [
 				'post_type'      => 'mycred_badge',
 				'posts_per_page' => 9999,
@@ -178,8 +205,14 @@ class Mycred_Helpers {
 					}
 				}
 			}
-		}
-		$type = 'select';
+		}*/
+		$query_args = [
+			'post_type'      => 'mycred_badge',
+			'posts_per_page' => 9999,
+			'post_status'    => 'publish'
+		];
+		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+		$type       = 'select';
 
 		$option = [
 			'option_code'     => $option_code,

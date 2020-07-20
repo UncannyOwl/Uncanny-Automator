@@ -47,7 +47,7 @@ class MP_PURCHASEPRODUCTRECURRING {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'mp_product_purchased' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->memberpress->options->all_memberpress_products_recurring( null, $this->trigger_meta, [ 'uo_include_any' => true] ),
+				$uncanny_automator->helpers->recipe->memberpress->options->all_memberpress_products_recurring( null, $this->trigger_meta, [ 'uo_include_any' => true ] ),
 			],
 		);
 
@@ -66,12 +66,15 @@ class MP_PURCHASEPRODUCTRECURRING {
 		global $uncanny_automator;
 
 		$subscription = $event->get_data();
+
 		$args = [
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'post_id'        => intval( $subscription->rec->product_id ),
-			'user_id'        => intval( $subscription->rec->user_id ),
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => intval( $subscription->rec->product_id ),
+			'user_id' => intval( $subscription->rec->user_id ),
 		];
+
+		update_user_meta( $subscription->rec->user_id, 'MPPRODUCT', $subscription->rec->product_id );
 
 		$uncanny_automator->maybe_add_trigger_entry( $args );
 	}

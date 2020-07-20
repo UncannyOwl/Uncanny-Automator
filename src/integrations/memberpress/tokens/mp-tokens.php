@@ -110,16 +110,36 @@ class Mp_Tokens {
 	 */
 	public function mp_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'MPPRODUCT', $pieces ) ) {
-				global $uncanny_automator;
-				$user_id = wp_get_current_user()->ID;
+			$matches = [ 'MPPRODUCT', 'MPPRODUCT_ID', 'MPPRODUCT_URL', 'first_name', 'last_name' ];
+			if ( array_intersect( $matches, $pieces ) ) {
+				//global $uncanny_automator;
+				//$user_id = wp_get_current_user()->ID;
 				// all memberpress values will be saved in usermeta.
-				$value = get_user_meta( $user_id, $pieces[2], true );
+				$value = get_user_meta( $user_id, 'MPPRODUCT', true );
 				if ( is_array( $value ) ) {
 					$value = implode( ', ', $value );
+				} else {
+					switch ( $pieces[2] ) {
+						case 'MPPRODUCT_ID':
+							$value = absint( $value );
+							break;
+						case 'MPPRODUCT_URL':
+							$value = get_the_permalink( $value );
+							break;
+						case 'first_name':
+							$value = get_user_by( 'ID', $user_id )->first_name;
+							break;
+						case 'last_name':
+							$value = get_user_by( 'ID', $user_id )->last_name;
+							break;
+						default:
+							$value = get_the_title( $value );
+							break;
+					}
 				}
 			}
 		}
+
 		return $value;
 	}
 }

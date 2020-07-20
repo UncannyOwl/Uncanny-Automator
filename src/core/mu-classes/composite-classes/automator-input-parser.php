@@ -22,6 +22,7 @@ class Automator_Input_Parser {
 		'recipe_name',
 		'current_date',
 		'current_time',
+		'AUTOLOGINLINK',
 
 	];
 
@@ -33,7 +34,7 @@ class Automator_Input_Parser {
 	/**
 	 * @param null $url
 	 * @param null $recipe_id
-	 * @param $trigger_args
+	 * @param      $trigger_args
 	 *
 	 * @return mixed|null|string
 	 */
@@ -294,6 +295,18 @@ class Automator_Input_Parser {
 								$replaceable = $recipe->post_title;
 							}
 							break;
+						case 'AUTOLOGINLINK':
+
+							$unix_day        = 24 * 60 * 60;
+							$days_expired_in = apply_filters( 'AUTOLOGINLINK_expires_in', 7, $current_user );
+
+							$hash = $this->generate_magic_hash();
+							update_user_meta( $current_user->ID, $hash, time() + $unix_day * $days_expired_in );
+
+							$auto_login_url = add_query_arg( 'ua_login', $hash, wp_login_url() );
+							$replaceable    = $auto_login_url;
+
+							break;
 					}
 				}
 
@@ -434,6 +447,66 @@ class Automator_Input_Parser {
 
 		return $rp_link;
 
+	}
+
+	/**
+	 * @param bool   $length
+	 * @param string $separator
+	 *
+	 * @return string
+	 */
+	private function generate_magic_hash( $length = false, $separator = '-' ) {
+		if ( ! is_array( $length ) || is_array( $length ) && empty( $length ) ) {
+			$length = array( 8, 4, 8, 8, 4, 8 );
+		}
+		$hash = '';
+		foreach ( $length as $key => $string_length ) {
+			if ( $key > 0 ) {
+				$hash .= $separator;
+			}
+			$hash .= $this->s4generator( $string_length );
+		}
+
+		return $hash;
+	}
+
+	/**
+	 * @param $length
+	 *
+	 * @return string
+	 */
+	private function s4generator( $length ) {
+		$token        = '';
+		$codeAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		$max          = strlen( $codeAlphabet );
+		for ( $i = 0; $i < $length; $i ++ ) {
+			$token .= $codeAlphabet[ $this->crypto_rand_secure( 0, $max - 1 ) ];
+		}
+
+		return $token;
+	}
+
+	/**
+	 * @param $min
+	 * @param $max
+	 *
+	 * @return int
+	 */
+	private function crypto_rand_secure( $min, $max ) {
+		$range = $max - $min;
+		if ( $range < 1 ) {
+			return $min;
+		}
+		$log    = ceil( log( $range, 2 ) );
+		$bytes  = (int) ( $log / 8 ) + 1;
+		$bits   = (int) $log + 1;
+		$filter = (int) ( 1 << $bits ) - 1;
+		do {
+			$rnd = hexdec( bin2hex( openssl_random_pseudo_bytes( $bytes ) ) );
+			$rnd = $rnd & $filter;
+		} while ( $rnd > $range );
+
+		return $min + $rnd;
 	}
 
 }

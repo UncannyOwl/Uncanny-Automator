@@ -18,6 +18,11 @@ class Gravity_Forms_Helpers {
 	public $pro;
 
 	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
 	 * @param Gravity_Forms_Helpers $options
 	 */
 	public function setOptions( Gravity_Forms_Helpers $options ) {
@@ -32,6 +37,14 @@ class Gravity_Forms_Helpers {
 	}
 
 	/**
+	 * Gravity_Forms_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -39,6 +52,11 @@ class Gravity_Forms_Helpers {
 	 * @return mixed
 	 */
 	public function list_gravity_forms( $label = null, $option_code = 'GFFORMS', $args = [] ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );
