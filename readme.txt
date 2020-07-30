@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.4.2
 Requires PHP: 7.0
-Stable tag: 2.6
+Stable tag: 2.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -149,6 +149,10 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.6.1 [2020-07-30] =
+
+* Fixed: Updated trigger log query to use wpdb postmeta instead of wp_postmeta
+
 = 2.6 [2020-07-20] =
 
 * Added: Upsell Plugin integration
@@ -168,7 +172,6 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 = 2.5.2 [2020-07-16] =
 
 * Fixed: Recipes set to "Unlimited" times per user now fire correctly
-
 
 = 2.5.1 [2020-07-13] =
 
@@ -194,10 +197,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Fixed: Button on settings pages not showing on mobile
 * Fixed: PHP warning on create post action when post status is registered
 * Fixed: Recipe completions with status "Completed with errors" can now be re-completed by the same user (if "Times per user" supports additional completions)
-
-= 2.4.2 [2020-06-18] =
-* Fixed: Ultimate Member - Tokens for select, multi select, checkbox and radio fields now pass values properly
-* Fixed: Trigger/Action values that are very large integers now handled correctly
-* Fixed: Action log showing duplicate entries for some recipes
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

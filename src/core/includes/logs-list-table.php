@@ -284,7 +284,7 @@ class Logs_List_Table extends \WP_List_Table {
 						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'sentence_human_readable'
                         LEFT JOIN {$wpdb->prefix}uap_recipe_log r
                         ON t.automator_recipe_log_id = r.ID
-                        LEFT JOIN wp_postmeta pm
+                        LEFT JOIN {$wpdb->postmeta} pm
                         ON pm.post_id = t.automator_trigger_id AND pm.meta_key = 'NUMTIMES'
                         WHERE ({$search_conditions})";
 

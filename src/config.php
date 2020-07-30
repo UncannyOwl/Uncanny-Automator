@@ -344,7 +344,7 @@ class Config {
 
 			// Alter table and add run_tim
 			if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
-				if ( ! $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE  WHERE Field LIKE 'run_time'" ) ) {
+				if ( ! $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` WHERE Field LIKE 'run_time'" ) ) {
 					$sql = "ALTER TABLE  $table_name ADD COLUMN run_time datetime DEFAULT \"0000-00-00 00:00:00\" NOT NULL;";
 					$wpdb->query( $sql );
 				}
@@ -450,7 +450,7 @@ class Config {
 						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'sentence_human_readable'
                         LEFT JOIN {$wpdb->prefix}uap_recipe_log r
                         ON t.automator_recipe_log_id = r.ID
-                        LEFT JOIN wp_postmeta pm
+                        LEFT JOIN {$wpdb->postmeta} pm
                         ON pm.post_id = t.automator_trigger_id AND pm.meta_key = 'NUMTIMES'";
 
 			$wpdb->query( "CREATE OR REPLACE VIEW $trigger_view AS $trigger_view_query" );
