@@ -21,8 +21,8 @@ class WPF_USERGROUP {
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
-		$this->action_code        = 'ENRLFOROGROUP';
-		$this->action_meta        = 'FOROGROUP';
+		$this->action_code = 'ENRLFOROGROUP';
+		$this->action_meta = 'FOROGROUP';
 		$this->define_action();
 	}
 
@@ -37,12 +37,12 @@ class WPF_USERGROUP {
 
 		$group_options = [];
 		foreach ( $usergroups as $key => $group ) {
-			$group_options[$group['groupid']] = $group['name'];
+			$group_options[ $group['groupid'] ] = $group['name'];
 		}
 
 		$option = [
 			'option_code' => 'FOROGROUP',
-			'label'       => __( 'User groups', 'uncanny-automator' ),
+			'label'       =>  esc_attr__( 'User groups', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $group_options,
@@ -54,9 +54,9 @@ class WPF_USERGROUP {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - wpForo */
-			'sentence'           => sprintf( __( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - wpForo */
-			'select_option_name' => __( 'Add the user to {{a group}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'enrol_in_to_group' ),
@@ -78,10 +78,10 @@ class WPF_USERGROUP {
 		global $uncanny_automator;
 		$group_id = $action_data['meta'][ $this->action_meta ];
 
-		if( wpforo_feature('role-synch') ){
+		if ( wpforo_feature( 'role-synch' ) ) {
 			WPF()->member->set_usergroup( $user_id, $group_id );
-		}else{
-			WPF()->usergroup->set_users_groupid(array($group_id => [$user_id]));
+		} else {
+			WPF()->usergroup->set_users_groupid( array( $group_id => [ $user_id ] ) );
 		}
 
 		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );

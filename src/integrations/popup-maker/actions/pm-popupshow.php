@@ -48,11 +48,11 @@ class PM_POPUPSHOW {
 			//'include'        => $automator_popups,
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any popup', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any popup', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code' => 'POPUPID',
-			'label'       => __( 'Popup', 'uncanny-automator' ),
+			'label'       =>  esc_attr__( 'Popup', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $options,
@@ -65,9 +65,9 @@ class PM_POPUPSHOW {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Logged-in trigger - Popup Maker */
-			'sentence'           => sprintf( __( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Logged-in trigger - Popup Maker */
-			'select_option_name' => __( 'Show {{a popup}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Show {{a popup}}', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => [ $this, 'display_pop_up' ],

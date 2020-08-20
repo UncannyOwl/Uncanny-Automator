@@ -3,6 +3,9 @@
 
 namespace Uncanny_Automator;
 
+use Forminator_API;
+use Uncanny_Automator_Pro\Forminator_Pro_Helpers;
+
 /**
  * Class Forminator_Helpers
  * @package Uncanny_Automator
@@ -14,7 +17,7 @@ class Forminator_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Forminator_Pro_Helpers
+	 * @var Forminator_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,6 +27,14 @@ class Forminator_Helpers {
 	public $load_options;
 
 	/**
+	 * Forminator_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Forminator_Helpers $options
 	 */
 	public function setOptions( Forminator_Helpers $options ) {
@@ -31,18 +42,10 @@ class Forminator_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Forminator_Pro_Helpers $pro
+	 * @param Forminator_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Forminator_Pro_Helpers $pro ) {
+	public function setPro( Forminator_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Forminator_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -60,13 +63,13 @@ class Forminator_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any form', 'uncanny-automator' ),
+				'uo_any_label'   =>  esc_attr__( 'Any form', 'uncanny-automator' ),
 			)
 		);
 
@@ -80,7 +83,7 @@ class Forminator_Helpers {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
-			$forms = \Forminator_API::get_forms( null, 1, 999 );
+			$forms = Forminator_API::get_forms( null, 1, 999 );
 
 			//$forms = forminator_cform_modules( 999, 'publish' );
 			if ( ! empty( $forms ) ) {

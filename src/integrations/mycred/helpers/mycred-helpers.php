@@ -2,11 +2,26 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Mycred_Pro_Helpers;
+
 /**
  * Class Mycred_Helpers
  * @package Uncanny_Automator
  */
 class Mycred_Helpers {
+
+	/**
+	 * @var Mycred_Helpers
+	 */
+	public $options;
+	/**
+	 * @var Mycred_Pro_Helpers
+	 */
+	public $pro;
+	/**
+	 * @var bool
+	 */
+	public $load_options;
 
 	/**
 	 * Mycred_Helpers constructor.
@@ -17,21 +32,6 @@ class Mycred_Helpers {
 	}
 
 	/**
-	 * @var Mycred_Helpers
-	 */
-	public $options;
-
-	/**
-	 * @var \Uncanny_Automator_Pro\Mycred_Pro_Helpers
-	 */
-	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Mycred_Helpers $options
 	 */
 	public function setOptions( Mycred_Helpers $options ) {
@@ -39,9 +39,9 @@ class Mycred_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Mycred_Pro_Helpers $pro
+	 * @param Mycred_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Mycred_Pro_Helpers $pro ) {
+	public function setPro( Mycred_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -59,7 +59,7 @@ class Mycred_Helpers {
 			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		if ( ! $label ) {
-			$label = __( 'Point type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Point type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -71,7 +71,7 @@ class Mycred_Helpers {
 		$options = [];
 
 		if ( $include_all ) {
-			$options['ua-all-mycred-points'] = __( 'All point types', 'uncanny-automator' );
+			$options['ua-all-mycred-points'] =  esc_attr__( 'All point types', 'uncanny-automator' );
 		}
 
 		global $uncanny_automator;
@@ -115,7 +115,7 @@ class Mycred_Helpers {
 			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		if ( ! $label ) {
-			$label = __( 'Ranks', 'uncanny-automator' );
+			$label =  esc_attr__( 'Ranks', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -128,7 +128,7 @@ class Mycred_Helpers {
 		global $uncanny_automator;
 
 		if ( $include_all ) {
-			$options['ua-all-mycred-ranks'] = __( 'All ranks', 'uncanny-automator' );
+			$options['ua-all-mycred-ranks'] =  esc_attr__( 'All ranks', 'uncanny-automator' );
 		}
 
 		/*if ( $uncanny_automator->helpers->recipe->load_helpers ) {
@@ -176,7 +176,7 @@ class Mycred_Helpers {
 			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		if ( ! $label ) {
-			$label = __( 'Badges', 'uncanny-automator' );
+			$label =  esc_attr__( 'Badges', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -187,7 +187,7 @@ class Mycred_Helpers {
 		$options      = [];
 
 		if ( $include_all ) {
-			$options['ua-all-mycred-badges'] = __( 'All badges', 'uncanny-automator' );
+			$options['ua-all-mycred-badges'] =  esc_attr__( 'All badges', 'uncanny-automator' );
 		}
 
 		global $uncanny_automator;

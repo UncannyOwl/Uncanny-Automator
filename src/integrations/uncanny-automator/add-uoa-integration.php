@@ -37,6 +37,38 @@ class Add_Uoa_Integration {
 	}
 
 	/**
+	 * Update previous triggers moved to this integration
+	 */
+	public function update_script() {
+		if ( false === get_option( '_uoa_sendwebhook_wp_uoa', false ) ) {
+			$args         = [
+				'post_type'  => 'uo-action',
+				'meta_query' => [
+					'relation' => 'AND',
+					[
+						'key'     => 'integration',
+						'value'   => 'WP',
+						'compare' => 'LIKE',
+					],
+					[
+						'key'     => 'code',
+						'value'   => 'WPSENDWEBHOOK',
+						'compare' => 'LIKE',
+					],
+				],
+			];
+			$old_triggers = get_posts( $args );
+			if ( ! empty( $old_triggers ) ) {
+				foreach ( $old_triggers as $old_trigger ) {
+					update_post_meta( $old_trigger->ID, 'integration', self::$integration );
+					update_post_meta( $old_trigger->ID, 'integration_name', 'Uncanny Automator' );
+				}
+			}
+			update_option( '_uoa_sendwebhook_wp_uoa', 'updated' );
+		}
+	}
+
+	/**
 	 * Only load this integration and its triggers and actions if the related plugin is active
 	 *
 	 * @param $status
@@ -74,41 +106,9 @@ class Add_Uoa_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'     => 'Uncanny Automator',
-			'icon_svg' => Utilities::get_integration_icon( 'uncanny-automator-icon.svg' ),
+			'name'     => 'Automator Core',
+			'icon_svg' => Utilities::get_integration_icon( 'automator-core-icon.svg' ),
 		) );
 
-	}
-
-	/**
-	 * Update previous triggers moved to this integration
-	 */
-	public function update_script() {
-		if ( false === get_option( '_uoa_sendwebhook_wp_uoa', false ) ) {
-			$args         = [
-				'post_type'  => 'uo-action',
-				'meta_query' => [
-					'relation' => 'AND',
-					[
-						'key'     => 'integration',
-						'value'   => 'WP',
-						'compare' => 'LIKE',
-					],
-					[
-						'key'     => 'code',
-						'value'   => 'WPSENDWEBHOOK',
-						'compare' => 'LIKE',
-					],
-				],
-			];
-			$old_triggers = get_posts( $args );
-			if ( ! empty( $old_triggers ) ) {
-				foreach ( $old_triggers as $old_trigger ) {
-					update_post_meta( $old_trigger->ID, 'integration', self::$integration );
-					update_post_meta( $old_trigger->ID, 'integration_name', 'Uncanny Automator' );
-				}
-			}
-			update_option( '_uoa_sendwebhook_wp_uoa', 'updated' );
-		}
 	}
 }

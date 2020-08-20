@@ -78,9 +78,9 @@ class Add_Et_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'The Events Calendar',
-			'icon_svg'    => Utilities::get_integration_icon( 'the-events-calendar-icon.svg' ),
-			'logo_svg'    => Utilities::get_integration_icon( 'the-events-calendar-icon.svg' ),
+			'name'     => 'The Events Calendar',
+			'icon_svg' => Utilities::get_integration_icon( 'the-events-calendar-icon.svg' ),
+			'logo_svg' => Utilities::get_integration_icon( 'the-events-calendar-icon.svg' ),
 			// 'logo_svg'    => Utilities::get_integration_icon( 'integration-tec.svg' ),
 		) );
 	}

@@ -39,9 +39,9 @@ class WP_SUBMITCOMMENT {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf( __( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => __( 'A user submits a comment on {{a post}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user submits a comment on {{a post}}', 'uncanny-automator' ),
 			'action'              => 'comment_post',
 			'priority'            => 90,
 			'accepted_args'       => 3,
@@ -60,9 +60,9 @@ class WP_SUBMITCOMMENT {
 	/**
 	 * Validation function when the trigger action is hit
 	 *
-	 * @param int        $comment_id       The comment ID.
+	 * @param int $comment_id The comment ID.
 	 * @param int|string $comment_approved 1 if the comment is approved, 0 if not, 'spam' if spam.
-	 * @param array      $commentdata      Comment data.
+	 * @param array $commentdata Comment data.
 	 */
 	public function submitted_comment( $comment_id, $comment_approved, $commentdata ) {
 

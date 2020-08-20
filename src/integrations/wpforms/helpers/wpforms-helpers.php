@@ -4,6 +4,9 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Wpforms_Pro_Helpers;
+use WPForms_Form_Handler;
+
 /**
  * Class Wpforms_Helpers
  * @package Uncanny_Automator
@@ -15,7 +18,7 @@ class Wpforms_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Wpforms_Pro_Helpers
+	 * @var Wpforms_Pro_Helpers
 	 */
 	public $pro;
 
@@ -25,6 +28,14 @@ class Wpforms_Helpers {
 	public $load_options;
 
 	/**
+	 * Wpforms_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Wpforms_Helpers $options
 	 */
 	public function setOptions( Wpforms_Helpers $options ) {
@@ -32,18 +43,10 @@ class Wpforms_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Wpforms_Pro_Helpers $pro
+	 * @param Wpforms_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Wpforms_Pro_Helpers $pro ) {
+	public function setPro( Wpforms_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Wpforms_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -63,7 +66,7 @@ class Wpforms_Helpers {
 
 		global $uncanny_automator;
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -73,7 +76,7 @@ class Wpforms_Helpers {
 		$options      = [];
 
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			$wpforms = new \WPForms_Form_Handler();
+			$wpforms = new WPForms_Form_Handler();
 
 			$forms = $wpforms->get( '', [
 				'orderby' => 'title',

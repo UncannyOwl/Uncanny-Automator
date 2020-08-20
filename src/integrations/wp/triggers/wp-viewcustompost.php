@@ -38,13 +38,6 @@ class WP_VIEWCUSTOMPOST {
 	}
 
 	/**
-	 *
-	 */
-	public function plugins_loaded() {
-		$this->define_trigger();
-	}
-
-	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
@@ -57,9 +50,9 @@ class WP_VIEWCUSTOMPOST {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf( __( 'A user views {{a custom post type:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user views {{a custom post type:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => __( 'A user views {{a custom post type}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user views {{a custom post type}}', 'uncanny-automator' ),
 			'action'              => 'template_redirect',
 			'priority'            => 90,
 			'accepted_args'       => 1,
@@ -76,7 +69,7 @@ class WP_VIEWCUSTOMPOST {
 						'endpoint'     => 'select_custom_post_by_type',
 					] ),
 					/* translators: Noun */
-					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Post', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta,  esc_attr__( 'Post', 'uncanny-automator' ) ),
 				],
 			],
 		);
@@ -84,6 +77,13 @@ class WP_VIEWCUSTOMPOST {
 		$uncanny_automator->register->trigger( $trigger );
 
 		return;
+	}
+
+	/**
+	 *
+	 */
+	public function plugins_loaded() {
+		$this->define_trigger();
 	}
 
 	/**

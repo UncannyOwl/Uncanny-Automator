@@ -44,9 +44,9 @@ class Admin_Menu {
 	public function plugins_loaded() {
 		$tabs = [
 			'settings' => [
-				'name'        => __( 'Settings', 'uncanny_automator' ),
-				'title'       => __( 'Auto-prune activity logs', 'uncanny-automator' ),
-				'description' => __( 'Enter a number of days below to have trigger and action log entries older than the specified number of days automatically deleted from your site daily. Trigger and action log entries will only be deleted for recipes with "Completed" status.', 'uncanny-automator' ),
+				'name'        =>  esc_attr__( 'Settings', 'uncanny_automator' ),
+				'title'       =>  esc_attr__( 'Auto-prune activity logs', 'uncanny-automator' ),
+				'description' =>  esc_attr__( 'Enter a number of days below to have trigger and action log entries older than the specified number of days automatically deleted from your site daily. Trigger and action log entries will only be deleted for recipes with "Completed" status.', 'uncanny-automator' ),
 				'is_pro'      => true,
 				'fields'      => [ /* see implementation in pro*/ ],
 			],
@@ -122,9 +122,9 @@ class Admin_Menu {
 		$parent_slug              = 'edit.php?post_type=uo-recipe';
 		$this->settings_page_slug = $parent_slug;
 		$function                 = array( $this, 'logs_options_menu_page_output' );
-		add_submenu_page( $parent_slug, __( 'Recipe log', 'uncanny-automator' ), __( 'Recipe log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
-		add_submenu_page( $parent_slug, __( 'Trigger log', 'uncanny-automator' ), __( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
-		add_submenu_page( $parent_slug, __( 'Action log', 'uncanny-automator' ), __( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
+		add_submenu_page( $parent_slug,  esc_attr__( 'Recipe log', 'uncanny-automator' ),  esc_attr__( 'Recipe log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
+		add_submenu_page( $parent_slug,  esc_attr__( 'Trigger log', 'uncanny-automator' ),  esc_attr__( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
+		add_submenu_page( $parent_slug,  esc_attr__( 'Action log', 'uncanny-automator' ),  esc_attr__( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
 
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
 			$pro_version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
@@ -133,9 +133,9 @@ class Admin_Menu {
 			}
 		}
 		/* translators: 1. Trademarked term */
-		$page_title               = sprintf( __( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' );
+		$page_title               = sprintf(  esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' );
 		$capability               = 'manage_options';
-		$menu_title               = __( 'Settings', 'uncanny-automator' );
+		$menu_title               =  esc_attr__( 'Settings', 'uncanny-automator' );
 		$menu_slug                = 'uncanny-automator-settings';
 		$this->settings_page_slug = $menu_slug;
 		$function                 = array( $this, 'options_menu_settings_page_output' );
@@ -164,15 +164,15 @@ class Admin_Menu {
             <nav class="nav-tab-wrapper uap-nav-tab-wrapper">
                 <a href="<?php echo admin_url( 'edit.php' ) ?>?post_type=uo-recipe&page=uncanny-automator-recipe-log"
                    class="nav-tab <?php echo ( 'recipe-log' == $current_tab ) ? 'nav-tab-active' : ''; ?>">
-					<?php echo __( 'Recipe log', 'uncanny-automator' ); ?>
+					<?php echo  esc_attr__( 'Recipe log', 'uncanny-automator' ); ?>
                 </a>
                 <a href="<?php echo admin_url( 'edit.php' ) ?>?post_type=uo-recipe&page=uncanny-automator-trigger-log"
                    class="nav-tab <?php echo ( 'trigger-log' == $current_tab ) ? 'nav-tab-active' : ''; ?>">
-					<?php echo __( 'Trigger log', 'uncanny-automator' ); ?>
+					<?php echo  esc_attr__( 'Trigger log', 'uncanny-automator' ); ?>
                 </a>
                 <a href="<?php echo admin_url( 'edit.php' ) ?>?post_type=uo-recipe&page=uncanny-automator-action-log"
                    class="nav-tab <?php echo ( 'action-log' == $current_tab ) ? 'nav-tab-active' : ''; ?>">
-					<?php echo __( 'Action log', 'uncanny-automator' ); ?>
+					<?php echo  esc_attr__( 'Action log', 'uncanny-automator' ); ?>
                 </a>
             </nav>
             <section class="uap-logs">
@@ -184,18 +184,18 @@ class Admin_Menu {
 						case 'recipe-log':
 							$headings = array(
 								/* translators: Log column. */
-								'recipe_type'      => __( 'Recipe type', 'uncanny-automator' ),
+								'recipe_type'      =>  esc_attr__( 'Recipe type', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_title'     => __( 'Recipe', 'uncanny-automator' ),
+								'recipe_title'     =>  esc_attr__( 'Recipe', 'uncanny-automator' ),
 								/* translators: Log column. The recipe status */
-								'recipe_completed' => __( 'Status', 'uncanny-automator' ),
+								'recipe_completed' =>  esc_attr__( 'Status', 'uncanny-automator' ),
 								/* translators: Log column. The recipe completion date */
-								'recipe_date_time' => __( 'Completion date', 'uncanny-automator' ),
-								//'display_name'=>__( 'User Name', 'uncanny-automator' ),
+								'recipe_date_time' =>  esc_attr__( 'Completion date', 'uncanny-automator' ),
+								//'display_name'=> esc_attr__( 'User Name', 'uncanny-automator' ),
 								/* translators: Log column. Noun. The recipe iteration */
-								'run_number'       => __( 'Run #', 'uncanny-automator' ),
+								'run_number'       =>  esc_attr__( 'Run #', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'display_name'     => __( 'User', 'uncanny-automator' ),
+								'display_name'     =>  esc_attr__( 'User', 'uncanny-automator' ),
 							);
 
 							$sortables = array(
@@ -222,21 +222,21 @@ class Admin_Menu {
 						case 'trigger-log':
 							$headings = array(
 								/* translators: Log column. */
-								'trigger_title'      => __( 'Trigger', 'uncanny-automator' ),
+								'trigger_title'      =>  esc_attr__( 'Trigger', 'uncanny-automator' ),
 								/* translators: Log column. The trigger completion date */
-								'trigger_date'       => __( 'Completion date', 'uncanny-automator' ),
+								'trigger_date'       =>  esc_attr__( 'Completion date', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_title'       => __( 'Recipe', 'uncanny-automator' ),
+								'recipe_title'       =>  esc_attr__( 'Recipe', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_completed'   => __( 'Recipe status', 'uncanny-automator' ),
+								'recipe_completed'   =>  esc_attr__( 'Recipe status', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_date_time'   => __( 'Recipe completion date', 'uncanny-automator' ),
+								'recipe_date_time'   =>  esc_attr__( 'Recipe completion date', 'uncanny-automator' ),
 								/* translators: Log column. Noun. The recipe iteration */
-								'recipe_run_number'  => __( 'Recipe run #', 'uncanny-automator' ),
+								'recipe_run_number'  =>  esc_attr__( 'Recipe run #', 'uncanny-automator' ),
 								/* translators: Log column. Noun. The trigger iteration */
-								'trigger_run_number' => __( 'Trigger run #', 'uncanny-automator' ),
+								'trigger_run_number' =>  esc_attr__( 'Trigger run #', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'display_name'       => __( 'User', 'uncanny-automator' ),
+								'display_name'       =>  esc_attr__( 'User', 'uncanny-automator' ),
 							);
 
 							$sortables = array(
@@ -263,23 +263,23 @@ class Admin_Menu {
 						case 'action-log':
 							$headings = array(
 								/* translators: Log column. */
-								'action_title'      => __( 'Action', 'uncanny-automator' ),
+								'action_title'      =>  esc_attr__( 'Action', 'uncanny-automator' ),
 								/* translators: Log column. The action completion date */
-								'action_date'       => __( 'Completion date', 'uncanny-automator' ),
+								'action_date'       =>  esc_attr__( 'Completion date', 'uncanny-automator' ),
 								/* translators: Log column. The action status */
-								'action_completed'  => __( 'Status', 'uncanny-automator' ),
+								'action_completed'  =>  esc_attr__( 'Status', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'error_message'     => __( 'Notes', 'uncanny-automator' ),
+								'error_message'     =>  esc_attr__( 'Notes', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_title'      => __( 'Recipe', 'uncanny-automator' ),
+								'recipe_title'      =>  esc_attr__( 'Recipe', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_completed'  => __( 'Recipe status', 'uncanny-automator' ),
+								'recipe_completed'  =>  esc_attr__( 'Recipe status', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'recipe_date_time'  => __( 'Recipe completion date', 'uncanny-automator' ),
+								'recipe_date_time'  =>  esc_attr__( 'Recipe completion date', 'uncanny-automator' ),
 								/* translators: Log column. Noun. The recipe iteration */
-								'recipe_run_number' => __( 'Recipe run #', 'uncanny-automator' ),
+								'recipe_run_number' =>  esc_attr__( 'Recipe run #', 'uncanny-automator' ),
 								/* translators: Log column. */
-								'display_name'      => __( 'User', 'uncanny-automator' ), // linked
+								'display_name'      =>  esc_attr__( 'User', 'uncanny-automator' ), // linked
 
 							);
 

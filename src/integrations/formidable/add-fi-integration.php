@@ -78,8 +78,8 @@ class Add_Fi_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'Formidable',
-			'icon_svg'    => Utilities::get_integration_icon( 'formidable-forms-icon.svg' ),
+			'name'     => 'Formidable',
+			'icon_svg' => Utilities::get_integration_icon( 'formidable-forms-icon.svg' ),
 		) );
 	}
 }

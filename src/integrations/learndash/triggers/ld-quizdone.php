@@ -39,9 +39,9 @@ class LD_QUIZDONE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( __( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => __( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'learndash_quiz_completed',
 			'priority'            => 15,
 			'accepted_args'       => 2,

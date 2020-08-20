@@ -21,7 +21,7 @@ class Add_Cf_Integration {
 
 		// Add directories to auto loader
 		add_filter( 'uncanny_automator_integration_directory', [ $this, 'add_integration_directory_func' ], 11 );
-		
+
 		// Add code, name and icon set to automator
 		add_action( 'uncanny_automator_add_integration', [ $this, 'add_integration_func' ] );
 
@@ -77,8 +77,8 @@ class Add_Cf_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'Caldera Forms',
-			'icon_svg'    => Utilities::get_integration_icon( 'caldera-forms-icon.svg' ),
+			'name'     => 'Caldera Forms',
+			'icon_svg' => Utilities::get_integration_icon( 'caldera-forms-icon.svg' ),
 		) );
 	}
 }

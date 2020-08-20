@@ -25,18 +25,18 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All recipes', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All recipes', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All users', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All users', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
-								<input type="text" placeholder="<?php _e( 'Recipe completion date', 'uncanny-automator' ); ?>" disabled>
+								<input type="text" placeholder="<?php  esc_attr_e( 'Recipe completion date', 'uncanny-automator' ); ?>" disabled>
 							</div>
 
 							<div class="uap-report-filters-filter uap-report-filters-filter--submit">
@@ -44,7 +44,7 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 									<?php
 
 									/* translators: Non-personal infinitive verb */
-									_e( 'Filter', 'uncanny-automator' );
+									 esc_attr_e( 'Filter', 'uncanny-automator' );
 
 									?>
 								</div>
@@ -58,28 +58,28 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All recipes', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All recipes', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All triggers', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All triggers', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All users', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All users', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
-								<input type="text" placeholder="<?php _e( 'Recipe completion date', 'uncanny-automator' ); ?>" disabled>
+								<input type="text" placeholder="<?php  esc_attr_e( 'Recipe completion date', 'uncanny-automator' ); ?>" disabled>
 							</div>
 
 							<div class="uap-report-filters-filter">
-								<input type="text" placeholder="<?php _e( 'Trigger completion date', 'uncanny-automator' ); ?>" disabled>
+								<input type="text" placeholder="<?php  esc_attr_e( 'Trigger completion date', 'uncanny-automator' ); ?>" disabled>
 							</div>
 
 							<div class="uap-report-filters-filter uap-report-filters-filter--submit">
@@ -87,7 +87,7 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 									<?php
 
 									/* translators: Non-personal infinitive verb */
-									_e( 'Filter', 'uncanny-automator' );
+									 esc_attr_e( 'Filter', 'uncanny-automator' );
 
 									?>
 								</div>
@@ -101,28 +101,28 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All recipes', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All recipes', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All actions', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All actions', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
 								<select disabled>
-									<option><?php _e( 'All users', 'uncanny-automator' ); ?></option>
+									<option><?php  esc_attr_e( 'All users', 'uncanny-automator' ); ?></option>
 								</select>
 							</div>
 
 							<div class="uap-report-filters-filter">
-								<input type="text" placeholder="<?php _e( 'Recipe completion date', 'uncanny-automator' ); ?>" disabled>
+								<input type="text" placeholder="<?php  esc_attr_e( 'Recipe completion date', 'uncanny-automator' ); ?>" disabled>
 							</div>
 
 							<div class="uap-report-filters-filter">
-								<input type="text" placeholder="<?php _e( 'Action completion date', 'uncanny-automator' ); ?>" disabled>
+								<input type="text" placeholder="<?php  esc_attr_e( 'Action completion date', 'uncanny-automator' ); ?>" disabled>
 							</div>
 
 							<div class="uap-report-filters-filter uap-report-filters-filter--submit">
@@ -130,7 +130,7 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 									<?php
 
 									/* translators: Non-personal infinitive verb */
-									_e( 'Filter', 'uncanny-automator' );
+									 esc_attr_e( 'Filter', 'uncanny-automator' );
 
 									?>
 								</div>
@@ -147,7 +147,7 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 							<?php 
 
 							/* translators: 1. Trademarked term */
-							printf( __( 'Upgrade to %1$s for advanced log filters!', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=logs&utm_content=advanced-log-filters" target="_blank">Uncanny Automator Pro</a>' );
+							printf(  esc_attr__( 'Upgrade to %1$s for advanced log filters!', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=logs&utm_content=advanced-log-filters" target="_blank">Uncanny Automator Pro</a>' );
 
 							?>
 						</div>
@@ -158,7 +158,7 @@ $current_tab  = $GLOBALS[ 'ua_current_tab' ];
 						<input type="text" name="search_key" value="<?php echo $search_query; ?>" class="uap-report-filters-search__field"/>
 						<input type="submit" name="filter_action" value="<?php
 						/* translators: Non-personal infinitive verb */
-						_e( 'Search', 'uncanny-automator' );
+						 esc_attr_e( 'Search', 'uncanny-automator' );
 						?>" class="button uap-report-filters-search__submit">
 					</div>
 				</div>

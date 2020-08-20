@@ -39,14 +39,14 @@ class LF_MARKLESSONDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LifterLMS */
-			'sentence'           => sprintf( __( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LifterLMS */
-			'select_option_name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lf_mark_lesson_done' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_lessons( __( 'Lesson', 'uncanny-automator' ), $this->action_meta, false ),
+				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_lessons(  esc_attr__( 'Lesson', 'uncanny-automator' ), $this->action_meta, false ),
 			],
 		);
 
@@ -58,7 +58,7 @@ class LF_MARKLESSONDONE {
 	 * Validation function when the action is hit.
 	 *
 	 * @param string $user_id user id.
-	 * @param array  $action_data action data.
+	 * @param array $action_data action data.
 	 * @param string $recipe_id recipe id.
 	 */
 	public function lf_mark_lesson_done( $user_id, $action_data, $recipe_id ) {

@@ -39,15 +39,15 @@ class WPLMS_COURSESTARTED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP LMS */
-			'sentence'            => sprintf( __( 'A user starts {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user starts {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP LMS */
-			'select_option_name'  => __( 'A user starts {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user starts {{a course}}', 'uncanny-automator' ),
 			'action'              => 'wplms_start_course',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wplms_course_started' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wplms->options->all_wplms_courses( __( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
+				$uncanny_automator->helpers->recipe->wplms->options->all_wplms_courses(  esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);
@@ -61,7 +61,7 @@ class WPLMS_COURSESTARTED {
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param integer $course_id
-	 * @param null    $marks
+	 * @param null $marks
 	 * @param integer $user_id
 	 */
 	public function wplms_course_started( $course_id, $marks, $user_id ) {

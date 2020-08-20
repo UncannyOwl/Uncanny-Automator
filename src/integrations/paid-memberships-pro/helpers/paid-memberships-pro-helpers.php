@@ -4,6 +4,8 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Paid_Memberships_Pro_Pro_Helpers;
+
 /**
  * Class Paid_Memberships_Pro_Helpers
  * @package Uncanny_Automator
@@ -16,7 +18,7 @@ class Paid_Memberships_Pro_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Paid_Memberships_Pro_Pro_Helpers
+	 * @var Paid_Memberships_Pro_Pro_Helpers
 	 */
 	public $pro;
 
@@ -26,9 +28,17 @@ class Paid_Memberships_Pro_Helpers {
 	public $load_options;
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Paid_Memberships_Pro_Pro_Helpers $pro
+	 * Paid_Memberships_Pro_Helpers constructor.
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Paid_Memberships_Pro_Pro_Helpers $pro ): void {
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
+	 * @param Paid_Memberships_Pro_Pro_Helpers $pro
+	 */
+	public function setPro( Paid_Memberships_Pro_Pro_Helpers $pro ): void {
 		$this->pro = $pro;
 	}
 
@@ -37,14 +47,6 @@ class Paid_Memberships_Pro_Helpers {
 	 */
 	public function setOptions( Paid_Memberships_Pro_Helpers $options ): void {
 		$this->options = $options;
-	}
-
-	/**
-	 * Paid_Memberships_Pro_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -61,7 +63,7 @@ class Paid_Memberships_Pro_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Membership', 'uncanny-automator' );
+			$label =  esc_attr__( 'Membership', 'uncanny-automator' );
 		}
 
 		global $wpdb;
@@ -69,7 +71,7 @@ class Paid_Memberships_Pro_Helpers {
 		$levels  = $wpdb->get_results( $qry );
 		$options = [];
 		if ( $levels ) {
-			$options['-1'] = __( 'Any membership', 'uncanny-automator' );
+			$options['-1'] =  esc_attr__( 'Any membership', 'uncanny-automator' );
 			foreach ( $levels as $level ) {
 				$options[ $level->id ] = $level->name;
 			}
@@ -81,9 +83,9 @@ class Paid_Memberships_Pro_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code         => __( 'Membership title', 'uncanny-automator' ),
-				$option_code . '_ID' => __( 'Membership ID', 'uncanny-automator' ),
-				//$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
+				$option_code         =>  esc_attr__( 'Membership title', 'uncanny-automator' ),
+				$option_code . '_ID' =>  esc_attr__( 'Membership ID', 'uncanny-automator' ),
+				//$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 

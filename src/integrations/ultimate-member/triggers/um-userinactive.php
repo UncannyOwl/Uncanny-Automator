@@ -41,9 +41,9 @@ class UM_USERINACTIVE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Ultimate Member */
-			'sentence'            => sprintf( __( 'A user becomes inactive', 'uncanny-automator' ) ),
+			'sentence'            => sprintf(  esc_attr__( 'A user becomes inactive', 'uncanny-automator' ) ),
 			/* translators: Logged-in trigger - Ultimate Member */
-			'select_option_name'  => __( 'A user becomes inactive', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user becomes inactive', 'uncanny-automator' ),
 			'action'              => 'um_after_user_is_inactive',
 			'priority'            => 9,
 			'accepted_args'       => 1,
@@ -84,5 +84,5 @@ class UM_USERINACTIVE {
 
 		return;
 	}
-	
+
 }

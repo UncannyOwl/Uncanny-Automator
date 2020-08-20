@@ -45,9 +45,9 @@ class UM_USERROLECHANGE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Ultimate Member */
-			'sentence'            => sprintf( __( 'A user\'s role changes to {{a specific role:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user\'s role changes to {{a specific role:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Ultimate Member */
-			'select_option_name'  => __( 'A user\'s role changes to {{a specific role}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user\'s role changes to {{a specific role}}', 'uncanny-automator' ),
 			'action'              => 'set_user_role',
 			'priority'            => 99,
 			'accepted_args'       => 3,

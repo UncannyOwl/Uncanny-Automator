@@ -4,39 +4,49 @@ namespace Uncanny_Automator;
 
 
 /**
- * Class Automator_Url_Validation
+ * Class Automator_Input_Parser
  * @package Uncanny_Automator
  */
 class Automator_Input_Parser {
 
-	public $defined_tokens = [
-		'site_name',
-		'user_username',
-		'user_firstname',
-		'user_lastname',
-		'user_email',
-		'user_displayname',
-		'reset_pass_link',
-		'admin_email',
-		'site_url',
-		'recipe_name',
-		'current_date',
-		'current_time',
-		'AUTOLOGINLINK',
+	/**
+	 * @var array|mixed|void
+	 */
+	public $defined_tokens = array();
 
-	];
-
+	/**
+	 * @var string
+	 */
 	public $url_regx = "/(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]-*)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]-*)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,}))\.?)(?::\d{2,5})?(?:[\/?#]\S*)?$/u";
 
+	/**
+	 * Automator_Input_Parser constructor.
+	 */
 	public function __construct() {
+		$this->defined_tokens = apply_filters( 'automator_pre_defined_tokens', array(
+				'site_name',
+				'user_username',
+				'user_firstname',
+				'user_lastname',
+				'user_email',
+				'user_displayname',
+				'reset_pass_link',
+				'admin_email',
+				'site_url',
+				'recipe_name',
+				'current_date',
+				'current_time',
+			)
+		);
 	}
+
 
 	/**
 	 * @param null $url
 	 * @param null $recipe_id
-	 * @param      $trigger_args
+	 * @param array $trigger_args
 	 *
-	 * @return mixed|null|string
+	 * @return string|string[]|null
 	 */
 	public function url( $url = null, $recipe_id = null, $trigger_args = [] ) {
 
@@ -295,23 +305,15 @@ class Automator_Input_Parser {
 								$replaceable = $recipe->post_title;
 							}
 							break;
-						case 'AUTOLOGINLINK':
-
-							$unix_day        = 24 * 60 * 60;
-							$days_expired_in = apply_filters( 'AUTOLOGINLINK_expires_in', 7, $current_user );
-
-							$hash = $this->generate_magic_hash();
-							update_user_meta( $current_user->ID, $hash, time() + $unix_day * $days_expired_in );
-
-							$auto_login_url = add_query_arg( 'ua_login', $hash, wp_login_url() );
-							$replaceable    = $auto_login_url;
-
+						default:
+							$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $current_user );
 							break;
 					}
 				}
-
-				$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
-				$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
+				//Utilities::log( $match, '', true, 'match' );
+				$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $user_id );
+				$field_text  = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
+				$field_text  = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 			}
 		}
 
@@ -395,7 +397,7 @@ class Automator_Input_Parser {
 										}
 									} else {
 										/* translators: Article. Fallback. Any type of content (post, page, media, etc) */
-										$return = __( 'Any', 'uncanny-automator' );
+										$return =  esc_attr__( 'Any', 'uncanny-automator' );
 									}
 								} elseif ( ! preg_match( '/ANON/', $piece ) ) {
 									if ( $is_relevant_token ) {
@@ -439,7 +441,7 @@ class Automator_Input_Parser {
 			$adt_rp_key = get_password_reset_key( $user );
 			$user_login = $user->user_login;
 			$url        = network_site_url( "wp-login.php?action=rp&key=$adt_rp_key&login=" . rawurlencode( $user_login ), 'login' );
-			$text       = __( 'Click here to reset your password.', 'uncanny-automator' );
+			$text       =  esc_attr__( 'Click here to reset your password.', 'uncanny-automator' );
 			$rp_link    = sprintf( '<a href="%s">%s</a>', $url, $text );
 		} else {
 			$rp_link = '';
@@ -447,66 +449,6 @@ class Automator_Input_Parser {
 
 		return $rp_link;
 
-	}
-
-	/**
-	 * @param bool   $length
-	 * @param string $separator
-	 *
-	 * @return string
-	 */
-	private function generate_magic_hash( $length = false, $separator = '-' ) {
-		if ( ! is_array( $length ) || is_array( $length ) && empty( $length ) ) {
-			$length = array( 8, 4, 8, 8, 4, 8 );
-		}
-		$hash = '';
-		foreach ( $length as $key => $string_length ) {
-			if ( $key > 0 ) {
-				$hash .= $separator;
-			}
-			$hash .= $this->s4generator( $string_length );
-		}
-
-		return $hash;
-	}
-
-	/**
-	 * @param $length
-	 *
-	 * @return string
-	 */
-	private function s4generator( $length ) {
-		$token        = '';
-		$codeAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-		$max          = strlen( $codeAlphabet );
-		for ( $i = 0; $i < $length; $i ++ ) {
-			$token .= $codeAlphabet[ $this->crypto_rand_secure( 0, $max - 1 ) ];
-		}
-
-		return $token;
-	}
-
-	/**
-	 * @param $min
-	 * @param $max
-	 *
-	 * @return int
-	 */
-	private function crypto_rand_secure( $min, $max ) {
-		$range = $max - $min;
-		if ( $range < 1 ) {
-			return $min;
-		}
-		$log    = ceil( log( $range, 2 ) );
-		$bytes  = (int) ( $log / 8 ) + 1;
-		$bits   = (int) $log + 1;
-		$filter = (int) ( 1 << $bits ) - 1;
-		do {
-			$rnd = hexdec( bin2hex( openssl_random_pseudo_bytes( $bytes ) ) );
-			$rnd = $rnd & $filter;
-		} while ( $rnd > $range );
-
-		return $min + $rnd;
 	}
 
 }

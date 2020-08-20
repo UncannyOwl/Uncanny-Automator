@@ -3,6 +3,9 @@
 
 namespace Uncanny_Automator;
 
+use Caldera_Forms_Forms;
+use Uncanny_Automator_Pro\Caldera_Forms_Pro_Helpers;
+
 /**
  * Class Caldera_Helpers
  * @package Uncanny_Automator
@@ -14,7 +17,7 @@ class Caldera_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Caldera_Forms_Pro_Helpers
+	 * @var Caldera_Forms_Pro_Helpers
 	 */
 	public $pro;
 
@@ -32,9 +35,9 @@ class Caldera_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Caldera_Forms_Pro_Helpers $pro
+	 * @param Caldera_Forms_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Caldera_Forms_Pro_Helpers $pro ) {
+	public function setPro( Caldera_Forms_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -59,7 +62,7 @@ class Caldera_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -68,7 +71,7 @@ class Caldera_Helpers {
 		$options      = [];
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			$forms = \Caldera_Forms_Forms::get_forms( true );
+			$forms = Caldera_Forms_Forms::get_forms( true );
 
 			if ( ! empty( $forms ) ) {
 				foreach ( $forms as $form ) {

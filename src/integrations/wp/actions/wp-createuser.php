@@ -42,53 +42,53 @@ class WP_CREATEUSER {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WordPress */
-			'sentence'           => sprintf( __( 'Create the user {{username:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Create the user {{username:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WordPress */
-			'select_option_name' => __( 'Create a {{user}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Create a {{user}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'create_user' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->text_field( 'USERNAME', __( 'Username', 'uncanny-automator' ), true, 'text', '', true, __( 'Only alphanumeric, _, space, ., -, @', 'uncanny-automator' ) ),
-					
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAIL', __( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
-					
-					$uncanny_automator->helpers->recipe->field->text_field( 'FIRSTNAME', __( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-					
-					$uncanny_automator->helpers->recipe->field->text_field( 'LASTNAME', __( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-					
-					$uncanny_automator->helpers->recipe->field->text_field( 'WEBSITE', __( 'Website', 'uncanny-automator' ), true, 'text', '', false, '' ),
-					
-					$uncanny_automator->helpers->recipe->field->text_field( 'PASSWORD', __( 'Password', 'uncanny-automator' ), true, 'text', '', false, __( 'Leave blank to automatically generate a password', 'uncanny-automator' ) ),
-					
+					$uncanny_automator->helpers->recipe->field->text_field( 'USERNAME',  esc_attr__( 'Username', 'uncanny-automator' ), true, 'text', '', true,  esc_attr__( 'Only alphanumeric, _, space, ., -, @', 'uncanny-automator' ) ),
+
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAIL',  esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
+
+					$uncanny_automator->helpers->recipe->field->text_field( 'FIRSTNAME',  esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+
+					$uncanny_automator->helpers->recipe->field->text_field( 'LASTNAME',  esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+
+					$uncanny_automator->helpers->recipe->field->text_field( 'WEBSITE',  esc_attr__( 'Website', 'uncanny-automator' ), true, 'text', '', false, '' ),
+
+					$uncanny_automator->helpers->recipe->field->text_field( 'PASSWORD',  esc_attr__( 'Password', 'uncanny-automator' ), true, 'text', '', false,  esc_attr__( 'Leave blank to automatically generate a password', 'uncanny-automator' ) ),
+
 					$uncanny_automator->helpers->recipe->wp->options->wp_user_roles(),
-					
-					$uncanny_automator->helpers->recipe->field->text_field( 'SENDREGEMAIL', __( 'Send user notification', 'uncanny-automator' ), true, 'checkbox', '', false, __( 'Send the new user an email about their account.', 'uncanny-automator' ) ),
+
+					$uncanny_automator->helpers->recipe->field->text_field( 'SENDREGEMAIL',  esc_attr__( 'Send user notification', 'uncanny-automator' ), true, 'checkbox', '', false,  esc_attr__( 'Send the new user an email about their account.', 'uncanny-automator' ) ),
 					[
 						'input_type'        => 'repeater',
 						'option_code'       => 'USERMETA_PAIRS',
-						'label'             => __( 'Meta', 'uncanny-automator' ),
+						'label'             =>  esc_attr__( 'Meta', 'uncanny-automator' ),
 						'required'          => false,
 						'fields'            => [
 							[
 								'input_type'      => 'text',
 								'option_code'     => 'meta_key',
-								'label'           => __( 'Key', 'uncanny-automator' ),
+								'label'           =>  esc_attr__( 'Key', 'uncanny-automator' ),
 								'supports_tokens' => true,
 								'required'        => true,
 							],
 							[
 								'input_type'      => 'text',
 								'option_code'     => 'meta_value',
-								'label'           => __( 'Value', 'uncanny-automator' ),
+								'label'           =>  esc_attr__( 'Value', 'uncanny-automator' ),
 								'supports_tokens' => true,
 								'required'        => true,
 							],
 						],
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+						'add_row_button'    =>  esc_attr__( 'Add pair', 'uncanny-automator' ),
+						'remove_row_button' =>  esc_attr__( 'Remove pair', 'uncanny-automator' ),
 					],
 				],
 			],
@@ -115,14 +115,14 @@ class WP_CREATEUSER {
 			$username = $uncanny_automator->parse->text( $action_data['meta']['USERNAME'], $recipe_id, $user_id, $args );
 			if ( ! validate_username( $username ) ) {
 				$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id, sprintf(
-					/* translators: Create a {{user}} - Error while creating a new user */
-					__( 'Invalid username: %1$s', 'uncanny-automator' ),
+				/* translators: Create a {{user}} - Error while creating a new user */
+					 esc_attr__( 'Invalid username: %1$s', 'uncanny-automator' ),
 					$username ) );
 			}
 		} else {
 			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id,
 				/* translators: Create a {{user}} - Error while creating a new user */
-				__( 'Username was not set', 'uncanny-automator' )
+				 esc_attr__( 'Username was not set', 'uncanny-automator' )
 			);
 
 			return;
@@ -133,12 +133,12 @@ class WP_CREATEUSER {
 			$email = $uncanny_automator->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
 			if ( ! is_email( $email ) ) {
 				$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id, sprintf(
-					/* translators: Create a {{user}} - Error while creating a new user */
-					__( 'Invalid email: %1$s', 'uncanny-automator' )
+				/* translators: Create a {{user}} - Error while creating a new user */
+					 esc_attr__( 'Invalid email: %1$s', 'uncanny-automator' )
 					, $email ) );
 			}
 		} else {
-			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id, __( 'Username was not set', 'uncanny-automator' ) );
+			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id,  esc_attr__( 'Username was not set', 'uncanny-automator' ) );
 
 			return;
 		}
@@ -173,9 +173,9 @@ class WP_CREATEUSER {
 		$user_id = wp_insert_user( $userdata );
 
 		if ( is_wp_error( $user_id ) ) {
-			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id, 
+			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id,
 				/* translators: Create a {{user}} - Error while creating a new user */
-				__( 'Failed to create a user', 'uncanny-automator' )
+				 esc_attr__( 'Failed to create a user', 'uncanny-automator' )
 			);
 
 			return;
@@ -187,9 +187,9 @@ class WP_CREATEUSER {
 		if ( isset( $action_data['meta']['USERMETA_PAIRS'] ) && ! empty( $action_data['meta']['USERMETA_PAIRS'] ) ) {
 			$fields = json_decode( $action_data['meta']['USERMETA_PAIRS'], true );
 
-			foreach ( $fields AS $meta ) {
+			foreach ( $fields as $meta ) {
 				if ( isset( $meta['meta_key'] ) && ! empty( $meta['meta_key'] ) && isset( $meta['meta_value'] ) && ! empty( $meta['meta_value'] ) ) {
-					$key = $uncanny_automator->parse->text( $meta['meta_key'], $recipe_id, $user_id, $args );
+					$key   = $uncanny_automator->parse->text( $meta['meta_key'], $recipe_id, $user_id, $args );
 					$value = $uncanny_automator->parse->text( $meta['meta_value'], $recipe_id, $user_id, $args );
 					update_user_meta( $user_id, $key, $value );
 				} else {
@@ -201,12 +201,12 @@ class WP_CREATEUSER {
 		if ( ! empty( $failed_meta_updates ) ) {
 			$failed_keys = "'" . implode( "','", array_keys( $failed_meta_updates ) ) . "'";
 			$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id, sprintf(
-				/* translators: Create a {{user}} - Error while creating a new user */
-				__( 'Meta keys failed to update: %1$s', 'uncanny-automator' ),
+			/* translators: Create a {{user}} - Error while creating a new user */
+				 esc_attr__( 'Meta keys failed to update: %1$s', 'uncanny-automator' ),
 				$failed_keys ) );
 		}
 
-		wp_new_user_notification( $user_id, NULL, 'both' );
+		wp_new_user_notification( $user_id, null, 'both' );
 
 		$uncanny_automator->complete->action( $user_id, $action_data, $recipe_id );
 	}

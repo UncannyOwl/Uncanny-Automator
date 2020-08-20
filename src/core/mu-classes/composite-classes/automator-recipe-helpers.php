@@ -336,7 +336,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	public function number_of_times( $label = null, $description = null, $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Number of times', 'uncanny-automator' );
+			$label = esc_attr__( 'Number of times', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -344,7 +344,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 
 		if ( ! $placeholder ) {
-			$placeholder = __( 'Example: 1', 'uncanny-automator' );
+			$placeholder = esc_attr__( 'Example: 1', 'uncanny-automator' );
 		}
 
 		$option = [
@@ -367,17 +367,17 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		$option = [
 			'option_code' => 'NUMBERCOND',
 			/* translators: Noun */
-			'label'       => __( 'Condition', 'uncanny-automator' ),
+			'label'       => esc_attr__( 'Condition', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			// 'default_value'      => false,
 			'options'     => [
-				'='  => __( 'equal to', 'uncanny-automator' ),
-				'!=' => __( 'not equal to', 'uncanny-automator' ),
-				'<'  => __( 'less than', 'uncanny-automator' ),
-				'>'  => __( 'greater than', 'uncanny-automator' ),
-				'>=' => __( 'greater or equal to', 'uncanny-automator' ),
-				'<=' => __( 'less or equal to', 'uncanny-automator' ),
+				'='  => esc_attr__( 'equal to', 'uncanny-automator' ),
+				'!=' => esc_attr__( 'not equal to', 'uncanny-automator' ),
+				'<'  => esc_attr__( 'less than', 'uncanny-automator' ),
+				'>'  => esc_attr__( 'greater than', 'uncanny-automator' ),
+				'>=' => esc_attr__( 'greater or equal to', 'uncanny-automator' ),
+				'<=' => esc_attr__( 'less or equal to', 'uncanny-automator' ),
 			],
 		];
 
@@ -394,7 +394,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	public function get_redirect_url( $label = null, $option_code = 'REDIRECTURL' ) {
 
 		if ( ! $label ) {
-			$label = __( 'Redirect URL', 'uncanny-automator' );
+			$label = esc_attr__( 'Redirect URL', 'uncanny-automator' );
 		}
 
 		$option = [
@@ -416,7 +416,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @param bool $is_all_label
 	 *
 	 * @return array
-	 * @version 2.1.4 - changes made to pass __('All pages', 'uncanny-automator') as string instead of
+	 * @version 2.1.4 - changes made to pass  esc_attr__('All pages', 'uncanny-automator') as string instead of
 	 * page, post, course etc
 	 * @version 2.4 - Added transients
 	 * @version 2.6 - Changed get_posts() to wpdb
@@ -427,7 +427,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		// set up a default label.
 		if ( is_null( $add_any_option_label ) ) {
-			$add_any_option_label = __( 'Any page', 'uncanny-automator' );
+			$add_any_option_label = esc_attr__( 'Any page', 'uncanny-automator' );
 		}
 
 		// bail, if we aren't supposed to do this at all.
@@ -451,7 +451,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		extract( $args );
 
 		// prepare transient key.
-		$transient_key = "uap_transient";
+		$transient_key = apply_filters( 'automator_transient_name', 'uap_transient', $args );
 
 		// suffix post type is needed.
 		if ( isset( $args['post_type'] ) ) {
@@ -459,7 +459,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 
 		// attempt fetching options from transient.
-		$options = get_transient( $transient_key );
+		$options = apply_filters( 'automator_modify_transient_options', get_transient( $transient_key ), $args );
 
 		// if meta query is set, its better to re-run query instead of transient
 		if ( isset( $args['meta_query'] ) && ! empty( $args['meta_query'] ) ) {
@@ -576,7 +576,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 					// set up a descriptive title for posts with no title.
 					if ( empty( $title ) ) {
-						$title = sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
+						$title = sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
 					}
 
 					// add post as an option.
@@ -637,7 +637,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	/**
 	 * switch statement is for pre-v2.1.4
 	 * default statement is v2.1.4+ in which
-	 * __() is passed to $add_any_option_label
+	 *  esc_attr__() is passed to $add_any_option_label
 	 *
 	 * @param $add_any_option_label
 	 * @param $is_all_label
@@ -649,101 +649,101 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			case 'page':
 			case 'pages':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All pages', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All pages', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any page', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any page', 'uncanny-automator' );
 				}
 				break;
 			case 'post':
 			case 'posts':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All posts', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All posts', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any post', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any post', 'uncanny-automator' );
 				}
 				break;
 			case 'course':
 			case 'courses':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All courses', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All courses', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any course', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any course', 'uncanny-automator' );
 				}
 				break;
 			case 'lesson':
 			case 'lessons':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All lessons', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All lessons', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any lesson', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any lesson', 'uncanny-automator' );
 				}
 				break;
 			case 'topic':
 			case 'topics':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All topics', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All topics', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any topic', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any topic', 'uncanny-automator' );
 				}
 				break;
 			case 'quiz':
 			case 'quizzes':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All quizzes', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All quizzes', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any quiz', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any quiz', 'uncanny-automator' );
 				}
 				break;
 			case 'membership':
 			case 'memberships':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All memberships', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All memberships', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any membership', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any membership', 'uncanny-automator' );
 				}
 				break;
 			case 'download':
 			case 'downloads':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All downloads', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All downloads', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any download', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any download', 'uncanny-automator' );
 				}
 				break;
 			case 'unit':
 			case 'units':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All units', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All units', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any unit', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any unit', 'uncanny-automator' );
 				}
 				break;
 			case 'popup':
 			case 'popups':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All popups', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All popups', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any popup', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any popup', 'uncanny-automator' );
 				}
 				break;
 			case 'product':
 			case 'products':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All products', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All products', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any product', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any product', 'uncanny-automator' );
 				}
 				break;
 			case 'award':
 			case 'awards':
 				if ( $is_all_label ) {
-					$options['-1'] = __( 'All awards', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'All awards', 'uncanny-automator' );
 				} else {
-					$options['-1'] = __( 'Any award', 'uncanny-automator' );
+					$options['-1'] = esc_attr__( 'Any award', 'uncanny-automator' );
 				}
 				break;
 			default:
-				//fallback, assuming __() string is passed
+				//fallback, assuming  esc_attr__() string is passed
 				$options['-1'] = $add_any_option_label;
 				break;
 		}

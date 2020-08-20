@@ -39,15 +39,15 @@ class FR_SUBMITFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Forminator */
-			'sentence'            => sprintf( __( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Forminator */
-			'select_option_name'  => __( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'forminator_custom_form_after_save_entry',
 			'priority'            => 100,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'fr_submit_form' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->forminator->options->all_forminator_forms( null, $this->trigger_meta),
+				$uncanny_automator->helpers->recipe->forminator->options->all_forminator_forms( null, $this->trigger_meta ),
 			],
 		);
 

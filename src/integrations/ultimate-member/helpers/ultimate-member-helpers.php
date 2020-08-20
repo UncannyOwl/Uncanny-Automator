@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Ultimate_Member_Pro_Helpers;
+
 /**
  * Class Ultimate_Member_Helpers
  * @package Uncanny_Automator
@@ -13,7 +15,7 @@ class Ultimate_Member_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Ultimate_Member_Pro_Helpers
+	 * @var Ultimate_Member_Pro_Helpers
 	 */
 	public $pro;
 
@@ -23,6 +25,14 @@ class Ultimate_Member_Helpers {
 	public $load_options;
 
 	/**
+	 * Ultimate_Member_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Ultimate_Member_Helpers $options
 	 */
 	public function setOptions( Ultimate_Member_Helpers $options ) {
@@ -30,18 +40,10 @@ class Ultimate_Member_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Ultimate_Member_Pro_Helpers $pro
+	 * @param Ultimate_Member_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Ultimate_Member_Pro_Helpers $pro ) {
+	public function setPro( Ultimate_Member_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Ultimate_Member_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -59,7 +61,7 @@ class Ultimate_Member_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $params ) ? $params['token'] : false;
@@ -70,7 +72,7 @@ class Ultimate_Member_Helpers {
 
 		$options = [];
 		if ( $any ) {
-			$options['-1'] = __( 'Any form', 'uncanny-automator' );
+			$options['-1'] =  esc_attr__( 'Any form', 'uncanny-automator' );
 		}
 		$args = array(
 			'posts_per_page'   => 999,
@@ -98,7 +100,7 @@ class Ultimate_Member_Helpers {
 		/*if ( ! empty( $forms_list ) ) {
 			foreach ( $forms_list as $form ) {
 				// Check if the form title is defined
-				$post_title           = ! empty( $form->post_title ) ? $form->post_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $form->ID );
+				$post_title           = ! empty( $form->post_title ) ? $form->post_title : sprintf(  esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $form->ID );
 				$options[ $form->ID ] = $post_title;
 			}
 		}*/
@@ -115,8 +117,8 @@ class Ultimate_Member_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $forms_list,
 			'relevant_tokens' => [
-				$option_code         => __( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' => __( 'Form ID', 'uncanny-automator' ),
+				$option_code         =>  esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' =>  esc_attr__( 'Form ID', 'uncanny-automator' ),
 			],
 		];
 

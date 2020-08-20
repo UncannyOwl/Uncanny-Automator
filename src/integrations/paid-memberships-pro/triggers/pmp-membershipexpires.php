@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 
+use MemberOrder;
+
 /**
  * Class PMP_MEMBERSHIPEXPIRES
  * @package Uncanny_Automator
@@ -40,9 +42,9 @@ class PMP_MEMBERSHIPEXPIRES {
 
 		global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->paid_memberships_pro->options->all_memberships( __( 'Membership', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->paid_memberships_pro->options->all_memberships(  esc_attr__( 'Membership', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' => __( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
+		$options['options'] = array( '-1' =>  esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
 			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
@@ -50,9 +52,9 @@ class PMP_MEMBERSHIPEXPIRES {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'sentence'            => sprintf( __( 'A user\'s subscription to {{a membership:%1$s}} expires', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user\'s subscription to {{a membership:%1$s}} expires', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'select_option_name'  => __( 'A user\'s subscription to {{a membership}} expires', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user\'s subscription to {{a membership}} expires', 'uncanny-automator' ),
 			'action'              => 'pmpro_membership_post_membership_expiry',
 			'priority'            => 100,
 			'accepted_args'       => 2,
@@ -70,7 +72,7 @@ class PMP_MEMBERSHIPEXPIRES {
 	/**
 	 * Validation function when the trigger action is hit
 	 *
-	 * @param \MemberOrder $morder
+	 * @param MemberOrder $morder
 	 */
 
 	/**

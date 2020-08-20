@@ -39,9 +39,9 @@ class LF_COURSEDONE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LifterLMS */
-			'sentence'            => sprintf( __( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LifterLMS */
-			'select_option_name'  => __( 'A user completes {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'lifterlms_course_completed',
 			'priority'            => 20,
 			'accepted_args'       => 2,
@@ -72,10 +72,10 @@ class LF_COURSEDONE {
 		global $uncanny_automator;
 
 		$args = [
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'post_id'        => intval( $course_id ),
-			'user_id'        => $user_id,
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => intval( $course_id ),
+			'user_id' => $user_id,
 		];
 
 		$uncanny_automator->maybe_add_trigger_entry( $args );

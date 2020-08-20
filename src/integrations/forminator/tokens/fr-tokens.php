@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 
+use Forminator_API;
+
 /**
  * Class Fr_Tokens
  *
@@ -65,7 +67,7 @@ class Fr_Tokens {
 		$trigger_meta = $args['meta'];
 
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
-			$form_meta = \Forminator_API::get_form_fields( $form_id );
+			$form_meta = Forminator_API::get_form_fields( $form_id );
 			if ( isset( $form_meta ) && ! empty( $form_meta ) ) {
 				$fields = [];
 				foreach ( $form_meta as $field ) {
@@ -118,7 +120,7 @@ class Fr_Tokens {
 							$meta_field     = $piece . '_' . $form_id;
 							$entry_id       = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
 							if ( ! empty( $entry_id ) ) {
-								$entry = \Forminator_API::get_entry( $form_id, $entry_id );
+								$entry = Forminator_API::get_entry( $form_id, $entry_id );
 								$value = $entry->get_meta( $meta_key );
 							}
 						}

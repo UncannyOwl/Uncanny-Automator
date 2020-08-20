@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use WP_Post;
+
 /**
  * Class EC_REGISTER
  * @package Uncanny_Automator
@@ -39,9 +41,9 @@ class EC_REGISTER {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - The Events Calendar */
-			'sentence'            => sprintf( __( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Calendar */
-			'select_option_name'  => __( 'A user registers for {{an event}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user registers for {{an event}}', 'uncanny-automator' ),
 			'action'              => 'event_tickets_rsvp_tickets_generated_for_product',
 			'priority'            => 10,
 			'accepted_args'       => 3,
@@ -68,7 +70,7 @@ class EC_REGISTER {
 		}
 
 		$event    = tribe_events_get_ticket_event( $product_id );
-		$event_id = ( $event instanceof \WP_Post ) ? $event->ID : false;
+		$event_id = ( $event instanceof WP_Post ) ? $event->ID : false;
 
 		$user_id = get_current_user_id();
 

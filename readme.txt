@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
-Tested up to: 5.4.2
+Tested up to: 5.5
 Requires PHP: 7.0
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -149,6 +149,15 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.6.2 [2020-08-19] =
+
+* Added: Filters to bypass transient data
+* Updated: Logs now use SQL views
+* Updated: Added permission_callback to all Rest API calls for WordPress v5.5 compatibility
+* Updated: Anonymous recipes - User selector - "Roles" dropdown label changed to "Role"
+* Updated: Changed __(), _e(), _x() to esc_attr__(), esc_attr_e(), esc_attr_x()
+* Updated: Auto login token code moved to Automator Pro
+
 = 2.6.1 [2020-07-30] =
 
 * Fixed: Updated trigger log query to use wpdb postmeta instead of wp_postmeta
@@ -179,23 +188,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Updated: Database structure and added Views for complex queries
 * Fixed: Number of times not working for some triggers
 * Fixed: In-progress triggers not showing up in trigger log
-
-= 2.5 [2020-07-02] =
-
-* Added: WP Foro integration
-* Added: Trigger: WP Foro - A user creates a new topic in a forum
-* Added: Action: WP Foro - Set user reputation
-* Added: Action: WP Foro - Add the user to a group
-* Added: myCred integration
-* Added: Action: myCred - Award a badge to the user
-* Added: Action: myCred - Award a rank to the user
-* Added: Action: myCred - Award points to the user
-* Updated: Improved performance of BuddyPress and GamiPress integrations
-* Updated: Database code cleanup, table engine switched from myisam to innodb, updated indexes
-* Updated: Action: Send an email - Added support for shortcodes in email subject and body
-* Updated: Added additional detail to new trigger and action log entries on hover
-* Fixed: Button on settings pages not showing on mobile
-* Fixed: PHP warning on create post action when post status is registered
-* Fixed: Recipe completions with status "Completed with errors" can now be re-completed by the same user (if "Times per user" supports additional completions)
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

@@ -40,9 +40,9 @@ class LD_MARKCOURSEDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf( __( 'Mark {{a course:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Mark {{a course:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Mark {{a course}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_course' ),

@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Upsell_Plugin_Pro_Helpers;
+
 /**
  * Class Upsell_Plugin_Helpers
  * @package Uncanny_Automator
@@ -14,7 +16,7 @@ class Upsell_Plugin_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Upsell_Plugin_Pro_Helpers
+	 * @var Upsell_Plugin_Pro_Helpers
 	 */
 	public $pro;
 
@@ -40,9 +42,9 @@ class Upsell_Plugin_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Upsell_Plugin_Pro_Helpers $pro
+	 * @param Upsell_Plugin_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Upsell_Plugin_Pro_Helpers $pro ) {
+	public function setPro( Upsell_Plugin_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -60,7 +62,7 @@ class Upsell_Plugin_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Product', 'uncanny-automator' );
+			$label =  esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -72,7 +74,7 @@ class Upsell_Plugin_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any product', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true,  esc_attr__( 'Any product', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -81,9 +83,9 @@ class Upsell_Plugin_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 

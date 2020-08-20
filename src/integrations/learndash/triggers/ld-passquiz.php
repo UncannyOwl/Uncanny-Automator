@@ -39,9 +39,9 @@ class LD_PASSQUIZ {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( __( 'A user passes {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user passes {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => __( 'A user passes {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user passes {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'learndash_quiz_completed',
 			'priority'            => 15,
 			'accepted_args'       => 2,
@@ -74,7 +74,7 @@ class LD_PASSQUIZ {
 		if ( 0 !== (int) $q_status ) {
 
 			global $uncanny_automator;
-			
+
 			$user    = $current_user;
 			$quiz    = $data['quiz'];
 			$post_id = is_object( $quiz ) ? $quiz->ID : $quiz;
@@ -86,7 +86,7 @@ class LD_PASSQUIZ {
 			$args = [
 				'code'    => $this->trigger_code,
 				'meta'    => $this->trigger_meta,
-				'post_id' => (int)$post_id,
+				'post_id' => (int) $post_id,
 				'user_id' => $user->ID,
 			];
 

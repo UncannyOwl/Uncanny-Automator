@@ -42,7 +42,7 @@ class LD_TOPICDONE {
 			'post_status'    => 'publish',
 		];
 
-		$course_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
+		$course_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$args = [
 			'post_type'      => 'sfwd-lessons',
@@ -52,21 +52,21 @@ class LD_TOPICDONE {
 			'post_status'    => 'publish',
 		];
 
-		$lesson_options         = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
+		$lesson_options         = $uncanny_automator->helpers->recipe->options->wp_query( $args, true,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 		$course_relevant_tokens = [
-			'LDCOURSE'     => __( 'Course title', 'uncanny-automator' ),
-			'LDCOURSE_ID'  => __( 'Course ID', 'uncanny-automator' ),
-			'LDCOURSE_URL' => __( 'Course URL', 'uncanny-automator' ),
+			'LDCOURSE'     =>  esc_attr__( 'Course title', 'uncanny-automator' ),
+			'LDCOURSE_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
+			'LDCOURSE_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
 		];
 		$lesson_relevant_tokens = [
-			'LDLESSON'     => __( 'Lesson title', 'uncanny-automator' ),
-			'LDLESSON_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
-			'LDLESSON_URL' => __( 'Lesson URL', 'uncanny-automator' ),
+			'LDLESSON'     =>  esc_attr__( 'Lesson title', 'uncanny-automator' ),
+			'LDLESSON_ID'  =>  esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+			'LDLESSON_URL' =>  esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 		];
 		$relevant_tokens        = [
-			$this->trigger_meta          => __( 'Topic title', 'uncanny-automator' ),
-			$this->trigger_meta . '_ID'  => __( 'Topic ID', 'uncanny-automator' ),
-			$this->trigger_meta . '_URL' => __( 'Topic URL', 'uncanny-automator' ),
+			$this->trigger_meta          =>  esc_attr__( 'Topic title', 'uncanny-automator' ),
+			$this->trigger_meta . '_ID'  =>  esc_attr__( 'Topic ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_URL' =>  esc_attr__( 'Topic URL', 'uncanny-automator' ),
 		];
 		$trigger                = array(
 			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
@@ -74,9 +74,9 @@ class LD_TOPICDONE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( __( 'A user completes {{a topic:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a topic:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => __( 'A user completes {{a topic}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user completes {{a topic}}', 'uncanny-automator' ),
 			'action'              => 'learndash_topic_completed',
 			'priority'            => 10,
 			'accepted_args'       => 1,
@@ -88,7 +88,7 @@ class LD_TOPICDONE {
 				$this->trigger_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDCOURSE',
-						__( 'Course', 'uncanny-automator' ),
+						 esc_attr__( 'Course', 'uncanny-automator' ),
 						$course_options,
 						'',
 						'',
@@ -102,7 +102,7 @@ class LD_TOPICDONE {
 					),
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDLESSON',
-						__( 'Lesson', 'uncanny-automator' ),
+						 esc_attr__( 'Lesson', 'uncanny-automator' ),
 						$lesson_options,
 						'',
 						'',
@@ -114,7 +114,7 @@ class LD_TOPICDONE {
 						],
 						$lesson_relevant_tokens
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( 'LDTOPIC', __( 'Topic', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
+					$uncanny_automator->helpers->recipe->field->select_field( 'LDTOPIC',  esc_attr__( 'Topic', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
 				],
 			],
 		);

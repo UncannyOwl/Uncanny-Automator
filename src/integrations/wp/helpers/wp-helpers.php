@@ -4,6 +4,9 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Wp_Pro_Helpers;
+use WP_Error;
+
 /**
  * Class Wp_Helpers
  * @package Uncanny_Automator
@@ -15,7 +18,7 @@ class Wp_Helpers {
 	 */
 	public $options;
 	/**
-	 * @var \Uncanny_Automator_Pro\Wp_Pro_Helpers
+	 * @var Wp_Pro_Helpers
 	 */
 	public $pro;
 
@@ -45,9 +48,9 @@ class Wp_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Wp_Pro_Helpers $pro
+	 * @param Wp_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Wp_Pro_Helpers $pro ) {
+	public function setPro( Wp_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -77,7 +80,7 @@ class Wp_Helpers {
 			if ( ! empty( $posts_list ) ) {
 				foreach ( $posts_list as $post_id => $title ) {
 					// Check if the post title is defined
-					$post_title = ! empty( $title ) ? $title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
+					$post_title = ! empty( $title ) ? $title : sprintf(  esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 
 					$fields[] = array(
 						'value' => $post_id,
@@ -105,7 +108,7 @@ class Wp_Helpers {
 
 		if ( ! $label ) {
 			/* translators: Noun */
-			$label = __( 'Post', 'uncanny-automator' );
+			$label =  esc_attr__( 'Post', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -117,7 +120,7 @@ class Wp_Helpers {
 		];
 
 		global $uncanny_automator;
-		$all_posts = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any post', 'uncanny-automator' ) );
+		$all_posts = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any post', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -126,9 +129,9 @@ class Wp_Helpers {
 			'required'        => true,
 			'options'         => $all_posts,
 			'relevant_tokens' => [
-				$option_code          => __( 'Post title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Post ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Post URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Post title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Post ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Post URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -150,7 +153,7 @@ class Wp_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Page', 'uncanny-automator' );
+			$label =  esc_attr__( 'Page', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -162,7 +165,7 @@ class Wp_Helpers {
 		];
 
 		global $uncanny_automator;
-		$all_pages = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'All pages', 'uncanny-automator' ) );
+		$all_pages = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'All pages', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -171,9 +174,9 @@ class Wp_Helpers {
 			'required'        => true,
 			'options'         => $all_pages,
 			'relevant_tokens' => [
-				$option_code          => __( 'Page title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Page ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Page URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Page title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Page ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Page URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -195,7 +198,7 @@ class Wp_Helpers {
 
 		if ( ! $label ) {
 			/* translators: WordPress role */
-			$label = __( 'Role', 'uncanny-automator' );
+			$label =  esc_attr__( 'Role', 'uncanny-automator' );
 		}
 
 		$roles = [];
@@ -230,7 +233,7 @@ class Wp_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Post type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Post type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -291,7 +294,7 @@ class Wp_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -307,14 +310,14 @@ class Wp_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter valid fields.', 'uncanny-automator' ),
+					'message' =>  esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -348,9 +351,9 @@ class Wp_Helpers {
 
 			$response = wp_remote_request( $webhook_url, $args );
 
-			if ( $response instanceof \WP_Error ) {
+			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
-				$error_message = sprintf( __( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
+				$error_message = sprintf(  esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				wp_send_json( [
 					'type'    => 'error',
 					'message' => $error_message,
@@ -358,7 +361,7 @@ class Wp_Helpers {
 			}
 
 			/* translators: 1. Webhook URL */
-			$success_message = sprintf( __( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
+			$success_message = sprintf(  esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
 			wp_send_json( array(
 				'type'    => 'success',

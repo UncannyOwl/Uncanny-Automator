@@ -21,8 +21,8 @@ class CF_SUBFORM {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code        = 'CFSUBFORM';
-		$this->trigger_meta        = 'CFFORMS';
+		$this->trigger_code = 'CFSUBFORM';
+		$this->trigger_meta = 'CFFORMS';
 		add_filter( 'wpcf_verify_nonce', '__return_true' );
 		$this->define_trigger();
 	}
@@ -41,9 +41,9 @@ class CF_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Caldera Forms */
-			'sentence'            => sprintf( __( 'User submits {{a form:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'User submits {{a form:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Caldera Forms */
-			'select_option_name'  => __( 'User submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'User submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'caldera_forms_submit_complete',
 			'priority'            => 99,
 			'accepted_args'       => 4,
@@ -66,8 +66,8 @@ class CF_SUBFORM {
 	public function caldera_forms_submit( $form, $referrer, $process_id, $entryid ) {
 
 		global $uncanny_automator;
-		$user_id = wp_get_current_user()->ID;
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$user_id    = wp_get_current_user()->ID;
+		$recipes    = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
 		$conditions = $this->match_condition( $form, $recipes, $this->trigger_meta, $this->trigger_code );
 
 		if ( ! $conditions ) {
@@ -94,8 +94,8 @@ class CF_SUBFORM {
 	/**
 	 * Matching Form id because its not an integer.
 	 *
-	 * @param array  $form .
-	 * @param array  $recipes .
+	 * @param array $form .
+	 * @param array $recipes .
 	 * @param string $trigger_meta .
 	 * @param string $trigger_code .
 	 *

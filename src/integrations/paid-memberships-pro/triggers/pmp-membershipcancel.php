@@ -40,9 +40,9 @@ class PMP_MEMBERSHIPCANCEL {
 
 		global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->paid_memberships_pro->options->all_memberships( __( 'Membership', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->paid_memberships_pro->options->all_memberships(  esc_attr__( 'Membership', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' => __( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
+		$options['options'] = array( '-1' =>  esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
 			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
@@ -50,9 +50,9 @@ class PMP_MEMBERSHIPCANCEL {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'sentence'            => sprintf( __( 'A user cancels {{a membership:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user cancels {{a membership:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'select_option_name'  => __( 'A user cancels {{a membership}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user cancels {{a membership}}', 'uncanny-automator' ),
 			'action'              => 'pmpro_after_change_membership_level',
 			'priority'            => 99,
 			'accepted_args'       => 3,
@@ -115,7 +115,7 @@ class PMP_MEMBERSHIPCANCEL {
 
 			if ( ! empty( $matched_recipe_ids ) ) {
 				foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-					$args = [
+					$args   = [
 						'code'             => $this->trigger_code,
 						'meta'             => $this->trigger_meta,
 						'user_id'          => $user_id,

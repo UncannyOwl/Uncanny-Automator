@@ -39,9 +39,9 @@ class WPLMS_UNITCOMPLETED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP LMS */
-			'sentence'            => sprintf( __( 'A user completes {{a unit:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a unit:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP LMS */
-			'select_option_name'  => __( 'A user completes {{a unit}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user completes {{a unit}}', 'uncanny-automator' ),
 			'action'              => 'wplms_unit_complete',
 			'priority'            => 20,
 			'accepted_args'       => 3,
@@ -61,7 +61,7 @@ class WPLMS_UNITCOMPLETED {
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param integer $unit_id
-	 * @param null    $info
+	 * @param null $info
 	 * @param integer $user_id
 	 */
 	public function wplms_unit_completed( $unit_id, $info, $user_id ) {

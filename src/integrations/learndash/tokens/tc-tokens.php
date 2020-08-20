@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 
+use UCTINCAN\Database;
+
 /**
  * Class Tc_Tokens
  * @package Uncanny_Automator
@@ -173,7 +175,7 @@ class Tc_Tokens {
 					// For other tokens.
 					global $wpdb;
 
-					$table_name   = $wpdb->prefix . \UCTINCAN\Database::TABLE_REPORTING;
+					$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
 					$q            = "SELECT * FROM {$table_name} WHERE user_id = {$user_id} AND module LIKE '%/uncanny-snc/{$module_id}/%' ORDER BY xstored DESC LIMIT 0,1";
 					$tin_can_data = $wpdb->get_row( $q );
 

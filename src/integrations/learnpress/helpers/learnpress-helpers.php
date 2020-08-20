@@ -3,11 +3,28 @@
 
 namespace Uncanny_Automator;
 
+use LP_Course_CURD;
+use LP_Section_CURD;
+use Uncanny_Automator_Pro\Learnpress_Pro_Helpers;
+
 /**
  * Class Learnpress_Helpers
  * @package Uncanny_Automator
  */
 class Learnpress_Helpers {
+	/**
+	 * @var Learnpress_Helpers
+	 */
+	public $options;
+	/**
+	 * @var Learnpress_Pro_Helpers
+	 */
+	public $pro;
+	/**
+	 * @var bool
+	 */
+	public $load_options;
+
 	/**
 	 * Learnpress_Helpers constructor.
 	 */
@@ -30,21 +47,6 @@ class Learnpress_Helpers {
 	}
 
 	/**
-	 * @var Learnpress_Helpers
-	 */
-	public $options;
-
-	/**
-	 * @var \Uncanny_Automator_Pro\Learnpress_Pro_Helpers
-	 */
-	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Learnpress_Helpers $options
 	 */
 	public function setOptions( Learnpress_Helpers $options ) {
@@ -52,9 +54,9 @@ class Learnpress_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Learnpress_Pro_Helpers $pro
+	 * @param Learnpress_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Learnpress_Pro_Helpers $pro ) {
+	public function setPro( Learnpress_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -74,7 +76,7 @@ class Learnpress_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Course', 'uncanny-automator' );
+			$label =  esc_attr__( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -86,7 +88,7 @@ class Learnpress_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -98,9 +100,9 @@ class Learnpress_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Course title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -122,7 +124,7 @@ class Learnpress_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Lesson', 'uncanny-automator' );
+			$label =  esc_attr__( 'Lesson', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -134,7 +136,7 @@ class Learnpress_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any lesson', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -146,9 +148,9 @@ class Learnpress_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Lesson title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Lesson title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -166,8 +168,8 @@ class Learnpress_Helpers {
 
 		$fields = [];
 		if ( isset( $_POST ) ) {
-			if( absint( $_POST['value'] ) > 0 ) {
-				$course_curd = new \LP_Course_CURD();
+			if ( absint( $_POST['value'] ) > 0 ) {
+				$course_curd = new LP_Course_CURD();
 				$sections    = $course_curd->get_course_sections( absint( $_POST['value'] ) );
 
 				foreach ( $sections as $section ) {
@@ -196,7 +198,7 @@ class Learnpress_Helpers {
 		if ( isset( $_POST ) ) {
 			$course_id = absint( $_POST['values']['LPCOURSE'] );
 			if ( $course_id > 0 ) {
-				$course_curd = new \LP_Section_CURD( $course_id );
+				$course_curd = new LP_Section_CURD( $course_id );
 				$lessons     = $course_curd->get_section_items( absint( $_POST['value'] ) );
 
 				foreach ( $lessons as $lesson ) {

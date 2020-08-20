@@ -3,6 +3,9 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Ninja_Forms_Pro_Helpers;
+use function Ninja_Forms;
+
 /**
  * Class Ninja_Forms_Helpers
  * @package Uncanny_Automator
@@ -14,7 +17,7 @@ class Ninja_Forms_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Ninja_Forms_Pro_Helpers
+	 * @var Ninja_Forms_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,6 +27,14 @@ class Ninja_Forms_Helpers {
 	public $load_options;
 
 	/**
+	 * Ninja_Forms_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Ninja_Forms_Helpers $options
 	 */
 	public function setOptions( Ninja_Forms_Helpers $options ) {
@@ -31,18 +42,10 @@ class Ninja_Forms_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Ninja_Forms_Pro_Helpers $pro
+	 * @param Ninja_Forms_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Ninja_Forms_Pro_Helpers $pro ) {
+	public function setPro( Ninja_Forms_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Ninja_Forms_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -61,7 +64,7 @@ class Ninja_Forms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -72,7 +75,7 @@ class Ninja_Forms_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			$forms = \Ninja_Forms()->form()->get_forms();
+			$forms = Ninja_Forms()->form()->get_forms();
 
 			if ( ! empty( $forms ) ) {
 				foreach ( $forms as $form ) {

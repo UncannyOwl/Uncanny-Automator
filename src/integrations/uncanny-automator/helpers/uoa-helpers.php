@@ -4,11 +4,27 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Uoa_Pro_Helpers;
+use WP_Error;
+
 /**
  * Class Uoa_Helpers
  * @package Uncanny_Automator
  */
 class Uoa_Helpers {
+	/**
+	 * @var Uoa_Helpers
+	 */
+	public $options;
+	/**
+	 * @var Uoa_Pro_Helpers
+	 */
+	public $pro;
+	/**
+	 * @var bool
+	 */
+	public $load_options;
+
 	/**
 	 * Uoa_Helpers constructor.
 	 */
@@ -20,20 +36,6 @@ class Uoa_Helpers {
 	}
 
 	/**
-	 * @var Uoa_Helpers
-	 */
-	public $options;
-	/**
-	 * @var \Uncanny_Automator_Pro\Uoa_Pro_Helpers
-	 */
-	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Uoa_Helpers $options
 	 */
 	public function setOptions( Uoa_Helpers $options ) {
@@ -41,9 +43,9 @@ class Uoa_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Uoa_Pro_Helpers $pro
+	 * @param Uoa_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Uoa_Pro_Helpers $pro ) {
+	public function setPro( Uoa_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -66,7 +68,7 @@ class Uoa_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -82,20 +84,20 @@ class Uoa_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' => __( 'Please enter valid fields.', 'uncanny-automator' ),
+					'message' =>  esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
 				] );
 			}
 
 			$fields = $values['WEBHOOK_FIELDS'];
 
-			if( ! empty( $fields ) ) {
+			if ( ! empty( $fields ) ) {
 				for ( $i = 0; $i <= count( $fields ); $i ++ ) {
 					$key   = isset( $fields[ $i ]['KEY'] ) ? sanitize_text_field( $fields[ $i ]['KEY'] ) : null;
 					$value = isset( $fields[ $i ]['VALUE'] ) ? sanitize_text_field( $fields[ $i ]['VALUE'] ) : null;
@@ -106,7 +108,7 @@ class Uoa_Helpers {
 			}
 			$header_meta = isset( $values['WEBHOOK_HEADERS'] ) ? $values['WEBHOOK_HEADERS'] : [];
 
-			if( ! empty( $header_meta ) ) {
+			if ( ! empty( $header_meta ) ) {
 				for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
 					$key = isset( $header_meta[ $i ]['NAME'] ) ? sanitize_text_field( $header_meta[ $i ]['NAME'] ) : null;
 					// remove colon if user added in NAME
@@ -142,9 +144,9 @@ class Uoa_Helpers {
 
 			$response = wp_remote_request( $webhook_url, $args );
 
-			if ( $response instanceof \WP_Error ) {
+			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
-				$error_message = sprintf( __( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
+				$error_message = sprintf(  esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				wp_send_json( [
 					'type'    => 'error',
 					'message' => $error_message,
@@ -152,7 +154,7 @@ class Uoa_Helpers {
 			}
 
 			/* translators: 1. Webhook URL */
-			$success_message = sprintf( __( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
+			$success_message = sprintf(  esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
 			wp_send_json( array(
 				'type'    => 'success',

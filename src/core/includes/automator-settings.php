@@ -46,18 +46,18 @@ if ( ! empty( $tab ) ) {
 										<div class="uap-report-filters__pro-notice-text">
 											<?php
 											/* translators: 1. Trademarked term */
-											printf( __( 'Upgrade to %1$s to access this feature.', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=settings&utm_content=' . $active . '" target="_blank">Uncanny Automator Pro</a>' );
+											printf(  esc_attr__( 'Upgrade to %1$s to access this feature.', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=settings&utm_content=' . $active . '" target="_blank">Uncanny Automator Pro</a>' );
 											?>
 										</div>
 									</div>
 								<?php } else { ?>
 									<?php if( isset( $tab->is_expired ) && $tab->is_expired ) { ?>
-										<div class='error-message'><?php _e( 'Your application access has expired. Please connect again with new credentials.', 'uncanny-automator');?></div>
+										<div class='error-message'><?php  esc_attr_e( 'Your application access has expired. Please connect again with new credentials.', 'uncanny-automator');?></div>
 									<?php }?>
 									<?php if( ! empty ( $connected ) && '1' === $connected ) { ?>
-										<div class='updated'><?php _e( 'Your application successfully connected.', 'uncanny-automator');?></div>
+										<div class='updated'><?php  esc_attr_e( 'Your application successfully connected.', 'uncanny-automator');?></div>
 									<?php } elseif( ! empty ( $connected ) && '2' === $connected ) { ?>
-										<div class='error-message'><?php _e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator');?></div>
+										<div class='error-message'><?php  esc_attr_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator');?></div>
 									<?php }?>
 									<?php if ( isset( $tab->fields ) && $tab->fields ) { ?>
 										<?php foreach ( $tab->fields as $field_id => $field_settings ) {

@@ -42,7 +42,7 @@ class LD_MARKLESSONDONE {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any course', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$action = array(
 			'author'             => $uncanny_automator->get_author_name(),
@@ -50,9 +50,9 @@ class LD_MARKLESSONDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf( __( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_lesson' ),
@@ -60,7 +60,7 @@ class LD_MARKLESSONDONE {
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDCOURSE',
-						__( 'Course', 'uncanny-automator' ),
+						 esc_attr__( 'Course', 'uncanny-automator' ),
 						$options,
 						'',
 						'',
@@ -71,7 +71,7 @@ class LD_MARKLESSONDONE {
 							'endpoint'     => 'select_lesson_from_course_MARKLESSONDONE',
 						]
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Lesson', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,  esc_attr__( 'Lesson', 'uncanny-automator' ) ),
 				],
 			],
 		);

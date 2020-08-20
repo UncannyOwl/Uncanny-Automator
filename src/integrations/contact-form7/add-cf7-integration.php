@@ -21,7 +21,7 @@ class Add_Cf7_Integration {
 
 		// Add directories to auto loader
 		add_filter( 'uncanny_automator_integration_directory', [ $this, 'add_integration_directory_func' ], 11 );
-		
+
 		// Add code, name and icon set to automator
 		add_action( 'uncanny_automator_add_integration', [ $this, 'add_integration_func' ] );
 

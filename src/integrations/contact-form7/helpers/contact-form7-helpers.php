@@ -4,6 +4,8 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Contact_Form7_Pro_Helpers;
+
 /**
  * Class Contact_Form7_Helpers
  * @package Uncanny_Automator
@@ -15,7 +17,7 @@ class Contact_Form7_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Contact_Form7_Pro_Helpers
+	 * @var Contact_Form7_Pro_Helpers
 	 */
 	public $pro;
 
@@ -25,6 +27,14 @@ class Contact_Form7_Helpers {
 	public $load_options;
 
 	/**
+	 * Contact_Form7_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Contact_Form7_Helpers $options
 	 */
 	public function setOptions( Contact_Form7_Helpers $options ) {
@@ -32,18 +42,10 @@ class Contact_Form7_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Contact_Form7_Pro_Helpers $pro
+	 * @param Contact_Form7_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Contact_Form7_Pro_Helpers $pro ) {
+	public function setPro( Contact_Form7_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Contact_Form7_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -60,7 +62,7 @@ class Contact_Form7_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -91,9 +93,9 @@ class Contact_Form7_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Form ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Form URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Form URL', 'uncanny-automator' ),
 			],
 		];
 

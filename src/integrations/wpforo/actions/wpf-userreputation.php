@@ -37,13 +37,13 @@ class WPF_USERREPUTATION {
 		$levels             = WPF()->member->levels();
 
 		foreach ( $levels as $level ) {
-			$title                                        = __( 'Level', 'wpforo' ) . ' ' . $level . ' - ' . WPF()->member->rating( $level, 'title' );
+			$title                                        =  esc_attr__( 'Level', 'wpforo' ) . ' ' . $level . ' - ' . WPF()->member->rating( $level, 'title' );
 			$reputation_options[ 'L' . strval( $level ) ] = $title;
 		}
 
 		$option = [
 			'option_code' => $this->action_meta,
-			'label'       => __( 'Reputation', 'uncanny-automator' ),
+			'label'       =>  esc_attr__( 'Reputation', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $reputation_options,
@@ -55,9 +55,9 @@ class WPF_USERREPUTATION {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - wpForo */
-			'sentence'           => sprintf( __( 'Set user reputation as {{a reputation:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Set user reputation as {{a reputation:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - wpForo */
-			'select_option_name' => __( 'Set the user\'s reputation to {{a reputation}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Set the user\'s reputation to {{a reputation}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'set_reputation' ),

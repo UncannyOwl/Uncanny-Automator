@@ -3,6 +3,10 @@
 namespace Uncanny_Automator;
 
 
+use GFCommon;
+use GFFormsModel;
+use RGFormsModel;
+
 /**
  * Class Gf_Tokens
  * @package Uncanny_Automator
@@ -53,19 +57,19 @@ class Gf_Tokens {
 	 * @return array
 	 */
 	function gf_possible_tokens( $tokens = [], $args = [] ) {
-		$form_id             = $args['value'];
-		$trigger_meta        = $args['meta'];
+		$form_id      = $args['value'];
+		$trigger_meta = $args['meta'];
 
 		$form_ids = [];
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
-			$form = \GFFormsModel::get_form( $form_id );
+			$form = GFFormsModel::get_form( $form_id );
 			if ( $form ) {
 				$form_ids[] = $form_id;
 			}
 		}
 
 		if ( empty( $form_ids ) ) {
-			$forms = \GFFormsModel::get_forms();
+			$forms = GFFormsModel::get_forms();
 			foreach ( $forms as $form ) {
 				$form_ids[] = $form->id;
 			}
@@ -74,13 +78,13 @@ class Gf_Tokens {
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
 				$fields = [];
-				$meta   = \RGFormsModel::get_form_meta( $form_id );
+				$meta   = RGFormsModel::get_form_meta( $form_id );
 				if ( is_array( $meta['fields'] ) ) {
 					foreach ( $meta['fields'] as $field ) {
 						if ( isset( $field['inputs'] ) && is_array( $field['inputs'] ) ) {
 							foreach ( $field['inputs'] as $input ) {
 								$input_id    = $input['id'];
-								$input_title = \GFCommon::get_label( $field, $input['id'] );
+								$input_title = GFCommon::get_label( $field, $input['id'] );
 								$input_type  = $this->get_field_type( $input );
 								$token_id    = "$form_id|$input_id";
 								$fields[]    = [
@@ -92,7 +96,7 @@ class Gf_Tokens {
 							}
 						} elseif ( ! rgar( $field, 'displayOnly' ) ) {
 							$input_id    = $field['id'];
-							$input_title = \GFCommon::get_label( $field );
+							$input_title = GFCommon::get_label( $field );
 							$token_id    = "$form_id|$input_id";
 							$input_type  = $this->get_field_type( $field );
 							$fields[]    = [
@@ -157,9 +161,9 @@ class Gf_Tokens {
 				$meta_key   = $token_info[1];
 
 				if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
-					$table_name = \RGFormsModel::get_entry_table_name();
+					$table_name = RGFormsModel::get_entry_table_name();
 				} else {
-					$table_name = \RGFormsModel::get_lead_table_name();
+					$table_name = RGFormsModel::get_lead_table_name();
 				}
 				$where_user_id = 0 === absint( $user_id ) ? 'created_by IS NULL' : 'created_by=' . $user_id;
 				$qq            = $wpdb->prepare( "SELECT id FROM {$table_name} WHERE $where_user_id AND form_id = %d ORDER BY date_created DESC LIMIT 0,1", $form_id );
@@ -167,9 +171,9 @@ class Gf_Tokens {
 				if ( $lead_id ) {
 
 					if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-						$table_name = \RGFormsModel::get_entry_meta_table_name();
+						$table_name = RGFormsModel::get_entry_meta_table_name();
 					} else {
-						$table_name = \RGFormsModel::get_lead_meta_table_name();
+						$table_name = RGFormsModel::get_lead_meta_table_name();
 					}
 
 					$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
@@ -177,18 +181,18 @@ class Gf_Tokens {
 					if ( 0 !== (int) $user_id ) {
 						//fallback.. ... attempt to find them by email??
 						if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-							$table_name = \RGFormsModel::get_entry_meta_table_name();
+							$table_name = RGFormsModel::get_entry_meta_table_name();
 						} else {
-							$table_name = \RGFormsModel::get_lead_meta_table_name();
+							$table_name = RGFormsModel::get_lead_meta_table_name();
 						}
 						$where_user_email = get_user_by( 'ID', $user_id )->user_email;
 						$aa               = $wpdb->prepare( "SELECT entry_id FROM {$table_name} WHERE meta_value LIKE '$where_user_email' AND form_id = %d ORDER BY entry_id DESC LIMIT 0,1", $form_id );
 						$lead_id          = $wpdb->get_var( $aa );
 						if ( $lead_id ) {
 							if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-								$table_name = \RGFormsModel::get_entry_meta_table_name();
+								$table_name = RGFormsModel::get_entry_meta_table_name();
 							} else {
-								$table_name = \RGFormsModel::get_lead_meta_table_name();
+								$table_name = RGFormsModel::get_lead_meta_table_name();
 							}
 
 							$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );

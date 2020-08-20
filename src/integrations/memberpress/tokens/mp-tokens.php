@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 
+use MeprOptions;
+
 /**
  * Class Mp_Tokens
  * @package Uncanny_Automator
@@ -51,7 +53,7 @@ class Mp_Tokens {
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
-		$mepr_options        = \MeprOptions::fetch();
+		$mepr_options        = MeprOptions::fetch();
 
 		$fields = [];
 		if ( $mepr_options->show_fname_lname ) {

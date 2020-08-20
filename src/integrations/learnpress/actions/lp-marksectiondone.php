@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+use LP_Global;
+use LP_Section_CURD;
+use LP_User_Item_Course;
+
 /**
  * Class LP_MARKSECTIONDONE
  *
@@ -41,7 +45,7 @@ class LP_MARKSECTIONDONE {
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		];
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any course', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$action = [
 			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
@@ -49,9 +53,9 @@ class LP_MARKSECTIONDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnPress */
-			'sentence'           => sprintf( __( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnPress */
-			'select_option_name' => __( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'lp_mark_section_done' ],
@@ -59,7 +63,7 @@ class LP_MARKSECTIONDONE {
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LPCOURSE',
-						__( 'Course', 'uncanny-automator' ),
+						 esc_attr__( 'Course', 'uncanny-automator' ),
 						$options,
 						'',
 						'',
@@ -70,7 +74,7 @@ class LP_MARKSECTIONDONE {
 							'endpoint'     => 'select_section_from_course_LPMARKLESSONDONE',
 						]
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Section', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,  esc_attr__( 'Section', 'uncanny-automator' ) ),
 				],
 			],
 		];
@@ -101,7 +105,7 @@ class LP_MARKSECTIONDONE {
 		$course_id  = $action_data['meta']['LPCOURSE'];
 		$section_id = $action_data['meta'][ $this->action_meta ];
 		// Get All lessons from section.
-		$course_curd = new \LP_Section_CURD( $course_id );
+		$course_curd = new LP_Section_CURD( $course_id );
 		$lessons     = $course_curd->get_section_items( $section_id );
 		// Mark lesson completed.
 		foreach ( $lessons as $lesson ) {
@@ -109,11 +113,11 @@ class LP_MARKSECTIONDONE {
 				$result = $user->complete_lesson( $lesson['id'], $course_id );
 			} elseif ( $lesson['type'] === 'lp_quiz' ) {
 				$quiz_id = $lesson['id'];
-				$user    = \LP_Global::user();
+				$user    = LP_Global::user();
 
 				if ( ! $user->has_item_status( [ 'started', 'completed' ], $quiz_id, $course_id ) ) {
 					$quiz_data = $user->start_quiz( $quiz_id, $course_id, false );
-					$item      = new \LP_User_Item_Course( $quiz_data );
+					$item      = new LP_User_Item_Course( $quiz_data );
 					$item->finish();
 				} else {
 					$quiz_data = $user->get_item_data( $quiz_id, $course_id );

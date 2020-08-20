@@ -7,17 +7,17 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class GP_AWARDACHIEVEMENT_A {
-	
+
 	/**
 	 * Integration code
 	 * @var string
 	 */
 	public static $integration = 'GP';
-	
+
 	private $action_code;
 	private $action_meta;
 	private $quiz_list;
-	
+
 	/**
 	 * Set up Automator action constructor.
 	 */
@@ -40,16 +40,16 @@ class GP_AWARDACHIEVEMENT_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - GamiPress */
-			'sentence'           => sprintf( __( 'Award {{an achievement:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Award {{an achievement:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - GamiPress */
-			'select_option_name' => __( 'Award {{an achievement}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Award {{an achievement}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_an_achievement' ),
 			'options_group'      => [
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->gamipress->options->list_gp_award_types(
-						__( 'Achievement type', 'uncanny-automator' ),
+						 esc_attr__( 'Achievement type', 'uncanny-automator' ),
 						'GPAWARDTYPES',
 						[
 							'token'        => false,
@@ -59,9 +59,9 @@ class GP_AWARDACHIEVEMENT_A {
 						]
 					),
 
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, 
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,
 						/* translators: Noun */
-						__( 'Award', 'uncanny-automator' ) 
+						 esc_attr__( 'Award', 'uncanny-automator' )
 					),
 				],
 			],
@@ -69,7 +69,7 @@ class GP_AWARDACHIEVEMENT_A {
 
 		$uncanny_automator->register->action( $action );
 	}
-	
+
 	/**
 	 * Validation function when the trigger action is hit
 	 *

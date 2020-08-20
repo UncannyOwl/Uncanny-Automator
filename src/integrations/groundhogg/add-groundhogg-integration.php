@@ -43,7 +43,7 @@ class Add_Groundhogg_Integration {
 	public function plugin_active( $status, $plugin ) {
 
 		if ( self::$integration === $plugin ) {
-			if ( defined('GROUNDHOGG_VERSION') ) {
+			if ( defined( 'GROUNDHOGG_VERSION' ) ) {
 				$status = true;
 			} else {
 				$status = false;

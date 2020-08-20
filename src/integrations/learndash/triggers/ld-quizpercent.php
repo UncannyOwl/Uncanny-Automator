@@ -39,9 +39,9 @@ class LD_QUIZPERCENT {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( __( 'A user achieves a percentage {{greater than, less than or equal:%1$s}} to {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} times', 'uncanny-automator' ), 'NUMBERCOND', 'QUIZPERCENT', $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user achieves a percentage {{greater than, less than or equal:%1$s}} to {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} times', 'uncanny-automator' ), 'NUMBERCOND', 'QUIZPERCENT', $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => __( 'A user achieves a percentage {{greater than, less than or equal}} to {{a value}} on {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user achieves a percentage {{greater than, less than or equal}} to {{a value}} on {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'learndash_quiz_completed',
 			'priority'            => 15,
 			'accepted_args'       => 2,
@@ -49,7 +49,7 @@ class LD_QUIZPERCENT {
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => [
 				$uncanny_automator->helpers->recipe->field->less_or_greater_than(),
-				$uncanny_automator->helpers->recipe->field->integer_field( 'QUIZPERCENT', __( 'Percentage', 'uncanny-automator' ), '' ),
+				$uncanny_automator->helpers->recipe->field->integer_field( 'QUIZPERCENT',  esc_attr__( 'Percentage', 'uncanny-automator' ), '' ),
 				$uncanny_automator->helpers->recipe->learndash->options->all_ld_quiz(),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],

@@ -4,6 +4,8 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Edd_Pro_Helpers;
+
 /**
  * Class Edd_Helpers
  * @package Uncanny_Automator
@@ -15,7 +17,7 @@ class Edd_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Edd_Pro_Helpers
+	 * @var Edd_Pro_Helpers
 	 */
 	public $pro;
 
@@ -23,13 +25,6 @@ class Edd_Helpers {
 	 * @var bool
 	 */
 	public $load_options;
-
-	/**
-	 * @param Edd_Helpers $options
-	 */
-	public function setOptions( Edd_Helpers $options ) {
-		$this->options = $options;
-	}
 
 	/**
 	 * Edd_Helpers constructor.
@@ -40,9 +35,16 @@ class Edd_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Edd_Pro_Helpers $pro
+	 * @param Edd_Helpers $options
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Edd_Pro_Helpers $pro ) {
+	public function setOptions( Edd_Helpers $options ) {
+		$this->options = $options;
+	}
+
+	/**
+	 * @param Edd_Pro_Helpers $pro
+	 */
+	public function setPro( Edd_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -60,7 +62,7 @@ class Edd_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Product', 'uncanny-automator' );
+			$label =  esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -72,7 +74,7 @@ class Edd_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any download', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any download', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -84,9 +86,9 @@ class Edd_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Download title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Download ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Download URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Download title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Download ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Download URL', 'uncanny-automator' ),
 			],
 		];
 

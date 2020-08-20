@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use Groundhogg\DB\Tags;
+use Groundhogg\Plugin;
+
 /**
  * Class HG_ADDTAG
  * @package Uncanny_Automator
@@ -21,8 +24,8 @@ class GH_ADDTAG {
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
-		$this->action_code        = 'GHADDTAG';
-		$this->action_meta        = 'GHTAG';
+		$this->action_code = 'GHADDTAG';
+		$this->action_meta = 'GHTAG';
 		$this->define_action();
 	}
 
@@ -32,16 +35,16 @@ class GH_ADDTAG {
 	public function define_action() {
 		global $uncanny_automator;
 
-		$tags = new \Groundhogg\DB\Tags;
+		$tags = new Tags;
 
 		$tag_options = [];
 		foreach ( $tags->get_tags() as $tag ) {
-			$tag_options[$tag->tag_id] = $tag->tag_name;
+			$tag_options[ $tag->tag_id ] = $tag->tag_name;
 		}
 
 		$option = [
 			'option_code' => $this->action_meta,
-			'label'       => __( 'Tags', 'uncanny-automator' ),
+			'label'       =>  esc_attr__( 'Tags', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $tag_options,
@@ -53,9 +56,9 @@ class GH_ADDTAG {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - Groundhogg */
-			'sentence'           => sprintf( __( 'Apply {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Apply {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - Groundhogg */
-			'select_option_name' => __( 'Apply {{a tag}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Apply {{a tag}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_tag_to_user' ),
@@ -76,12 +79,12 @@ class GH_ADDTAG {
 
 		global $uncanny_automator;
 
-		$tag_id = absint($action_data['meta'][ $this->action_meta ]);
+		$tag_id = absint( $action_data['meta'][ $this->action_meta ] );
 
-		if( 0 !== $tag_id){
-			$contact = \Groundhogg\Plugin::$instance->utils->get_contact( absint( $user_id ), true );
+		if ( 0 !== $tag_id ) {
+			$contact = Plugin::$instance->utils->get_contact( absint( $user_id ), true );
 
-			if ( ! $contact ){
+			if ( ! $contact ) {
 				return;
 			}
 

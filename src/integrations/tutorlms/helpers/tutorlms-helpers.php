@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Tutorlms_Pro_Helpers;
+use function tutor;
+use function tutor_utils;
+
 /**
  * Class Tutorlms_Helpers
  *
@@ -14,7 +18,7 @@ class Tutorlms_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Tutorlms_Pro_Helpers
+	 * @var Tutorlms_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,6 +28,14 @@ class Tutorlms_Helpers {
 	public $load_options;
 
 	/**
+	 * Tutorlms_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Tutorlms_Helpers $options
 	 */
 	public function setOptions( Tutorlms_Helpers $options ) {
@@ -31,18 +43,10 @@ class Tutorlms_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Tutorlms_Pro_Helpers $pro
+	 * @param Tutorlms_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Tutorlms_Pro_Helpers $pro ) {
+	public function setPro( Tutorlms_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Tutorlms_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -59,12 +63,12 @@ class Tutorlms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Lesson', 'uncanny-automator' );
+			$label =  esc_attr__( 'Lesson', 'uncanny-automator' );
 		}
 
 		// post query arguments.
 		$args = [
-			'post_type'      => \tutor()->lesson_post_type,
+			'post_type'      => tutor()->lesson_post_type,
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
@@ -73,7 +77,7 @@ class Tutorlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any lesson', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -85,9 +89,9 @@ class Tutorlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Lesson title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Lesson title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -108,12 +112,12 @@ class Tutorlms_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Course', 'uncanny-automator' );
+			$label =  esc_attr__( 'Course', 'uncanny-automator' );
 		}
 
 		// post query arguments.
 		$args = [
-			'post_type'      => \tutor()->course_post_type,
+			'post_type'      => tutor()->course_post_type,
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
@@ -122,7 +126,7 @@ class Tutorlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -134,9 +138,9 @@ class Tutorlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Course title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -158,7 +162,7 @@ class Tutorlms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Quiz', 'uncanny-automator' );
+			$label =  esc_attr__( 'Quiz', 'uncanny-automator' );
 		}
 
 		// post query arguments.
@@ -172,7 +176,7 @@ class Tutorlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any quiz', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -184,14 +188,32 @@ class Tutorlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Quiz title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Quiz ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Quiz URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Quiz title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Quiz ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Quiz URL', 'uncanny-automator' ),
 			],
 		];
 
 		return apply_filters( 'uap_option_all_tutorlms_quizzes', $option );
 
+	}
+
+	/**
+	 * Checks if a quiz attempt was successful.
+	 *
+	 * @param $attempt object.
+	 *
+	 * @since 2.4.0
+	 */
+	public function was_quiz_attempt_successful( $attempt ) {
+
+		// if the earned grade is less than or equal to zero, they failed.
+		if ( $attempt->earned_marks <= 0 ) {
+			return false;
+		}
+
+		// return pass or fail based on whether the required score was met.
+		return ( $this->get_percentage_scored( $attempt ) >= $this->get_percentage_required( $attempt ) );
 	}
 
 	/**
@@ -215,24 +237,6 @@ class Tutorlms_Helpers {
 	 * @since 2.4.0
 	 */
 	public function get_percentage_required( $attempt ) {
-		return (int) \tutor_utils()->get_quiz_option( $attempt->quiz_id, 'passing_grade', 0 );
-	}
-
-	/**
-	 * Checks if a quiz attempt was successful.
-	 *
-	 * @param $attempt object.
-	 *
-	 * @since 2.4.0
-	 */
-	public function was_quiz_attempt_successful( $attempt ) {
-
-		// if the earned grade is less than or equal to zero, they failed.
-		if ( $attempt->earned_marks <= 0 ) {
-			return false;
-		}
-
-		// return pass or fail based on whether the required score was met.
-		return ( $this->get_percentage_scored( $attempt ) >= $this->get_percentage_required( $attempt ) );
+		return (int) tutor_utils()->get_quiz_option( $attempt->quiz_id, 'passing_grade', 0 );
 	}
 }

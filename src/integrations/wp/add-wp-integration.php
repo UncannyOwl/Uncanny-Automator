@@ -76,13 +76,13 @@ class Add_Wp_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'WordPress',
-			'icon_svg'    => Utilities::get_integration_icon( 'wordpress-icon.svg' ),
+			'name'     => 'WordPress',
+			'icon_svg' => Utilities::get_integration_icon( 'wordpress-icon.svg' ),
 		) );
 
 		$uncanny_automator->register->integration( 'UA', array(
-			'name'        => 'Uncanny Automator',
-			'icon_svg'    => Utilities::get_integration_icon( 'uncanny-automator-icon.svg' ),
+			'name'     => 'Uncanny Automator',
+			'icon_svg' => Utilities::get_integration_icon( 'uncanny-automator-icon.svg' ),
 		) );
 	}
 }

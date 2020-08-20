@@ -3,11 +3,26 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Gamipress_Pro_Helpers;
+
 /**
  * Class Gamipress_Helpers
  * @package Uncanny_Automator
  */
 class Gamipress_Helpers {
+	/**
+	 * @var Gamipress_Helpers
+	 */
+	public $options;
+	/**
+	 * @var Gamipress_Pro_Helpers
+	 */
+	public $pro;
+	/**
+	 * @var bool
+	 */
+	public $load_options;
+
 	/**
 	 * Gamipress_Helpers constructor.
 	 */
@@ -23,21 +38,6 @@ class Gamipress_Helpers {
 	}
 
 	/**
-	 * @var Gamipress_Helpers
-	 */
-	public $options;
-
-	/**
-	 * @var \Uncanny_Automator_Pro\Gamipress_Pro_Helpers
-	 */
-	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Gamipress_Helpers $options
 	 */
 	public function setOptions( Gamipress_Helpers $options ) {
@@ -45,9 +45,9 @@ class Gamipress_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Gamipress_Pro_Helpers $pro
+	 * @param Gamipress_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Gamipress_Pro_Helpers $pro ) {
+	public function setPro( Gamipress_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -66,7 +66,7 @@ class Gamipress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Achievement type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Achievement type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -88,11 +88,11 @@ class Gamipress_Helpers {
 				}
 			}
 			/* translators: GamiPress achievement type */
-			$options['points-award'] = __( 'Points awards', 'uncanny-automator' );
+			$options['points-award'] =  esc_attr__( 'Points awards', 'uncanny-automator' );
 			/* translators: GamiPress achievement type */
-			$options['step'] = __( 'Step', 'uncanny-automator' );
+			$options['step'] =  esc_attr__( 'Step', 'uncanny-automator' );
 			/* translators: GamiPress achievement type */
-			$options['rank-requirement'] = __( 'Rank requirement', 'uncanny-automator' );
+			$options['rank-requirement'] =  esc_attr__( 'Rank requirement', 'uncanny-automator' );
 		}
 		$type = 'select';
 
@@ -126,7 +126,7 @@ class Gamipress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Point type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Point type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -138,7 +138,7 @@ class Gamipress_Helpers {
 		$options = [];
 
 		if ( $include_all ) {
-			$options['ua-all-gp-types'] = __( 'All point types', 'uncanny-automator' );
+			$options['ua-all-gp-types'] =  esc_attr__( 'All point types', 'uncanny-automator' );
 		}
 
 		global $uncanny_automator, $wpdb;
@@ -186,7 +186,7 @@ class Gamipress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Rank type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Rank type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -246,7 +246,7 @@ class Gamipress_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [
@@ -280,7 +280,7 @@ class Gamipress_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [

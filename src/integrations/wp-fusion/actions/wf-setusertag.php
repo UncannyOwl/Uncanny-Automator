@@ -40,9 +40,9 @@ class WF_SETUSERTAG {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WP Fusion */
-			'sentence'           => sprintf( __( 'Add {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Add {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WP Fusion */
-			'select_option_name' => __( 'Add {{a tag}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Add {{a tag}} to the user', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'set_user_tag' ),
@@ -63,7 +63,7 @@ class WF_SETUSERTAG {
 	public function fusion_tags( $label = '' ) {
 
 		if ( empty( $label ) ) {
-			$label = __( 'Tag', 'uncanny-automator' );
+			$label =  esc_attr__( 'Tag', 'uncanny-automator' );
 		}
 
 		$tags = wp_fusion()->settings->get( 'available_tags' );

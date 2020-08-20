@@ -4,6 +4,8 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Woocommerce_Pro_Helpers;
+
 /**
  * Class Woocommerce_Helpers
  * @package Uncanny_Automator
@@ -15,7 +17,7 @@ class Woocommerce_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Woocommerce_Pro_Helpers
+	 * @var Woocommerce_Pro_Helpers
 	 */
 	public $pro;
 
@@ -37,9 +39,9 @@ class Woocommerce_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Woocommerce_Pro_Helpers $pro
+	 * @param Woocommerce_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Woocommerce_Pro_Helpers $pro ) {
+	public function setPro( Woocommerce_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -57,7 +59,7 @@ class Woocommerce_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Product', 'uncanny-automator' );
+			$label =  esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -69,7 +71,7 @@ class Woocommerce_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any product', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true,  esc_attr__( 'Any product', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -78,9 +80,9 @@ class Woocommerce_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 

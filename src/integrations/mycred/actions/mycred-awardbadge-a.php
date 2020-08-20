@@ -42,9 +42,9 @@ class MYCRED_AWARDBADGE_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - myCred */
-			'sentence'           => sprintf( __( 'Award {{a badge:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Award {{a badge:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - myCred */
-			'select_option_name' => __( 'Award {{a badge}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Award {{a badge}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_mycred_badge' ],
@@ -53,7 +53,7 @@ class MYCRED_AWARDBADGE_A {
 				$this->action_meta => [
 					/* translators: Noun */
 					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_badges(
-						__( 'Badge', 'uncanny-automator' ),
+						 esc_attr__( 'Badge', 'uncanny-automator' ),
 						$this->action_meta,
 						[
 							'token'        => false,

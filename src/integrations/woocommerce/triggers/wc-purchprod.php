@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use WC_Order_Item_Product;
+
 /**
  * Class WC_PURCHPROD
  * @package Uncanny_Automator
@@ -33,9 +35,9 @@ class WC_PURCHPROD {
 
 		global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->woocommerce->options->all_wc_products( __( 'Product', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->woocommerce->options->all_wc_products(  esc_attr__( 'Product', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' => __( 'Any product', 'uncanny-automator' ) ) + $options['options'];
+		$options['options'] = array( '-1' =>  esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
 			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
@@ -43,9 +45,9 @@ class WC_PURCHPROD {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WooCommerce */
-			'sentence'            => sprintf( __( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WooCommerce */
-			'select_option_name'  => __( 'A user purchases {{a product}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
 			'action'              => [
 				'woocommerce_order_status_completed',
 				'woocommerce_thankyou',
@@ -116,7 +118,7 @@ class WC_PURCHPROD {
 		}
 		$items       = $order->get_items();
 		$product_ids = array();
-		/** @var \WC_Order_Item_Product $item */
+		/** @var WC_Order_Item_Product $item */
 		foreach ( $items as $item ) {
 			$product_ids[] = $item->get_product_id();
 		}

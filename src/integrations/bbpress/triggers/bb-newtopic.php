@@ -39,9 +39,9 @@ class BB_NEWTOPIC {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - bbPress */
-			'sentence'            => sprintf( __( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - bbPress */
-			'select_option_name'  => __( 'A user creates a topic in {{a forum}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user creates a topic in {{a forum}}', 'uncanny-automator' ),
 			'action'              => 'bbp_new_topic',
 			'priority'            => 10,
 			'accepted_args'       => 4,

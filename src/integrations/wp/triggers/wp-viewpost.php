@@ -40,9 +40,9 @@ class WP_VIEWPOST {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf( __( 'A user views {{a post:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user views {{a post:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => __( 'A user views {{a post}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user views {{a post}}', 'uncanny-automator' ),
 			'action'              => 'template_redirect',
 			'priority'            => 90,
 			'accepted_args'       => 1,

@@ -39,9 +39,9 @@ class LF_SECTIONDONE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LifterLMS */
-			'sentence'            => sprintf( __( 'A user completes {{a section:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a section:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LifterLMS */
-			'select_option_name'  => __( 'A user completes {{a section}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user completes {{a section}}', 'uncanny-automator' ),
 			'action'              => 'lifterlms_section_completed',
 			'priority'            => 20,
 			'accepted_args'       => 2,
@@ -51,12 +51,12 @@ class LF_SECTIONDONE {
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);
-		
+
 		$uncanny_automator->register->trigger( $trigger );
-		
+
 		return;
 	}
-	
+
 	/**
 	 * Validation function when the trigger action is hit
 	 *
@@ -64,20 +64,20 @@ class LF_SECTIONDONE {
 	 * @param $course_id
 	 */
 	public function lf_section_done( $user_id, $course_id ) {
-		
+
 		if ( empty( $user_id ) ) {
 			return;
 		}
-		
+
 		global $uncanny_automator;
-		
+
 		$args = [
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'post_id'        => intval( $course_id ),
-			'user_id'        => $user_id,
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => intval( $course_id ),
+			'user_id' => $user_id,
 		];
-		
+
 		$uncanny_automator->maybe_add_trigger_entry( $args );
 	}
 }

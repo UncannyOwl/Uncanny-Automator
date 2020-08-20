@@ -39,9 +39,9 @@ class MP_PURCHASEPRODUCTRECURRING {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MemberPress */
-			'sentence'            => sprintf( __( 'A user purchases {{a recurring subscription product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a recurring subscription product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - MemberPress */
-			'select_option_name'  => __( 'A user purchases {{a recurring subscription product}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user purchases {{a recurring subscription product}}', 'uncanny-automator' ),
 			'action'              => 'mepr-event-recurring-transaction-completed',
 			'priority'            => 10,
 			'accepted_args'       => 1,

@@ -3,6 +3,10 @@
 namespace Uncanny_Automator;
 
 
+use FrmEntry;
+use FrmField;
+use FrmForm;
+
 /**
  * Class Fi_Tokens
  *
@@ -31,7 +35,7 @@ class Fi_Tokens {
 	 * Only load this integration and its triggers and actions if the related
 	 * plugin is active
 	 *
-	 * @param bool   $status status of plugin.
+	 * @param bool $status status of plugin.
 	 * @param string $plugin plugin code.
 	 *
 	 * @return bool
@@ -65,14 +69,14 @@ class Fi_Tokens {
 		$form_ids = [];
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 
-			$form = \FrmForm::getOne( $form_id );
+			$form = FrmForm::getOne( $form_id );
 			if ( $form ) {
 				$form_ids[] = $form->id;
 			}
 		}
 
 		if ( empty( $form_ids ) ) {
-			$s_query = [
+			$s_query                = [
 				[
 					'or'               => 1,
 					'parent_form_id'   => null,
@@ -82,7 +86,7 @@ class Fi_Tokens {
 			$s_query['is_template'] = 0;
 			$s_query['status !']    = 'trash';
 
-			$forms = \FrmForm::getAll( $s_query, '', ' 0, 999' );
+			$forms = FrmForm::getAll( $s_query, '', ' 0, 999' );
 			foreach ( $forms as $form ) {
 				$form_ids[] = $form->id;
 			}
@@ -91,7 +95,7 @@ class Fi_Tokens {
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
 				$fields = [];
-				$meta   = \FrmField::get_all_for_form( $form_id );
+				$meta   = FrmField::get_all_for_form( $form_id );
 				if ( is_array( $meta ) ) {
 					foreach ( $meta as $field ) {
 						$input_id    = $field->id;
@@ -124,16 +128,16 @@ class Fi_Tokens {
 	public function fi_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
 			if ( in_array( 'FIFORM', $pieces, true ) ) {
-				$token_info            = explode( '|', $pieces[2] );
-				$form_id               = $token_info[0];
-				$meta_key              = $token_info[1];
+				$token_info = explode( '|', $pieces[2] );
+				$form_id    = $token_info[0];
+				$meta_key   = $token_info[1];
 				//$user_id               = get_current_user_id();
 				$s_query               = [];
 				$s_query['it.form_id'] = $form_id;
 				$s_query['it.user_id'] = $user_id;
 				$order                 = ' ORDER BY id DESC ';
-				$enrties               = \FrmEntry::getAll( $s_query, $order, 1,
-					TRUE, FALSE );
+				$enrties               = FrmEntry::getAll( $s_query, $order, 1,
+					true, false );
 				if ( ! empty( $enrties ) ) {
 					foreach ( $enrties as $enrty ) {
 						if ( isset( $enrty->metas )

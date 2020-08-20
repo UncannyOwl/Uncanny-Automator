@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Buddypress_Pro_Helpers;
+
 /**
  * Class Buddypress_Helpers
  * @package Uncanny_Automator
@@ -14,7 +16,7 @@ class Buddypress_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Buddypress_Pro_Helpers
+	 * @var Buddypress_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,9 +26,17 @@ class Buddypress_Helpers {
 	public $load_options;
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Buddypress_Pro_Helpers $pro
+	 * Buddypress_Helpers constructor.
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Buddypress_Pro_Helpers $pro ) {
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
+	 * @param Buddypress_Pro_Helpers $pro
+	 */
+	public function setPro( Buddypress_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -35,14 +45,6 @@ class Buddypress_Helpers {
 	 */
 	public function setOptions( Buddypress_Helpers $options ) {
 		$this->options = $options;
-	}
-
-	/**
-	 * Buddypress_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -60,12 +62,12 @@ class Buddypress_Helpers {
 
 		$args = wp_parse_args( $args, array(
 			'uo_include_any' => false,
-			'uo_any_label'   => __( 'Any group', 'uncanny-automator' ),
+			'uo_any_label'   =>  esc_attr__( 'Any group', 'uncanny-automator' ),
 			'status'         => array( 'public' ),
 		) );
 
 		if ( ! $label ) {
-			$label = __( 'Group', 'uncanny-automator' );
+			$label =  esc_attr__( 'Group', 'uncanny-automator' );
 		}
 
 		global $wpdb;
@@ -122,13 +124,13 @@ class Buddypress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'User', 'uncanny-automator' );
+			$label =  esc_attr__( 'User', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any user', 'uncanny-automator' ),
+				'uo_any_label'   =>  esc_attr__( 'Any user', 'uncanny-automator' ),
 			)
 		);
 

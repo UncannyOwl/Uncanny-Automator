@@ -45,7 +45,7 @@ class LD_MARKTOPICDONE {
 			'post_status'    => 'publish',
 		];
 
-		$course_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any course', 'uncanny-automator' ) );
+		$course_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$args = [
 			'post_type'      => 'sfwd-lessons',
@@ -55,7 +55,7 @@ class LD_MARKTOPICDONE {
 			'post_status'    => 'publish'
 		];
 
-		$lesson_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any lesson', 'uncanny-automator' ) );
+		$lesson_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$action = array(
 			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
@@ -63,9 +63,9 @@ class LD_MARKTOPICDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf( __( 'Mark {{a topic:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Mark {{a topic:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' => __( 'Mark {{a topic}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Mark {{a topic}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_topic' ),
@@ -73,7 +73,7 @@ class LD_MARKTOPICDONE {
 				$this->action_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDCOURSE',
-						__( 'Course', 'uncanny-automator' ),
+						 esc_attr__( 'Course', 'uncanny-automator' ),
 						$course_options,
 						'',
 						'',
@@ -86,7 +86,7 @@ class LD_MARKTOPICDONE {
 					),
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'LDLESSON',
-						__( 'Lesson', 'uncanny-automator' ),
+						 esc_attr__( 'Lesson', 'uncanny-automator' ),
 						$lesson_options,
 						'',
 						'',
@@ -97,7 +97,7 @@ class LD_MARKTOPICDONE {
 							'endpoint'     => 'select_topic_from_lesson_MARKTOPICDONE',
 						]
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( 'LDTOPIC', __( 'Topic', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field( 'LDTOPIC',  esc_attr__( 'Topic', 'uncanny-automator' ) ),
 				],
 			],
 		);

@@ -39,9 +39,9 @@ class MYCRED_AWARDRANK_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - myCred */
-			'sentence'           => sprintf( __( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - myCred */
-			'select_option_name' => __( 'Award {{a rank}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Award {{a rank}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_mycred_ranks' ],
@@ -50,7 +50,7 @@ class MYCRED_AWARDRANK_A {
 				$this->action_meta => [
 					/* translators: Noun */
 					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_rank_types(
-						__( 'Rank', 'uncanny-automator' ),
+						 esc_attr__( 'Rank', 'uncanny-automator' ),
 						$this->action_meta,
 						[
 							'token'        => false,

@@ -41,9 +41,10 @@ class Add_Wp_Foro_Integration {
 	 * @return bool
 	 */
 	public function plugin_active( $status, $plugin ) {
-		if( !defined( 'WPFORO_VERSION' ) ){
+		if ( ! defined( 'WPFORO_VERSION' ) ) {
 			return false;
 		}
+
 		return true;
 	}
 

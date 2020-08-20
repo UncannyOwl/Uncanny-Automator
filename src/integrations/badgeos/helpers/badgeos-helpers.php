@@ -3,11 +3,26 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Badgeos_Pro_Helpers;
+
 /**
  * Class Badgeos_Helpers
  * @package Uncanny_Automator
  */
 class Badgeos_Helpers {
+	/**
+	 * @var Badgeos_Helpers
+	 */
+	public $options;
+	/**
+	 * @var Badgeos_Pro_Helpers
+	 */
+	public $pro;
+	/**
+	 * @var bool
+	 */
+	public $load_options;
+
 	/**
 	 * Badgeos_Helpers constructor.
 	 */
@@ -23,21 +38,6 @@ class Badgeos_Helpers {
 	}
 
 	/**
-	 * @var Badgeos_Helpers
-	 */
-	public $options;
-
-	/**
-	 * @var \Uncanny_Automator_Pro\Badgeos_Pro_Helpers
-	 */
-	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * @param Badgeos_Helpers $options
 	 */
 	public function setOptions( Badgeos_Helpers $options ) {
@@ -45,9 +45,9 @@ class Badgeos_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Badgeos_Pro_Helpers $pro
+	 * @param Badgeos_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Badgeos_Pro_Helpers $pro ) {
+	public function setPro( Badgeos_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -66,7 +66,7 @@ class Badgeos_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Achievement type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Achievement type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -122,7 +122,7 @@ class Badgeos_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Point type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Point type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -134,7 +134,7 @@ class Badgeos_Helpers {
 		$options = [];
 
 		if ( $include_all ) {
-			$options['ua-all-bo-types'] = __( 'All point types', 'uncanny-automator' );
+			$options['ua-all-bo-types'] =  esc_attr__( 'All point types', 'uncanny-automator' );
 		}
 
 		global $uncanny_automator, $wpdb;
@@ -152,7 +152,7 @@ class Badgeos_Helpers {
 			}
 		}
 		//$options = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'point_type' ] );
-		$type    = 'select';
+		$type = 'select';
 
 		$option = [
 			'option_code'     => $option_code,
@@ -184,7 +184,7 @@ class Badgeos_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Rank type', 'uncanny-automator' );
+			$label =  esc_attr__( 'Rank type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -244,7 +244,7 @@ class Badgeos_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [
@@ -278,7 +278,7 @@ class Badgeos_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any awards', 'uncanny-automator' ) );
+			$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [

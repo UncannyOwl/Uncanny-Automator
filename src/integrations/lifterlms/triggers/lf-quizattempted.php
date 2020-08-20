@@ -39,9 +39,9 @@ class LF_QUIZATTEMPTED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LifterLMS */
-			'sentence'            => sprintf( __( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LifterLMS */
-			'select_option_name'  => __( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'lifterlms_quiz_completed',
 			'priority'            => 20,
 			'accepted_args'       => 3,
@@ -60,9 +60,9 @@ class LF_QUIZATTEMPTED {
 	/**
 	 * Validation function when the trigger action is hit
 	 *
-	 * @param string $user_id   .
-	 * @param string $quiz_id   .
-	 * @param object $quiz_obj  .
+	 * @param string $user_id .
+	 * @param string $quiz_id .
+	 * @param object $quiz_obj .
 	 */
 	public function lf_quiz_attempted( $user_id, $quiz_id, $quiz_obj ) {
 
@@ -73,10 +73,10 @@ class LF_QUIZATTEMPTED {
 		global $uncanny_automator;
 
 		$args = [
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'post_id'        => intval( $quiz_id ),
-			'user_id'        => $user_id,
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => intval( $quiz_id ),
+			'user_id' => $user_id,
 		];
 
 		$uncanny_automator->maybe_add_trigger_entry( $args );

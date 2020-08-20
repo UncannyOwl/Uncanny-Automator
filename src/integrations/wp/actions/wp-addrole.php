@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use WP_User;
+
 /**
  * Class GEN_ADDROLE
  * @package Uncanny_Automator
@@ -39,9 +41,9 @@ class WP_ADDROLE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WordPress */
-			'sentence'           => sprintf( __( 'Add {{a new role:%1$s}} to the user\'s roles', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Add {{a new role:%1$s}} to the user\'s roles', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WordPress */
-			'select_option_name' => __( 'Add {{a new role}} to the user\'s roles', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Add {{a new role}} to the user\'s roles', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'add_role' ),
@@ -66,8 +68,8 @@ class WP_ADDROLE {
 
 		$role = $action_data['meta'][ $this->action_meta ];
 
-		$user_obj = new \WP_User( (int) $user_id );
-		if ( $user_obj instanceof \WP_User ) {
+		$user_obj = new WP_User( (int) $user_id );
+		if ( $user_obj instanceof WP_User ) {
 			$user_obj->add_role( $role );
 			$uncanny_automator->complete->user->action( $user_id, $action_data, $recipe_id );
 		}

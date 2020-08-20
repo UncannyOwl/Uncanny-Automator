@@ -7,17 +7,17 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class GP_AWARDRANK_A {
-	
+
 	/**
 	 * Integration code
 	 * @var string
 	 */
 	public static $integration = 'GP';
-	
+
 	private $action_code;
 	private $action_meta;
 	private $quiz_list;
-	
+
 	/**
 	 * Set up Automator action constructor.
 	 */
@@ -34,16 +34,16 @@ class GP_AWARDRANK_A {
 	public function define_action() {
 
 		global $uncanny_automator;
-		
+
 		$action = [
 			'author'             => $uncanny_automator->get_author_name(),
 			'support_link'       => $uncanny_automator->get_author_support_link(),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - GamiPress */
-			'sentence'           => sprintf( __( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - GamiPress */
-			'select_option_name' => __( 'Award {{a rank}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Award {{a rank}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_points' ],
@@ -61,7 +61,7 @@ class GP_AWARDRANK_A {
 						]
 					),
 					/* translators: Noun */
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Rank', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,  esc_attr__( 'Rank', 'uncanny-automator' ) ),
 				],
 			],
 		];

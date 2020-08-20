@@ -50,7 +50,7 @@ class Add_Tutorlms_Integration {
 
 		// set up configuration.
 		$integration_config = [
-			'name'     => 'TutorLMS',
+			'name'     => 'Tutor LMS',
 			'icon_svg' => Utilities::get_integration_icon( 'tutorlms-icon.svg' ),
 		];
 

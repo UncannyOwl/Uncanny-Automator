@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use WP_User;
+
 /**
  * Class GEN_USERROLE
  * @package Uncanny_Automator
@@ -39,9 +41,9 @@ class WP_USERROLE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WordPress */
-			'sentence'           => sprintf( __( 'Change the user\'s role to {{a new role:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Change the user\'s role to {{a new role:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WordPress */
-			'select_option_name' => __( 'Change the user\'s role to {{a new role}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Change the user\'s role to {{a new role}}', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'user_role' ),
@@ -66,13 +68,13 @@ class WP_USERROLE {
 
 		$role = $action_data['meta'][ $this->action_meta ];
 
-		$user_obj   = new \WP_User( (int) $user_id );
+		$user_obj   = new WP_User( (int) $user_id );
 		$user_roles = $user_obj->roles;
 		if ( ! in_array( 'administrator', $user_roles ) ) {
 			$user_obj->set_role( $role );
 			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
 		} else {
-			$error_message = __( 'For security, the change role action cannot be applied to administrators.', 'uncanny-automator' );
+			$error_message =  esc_attr__( 'For security, the change role action cannot be applied to administrators.', 'uncanny-automator' );
 			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 		}
 	}

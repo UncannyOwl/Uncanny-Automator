@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use TINCANNYSNC\Database;
+
 /**
  * Class WP_LOGIN
  * @package Uncanny_Automator
@@ -38,8 +40,8 @@ class TC_MODULEINTERACTION {
 		global $uncanny_automator;
 
 		$options       = [];
-		$modules       = \TINCANNYSNC\Database::get_modules();
-		$options['-1'] = __( 'Any module', 'uncanny-automator' );
+		$modules       = Database::get_modules();
+		$options['-1'] =  esc_attr__( 'Any module', 'uncanny-automator' );
 
 		foreach ( $modules as $module ) {
 			$options[ $module->ID ] = $module->file_name;
@@ -51,16 +53,16 @@ class TC_MODULEINTERACTION {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( __( '{{A Tin Can verb:%1$s}} is recorded from {{a Tin Can module:%2$s}}', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( '{{A Tin Can verb:%1$s}} is recorded from {{a Tin Can module:%2$s}}', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => __( '{{A Tin Can verb}} is recorded from {{a Tin Can module}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( '{{A Tin Can verb}} is recorded from {{a Tin Can module}}', 'uncanny-automator' ),
 			'action'              => 'tincanny_module_completed',
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'tincanny_module_completed_func' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Module', 'uncanny-automator' ), $options ),
-				$uncanny_automator->helpers->recipe->field->select_field( 'TCVERB', _x( 'Verb', 'Tin Can verb', 'uncanny-automator' ), [
+				$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta,  esc_attr__( 'Module', 'uncanny-automator' ), $options ),
+				$uncanny_automator->helpers->recipe->field->select_field( 'TCVERB',  esc_attr_x( 'Verb', 'Tin Can verb', 'uncanny-automator' ), [
 					'completed'   => 'Completed',
 					'passed'      => 'Passed',
 					'failed'      => 'Failed',
@@ -98,9 +100,9 @@ class TC_MODULEINTERACTION {
 
 		global $uncanny_automator;
 
-		$recipes     = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$module_ids  = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$verbs       = $uncanny_automator->get->meta_from_recipes( $recipes, 'TCVERB' );
+		$recipes    = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$module_ids = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$verbs      = $uncanny_automator->get->meta_from_recipes( $recipes, 'TCVERB' );
 
 		$matched_recipe_ids = [];
 

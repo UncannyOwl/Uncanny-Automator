@@ -38,9 +38,9 @@ class Recipe_Taxonomies {
 			'uo-recipe', // post type name
 			array(
 				'hierarchical'      => true,
-				'label'             => __( 'Recipe category', 'uncanny-automator' ), // display name
+				'label'             =>  esc_attr__( 'Recipe category', 'uncanny-automator' ), // display name
 				'labels'            => array(
-					'menu_name' => __( 'Categories', 'uncanny-automator' )
+					'menu_name' =>  esc_attr__( 'Categories', 'uncanny-automator' )
 				),
 				'query_var'         => true,
 				'rewrite'           => array(
@@ -57,9 +57,9 @@ class Recipe_Taxonomies {
 			'uo-recipe', // post type name
 			array(
 				'hierarchical'      => false,
-				'label'             => __( 'Recipe tag', 'uncanny-automator' ), // display name
+				'label'             =>  esc_attr__( 'Recipe tag', 'uncanny-automator' ), // display name
 				'labels'            => array(
-					'menu_name' => __( 'Tags', 'uncanny-automator' )
+					'menu_name' =>  esc_attr__( 'Tags', 'uncanny-automator' )
 				),
 				'query_var'         => true,
 				'rewrite'           => array(
@@ -122,7 +122,7 @@ class Recipe_Taxonomies {
 		$cats      = new \WP_Term_Query( $term_args );
 
 		if ( ! empty( $cats->terms ) ) {
-			$columns['recipe_category'] = __( 'Categories', 'uncanny-automator' );
+			$columns['recipe_category'] =  esc_attr__( 'Categories', 'uncanny-automator' );
 		}
 
 		$term_args = array(
@@ -135,7 +135,7 @@ class Recipe_Taxonomies {
 		$tags      = new \WP_Term_Query( $term_args );
 
 		if ( ! empty( $tags->terms ) ) {
-			$columns['recipe_tag'] = __( 'Tags', 'uncanny-automator' );
+			$columns['recipe_tag'] =  esc_attr__( 'Tags', 'uncanny-automator' );
 		}
 
 		return $columns;

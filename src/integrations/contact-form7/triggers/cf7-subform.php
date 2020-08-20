@@ -21,8 +21,8 @@ class CF7_SUBFORM {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code        = 'CF7SUBFORM';
-		$this->trigger_meta        = 'CF7FORMS';
+		$this->trigger_code = 'CF7SUBFORM';
+		$this->trigger_meta = 'CF7FORMS';
 		//add_filter( 'wpcf7_verify_nonce', '__return_true' );
 		$this->define_trigger();
 	}
@@ -41,9 +41,9 @@ class CF7_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Contact Form 7 */
-			'sentence'            => sprintf( __( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Contact Form 7 */
-			'select_option_name'  => __( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'wpcf7_submit',
 			'priority'            => 99,
 			'accepted_args'       => 2,

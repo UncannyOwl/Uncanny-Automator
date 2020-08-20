@@ -8,6 +8,8 @@
 
 namespace Uncanny_Automator;
 
+use function tutor;
+
 defined( '\ABSPATH' ) || exit;
 
 /**
@@ -52,9 +54,9 @@ class TUTORLMS_COURSECOMPLETED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - TutorLMS */
-			'sentence'            => sprintf( __( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - TutorLMS */
-			'select_option_name'  => __( 'A user completes {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'tutor_course_complete_after',
 			'priority'            => 10,
 			'accepted_args'       => 1,
@@ -80,7 +82,7 @@ class TUTORLMS_COURSECOMPLETED {
 		global $post;
 
 		// Is this the registered lesson post type
-		if ( \tutor()->course_post_type !== $post->post_type ) {
+		if ( tutor()->course_post_type !== $post->post_type ) {
 			return;
 		}
 

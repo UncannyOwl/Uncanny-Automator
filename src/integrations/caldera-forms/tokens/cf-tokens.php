@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Caldera_Forms_Forms;
+
 /**
  * Class Cf_Tokens
  *
@@ -64,7 +66,7 @@ class Cf_Tokens {
 			return $tokens;
 		}
 
-		$form = \Caldera_Forms_Forms::get_form( $form_id );
+		$form = Caldera_Forms_Forms::get_form( $form_id );
 
 		if ( ! empty( $form['fields'] ) ) {
 			foreach ( $form['fields'] as $field ) {

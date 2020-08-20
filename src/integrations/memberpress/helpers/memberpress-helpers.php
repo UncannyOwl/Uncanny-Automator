@@ -3,6 +3,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Memberpress_Pro_Helpers;
+
 /**
  * Class Memberpress_Helpers
  * @package Uncanny_Automator
@@ -14,7 +16,7 @@ class Memberpress_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Memberpress_Pro_Helpers
+	 * @var Memberpress_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,6 +26,14 @@ class Memberpress_Helpers {
 	public $load_options;
 
 	/**
+	 * Memberpress_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Memberpress_Helpers $options
 	 */
 	public function setOptions( Memberpress_Helpers $options ) {
@@ -31,18 +41,10 @@ class Memberpress_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Memberpress_Pro_Helpers $pro
+	 * @param Memberpress_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Memberpress_Pro_Helpers $pro ) {
+	public function setPro( Memberpress_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Memberpress_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -60,13 +62,13 @@ class Memberpress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Product', 'uncanny-automator' );
+			$label =  esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any product', 'uncanny-automator' ),
+				'uo_any_label'   =>  esc_attr__( 'Any product', 'uncanny-automator' ),
 			)
 		);
 
@@ -87,9 +89,9 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -112,13 +114,13 @@ class Memberpress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Product', 'uncanny-automator' );
+			$label =  esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any one-time subscription product', 'uncanny-automator' ),
+				'uo_any_label'   =>  esc_attr__( 'Any one-time subscription product', 'uncanny-automator' ),
 			)
 		);
 
@@ -150,9 +152,9 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -175,13 +177,13 @@ class Memberpress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Product', 'uncanny-automator' );
+			$label =  esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any recurring subscription product', 'uncanny-automator' ),
+				'uo_any_label'   =>  esc_attr__( 'Any recurring subscription product', 'uncanny-automator' ),
 			)
 		);
 
@@ -212,9 +214,9 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Product URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 

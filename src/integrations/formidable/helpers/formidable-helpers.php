@@ -3,6 +3,10 @@
 
 namespace Uncanny_Automator;
 
+use FrmEntryMeta;
+use FrmForm;
+use Uncanny_Automator_Pro\Formidable_Pro_Helpers;
+
 /**
  * Class Formidable_Helpers
  * @package Uncanny_Automator
@@ -14,7 +18,7 @@ class Formidable_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Formidable_Pro_Helpers
+	 * @var Formidable_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,6 +28,14 @@ class Formidable_Helpers {
 	public $load_options;
 
 	/**
+	 * Formidable_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Formidable_Helpers $options
 	 */
 	public function setOptions( Formidable_Helpers $options ) {
@@ -31,18 +43,10 @@ class Formidable_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Formidable_Pro_Helpers $pro
+	 * @param Formidable_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Formidable_Pro_Helpers $pro ) {
+	public function setPro( Formidable_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Formidable_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -60,13 +64,13 @@ class Formidable_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any product', 'uncanny-automator' ),
+				'uo_any_label'   =>  esc_attr__( 'Any product', 'uncanny-automator' ),
 			)
 		);
 
@@ -89,7 +93,7 @@ class Formidable_Helpers {
 			];
 			$s_query['is_template'] = 0;
 			$s_query['status !']    = 'trash';
-			$forms                  = \FrmForm::getAll( $s_query, '', ' 0, 999' );
+			$forms                  = FrmForm::getAll( $s_query, '', ' 0, 999' );
 
 			if ( ! empty( $forms ) ) {
 				foreach ( $forms as $form ) {
@@ -122,7 +126,7 @@ class Formidable_Helpers {
 	public function extract_save_fi_fields( $entry_id, $form_id, $args ) {
 		$data = [];
 		if ( $entry_id && class_exists( '\FrmEntryMeta' ) ) {
-			$metas          = \FrmEntryMeta::get_entry_meta_info( $entry_id );
+			$metas          = FrmEntryMeta::get_entry_meta_info( $entry_id );
 			$trigger_id     = (int) $args['trigger_id'];
 			$user_id        = (int) $args['user_id'];
 			$trigger_log_id = (int) $args['trigger_log_id'];

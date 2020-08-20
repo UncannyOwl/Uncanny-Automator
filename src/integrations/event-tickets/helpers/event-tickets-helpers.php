@@ -3,6 +3,9 @@
 
 namespace Uncanny_Automator;
 
+use Tribe__Tickets__Tickets_Handler;
+use Uncanny_Automator_Pro\Event_Tickets_Pro_Helpers;
+
 /**
  * Class Event_Tickets_Helpers
  * @package Uncanny_Automator
@@ -14,7 +17,7 @@ class Event_Tickets_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Event_Tickets_Pro_Helpers
+	 * @var Event_Tickets_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,6 +27,14 @@ class Event_Tickets_Helpers {
 	public $load_options;
 
 	/**
+	 * Event_Tickets_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Event_Tickets_Helpers $options
 	 */
 	public function setOptions( Event_Tickets_Helpers $options ) {
@@ -31,18 +42,10 @@ class Event_Tickets_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Event_Tickets_Pro_Helpers $pro
+	 * @param Event_Tickets_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Event_Tickets_Pro_Helpers $pro ) {
+	public function setPro( Event_Tickets_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Event_Tickets_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -59,7 +62,7 @@ class Event_Tickets_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Event', 'uncanny-automator' );
+			$label =  esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -81,9 +84,9 @@ class Event_Tickets_Helpers {
 			//'default_value'      => 'Any post',
 			'options'         => $all_events,
 			'relevant_tokens' => [
-				$option_code          => __( 'Event title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Event ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Event URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Event title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Event ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Event URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -104,7 +107,7 @@ class Event_Tickets_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Event', 'uncanny-automator' );
+			$label =  esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
 		$args    = [
@@ -119,12 +122,12 @@ class Event_Tickets_Helpers {
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
 			//$posts          = get_posts( $args );
 			$posts          = $uncanny_automator->helpers->recipe->options->wp_query( $args );
-			$ticket_handler = new \Tribe__Tickets__Tickets_Handler();
+			$ticket_handler = new Tribe__Tickets__Tickets_Handler();
 			foreach ( $posts as $post_id => $title ) {
 				//$title = $post->post_title;
 
 				if ( empty( $title ) ) {
-					$title = sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
+					$title = sprintf(  esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 				}
 
 				$rsvp_ticket = $ticket_handler->get_event_rsvp_tickets( get_post( $post_id ) );
@@ -142,9 +145,9 @@ class Event_Tickets_Helpers {
 			//'default_value'      => 'Any post',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Event title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Event ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Event URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Event title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Event ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Event URL', 'uncanny-automator' ),
 			],
 		];
 

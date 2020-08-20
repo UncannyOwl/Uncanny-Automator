@@ -39,9 +39,9 @@ class WPLMS_COURSECOMPLETED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP LMS */
-			'sentence'            => sprintf( __( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP LMS */
-			'select_option_name'  => __( 'A user completes {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'wplms_submit_course',
 			'priority'            => 20,
 			'accepted_args'       => 3,
@@ -61,7 +61,7 @@ class WPLMS_COURSECOMPLETED {
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param integer $course_id
-	 * @param null    $marks
+	 * @param null $marks
 	 * @param integer $user_id
 	 */
 	public function wplms_course_completed( $course_id, $marks, $user_id ) {

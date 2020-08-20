@@ -39,9 +39,9 @@ class WPLMS_QUIZCOMPLETED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP LMS */
-			'sentence'            => sprintf( __( 'A user completes {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP LMS */
-			'select_option_name'  => __( 'A user completes {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user completes {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'wplms_submit_quiz',
 			'priority'            => 20,
 			'accepted_args'       => 3,
@@ -61,7 +61,7 @@ class WPLMS_QUIZCOMPLETED {
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param integer $quiz_id
-	 * @param string  $marks Can be a single number of a range separated by "-"
+	 * @param string $marks Can be a single number of a range separated by "-"
 	 * @param integer $user_id
 	 */
 	public function wplms_quiz_completed( $quiz_id, $marks, $user_id ) {

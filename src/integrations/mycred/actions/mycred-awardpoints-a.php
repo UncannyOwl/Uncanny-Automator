@@ -39,16 +39,16 @@ class MYCRED_AWARDPOINTS_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - myCred */
-			'sentence'           => sprintf( __( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'MYCREDPOINTVALUE', $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'MYCREDPOINTVALUE', $this->action_meta ),
 			/* translators: Action - myCred */
-			'select_option_name' => __( 'Award {{points}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_mycred_points' ],
 			'options'            => [],
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_points_types( __( 'Point type', 'uncanny-automator' ), $this->action_meta, [
+					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_points_types(  esc_attr__( 'Point type', 'uncanny-automator' ), $this->action_meta, [
 						'token'   => false,
 						'is_ajax' => false,
 					] ),
@@ -58,7 +58,7 @@ class MYCRED_AWARDPOINTS_A {
 						'input_type' => 'int',
 
 						'option_code' => 'MYCREDPOINTVALUE',
-						'label'       => __( 'Points', 'uncanny-automator' ),
+						'label'       =>  esc_attr__( 'Points', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
 						'required'        => true,

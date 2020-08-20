@@ -40,9 +40,9 @@ class BO_AWARDRANK_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - BadgeOS */
-			'sentence'           => sprintf( __( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - BadgeOS */
-			'select_option_name' => __( 'Award {{a rank}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Award {{a rank}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_points' ],
@@ -60,7 +60,7 @@ class BO_AWARDRANK_A {
 						]
 					),
 					/* translators: Noun */
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta, __( 'Rank', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,  esc_attr__( 'Rank', 'uncanny-automator' ) ),
 				],
 			],
 		];

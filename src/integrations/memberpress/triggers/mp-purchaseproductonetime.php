@@ -39,9 +39,9 @@ class MP_PURCHASEPRODUCTONETIME {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MemberPress */
-			'sentence'            => sprintf( __( 'A user purchases {{a one-time subscription product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a one-time subscription product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - MemberPress */
-			'select_option_name'  => __( 'A user purchases {{a one-time subscription product}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user purchases {{a one-time subscription product}}', 'uncanny-automator' ),
 			'action'              => 'mepr-event-non-recurring-transaction-completed',
 			'priority'            => 10,
 			'accepted_args'       => 1,

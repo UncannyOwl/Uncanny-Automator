@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use GFFormsModel;
+use Uncanny_Automator_Pro\Gravity_Forms_Pro_Helpers;
+
 /**
  * Class Gravity_Forms_Helpers
  * @package Uncanny_Automator
@@ -13,7 +16,7 @@ class Gravity_Forms_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Gravity_Forms_Pro_Helpers
+	 * @var Gravity_Forms_Pro_Helpers
 	 */
 	public $pro;
 
@@ -23,6 +26,14 @@ class Gravity_Forms_Helpers {
 	public $load_options;
 
 	/**
+	 * Gravity_Forms_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Gravity_Forms_Helpers $options
 	 */
 	public function setOptions( Gravity_Forms_Helpers $options ) {
@@ -30,18 +41,10 @@ class Gravity_Forms_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Gravity_Forms_Pro_Helpers $pro
+	 * @param Gravity_Forms_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Gravity_Forms_Pro_Helpers $pro ) {
+	public function setPro( Gravity_Forms_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Gravity_Forms_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -59,7 +62,7 @@ class Gravity_Forms_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -70,7 +73,7 @@ class Gravity_Forms_Helpers {
 
 		global $uncanny_automator;
 		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
-			$forms = \GFFormsModel::get_forms();
+			$forms = GFFormsModel::get_forms();
 
 			foreach ( $forms as $form ) {
 				$options[ $form->id ] = esc_html( $form->title );

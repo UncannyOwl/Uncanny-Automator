@@ -39,26 +39,26 @@ class BO_AWARDPOINTS_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - BadgeOS */
-			'sentence'           => sprintf( __( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'BOPOINTVALUE', $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'BOPOINTVALUE', $this->action_meta ),
 			/* translators: Action - BadgeOS */
-			'select_option_name' => __( 'Award {{points}} to the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_points' ],
 			'options'            => [],
-			'options_group'       => [
+			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->badgeos->options->list_bo_points_types( __( 'Point type', 'uncanny-automator' ), $this->action_meta, [
-						'token'        => false,
-						'is_ajax'      => false,
+					$uncanny_automator->helpers->recipe->badgeos->options->list_bo_points_types(  esc_attr__( 'Point type', 'uncanny-automator' ), $this->action_meta, [
+						'token'   => false,
+						'is_ajax' => false,
 					] ),
 				],
-				'BOPOINTVALUE' => [
+				'BOPOINTVALUE'     => [
 					[
-						'input_type'      => 'int',
+						'input_type' => 'int',
 
-						'option_code'     => 'BOPOINTVALUE',
-						'label'           => __( 'Points', 'uncanny-automator' ),
+						'option_code' => 'BOPOINTVALUE',
+						'label'       =>  esc_attr__( 'Points', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
 						'required'        => true,

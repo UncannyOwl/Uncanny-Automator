@@ -42,9 +42,9 @@ class WP_SENDEMAIL {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WordPress */
-			'sentence'           => sprintf( __( 'Send an email to {{email address:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Send an email to {{email address:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WordPress */
-			'select_option_name' => __( 'Send an {{email}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Send an {{email}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'send_email' ),
@@ -52,17 +52,17 @@ class WP_SENDEMAIL {
 			'options_group'      => [
 				$this->action_meta => [
 					/* translators: Email field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILFROM', __( 'From', 'uncanny-automator' ), true, 'email', '{{admin_email}}' ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILFROM',  esc_attr__( 'From', 'uncanny-automator' ), true, 'email', '{{admin_email}}' ),
 					/* translators: Email field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILTO', __( 'To', 'uncanny-automator' ), true, 'email', '{{user_email}}', true, __( 'Separate multiple email addresses with a comma', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILTO',  esc_attr__( 'To', 'uncanny-automator' ), true, 'email', '{{user_email}}', true,  esc_attr__( 'Separate multiple email addresses with a comma', 'uncanny-automator' ) ),
 					/* translators: Email field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILCC', __( 'CC', 'uncanny-automator' ), true, 'email', '', false ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILCC',  esc_attr__( 'CC', 'uncanny-automator' ), true, 'email', '', false ),
 					/* translators: Email field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBCC', __( 'BCC', 'uncanny-automator' ), true, 'email', '', false ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBCC',  esc_attr__( 'BCC', 'uncanny-automator' ), true, 'email', '', false ),
 					/* translators: Email field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILSUBJECT', __( 'Subject', 'uncanny-automator' ), true ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILSUBJECT',  esc_attr__( 'Subject', 'uncanny-automator' ), true ),
 					/* translators: Email field */
-					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBODY', __( 'Body', 'uncanny-automator' ), true, 'textarea' ),
+					$uncanny_automator->helpers->recipe->field->text_field( 'EMAILBODY',  esc_attr__( 'Body', 'uncanny-automator' ), true, 'textarea' ),
 				],
 			],
 		);

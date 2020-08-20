@@ -39,9 +39,9 @@ class Closure_Redirect {
 			'integration'        => self::$integration,
 			'code'               => $this->closure_code,
 			/* translators: Closure - WordPress */
-			'sentence'           => sprintf( __( 'Redirect to {{a link:%1$s}} when recipe is completed', 'uncanny-automator' ), $this->closure_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Redirect to {{a link:%1$s}} when recipe is completed', 'uncanny-automator' ), $this->closure_meta ),
 			/* translators: Closure - WordPress */
-			'select_option_name' => __( 'Redirect when recipe is completed', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Redirect when recipe is completed', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'redirect' ),
@@ -77,11 +77,11 @@ class Closure_Redirect {
 			global $uncanny_automator;
 			$redirect_url = $uncanny_automator->parse->url( $redirect_url, $recipe_id, $args );
 			?>
-			<script type="text/javascript">
-              var t = setTimeout(function () {
-                document.location.href = '<?php echo $redirect_url ?>'
-              }, 200)
-			</script>
+            <script type="text/javascript">
+                var t = setTimeout(function () {
+                    document.location.href = '<?php echo $redirect_url ?>'
+                }, 200)
+            </script>
 			<?php
 			exit;
 		}

@@ -3,6 +3,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Bbpress_Pro_Helpers;
+
 /**
  * Class Bbpress_Helpers
  * @package Uncanny_Automator
@@ -14,7 +16,7 @@ class Bbpress_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Bbpress_Pro_Helpers
+	 * @var Bbpress_Pro_Helpers
 	 */
 	public $pro;
 
@@ -24,20 +26,6 @@ class Bbpress_Helpers {
 	public $load_options;
 
 	/**
-	 * @param Bbpress_Helpers $options
-	 */
-	public function setOptions( Bbpress_Helpers $options ) {
-		$this->options = $options;
-	}
-
-	/**
-	 * @param \Uncanny_Automator_Pro\Bbpress_Pro_Helpers $pro
-	 */
-	public function setPro( \Uncanny_Automator_Pro\Bbpress_Pro_Helpers $pro ) {
-		$this->pro = $pro;
-	}
-
-	/**
 	 * Bbpress_Helpers constructor.
 	 */
 	public function __construct() {
@@ -45,6 +33,19 @@ class Bbpress_Helpers {
 		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
+	/**
+	 * @param Bbpress_Helpers $options
+	 */
+	public function setOptions( Bbpress_Helpers $options ) {
+		$this->options = $options;
+	}
+
+	/**
+	 * @param Bbpress_Pro_Helpers $pro
+	 */
+	public function setPro( Bbpress_Pro_Helpers $pro ) {
+		$this->pro = $pro;
+	}
 
 	/**
 	 * @param string $label
@@ -66,7 +67,7 @@ class Bbpress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Forum', 'uncanny-automator' );
+			$label =  esc_attr__( 'Forum', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -87,9 +88,9 @@ class Bbpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Forum title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Forum ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Forum URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Forum title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Forum ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Forum URL', 'uncanny-automator' ),
 			],
 		];
 

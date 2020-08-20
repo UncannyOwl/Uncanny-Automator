@@ -21,8 +21,8 @@ class WC_VIEWPRODUCT {
 	 * SetAutomatorTriggers constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code        = 'VIEWWOOPRODUCT';
-		$this->trigger_meta        = 'WOOPRODUCT';
+		$this->trigger_code = 'VIEWWOOPRODUCT';
+		$this->trigger_meta = 'WOOPRODUCT';
 		$this->define_trigger();
 	}
 
@@ -38,9 +38,9 @@ class WC_VIEWPRODUCT {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WooCommerce */
-			'sentence'            => sprintf( __( 'A user views {{a product:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user views {{a product:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WooCommerce */
-			'select_option_name'  => __( 'A user views {{a product}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user views {{a product}}', 'uncanny-automator' ),
 			'action'              => 'template_redirect',
 			'priority'            => 90,
 			'accepted_args'       => 1,

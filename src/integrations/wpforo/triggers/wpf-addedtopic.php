@@ -34,7 +34,7 @@ class WPF_ADDEDTOPIC {
 
 		global $uncanny_automator;
 
-		$forums = WPF()->forum->get_forums(['type' => 'forum']);
+		$forums = WPF()->forum->get_forums( [ 'type' => 'forum' ] );
 
 		$forum_options = [ 0 => 'Any Forum' ];
 		foreach ( $forums as $forum ) {
@@ -43,7 +43,7 @@ class WPF_ADDEDTOPIC {
 
 		$option = [
 			'option_code' => $this->trigger_meta,
-			'label'       => __( 'Forums', 'uncanny-automator' ),
+			'label'       =>  esc_attr__( 'Forums', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $forum_options,
@@ -55,9 +55,9 @@ class WPF_ADDEDTOPIC {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - wpForo */
-			'sentence'            => sprintf( __( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - wpForo */
-			'select_option_name'  => __( 'A user creates a {{new topic}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user creates a {{new topic}}', 'uncanny-automator' ),
 			'action'              => 'wpforo_after_add_topic',
 			'priority'            => 5,
 			'accepted_args'       => 1,
@@ -84,19 +84,19 @@ class WPF_ADDEDTOPIC {
 		}
 
 		// Get all recipes that have the "$this->trigger_code = 'ADDEDTOPIC'" trigger
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
 		// Get the specific WPFFORUMID meta data from the recipes
 		$recipe_trigger_meta_data = $uncanny_automator->get->meta_from_recipes( $recipes, 'WPFFORUMID' );
-		$matched_recipe_ids = [];
+		$matched_recipe_ids       = [];
 
 		// Loop through recipe
 		foreach ( $recipe_trigger_meta_data as $recipe_id => $trigger_meta ) {
 			// Loop through recipe WPFFORUMID trigger meta data
 			foreach ( $trigger_meta as $trigger_id => $required_forum_id ) {
-				if(
-					0 === absint($required_forum_id) || // Any forum is set as the option
-					$forum_id === absint($required_forum_id) // Match specific forum
-				){
+				if (
+					0 === absint( $required_forum_id ) || // Any forum is set as the option
+					$forum_id === absint( $required_forum_id ) // Match specific forum
+				) {
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,

@@ -52,7 +52,7 @@ class Add_Zapier_Integration {
 	 * @return array
 	 */
 	public function add_integration_directory_func( $directory ) {
-		
+
 		$directory[] = dirname( __FILE__ ) . '/helpers';
 		$directory[] = dirname( __FILE__ ) . '/actions';
 		$directory[] = dirname( __FILE__ ) . '/triggers';

@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 // If this file is called directly, abort.
+use WP_REST_Response;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -54,37 +56,9 @@ class Boot {
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ) );
 		// Load script front-end
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_script' ] );
-
-		/*Weekly delete logs from /wp-content/*/
-		//add_action( 'admin_init', array( $this, 'schedule_clear_debug_logs' ) );
-		//add_action( 'weekly_remove_debug_logs', array( $this, 'remove_weekly_log_action_data' ) );
-
 		add_action( 'rest_api_init', [ $this, 'uo_register_api' ] );
 		add_action( 'admin_init', [ $this, 'maybe_ask_review' ] );
 	}
-
-	/**
-	 * Set a weekly schedule to remove debug logs
-	 */
-	/*public function schedule_clear_debug_logs() {
-		if ( false === as_next_scheduled_action( 'weekly_remove_debug_logs' ) ) {
-			as_schedule_recurring_action( strtotime( 'midnight tonight' ), ( 7 * DAY_IN_SECONDS ), 'weekly_remove_debug_logs' );
-		}
-	}*/
-
-	/**
-	 * A callback to run when the 'weekly_remove_debug_logs' scheduled action is run.
-	 */
-	/*public function remove_weekly_log_action_data() {
-		if ( ! Utilities::get_debug_mode() ) {
-			$files = glob( WP_CONTENT_DIR . '/uo-*.log' );
-			if ( $files ) {
-				foreach ( $files as $file ) {
-					unlink( $file );
-				}
-			}
-		}
-	}*/
 
 	/**
 	 * Licensing page styles
@@ -100,7 +74,7 @@ class Boot {
 		}
 
 	}
-	
+
 	/**
 	 * Enqueue script
 	 *
@@ -109,12 +83,16 @@ class Boot {
 		global $wpdb;
 		if ( is_user_logged_in() ) {
 			// check if there is a recipe and closure with publish status
-			$check_closure = $wpdb->get_col( "SELECT cp.ID as ID FROM {$wpdb->posts} cp LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent WHERE cp.post_type LIKE 'uo-closure' AND cp.post_status LIKE 'publish' AND rp.post_status LIKE 'publish' LIMIT 1" );
+			$check_closure = $wpdb->get_col( "SELECT cp.ID FROM {$wpdb->posts} cp 
+    											LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent 
+												WHERE cp.post_type LIKE 'uo-closure' 
+												  AND cp.post_status LIKE 'publish' 
+												  AND rp.post_status LIKE 'publish' LIMIT 1" );
 			if ( ! empty( $check_closure ) ) {
 				$user_id   = wp_get_current_user()->ID;
 				$api_setup = [
 					'root'              => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT . '/uoa_redirect/' ),
-					'nonce'             => \wp_create_nonce( 'wp_rest' ),
+					'nonce'             => wp_create_nonce( 'wp_rest' ),
 					'user_id'           => $user_id,
 					'client_secret_key' => md5( 'l6fsX3vAAiJbSXticLBd' . $user_id ),
 				];
@@ -204,7 +182,9 @@ class Boot {
 
 			// remove parent directory, sub directory, and silence is golden index.php
 			$files = array_diff( $files, array( '..', '.', 'index.php' ) );
-
+			if ( ! $files ) {
+				continue;
+			}
 			// Loop through all files in directory to create class names from file name
 			foreach ( $files as $file ) {
 
@@ -237,38 +217,11 @@ class Boot {
 				}
 
 				$path = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $file;
-				//$contents = file_get_contents( $path );
-				//var_dump( $contents );
-
-				// On plugin activation,
-				// 1. collect all comments from every file loaded
-				// 2. collect all add_shortcode, apply_filters, and do_actions
-
 
 				$some_param    = array();
 				$another_param = '';
 
-				// ex
-				/*
-				 * The first line is the title
-				 *
-				 * The next line is the description and can be mulitple lines and even html
-				 * entities. <br> The '@see the_hook' must be present to make the connection.
-				 *
-				 * @see the_hook
-				 * @since version 1.0
-				 * @access plugin | module | general  // not everyone needs to se all filters.... maybe we can categories them depending on if its a module and depend file, core plugin architecture file, and not making have to @access tag
-				 * @param array $some_param Then the description at the end
-				 * @param string $another_param Then the description at the end
-				 */
 				do_action( 'the_hook', array( $this, 'the_hook_function' ), $some_param, $another_param );
-
-				//regex101
-				// regex mulitline comments:  ^\s\/\*\*?[^!][.\s\t\S\n\r]*?\*\/    <<-- tested first
-				// regex multiline comments: (?<!\/)\/\*((?:(?!\*\/).|\s)*)\*\/    <<-- found another https://regex101.com/r/nW6hU2/1
-				// regex add_shortcode line functions: ^.*\badd_shortcode\b.*$
-				// regex add_shortcode line functions: ^.*\bdo_action\b.*$
-				// regex add_shortcode line functions: ^.*\bapply_filters\b.*$
 
 				if ( class_exists( $class ) ) {
 					Utilities::add_class_instance( $class, new $class );
@@ -287,15 +240,28 @@ class Boot {
 		global $wpdb;
 		$check_closure = $wpdb->get_col( "SELECT cp.ID as ID FROM {$wpdb->posts} cp LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent WHERE cp.post_type LIKE 'uo-closure' AND cp.post_status LIKE 'publish' AND rp.post_status LIKE 'publish' LIMIT 1" );
 		if ( ! empty( $check_closure ) ) {
-			register_rest_route( AUTOMATOR_REST_API_END_POINT, '/uoa_redirect/', [
-				'methods'  => 'POST',
-				'callback' => [ $this, 'send_feedback' ],
-			] );
+			register_rest_route( AUTOMATOR_REST_API_END_POINT, '/uoa_redirect/', array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'send_feedback' ),
+					'permission_callback' => function () {
+						return true;
+					}
+				)
+			);
 		}
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/review-banner-visibility/', [
-			'methods'  => 'POST',
-			'callback' => [ $this, 'save_review_settings' ],
-		] );
+
+		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/review-banner-visibility/', array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'save_review_settings' ),
+				'permission_callback' => function () {
+					if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+						return true;
+					}
+
+					return false;
+				}
+			)
+		);
 	}
 
 	/**
@@ -313,11 +279,11 @@ class Boot {
 			if ( ! empty( $redirect_url ) ) {
 				delete_option( 'UO_REDIRECTURL_' . $user_id );
 
-				return new \WP_REST_Response( [ 'redirect_url' => $redirect_url ], 201 );
+				return new WP_REST_Response( [ 'redirect_url' => $redirect_url ], 201 );
 			}
 		}
 
-		return new \WP_REST_Response( [ 'redirect_url' => '' ], 201 );
+		return new WP_REST_Response( [ 'redirect_url' => '' ], 201 );
 	}
 
 	/**
@@ -359,10 +325,10 @@ class Boot {
 			add_action( 'admin_notices', function () {
 
 				// Get data about Automator's version
-				$is_pro  = FALSE;
-				$version = \Uncanny_Automator\InitializePlugin::PLUGIN_VERSION;
+				$is_pro  = false;
+				$version = InitializePlugin::PLUGIN_VERSION;
 				if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
-					$is_pro  = TRUE;
+					$is_pro  = true;
 					$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
 				}
 
@@ -381,10 +347,10 @@ class Boot {
 	/**
 	 * Rest API callback for saving user selection for review.
 	 *
-	 * @since 2.1.4
 	 * @param object $request
 	 *
 	 * @return object
+	 * @since 2.1.4
 	 */
 	public function save_review_settings( $request ) {
 		// check if its a valid request.
@@ -392,10 +358,11 @@ class Boot {
 		if ( isset( $data['action'] ) && ( 'maybe-later' === $data['action'] || 'hide-forever' === $data['action'] ) ) {
 			update_option( '_uncanny_automator_review_reminder', $data['action'] );
 			update_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
-			return new \WP_REST_Response( [ 'success' => true ], 200 );
+
+			return new WP_REST_Response( [ 'success' => true ], 200 );
 		}
 
-		return new \WP_REST_Response( [ 'success' => false ], 200 );
+		return new WP_REST_Response( [ 'success' => false ], 200 );
 	}
 }
 

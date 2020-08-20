@@ -39,15 +39,15 @@ class LP_COURSEENROLLED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnPress */
-			'sentence'            => sprintf( __( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnPress */
-			'select_option_name'  => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 			'action'              => 'learn-press/user-enrolled-course',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'lp_course_enrolled' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->learnpress->options->all_lp_courses( __( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
+				$uncanny_automator->helpers->recipe->learnpress->options->all_lp_courses(  esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);

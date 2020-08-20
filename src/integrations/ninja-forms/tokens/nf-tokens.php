@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 
+use function Ninja_Forms;
+
 /**
  * Class Nf_Tokens
  * @package Uncanny_Automator
@@ -59,14 +61,14 @@ class Nf_Tokens {
 
 		$form_ids = [];
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
-			$form = \Ninja_Forms()->form( $form_id )->get();
+			$form = Ninja_Forms()->form( $form_id )->get();
 			if ( $form ) {
 				$form_ids[] = $form->get_id();
 			}
 		}
 
 		if ( empty( $form_ids ) ) {
-			$forms = \Ninja_Forms()->form()->get_forms();
+			$forms = Ninja_Forms()->form()->get_forms();
 			foreach ( $forms as $form ) {
 				$form_ids[] = $form->get_id();
 			}
@@ -75,7 +77,7 @@ class Nf_Tokens {
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
 				$fields = [];
-				$meta   = \Ninja_Forms()->form( $form_id )->get_fields();
+				$meta   = Ninja_Forms()->form( $form_id )->get_fields();
 				if ( is_array( $meta ) ) {
 					foreach ( $meta as $field ) {
 						if ( $field->get_setting( 'type' ) !== 'submit' ) {

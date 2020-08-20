@@ -39,9 +39,9 @@ class LD_ENRLCOURSE_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf( __( 'Enroll the user in {{a course:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Enroll the user in {{a course:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'enroll_in_course' ),

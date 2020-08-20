@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.6.1
+ * Version:             2.6.2
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.6.1';
+	const PLUGIN_VERSION = '2.6.2';
 
 	/**
 	 * The database version number
@@ -274,7 +274,7 @@ function uap_temp_warning_change( $translated_text, $text, $domain ) {
 		switch ( $translated_text ) {
 			case 'Please activate Uncanny Automator before activating Uncanny Automator Pro.':
 				/* translators: 1. Trademarked term. 2. Trademarked term */
-				$translated_text = sprintf( __( '%1$s needs to be updated before it can be used with the new updates and enhancements of %2$s.', 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator' );
+				$translated_text = sprintf(  esc_attr__( '%1$s needs to be updated before it can be used with the new updates and enhancements of %2$s.', 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator' );
 				break;
 		}
 	}

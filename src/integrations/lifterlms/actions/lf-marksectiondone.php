@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use LLMS_Section;
+
 /**
  * Class LF_MARKSECTIONDONE
  * @package Uncanny_Automator
@@ -39,14 +41,14 @@ class LF_MARKSECTIONDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LifterLMS */
-			'sentence'           => sprintf( __( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LifterLMS */
-			'select_option_name' => __( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lf_mark_section_done' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_sections( __( 'Section', 'uncanny-automator' ), $this->action_meta, false ),
+				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_sections(  esc_attr__( 'Section', 'uncanny-automator' ), $this->action_meta, false ),
 			],
 		);
 
@@ -58,7 +60,7 @@ class LF_MARKSECTIONDONE {
 	 * Validation function when the action is hit.
 	 *
 	 * @param string $user_id user id.
-	 * @param array  $action_data action data.
+	 * @param array $action_data action data.
 	 * @param string $recipe_id recipe id.
 	 */
 	public function lf_mark_section_done( $user_id, $action_data, $recipe_id ) {
@@ -75,7 +77,7 @@ class LF_MARKSECTIONDONE {
 		$section_id = $action_data['meta'][ $this->action_meta ];
 
 		// Get all lessons of section.
-		$section = new \LLMS_Section( $section_id );
+		$section = new LLMS_Section( $section_id );
 		$lessons = $section->get_lessons();
 		if ( ! empty( $lessons ) ) {
 			foreach ( $lessons as $lesson ) {

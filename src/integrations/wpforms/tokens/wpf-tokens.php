@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 
+use WPForms_Form_Handler;
+
 /**
  * Class Wpf_Tokens
  * @package Uncanny_Automator
@@ -59,7 +61,7 @@ class Wpf_Tokens {
 		$trigger_meta        = $args['meta'];
 
 		$form_ids = [];
-		$wpforms  = new \WPForms_Form_Handler();
+		$wpforms  = new WPForms_Form_Handler();
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 			$form = $wpforms->get( $form_id );
 			if ( $form ) {

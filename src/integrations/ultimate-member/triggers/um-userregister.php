@@ -39,9 +39,9 @@ class UM_USERREGISTER {
 
 		global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->ultimate_member->options->get_um_forms( __( 'Form', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->ultimate_member->options->get_um_forms(  esc_attr__( 'Form', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' => __( 'Any form', 'uncanny-automator' ) ) + $options['options'];
+		$options['options'] = array( '-1' =>  esc_attr__( 'Any form', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
 			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
@@ -49,9 +49,9 @@ class UM_USERREGISTER {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Ultimate Member */
-			'sentence'            => sprintf( __( 'A user registers with {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( 'A user registers with {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Ultimate Member */
-			'select_option_name'  => __( 'A user registers with {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user registers with {{a form}}', 'uncanny-automator' ),
 			'action'              => 'um_registration_complete',
 			'priority'            => 99,
 			'accepted_args'       => 2,

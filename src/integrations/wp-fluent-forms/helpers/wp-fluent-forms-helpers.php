@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Wp_Fluent_Forms_Pro_Helpers;
+use WpFluent\Exception;
+
 /**
  * Class Wp_Fluent_Forms_Helpers
  * @package Uncanny_Automator
@@ -13,7 +16,7 @@ class Wp_Fluent_Forms_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Wp_Fluent_Forms_Pro_Helpers
+	 * @var Wp_Fluent_Forms_Pro_Helpers
 	 */
 	public $pro;
 
@@ -21,20 +24,6 @@ class Wp_Fluent_Forms_Helpers {
 	 * @var bool
 	 */
 	public $load_options;
-
-	/**
-	 * @param Wp_Fluent_Forms_Helpers $options
-	 */
-	public function setOptions( Wp_Fluent_Forms_Helpers $options ) {
-		$this->options = $options;
-	}
-
-	/**
-	 * @param \Uncanny_Automator_Pro\Wp_Fluent_Forms_Pro_Helpers $pro
-	 */
-	public function setPro( \Uncanny_Automator_Pro\Wp_Fluent_Forms_Pro_Helpers $pro ) {
-		$this->pro = $pro;
-	}
 
 	/**
 	 * Wp_Fluent_Forms_Helpers constructor.
@@ -45,12 +34,26 @@ class Wp_Fluent_Forms_Helpers {
 	}
 
 	/**
+	 * @param Wp_Fluent_Forms_Helpers $options
+	 */
+	public function setOptions( Wp_Fluent_Forms_Helpers $options ) {
+		$this->options = $options;
+	}
+
+	/**
+	 * @param Wp_Fluent_Forms_Pro_Helpers $pro
+	 */
+	public function setPro( Wp_Fluent_Forms_Pro_Helpers $pro ) {
+		$this->pro = $pro;
+	}
+
+	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
 	 *
 	 * @return mixed
-	 * @throws \WpFluent\Exception
+	 * @throws Exception
 	 */
 	public function list_wp_fluent_forms( $label = null, $option_code = 'WPFFFORMS', $args = [] ) {
 		if ( ! $this->load_options ) {
@@ -60,7 +63,7 @@ class Wp_Fluent_Forms_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label =  esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;

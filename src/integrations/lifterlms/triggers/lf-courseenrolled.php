@@ -39,15 +39,15 @@ class LF_COURSEENROLLED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LifterLMS */
-			'sentence'            => sprintf( __( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LifterLMS */
-			'select_option_name'  => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 			'action'              => 'llms_user_enrolled_in_course',
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'lf_course_enrolled' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_courses( __( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
+				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_courses(  esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);

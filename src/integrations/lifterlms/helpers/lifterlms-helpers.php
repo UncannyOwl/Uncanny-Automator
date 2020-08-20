@@ -4,6 +4,8 @@
 namespace Uncanny_Automator;
 
 
+use Uncanny_Automator_Pro\Lifterlms_Pro_Helpers;
+
 /**
  * Class Lifterlms_Helpers
  * @package Uncanny_Automator
@@ -15,7 +17,7 @@ class Lifterlms_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Lifterlms_Pro_Helpers
+	 * @var Lifterlms_Pro_Helpers
 	 */
 	public $pro;
 
@@ -25,6 +27,14 @@ class Lifterlms_Helpers {
 	public $load_options;
 
 	/**
+	 * Lifterlms_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
 	 * @param Lifterlms_Helpers $options
 	 */
 	public function setOptions( Lifterlms_Helpers $options ) {
@@ -32,18 +42,10 @@ class Lifterlms_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Lifterlms_Pro_Helpers $pro
+	 * @param Lifterlms_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Lifterlms_Pro_Helpers $pro ) {
+	public function setPro( Lifterlms_Pro_Helpers $pro ) {
 		$this->pro = $pro;
-	}
-
-	/**
-	 * Lifterlms_Helpers constructor.
-	 */
-	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -62,7 +64,7 @@ class Lifterlms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Course', 'uncanny-automator' );
+			$label =  esc_attr__( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -74,7 +76,7 @@ class Lifterlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -86,9 +88,9 @@ class Lifterlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Course title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Course ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Course URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Course title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -110,7 +112,7 @@ class Lifterlms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Lesson', 'uncanny-automator' );
+			$label =  esc_attr__( 'Lesson', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -122,7 +124,7 @@ class Lifterlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any lesson', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -134,9 +136,9 @@ class Lifterlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Lesson title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Lesson ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Lesson URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Lesson title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -158,7 +160,7 @@ class Lifterlms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Section', 'uncanny-automator' );
+			$label =  esc_attr__( 'Section', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -170,7 +172,7 @@ class Lifterlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any section', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any section', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -182,9 +184,9 @@ class Lifterlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Section title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Section ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Section URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Section title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Section ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Section URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -206,7 +208,7 @@ class Lifterlms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Membership', 'uncanny-automator' );
+			$label =  esc_attr__( 'Membership', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -218,7 +220,7 @@ class Lifterlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any membership', 'uncanny-automator' ), $is_all_label );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any membership', 'uncanny-automator' ), $is_all_label );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -230,9 +232,9 @@ class Lifterlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Membership title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Membership ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Membership URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Membership title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Membership ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Membership URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -254,7 +256,7 @@ class Lifterlms_Helpers {
 
 
 		if ( ! $label ) {
-			$label = __( 'Quiz', 'uncanny-automator' );
+			$label =  esc_attr__( 'Quiz', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -266,7 +268,7 @@ class Lifterlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any quiz', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -278,9 +280,9 @@ class Lifterlms_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          => __( 'Quiz title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Quiz ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Quiz URL', 'uncanny-automator' ),
+				$option_code          =>  esc_attr__( 'Quiz title', 'uncanny-automator' ),
+				$option_code . '_ID'  =>  esc_attr__( 'Quiz ID', 'uncanny-automator' ),
+				$option_code . '_URL' =>  esc_attr__( 'Quiz URL', 'uncanny-automator' ),
 			],
 		];
 

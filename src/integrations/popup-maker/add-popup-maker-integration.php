@@ -99,18 +99,18 @@ class Add_Popup_Maker_Integration {
 
 		$triggers['automator'] = array(
 			/* translators: 1. Trademarked term */
-			'name'            => sprintf( __( '%1$s recipe is completed', 'uncanny-automator' ), 'Automator' ),
-			'modal_title'     => __( 'Settings', 'uncanny-automator' ),
-			'settings_column' => sprintf( '<strong>%1$s</strong>: %2$s', __( 'Recipes', 'uncanny-automator' ), '{{data.recipe}}' ),
+			'name'            => sprintf(  esc_attr__( '%1$s recipe is completed', 'uncanny-automator' ), 'Automator' ),
+			'modal_title'     =>  esc_attr__( 'Settings', 'uncanny-automator' ),
+			'settings_column' => sprintf( '<strong>%1$s</strong>: %2$s',  esc_attr__( 'Recipes', 'uncanny-automator' ), '{{data.recipe}}' ),
 			'fields'          => array(
 				'general' => array(
 					'recipe' => array(
-						'label'       => __( 'Recipe', 'uncanny-automator' ),
-						'type'        => 'postselect',
-						'post_type'   => 'uo-recipe',
-						'multiple'    => true,
-						'as_array'    => true,
-						'std'         => array(),
+						'label'     =>  esc_attr__( 'Recipe', 'uncanny-automator' ),
+						'type'      => 'postselect',
+						'post_type' => 'uo-recipe',
+						'multiple'  => true,
+						'as_array'  => true,
+						'std'       => array(),
 					),
 				),
 			),

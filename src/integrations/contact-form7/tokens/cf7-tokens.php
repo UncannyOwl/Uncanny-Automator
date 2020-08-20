@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use WPCF7_ContactForm;
+use WPCF7_Pipes;
+
 /**
  * Class Cf7_Tokens
  * @package Uncanny_Automator
@@ -48,17 +51,17 @@ class Cf7_Tokens {
 	}
 
 	/**
-	 * @param \WPCF7_ContactForm $contact_form
+	 * @param WPCF7_ContactForm $contact_form
 	 * @param $recipes
 	 * @param $args
 	 */
-	public function automator_save_cf7_form_func( \WPCF7_ContactForm $contact_form, $recipes, $args ) {
+	public function automator_save_cf7_form_func( WPCF7_ContactForm $contact_form, $recipes, $args ) {
 		if ( is_array( $args ) ) {
 			foreach ( $args as $trigger_result ) {
 				//$trigger_result = array_pop( $args );
 				if ( true === $trigger_result['result'] ) {
 					global $uncanny_automator;
-					if ( $recipes && $contact_form instanceof \WPCF7_ContactForm ) {
+					if ( $recipes && $contact_form instanceof WPCF7_ContactForm ) {
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];
 							if ( $triggers ) {
@@ -100,13 +103,13 @@ class Cf7_Tokens {
 	}
 
 	/**
-	 * @param \WPCF7_ContactForm $contact_form
+	 * @param WPCF7_ContactForm $contact_form
 	 *
 	 * @return array
 	 */
-	public function get_data_from_contact_form( \WPCF7_ContactForm $contact_form ) {
+	public function get_data_from_contact_form( WPCF7_ContactForm $contact_form ) {
 		$data = [];
-		if ( $contact_form instanceof \WPCF7_ContactForm ) {
+		if ( $contact_form instanceof WPCF7_ContactForm ) {
 			$tags = $contact_form->scan_form_tags();
 			global $uncanny_automator;
 			foreach ( $tags as $tag ) {
@@ -117,7 +120,7 @@ class Cf7_Tokens {
 				$pipes = $tag->pipes;
 
 				$value = ( ! empty( $_POST[ $tag->name ] ) ) ? $uncanny_automator->uap_sanitize( $_POST[ $tag->name ], 'mixed' ) : '';
-				if ( WPCF7_USE_PIPE && $pipes instanceof \WPCF7_Pipes && ! $pipes->zero() ) {
+				if ( WPCF7_USE_PIPE && $pipes instanceof WPCF7_Pipes && ! $pipes->zero() ) {
 					if ( is_array( $value ) ) {
 						$new_value = [];
 
@@ -162,8 +165,8 @@ class Cf7_Tokens {
 		if ( empty( $form_id ) ) {
 			return $tokens;
 		}
-		$contact_form7 = \WPCF7_ContactForm::get_instance( $form_id );
-		if ( ! $contact_form7 instanceof \WPCF7_ContactForm ) {
+		$contact_form7 = WPCF7_ContactForm::get_instance( $form_id );
+		if ( ! $contact_form7 instanceof WPCF7_ContactForm ) {
 			return $tokens;
 		}
 
