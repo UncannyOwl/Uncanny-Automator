@@ -59,8 +59,15 @@ class BO_AWARDRANK_A {
 							'endpoint'     => 'select_ranks_from_types_BOAWARDRANKS',
 						]
 					),
-					/* translators: Noun */
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,  esc_attr__( 'Rank', 'uncanny-automator' ) ),
+
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code' => $this->action_meta,
+						'options'     => [],
+						/* translators: Noun */
+						'label'       => esc_attr__( 'Rank', 'uncanny-automator' ),
+						'required'    => true,
+						'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' )
+					]),
 				],
 			],
 		];

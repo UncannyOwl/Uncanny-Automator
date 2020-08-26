@@ -79,9 +79,6 @@ class ZAPIER_SENDWEBHOOK {
 							'PUT'  => 'PUT',
 							'POST' => 'POST',
 						],
-
-						'supports_custom_value' => false,
-						'supports_tokens'       => false,
 					],
 					// Header
 					[

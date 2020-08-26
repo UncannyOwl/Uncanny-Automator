@@ -55,14 +55,19 @@ class BO_AWARDACHIEVEMENT_A {
 							'token'        => false,
 							'is_ajax'      => true,
 							'target_field' => $this->action_meta,
+							'supports_custom_value' => false,
 							'endpoint'     => 'select_achievements_from_types_BOAWARDACHIEVEMENT',
 						]
 					),
 
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code' => $this->action_meta,
+						'options'     => [],
 						/* translators: Noun */
-						 esc_attr__( 'Award', 'uncanny-automator' )
-					),
+						'label'       => esc_attr__( 'Award', 'uncanny-automator' ),
+						'required'    => true,
+						'custom_value_description' => esc_attr__( 'Award ID', 'uncanny-automator' )
+					]),
 				],
 			],
 		);

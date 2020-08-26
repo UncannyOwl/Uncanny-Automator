@@ -25,6 +25,7 @@ class Automator_Input_Parser {
 	public function __construct() {
 		$this->defined_tokens = apply_filters( 'automator_pre_defined_tokens', array(
 				'site_name',
+				'user_id',
 				'user_username',
 				'user_firstname',
 				'user_lastname',

@@ -240,6 +240,10 @@ class Automator_Recipe_Process_Complete {
 
 		$completed = 0;
 
+		if ( is_array( $action_data ) && ! empty( $error_message ) && key_exists( 'complete_with_errors', $action_data ) ) {
+			$completed = 2;
+		}
+
 		if ( ( is_array( $action_data ) && key_exists( 'do-nothing', $action_data ) ) ) {
 			if ( key_exists( 'complete_with_errors', $action_data ) ) {
 				$completed = 2;
@@ -278,10 +282,11 @@ class Automator_Recipe_Process_Complete {
 				'%s',
 			) );
 
+
 		global $uncanny_automator;
 
 		$sentence_human_readable = $uncanny_automator->get->action_sentence( $action_id, 'sentence_human_readable' );
-		
+
 		if ( ! empty( $sentence_human_readable ) ) {
 			// Store action sentence details for the completion
 			$wpdb->insert(
@@ -372,14 +377,6 @@ class Automator_Recipe_Process_Complete {
 		}
 
 		do_action( 'uap_before_recipe_completed', $recipe_id, $user_id, $recipe_log_id, $args );
-
-		/*Utilities::log( [
-			'$recipe_id'     => $recipe_id,
-			'$user_id'       => $user_id,
-			'$recipe_log_id' => $recipe_log_id,
-			'$completed'     => $completed,
-			'$args'          => $args
-		], '', true, 'step-final' );*/
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'uap_recipe_log';
@@ -502,7 +499,8 @@ class Automator_Recipe_Process_Complete {
 
 				if ( ! $valid_function ) {
 					global $uncanny_automator;
-					$error_message = $uncanny_automator->error_message->get( 'action-function-not-exist' );
+					$error_message                       = $uncanny_automator->error_message->get( 'action-function-not-exist' );
+					$action_data['complete_with_errors'] = true;
 					$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 				} else {
 
@@ -518,11 +516,23 @@ class Automator_Recipe_Process_Complete {
 
 			} elseif ( 0 === $uncanny_automator->plugin_status->get( $action_integration ) ) {
 				global $uncanny_automator;
-				$error_message = $uncanny_automator->error_message->get( 'action-not-active' );
+				$error_message                       = $uncanny_automator->error_message->get( 'action-not-active' );
+				$action_data['complete_with_errors'] = true;
 				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
-			} elseif ( 'draft' !== $action_status ) {
+			} elseif ( 0 === $uncanny_automator->plugin_status->get( $action_integration ) ) {
 				global $uncanny_automator;
-				$error_message = $uncanny_automator->error_message->get( 'plugin-not-active' );
+				$error_message                       = $uncanny_automator->error_message->get( 'plugin-not-active' );
+				$action_data['complete_with_errors'] = true;
+				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+			} elseif ( 1 === $uncanny_automator->plugin_status->get( $action_integration ) && 'draft' === $action_status ) {
+				global $uncanny_automator;
+				$error_message                       = $uncanny_automator->error_message->get( 'action-not-active' );
+				$action_data['complete_with_errors'] = true;
+				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+			} else {
+				global $uncanny_automator;
+				$error_message                       = esc_attr__( 'Unknown error occurred.', 'uncanny-automator' );
+				$action_data['complete_with_errors'] = true;
 				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 			}
 		}

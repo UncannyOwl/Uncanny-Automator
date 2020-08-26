@@ -162,12 +162,11 @@ class Logs_List_Table extends \WP_List_Table {
 		$order = ! empty( $_GET["order"] ) ? $wpdb->_real_escape( $_GET["order"] ) : 'DESC';
 
 		if ( 'recipe-log' === $this->tab ) {
-			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'automator_recipe_id';
+			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'recipe_date_time';
 		} elseif ( 'trigger-log' === $this->tab ) {
-			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'automator_trigger_id DESC, trigger_run_number DESC';
-			$order   = ' ';
+			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'trigger_date';
 		} elseif ( 'action-log' === $this->tab ) {
-			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'automator_action_id';
+			$orderby = ! empty( $_GET["orderby"] ) ? $wpdb->_real_escape( $_GET["orderby"] ) : 'action_date';
 		}
 
 		if ( ! empty( $query ) && ! empty( $orderby ) && ! empty( $order ) ) {
@@ -287,14 +286,14 @@ class Logs_List_Table extends \WP_List_Table {
 				$recipe_id   = 0;
 			}
 
-			$recipe_name = ! empty( $recipe->recipe_title ) ? $recipe->recipe_title : sprintf(  esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $recipe_id );
+			$recipe_name = ! empty( $recipe->recipe_title ) ? $recipe->recipe_title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $recipe_id );
 
 			if ( '#' !== $recipe_link ) {
 				$recipe_name = '<a href="' . $recipe_link . '" class="uap-log-table__recipe-name">' . $recipe_name . '</a>';
 			}
 			if ( empty( $recipe->display_name ) ) {
 				/* translators: User type */
-				$user_name =  esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
+				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
 			} else {
 				$user_link = get_edit_user_link( absint( $recipe->user_id ) );
 				$user_name = '<a href="' . $user_link . '">' . $recipe->display_name . '</a> <br>' . $recipe->user_email;
@@ -302,16 +301,16 @@ class Logs_List_Table extends \WP_List_Table {
 
 			if ( 1 === (int) $recipe->recipe_completed ) {
 				/* translators: Recipe status */
-				$recipe_status =  esc_attr_x( 'Completed', 'Recipe', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed', 'Recipe', 'uncanny-automator' );
 			} elseif ( 2 === (int) $recipe->recipe_completed ) {
 				/* translators: Recipe status */
-				$recipe_status =  esc_attr_x( 'Completed with errors', 'Recipe', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed with errors', 'Recipe', 'uncanny-automator' );
 			} elseif ( 9 === (int) $recipe->recipe_completed ) {
 				/* translators: Recipe status */
-				$recipe_status =  esc_attr_x( 'Completed - do nothing', 'Recipe', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed - do nothing', 'Recipe', 'uncanny-automator' );
 			} else {
 				/* translators: Recipe status */
-				$recipe_status =  esc_attr_x( 'In progress', 'Recipe', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'In progress', 'Recipe', 'uncanny-automator' );
 			}
 
 			$run_number            = $recipe->run_number;
@@ -319,14 +318,14 @@ class Logs_List_Table extends \WP_List_Table {
 			$current_type          = $uncanny_automator->utilities->get_recipe_type( $recipe_id );
 
 			/* translators: Recipe type. Logged-in recipes are triggered only by logged-in users */
-			$recipe_type_name =  esc_attr_x( 'Logged-in', 'Recipe', 'uncanny-automator' );
+			$recipe_type_name = esc_attr_x( 'Logged-in', 'Recipe', 'uncanny-automator' );
 			if ( ! empty( $current_type ) ) {
 				if ( $current_type == 'user' ) {
 					/* translators: Recipe type. Logged-in recipes are triggered only by logged-in users */
-					$recipe_type_name =  esc_attr_x( 'Logged-in', 'Recipe', 'uncanny-automator' );
+					$recipe_type_name = esc_attr_x( 'Logged-in', 'Recipe', 'uncanny-automator' );
 				} elseif ( $current_type == 'anonymous' ) {
 					/* translators: Recipe type. Anonymous recipes can be triggered by logged-in or anonymous users. Anonymous recipes can create new users or modify existing users. */
-					$recipe_type_name =  esc_attr_x( 'Anonymous', 'Recipe', 'uncanny-automator' );
+					$recipe_type_name = esc_attr_x( 'Anonymous', 'Recipe', 'uncanny-automator' );
 				}
 			}
 
@@ -368,13 +367,13 @@ class Logs_List_Table extends \WP_List_Table {
 			$trigger_code = $this->item_code( $recipes_data, absint( $trigger->automator_trigger_id ) );
 
 			$trigger_date_completed = $trigger->trigger_date;
-			if ( '0000-00-00 00:00:00' !== (string) $trigger->trigger_run_time ) {
+			if ( ! empty( $trigger->trigger_run_time ) && '0000-00-00 00:00:00' !== (string) $trigger->trigger_run_time ) {
 				$trigger_date_completed = $trigger->trigger_run_time;
 			}
 
 			$recipe_link = get_edit_post_link( absint( $trigger->automator_recipe_id ) );
 			/* translators: 1: Post ID */
-			$recipe_name = ! empty( $trigger->recipe_title ) ? $trigger->recipe_title : sprintf(  esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $trigger->automator_recipe_id );
+			$recipe_name = ! empty( $trigger->recipe_title ) ? $trigger->recipe_title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $trigger->automator_recipe_id );
 
 			if ( ! empty( $recipe_link ) ) {
 				$recipe_name = '<a href="' . $recipe_link . '" class="uap-log-table__recipe-name">' . $recipe_name . '</a>';
@@ -382,29 +381,29 @@ class Logs_List_Table extends \WP_List_Table {
 
 			if ( 1 === absint( $trigger->recipe_completed ) ) {
 				/* translators: Trigger status */
-				$recipe_status =  esc_attr_x( 'Completed', 'Trigger', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed', 'Trigger', 'uncanny-automator' );
 			} elseif ( 2 === absint( $trigger->recipe_completed ) ) {
 				/* translators: Trigger status */
-				$recipe_status =  esc_attr_x( 'Completed with errors', 'Trigger', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed with errors', 'Trigger', 'uncanny-automator' );
 			} elseif ( 9 === absint( $trigger->recipe_completed ) ) {
 				/* translators: Trigger status */
-				$recipe_status =  esc_attr_x( 'Completed, do nothing', 'Trigger', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed, do nothing', 'Trigger', 'uncanny-automator' );
 			} else {
 				/* translators: Trigger status */
-				$recipe_status =  esc_attr_x( 'In progress', 'Trigger', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'In progress', 'Trigger', 'uncanny-automator' );
 			}
 
 			$recipe_date_completed = ( 1 === absint( $trigger->recipe_completed ) || 2 === absint( $trigger->recipe_completed ) || 9 === absint( $trigger->recipe_completed ) ) ? $trigger->recipe_date_time : '';
 			if ( is_null( $trigger->user_id ) ) {
 				/* translators: User type */
-				$user_name =  esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
+				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
 			} else {
 				$user_link = get_edit_user_link( absint( $trigger->user_id ) );
 				$user_name = '<a href="' . $user_link . '">' . $trigger->display_name . '</a> <br>' . $trigger->user_email;
 			}
 
 			/* translators: 1. Trigger ID */
-			$trigger_name = sprintf(  esc_attr__( 'Trigger deleted: %1$s', 'uncanny-automator' ), $trigger->automator_trigger_id );
+			$trigger_name = sprintf( esc_attr__( 'Trigger deleted: %1$s', 'uncanny-automator' ), $trigger->automator_trigger_id );
 
 			if ( $trigger_code ) {
 				// get the trigger title
@@ -413,7 +412,7 @@ class Logs_List_Table extends \WP_List_Table {
 				$trigger_sentence = $trigger->trigger_sentence;
 				if ( empty( $trigger_title ) && ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
 					/* translators: 1. Trademarked term */
-					$trigger_name = sprintf(  esc_attr__( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
+					$trigger_name = sprintf( esc_attr__( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
 				} else {
 					if ( empty( $trigger_sentence ) ) {
 						$trigger_name = '<div class="uap-logs-table__item-main-sentence">' . $trigger_title . '</div>';
@@ -436,7 +435,7 @@ class Logs_List_Table extends \WP_List_Table {
 				'recipe_completed'   => $recipe_status,
 				'recipe_date_time'   => $recipe_date_completed,
 				'recipe_run_number'  => $recipe_run_number,
-				'trigger_run_number' => sprintf(  esc_attr__( '%d of %d', 'uncanny-automator' ), $trigger_run_number, $trigger_total_times ),
+				'trigger_run_number' => sprintf( esc_attr__( '%d of %d', 'uncanny-automator' ), $trigger_run_number, $trigger_total_times ),
 				'display_name'       => $user_name,
 			);
 		}
@@ -458,17 +457,17 @@ class Logs_List_Table extends \WP_List_Table {
 		$recipes_data = $uncanny_automator->get_recipes_data( false );
 
 		foreach ( $actions as $action ) {
-			$st =  esc_attr__( 'Error', 'uncanny-automator' );
+			$st = esc_attr__( 'Error', 'uncanny-automator' );
 			if ( 1 === (int) $action->action_completed ) {
 				/* translators: Action status */
-				$st =  esc_attr_x( 'Completed', 'Action', 'uncanny-automator' );
+				$st = esc_attr_x( 'Completed', 'Action', 'uncanny-automator' );
 			} elseif ( 9 === (int) $action->action_completed ) {
 				/* translators: Action status */
-				$st =  esc_attr_x( 'Completed, do nothing', 'Action', 'uncanny-automator' );
+				$st = esc_attr_x( 'Completed, do nothing', 'Action', 'uncanny-automator' );
 			}
 			$action_code = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
 			/* translators: 1. Action ID */
-			$action_name = sprintf(  esc_attr__( 'Action deleted: %1$s', 'uncanny-automator' ), $action->automator_action_id );
+			$action_name = sprintf( esc_attr__( 'Action deleted: %1$s', 'uncanny-automator' ), $action->automator_action_id );
 
 			if ( $action_code ) {
 				// get the action title
@@ -478,7 +477,7 @@ class Logs_List_Table extends \WP_List_Table {
 
 				if ( empty( $action_title ) && ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
 					/* translators: 1. Trademarked term */
-					$action_name = sprintf(  esc_attr__( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
+					$action_name = sprintf( esc_attr__( '(Reactivate %1$s to view)', 'uncanny-automator' ), 'Uncanny Automator Pro' );
 				} else {
 					if ( empty( $action_sentence ) ) {
 						$action_name = '<div class="uap-logs-table__item-main-sentence">' . $action_title . '</div>';
@@ -497,16 +496,16 @@ class Logs_List_Table extends \WP_List_Table {
 
 			if ( 1 === (int) $action->recipe_completed ) {
 				/* translators: Action status */
-				$recipe_status =  esc_attr_x( 'Completed', 'Action', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed', 'Action', 'uncanny-automator' );
 			} elseif ( 2 === (int) $action->recipe_completed ) {
 				/* translators: Action status */
-				$recipe_status =  esc_attr_x( 'Completed with errors', 'Action', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed with errors', 'Action', 'uncanny-automator' );
 			} elseif ( 9 === (int) $action->recipe_completed ) {
 				/* translators: Action status */
-				$recipe_status =  esc_attr_x( 'Completed, do nothing', 'Action', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'Completed, do nothing', 'Action', 'uncanny-automator' );
 			} else {
 				/* translators: Action status */
-				$recipe_status =  esc_attr_x( 'In progress', 'Action', 'uncanny-automator' );
+				$recipe_status = esc_attr_x( 'In progress', 'Action', 'uncanny-automator' );
 			}
 
 			$recipe_date_completed = ( 1 === absint( $action->recipe_completed ) || 2 === absint( $action->recipe_completed ) || 9 === absint( $action->recipe_completed ) ) ? $action->recipe_date_time : '';
@@ -516,7 +515,7 @@ class Logs_List_Table extends \WP_List_Table {
 				$user_name = '<a href="' . $user_link . '">' . $action->display_name . '</a><br>' . $action->user_email;
 			} else {
 				/* translators: User type */
-				$user_name =  esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
+				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
 			}
 			$data[] = array(
 				'action_title'      => $action_name,
@@ -567,7 +566,7 @@ class Logs_List_Table extends \WP_List_Table {
 	/**
 	 * Format single item
 	 *
-	 * @param array $recipes_data
+	 * @param array  $recipes_data
 	 * @param string $item_id
 	 *
 	 * @return array

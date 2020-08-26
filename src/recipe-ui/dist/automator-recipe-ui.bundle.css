@@ -1949,6 +1949,35 @@ html.automator-modal-open body {
 .uap .form-element__error--show {
   display: block; }
 
+.uap .form-element-children {
+  padding-top: 10px;
+  padding-left: 25px;
+  position: relative; }
+
+.uap .form-element-children:before {
+  content: '\f3be';
+  color: #888888;
+  position: absolute;
+  top: 23px;
+  left: 1px;
+  transform: rotate(90deg) scale(1, -1);
+  transform-origin: left top;
+  font-family: 'Uncanny Automator Icons' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.uap .form-select-custom {
+  display: none; }
+
+.uap .form-select-custom--visible {
+  display: block; }
+
 /* Form − Input */
 .uap .form-input {
   width: 100%; }
@@ -2612,7 +2641,7 @@ html.automator-modal-open body {
   padding-left: 4px;
   padding-top: 3px;
   padding-bottom: 3px;
-  border: 1px solid #cdcdcd;
+  border: 1px solid #cdcdcd !important;
   /* transition: border 150ms ease-in-out; */ }
 
 .uap .select2-container--default .select2-selection--single {
@@ -2708,9 +2737,13 @@ html.automator-modal-open body {
 .uap-select2 .select2-results__option:not(:last-child) {
   border-bottom: 1px solid #cdcdcd; }
 
-.uap-select2 .uap-select2 .select2-results__group {
+.uap-select2 .select2-results__options[aria-multiselectable="true"] {
+  border-top: 1px solid #cdcdcd; }
+
+.uap-select2 .select2-results__group {
   padding: 10px 12px 10px 42px !important;
   border-bottom: 1px solid #cdcdcd !important;
+  background: #fff !important;
   font-size: 14px !important;
   font-weight: 400 !important;
   color: #444 !important;
@@ -2721,7 +2754,7 @@ html.automator-modal-open body {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1px solid #bababa;
+  border: 1px solid #0790e8;
   position: absolute;
   top: 50%;
   left: 12px;
@@ -2745,7 +2778,7 @@ html.automator-modal-open body {
   top: 50%;
   left: 12px;
   font-size: 12px;
-  color: #969696; }
+  color: #0790e8; }
 
 .uap-select2 li.select2-results__option[role="group"] ul.select2-results__options .select2-results__option[data-select2-id$="-automator_custom_value"] {
   padding: 10px 12px 10px 42px !important;
@@ -2771,7 +2804,7 @@ html.automator-modal-open body {
   font-size: 15px;
   color: #969696; }
 
-.uap-select2 .select2-results__option[role="group"] {
+.uap-select2 li.select2-results__option[role="group"] {
   padding: 0 !important;
   margin: 0 !important; }
 
@@ -2796,19 +2829,28 @@ html.automator-modal-open body {
   border: 2px solid rgba(0, 0, 0, 0);
   min-height: 10px; }
 
-.uap-select2.select2-container--default.select2-container--open.select2-container--below .select2-selection--single,
-.uap-select2.select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+.uap-select2 li.select2-results__option[role="group"][title="form-element__select-normal-options"] > strong.select2-results__group {
+  display: none !important; }
+
+.uap-select2.select2-container--default.select2-container--open.select2-container--below .select2-selection--single {
   border-bottom: 0px !important;
   margin-bottom: 1px; }
+
+.uap-select2.select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+  margin-bottom: 0;
+  border-bottom: 0px !important; }
 
 .uap-select2.select2-container--default .select2-results__option:not(.select2-results__option--highlighted) {
   background-color: #f3f3f3 !important;
   color: #565555 !important; }
 
-.uap-select2.select2-container--default .select2-results__option--highlighted,
-.uap-select2.select2-container--default .select2-results__option--highlighted[aria-selected] {
+.uap-select2 .select2-results__option--highlighted,
+.uap-select2 .select2-results__option--highlighted[aria-selected] {
   background-color: #e3e3e3 !important;
   color: #565555 !important; }
+
+.uap-select2.select2-container--default .select2-results__option[aria-selected="true"] {
+  background-color: #e3e3e3 !important; }
 
 .uap .form-element--loading .select2-selection {
   background: #ebebeb !important;

@@ -49,6 +49,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $gamipress;
 	/**
+	 * @var Give_Helpers
+	 */
+	public $give;
+	/**
 	 * @var Gravity_Forms_Helpers
 	 */
 	public $gravity_forms;
@@ -128,15 +132,27 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Mycred_Helpers
 	 */
 	public $mycred;
-
 	/**
 	 * @var Upsell_Plugin_Helpers
 	 */
+
 	public $upsell_plugin;
+	/**
+	 * @var Wishlist_Member_Helpers
+	 */
+	public $wishlist_member;
 	/**
 	 * @var Uoa_Helpers
 	 */
 	public $uoa;
+	/**
+	 * @var Uncanny_Codes_Helpers
+	 */
+	public $uncanny_codes;
+	/**
+	 * @var Wpwh_Helpers
+	 */
+	public $wp_webhooks;
 	/**
 	 * @var Automator_Helpers_Recipe
 	 */

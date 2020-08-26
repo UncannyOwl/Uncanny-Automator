@@ -214,6 +214,7 @@ class Wp_Helpers {
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $roles,
+			'custom_value_description' => esc_attr__( 'Role slug', 'uncanny-automator' )
 		];
 
 		return apply_filters( 'uap_option_wp_user_roles', $option );

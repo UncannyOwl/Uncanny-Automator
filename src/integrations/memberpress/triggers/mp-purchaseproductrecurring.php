@@ -66,12 +66,13 @@ class MP_PURCHASEPRODUCTRECURRING {
 		global $uncanny_automator;
 
 		$subscription = $event->get_data();
-
+		
 		$args = [
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => intval( $subscription->rec->product_id ),
-			'user_id' => intval( $subscription->rec->user_id ),
+			'code'         => $this->trigger_code,
+			'meta'         => $this->trigger_meta,
+			'post_id'      => intval( $subscription->rec->product_id ),
+			'user_id'      => intval( $subscription->rec->user_id ),
+			'is_signed_in' => intval( $subscription->rec->user_id ),
 		];
 
 		update_user_meta( $subscription->rec->user_id, 'MPPRODUCT', $subscription->rec->product_id );

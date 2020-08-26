@@ -102,6 +102,7 @@ class Badgeos_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'custom_value_description' => _x( 'Achievement type slug', 'BadgeOS', 'uncanny-automator' )
 		];
 
 		return apply_filters( 'uap_option_list_bo_award_types', $option );
@@ -164,6 +165,7 @@ class Badgeos_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'custom_value_description' => _x( 'Point type slug', 'BadgeOS', 'uncanny-automator' )
 		];
 
 		return apply_filters( 'uap_option_list_bo_points_types', $option );
@@ -218,6 +220,7 @@ class Badgeos_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'custom_value_description' => _x( 'Rank type slug', 'BadgeOS', 'uncanny-automator' )
 		];
 
 		return apply_filters( 'uap_option_list_bo_rank_types', $option );

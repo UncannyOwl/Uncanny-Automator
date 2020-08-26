@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.5
 Requires PHP: 7.0
-Stable tag: 2.6.2
+Stable tag: 2.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,6 +30,7 @@ If you've used Zapier, setting things up will be intuitive. And if not, that's o
 
 The free version of Automator is incredibly powerful and comes with built-in support for all of these popular WordPress plugins:
 
+- [Automator Core](https://automatorplugin.com/integration/automator-core/)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/)
 - [bbPress](https://automatorplugin.com/integration/bbpress/)
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/)
@@ -40,6 +41,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/)
 - [Forminator](https://automatorplugin.com/integration/forminator/)
 - [GamiPress](https://automatorplugin.com/integration/gamipress/)
+- [GiveWP](https://automatorplugin.com/integration/givewp/)
 - [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/)
 - [Groundhogg](https://automatorplugin.com/integration/groundhogg/)
 - [LearnDash](https://automatorplugin.com/integration/learndash/)
@@ -53,6 +55,8 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/)
+- [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/)
+- [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
@@ -61,6 +65,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [wpForo](https://automatorplugin.com/integration/wp-foro/)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/)
+- [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/)
 - [Zapier](https://automatorplugin.com/integration/zapier/)
 
 Dozens of triggers and actions are available for the plugins listed above in the free version. There's simple documentation to follow in our [Knowledge Base](https://automatorplugin.com/knowledge-base/), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
@@ -149,6 +154,33 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.7 [2020-08-26] =
+
+* Added: New Integration - Uncanny Codes
+* Added: New Integration - Uncanny Groups
+* Added: New Integration - WP Webhooks
+* Added: New Integration - Wishlist Member
+* Added: New Integration - GiveWP
+* Added: Trigger: Automator Core - An Automator recipe completes with errors
+* Added: Trigger: Uncanny Codes - A code is redeemed
+* Added: Trigger: Uncanny Codes - A user redeems a code with a specific prefix
+* Added: Trigger: Uncanny Codes - A user redeems a code with a specific suffix
+* Added: Action: Uncanny Groups - Create an Uncanny group
+* Added: Trigger: WP Webhooks - A webhook trigger is triggered
+* Added: Trigger: Wishlist Member - A user is added to a membership level
+* Added: Trigger: Wishlist Member - A user is removed from a membership level
+* Added: Action: Wishlist Member - Add the user to a membership level
+* Added: Trigger: GiveWP - A user makes a donation via a form
+* Added: Action: LearnDash - Create a group
+* Added: Action: LearnDash - Make the user leader of a group
+* Updated: All logs now sorted by most recent activity first on initial load
+* Fixed: Manual sorting in logs now works properly on all columns
+* Fixed: User ID token now correctly outputs the user's ID
+* Fixed: Trigger: MemberPress - A user purchases a one-time membership - Now fires consistently when a user account is created during checkout
+* Fixed: MySQL 8.x AUTO_INCREMENT related issues on some server configurations
+* Fixed: Formidable Forms - Fixed PHP notice on tokens for form name, multi-select field and file upload field
+* Fixed: Adding a trigger that uses AJAX to load values while another is open no longer causes AJAX to fail on the first trigger
+
 = 2.6.2 [2020-08-19] =
 
 * Added: Filters to bypass transient data
@@ -181,12 +213,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 = 2.5.2 [2020-07-16] =
 
 * Fixed: Recipes set to "Unlimited" times per user now fire correctly
-
-= 2.5.1 [2020-07-13] =
-
-* Updated: Trigger log now shows trigger run #
-* Updated: Database structure and added Views for complex queries
-* Fixed: Number of times not working for some triggers
-* Fixed: In-progress triggers not showing up in trigger log
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

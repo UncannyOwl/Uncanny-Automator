@@ -77,7 +77,9 @@ class Add_Uoa_Integration {
 	 * @return bool
 	 */
 	public function plugin_active( $status, $plugin ) {
-		return true;
+		$status = true;
+	
+		return $status;
 	}
 
 	/**

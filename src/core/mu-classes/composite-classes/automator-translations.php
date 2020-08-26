@@ -129,6 +129,8 @@ class Automator_Translations {
 						/* translators: Non-personal infinitive verb */
 						'customValue'  =>  esc_attr__( 'Use a custom value', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.validation.field.select.customValue
+						'customValueToken'  => esc_attr__( '%s (custom value)', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.validation.field.select.customValueToken
 					),
 					'text'        => array(
 						'empty'   =>  esc_attr__( 'Please fill out this field.', 'uncanny-automator' ),
@@ -508,7 +510,10 @@ class Automator_Translations {
 			// UncannyAutomator.i18n.falseLabel
 			'loadingMoreResults'  =>  esc_attr__( 'Loading more results...', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.loadingMoreResults
-			'itemMissing'         =>  esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),
+			/* translators: 1. Post ID */
+			'postIDPlaceholder'  => esc_attr__( 'ID: %1$s' ),
+			// UncannyAutomator.i18n.postIDPlaceholder
+			'itemMissing'        => esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.itemMissing
 			/* translators: Non-personal infinitive verb */
 			'addRow'              =>  esc_attr__( 'Add row', 'uncanny-automator' ),

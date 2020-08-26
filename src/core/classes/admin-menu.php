@@ -150,6 +150,7 @@ class Admin_Menu {
 	public function logs_options_menu_page_output() {
 		$current_tab = 'recipe-log';
 		//isset( $_GET['page'] ) ? str_replace( 'uncanny-automator-', '', sanitize_text_field( $_GET['page'] ) ) : 'recipe-log';
+		
 		$available_tabs = array(
 			'uncanny-automator-recipe-log',
 			'uncanny-automator-trigger-log',
@@ -158,6 +159,17 @@ class Admin_Menu {
 		);
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $available_tabs ) ) {
 			$current_tab = str_replace( 'uncanny-automator-', '', sanitize_text_field( $_GET['page'] ) );
+		}
+		// Set default query for list table.
+		if ( ! isset( $_GET['order'] ) && ! isset( $_GET['orderby'] ) ) {
+			$_GET['order'] = 'desc';
+			if ( 'recipe-log' === $current_tab ) {
+				$_GET['orderby'] = 'recipe_date_time';
+			} elseif ( 'trigger-log' === $current_tab ) {
+				$_GET['orderby'] = 'trigger_date';
+			} elseif ( 'action-log' === $current_tab ) {
+				$_GET['orderby'] = 'action_date';
+			}
 		}
 		?>
         <div class="wrap uap">

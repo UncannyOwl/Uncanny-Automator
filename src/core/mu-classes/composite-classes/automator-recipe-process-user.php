@@ -215,14 +215,25 @@ class Automator_Recipe_Process_User {
 					'existing'      => false,
 					'recipe_log_id' => $this->insert_recipe_log( $recipe_id, $user_id, $maybe_add_log_id ),
 				];
-				//return $this->insert_recipe_log( $recipe_id, $user_id, $maybe_add_log_id );
 			} else {
-				$recipe_log_id = $wpdb->get_var( "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" . DB_NAME . "' AND TABLE_NAME   = '{$wpdb->prefix}uap_recipe_log' LIMIT 0,1;" );
-				//Utilities::log( $recipe_log_id, '$recipe_log_id', true, 'recipe_log_id' );
-				if ( $recipe_log_id ) {
-					return [ 'existing' => false, 'recipe_log_id' => $recipe_log_id, ];
-					//return $recipe_log_id;
+
+				/**
+				 * Query changed from Table schema to Max(ID) to support wider MySQL settings
+				 * Next Auto_Increment in certain environments returned last inserted ID instead of
+				 * next one. Manually add 1 to get next insert ID
+				 *
+				 * @version 2.6.3
+				 */
+				$recipe_log_id = $wpdb->get_var( "SELECT MAX(ID) AS next_id FROM {$wpdb->prefix}uap_recipe_log" );
+
+				if ( empty( $recipe_log_id ) || null === $recipe_log_id || 0 === absint( $recipe_log_id ) ) {
+					$recipe_log_id = 1;
+				} elseif ( $recipe_log_id ) {
+					// Add 1 to last insert ID
+					$recipe_log_id ++;
 				}
+
+				return [ 'existing' => false, 'recipe_log_id' => $recipe_log_id, ];
 			}
 		} elseif ( true === $create_recipe ) {
 			return [
@@ -232,7 +243,6 @@ class Automator_Recipe_Process_User {
 		}
 
 		return [ 'existing' => false, 'recipe_log_id' => null ];
-		//return null;
 	}
 
 
@@ -599,15 +609,17 @@ class Automator_Recipe_Process_User {
 				'%d',
 			);
 
-			if ( ! is_null( $maybe_add_log_id ) ) {
+			/*
+			 * Force new ID
+			 * if ( ! is_null( $maybe_add_log_id ) ) {
 				$insert['ID'] = $maybe_add_log_id;
 				$format[]     = '%d';
-			}
+			}*/
 
-			$r = $wpdb->insert( $table_name, $insert, $format );
+			$wpdb->insert( $table_name, $insert, $format );
+			$recipe_log_id = (int) $wpdb->insert_id;
 
-
-			return (int) $wpdb->insert_id;
+			return $recipe_log_id;
 		}
 
 		return null;
@@ -754,7 +766,7 @@ class Automator_Recipe_Process_User {
 							AND r.completed = 1
 							AND a.completed = 1";
 		}
-		$results    = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) );
+		$results = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) );
 
 		$return = false;
 		if ( empty( $results ) ) {

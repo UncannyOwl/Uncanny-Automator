@@ -44,7 +44,7 @@ class GH_ADDTAG {
 
 		$option = [
 			'option_code' => $this->action_meta,
-			'label'       =>  esc_attr__( 'Tags', 'uncanny-automator' ),
+			'label'       => esc_attr__( 'Tags', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $tag_options,
@@ -56,9 +56,9 @@ class GH_ADDTAG {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - Groundhogg */
-			'sentence'           => sprintf(  esc_attr__( 'Apply {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Add {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - Groundhogg */
-			'select_option_name' =>  esc_attr__( 'Apply {{a tag}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Add {{a tag}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_tag_to_user' ),

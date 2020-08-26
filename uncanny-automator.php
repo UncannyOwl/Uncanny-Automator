@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.6.2
+ * Version:             2.7
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.6.2';
+	const PLUGIN_VERSION = '2.7';
 
 	/**
 	 * The database version number
@@ -96,7 +96,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const DATABASE_VERSION = '2.6.1';
+	const DATABASE_VERSION = '2.7';
 
 	/**
 	 * The database views version number
@@ -211,15 +211,13 @@ class InitializePlugin {
 		$config_instance = Config::get_instance();
 		$config_instance->configure_plugin_before_boot( self::PLUGIN_NAME, self::PLUGIN_PREFIX, self::PLUGIN_VERSION, self::MAIN_FILE, $this->log_debug_messages );
 
-		$db_version = get_option( 'uap_database_version', 0 );
-		if ( (float) InitializePlugin::DATABASE_VERSION !== (float) $db_version ) {
-			if ( 0 === absint( $db_version ) ) {
-				// new installation
-				$config_instance->activation();
-			} else {
-				// update
-				$config_instance->upgrade();
-			}
+		$db_version = get_option( 'uap_database_version', null );
+		if ( null === $db_version ) {
+			$config_instance->activation();
+		}
+		if ( (string) InitializePlugin::DATABASE_VERSION !== (string) $db_version ) {
+			// update
+			$config_instance->upgrade();
 		}
 
 		if ( InitializePlugin::DATABASE_VIEWS_VERSION !== get_option( 'uap_database_views_version', 0 ) ) {
@@ -274,7 +272,7 @@ function uap_temp_warning_change( $translated_text, $text, $domain ) {
 		switch ( $translated_text ) {
 			case 'Please activate Uncanny Automator before activating Uncanny Automator Pro.':
 				/* translators: 1. Trademarked term. 2. Trademarked term */
-				$translated_text = sprintf(  esc_attr__( '%1$s needs to be updated before it can be used with the new updates and enhancements of %2$s.', 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator' );
+				$translated_text = sprintf( esc_attr__( '%1$s needs to be updated before it can be used with the new updates and enhancements of %2$s.', 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator' );
 				break;
 		}
 	}

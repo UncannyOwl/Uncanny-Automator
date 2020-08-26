@@ -104,6 +104,7 @@ class Buddypress_Helpers {
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $options,
+			'custom_value_description' => _x( 'Group ID', 'BuddyPress', 'uncanny-automator' )
 		];
 
 
@@ -154,6 +155,7 @@ class Buddypress_Helpers {
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $options,
+			'custom_value_description' => esc_attr__( 'User ID', 'uncanny-automator' )
 		];
 
 

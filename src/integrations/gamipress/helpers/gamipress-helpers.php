@@ -106,6 +106,7 @@ class Gamipress_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'custom_value_description' => _x( 'Achievement type slug', 'GamiPress', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gp_award_types', $option );
@@ -166,6 +167,7 @@ class Gamipress_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'custom_value_description' => _x( 'Point type slug', 'GamiPress', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gp_points_types', $option );
@@ -220,6 +222,7 @@ class Gamipress_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'custom_value_description' => _x( 'Rank type slug', 'GamiPress', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_gp_rank_types', $option );

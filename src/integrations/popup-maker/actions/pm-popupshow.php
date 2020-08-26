@@ -56,6 +56,7 @@ class PM_POPUPSHOW {
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $options,
+			'custom_value_description' => esc_attr__( 'Popup ID', 'uncanny-automator' ),
 		];
 
 

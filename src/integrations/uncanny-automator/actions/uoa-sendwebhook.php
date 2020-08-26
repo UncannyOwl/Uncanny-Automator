@@ -43,9 +43,9 @@ class UOA_SENDWEBHOOK {
 			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* translators: Action - WordPress */
+			/* translators: Action - Uncanny Automator */
 			'sentence'           => sprintf(  esc_attr__( 'Send data to {{a webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			/* translators: Action - WordPress */
+			/* translators: Action - Uncanny Automator */
 			'select_option_name' =>  esc_attr__( 'Send data to {{a webhook}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
@@ -79,9 +79,6 @@ class UOA_SENDWEBHOOK {
 							'PUT'  => 'PUT',
 							'POST' => 'POST',
 						],
-
-						'supports_custom_value' => false,
-						'supports_tokens'       => false,
 					],
 					// Header
 					[

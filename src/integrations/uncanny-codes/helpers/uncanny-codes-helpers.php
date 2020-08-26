@@ -1,0 +1,153 @@
+<?php
+
+
+namespace Uncanny_Automator;
+
+/**
+ * Class Uncanny_Codes_Helpers
+ * @package Uncanny_Automator
+ */
+class Uncanny_Codes_Helpers {
+
+	/**
+	 * @var Uncanny_Codes_Helpers
+	 */
+	public $options;
+
+	/**
+	 * @var bool
+	 */
+	public $load_options;
+
+	/**
+	 * Uoa_Helpers constructor.
+	 */
+	public function __construct() {
+		global $uncanny_automator;
+		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+	}
+
+	/**
+	 * @param Uncanny_Codes_Helpers $options
+	 */
+	public function setOptions( Uncanny_Codes_Helpers $options ) {
+		$this->options = $options;
+	}
+
+	public function get_all_codes( $label = null, $option_code = 'UNCANNYCODES' ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
+		if ( ! $label ) {
+			$label = esc_attr__( 'Code', 'uncanny-automator' );
+		}
+
+		global $uncanny_automator, $wpdb;
+
+		$options = [];
+
+		$all_codes = $wpdb->get_results( 'SELECT ID,code FROM ' . $wpdb->prefix . 'uncanny_codes_codes', ARRAY_A );
+
+		foreach ( $all_codes as $code ) {
+			$options[ $code['ID'] ] = $code['code'];
+		}
+
+		$option = [
+			'option_code'     => $option_code,
+			'label'           => $label,
+			'input_type'      => 'select',
+			'required'        => true,
+			'options'         => $options,
+			'relevant_tokens' => [
+				$option_code         => esc_attr__( 'Code', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr__( 'Code ID', 'uncanny-automator' ),
+			],
+		];
+
+		return apply_filters( 'uap_option_get_all_codes', $option );
+	}
+
+	public function get_all_code_prefix( $label = null, $option_code = 'UCPREFIX' ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
+		if ( ! $label ) {
+			$label = esc_attr__( 'Prefix', 'uncanny-automator' );
+		}
+
+		global $wpdb, $uncanny_automator;
+
+		$options = [];
+
+		$all_codes = $wpdb->get_results( 'SELECT DISTINCT prefix FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
+		if ( ! $all_codes ) {
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+		foreach ( $all_codes as $code ) {
+			if ( ! empty( $code['prefix'] ) ) {
+				$prefix             = $uncanny_automator->uap_sanitize( $code['prefix'] );
+				$options[ $prefix ] = $code['prefix'];
+			}
+		}
+
+		$option = [
+			'option_code'     => $option_code,
+			'label'           => $label,
+			'input_type'      => 'select',
+			'required'        => true,
+			'options'         => $options,
+			'relevant_tokens' => [
+				$option_code => esc_attr__( 'Prefix', 'uncanny-automator' )
+			],
+		];
+
+		return apply_filters( 'uap_option_get_all_code_prefix', $option );
+	}
+
+	public function get_all_code_suffix( $label = null, $option_code = 'UCSUFFIX' ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
+		if ( ! $label ) {
+			$label = esc_attr__( 'Suffix', 'uncanny-automator' );
+		}
+
+		global $wpdb, $uncanny_automator;
+
+		$options = [];
+
+		$all_codes = $wpdb->get_results( 'SELECT DISTINCT suffix FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
+		if ( ! $all_codes ) {
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
+		foreach ( $all_codes as $code ) {
+			if ( ! empty( $code['suffix'] ) ) {
+				$suffix             = $uncanny_automator->uap_sanitize( $code['suffix'] );
+				$options[ $suffix ] = $code['suffix'];
+			}
+		}
+
+		$option = [
+			'option_code'     => $option_code,
+			'label'           => $label,
+			'input_type'      => 'select',
+			'required'        => true,
+			'options'         => $options,
+			'relevant_tokens' => [
+				$option_code => esc_attr__( 'Suffix', 'uncanny-automator' )
+			],
+		];
+
+		return apply_filters( 'uap_option_get_all_code_suffix', $option );
+	}
+}

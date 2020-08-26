@@ -23,25 +23,7 @@ class Wp_Tokens {
 		add_filter( 'automator_maybe_trigger_wp_wppostcomments_tokens', [ $this, 'wp_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_anonusercreated_token' ], 20, 6 );
 	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
-	 *
-	 * @param $status
-	 * @param $code
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $code ) {
-
-		if ( self::$integration === $code ) {
-
-			$status = true;
-		}
-
-		return $status;
-	}
-
+	
 	/**
 	 * @param array $tokens
 	 * @param array $args

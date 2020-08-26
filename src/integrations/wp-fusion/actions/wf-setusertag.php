@@ -74,6 +74,7 @@ class WF_SETUSERTAG {
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $tags,
+			'custom_value_description' => esc_attr__( 'Tag', 'uncanny-automator' )
 		];
 
 		return apply_filters( 'uap_option_wp_user_roles', $option );

@@ -140,6 +140,7 @@ class Lifterlms_Helpers {
 				$option_code . '_ID'  =>  esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' =>  esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 			],
+			'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_all_lf_lessons', $option );
@@ -188,6 +189,7 @@ class Lifterlms_Helpers {
 				$option_code . '_ID'  =>  esc_attr__( 'Section ID', 'uncanny-automator' ),
 				$option_code . '_URL' =>  esc_attr__( 'Section URL', 'uncanny-automator' ),
 			],
+			'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_all_lf_sections', $option );
@@ -236,6 +238,7 @@ class Lifterlms_Helpers {
 				$option_code . '_ID'  =>  esc_attr__( 'Membership ID', 'uncanny-automator' ),
 				$option_code . '_URL' =>  esc_attr__( 'Membership URL', 'uncanny-automator' ),
 			],
+			'custom_value_description' => esc_attr__( 'Membership ID', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_all_lf_memberships', $option );
@@ -284,6 +287,7 @@ class Lifterlms_Helpers {
 				$option_code . '_ID'  =>  esc_attr__( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' =>  esc_attr__( 'Quiz URL', 'uncanny-automator' ),
 			],
+			'custom_value_description' => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_all_lf_quizs', $option );

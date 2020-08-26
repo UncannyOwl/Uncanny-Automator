@@ -150,7 +150,17 @@ class Config {
 
 		do_action( Utilities::get_prefix() . '_activation_before' );
 
-		if ( InitializePlugin::DATABASE_VERSION !== get_option( 'uap_database_version', 0 ) ) {
+		$db_version = get_option( 'uap_database_version', null );
+
+		if ( ! null === $db_version ) {
+			// update
+			$this->upgrade();
+
+			return;
+		}
+
+		if ( null === $db_version ) {
+
 			global $wpdb;
 			$wpdb_collate = $wpdb->collate;
 
@@ -313,81 +323,88 @@ class Config {
 	public function upgrade() {
 
 		do_action( Utilities::get_prefix() . '_activation_before' );
+		$db_version = get_option( 'uap_database_version', null );
 
-		if ( InitializePlugin::DATABASE_VERSION !== get_option( 'uap_database_version', 0 ) ) {
-			global $wpdb;
+		if ( null === $db_version ) {
+			$this->activation();
+		}
 
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		if ( (string) $db_version === (string) InitializePlugin::DATABASE_VERSION ) {
+			return;
+		}
 
-			$db_name = DB_NAME;
+		global $wpdb;
 
-			// Automator Recipe log
-			$table_name = $wpdb->prefix . 'uap_recipe_log';
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-			// Change table db to InnoDB
-			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-			$wpdb->query( $sql );
+		$db_name = DB_NAME;
 
-			// Automator Trigger log
-			$table_name = $wpdb->prefix . 'uap_trigger_log';
+		// Automator Recipe log
+		$table_name = $wpdb->prefix . 'uap_recipe_log';
 
-			// Change table db to InnoDB
-			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-			$wpdb->query( $sql );
+		// Change table db to InnoDB
+		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+		$wpdb->query( $sql );
 
-			//Automator trigger meta data log
-			$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
+		// Automator Trigger log
+		$table_name = $wpdb->prefix . 'uap_trigger_log';
 
-			// Change table db to InnoDB
-			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-			$wpdb->query( $sql );
+		// Change table db to InnoDB
+		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+		$wpdb->query( $sql );
 
-			// Alter table and add run_tim
-			if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
-				if ( ! $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` WHERE Field LIKE 'run_time'" ) ) {
-					$sql = "ALTER TABLE  $table_name ADD COLUMN run_time datetime DEFAULT \"0000-00-00 00:00:00\" NOT NULL;";
-					$wpdb->query( $sql );
-				}
-			}
+		//Automator trigger meta data log
+		$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
 
-			// Automator Action log
-			$table_name = $wpdb->prefix . 'uap_action_log';
+		// Change table db to InnoDB
+		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+		$wpdb->query( $sql );
 
-			if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
-				if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
-					$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
-				}
+		// Alter table and add run_tim
+		if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
+			if ( empty( $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` WHERE Field LIKE 'run_time'" ) ) ) {
+				$sql = "ALTER TABLE $table_name ADD COLUMN `run_time` datetime DEFAULT NULL;";
 				$wpdb->query( $sql );
 			}
-
-			// Change table db to InnoDB
-			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-			$wpdb->query( $sql );
-
-
-			//Automator action meta data log
-			$table_name = $wpdb->prefix . 'uap_action_log_meta';
-
-			// Change table db to InnoDB
-			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-			$wpdb->query( $sql );
-
-			// Automator Closure Log
-			$table_name = $wpdb->prefix . 'uap_closure_log';
-
-			// Change table db to InnoDB
-			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-			$wpdb->query( $sql );
-
-			//Automator closure meta data log
-			$table_name = $wpdb->prefix . 'uap_closure_log_meta';
-
-			// Change table db to InnoDB
-			$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-			$wpdb->query( $sql );
-
-			update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
 		}
+
+		// Automator Action log
+		$table_name = $wpdb->prefix . 'uap_action_log';
+
+		if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
+			if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
+				$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
+				$wpdb->query( $sql );
+			}
+		}
+
+		// Change table db to InnoDB
+		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+		$wpdb->query( $sql );
+
+
+		//Automator action meta data log
+		$table_name = $wpdb->prefix . 'uap_action_log_meta';
+
+		// Change table db to InnoDB
+		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+		$wpdb->query( $sql );
+
+		// Automator Closure Log
+		$table_name = $wpdb->prefix . 'uap_closure_log';
+
+		// Change table db to InnoDB
+		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+		$wpdb->query( $sql );
+
+		//Automator closure meta data log
+		$table_name = $wpdb->prefix . 'uap_closure_log_meta';
+
+		// Change table db to InnoDB
+		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
+		$wpdb->query( $sql );
+
+		update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
 
 		do_action( Utilities::get_prefix() . '_activation_after' );
 	}

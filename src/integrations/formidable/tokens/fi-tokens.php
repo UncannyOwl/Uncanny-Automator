@@ -35,7 +35,7 @@ class Fi_Tokens {
 	 * Only load this integration and its triggers and actions if the related
 	 * plugin is active
 	 *
-	 * @param bool $status status of plugin.
+	 * @param bool   $status status of plugin.
 	 * @param string $plugin plugin code.
 	 *
 	 * @return bool
@@ -57,7 +57,7 @@ class Fi_Tokens {
 	 * Prepare tokens.
 	 *
 	 * @param array $tokens .
-	 * @param array $args .
+	 * @param array $args   .
 	 *
 	 * @return array
 	 */
@@ -119,32 +119,73 @@ class Fi_Tokens {
 	/**
 	 * Parse the token.
 	 *
-	 * @param string $value .
-	 * @param array $pieces .
+	 * @param string $value     .
+	 * @param array  $pieces    .
 	 * @param string $recipe_id .
 	 *
 	 * @return null|string
 	 */
 	public function fi_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
+
 			if ( in_array( 'FIFORM', $pieces, true ) ) {
-				$token_info = explode( '|', $pieces[2] );
-				$form_id    = $token_info[0];
-				$meta_key   = $token_info[1];
-				//$user_id               = get_current_user_id();
-				$s_query               = [];
-				$s_query['it.form_id'] = $form_id;
-				$s_query['it.user_id'] = $user_id;
-				$order                 = ' ORDER BY id DESC ';
-				$enrties               = FrmEntry::getAll( $s_query, $order, 1,
-					true, false );
-				if ( ! empty( $enrties ) ) {
-					foreach ( $enrties as $enrty ) {
-						if ( isset( $enrty->metas )
-						     && isset( $enrty->metas[ $meta_key ] )
-						) {
-							$value = $enrty->metas[ $meta_key ];
-							break;
+
+				if ( 'FIFORM' === $pieces[2] ) {
+					if ( isset( $trigger_data[0]['meta']['FIFORM_readable'] ) ) {
+						$value = $trigger_data[0]['meta']['FIFORM_readable'];
+					}
+				} else {
+					$token_info = explode( '|', $pieces[2] );
+
+					$form_id  = $token_info[0];
+					$meta_key = $token_info[1];
+					//$user_id               = get_current_user_id();
+					$s_query               = [];
+					$s_query['it.form_id'] = $form_id;
+					$s_query['it.user_id'] = $user_id;
+					$order                 = ' ORDER BY id DESC ';
+					$enrties               = FrmEntry::getAll( $s_query, $order, 1, true, false );
+					$fields = FrmField::get_all_for_form( $form_id );
+
+					// Collect all file field types
+					$file_fields = [];
+					foreach($fields as $field ){
+						if(isset($field->type) && 'file' === $field->type){
+							$file_fields[] = $field->id;
+						}
+					}
+
+					if ( ! empty( $enrties ) ) {
+						foreach ( $enrties as $enrty ) {
+							if ( isset( $enrty->metas )
+								 && isset( $enrty->metas[ $meta_key ] )
+							) {
+
+								if ( is_array( $enrty->metas[ $meta_key ] ) ) {
+									$value = implode( ', ', $enrty->metas[ $meta_key ] );
+								} elseif( in_array($meta_key, $file_fields)){
+
+									$media_id = $enrty->metas[ $meta_key ];
+
+									$attachment = get_post($media_id);
+									if ( ! $attachment ) {
+										$value = $enrty->metas[ $meta_key ];
+									}
+
+									$image = $orig_image = wp_get_attachment_image($media_id, 'thumbnail', true);
+
+									//if this is a mime type icon
+									if ( $image && ! preg_match( '/wp-content\/uploads/', $image ) ) {
+										$label = basename($attachment->guid);
+									}
+									if ( $image ) {
+										$value = '<a href="' . esc_url( wp_get_attachment_url( $media_id ) ) . '">' . $label . '</a>';
+									}
+								}else {
+									$value = $enrty->metas[ $meta_key ];
+								}
+								break;
+							}
 						}
 					}
 				}

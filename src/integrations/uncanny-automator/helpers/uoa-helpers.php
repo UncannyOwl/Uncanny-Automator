@@ -68,7 +68,7 @@ class Uoa_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -84,14 +84,14 @@ class Uoa_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -146,7 +146,7 @@ class Uoa_Helpers {
 
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
-				$error_message = sprintf(  esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
+				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				wp_send_json( [
 					'type'    => 'error',
 					'message' => $error_message,
@@ -154,7 +154,7 @@ class Uoa_Helpers {
 			}
 
 			/* translators: 1. Webhook URL */
-			$success_message = sprintf(  esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
+			$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
 			wp_send_json( array(
 				'type'    => 'success',

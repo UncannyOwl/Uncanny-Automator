@@ -71,33 +71,40 @@ class LD_MARKTOPICDONE {
 			'execution_function' => array( $this, 'mark_completes_a_topic' ),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_ajax(
-						'LDCOURSE',
-						 esc_attr__( 'Course', 'uncanny-automator' ),
-						$course_options,
-						'',
-						'',
-						false,
-						true,
-						[
-							'target_field' => 'LDLESSON',
-							'endpoint'     => 'select_lesson_from_course_MARKTOPICDONE',
-						]
-					),
-					$uncanny_automator->helpers->recipe->field->select_field_ajax(
-						'LDLESSON',
-						 esc_attr__( 'Lesson', 'uncanny-automator' ),
-						$lesson_options,
-						'',
-						'',
-						false,
-						true,
-						[
-							'target_field' => 'LDTOPIC',
-							'endpoint'     => 'select_topic_from_lesson_MARKTOPICDONE',
-						]
-					),
-					$uncanny_automator->helpers->recipe->field->select_field( 'LDTOPIC',  esc_attr__( 'Topic', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code'  => 'LDCOURSE',
+						'options'      => $course_options,
+						'label'        => esc_attr__( 'Course', 'uncanny-automator' ),
+
+						'required'     => true,
+						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+
+						'is_ajax'      => true,
+						'target_field' => 'LDLESSON',
+						'endpoint'     => 'select_lesson_from_course_MARKTOPICDONE',
+					]),
+
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code'  => 'LDLESSON',
+						'options'      => $lesson_options,
+						'label'        => esc_attr__( 'Lesson', 'uncanny-automator' ),
+
+						'required'     => true,
+						'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+
+						'is_ajax'      => true,
+						'target_field' => 'LDTOPIC',
+						'endpoint'     => 'select_topic_from_lesson_MARKTOPICDONE',
+					]),
+
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code' => 'LDTOPIC',
+						'options'     => [],
+
+						'label'       => esc_attr__( 'Topic', 'uncanny-automator' ),
+						'required'    => true,
+						'custom_value_description' => esc_attr__( 'Topic ID', 'uncanny-automator' )
+					]),
 				],
 			],
 		);

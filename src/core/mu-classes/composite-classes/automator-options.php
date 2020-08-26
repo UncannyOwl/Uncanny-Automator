@@ -328,12 +328,14 @@ class Automator_Options {
 
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$supports_custom_value    = key_exists( 'supports_custom_value', $args ) ? $args['supports_custom_value'] : '';
 
 		$option = [
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'supports_tokens' => apply_filters( 'uap_option_' . $option_code . '_select_field', false ),
+			'supports_custom_value' => $supports_custom_value,
 			'required'        => true,
 			'default_value'   => $default,
 			'options'         => $options,

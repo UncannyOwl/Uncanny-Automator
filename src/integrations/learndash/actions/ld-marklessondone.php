@@ -58,20 +58,26 @@ class LD_MARKLESSONDONE {
 			'execution_function' => array( $this, 'mark_completes_a_lesson' ),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_ajax(
-						'LDCOURSE',
-						 esc_attr__( 'Course', 'uncanny-automator' ),
-						$options,
-						'',
-						'',
-						false,
-						true,
-						[
-							'target_field' => $this->action_meta,
-							'endpoint'     => 'select_lesson_from_course_MARKLESSONDONE',
-						]
-					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,  esc_attr__( 'Lesson', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code'  => 'LDCOURSE',
+						'options'      => $options,
+						'label'        => esc_attr__( 'Course', 'uncanny-automator' ),
+
+						'required'     => true,
+						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+
+						'is_ajax'      => true,
+						'target_field' => $this->action_meta,
+						'endpoint'     => 'select_lesson_from_course_MARKLESSONDONE',
+					]),
+
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code' => $this->action_meta,
+						'options'     => [],
+						'label'       => esc_attr__( 'Lesson', 'uncanny-automator' ),
+						'required'    => true,
+						'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' )
+					]),
 				],
 			],
 		);

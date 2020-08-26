@@ -61,20 +61,27 @@ class LP_MARKSECTIONDONE {
 			'execution_function' => [ $this, 'lp_mark_section_done' ],
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_ajax(
-						'LPCOURSE',
-						 esc_attr__( 'Course', 'uncanny-automator' ),
-						$options,
-						'',
-						'',
-						false,
-						true,
-						[
-							'target_field' => 'LPSECTION',
-							'endpoint'     => 'select_section_from_course_LPMARKLESSONDONE',
-						]
-					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->action_meta,  esc_attr__( 'Section', 'uncanny-automator' ) ),
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code'  => 'LPCOURSE',
+						'options'      => $options,
+						'label'        => esc_attr__( 'Course', 'uncanny-automator' ),
+
+						'required'     => true,
+						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+
+						'is_ajax'      => true,
+						'target_field' => 'LPSECTION',
+						'endpoint'     => 'select_section_from_course_LPMARKLESSONDONE',
+					]),
+
+					$uncanny_automator->helpers->recipe->field->select_field_args([
+						'option_code' => $this->action_meta,
+						'options'     => [],
+						'label'       => esc_attr__( 'Section', 'uncanny-automator' ),
+						
+						'required'    => true,
+						'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' )
+					]),
 				],
 			],
 		];
