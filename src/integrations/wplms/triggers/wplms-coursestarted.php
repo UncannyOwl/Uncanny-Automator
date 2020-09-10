@@ -39,7 +39,7 @@ class WPLMS_COURSESTARTED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP LMS */
-			'sentence'            => sprintf(  esc_attr__( 'A user starts {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user starts {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP LMS */
 			'select_option_name'  =>  esc_attr__( 'A user starts {{a course}}', 'uncanny-automator' ),
 			'action'              => 'wplms_start_course',

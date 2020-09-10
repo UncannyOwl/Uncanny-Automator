@@ -39,7 +39,7 @@ class EDD_ORDERDONE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'sentence'            => sprintf(  esc_attr__( 'Order total is {{equals to:%1$s}} ${{0:%2$s}} and placed {{a number of:%3$s}} times', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'Order total is {{equals to:%1$s}} ${{0:%2$s}} and placed {{a number of:%3$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Easy Digital Downloads */
 			'select_option_name'  =>  esc_attr__( 'User completes {{an order}}', 'uncanny-automator' ),
 			'action'              => 'edd_complete_purchase',

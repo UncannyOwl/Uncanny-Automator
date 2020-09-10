@@ -39,7 +39,7 @@ class LP_COURSEENROLLED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnPress */
 			'select_option_name'  =>  esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 			'action'              => 'learn-press/user-enrolled-course',

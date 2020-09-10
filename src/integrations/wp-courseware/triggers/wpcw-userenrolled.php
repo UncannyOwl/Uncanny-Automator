@@ -39,7 +39,7 @@ class WPCW_USERENROLLED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Courseware */
-			'sentence'            => sprintf(  esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP Courseware */
 			'select_option_name'  =>  esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 			'action'              => 'wpcw_enroll_user',

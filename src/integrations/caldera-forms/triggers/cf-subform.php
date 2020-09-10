@@ -41,7 +41,7 @@ class CF_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Caldera Forms */
-			'sentence'            => sprintf(  esc_attr__( 'User submits {{a form:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'User submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Caldera Forms */
 			'select_option_name'  =>  esc_attr__( 'User submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'caldera_forms_submit_complete',

@@ -55,7 +55,7 @@ class Closures_Post_Type {
 			'filter_items_list'     => 'Filter items list',
 		);
 
-		$args   = array(
+		$args = array(
 			'label'               => 'Automator Closure',
 			'description'         => 'Closure for an Uncanny WordPress Automation',
 			'labels'              => $labels,
@@ -71,9 +71,18 @@ class Closures_Post_Type {
 			'has_archive'         => false,
 			'exclude_from_search' => true,
 			'publicly_queryable'  => false,
-			'capability_type'     => 'page',
+			'capabilities'        => array(
+				'publish_posts'       => 'manage_options',
+				'edit_posts'          => 'manage_options',
+				'edit_others_posts'   => 'manage_options',
+				'delete_posts'        => 'manage_options',
+				'delete_others_posts' => 'manage_options',
+				'read_private_posts'  => 'manage_options',
+				'edit_post'           => 'manage_options',
+				'delete_post'         => 'manage_options',
+			),
 		);
 
-		register_post_type( 'uo-closure', $args );
+		register_post_type( 'uo-closure', apply_filters( 'automator_post_type_closure_args', $args )  );
 	}
 }

@@ -39,7 +39,7 @@ class WPLMS_QUIZCOMPLETED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP LMS */
-			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a quiz:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP LMS */
 			'select_option_name'  =>  esc_attr__( 'A user completes {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'wplms_submit_quiz',

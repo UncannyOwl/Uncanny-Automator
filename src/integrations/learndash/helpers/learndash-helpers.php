@@ -24,6 +24,8 @@ class Learndash_Helpers {
 	 */
 	public $load_options;
 
+	public $load_any_options = true;
+
 	/**
 	 * Learndash_Helpers constructor.
 	 */
@@ -301,13 +303,15 @@ class Learndash_Helpers {
 	 * Return all the specific fields of a form ID provided in ajax call
 	 */
 	public function select_lesson_from_course_no_any() {
-		$this->select_lesson_from_course_func( false );
+		$this->select_lesson_from_course_func( 'yes' );
 	}
 
 	/**
 	 * Return all the specific fields of a form ID provided in ajax call
+	 *
+	 * @param string $include_any
 	 */
-	public function select_lesson_from_course_func( $include_any = '' ) {
+	public function select_lesson_from_course_func() {
 
 		global $uncanny_automator;
 
@@ -328,15 +332,23 @@ class Learndash_Helpers {
 			$ld_course_id = absint( $_POST['values']['LDCOURSE'] );
 		}
 
-		$include_any = $include_any !== false ? true : false;
-
-		$lessons = learndash_get_lesson_list( $ld_course_id );
-
-		foreach ( $lessons as $lesson ) {
+		if ( absint( '-1' ) === absint( $ld_course_id ) || true === (bool) $this->load_any_options ) {
 			$fields[] = array(
-				'value' => $lesson->ID,
-				'text'  => $lesson->post_title,
+				'value' => '-1',
+				'text'  => 'Any lesson',
 			);
+		}
+
+		if ( absint( '-1' ) !== absint( $ld_course_id ) ) {
+			$lessons = learndash_get_lesson_list( $ld_course_id );
+
+			foreach ( $lessons as $lesson ) {
+				$fields[] = array(
+					'value' => $lesson->ID,
+					'text'  => $lesson->post_title,
+				);
+			}
+
 		}
 
 		echo wp_json_encode( $fields );
@@ -347,13 +359,15 @@ class Learndash_Helpers {
 	 * Return all the specific fields of a form ID provided in ajax call
 	 */
 	public function lesson_from_course_func_no_any() {
-		$this->lesson_from_course_func( false );
+		$this->load_any_options = false;
+		$this->lesson_from_course_func();
+		$this->load_any_options = true;
 	}
 
 	/**
 	 * Return all the specific fields of a form ID provided in ajax call
 	 */
-	public function lesson_from_course_func( $include_any = '' ) {
+	public function lesson_from_course_func() {
 
 		global $uncanny_automator;
 
@@ -370,7 +384,6 @@ class Learndash_Helpers {
 		$ld_post_value = sanitize_text_field( $_POST['value'] );
 
 
-
 		$ld_course_id = sanitize_text_field( $_POST['value'] );
 
 		if ( 'automator_custom_value' === $ld_post_value && '-1' !== absint( $ld_post_value ) ) {
@@ -381,7 +394,12 @@ class Learndash_Helpers {
 			}
 		}
 
-		$include_any = $include_any !== false ? true : false;
+		if ( absint( '-1' ) === absint( $ld_course_id ) || true === $this->load_any_options ) {
+			$fields[] = array(
+				'value' => '-1',
+				'text'  => 'Any lesson',
+			);
+		}
 		//$options     = $uncanny_automator->helpers->recipe->options->wp_query( $args, $include_any, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$lessons = learndash_get_lesson_list( $ld_course_id );
@@ -402,15 +420,16 @@ class Learndash_Helpers {
 	 * Return all the specific fields of a form ID provided in ajax call
 	 */
 	public function topic_from_lesson_func_no_any() {
-		$this->topic_from_lesson_func( false );
+		$this->load_any_options = false;
+		$this->topic_from_lesson_func();
+		$this->load_any_options = true;
 	}
 
 	/**
 	 * Return all the specific fields of a form ID provided in ajax call
 	 *
-	 * @param string $include_any
 	 */
-	public function topic_from_lesson_func( $include_any = '' ) {
+	public function topic_from_lesson_func() {
 
 		global $uncanny_automator;
 
@@ -418,7 +437,7 @@ class Learndash_Helpers {
 		$uncanny_automator->utilities->ajax_auth_check( $_POST );
 
 		$fields      = array();
-		$include_any = $include_any !== false ? true : false;
+		$include_any = $this->load_any_options;
 		if ( $include_any ) {
 			$fields[] = [
 				'value' => - 1,

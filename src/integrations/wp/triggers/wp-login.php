@@ -39,7 +39,7 @@ class WP_LOGIN {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user logs in to the site {{a number of:%1$s}} times', 'uncanny-automator' ), 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user logs in to the site {{a number of:%1$s}} time(s)', 'uncanny-automator' ), 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
 			'select_option_name'  =>  esc_attr__( 'A user logs in to the site', 'uncanny-automator' ),
 			'action'              => 'wp_login',

@@ -211,12 +211,21 @@ class Recipe_Post_Type {
 				'has_archive'         => false,
 				'exclude_from_search' => true,
 				'publicly_queryable'  => true,
-				'capability_type'     => 'post',
+				'capabilities'        => array(
+					'publish_posts'       => 'manage_options',
+					'edit_posts'          => 'manage_options',
+					'edit_others_posts'   => 'manage_options',
+					'delete_posts'        => 'manage_options',
+					'delete_others_posts' => 'manage_options',
+					'read_private_posts'  => 'manage_options',
+					'edit_post'           => 'manage_options',
+					'delete_post'         => 'manage_options',
+				),
 				'show_in_rest'        => true,
 				'rest_base'           => 'uap',
 			);
 
-			register_post_type( 'uo-recipe', $args );
+			register_post_type( 'uo-recipe', apply_filters( 'automator_post_type_recipe_args', $args ) );
 		}
 	}
 

@@ -176,7 +176,7 @@ class WP_CREATEPOST {
 		$post_type    = $action_data['meta'][ $this->action_code ];
 
 		$post_args                 = [];
-		$post_args['post_title']   = sanitize_title( $post_title );
+		$post_args['post_title']   = sanitize_text_field( $post_title );
 		$post_args['post_name']    = sanitize_title( $post_slug );
 		$post_args['post_content'] = $post_content;
 		$post_args['post_type']    = $post_type;

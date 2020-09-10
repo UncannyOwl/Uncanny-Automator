@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
-Tested up to: 5.5
+Tested up to: 5.5.1
 Requires PHP: 7.0
-Stable tag: 2.7
+Stable tag: 2.7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -58,6 +58,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/)
 - [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/)
+- [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
 - [WP LMS](https://automatorplugin.com/integration/wp-lms/)
@@ -154,6 +155,15 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.7.1 [2020-09-10] =
+
+* Updated: manage_options capability now required to manage Automator recipes
+* Fixed: Action: WordPress - Create a post - Post title no longer replaces spaces with hyphens
+* Fixed: LearnDash - "Any lesson" option not appearing in lesson dropdown when "Any course" is selected
+* Fixed: Trigger: WooCommerce - Product tokens now return proper values when "Any product" is selected
+* Fixed: HTML entity not rendering in Anonymous Recipe user selector UI
+* Fixed: LearnDash triggers: Grammar issue: A user _____ 1 times changed to A user _____ 1 time(s)
+
 = 2.7 [2020-08-26] =
 
 * Added: New Integration - Uncanny Codes
@@ -209,9 +219,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Updated: Additional detail is now shown by default in trigger and action logs
 * Updated: Field label text on webhook actions
 * Fixed: MemberPress tokens now rendering correct values
-
-= 2.5.2 [2020-07-16] =
-
-* Fixed: Recipes set to "Unlimited" times per user now fire correctly
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

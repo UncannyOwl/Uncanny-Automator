@@ -39,7 +39,7 @@ class WP_SUBMITCOMMENT {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} times', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
 			'select_option_name'  =>  esc_attr__( 'A user submits a comment on {{a post}}', 'uncanny-automator' ),
 			'action'              => 'comment_post',
