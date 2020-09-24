@@ -153,6 +153,18 @@ class TC_MODULEINTERACTION {
 							);
 
 							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							$uncanny_automator->insert_trigger_meta(
+								[
+									'user_id'        => $user_id,
+									'trigger_id'     => $result['args']['trigger_id'],
+									'meta_key'       => $this->trigger_meta,
+									'meta_value'     => $module_id,
+									'trigger_log_id' => $result['args']['get_trigger_id'],
+									'run_number'     => $result['args']['run_number'],
+								]
+							);
+
+							$uncanny_automator->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

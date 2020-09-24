@@ -1,0 +1,83 @@
+<?php
+
+namespace Uncanny_Automator;
+
+/**
+ * Class BP_USERUPDATEAVATAR
+ * @package Uncanny_Automator
+ */
+class BP_USERUPDATEAVATAR {
+
+	/**
+	 * Integration code
+	 * @var string
+	 */
+	public static $integration = 'BP';
+
+	private $trigger_code;
+	private $trigger_meta;
+
+	/**
+	 * Set up Automator trigger constructor.
+	 */
+	public function __construct() {
+		$this->trigger_code = 'BPUSERUPDATEAVATAR';
+		$this->trigger_meta = 'BPUSERAVATAR';
+		$this->define_trigger();
+	}
+
+	/**
+	 * Define and register the trigger by pushing it into the Automator object
+	 */
+	public function define_trigger() {
+
+		global $uncanny_automator;
+
+		$trigger = array(
+			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
+			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			'meta'                => $this->trigger_meta,
+			/* translators: Logged-in trigger - BuddyPress */
+			'sentence'            => esc_attr__( 'A user updates their avatar', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - BuddyPress */
+			'select_option_name'  => esc_attr__( 'A user updates their avatar', 'uncanny-automator' ),
+			'action'              => 'xprofile_avatar_uploaded',
+			'priority'            => 10,
+			'accepted_args'       => 3,
+			'validation_function' => array( $this, 'bp_user_updated_avatar' ),
+			'options'             => [],
+		);
+
+		$uncanny_automator->register->trigger( $trigger );
+	}
+
+	/**
+	 *  Validation function when the trigger action is hit
+	 *
+	 * @param $user_id
+	 * @param $posted_field_ids
+	 * @param $errors
+	 * @param $old_values
+	 * @param $new_values
+	 */
+	public function bp_user_updated_avatar( $item_id, $type, $avatar_data ) {
+
+		global $uncanny_automator;
+
+		if ( empty( $avatar_data ) || 'user' !== $avatar_data['object'] ) {
+			return;
+		}
+
+		$args = [
+			'code'           => $this->trigger_code,
+			'meta'           => $this->trigger_meta,
+			'user_id'        => $avatar_data['item_id'],
+			'ignore_post_id' => true,
+			'is_signed_in'   => true,
+		];
+
+		$uncanny_automator->maybe_add_trigger_entry( $args );
+	}
+}

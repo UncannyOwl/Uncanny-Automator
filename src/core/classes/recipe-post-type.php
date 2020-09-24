@@ -333,12 +333,19 @@ class Recipe_Post_Type {
 		global $post, $uncanny_automator;
 
 		// Get recipe type
-		$recipe_type = $uncanny_automator->utilities->get_recipe_type( $post->ID );
+		$recipe_type = get_post_meta( $post->ID, 'uap_recipe_type', true );
 
 		// Create variable to save the title of the triggers metabox,
 		// and add the default value (on load value)
 		/* translators: Trigger type. Logged-in triggers are triggered only by logged-in users */
-		$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Logged-in triggers', 'uncanny-automator' ), $recipe_type );
+
+		// Check if the user didn't select a recipe type yet
+		if ( empty( $recipe_type ) ){
+			$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Triggers', 'uncanny-automator' ), $recipe_type );
+		}
+		else {
+			$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Logged-in triggers', 'uncanny-automator' ), $recipe_type );
+		}
 
 		add_meta_box(
 			'uo-recipe-triggers-meta-box-ui',
@@ -1476,7 +1483,7 @@ class Recipe_Post_Type {
 
 					[
 						/* translators: Logged-in trigger - Groundhogg */
-						'name' => esc_attr__( '{{A tag}} is remove from a user', 'uncanny-automator' ),
+						'name' => esc_attr__( '{{A tag}} is removed from a user', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
@@ -1984,7 +1991,7 @@ class Recipe_Post_Type {
 		if ( $post && 'uo-recipe' === $post->post_type ) {
 
 			// delete recipe logs
-			$this->delete_recipe_logs( $post_ID );
+			self::delete_recipe_logs( $post_ID );
 
 			$args = array(
 				'post_parent' => $post->ID,
@@ -2002,7 +2009,7 @@ class Recipe_Post_Type {
 
 					wp_delete_post( $child->ID, true );
 
-					$this->delete_trigger_logs( $child->ID );
+					self::delete_trigger_logs( $child->ID );
 				}
 			}
 
@@ -2022,7 +2029,7 @@ class Recipe_Post_Type {
 
 					wp_delete_post( $child->ID, true );
 
-					$this->delete_action_logs( $child->ID );
+					self::delete_action_logs( $child->ID );
 				}
 			}
 
@@ -2042,16 +2049,16 @@ class Recipe_Post_Type {
 
 					wp_delete_post( $child->ID, true );
 
-					$this->delete_closure_logs( $child->ID );
+					self::delete_closure_logs( $child->ID );
 				}
 			}
 
 		} elseif ( $post && 'uo-action' === $post->post_type ) {
-			$this->delete_action_logs( $post_ID );
+			self::delete_action_logs( $post_ID );
 		} elseif ( $post && 'uo-trigger' === $post->post_type ) {
-			$this->delete_trigger_logs( $post_ID );
+			self::delete_trigger_logs( $post_ID );
 		} elseif ( $post && 'uo-closure' === $post->post_type ) {
-			$this->delete_closure_logs( $post_ID );
+			self::delete_closure_logs( $post_ID );
 		}
 	}
 
@@ -2143,7 +2150,7 @@ class Recipe_Post_Type {
 	 *
 	 * @param $post_ID
 	 */
-	public function delete_recipe_logs( $post_ID ) {
+	public static function delete_recipe_logs( $post_ID ) {
 		global $wpdb;
 
 		// delete from uap_recipe_log
@@ -2155,7 +2162,7 @@ class Recipe_Post_Type {
 	 *
 	 * @param $post_ID
 	 */
-	public function delete_trigger_logs( $post_ID ) {
+	public static function delete_trigger_logs( $post_ID ) {
 		global $wpdb;
 
 		// delete from uap_trigger_log
@@ -2170,7 +2177,7 @@ class Recipe_Post_Type {
 	 *
 	 * @param $post_ID
 	 */
-	public function delete_action_logs( $post_ID ) {
+	public static function delete_action_logs( $post_ID ) {
 		global $wpdb;
 
 		// delete from uap_action_log
@@ -2185,7 +2192,7 @@ class Recipe_Post_Type {
 	 *
 	 * @param $post_ID
 	 */
-	public function delete_closure_logs( $post_ID ) {
+	public static function delete_closure_logs( $post_ID ) {
 		global $wpdb;
 
 		// delete from uap_closure_log

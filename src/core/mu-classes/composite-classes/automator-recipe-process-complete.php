@@ -506,6 +506,14 @@ class Automator_Recipe_Process_Complete {
 
 					//fallback...
 					$action_data['args'] = $args;
+
+					/*
+					 * See function notes
+					 *
+					 * @since 2.8
+					 */
+					$action_data = $this->parse_custom_value( $action_data, $user_id, $recipe_id, $args );
+
 					call_user_func_array( $action_execution_function, array(
 						$user_id,
 						$action_data,
@@ -589,4 +597,64 @@ class Automator_Recipe_Process_Complete {
 		return true;
 	}
 
+	/**
+	 * this code is to parse new "Use custom value" functionality before an action
+	 * function is called. We will not have to modify each integration to support it.
+	 *
+	 * @param $action_data
+	 * @param $user_id
+	 * @param $recipe_id
+	 * @param $args
+	 *
+	 * @return mixed
+	 * @since 2.8
+	 *
+	 * @author Saad
+	 */
+	public function parse_custom_value( $action_data, $user_id, $recipe_id, $args ) {
+
+		if ( ! isset( $action_data['meta'] ) ) {
+			return $action_data;
+		}
+		$updated_values = [];
+		$meta           = $action_data['meta'];
+		// use regex to see if there's a _cutome key
+		$custom_keys = preg_grep( '/(automator_custom_value)/', $meta );
+
+		if ( ! $custom_keys ) {
+			return $action_data;
+		}
+
+		global $uncanny_automator;
+		foreach ( $custom_keys as $action_meta => $custom_value ) {
+			$k = "{$action_meta}_custom";
+			if ( ! key_exists( $k, $meta ) ) {
+				continue;
+			}
+
+			// parse token here
+			$v = $uncanny_automator->parse->text( $action_data['meta'][ $k ], $recipe_id, $user_id, $args );
+			if ( $v ) {
+				$action_data['meta'][ $action_meta ] = $v;
+				$updated_values[ $action_meta ]      = $v;
+			}
+		}
+		
+		if ( $updated_values ) {
+			foreach ( $updated_values as $meta_key => $meta_value ) {
+				$args = [
+					'user_id'        => $user_id,
+					'trigger_id'     => $args['trigger_id'],
+					'meta_key'       => $action_meta,
+					'meta_value'     => $v,
+					'run_number'     => $args['run_number'], //get run number
+					'trigger_log_id' => $args['get_trigger_id'],
+				];
+
+				$uncanny_automator->insert_trigger_meta( $args );
+			}
+		}
+
+		return $action_data;
+	}
 }

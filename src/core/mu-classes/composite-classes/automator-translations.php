@@ -425,7 +425,7 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.userSelector.existingUser.valueFieldLabel
 					'valueFieldPlaceholder'              =>  esc_attr__( 'Value of the unique field', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.existingUser.valueFieldPlaceholder
-					'createNewUserFieldLabel'            =>  esc_attr__( "What to do if the user doesn't exist", 'uncanny-automator' ),
+					'createNewUserFieldLabel'            =>  __( "What to do if the user doesn't exist", 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.existingUser.createNewUserFieldLabel
 					/* translators: Non-personal infinitive verb */
 					'createNewUserFieldOptionCreateUser' =>  esc_attr__( 'Create new user', 'uncanny-automator' ),

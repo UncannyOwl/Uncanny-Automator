@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.5.1
 Requires PHP: 7.0
-Stable tag: 2.7.1
+Stable tag: 2.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -33,10 +33,13 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Automator Core](https://automatorplugin.com/integration/automator-core/)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/)
 - [bbPress](https://automatorplugin.com/integration/bbpress/)
+- [BuddyBoss](https://automatorplugin.com/integration/buddyboss/)
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/)
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/)
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/)
+- [Elementor](https://automatorplugin.com/integration/elementor/)
+- [Events Manager](https://automatorplugin.com/integration/events-manager/)
 - [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/)
 - [Forminator](https://automatorplugin.com/integration/forminator/)
@@ -44,9 +47,12 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [GiveWP](https://automatorplugin.com/integration/givewp/)
 - [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/)
 - [Groundhogg](https://automatorplugin.com/integration/groundhogg/)
+- [HappyForms](https://automatorplugin.com/integration/happyforms/)
+- [Integromat](https://automatorplugin.com/integration/integromat/)
 - [LearnDash](https://automatorplugin.com/integration/learndash/)
 - [LearnPress](https://automatorplugin.com/integration/learnpress/)
 - [LifterLMS](https://automatorplugin.com/integration/lifterlms/)
+- [MailPoet 3](https://automatorplugin.com/integration/mailpoet-3/)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/)
 - [myCred](https://automatorplugin.com/integration/mycred/)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/)
@@ -155,6 +161,43 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.8 [2020-09-24] =
+
+* New Integration: BuddyBoss
+* New Integration: Elementor
+* New Integration: Events Manager
+* New Integration: HappyForms
+* New Integration: Integromat
+* New Integration: MailPoet 3
+* Added: Action: MailPoet 3 - Add the user to a list
+* Added: Action: MailPoet 3 - Add a subscriber to a list
+* Added: Trigger: HappyForms - A user submits a form
+* Added: Trigger: BuddyBoss - A user updates their profile
+* Added: Trigger: BuddyBoss - A user updates their avatar
+* Added: Trigger: BuddyBoss - A user replies to a topic in a forum
+* Added: Trigger: BuddyBoss - A user accepts a friendship request
+* Added: Trigger: BuddyBoss - A user sends a friendship request
+* Added: Trigger: BuddyBoss - A user gains a new follower
+* Added: Trigger: BuddyBoss - A user sends an email invitation
+* Added: Trigger: BuddyBoss - A user posts activity to their stream
+* Added: Action: BuddyBoss - Add the user to a group
+* Added: Trigger: BuddyBoss - A user activates their account
+* Added: Trigger: BuddyPress - A user updates their profile
+* Added: Trigger: BuddyPress - A user updates their avatar
+* Added: Trigger: BuddyPress - A user accepts a friendship request
+* Added: Trigger: BuddyPress - A user sends a friendship request
+* Added: Trigger: Elementor - A user submits a form
+* Added: Action: Integromat - Send a webhook to Integromat
+* Added: Trigger: Events Manager - A user registers for an event
+* Added: Trigger: WordPress Core - A user creates a post
+* Added: Trigger: Automator Core - A user completes a recipe
+* Fixed: Trigger: The Events Calendar - A user registers for an event now fires reliably when ticket is purchased via WooCommerce
+* Fixed: Logic issue in "Log the user in" option in Anonymous recipes (Automator Pro only)
+* Fixed: WooCommerce triggers - Billing email token can now be used in email address fields
+* Fixed: Inconsistencies in some trigger/action sentences
+* Fixed: Incorrect logic in trigger_meta function affecting custom triggers
+* Fixed: Trigger section label on first creation of an Anonymous recipe now reads "Anonymous trigger"
+
 = 2.7.1 [2020-09-10] =
 
 * Updated: manage_options capability now required to manage Automator recipes
@@ -203,21 +246,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 = 2.6.1 [2020-07-30] =
 
 * Fixed: Updated trigger log query to use wpdb postmeta instead of wp_postmeta
-
-= 2.6 [2020-07-20] =
-
-* Added: Upsell Plugin integration
-* Added: Trigger: Upsell Plugin - A user purchases a product
-* Added: Action: WordPress Core - Create a post
-* Added: Action: Groundhogg - Apply a tag to the user
-* Added: Action: Groundhogg - Remove a tag from the user
-* Added: Action: Send data to webhook - Now supports headers
-* Updated: Trigger: Send data to a webhook is now found in the Uncanny Automator integration
-* Updated: Trigger and Action log entries now display full sentences with saved values
-* Updated: Further improved performance for BuddyPress, GamiPress, MyCred and BadgeOS users
-* Updated: Improved consistency of strings across the plugin
-* Updated: Additional detail is now shown by default in trigger and action logs
-* Updated: Field label text on webhook actions
-* Fixed: MemberPress tokens now rendering correct values
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

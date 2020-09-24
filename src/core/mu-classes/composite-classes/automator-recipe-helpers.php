@@ -145,14 +145,36 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Uoa_Helpers
 	 */
 	public $uoa;
+
+	/**
+	 * @var Events_Manager_Helpers
+	 */
+	public $events_manager;
 	/**
 	 * @var Uncanny_Codes_Helpers
 	 */
 	public $uncanny_codes;
 	/**
+	 * @var Mailpoet_Helpers
+	 */
+	public $mailpoet;
+	/**
 	 * @var Wpwh_Helpers
 	 */
 	public $wp_webhooks;
+
+	/**
+	 * @var Happyforms_Helpers
+	 */
+	public $happyforms;
+	/**
+	 * @var Buddyboss_Helpers
+	 */
+	public $buddyboss;
+	/**
+	 * @var Wpwh_Helpers
+	 */
+	public $elementor;
 	/**
 	 * @var Automator_Helpers_Recipe
 	 */

@@ -31,6 +31,8 @@ class Buddypress_Helpers {
 	public function __construct() {
 		global $uncanny_automator;
 		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		add_action( 'wp_ajax_select_topic_from_forum_BDBTOPICREPLY', [ $this, 'select_topic_fields_func' ] );
 	}
 
 	/**
@@ -162,4 +164,44 @@ class Buddypress_Helpers {
 		return apply_filters( 'uap_option_all_buddypress_users', $option );
 	}
 
+	/**
+	 * Return all the specific topics of a forum in ajax call
+	 */
+	public function select_topic_fields_func() {
+
+		global $uncanny_automator;
+
+		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+
+		$fields = [];
+		if ( isset( $_POST ) ) {
+			$fields[] = [
+				'value' => - 1,
+				'text'  => __( 'Any Topic', 'uncanny-automator' ),
+			];
+			$forum_id = (int) $_POST['value'];
+
+			if ( $forum_id > 0 ) {
+				$args = [
+					'post_type'      => bbp_get_topic_post_type(),
+					'post_parent'    => $forum_id,
+					'post_status'    => array_keys( get_post_stati() ),
+					'posts_per_page' => 9999,
+				];
+
+				$topics = $uncanny_automator->helpers->recipe->wp_query( $args );
+
+				if ( ! empty( $topics ) ) {
+					foreach ( $topics as $input_id => $input_title ) {
+						$fields[] = [
+							'value' => $input_id,
+							'text'  => $input_title,
+						];
+					}
+				}
+			}
+		}
+		echo wp_json_encode( $fields );
+		die();
+	}
 }

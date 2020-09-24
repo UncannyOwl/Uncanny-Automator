@@ -162,4 +162,46 @@ class Uoa_Helpers {
 			) );
 		}
 	}
+
+	/**
+	 * @param string $label
+	 * @param string $option_code
+	 *
+	 * @return mixed
+	 */
+	public function get_recipes( $label = null, $option_code = 'UOARECIPE', $any_option = false ) {
+		if ( ! $this->load_options ) {
+			global $uncanny_automator;
+
+			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
+		if ( ! $label ) {
+			$label =  esc_attr__( 'Recipe', 'uncanny-automator' );
+		}
+
+		// post query arguments.
+		$args = [
+			'post_type'      => 'uo-recipe',
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+
+		];
+
+		global $uncanny_automator;
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any Recipe', 'uncanny-automator' ) );
+
+		$option = [
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => 'select',
+			'required'                 => true,
+			'options'                  => $options,
+			'custom_value_description' => esc_attr__( 'Recipe slug', 'uncanny-automator' ),
+		];
+
+		return apply_filters( 'uap_option_get_recipes', $option );
+	}
 }

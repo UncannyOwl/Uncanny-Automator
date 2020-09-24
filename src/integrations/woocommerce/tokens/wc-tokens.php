@@ -154,8 +154,12 @@ class Wc_Tokens {
 		$trigger_meta    = $args['meta'];
 		$possible_tokens = apply_filters( 'automator_woocommerce_possible_tokens', $this->possible_order_fields );
 		foreach ( $possible_tokens as $token_id => $input_title ) {
-			$input_type = 'text';
-			$fields[]   = [
+			if ( 'billing_email' === (string) $token_id || 'shipping_email' === (string) $token_id ) {
+				$input_type = 'email';
+			} else {
+				$input_type = 'text';
+			}
+			$fields[] = [
 				'tokenId'         => $token_id,
 				'tokenName'       => $input_title,
 				'tokenType'       => $input_type,

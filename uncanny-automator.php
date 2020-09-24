@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.7.1
+ * Version:             2.8
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.7.1';
+	const PLUGIN_VERSION = '2.8';
 
 	/**
 	 * The database version number
@@ -158,7 +158,7 @@ class InitializePlugin {
 		if ( isset( $_REQUEST['action'] ) && 'heartbeat' === sanitize_text_field( $_REQUEST['action'] ) ) {
 			//Ignore
 			return;
-		} elseif ( isset( $_REQUEST['wc-ajax'] ) ) {
+		} elseif ( isset( $_REQUEST['wc-ajax'] ) && 'checkout' !== (string) sanitize_text_field( $_REQUEST['wc-ajax'] ) ) {
 			//Ignore
 			return;
 		} else {

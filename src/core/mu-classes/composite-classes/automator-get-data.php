@@ -782,7 +782,7 @@ class Automator_Get_Data {
 	public function trigger_meta( $user_id = null, $trigger_id = null, $meta_key = null, $trigger_log_id = null ) {
 
 		// Set user ID
-		if ( absint( $user_id ) ) {
+		if ( ! absint( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
 

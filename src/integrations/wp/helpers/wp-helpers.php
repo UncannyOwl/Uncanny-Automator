@@ -35,6 +35,11 @@ class Wp_Helpers {
 		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
+		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
+		add_action( 'wp_ajax_select_terms_for_selected_taxonomy', array(
+			$this,
+			'select_terms_for_selected_taxonomy'
+		) );
 
 		add_action( 'wp_ajax_nopriv_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
 		add_action( 'wp_ajax_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
@@ -80,7 +85,7 @@ class Wp_Helpers {
 			if ( ! empty( $posts_list ) ) {
 				foreach ( $posts_list as $post_id => $title ) {
 					// Check if the post title is defined
-					$post_title = ! empty( $title ) ? $title : sprintf(  esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
+					$post_title = ! empty( $title ) ? $title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 
 					$fields[] = array(
 						'value' => $post_id,
@@ -108,7 +113,7 @@ class Wp_Helpers {
 
 		if ( ! $label ) {
 			/* translators: Noun */
-			$label =  esc_attr__( 'Post', 'uncanny-automator' );
+			$label = esc_attr__( 'Post', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -120,7 +125,7 @@ class Wp_Helpers {
 		];
 
 		global $uncanny_automator;
-		$all_posts = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any post', 'uncanny-automator' ) );
+		$all_posts = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any post', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -129,9 +134,9 @@ class Wp_Helpers {
 			'required'        => true,
 			'options'         => $all_posts,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Post title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Post ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Post URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Post title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Post ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -153,7 +158,7 @@ class Wp_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Page', 'uncanny-automator' );
+			$label = esc_attr__( 'Page', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -165,7 +170,7 @@ class Wp_Helpers {
 		];
 
 		global $uncanny_automator;
-		$all_pages = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'All pages', 'uncanny-automator' ) );
+		$all_pages = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'All pages', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -174,9 +179,9 @@ class Wp_Helpers {
 			'required'        => true,
 			'options'         => $all_pages,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Page title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Page ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Page URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Page title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Page ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Page URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -198,7 +203,7 @@ class Wp_Helpers {
 
 		if ( ! $label ) {
 			/* translators: WordPress role */
-			$label =  esc_attr__( 'Role', 'uncanny-automator' );
+			$label = esc_attr__( 'Role', 'uncanny-automator' );
 		}
 
 		$roles = [];
@@ -209,11 +214,11 @@ class Wp_Helpers {
 			}
 		}
 		$option = [
-			'option_code' => $option_code,
-			'label'       => $label,
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $roles,
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => 'select',
+			'required'                 => true,
+			'options'                  => $roles,
 			'custom_value_description' => esc_attr__( 'Role slug', 'uncanny-automator' )
 		];
 
@@ -234,7 +239,7 @@ class Wp_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Post type', 'uncanny-automator' );
+			$label = esc_attr__( 'Post Type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -295,7 +300,7 @@ class Wp_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -311,14 +316,14 @@ class Wp_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -354,7 +359,7 @@ class Wp_Helpers {
 
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
-				$error_message = sprintf(  esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
+				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				wp_send_json( [
 					'type'    => 'error',
 					'message' => $error_message,
@@ -362,12 +367,99 @@ class Wp_Helpers {
 			}
 
 			/* translators: 1. Webhook URL */
-			$success_message = sprintf(  esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
+			$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
 			wp_send_json( array(
 				'type'    => 'success',
 				'message' => $success_message,
 			) );
 		}
+	}
+
+	/**
+	 * Return all the specific taxonomies of selected post type in ajax call
+	 */
+	function select_post_type_taxonomies() {
+		global $uncanny_automator;
+
+		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		$fields = [];
+		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
+			$post_type = sanitize_text_field( $_POST['value'] );
+
+			if ( $post_type != '- 1' ) {
+				$output     = 'object';
+				$taxonomies = get_object_taxonomies( $post_type, $output );
+
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => sprintf( _x( 'Any %s', 'WordPress taxonomy', 'uncanny-automator' ), $post_type ),
+				);
+
+				if ( ! empty( $taxonomies ) ) {
+					foreach ( $taxonomies as $taxonomy ) {
+						$fields[] = array(
+							'value' => $taxonomy->name,
+							'text'  => esc_html( $taxonomy->labels->singular_name ),
+						);
+					}
+				}
+			} else {
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => __( 'Any taxonomy', 'uncanny-automator' ),
+				);
+			}
+
+
+		}
+		echo wp_json_encode( $fields );
+		die();
+	}
+
+	/**
+	 * Return all the specific terms of the selected taxonomy in ajax call
+	 */
+	function select_terms_for_selected_taxonomy() {
+		global $uncanny_automator;
+
+		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		$fields = [];
+		$terms  = '';
+		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
+			$taxonomy = sanitize_text_field( $_POST['value'] );
+
+			if ( $taxonomy != '-1' ) {
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => sprintf( _x( 'Any %s', 'WordPress taxonomy term', 'uncanny-automator' ), $taxonomy ),
+				);
+
+				$terms = get_terms( array(
+					'taxonomy'   => $taxonomy,
+					'hide_empty' => false,
+				) );
+
+			} else {
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => __( 'Any taxonomy term', 'uncanny-automator' ),
+				);
+			}
+
+			if ( ! empty( $terms ) ) {
+				foreach ( $terms as $term ) {
+					// Check if the post title is defined
+					$term_name = ! empty( $term->name ) ? $term->name : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $term->term_id );
+
+					$fields[] = array(
+						'value' => $term->term_id,
+						'text'  => $term_name,
+					);
+				}
+			}
+		}
+		echo wp_json_encode( $fields );
+		die();
 	}
 }

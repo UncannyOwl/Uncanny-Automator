@@ -44,7 +44,11 @@ class EC_REGISTER {
 			'sentence'            => sprintf(  esc_attr__( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Calendar */
 			'select_option_name'  =>  esc_attr__( 'A user registers for {{an event}}', 'uncanny-automator' ),
-			'action'              => 'event_tickets_rsvp_tickets_generated_for_product',
+			'action'              => [
+				'event_tickets_rsvp_tickets_generated_for_product',
+				'event_tickets_woocommerce_tickets_generated_for_product',
+				'event_tickets_tpp_tickets_generated_for_product',
+			],
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'user_registered' ),
