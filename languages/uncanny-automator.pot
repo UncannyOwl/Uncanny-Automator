@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Uncanny Automator plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 2.8\n"
+"Project-Id-Version: Uncanny Automator 2.8.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-09-24T18:08:30+00:00\n"
+"POT-Creation-Date: 2020-10-01T18:39:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
@@ -941,37 +941,37 @@ msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:402
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:413
-#: src/integrations/woocommerce/tokens/wc-tokens.php:291
+#: src/integrations/woocommerce/tokens/wc-tokens.php:292
 msgid "equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:403
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:414
-#: src/integrations/woocommerce/tokens/wc-tokens.php:294
+#: src/integrations/woocommerce/tokens/wc-tokens.php:295
 msgid "not equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:404
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:415
-#: src/integrations/woocommerce/tokens/wc-tokens.php:285
+#: src/integrations/woocommerce/tokens/wc-tokens.php:286
 msgid "less than"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:405
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:416
-#: src/integrations/woocommerce/tokens/wc-tokens.php:288
+#: src/integrations/woocommerce/tokens/wc-tokens.php:289
 msgid "greater than"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:406
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:417
-#: src/integrations/woocommerce/tokens/wc-tokens.php:297
+#: src/integrations/woocommerce/tokens/wc-tokens.php:298
 msgid "greater or equal to"
 msgstr ""
 
 #: src/core/mu-classes/composite-classes/automator-options.php:407
 #: src/core/mu-classes/composite-classes/automator-recipe-helpers.php:418
-#: src/integrations/woocommerce/tokens/wc-tokens.php:300
+#: src/integrations/woocommerce/tokens/wc-tokens.php:301
 msgid "less or equal to"
 msgstr ""
 
@@ -3849,6 +3849,10 @@ msgstr ""
 
 #: src/integrations/woocommerce/tokens/wc-tokens.php:60
 msgid "Payment method"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:61
+msgid "Order products links"
 msgstr ""
 
 #. translators: Logged-in trigger - WooCommerce

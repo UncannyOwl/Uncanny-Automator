@@ -28,27 +28,14 @@ class Boot {
 	private static $instance = null;
 
 	/**
-	 * The directories that are auto loaded and initialized
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      array
+	 * @var array
 	 */
-	private static $auto_loaded_directories = null;
+	public static $core_class_inits = array();
 
 	/**
 	 * class constructor
 	 */
 	private function __construct() {
-
-		// We need to check if spl auto loading is available when activating plugin
-		// Plugin will not activate if SPL extension is not enabled by throwing error
-		if ( ! extension_loaded( 'SPL' ) ) {
-			trigger_error( 'Please contact your hosting company to update to php version 5.3+ and enable spl extensions.', E_USER_ERROR );
-		}
-
-		spl_autoload_register( array( $this, 'require_class_files' ) );
-
 		// Initialize all classes in given directories
 		$this->auto_initialize_classes();
 
@@ -106,64 +93,18 @@ class Boot {
 	/**
 	 * Creates singleton instance of Boot class and defines which directories are auto loaded
 	 *
-	 * @param array $auto_loaded_directories
-	 *
 	 * @return Boot
 	 * @since 1.0.0
-	 *
 	 */
-	public static function get_instance( $auto_loaded_directories = [ 'core/classes', 'core/extensions' ] ) {
+	public static function get_instance() {
 
 		if ( null === self::$instance ) {
-
-			// Define directories were the auto loader looks for files and initializes them
-			self::$auto_loaded_directories = $auto_loaded_directories;
 
 			// Lets boot up!
 			self::$instance = new self();
 		}
 
 		return self::$instance;
-	}
-
-
-	/**
-	 * SPL Auto Loader functions
-	 *
-	 * @param string $class Any
-	 *
-	 * @since 1.0.0
-	 *
-	 */
-	private function require_class_files( $class ) {
-
-		// Remove Class's namespace eg: my_namespace/MyClassName to MyClassName
-		$class = str_replace( __NAMESPACE__, '', $class );
-		$class = str_replace( '\\', '', $class );
-
-		// Replace _ with - eg. eg: My_Class_Name to My-Class-Name
-		$class_to_filename = str_replace( '_', '-', $class );
-
-		// Create file name that will be loaded from the classes directory eg: My-Class-Name to my-class-name.php
-		$file_name = strtolower( $class_to_filename ) . '.php';
-
-
-		// Check each directory
-		foreach ( self::$auto_loaded_directories as $directory ) {
-
-			$file_path = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $file_name;
-
-			// Does the file exist
-			if ( file_exists( $file_path ) ) {
-
-				// File found, require it
-				require_once( $file_path );
-
-				// You can cannot have duplicate files names. Once the first file is found, the loop ends.
-				return;
-			}
-		}
-
 	}
 
 	/**
@@ -174,59 +115,22 @@ class Boot {
 	 */
 	private function auto_initialize_classes() {
 
-		// Check each directory
-		foreach ( self::$auto_loaded_directories as $directory ) {
+		self::$core_class_inits['A_Cron_Exceptions']    = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/a-cron-exceptions.php';
+		self::$core_class_inits['Actionify_Triggers']   = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/actionify-triggers.php';
+		self::$core_class_inits['Actions_Post_Type']    = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/actions-post-type.php';
+		self::$core_class_inits['Add_User_Recipe_Type'] = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/add-user-recipe-type.php';
+		self::$core_class_inits['Admin_Menu']           = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/admin-menu.php';
+		self::$core_class_inits['Closures_Post_Type']   = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/closures-post-type.php';
+		self::$core_class_inits['Recipe_Post_Type']     = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/recipe-post-type.php';
+		self::$core_class_inits['Recipe_Taxonomies']    = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/recipe-taxonomies.php';
+		self::$core_class_inits['Set_Up_Automator']     = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/set-up-automator.php';
+		self::$core_class_inits['Triggers_Post_Type']   = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/triggers-post-type.php';
+		self::$core_class_inits['Activity_Log']         = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/extensions/activity-log.php';
 
-			// Get all files in directory
-			$files = scandir( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $directory );
-
-			// remove parent directory, sub directory, and silence is golden index.php
-			$files = array_diff( $files, array( '..', '.', 'index.php' ) );
-			if ( ! $files ) {
-				continue;
-			}
-			// Loop through all files in directory to create class names from file name
-			foreach ( $files as $file ) {
-
-				// Load only php files
-				$file_parts = pathinfo( $file );
-				if ( key_exists( 'extension', $file_parts ) && 'php' !== $file_parts['extension'] ) {
-					continue;
-				}
-
-				// Remove file extension my-class-name.php to my-class-name
-				$file_name = str_replace( '.php', '', $file );
-
-				// Split file name on - eg: my-class-name to array( 'my', 'class', 'name')
-				$class_to_filename = explode( '-', $file_name );
-
-				// Make the first letter of each word in array upper case - eg array( 'my', 'class', 'name') to array( 'My', 'Class', 'Name')
-				$class_to_filename = array_map( function ( $word ) {
-					return ucfirst( $word );
-				}, $class_to_filename );
-
-				// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
-				$class_name = implode( '_', $class_to_filename );
-
-				$class = __NAMESPACE__ . '\\' . $class_name;
-
-				// We way want to include some class with the autoloader but not initialize them ex. interface class
-				$skip_classes = apply_filters( 'Skip_class_initialization', array(), $directory, $files, $class, $class_name );
-				if ( in_array( $class_name, $skip_classes ) ) {
-					continue;
-				}
-
-				$path = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $file;
-
-				$some_param    = array();
-				$another_param = '';
-
-				do_action( 'the_hook', array( $this, 'the_hook_function' ), $some_param, $another_param );
-
-				if ( class_exists( $class ) ) {
-					Utilities::add_class_instance( $class, new $class );
-				}
-			}
+		foreach ( self::$core_class_inits as $class_name => $file ) {
+			require_once $file;
+			$class = __NAMESPACE__ . '\\' . $class_name;
+			Utilities::add_class_instance( $class, new $class );
 		}
 
 	}
@@ -365,7 +269,6 @@ class Boot {
 		return new WP_REST_Response( [ 'success' => false ], 200 );
 	}
 }
-
 
 
 

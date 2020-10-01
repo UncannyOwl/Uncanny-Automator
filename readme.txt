@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.5.1
 Requires PHP: 7.0
-Stable tag: 2.8
+Stable tag: 2.8.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -161,6 +161,13 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.8.1 [2020-10-01] =
+
+* Added: WooCommerce token: Order product links
+* Updated: Performance optimizations
+* Fixed: Elementor - PHP warning: Invalid argument supplied foreach()
+* Fixed: PHP Uncaught Error: Call to undefined method in Automator Core trigger on activation for some environments
+
 = 2.8 [2020-09-24] =
 
 * New Integration: BuddyBoss
@@ -242,9 +249,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Updated: Anonymous recipes - User selector - "Roles" dropdown label changed to "Role"
 * Updated: Changed __(), _e(), _x() to esc_attr__(), esc_attr_e(), esc_attr_x()
 * Updated: Auto login token code moved to Automator Pro
-
-= 2.6.1 [2020-07-30] =
-
-* Fixed: Updated trigger log query to use wpdb postmeta instead of wp_postmeta
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

@@ -23,17 +23,15 @@ class Automator_Integrations_Status {
 		// Sanity check that there was a trigger passed
 		if ( null === $integration || ! is_string( $integration ) ) {
 			Utilities::log( 'ERROR: You are try to get a plugin\'s status without passing its proper integration code.', 'get_plugin_status ERROR', false, 'uap - errors' );
+
 			return null;
 		}
 
 		$active = 0;
 
-		if ( ! empty( $integration ) ) {
-			$filter = 'uncanny_automator_maybe_add_integration';
-
-			$active = apply_filters( $filter, 0, $integration );
+		if ( in_array( $integration, Set_Up_Automator::$active_integrations_code, true ) ) {
+			$active = 1;
 		}
-
 
 		return absint( $active );
 	}

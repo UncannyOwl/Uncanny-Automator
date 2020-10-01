@@ -58,6 +58,7 @@ class Wc_Tokens {
 			'order_products'      => esc_attr__( 'Order products', 'uncanny-automator' ),
 			'order_products_qty'  => esc_attr__( 'Order products and quantity', 'uncanny-automator' ),
 			'payment_method'      => esc_attr__( 'Payment method', 'uncanny-automator' ),
+			'order_products_links'=> esc_attr__( 'Order products links', 'uncanny-automator' ),
 		);
 
 		add_action( 'uap_wc_trigger_save_meta', [ $this, 'uap_wc_trigger_save_meta_func' ], 20, 4 );
@@ -431,6 +432,19 @@ class Wc_Tokens {
 										$value .= '</ul>';
 									}
 
+									break;
+								case 'order_products_links':
+									$items = $order->get_items();
+									if ( $items ) {
+										$value = '<ul>';
+										/** @var WC_Order_Item_Product $item */
+										foreach ( $items as $item ) {
+											$product = $item->get_product();
+											$value   .= '<li><a href="' . $product->get_permalink() . '">' . $product->get_title() . '</a></li>';
+										}
+										$value .= '</ul>';
+									}
+									
 									break;
 								case 'payment_method':
 									$value = $order->get_payment_method_title();

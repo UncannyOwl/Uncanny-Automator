@@ -19,16 +19,16 @@ class Add_Hf_Integration {
 	 */
 	public function __construct() {
 		// Add directories to auto loader
-		add_filter( 'uncanny_automator_integration_directory', [ $this, 'add_integration_directory_func' ], 11 );
+		// add_filter( 'uncanny_automator_integration_directory', [ $this, 'add_integration_directory_func' ], 11 );
 
 		// Add code, name and icon set to automator
-		$this->add_integration_func();
+		// $this->add_integration_func();
 
 		// Verify is the plugin is active based on integration code
-		add_filter( 'uncanny_automator_maybe_add_integration', [
-			$this,
-			'plugin_active',
-		], 30, 2 );
+//		add_filter( 'uncanny_automator_maybe_add_integration', [
+//			$this,
+//			'plugin_active',
+//		], 30, 2 );
 	}
 
 	/**

@@ -67,10 +67,14 @@ class Cf7_Tokens {
 							if ( $triggers ) {
 								foreach ( $triggers as $trigger ) {
 									$trigger_id = $trigger['ID'];
-									if ( ! key_exists( 'CF7FORMS', $trigger['meta'] ) ) {
+									if ( ! key_exists( 'CF7FORMS', $trigger['meta'] ) && ! key_exists( 'CF7FIELDS', $trigger['meta'] ) ) {
 										continue;
 									} else {
-										$form_id = (int) $trigger['meta']['CF7FORMS'];
+										if ( isset( $trigger['meta']['CF7FORMS'] ) ) {
+											$form_id = (int) $trigger['meta']['CF7FORMS'];
+										} elseif ( isset( $trigger['meta']['CF7FIELDS'] ) ) {
+											$form_id = (int) $trigger['meta']['CF7FIELDS'];
+										}
 										$data    = $this->get_data_from_contact_form( $contact_form );
 										$user_id = (int) $trigger_result['args']['user_id'];
 										if ( $user_id ) {
@@ -211,15 +215,15 @@ class Cf7_Tokens {
 	 * @return mixed
 	 */
 	public function parse_cf7_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		$piece = 'CF7FORMS';
+		$piece        = 'CF7FORMS';
+		$piece_fields = 'CF7FIELDS';
 		if ( $pieces ) {
-			if ( in_array( $piece, $pieces ) ) {
+			if ( in_array( $piece, $pieces ) || in_array( $piece_fields, $pieces ) ) {
 				global $uncanny_automator;
 				$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
-
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
-						if ( key_exists( $piece, $trigger['meta'] ) ) {
+						if ( key_exists( $piece, $trigger['meta'] ) || key_exists( $piece_fields, $trigger['meta'] ) ) {
 							$trigger_id     = $trigger['ID'];
 							$trigger_log_id = $replace_args['trigger_log_id'];
 							$token_info     = explode( '|', $pieces[2] );
@@ -234,6 +238,14 @@ class Cf7_Tokens {
 									$value = $user_meta[ $meta_key ];
 								}
 							}
+						}
+					}
+				}
+			} elseif ( in_array( 'CF7SUBFIELD', $pieces ) ) {
+				if ( $trigger_data ) {
+					foreach ( $trigger_data as $trigger ) {
+						if ( key_exists( 'CF7SUBFIELD', $trigger['meta'] ) && isset( $trigger['meta'][ $pieces[2] ] ) ) {
+							$value = $trigger['meta'][ $pieces[2] ];
 						}
 					}
 				}

@@ -17,10 +17,28 @@ class Set_Up_Automator {
 	 */
 	public $auto_loaded_directories = null;
 	/**
+	 * @var array
+	 */
+	public $active_directories = array();
+	/**
 	 * @var array|string[]
 	 */
 	public $default_directories = [];
 
+	/**
+	 * @var array
+	 */
+	public $all_integrations = array();
+
+	/**
+	 * @var array
+	 */
+	public $directories_to_include = array();
+
+	/**
+	 * @var array
+	 */
+	public static $active_integrations_code = array();
 
 	/**
 	 * Set_Up_Automator constructor.
@@ -28,6 +46,10 @@ class Set_Up_Automator {
 	public function __construct() {
 		if ( isset( $_SERVER['REQUEST_URI'] ) && 'favicon.ico' === basename( $_SERVER['REQUEST_URI'] ) ) {
 			// bail out if it's favicon.ico
+			return;
+		}
+
+		if ( isset( $_GET['doing_wp_cron'] ) ) {
 			return;
 		}
 
@@ -42,7 +64,6 @@ class Set_Up_Automator {
 		$this->auto_loaded_directories = $this->get_integrations_autoload_directories();
 
 		// Loads all internal triggers, actions, and closures then provides hooks for external ones
-		spl_autoload_register( array( $this, 'require_triggers_actions' ) );
 	}
 
 	/**
@@ -63,10 +84,28 @@ class Set_Up_Automator {
 	 * Sets all trigger, actions, and closure classes directories
 	 */
 	public function get_integrations_autoload_directories() {
-		$directory    = dirname( AUTOMATOR_BASE_FILE ) . '/src/integrations';
-		$integrations = glob( $directory . '/*', GLOB_ONLYDIR );
+		$directory              = dirname( AUTOMATOR_BASE_FILE ) . '/src/integrations';
+		$integrations           = self::read_directory( $directory );
+		$this->all_integrations = $integrations;
 
-		return $integrations;
+		return self::extract_integration_folders( $integrations, $directory );
+	}
+
+	/**
+	 * @param $integrations
+	 * @param $directory
+	 *
+	 * @return array
+	 */
+	public static function extract_integration_folders( $integrations, $directory ) {
+		$folders = [];
+		if ( $integrations ) {
+			foreach ( $integrations as $f => $integration ) {
+				$folders[] = "{$directory}/{$f}";
+			}
+		}
+
+		return $folders;
 	}
 
 	/**
@@ -86,6 +125,8 @@ class Set_Up_Automator {
 		//Let others hook in to the directories and add their integration's actions / triggers etc
 		$this->auto_loaded_directories = apply_filters( 'uncanny_automator_integration_directory', $this->auto_loaded_directories );
 
+		//spl_autoload_register( array( $this, 'require_triggers_actions' ) );
+
 		// Loads all options and provide a hook for external options
 		$this->initialize_integration_helpers();
 
@@ -100,58 +141,64 @@ class Set_Up_Automator {
 	}
 
 	/**
-	 * @throws \ReflectionException
+	 *
 	 */
 	public function initialize_add_integrations() {
 		// Check each directory
 		if ( $this->auto_loaded_directories ) {
 
 			foreach ( $this->auto_loaded_directories as $directory ) {
-				$files = array_diff( scandir( $directory ), array(
-					'..',
-					'.',
-					'index.php',
-					'helpers',
-					'actions',
-					'triggers',
-					'tokens',
-					'closures',
-				) );
+				$files    = array();
+				$dir_name = basename( $directory );
+				if ( ! isset( $this->all_integrations[ $dir_name ] ) ) {
+					continue;
+				}
+
+				$files[] = $this->all_integrations[ $dir_name ]['main'];
 
 				if ( $files ) {
 					foreach ( $files as $file ) {
-						$file = "$directory/$file";
 						if ( file_exists( $file ) ) {
 							$file_name = basename( $file, '.php' );
 
-							// Split file name on - eg: my-class-name to array( 'my', 'class', 'name')
-							$class_to_filename = explode( '-', $file_name );
-
-							// Make the first letter of each word in array upper case - eg array( 'my', 'class', 'name') to array( 'My', 'Class', 'Name')
-							$class_to_filename = array_map( function ( $word ) {
-								return ucfirst( $word );
-							}, $class_to_filename );
-
-							// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
-							$class_name = implode( '_', $class_to_filename );
+							$class_name = self::file_name_to_class( $file_name );
 
 							$class = __NAMESPACE__ . '\\' . strtoupper( $class_name );
 							require_once $file;
 
-							$status = false;
+							$i = new $class();
 
-							$reflection_class = new \ReflectionClass( $class );
+							if ( ! method_exists( $i, 'plugin_active' ) ) {
+								continue;
+							}
+							$integration_code = $class::$integration;
+							$active           = $i->plugin_active( 0, $integration_code );
 
-							$static_properties = $reflection_class->getStaticProperties();
-							if ( key_exists( 'integration', $static_properties ) ) {
-								$integration = $reflection_class->getStaticPropertyValue( 'integration' );
-								$instance    = $reflection_class->newInstanceWithoutConstructor();
-								$status      = $instance->plugin_active( 0, $integration );
+							if ( true !== $active ) {
+								unset( $i );
+								continue;
 							}
 
-							if ( true === $status ) {
-								Utilities::add_class_instance( $class, new $class() );
+							// Include only active integrations
+							if ( method_exists( $i, 'add_integration_func' ) ) {
+								$i->add_integration_func();
 							}
+
+							if ( ! in_array( $integration_code, self::$active_integrations_code, true ) ) {
+								self::$active_integrations_code[] = $integration_code;
+							}
+
+							$this->active_directories[ $dir_name ] = $i;
+
+							if ( method_exists( $i, 'add_integration_directory_func' ) ) {
+								$directories_to_include = $i->add_integration_directory_func( array() );
+								if ( $directories_to_include ) {
+									foreach ( $directories_to_include as $dir ) {
+										$this->directories_to_include[ $dir_name ][] = basename( $dir );
+									}
+								}
+							}
+							Utilities::add_class_instance( $class, $i );
 						}
 					}
 				}
@@ -164,42 +211,29 @@ class Set_Up_Automator {
 	 */
 	public function initialize_integration_helpers() {
 
-		if ( $this->auto_loaded_directories ) {
-			// Check each directory
-			foreach ( $this->auto_loaded_directories as $directory ) {
-				if ( in_array( basename( $directory ), [ 'helpers' ] ) ) {
+		if ( empty( $this->active_directories ) ) {
+			return;
+		}
 
-					if ( file_exists( $directory ) ) {
-						// Get all files in directory
-						// remove parent directory, sub directory, and silence is golden index.php
-						$files = array_diff( scandir( $directory ), array( '..', '.', 'index.php' ) );
-						if ( $files ) {
-							// Loop through all files in directory to create class names from file name
-							foreach ( $files as $file ) {
-								if ( strpos( $file, '.php' ) ) {
-									// Remove file extension my-class-name.php to my-class-name
-									$file_name = basename( $file, '.php' );
+		foreach ( $this->active_directories as $dir_name => $object ) {
+			$files = isset( $this->all_integrations[ $dir_name ]['helpers'] ) && in_array( 'helpers', $this->directories_to_include[ $dir_name ], true ) ? $this->all_integrations[ $dir_name ]['helpers'] : array();
 
-									// Split file name on - eg: my-class-name to array( 'my', 'class', 'name')
-									$class_to_filename = explode( '-', $file_name );
+			if ( empty( $files ) ) {
+				continue;
+			}
+			// Loop through all files in directory to create class names from file name
+			foreach ( $files as $file ) {
+				require_once $file;
+				// Remove file extension my-class-name.php to my-class-name
+				$file_name = basename( $file, '.php' );
 
-									// Make the first letter of each word in array upper case - eg array( 'my', 'class', 'name') to array( 'My', 'Class', 'Name')
-									$class_to_filename = array_map( function ( $word ) {
-										return ucfirst( $word );
-									}, $class_to_filename );
+				// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
+				$class_name = self::file_name_to_class( $file_name );
 
-									// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
-									$class_name = implode( '_', $class_to_filename );
-
-									$class = __NAMESPACE__ . '\\' . $class_name;
-									$key   = str_replace( '-', '_', basename( dirname( $directory ) ) );
-									if ( class_exists( $class ) ) {
-										Utilities::add_helper_instance( $key, new $class() );
-									}
-								}
-							}
-						}
-					}
+				$class = __NAMESPACE__ . '\\' . $class_name;
+				if ( class_exists( $class ) ) {
+					$mod = str_replace( '-', '_', $dir_name );
+					Utilities::add_helper_instance( $mod, new $class() );
 				}
 			}
 		}
@@ -210,103 +244,102 @@ class Set_Up_Automator {
 	 */
 	public function initialize_triggers_actions_closures() {
 
-		global $uncanny_automator;
-		if ( $this->auto_loaded_directories ) {
-			// Check each directory
-			foreach ( $this->auto_loaded_directories as $directory ) {
-				if ( in_array( basename( $directory ), $this->default_directories ) ) {
+		if ( empty( $this->active_directories ) ) {
+			return;
+		}
 
-					if ( file_exists( $directory ) ) {
-						// Get all files in directory
-						// remove parent directory, sub directory, and silence is golden index.php
-						$files = array_diff( scandir( $directory ), array( '..', '.', 'index.php' ) );
+		foreach ( $this->active_directories as $dir_name => $object ) {
+			$mod = $dir_name;
+			if ( ! isset( $this->all_integrations[ $mod ] ) ) {
+				continue;
+			}
+			$tokens   = isset( $this->all_integrations[ $mod ]['tokens'] ) && in_array( 'tokens', $this->directories_to_include[ $dir_name ], true ) ? $this->all_integrations[ $mod ]['tokens'] : array();
+			$triggers = isset( $this->all_integrations[ $mod ]['triggers'] ) && in_array( 'triggers', $this->directories_to_include[ $dir_name ], true ) ? $this->all_integrations[ $mod ]['triggers'] : array();
+			$actions  = isset( $this->all_integrations[ $mod ]['actions'] ) && in_array( 'actions', $this->directories_to_include[ $dir_name ], true ) ? $this->all_integrations[ $mod ]['actions'] : array();
+			$closures = isset( $this->all_integrations[ $mod ]['closures'] ) && in_array( 'closures', $this->directories_to_include[ $dir_name ], true ) ? $this->all_integrations[ $mod ]['closures'] : array();
 
-						if ( $files ) {
-							// Loop through all files in directory to create class names from file name
-							foreach ( $files as $file ) {
-								if ( strpos( $file, '.php' ) ) {
-									// Remove file extension my-class-name.php to my-class-name
-									$file_name = basename( $file, '.php' );
+			$files = array_merge( $tokens, $triggers, $actions, $closures );
 
-									// Split file name on - eg: my-class-name to array( 'my', 'class', 'name')
-									$class_to_filename = explode( '-', $file_name );
+			if ( empty( $files ) ) {
+				continue;
+			}
+			// Loop through all files in directory to create class names from file name
+			foreach ( $files as $file ) {
+				require_once $file;
+				// Remove file extension my-class-name.php to my-class-name
+				$file_name = basename( $file, '.php' );
 
-									// Make the first letter of each word in array upper case - eg array( 'my', 'class', 'name') to array( 'My', 'Class', 'Name')
-									$class_to_filename = array_map( function ( $word ) {
-										return ucfirst( $word );
-									}, $class_to_filename );
+				// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
+				$class_name = self::file_name_to_class( $file_name );
 
-									// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
-									$class_name = implode( '_', $class_to_filename );
+				if ( preg_match( '/tokens/', $file ) ) {
+					$class = __NAMESPACE__ . '\\' . $class_name;
+				} else {
+					$class = __NAMESPACE__ . '\\' . strtoupper( $class_name );
+				}
 
-									$class = __NAMESPACE__ . '\\' . strtoupper( $class_name );
-
-									// We way want to include some class with the autoloader but not initialize them ex. interface class
-									$skip_classes = apply_filters( 'skip_class_initialization', array(), $directory, $files, $class, $class_name );
-									if ( in_array( $class_name, $skip_classes ) ) {
-										continue;
-									}
-
-									if ( class_exists( $class ) ) {
-										$reflection_class  = new \ReflectionClass( $class );
-										$static_properties = $reflection_class->getStaticProperties();
-
-										$status = 0;
-
-										if ( key_exists( 'integration', $static_properties ) ) {
-											$integration = $reflection_class->getStaticPropertyValue( 'integration' );
-											$status      = $uncanny_automator->plugin_status->get( $integration );
-										}
-
-										if ( 1 === (int) $status && class_exists( $class ) ) {
-											Utilities::add_class_instance( $class, new $class() );
-										}
-									}
-								}
-							}
-						}
-					}
+				if ( class_exists( $class ) ) {
+					Utilities::add_class_instance( $class, new $class() );
 				}
 			}
 		}
+
 	}
 
 	/**
-	 * Require all trigger,action, and closure classes
+	 * @param $directory
+	 * @param bool $recursive
 	 *
-	 * @param $class
+	 * @return array|false
 	 */
-	public function require_triggers_actions( $class ) {
+	public static function read_directory( $directory, $recursive = true ) {
+		if ( is_dir( $directory ) === false ) {
+			return false;
+		}
 
-		// Remove Class's namespace eg: my_namespace/MyClassName to MyClassName
-		$class = str_replace( __NAMESPACE__, '', $class );
-		$class = str_replace( '\\', '', $class );
+		try {
+			$resource          = opendir( $directory );
+			$integration_files = array();
+			while ( false !== ( $item = readdir( $resource ) ) ) {
+				if ( (string) '.' === (string) $item || (string) '..' === (string) $item || (string) 'index.php' === (string) $item ) {
+					continue;
+				}
 
-		// Replace _ with - eg. eg: My_Class_Name to My-Class-Name
-		$class_to_filename = str_replace( '_', '-', $class );
-
-		// Create file name that will be loaded from the classes directory eg: My-Class-Name to my-class-name.php
-		$file_name = strtolower( $class_to_filename ) . '.php';
-
-		// Check each directory
-		foreach ( $this->auto_loaded_directories as $directory ) {
-
-			if ( in_array( basename( $directory ), $this->default_directories ) ) {
-				//$directory = str_replace( dirname( AUTOMATOR_BASE_FILE ) . '/', '', $directory );
-				if ( 'index.php' !== $file_name ) {
-					$file_path = $directory . DIRECTORY_SEPARATOR . $file_name;
-
-
-					// Does the file exist
-					if ( file_exists( $file_path ) ) {
-						// File found, require it
-						require_once( $file_path );
-
-						// You can cannot have duplicate files names. Once the first file is found, the loop ends.
-						return;
+				if ( true === $recursive && is_dir( $directory . DIRECTORY_SEPARATOR . $item ) ) {
+					$dir                       = basename( $directory . DIRECTORY_SEPARATOR . $item );
+					$integration_files[ $dir ] = self::read_directory( $directory . DIRECTORY_SEPARATOR . $item );
+				} else {
+					// only include files that have .php extension
+					$ext = pathinfo( $item, PATHINFO_EXTENSION );
+					if ( 'php' !== (string) $ext ) {
+						continue;
+					}
+					if ( preg_match( '/(add\-)/', $item ) ) {
+						$integration_files['main'] = $directory . DIRECTORY_SEPARATOR . $item;
+					} else {
+						$integration_files[] = $directory . DIRECTORY_SEPARATOR . $item;
 					}
 				}
 			}
+		} catch ( \Exception $e ) {
+			return false;
 		}
+
+		return $integration_files;
 	}
+
+	/**
+	 * @param $file
+	 *
+	 * @return string
+	 */
+	public static function file_name_to_class( $file ) {
+		$name = array_map( 'ucfirst', explode( '-', str_replace( array(
+			'class-',
+			'.php',
+		), '', basename( $file ) ) ) );
+
+		return join( '_', $name );
+	}
+
 }

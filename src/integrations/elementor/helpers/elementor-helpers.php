@@ -115,15 +115,16 @@ class Elementor_Helpers {
 
 	public static function get_all_inner_forms( $elements ) {
 		$block_is_on_page = [];
-		foreach ( $elements as $element ) {
-
-			if ( 'widget' === $element->elType && 'form' === $element->widgetType ) {
-				$block_is_on_page[] = $element;
-			}
-			if ( ! empty( $element->elements ) ) {
-				$inner_block_is_on_page = self::get_all_inner_forms( $element->elements );
-				if ( ! empty( $inner_block_is_on_page ) ) {
-					$block_is_on_page = array_merge( $block_is_on_page, $inner_block_is_on_page );
+		if ( ! empty( $elements ) ) {
+			foreach ( $elements as $element ) {
+				if ( 'widget' === $element->elType && 'form' === $element->widgetType ) {
+					$block_is_on_page[] = $element;
+				}
+				if ( ! empty( $element->elements ) ) {
+					$inner_block_is_on_page = self::get_all_inner_forms( $element->elements );
+					if ( ! empty( $inner_block_is_on_page ) ) {
+						$block_is_on_page = array_merge( $block_is_on_page, $inner_block_is_on_page );
+					}
 				}
 			}
 		}

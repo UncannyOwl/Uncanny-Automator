@@ -144,7 +144,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	/**
 	 * @var Uoa_Helpers
 	 */
-	public $uoa;
+	public $uncanny_automator;
 
 	/**
 	 * @var Events_Manager_Helpers
