@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.5.1
 Requires PHP: 7.0
-Stable tag: 2.8.1
+Stable tag: 2.8.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -161,6 +161,16 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.8.2 [2020-10-14] =
+
+* Added: Additional tokens for GiveWP triggers
+* Update: Renamed WP Fluent Forms to Fluent Forms
+* Updated: Twilio API - Folders now excluded from loader
+* Updated: Added compatibility with Phlox theme
+* Fixed: Description on Password field in Anonymous Recipe User Selector updated to reduce confusion (Uncanny Automator Pro only)
+* Fixed: Integromat - Namespace in helper file use statement
+* Fixed: Child dropdown values now load previously saved values when editing recipes
+
 = 2.8.1 [2020-10-01] =
 
 * Added: WooCommerce token: Order product links
@@ -240,14 +250,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Fixed: MySQL 8.x AUTO_INCREMENT related issues on some server configurations
 * Fixed: Formidable Forms - Fixed PHP notice on tokens for form name, multi-select field and file upload field
 * Fixed: Adding a trigger that uses AJAX to load values while another is open no longer causes AJAX to fail on the first trigger
-
-= 2.6.2 [2020-08-19] =
-
-* Added: Filters to bypass transient data
-* Updated: Logs now use SQL views
-* Updated: Added permission_callback to all Rest API calls for WordPress v5.5 compatibility
-* Updated: Anonymous recipes - User selector - "Roles" dropdown label changed to "Role"
-* Updated: Changed __(), _e(), _x() to esc_attr__(), esc_attr_e(), esc_attr_x()
-* Updated: Auto login token code moved to Automator Pro
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

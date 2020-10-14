@@ -340,10 +340,9 @@ class Recipe_Post_Type {
 		/* translators: Trigger type. Logged-in triggers are triggered only by logged-in users */
 
 		// Check if the user didn't select a recipe type yet
-		if ( empty( $recipe_type ) ){
+		if ( empty( $recipe_type ) ) {
 			$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Triggers', 'uncanny-automator' ), $recipe_type );
-		}
-		else {
+		} else {
 			$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Logged-in triggers', 'uncanny-automator' ), $recipe_type );
 		}
 
@@ -354,7 +353,7 @@ class Recipe_Post_Type {
 				ob_start();
 				?>
                 <div class="uap">
-                    <div id="recipe-triggers-ui" class="metabox__content clear">
+                    <div id="recipe-triggers-ui" class="metabox__content uap-clear">
 
                         <!-- Placeholder content -->
                         <div class="uap-placeholder">
@@ -401,7 +400,7 @@ class Recipe_Post_Type {
 				ob_start();
 				?>
                 <div class="uap">
-                    <div id="recipe-actions-ui" class="metabox__content clear">
+                    <div id="recipe-actions-ui" class="metabox__content uap-clear">
 
                         <!-- Placeholder content -->
                         <div class="uap-placeholder">
@@ -480,7 +479,7 @@ class Recipe_Post_Type {
                             </div>
                             <div class="metabox__footer">
                                 <div class="publish-footer">
-                                    <div class="publish-footer__row clear">
+                                    <div class="publish-footer__row uap-clear">
                                         <div class="publish-footer__left">
                                             <a class="publish-footer__move-to-draft"></a>
                                         </div>
@@ -1273,37 +1272,165 @@ class Recipe_Post_Type {
 	 * @return array
 	 */
 	private function get_pro_items() {
-
+	    
 		$pro_items = [
+			'UOA' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - Automator Core */
+						'name' => __( 'A user clicks {{a magic button}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - Automator Core */
+						'name' => __( 'A user clicks {{a magic link}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Anonymous trigger - Automator Core */
+						'name' => __( 'Receive data from a webhook', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					]
+				],
+				'actions'  => []
+			],
+
 			'BB' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - bbPress */
-						'name' => esc_attr__( 'A user replies to {{a topic}}', 'uncanny-automator' ),
+						'name' => __( 'A user replies to {{a topic}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => []
 			],
 
+			'BDB' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user\'s connection request is accepted', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user registers with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user registers a new account via an email invitation', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user activates a new account via an email invitation', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user\'s email invitation results in a new member activation', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user\'s email invitation results in a new member registration', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user\'s member type is set to {{a specific type}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					]
+				],
+				'actions'  => [
+					[
+						/* translators: Action - BuddyBoss */
+						'name' => __( 'Set the user\'s member type to {{a specific type}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - BuddyBoss */
+						'name' => __( 'Add a post to the user\'s {{activity}} stream', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - BuddyBoss */
+						'name' => __( 'Add a post to the activity stream of {{a group}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - BuddyBoss */
+						'name' => __( ' Add a post to the sitewide {{activity}} stream', 'uncanny-automator' )
+					]
+				]
+			],
+
 			'BP' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => esc_attr__( 'A user joins {{a public group}}', 'uncanny-automator' ),
+						'name' => __( 'A user joins {{a public group}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => esc_attr__( 'A user leaves {{a group}}', 'uncanny-automator' ),
+						'name' => __( 'A user leaves {{a group}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyPress */
+						'name' => __( 'A user\'s connection request is accepted', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyPress */
+						'name' => __( ' A user registers with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - BuddyPress */
+						'name' => __( 'A user\'s member type is set to {{a specific type}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - BuddyPress */
-						'name' => esc_attr__( 'Remove the user from {{a group}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a group}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - BuddyPress */
+						'name' => __( 'Set the user\'s member type to {{a specific type}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - BuddyPress */
+						'name' => __( 'Add a post to the user\'s {{activity}} stream', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - BuddyPress */
+						'name' => __( 'Add a post to the activity stream of {{a group}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - BuddyPress */
+						'name' => __( 'Add a post to the sitewide {{activity}} stream', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1312,14 +1439,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Caldera Forms */
-						'name' => esc_attr__( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Caldera Forms */
-						'name' => esc_attr__( 'Register a new user', 'uncanny-automator' )
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1328,36 +1455,59 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Contact Form 7 */
-						'name' => esc_attr__( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Contact Form 7 */
-						'name' => esc_attr__( 'Register a new user', 'uncanny-automator' )
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
+			],
+
+			'ELEM' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - Elementor */
+						'name' => __( ' A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Anonymous trigger - Elementor */
+						'name' => __( 'A user submits {{a form}}', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					],
+
+					[
+						/* translators: Anonymous trigger - Elementor */
+						'name' => __( ' A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					]
+				],
+				'actions'  => []
 			],
 
 			'FI' => [
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Formidable Forms */
-						'name' => esc_attr__( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - Formidable Forms */
-						'name' => esc_attr__( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Formidable Forms */
-						'name' => esc_attr__( 'Register a new user', 'uncanny-automator' )
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1366,14 +1516,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Forminator */
-						'name' => esc_attr__( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Forminator */
-						'name' => esc_attr__( 'Register a new user', 'uncanny-automator' )
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1382,41 +1532,63 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => esc_attr__( 'A user earns {{an achievement}}', 'uncanny-automator' ),
+						'name' => __( 'A user earns {{an achievement}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => esc_attr__( 'A user earns {{a number}} {{of a specfic type of}} points', 'uncanny-automator' ),
+						'name' => __( 'A user earns {{a number}} {{of a specfic type of}} points', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => esc_attr__( 'A user attains {{a rank}}', 'uncanny-automator' ),
+						'name' => __( 'A user attains {{a rank}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - GamiPress */
-						'name' => esc_attr__( 'Revoke {{an achievement}} from the user', 'uncanny-automator' )
+						'name' => __( 'Revoke {{an achievement}} from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GamiPress */
-						'name' => esc_attr__( 'Revoke {{a rank}} from the user', 'uncanny-automator' )
+						'name' => __( 'Revoke {{a rank}} from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GamiPress */
-						'name' => esc_attr__( 'Revoke {{a number}} {{of a certain type of}} points from the user', 'uncanny-automator' )
+						'name' => __( 'Revoke {{a number}} {{of a certain type of}} points from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GamiPress */
-						'name' => esc_attr__( 'Revoke all {{of a certain type of}} points from the user', 'uncanny-automator' )
+						'name' => __( 'Revoke all {{of a certain type of}} points from the user', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'GIVEWP' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - GiveWP */
+						'name' => __( 'A user cancels {{a recurring donation}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Anonymous trigger - GiveWP */
+						'name' => __( '{{A donation form}} is submitted', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					]
+				],
+				'actions'  => [
+					[
+						/* translators: Action - GiveWP */
+						'name' => __( 'Add a note to {{a donor}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1426,12 +1598,12 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - GoToTraining */
-						'name' => esc_attr__( 'Add the user to a {{training session}}', 'uncanny-automator' )
+						'name' => __( 'Add the user to a {{training session}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GoToTraining */
-						'name' => esc_attr__( 'Remove the user from a {{training session}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from a {{training session}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1441,12 +1613,12 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - GoToWebinar */
-						'name' => esc_attr__( 'Add the user to {{a webinar}}', 'uncanny-automator' )
+						'name' => __( 'Add the user to {{a webinar}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - GoToWebinar */
-						'name' => esc_attr__( 'Remove the user from {{a webinar}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1455,20 +1627,20 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Gravity Forms */
-						'name' => esc_attr__( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - Gravity Forms */
-						'name' => esc_attr__( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Gravity Forms */
-						'name' => esc_attr__( 'Register a new user', 'uncanny-automator' )
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1477,13 +1649,13 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Groundhogg */
-						'name' => esc_attr__( '{{A tag}} is added to a user', 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is added to a user', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - Groundhogg */
-						'name' => esc_attr__( '{{A tag}} is removed from a user', 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is removed from a user', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
@@ -1494,20 +1666,54 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - H5P */
-						'name' => esc_attr__( 'A user completes {{H5P content}}', 'uncanny-automator' ),
+						'name' => __( 'A user completes {{H5P content}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - H5P */
-						'name' => esc_attr__( 'A user completes any {{of a specific type of}} H5P content', 'uncanny-automator' ),
+						'name' => __( 'A user completes any {{of a specific type of}} H5P content', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - H5P */
-						'name' => esc_attr__( 'A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{H5P content}}', 'uncanny-automator' ),
+						'name' => __( 'A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{H5P content}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
+					]
+				],
+				'actions'  => []
+			],
+
+			'HF' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - HappyForms */
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Anonymous trigger - HappyForms */
+						'name' => __( '{{A form}} is submitted', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					],
+
+					[
+						/* translators: Anonymous trigger - HappyForms */
+						'name' => __( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					]
+				],
+				'actions'  => []
+			],
+
+			'INTEGROMAT' => [
+				'triggers' => [
+					[
+						/* translators: Anonymous trigger - Integromat */
+						'name' => __( 'Receive data from {{Integromat webhook}}', 'uncanny-automator' ),
+						'type' => 'anonymous'
 					]
 				],
 				'actions'  => []
@@ -1517,61 +1723,66 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => esc_attr__( 'A user submits an assignment for {{a lesson or topic}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits an assignment for {{a lesson or topic}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
+						'name' => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => esc_attr__( 'A user is added to {{a group}}', 'uncanny-automator' ),
+						'name' => __( 'A user is added to {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Unenroll the user from {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Unenroll the user from {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Reset the user\'s progress in {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Reset the user\'s progress in {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator' )
+						'name' => __( 'Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' )
+						'name' => __( 'Add the user to {{a group}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Remove the user from {{a group}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a group}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Send an {{email}} to the user\'s group leader(s)', 'uncanny-automator' )
+						'name' => __( 'Send an {{email}} to the user\'s group leader(s)', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Mark {{a lesson}} not complete for the user', 'uncanny-automator' )
+						'name' => __( 'Mark {{a lesson}} not complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnDash */
-						'name' => esc_attr__( 'Mark {{a topic}} not complete for the user', 'uncanny-automator' )
+						'name' => __( 'Mark {{a topic}} not complete for the user', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - LearnDash */
+						'name' => __( 'Generate and email a certificate', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1581,17 +1792,17 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - LearnPress */
-						'name' => esc_attr__( 'Enroll the user in {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnPress */
-						'name' => esc_attr__( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LearnPress */
-						'name' => esc_attr__( 'Remove the user from {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1601,32 +1812,47 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - LifterLMS */
-						'name' => esc_attr__( 'Remove the user from {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => esc_attr__( 'Enroll the user in {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => esc_attr__( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => esc_attr__( 'Remove the user from {{a membership}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a membership}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => esc_attr__( 'Enroll the user in {{a membership}}', 'uncanny-automator' )
+						'name' => __( 'Enroll the user in {{a membership}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - LifterLMS */
-						'name' => esc_attr__( 'Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator' )
+						'name' => __( 'Reset the user\'s attempts for {{a quiz}}', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'MAILPOET' => [
+				'triggers' => [],
+				'actions'  => [
+					[
+						/* translators: Action - MailPoet */
+						'name' => __( 'Remove {{a subscriber}} from {{a list}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - MailPoet */
+						'name' => __( 'Remove the user from {{a list}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1636,32 +1862,60 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - MemberPress */
-						'name' => esc_attr__( 'Add the user to {{a membership}}', 'uncanny-automator' )
+						'name' => __( 'Add the user to {{a membership}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - MemberPress */
-						'name' => esc_attr__( 'Remove the user from {{a membership}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a membership}}', 'uncanny-automator' )
 					]
 				]
 			],
 
 			'MYCRED' => [
-				'triggers' => [],
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - myCred */
+						'name' => __( 'A user earns {{a rank}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - myCred */
+						'name' => __( 'A user\'s total balance reaches {{a number of}} {{a specific type of}} points', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - myCred */
+						'name' => __( 'A user\'s current balance reaches {{a number of}} {{a specific type of}} points', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					]
+				],
 				'actions'  => [
 					[
 						/* translators: Action - myCred */
-						'name' => esc_attr__( 'Revoke {{a number of}} {{a specific type of}} points from the user', 'uncanny-automator' )
+						'name' => __( 'Revoke {{a number of}} {{a specific type of}} points from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - myCred */
-						'name' => esc_attr__( 'Revoke all {{of a specific type of}} points from the user', 'uncanny-automator' )
+						'name' => __( 'Revoke all {{of a specific type of}} points from the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - myCred */
-						'name' => esc_attr__( 'Revoke {{a badge}} from the user', 'uncanny-automator' )
+						'name' => __( 'Revoke {{a badge}} from the user', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - myCred */
+						'name' => __( 'Increase the user\'s rank for {{a specific type of}} points', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - myCred */
+						'name' => __( 'Decrease the user\'s rank for {{a specific type of}} points', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1670,14 +1924,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Ninja Forms */
-						'name' => esc_attr__( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Ninja Forms */
-						'name' => esc_attr__( 'Register a new user', 'uncanny-automator' )
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1686,14 +1940,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - The Events Calendar */
-						'name' => esc_attr__( 'A user attends {{an event}}', 'uncanny-automator' ),
+						'name' => __( 'A user attends {{an event}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - The Events Calendar */
-						'name' => esc_attr__( 'RSVP for {{an event}}', 'uncanny-automator' )
+						'name' => __( 'RSVP for {{an event}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1702,30 +1956,35 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Tutor LMS */
-						'name' => esc_attr__( 'A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on a quiz', 'uncanny-automator' ),
+						'name' => __( 'A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on a quiz', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - Tutor LMS */
-						'name' => esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
+						'name' => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Tutor LMS */
-						'name' => esc_attr__( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' )
+						'name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - Tutor LMS */
-						'name' => esc_attr__( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - Tutor LMS */
-						'name' => esc_attr__( 'Enroll the user in {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
+					],
+
+					[
+						/* translators: Action - Tutor LMS */
+						'name' => __( 'Reset the user\'s progress in {{a course}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1735,7 +1994,7 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - Twilio */
-						'name' => esc_attr__( 'Send an SMS message to {{a number}}', 'uncanny-automator' )
+						'name' => __( 'Send an SMS message to {{a number}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1744,14 +2003,47 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - Ultimate Member */
-						'name' => esc_attr__( 'A user registers with {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user registers with {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - Ultimate Member */
-						'name' => esc_attr__( 'Set the user\'s role to {{a specific role}}', 'uncanny-automator' )
+						'name' => __( 'Set the user\'s role to {{a specific role}}', 'uncanny-automator' )
+					]
+				]
+			],
+
+			'UPSELL' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - Upsell Plugin */
+						'name' => __( 'A user subscribes to {{a product}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					]
+				],
+				'actions'  => []
+			],
+
+			'WISHLISTMEMBER' => [
+				'triggers' => [
+					[
+						/* translators: Logged-in trigger - Wishlist Member */
+						'name' => __( 'A user submits {{a registration form}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Logged-in trigger - Wishlist Member */
+						'name' => __( 'A user submits a registration form with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					]
+				],
+				'actions'  => [
+					[
+						/* translators: Action - Wishlist Member */
+						'name' => __( 'Remove the user from {{a membership level}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1760,55 +2052,55 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user completes {{an order}}', 'uncanny-automator' ),
+						'name' => __( 'A user completes {{an order}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user\'s order status changes to {{a specific status}}', 'uncanny-automator' ),
+						'name' => __( 'A user\'s order status changes to {{a specific status}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user\'s subscription to {{a product}} expires', 'uncanny-automator' ),
+						'name' => __( 'A user\'s subscription to {{a product}} expires', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user cancels a subscription to {{a product}}', 'uncanny-automator' ),
+						'name' => __( 'A user cancels a subscription to {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user renews a subscription to {{a product}}', 'uncanny-automator' ),
+						'name' => __( 'A user renews a subscription to {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Anonymous trigger - WooCommerce */
-						'name' => esc_attr__( '{{A product}} is purchased via guest checkout', 'uncanny-automator' ),
+						'name' => __( '{{A product}} is purchased via guest checkout', 'uncanny-automator' ),
 						'type' => 'anonymous'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user purchases a product with {{a tag}}', 'uncanny-automator' ),
+						'name' => __( 'A user purchases a product with {{a tag}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user purchases a product with {{a category}}', 'uncanny-automator' ),
+						'name' => __( 'A user purchases a product in {{a category}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => esc_attr__( 'A user purchases {{a variable product}} with {{a variation}} selected', 'uncanny-automator' ),
+						'name' => __( 'A user purchases {{a variable product}} with {{a variation}} selected', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
@@ -1819,53 +2111,66 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => esc_attr__( 'A user is created', 'uncanny-automator' ),
+						'name' => __( 'A user is created', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => esc_attr__( 'A user clicks a {{magic button}}', 'uncanny-automator' ),
+						'name' => __( '{{A post}} is updated', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => esc_attr__( 'Receive data from {{a webhook}}', 'uncanny-automator' ),
+						'name' => __( 'A user resets their password', 'uncanny-automator' ),
+						'type' => 'logged-in'
+					],
+
+					[
+						/* translators: Anonymous trigger - WordPress Core */
+						'name' => __( 'A guest comment is submitted on {{a post}}', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					],
+
+					[
+						/* translators: Anonymous trigger - WordPress Core */
+						'name' => __( 'A guest comment on {{a post}} is approved', 'uncanny-automator' ),
+						'type' => 'anonymous'
+					],
+
+					[
+						/* translators: Logged-in trigger - WordPress Core */
+						'name' => __( 'A user\'s post is set to {{a specific status}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => esc_attr__( '{{A post}} is updated', 'uncanny-automator' ),
+						'name' => __( 'A post in {{a specific taxonomy}} is updated', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => esc_attr__( 'A user resets their password', 'uncanny-automator' ),
+						'name' => __( 'A user\'s comment on {{a post}} is approved', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - WordPress Core */
-						'name' => esc_attr__( 'Remove {{a role}} from the user\'s roles', 'uncanny-automator' )
+						'name' => __( 'Remove {{a role}} from the user\'s roles', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - WordPress Core */
-						'name' => esc_attr__( 'Create {{a post}}', 'uncanny-automator' )
+						'name' => __( 'Set {{post meta}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - WordPress Core */
-						'name' => esc_attr__( 'Set {{post meta}}', 'uncanny-automator' )
-					],
-
-					[
-						/* translators: Action - WordPress Core */
-						'name' => esc_attr__( 'Set {{user meta}}', 'uncanny-automator' )
+						'name' => __( 'Set {{user meta}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1875,12 +2180,12 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - WP Courseware */
-						'name' => esc_attr__( 'Remove the user from {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - WP Courseware */
-						'name' => esc_attr__( 'Enroll the user in {{a course}}', 'uncanny-automator' )
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1889,20 +2194,20 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WP Fusion */
-						'name' => esc_attr__( '{{A tag}} is added to a user', 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is added to a user', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					],
 
 					[
 						/* translators: Logged-in trigger - WP Fusion */
-						'name' => esc_attr__( '{{A tag}} is removed from a user', 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is removed from a user', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - WP Fusion */
-						'name' => esc_attr__( 'Remove {{a tag}} from the user', 'uncanny-automator' )
+						'name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1911,14 +2216,14 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - WPForms */
-						'name' => esc_attr__( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
 				'actions'  => [
 					[
 						/* translators: Action - WPForms */
-						'name' => esc_attr__( 'Register a new user', 'uncanny-automator' )
+						'name' => __( 'Register a new user', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1927,7 +2232,7 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Logged-in trigger - wpForo */
-						'name' => esc_attr__( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
+						'name' => __( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
 						'type' => 'logged-in'
 					]
 				],
@@ -1938,7 +2243,7 @@ class Recipe_Post_Type {
 				'triggers' => [
 					[
 						/* translators: Anonymous trigger - Zapier */
-						'name' => esc_attr__( 'Receive data from Zapier webhook', 'uncanny-automator' ),
+						'name' => __( 'Receive data from Zapier webhook', 'uncanny-automator' ),
 						'type' => 'anonymous'
 					]
 				],
@@ -1950,12 +2255,12 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - Zoom Meetings */
-						'name' => esc_attr__( 'Add the user to {{a meeting}}', 'uncanny-automator' )
+						'name' => __( 'Add the user to {{a meeting}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - Zoom Meetings */
-						'name' => esc_attr__( 'Remove the user from {{a meeting}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a meeting}}', 'uncanny-automator' )
 					]
 				]
 			],
@@ -1965,12 +2270,12 @@ class Recipe_Post_Type {
 				'actions'  => [
 					[
 						/* translators: Action - Zoom Webinars */
-						'name' => esc_attr__( 'Add the user to {{a webinar}}', 'uncanny-automator' )
+						'name' => __( 'Add the user to {{a webinar}}', 'uncanny-automator' )
 					],
 
 					[
 						/* translators: Action - Zoom Webinars */
-						'name' => esc_attr__( 'Remove the user from {{a webinar}}', 'uncanny-automator' )
+						'name' => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' )
 					]
 				]
 			]

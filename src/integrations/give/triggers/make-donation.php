@@ -121,6 +121,10 @@ class MAKE_DONATION {
 							$trigger_meta['meta_value'] = maybe_serialize( $amount );
 							$uncanny_automator->insert_trigger_meta( $trigger_meta );
 
+							$trigger_meta['meta_key']   = 'payment_data';
+							$trigger_meta['meta_value'] = maybe_serialize( $payment_data );
+							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
 							$uncanny_automator->maybe_trigger_complete( $result['args'] );
 						}
 					}

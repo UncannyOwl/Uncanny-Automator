@@ -15,7 +15,7 @@
 .uap * {
   box-sizing: border-box; }
 
-.uap .clear:after {
+.uap .uap-clear:after {
   content: '';
   display: block;
   clear: both; }

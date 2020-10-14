@@ -449,7 +449,7 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.userSelector.newUser.displayName
 					'password'                         =>  esc_attr__( 'Password', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.newUser.password
-					'passwordDescription'              =>  esc_attr__( 'If left empty, you will need to create an action to send the automatically generated password to the user.', 'uncanny-automator' ),
+					'passwordDescription'              =>  sprintf( esc_attr__( 'If left empty, the user will need to reset their password to log in. Send an email containing the %1$s token to simplify the process.', 'uncanny-automator' ), '<em>' . esc_attr__( 'User reset password URL', 'uncanny-automator' ) . '</em>' ),
 					// UncannyAutomator.i18n.userSelector.newUser.passwordDescription
 					/* translators: WordPress roles */
 					'roles'                            =>  esc_attr__( 'Roles', 'uncanny-automator' ),

@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 
 use WP_Error;
+use Uncanny_Automator_Pro\Integromat_Pro_Helpers;
 
 /**
  * Class Integromat_Helpers

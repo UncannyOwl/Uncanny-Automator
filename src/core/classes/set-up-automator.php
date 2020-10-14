@@ -305,6 +305,10 @@ class Set_Up_Automator {
 					continue;
 				}
 
+				if ( 'vendor' === (string) $item && is_dir( $directory . DIRECTORY_SEPARATOR . $item ) ) {
+					continue;
+				}
+				
 				if ( true === $recursive && is_dir( $directory . DIRECTORY_SEPARATOR . $item ) ) {
 					$dir                       = basename( $directory . DIRECTORY_SEPARATOR . $item );
 					$integration_files[ $dir ] = self::read_directory( $directory . DIRECTORY_SEPARATOR . $item );
