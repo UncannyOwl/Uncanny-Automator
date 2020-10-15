@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.5.1
 Requires PHP: 7.0
-Stable tag: 2.8.2
+Stable tag: 2.8.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -160,6 +160,11 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.8.3 [2020-10-15] =
+
+* Fixed: Token QUIZPERCENT for A user achieves a percentage greater than, less than or equal to a value on a quiz
+* Fixed: Incorrect namespace on helper files for some integrations
 
 = 2.8.2 [2020-10-14] =
 

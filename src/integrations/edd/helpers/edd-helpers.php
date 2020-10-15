@@ -62,7 +62,7 @@ class Edd_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Product', 'uncanny-automator' );
+			$label = esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -74,7 +74,7 @@ class Edd_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any download', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any download', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -86,9 +86,9 @@ class Edd_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Download title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Download ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Download URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Download title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Download ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Download URL', 'uncanny-automator' ),
 			],
 		];
 

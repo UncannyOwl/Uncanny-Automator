@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Events_Manager_Pro_Helpers;
+
 /**
  * Class Events_Manager_Helpers
  * @package Uncanny_Automator
@@ -13,7 +15,7 @@ class Events_Manager_Helpers {
 	public $options;
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Events_Manager_Pro_Helpers
+	 * @var Events_Manager_Pro_Helpers
 	 */
 	public $pro;
 
@@ -30,9 +32,9 @@ class Events_Manager_Helpers {
 	}
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Events_Manager_Pro_Helpers $pro
+	 * @param Events_Manager_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Events_Manager_Pro_Helpers $pro ) {
+	public function setPro( Events_Manager_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 

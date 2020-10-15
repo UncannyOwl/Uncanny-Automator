@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Give_Pro_Helpers;
+
 /**
  * Class Give_Helpers
  * @package Uncanny_Automator
@@ -27,14 +29,14 @@ class Give_Helpers {
 	}
 
 	/**
-	 * @var \Uncanny_Automator_Pro\Give_Pro_Helpers
+	 * @var Give_Pro_Helpers
 	 */
 	public $pro;
 
 	/**
-	 * @param \Uncanny_Automator_Pro\Give_Pro_Helpers $pro
+	 * @param Give_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Give_Pro_Helpers $pro ) {
+	public function setPro( Give_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 

@@ -53,7 +53,7 @@ class Tc_Tokens {
 	 *
 	 * @return array
 	 */
-	function possible_tokens( $tokens = [], $args = [] ) {
+	public function possible_tokens( $tokens = [], $args = [] ) {
 
 		if ( ! isset( $args['value'] ) || ! isset( $args['meta'] ) ) {
 			return $tokens;
@@ -71,40 +71,40 @@ class Tc_Tokens {
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Course title',
+				'tokenName'       => __( 'Course title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course',
 			];
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Course ID',
+				'tokenName'       => __( 'Course ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_id',
 			];
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Course URL',
+				'tokenName'       => __( 'Course URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_url',
 			];
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Lesson/Topic title',
+				'tokenName'       => __( 'Lesson/Topic title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
 			];
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Lesson/Topic ID',
+				'tokenName'       => __( 'Lesson/Topic ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_id',
 			];
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => 'Lesson/Topic URL',
+				'tokenName'       => __( 'Lesson/Topic URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_url',
 			];
@@ -135,6 +135,7 @@ class Tc_Tokens {
 				|| in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces )
 				|| in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces )
 				|| in_array( 'TCVERB', $pieces )
+				|| in_array( 'QUIZPERCENT', $pieces )
 				|| in_array( 'TCMODULEINTERACTION', $pieces )
 			) {
 				if ( ! absint( $user_id ) ) {
@@ -156,6 +157,13 @@ class Tc_Tokens {
 				// Verb can be found from trigger meta
 				if ( in_array( 'TCVERB', $pieces ) ) {
 					$value = $uncanny_automator->get->maybe_get_meta_value_from_trigger_log( 'TCVERB', $trigger_id, $trigger_log_id, $run_number, $user_id );
+
+					return $value;
+				}
+
+				// Verb can be found from trigger meta
+				if ( in_array( 'QUIZPERCENT', $pieces ) ) {
+					$value = $uncanny_automator->get->maybe_get_meta_value_from_trigger_log( 'QUIZPERCENT', $trigger_id, $trigger_log_id, $run_number, $user_id );
 
 					return $value;
 				}

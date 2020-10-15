@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Uncanny Automator plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 2.8.2\n"
+"Project-Id-Version: Uncanny Automator 2.8.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-10-14T17:32:44+00:00\n"
+"POT-Creation-Date: 2020-10-15T21:10:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
@@ -1304,6 +1304,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1567
 #: src/core/mu-classes/composite-classes/automator-options.php:1609
 #: src/integrations/learndash/helpers/learndash-helpers.php:105
+#: src/integrations/learndash/tokens/tc-tokens.php:74
 #: src/integrations/learndash/triggers/ld-lessondone.php:47
 #: src/integrations/learndash/triggers/ld-topicdone.php:57
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:103
@@ -1322,6 +1323,7 @@ msgstr ""
 #: src/integrations/learndash/actions/ld-marklessondone.php:67
 #: src/integrations/learndash/actions/ld-marktopicdone.php:80
 #: src/integrations/learndash/helpers/learndash-helpers.php:106
+#: src/integrations/learndash/tokens/tc-tokens.php:80
 #: src/integrations/learndash/triggers/ld-lessondone.php:48
 #: src/integrations/learndash/triggers/ld-topicdone.php:58
 #: src/integrations/learnpress/actions/lp-marklessondone.php:64
@@ -1340,6 +1342,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:1569
 #: src/core/mu-classes/composite-classes/automator-options.php:1611
 #: src/integrations/learndash/helpers/learndash-helpers.php:107
+#: src/integrations/learndash/tokens/tc-tokens.php:86
 #: src/integrations/learndash/triggers/ld-lessondone.php:49
 #: src/integrations/learndash/triggers/ld-topicdone.php:59
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:105
@@ -1621,8 +1624,8 @@ msgstr ""
 #: src/integrations/elementor/helpers/elementor-helpers.php:65
 #: src/integrations/formidable/helpers/formidable-helpers.php:67
 #: src/integrations/forminator/helpers/forminator-helpers.php:66
-#: src/integrations/give/helpers/give-helpers.php:46
-#: src/integrations/give/helpers/give-helpers.php:75
+#: src/integrations/give/helpers/give-helpers.php:48
+#: src/integrations/give/helpers/give-helpers.php:77
 #: src/integrations/give/triggers/make-donation.php:50
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:65
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:66
@@ -1686,7 +1689,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2467
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:65
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:110
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:47
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:49
 msgid "Event"
 msgstr ""
 
@@ -1694,7 +1697,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2503
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:87
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:148
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:86
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:88
 msgid "Event title"
 msgstr ""
 
@@ -1702,7 +1705,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2504
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:88
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:149
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:87
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:89
 msgid "Event ID"
 msgstr ""
 
@@ -1710,7 +1713,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2505
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:89
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:150
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:88
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:90
 msgid "Event URL"
 msgstr ""
 
@@ -1922,7 +1925,7 @@ msgstr ""
 #: src/core/mu-classes/composite-classes/automator-options.php:2289
 #: src/integrations/elementor/helpers/elementor-helpers.php:71
 #: src/integrations/forminator/helpers/forminator-helpers.php:72
-#: src/integrations/give/helpers/give-helpers.php:60
+#: src/integrations/give/helpers/give-helpers.php:62
 #: src/integrations/happyforms/triggers/hf-formsubmit.php:59
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:75
 #: src/integrations/ultimate-member/triggers/um-userlogsin.php:43
@@ -3055,11 +3058,11 @@ msgstr ""
 msgid "A user registers for {{an event}}"
 msgstr ""
 
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:58
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:60
 msgid "Any event"
 msgstr ""
 
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:70
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:72
 msgid "ID: %s (no title)"
 msgstr ""
 
@@ -3078,7 +3081,7 @@ msgctxt "GamiPress"
 msgid "Rank type slug"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:74
+#: src/integrations/give/helpers/give-helpers.php:76
 msgid "Donated Amount"
 msgstr ""
 
@@ -3363,6 +3366,18 @@ msgstr ""
 #: src/integrations/learndash/helpers/learndash-helpers.php:296
 msgctxt "LearnDash"
 msgid "Quiz ID"
+msgstr ""
+
+#: src/integrations/learndash/tokens/tc-tokens.php:93
+msgid "Lesson/Topic title"
+msgstr ""
+
+#: src/integrations/learndash/tokens/tc-tokens.php:100
+msgid "Lesson/Topic ID"
+msgstr ""
+
+#: src/integrations/learndash/tokens/tc-tokens.php:107
+msgid "Lesson/Topic URL"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
@@ -3897,19 +3912,19 @@ msgstr ""
 msgid "Add the user to {{a membership level}}"
 msgstr ""
 
-#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:62
+#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:64
 msgid "Membership level"
 msgstr ""
 
-#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:74
+#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:76
 msgid "All levels"
 msgstr ""
 
-#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:78
+#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:80
 msgid "Any level"
 msgstr ""
 
-#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:99
+#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:101
 msgid "Membership Level"
 msgstr ""
 

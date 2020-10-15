@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator_Pro\Wishlist_Member_Pro_Helpers;
+
 /**
  * Class Wishlist_Member_Helpers
  * @package Uncanny_Automator

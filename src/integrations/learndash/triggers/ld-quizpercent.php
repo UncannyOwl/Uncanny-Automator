@@ -39,9 +39,9 @@ class LD_QUIZPERCENT {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf(  esc_attr__( 'A user achieves a percentage {{greater than, less than or equal:%1$s}} to {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', 'QUIZPERCENT', $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user achieves a percentage {{greater than, less than or equal:%1$s}} to {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', 'QUIZPERCENT', $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  =>  esc_attr__( 'A user achieves a percentage {{greater than, less than or equal}} to {{a value}} on {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user achieves a percentage {{greater than, less than or equal}} to {{a value}} on {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'learndash_quiz_completed',
 			'priority'            => 15,
 			'accepted_args'       => 2,
@@ -49,7 +49,7 @@ class LD_QUIZPERCENT {
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => [
 				$uncanny_automator->helpers->recipe->field->less_or_greater_than(),
-				$uncanny_automator->helpers->recipe->field->integer_field( 'QUIZPERCENT',  esc_attr__( 'Percentage', 'uncanny-automator' ), '' ),
+				$uncanny_automator->helpers->recipe->field->integer_field( 'QUIZPERCENT', esc_attr__( 'Percentage', 'uncanny-automator' ), '' ),
 				$uncanny_automator->helpers->recipe->learndash->options->all_ld_quiz(),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
@@ -108,7 +108,34 @@ class LD_QUIZPERCENT {
 						'trigger_to_match' => $matched_recipe_id['trigger_id'],
 						'ignore_post_id'   => true,
 					];
-					$uncanny_automator->maybe_add_trigger_entry( $args );
+
+					$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+
+					if ( $result ) {
+						foreach ( $result as $r ) {
+							if ( true === $r['result'] ) {
+								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
+									$trigger_id     = (int) $r['args']['trigger_id'];
+									$user_id        = (int) $r['args']['user_id'];
+									$trigger_log_id = (int) $r['args']['get_trigger_id'];
+									$run_number     = (int) $r['args']['run_number'];
+
+									$insert = [
+										'user_id'        => $user_id,
+										'trigger_id'     => $trigger_id,
+										'trigger_log_id' => $trigger_log_id,
+										'meta_key'       => 'QUIZPERCENT',
+										'meta_value'     => $percentage,
+										'run_number'     => $run_number,
+									];
+
+									$uncanny_automator->insert_trigger_meta( $insert );
+								}
+
+								$uncanny_automator->maybe_trigger_complete( $r['args'] );
+							}
+						}
+					}
 				}
 			}
 		}
