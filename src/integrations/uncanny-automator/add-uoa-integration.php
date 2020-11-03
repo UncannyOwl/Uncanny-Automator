@@ -40,10 +40,11 @@ class Add_Uoa_Integration {
 	 * Update previous triggers moved to this integration
 	 */
 	public function update_script() {
-		if ( false === get_option( '_uoa_sendwebhook_wp_uoa', false ) ) {
-			$args         = [
-				'post_type'  => 'uo-action',
-				'meta_query' => [
+		if ( false === get_option( '_uoa_sendwebhook_wp_uoa_any', false ) ) {
+			$args = [
+				'post_type'   => 'uo-action',
+				'post_status' => 'any',
+				'meta_query'  => [
 					'relation' => 'AND',
 					[
 						'key'     => 'integration',
@@ -64,7 +65,7 @@ class Add_Uoa_Integration {
 					update_post_meta( $old_trigger->ID, 'integration_name', 'Uncanny Automator' );
 				}
 			}
-			update_option( '_uoa_sendwebhook_wp_uoa', 'updated' );
+			update_option( '_uoa_sendwebhook_wp_uoa_any', 'updated' );
 		}
 	}
 

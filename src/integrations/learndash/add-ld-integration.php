@@ -80,11 +80,7 @@ class Add_Ld_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'        => 'LearnDash',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-learndash-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-learndash-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-learndash-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-learndash.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-learndash@2x.png' ),
+			'icon_svg'    => Utilities::get_integration_icon( 'learndash-icon.svg' ),
 		) );
 	}
 }

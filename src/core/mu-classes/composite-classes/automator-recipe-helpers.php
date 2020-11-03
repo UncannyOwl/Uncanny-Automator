@@ -37,6 +37,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $event_tickets;
 	/**
+	 * @var Fluent_Crm_Helpers
+	 */
+	public $fluent_crm;
+	/**
 	 * @var Formidable_Helpers
 	 */
 	public $formidable;
@@ -88,6 +92,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Popup_Maker_Helpers
 	 */
 	public $popup_maker;
+	/**
+	 * @var Restrict_Content_Helpers
+	 */
+	public $restrict_content;
 	/**
 	 * @var Tutorlms_Helpers
 	 */
@@ -175,6 +183,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Wpwh_Helpers
 	 */
 	public $elementor;
+	/**
+	 * @var Wpjm_Helpers
+	 */
+	public $wp_job_manager;
 	/**
 	 * @var Automator_Helpers_Recipe
 	 */
@@ -325,7 +337,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		// (#4)
 		$current_url = wp_parse_url( add_query_arg( array() ) );
 		$regex       = '/\/' . $prefix . '\/(' . str_replace( '/', '\/', AUTOMATOR_REST_API_END_POINT ) . '.+)/';
-		$match       = $current_url['path'];
+		$match       = isset( $current_url['path'] ) ? $current_url['path'] : '';
 
 
 		return preg_match( $regex, $match );

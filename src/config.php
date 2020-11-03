@@ -83,7 +83,6 @@ class Config {
 	 */
 	private function define_constants( $plugin_name, $prefix, $version, $plugin_file, $debug_mode ) {
 
-
 		// Set and define version
 		if ( ! defined( strtoupper( $prefix ) . '_PLUGIN_NAME' ) ) {
 			define( strtoupper( $prefix ) . '_PLUGIN_NAME', $plugin_name );
@@ -142,271 +141,153 @@ class Config {
 	 * Update DB code to use InnoDB Engine instead of MyISAM.
 	 * Indexes updated
 	 *
-	 * @since    1.0.0
 	 * @version 2.5
+	 * @version 2.9
 	 * @author Saad
+	 * @since 1.0.0
 	 */
 	public function activation() {
-
-		do_action( Utilities::get_prefix() . '_activation_before' );
-
 		$db_version = get_option( 'uap_database_version', null );
-
-		if ( ! null === $db_version ) {
-			// update
-			$this->upgrade();
-
+		if ( null !== $db_version && (string) InitializePlugin::DATABASE_VERSION === (string) $db_version ) {
+			// bail. No db upgrade needed!
 			return;
 		}
 
-		if ( null === $db_version ) {
+		do_action( Utilities::get_prefix() . '_activation_before' );
 
-			global $wpdb;
-			$wpdb_collate = $wpdb->collate;
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		// Automator Recipe log
+		$tbl_recipe_log = $wpdb->prefix . 'uap_recipe_log';
+		//Automator trigger log
+		$tbl_trigger_log = $wpdb->prefix . 'uap_trigger_log';
+		//Automator trigger meta data log
+		$tbl_trigger_log_meta = $wpdb->prefix . 'uap_trigger_log_meta';
+		// Automator Action log
+		$tbl_action_log = $wpdb->prefix . 'uap_action_log';
+		//Automator action meta data log
+		$tbl_action_log_meta = $wpdb->prefix . 'uap_action_log_meta';
+		// Automator Closure Log
+		$tbl_closure_log = $wpdb->prefix . 'uap_closure_log';
+		//Automator closure meta data log
+		$tbl_closure_log_meta = $wpdb->prefix . 'uap_closure_log_meta';
 
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		$sql = "CREATE TABLE {$tbl_recipe_log} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`user_id` bigint unsigned NOT NULL,
+`automator_recipe_id` bigint unsigned NOT NULL,
+`completed` tinyint(1) NOT NULL,
+`run_number` mediumint unsigned NOT NULL DEFAULT 1,
+PRIMARY KEY  (`ID`),
+KEY completed (`completed`),
+KEY user_id (`user_id`),
+KEY automator_recipe_id (`automator_recipe_id`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_trigger_log} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`user_id` bigint unsigned NOT NULL,
+`automator_trigger_id` bigint unsigned NOT NULL,
+`automator_recipe_id` bigint unsigned NOT NULL,
+`automator_recipe_log_id` bigint unsigned NULL,
+`completed` tinyint(1) unsigned NOT NULL,
+PRIMARY KEY  (`ID`),
+KEY user_id (`user_id`),
+KEY completed (`completed`),
+KEY automator_recipe_id (`automator_recipe_id`),
+KEY automator_recipe_log_id (`automator_recipe_log_id`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_trigger_log_meta} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`user_id` bigint unsigned NOT NULL,
+`automator_trigger_log_id` bigint unsigned NULL,
+`automator_trigger_id` bigint unsigned NOT NULL,
+`meta_key` varchar(255) DEFAULT '' NOT NULL,
+`meta_value` longtext NULL,
+`run_number` mediumint unsigned NOT NULL DEFAULT 1,
+`run_time` datetime DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY  (`ID`),
+KEY user_id (`user_id`),
+KEY automator_trigger_id (`automator_trigger_id`),
+KEY automator_trigger_log_id (`automator_trigger_log_id`),
+KEY meta_key (meta_key(20))
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_action_log} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`user_id` bigint unsigned NOT NULL,
+`automator_action_id` bigint unsigned NOT NULL,
+`automator_recipe_id` bigint unsigned NOT NULL,
+`automator_recipe_log_id` bigint unsigned NULL,
+`completed` tinyint(1) unsigned NOT NULL,
+`error_message` longtext NULL,
+PRIMARY KEY  (`ID`),
+KEY user_id (`user_id`),
+KEY completed (`completed`),
+KEY automator_recipe_log_id (`automator_recipe_log_id`),
+KEY automator_recipe_id (`automator_recipe_id`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_action_log_meta} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`user_id` bigint unsigned NOT NULL,
+`automator_action_log_id` bigint unsigned NULL,
+`automator_action_id` bigint unsigned NOT NULL,
+`meta_key` varchar(255) DEFAULT '' NOT NULL,
+`meta_value` longtext NULL,
+PRIMARY KEY  (`ID`),
+KEY user_id (`user_id`),
+KEY automator_action_log_id (`automator_action_log_id`),
+KEY meta_key (meta_key(20))
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_closure_log} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`user_id` bigint unsigned NOT NULL,
+`automator_closure_id` bigint unsigned NOT NULL,
+`automator_recipe_id` bigint unsigned NOT NULL,
+`completed` tinyint(1) unsigned NOT NULL,
+PRIMARY KEY  (`ID`),
+KEY user_id (`user_id`),
+KEY automator_recipe_id (`automator_recipe_id`),
+KEY completed (`completed`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_closure_log_meta} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`user_id` bigint unsigned NOT NULL,
+`automator_closure_id` bigint unsigned NOT NULL,
+`meta_key` varchar(255) DEFAULT '' NOT NULL,
+`meta_value` longtext NULL,
+PRIMARY KEY  (`ID`),
+KEY user_id (`user_id`),
+KEY meta_key (meta_key(15))
+) ENGINE=InnoDB {$charset_collate};";
 
-			// Automator Recipe log
-			$table_name = $wpdb->prefix . 'uap_recipe_log';
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
 
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
-				ID mediumint(8) unsigned NOT NULL auto_increment,
-				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
-				user_id bigint(20) unsigned NOT NULL,
-				automator_recipe_id bigint(20) unsigned NOT NULL,
-				completed tinyint(1) NOT NULL,
-				run_number mediumint(8) unsigned NOT NULL DEFAULT "1",
-				PRIMARY KEY  (ID),
-				KEY completed (completed),
-				KEY user_id (user_id),
-				KEY automator_recipe_id (automator_recipe_id)
-				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
-
-			dbDelta( $sql );
-
-			// Automator Trigger log
-			$table_name = $wpdb->prefix . 'uap_trigger_log';
-
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
-				ID mediumint(8) unsigned NOT NULL auto_increment,
-				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
-				user_id bigint(20) unsigned NOT NULL,
-				automator_trigger_id bigint(20) unsigned NOT NULL,
-				automator_recipe_id bigint(20) unsigned NOT NULL,
-				automator_recipe_log_id bigint(20) unsigned NULL,
-				completed tinyint(1) unsigned NOT NULL,
-				PRIMARY KEY  (ID),
-				KEY user_id (user_id),
-				KEY completed (completed),
-				KEY automator_recipe_id (automator_recipe_id),
-				KEY automator_recipe_log_id (automator_recipe_log_id)
-				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
-
-			dbDelta( $sql );
-
-			//Automator trigger meta data log
-			$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
-
-
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
-				ID mediumint(8) unsigned NOT NULL auto_increment,
-				user_id bigint(20) unsigned NOT NULL,
-				automator_trigger_log_id bigint(20) unsigned NULL,
-				automator_trigger_id bigint(20) unsigned NOT NULL,
-				meta_key varchar(255) DEFAULT "" NOT NULL,
-				meta_value longtext DEFAULT "" NOT NULL,
-				run_number mediumint(8) unsigned NOT NULL DEFAULT "1",
-				run_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
-				PRIMARY KEY  (ID),
-				KEY user_id (user_id),
-				KEY automator_trigger_id (automator_trigger_id),
-				KEY automator_trigger_log_id (automator_trigger_log_id),
-				KEY meta_key (meta_key(20))
-				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
-
-			dbDelta( $sql );
-
-			// Automator Action log
-			$table_name = $wpdb->prefix . 'uap_action_log';
-			if ( $wpdb->get_results( "SHOW TABLES LIKE '$table_name';" ) ) {
-				if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
-					$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
-				}
-				$wpdb->query( $sql );
-			}
-
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
-				ID mediumint(8) unsigned NOT NULL auto_increment,
-				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
-				user_id bigint(20) unsigned NOT NULL,
-				automator_action_id bigint(20) unsigned NOT NULL,
-				automator_recipe_id bigint(20) unsigned NOT NULL,
-				automator_recipe_log_id bigint(20) unsigned NULL,
-				completed tinyint(1) unsigned NOT NULL,
-				error_message longtext DEFAULT "" NOT NULL,
-				PRIMARY KEY  (ID),
-				KEY user_id (user_id),
-				KEY completed (completed),
-				KEY automator_recipe_log_id (automator_recipe_log_id),
-				KEY automator_recipe_id (automator_recipe_id)
-				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
-
-			dbDelta( $sql );
-
-			//Automator action meta data log
-			$table_name = $wpdb->prefix . 'uap_action_log_meta';
-
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
-				ID mediumint(8) unsigned NOT NULL auto_increment,
-				user_id bigint(20) unsigned NOT NULL,
-				automator_action_log_id bigint(20) unsigned NULL,
-				automator_action_id bigint(20) unsigned NOT NULL,
-				meta_key varchar(255) DEFAULT "" NOT NULL,
-				meta_value longtext DEFAULT "" NOT NULL,
-				PRIMARY KEY  (ID),
-				KEY user_id (user_id),
-				KEY automator_action_log_id (automator_action_log_id),
-				KEY meta_key (meta_key(20))
-				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
-
-			dbDelta( $sql );
-
-			// Automator Closure Log
-			$table_name = $wpdb->prefix . 'uap_closure_log';
-
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
-				ID mediumint(8) unsigned NOT NULL auto_increment,
-				date_time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
-				user_id bigint(20) unsigned NOT NULL,
-				automator_closure_id bigint(20) unsigned NOT NULL,
-				automator_recipe_id bigint(20) unsigned NOT NULL,
-				completed tinyint(1) unsigned NOT NULL,
-				PRIMARY KEY  (ID),
-				KEY user_id (user_id),
-				KEY automator_recipe_id (automator_recipe_id),
-				KEY completed (completed)
-				) ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
-
-			dbDelta( $sql );
-
-			//Automator closure meta data log
-			$table_name = $wpdb->prefix . 'uap_closure_log_meta';
-
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
-				ID mediumint(8) unsigned NOT NULL auto_increment,
-				user_id bigint(20) unsigned NOT NULL,
-				automator_closure_id bigint(20) unsigned NOT NULL,
-				meta_key varchar(255) DEFAULT "" NOT NULL,
-				meta_value longtext DEFAULT "" NOT NULL,
-				PRIMARY KEY  (ID),
-				KEY user_id (user_id),
-				KEY meta_key (meta_key(15))
-				)  ENGINE=InnoDB COLLATE ' . $wpdb_collate . ';';
-
-			dbDelta( $sql );
-
-			update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
-		}
+		update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
 
 		do_action( Utilities::get_prefix() . '_activation_after' );
 	}
 
 	/**
-	 * The code that runs during plugin activation/upgrade.
+	 * Added this to fix MySQL 8 AUTO_INCREMENT issue
+	 * with already created tables
 	 *
-	 * Run for database updates
-	 *
-	 * @since   2.5.1
-	 * @version 2.5.1
-	 * @author Saad
+	 * @since 2.9
+	 * @author Saad S.
 	 */
-	public function upgrade() {
-
-		do_action( Utilities::get_prefix() . '_activation_before' );
-		$db_version = get_option( 'uap_database_version', null );
-
-		if ( null === $db_version ) {
-			$this->activation();
-		}
-
-		if ( (string) $db_version === (string) InitializePlugin::DATABASE_VERSION ) {
-			return;
-		}
-
+	public function mysql_8_auto_increment_fix() {
 		global $wpdb;
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		$db_name = DB_NAME;
-
-		// Automator Recipe log
-		$table_name = $wpdb->prefix . 'uap_recipe_log';
-
-		// Change table db to InnoDB
-		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-		$wpdb->query( $sql );
-
-		// Automator Trigger log
-		$table_name = $wpdb->prefix . 'uap_trigger_log';
-
-		// Change table db to InnoDB
-		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-		$wpdb->query( $sql );
-
-		//Automator trigger meta data log
-		$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
-
-		// Change table db to InnoDB
-		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-		$wpdb->query( $sql );
-
-		// Alter table and add run_tim
-		if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
-			if ( empty( $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` WHERE Field LIKE 'run_time'" ) ) ) {
-				$sql = "ALTER TABLE $table_name ADD COLUMN `run_time` datetime DEFAULT NULL;";
-				$wpdb->query( $sql );
-			}
-		}
-
-		// Automator Action log
-		$table_name = $wpdb->prefix . 'uap_action_log';
-
-		if ( $wpdb->get_results( $wpdb->prepare( "SHOW TABLES FROM `{$db_name}` WHERE `Tables_in_{$db_name}` LIKE %s", $table_name ) ) ) {
-			if ( $wpdb->get_results( "SHOW INDEX FROM $table_name WHERE Key_name = 'error_message';" ) ) {
-				$sql = 'ALTER TABLE ' . $table_name . ' DROP INDEX `error_message`;';
-				$wpdb->query( $sql );
-			}
-		}
-
-		// Change table db to InnoDB
-		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-		$wpdb->query( $sql );
-
-
-		//Automator action meta data log
-		$table_name = $wpdb->prefix . 'uap_action_log_meta';
-
-		// Change table db to InnoDB
-		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-		$wpdb->query( $sql );
-
-		// Automator Closure Log
-		$table_name = $wpdb->prefix . 'uap_closure_log';
-
-		// Change table db to InnoDB
-		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-		$wpdb->query( $sql );
-
-		//Automator closure meta data log
-		$table_name = $wpdb->prefix . 'uap_closure_log_meta';
-
-		// Change table db to InnoDB
-		$sql = "ALTER TABLE  $table_name ENGINE=InnoDB;";
-		$wpdb->query( $sql );
-
-		update_option( 'uap_database_version', InitializePlugin::DATABASE_VERSION );
-
-		do_action( Utilities::get_prefix() . '_activation_after' );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_recipe_log`;" );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_action_log`;" );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_action_log_meta`;" );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_closure_log`;" );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_closure_log_meta`;" );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_trigger_log`;" );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_trigger_log_meta`;" );
 	}
 
 	/**

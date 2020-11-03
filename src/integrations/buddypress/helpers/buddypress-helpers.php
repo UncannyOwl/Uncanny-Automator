@@ -177,7 +177,7 @@ class Buddypress_Helpers {
 		if ( isset( $_POST ) ) {
 			$fields[] = [
 				'value' => - 1,
-				'text'  => __( 'Any Topic', 'uncanny-automator' ),
+				'text'  => __( 'Any topic', 'uncanny-automator' ),
 			];
 			$forum_id = (int) $_POST['value'];
 

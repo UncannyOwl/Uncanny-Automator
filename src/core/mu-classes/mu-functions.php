@@ -979,6 +979,34 @@ class Automator_Functions {
 	}
 
 	/**
+	 * Added this function to directly fetch trigger data instead of looping thru
+	 * recipe and it's triggers for parsing. Specially needed for multi-trigger
+	 * parsing
+	 *
+	 * @param int $recipe_id
+	 * @param int $trigger_id
+	 *
+	 * @return array|mixed
+	 * @since 2.9
+	 * @author Saad S.
+	 */
+	public function get_trigger_data( $recipe_id = 0, $trigger_id = 0 ) {
+		$recipe_data = $this->get_recipe_data( 'uo-trigger', $recipe_id );
+		if ( ! $recipe_data ) {
+			return array();
+		}
+		foreach ( $recipe_data as $trigger_data ) {
+			if ( absint( $trigger_id ) !== absint( $trigger_data['ID'] ) ) {
+				continue;
+			}
+
+			return $trigger_data;
+		}
+
+		return array();
+	}
+
+	/**
 	 * Insert trigger for the user
 	 *
 	 * @param $user_id

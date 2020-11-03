@@ -71,7 +71,7 @@ class Automator_Recipe_Process_Complete {
 
 		$update = array(
 			'completed' => true,
-			'date_time' => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+			'date_time' => current_time( 'mysql' ),
 		);
 
 		$where = array(
@@ -265,7 +265,7 @@ class Automator_Recipe_Process_Complete {
 
 		$action_log_id = $wpdb->insert( $table_name,
 			array(
-				'date_time'               => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+				'date_time'               => current_time( 'mysql' ),
 				'user_id'                 => $user_id,
 				'automator_action_id'     => $action_id,
 				'automator_recipe_id'     => $recipe_id,
@@ -383,7 +383,7 @@ class Automator_Recipe_Process_Complete {
 		if ( null === $recipe_log_id ) {
 			$wpdb->insert( $table_name,
 				array(
-					'date_time'           => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+					'date_time'           => current_time( 'mysql' ),
 					'user_id'             => $user_id,
 					'automator_recipe_id' => $recipe_id,
 					'completed'           => $completed,
@@ -401,7 +401,7 @@ class Automator_Recipe_Process_Complete {
 		} else {
 			$wpdb->update( $table_name,
 				array(
-					'date_time'  => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+					'date_time'  => current_time( 'mysql' ),
 					'completed'  => $completed,
 					'run_number' => $run_number
 				),
@@ -533,10 +533,7 @@ class Automator_Recipe_Process_Complete {
 				$action_data['complete_with_errors'] = true;
 				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 			} elseif ( 1 === $uncanny_automator->plugin_status->get( $action_integration ) && 'draft' === $action_status ) {
-				global $uncanny_automator;
-				$error_message                       = $uncanny_automator->error_message->get( 'action-not-active' );
-				$action_data['complete_with_errors'] = true;
-				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+				continue;
 			} else {
 				global $uncanny_automator;
 				$error_message                       = esc_attr__( 'Unknown error occurred.', 'uncanny-automator' );
@@ -631,7 +628,6 @@ class Automator_Recipe_Process_Complete {
 			if ( ! key_exists( $k, $meta ) ) {
 				continue;
 			}
-
 			// parse token here
 			$v = $uncanny_automator->parse->text( $action_data['meta'][ $k ], $recipe_id, $user_id, $args );
 			if ( $v ) {
@@ -639,18 +635,17 @@ class Automator_Recipe_Process_Complete {
 				$updated_values[ $action_meta ]      = $v;
 			}
 		}
-		
+
 		if ( $updated_values ) {
 			foreach ( $updated_values as $meta_key => $meta_value ) {
 				$args = [
 					'user_id'        => $user_id,
 					'trigger_id'     => $args['trigger_id'],
-					'meta_key'       => $action_meta,
-					'meta_value'     => $v,
+					'meta_key'       => $meta_key,
+					'meta_value'     => $meta_value,
 					'run_number'     => $args['run_number'], //get run number
 					'trigger_log_id' => $args['get_trigger_id'],
 				];
-
 				$uncanny_automator->insert_trigger_meta( $args );
 			}
 		}

@@ -478,6 +478,9 @@ class Automator_Translations {
 			),
 			'noResults'           =>  esc_attr__( 'No results found', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.noResults
+			/* translators: Character to separate items */
+			'itemSeparator'       => __( ',', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.itemSeparator
 			/* translators: Non-personal infinitive verb */
 			'save'                =>  esc_attr__( 'Save', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.save

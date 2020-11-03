@@ -53,8 +53,6 @@ class Automator_Input_Parser {
 
 		// Sanity check that there was a $field_text passed
 		if ( null === $url ) {
-			#Utilities::log( 'ERROR: You are try to parse an url without passing $url.', 'parse->url ERROR', false, 'uap - errors' );
-
 			return null;
 		}
 
@@ -97,8 +95,6 @@ class Automator_Input_Parser {
 
 		if ( ! preg_match( $this->url_regx, $url ) ) {
 			// if the url is not valid still then something when wrong...
-			#Utilities::log( 'ERROR: The URL passed could not be parsed properly. @$original_url: ' . $original_url . '@failed Url: ' . $url, 'parse->url ERROR', false, 'uap - errors' );
-
 			return null;
 		}
 
@@ -118,8 +114,6 @@ class Automator_Input_Parser {
 
 		// Sanity check that there was a $field_text passed
 		if ( null === $field_text ) {
-			#Utilities::log( 'ERROR: You are try to parse a field text\'s token without passing $field_text.', 'parse->text ERROR', false, 'uap - errors' );
-
 			return null;
 		}
 		$args = [
@@ -131,8 +125,6 @@ class Automator_Input_Parser {
 			'trigger_log_id' => $trigger_args['get_trigger_id'],
 			'run_number'     => $trigger_args['run_number'],
 		];
-
-		#Utilities::log( $args, '$args-later', true, 'args-zapier' );
 
 		return $this->parse_vars( $args, $trigger_args );
 	}
@@ -193,12 +185,17 @@ class Automator_Input_Parser {
 					} else {
 						//Non usermeta
 						global $wpdb;
-						$qq          = "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = 'parsed_data' AND automator_trigger_log_id = '{$trigger_log_id}' AND user_id = '{$user_id}' AND run_number = '{$run_number}' ";
+						$qq          = "SELECT meta_value 
+										FROM {$wpdb->prefix}uap_trigger_log_meta 
+										WHERE 1=1 
+										  AND meta_key = %s 
+										  AND automator_trigger_log_id = %d 
+										  AND user_id = %d 
+										  AND run_number = %d";
+						$qq          = $wpdb->prepare( $qq, 'parsed_data', $trigger_log_id, $user_id, $run_number );
 						$parsed_data = $wpdb->get_var( $qq );
 						$run_func    = true;
-						/*Utilities::log( [
-							'$qq' => $qq,
-						], '', true, 'parsed' );*/
+
 						if ( ! empty( $parsed_data ) ) {
 							$parsed_data = maybe_unserialize( $parsed_data );
 							if ( key_exists( '{{' . $match . '}}', $parsed_data ) && ! empty( $parsed_data[ '{{' . $match . '}}' ] ) ) {
@@ -207,11 +204,6 @@ class Automator_Input_Parser {
 							} else {
 								$run_func = true;
 							}
-							/*Utilities::log( [
-								'$replaceable' => $replaceable,
-								'$parsed_data' => $parsed_data,
-								'$match'       => $match
-							], '', true, 'parsed' );*/
 						}
 						if ( empty( $replaceable ) ) {
 							$run_func = true;
@@ -226,15 +218,12 @@ class Automator_Input_Parser {
 									'run_number'     => $run_number,
 									'user_id'        => $user_id,
 								];
-								/*Utilities::log( [
-									'$replace_args' => $replace_args,
-									'$trigger_args' => $trigger_args,
-								], '', true, 'parsed' );*/
+
 								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
 							}
 						}
 					}
-				} elseif ( in_array( $match, $this->defined_tokens ) ) {
+				} elseif ( in_array( $match, $this->defined_tokens, true ) ) {
 					if ( null === $user_id ) {
 						$current_user = wp_get_current_user();
 					} else {
@@ -311,7 +300,7 @@ class Automator_Input_Parser {
 							break;
 					}
 				}
-				//Utilities::log( $match, '', true, 'match' );
+
 				$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $user_id );
 				$field_text  = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
 				$field_text  = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
@@ -332,96 +321,97 @@ class Automator_Input_Parser {
 	 */
 	public function replace_recipe_variables( $replace_args, $args = [] ) {
 		global $uncanny_automator;
-		$pieces                     = $replace_args['pieces'];
-		$recipe_id                  = $replace_args['recipe_id'];
-		$trigger_log_id             = $replace_args['trigger_log_id'];
-		$run_number                 = $replace_args['run_number'];
-		$user_id                    = $replace_args['user_id'];
-		$trigger_data               = $uncanny_automator->get_recipe_data( 'uo-trigger', $recipe_id );
-		$return                     = '';
-		$trigger_id                 = absint( $pieces[0] );
+		$pieces         = $replace_args['pieces'];
+		$recipe_id      = $replace_args['recipe_id'];
+		$trigger_log_id = $replace_args['trigger_log_id'];
+		$run_number     = $replace_args['run_number'];
+		$user_id        = $replace_args['user_id'];
+		$trigger_id     = absint( $pieces[0] );
+		$trigger        = $uncanny_automator->get_trigger_data( $recipe_id, $trigger_id );
+		$trigger_data   = array( $trigger );
+		$return         = '';
+
+		// save trigger ID in the $replace_args
 		$replace_args['trigger_id'] = $trigger_id;
 
 		if ( is_null( $user_id ) && 0 !== absint( $user_id ) ) {
 			$user_id = wp_get_current_user()->ID;
 		}
 
-		foreach ( $trigger_data as $trigger ) {
-			foreach ( $pieces as $piece ) {
-				$is_relevant_token = false;
-				if ( strpos( $piece, '_ID' ) !== false || strpos( $piece, '_URL' ) !== false ) {
-					$is_relevant_token = true;
-					$sub_piece         = explode( '_', $piece, 2 );
-					$piece             = $sub_piece[0];
-				}
+		foreach ( $pieces as $piece ) {
+			$is_relevant_token = false;
+			if ( strpos( $piece, '_ID' ) !== false || strpos( $piece, '_URL' ) !== false ) {
+				$is_relevant_token = true;
+				$sub_piece         = explode( '_', $piece, 2 );
+				$piece             = $sub_piece[0];
+			}
 
-				if ( key_exists( $piece, $trigger['meta'] ) ) {
-					if ( is_numeric( $trigger['meta'][ $piece ] ) ) {
-						switch ( $piece ) {
-							case 'WPPOST':
-							case 'WPPAGE':
-								if ( isset( $sub_piece ) && key_exists( 1, $sub_piece ) ) {
+			if ( key_exists( $piece, $trigger['meta'] ) ) {
+				if ( is_numeric( $trigger['meta'][ $piece ] ) ) {
+					switch ( $piece ) {
+						case 'WPPOST':
+						case 'WPPAGE':
+							if ( isset( $sub_piece ) && key_exists( 1, $sub_piece ) ) {
+								if ( 'ID' === $sub_piece[1] ) {
+									$return = $trigger['meta'][ $piece ];
+								} elseif ( 'URL' === $sub_piece[1] ) {
+									$return = get_permalink( $trigger['meta'][ $piece ] );
+								}
+							} else {
+								$return = get_the_title( $trigger['meta'][ $piece ] );
+							}
+							break;
+						case 'NUMTIMES':
+							$return = $trigger['meta'][ $piece ];
+							break;
+						case 'WPUSER':
+							$user_id = absint( $trigger['meta'][ $piece ] );
+							$user    = get_user_by( 'ID', $user_id );
+							if ( $user ) {
+								$return = $user->user_email;
+							} else {
+								$return = '';
+							}
+							break;
+						default:
+							if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
+								//Find stored post_id for piece, i.e., LDLESSON, LDTOPIC set to Any
+								$post_id = $uncanny_automator->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
+								if ( is_numeric( $post_id ) ) {
+									if ( $is_relevant_token ) {
+										if ( 'ID' === $sub_piece[1] ) {
+											$return = $post_id;
+										} elseif ( 'URL' === $sub_piece[1] ) {
+											$return = get_the_permalink( $post_id );
+										}
+									} else {
+										$return = get_the_title( $post_id );
+									}
+								} else {
+									/* translators: Article. Fallback. Any type of content (post, page, media, etc) */
+									$return = esc_attr__( 'Any', 'uncanny-automator' );
+								}
+							} elseif ( ! preg_match( '/ANON/', $piece ) ) {
+								if ( $is_relevant_token ) {
 									if ( 'ID' === $sub_piece[1] ) {
 										$return = $trigger['meta'][ $piece ];
 									} elseif ( 'URL' === $sub_piece[1] ) {
-										$return = get_permalink( $trigger['meta'][ $piece ] );
+										$return = get_the_permalink( $trigger['meta'][ $piece ] );
 									}
 								} else {
 									$return = get_the_title( $trigger['meta'][ $piece ] );
 								}
-								break;
-							case 'NUMTIMES':
-								$return = $trigger['meta'][ $piece ];
-								break;
-							case 'WPUSER':
-								$user_id = absint( $trigger['meta'][ $piece ] );
-								$user    = get_user_by( 'ID', $user_id );
-								if ( $user ) {
-									return $user->user_email;
-								} else {
-									return '';
-								}
-								break;
-							default:
-								if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
-									//Find stored post_id for piece, i.e., LDLESSON, LDTOPIC set to Any
-									$post_id = $uncanny_automator->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
-									if ( is_numeric( $post_id ) ) {
-										if ( $is_relevant_token ) {
-											if ( 'ID' === $sub_piece[1] ) {
-												$return = $post_id;
-											} elseif ( 'URL' === $sub_piece[1] ) {
-												$return = get_the_permalink( $post_id );
-											}
-										} else {
-											$return = get_the_title( $post_id );
-										}
-									} else {
-										/* translators: Article. Fallback. Any type of content (post, page, media, etc) */
-										$return =  esc_attr__( 'Any', 'uncanny-automator' );
-									}
-								} elseif ( ! preg_match( '/ANON/', $piece ) ) {
-									if ( $is_relevant_token ) {
-										if ( 'ID' === $sub_piece[1] ) {
-											$return = $trigger['meta'][ $piece ];
-										} elseif ( 'URL' === $sub_piece[1] ) {
-											$return = get_the_permalink( $trigger['meta'][ $piece ] );
-										}
-									} else {
-										$return = get_the_title( $trigger['meta'][ $piece ] );
-									}
-								} else {
-									$return = '';
-								}
-								break;
-						}
-					} else {
-						//Non numeric data.. passed custom post type
-						switch ( $piece ) {
-							case 'WPPOSTTYPES':
-								$return = key_exists( 'post_type_label', $args ) && ! empty( $args['post_type_label'] ) ? $args['post_type_label'] : '';
-								break;
-						}
+							} else {
+								$return = '';
+							}
+							break;
+					}
+				} else {
+					//Non numeric data.. passed custom post type
+					switch ( $piece ) {
+						case 'WPPOSTTYPES':
+							$return = key_exists( 'post_type_label', $args ) && ! empty( $args['post_type_label'] ) ? $args['post_type_label'] : '';
+							break;
 					}
 				}
 			}
@@ -442,7 +432,7 @@ class Automator_Input_Parser {
 			$adt_rp_key = get_password_reset_key( $user );
 			$user_login = $user->user_login;
 			$url        = network_site_url( "wp-login.php?action=rp&key=$adt_rp_key&login=" . rawurlencode( $user_login ), 'login' );
-			$text       =  esc_attr__( 'Click here to reset your password.', 'uncanny-automator' );
+			$text       = esc_attr__( 'Click here to reset your password.', 'uncanny-automator' );
 			$rp_link    = sprintf( '<a href="%s">%s</a>', $url, $text );
 		} else {
 			$rp_link = '';

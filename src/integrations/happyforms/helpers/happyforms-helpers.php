@@ -69,7 +69,7 @@ class Happyforms_Helpers {
 		$args = wp_parse_args( $args,
 			[
 				'uo_include_any' => false,
-				'uo_any_label'   => esc_attr__( 'Any Form', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
 			]
 		);
 

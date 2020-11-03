@@ -39,12 +39,10 @@ class Add_Wpff_Integration {
 	 */
 	public function plugin_active( $status, $plugin ) {
 
-		if ( self::$integration === $plugin ) {
-			if ( function_exists( 'wpFluent' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
+		if ( function_exists( 'wpFluent' ) ) {
+			$status = true;
+		} else {
+			$status = false;
 		}
 
 		return $status;

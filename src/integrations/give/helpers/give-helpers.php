@@ -73,7 +73,7 @@ class Give_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => [
-				'ACTUALDONATEDAMOUNT' => esc_attr__( 'Donated Amount', 'uncanny-automator' ),
+				'ACTUALDONATEDAMOUNT' => esc_attr__( 'Donated amount', 'uncanny-automator' ),
 				$option_code          => esc_attr__( 'Form', 'uncanny-automator' ),
 			],
 		];

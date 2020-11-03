@@ -146,7 +146,7 @@ class Wp_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool $any_option
+	 * @param bool   $any_option
 	 *
 	 * @return mixed
 	 */
@@ -239,7 +239,7 @@ class Wp_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Post Type', 'uncanny-automator' );
+			$label = esc_attr__( 'Post type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -384,17 +384,21 @@ class Wp_Helpers {
 
 		$uncanny_automator->utilities->ajax_auth_check( $_POST );
 		$fields = [];
+
+		$fields[] = array(
+			'value' => '0',
+			'text'  => __( 'Any taxonomy', 'uncanny-automator' ),
+		);
+
 		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
+
 			$post_type = sanitize_text_field( $_POST['value'] );
 
-			if ( $post_type != '- 1' ) {
-				$output     = 'object';
-				$taxonomies = get_object_taxonomies( $post_type, $output );
+			$post_type = get_post_type_object( $post_type );
 
-				$fields[] = array(
-					'value' => '-1',
-					'text'  => sprintf( _x( 'Any %s', 'WordPress taxonomy', 'uncanny-automator' ), $post_type ),
-				);
+			if ( null !== $post_type ) {
+				$output     = 'object';
+				$taxonomies = get_object_taxonomies( $post_type->name, $output );
 
 				if ( ! empty( $taxonomies ) ) {
 					foreach ( $taxonomies as $taxonomy ) {
@@ -404,15 +408,9 @@ class Wp_Helpers {
 						);
 					}
 				}
-			} else {
-				$fields[] = array(
-					'value' => '-1',
-					'text'  => __( 'Any taxonomy', 'uncanny-automator' ),
-				);
 			}
-
-
 		}
+
 		echo wp_json_encode( $fields );
 		die();
 	}
@@ -425,40 +423,43 @@ class Wp_Helpers {
 
 		$uncanny_automator->utilities->ajax_auth_check( $_POST );
 		$fields = [];
-		$terms  = '';
+
+		$fields[] = array(
+			'value' => '0',
+			'text'  => __( 'Any taxonomy term', 'uncanny-automator' ),
+		);
+
 		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
+
 			$taxonomy = sanitize_text_field( $_POST['value'] );
 
-			if ( $taxonomy != '-1' ) {
-				$fields[] = array(
-					'value' => '-1',
-					'text'  => sprintf( _x( 'Any %s', 'WordPress taxonomy term', 'uncanny-automator' ), $taxonomy ),
-				);
+			if ( $taxonomy !== '0' ) {
 
-				$terms = get_terms( array(
-					'taxonomy'   => $taxonomy,
-					'hide_empty' => false,
-				) );
+				$taxonomy = get_taxonomy( $taxonomy );
 
-			} else {
-				$fields[] = array(
-					'value' => '-1',
-					'text'  => __( 'Any taxonomy term', 'uncanny-automator' ),
-				);
-			}
+				if ( false !== $taxonomy ) {
 
-			if ( ! empty( $terms ) ) {
-				foreach ( $terms as $term ) {
-					// Check if the post title is defined
-					$term_name = ! empty( $term->name ) ? $term->name : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $term->term_id );
+					$terms = get_terms( array(
+						'taxonomy'   => $taxonomy->name,
+						'hide_empty' => false,
+					) );
 
-					$fields[] = array(
-						'value' => $term->term_id,
-						'text'  => $term_name,
-					);
+					if ( ! empty( $terms ) ) {
+						foreach ( $terms as $term ) {
+							// Check if the post title is defined
+							$term_name = ! empty( $term->name ) ? $term->name : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $term->term_id );
+
+							$fields[] = array(
+								'value' => $term->term_id,
+								'text'  => $term_name,
+							);
+						}
+					}
 				}
 			}
+
 		}
+
 		echo wp_json_encode( $fields );
 		die();
 	}

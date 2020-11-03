@@ -72,40 +72,96 @@ class WPFF_SUBFORM {
 	 */
 	public function wpffform_submit( $inser_data, $data, $form ) {
 		global $uncanny_automator;
+		$user_id = get_current_user_id();
 
+		// Logged in users only
+		if ( empty( $user_id ) ) {
+			return;
+		}
 		if ( empty( $form ) ) {
 			return;
 		}
+		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$matches = $this->match_condition( $form, $data, $recipes );
 
-		$user_id = get_current_user_id();
+		if ( ! $matches ) {
+			return;
+		}
 
-		$args = [
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => intval( $form->id ),
-			'user_id' => $user_id,
-		];
+		if ( ! empty( $matches ) ) {
+			foreach ( $matches as $recipe_id => $match ) {
+				if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+					$args = [
+						'code'            => $this->trigger_code,
+						'meta'            => $this->trigger_meta,
+						'meta_key'        => $this->trigger_meta,
+						'recipe_to_match' => $recipe_id,
+						'ignore_post_id'  => true,
+						'user_id'         => $user_id,
+					];
 
-		$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
 
-		if ( $result ) {
-			foreach ( $result as $r ) {
-				if ( true === $r['result'] ) {
-					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-						//Saving form values in trigger log meta for token parsing!
-						$wp_ff_args = [
-							'trigger_id'     => (int) $r['args']['trigger_id'],
-							'meta_key'       => $this->trigger_meta,
-							'user_id'        => $user_id,
-							'trigger_log_id' => $r['args']['get_trigger_id'],
-							'run_number'     => $r['args']['run_number'],
-						];
-						$uncanny_automator->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
+					if ( $result ) {
+						foreach ( $result as $r ) {
+							if ( true === $r['result'] ) {
+								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
+									//Saving form values in trigger log meta for token parsing!
+									$wp_ff_args = [
+										'trigger_id'     => (int) $r['args']['trigger_id'],
+										'meta_key'       => $this->trigger_meta,
+										'user_id'        => $user_id,
+										'trigger_log_id' => $r['args']['get_trigger_id'],
+										'run_number'     => $r['args']['run_number'],
+									];
+									$uncanny_automator->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
+									$uncanny_automator->maybe_add_trigger_entry( $args );
+								}
+							}
+						}
 					}
-
-					$uncanny_automator->maybe_trigger_complete( $r['args'] );
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param      $form_data
+	 * @param      $submitted_data
+	 * @param null $recipes
+	 * @param null $trigger_meta
+	 * @param null $trigger_code
+	 * @param null $trigger_second_code
+	 *
+	 * @return array|bool
+	 */
+	public function match_condition( $form_data, $submitted_data, $recipes = null ) {
+
+		if ( null === $recipes ) {
+			return false;
+		}
+
+		$matches = [];
+
+		foreach ( $recipes as $recipe ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				//  Validate that all needed feilds and value are set
+				if (
+					isset( $trigger['meta'] ) && ! empty( $trigger['meta'] )
+					&& isset( $trigger['meta']['WPFFFORMS'] ) && ! empty( $trigger['meta']['WPFFFORMS'] )
+					&& ( (int) $form_data->id === (int) $trigger['meta']['WPFFFORMS'] || '-1' === $trigger['meta']['WPFFFORMS'] )
+				) {
+					$matches[ $recipe['ID'] ] = [
+						'recipe_id' => $recipe['ID'],
+					];
+				}
+			}
+		}
+
+		if ( ! empty( $matches ) ) {
+			return $matches;
+		}
+
+		return false;
 	}
 }

@@ -90,23 +90,44 @@ class Tc_Tokens {
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson/Topic title', 'uncanny-automator' ),
+				'tokenName'       => __( 'Lesson title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
 			];
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson/Topic ID', 'uncanny-automator' ),
+				'tokenName'       => __( 'Lesson ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_id',
 			];
 
 			$new_tokens[] = [
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson/Topic URL', 'uncanny-automator' ),
+				'tokenName'       => __( 'Lesson URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_url',
+			];
+
+			$new_tokens[] = [
+				'tokenId'         => $tc_module_id,
+				'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta . '_maybe_topic',
+			];
+
+			$new_tokens[] = [
+				'tokenId'         => $tc_module_id,
+				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta . '_maybe_topic_id',
+			];
+
+			$new_tokens[] = [
+				'tokenId'         => $tc_module_id,
+				'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta . '_maybe_topic_url',
 			];
 
 			$tokens = array_merge( $tokens, $new_tokens );
@@ -128,15 +149,18 @@ class Tc_Tokens {
 
 		if ( $pieces ) {
 			if (
-				in_array( 'TCMODULEINTERACTION_maybe_course', $pieces )
-				|| in_array( 'TCMODULEINTERACTION_maybe_course_id', $pieces )
-				|| in_array( 'TCMODULEINTERACTION_maybe_course_url', $pieces )
-				|| in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces )
-				|| in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces )
-				|| in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces )
-				|| in_array( 'TCVERB', $pieces )
-				|| in_array( 'QUIZPERCENT', $pieces )
-				|| in_array( 'TCMODULEINTERACTION', $pieces )
+				in_array( 'TCMODULEINTERACTION_maybe_course', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_course_id', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_course_url', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_topic', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_topic_id', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION_maybe_topic_url', $pieces, true )
+				|| in_array( 'TCVERB', $pieces, true )
+				|| in_array( 'QUIZPERCENT', $pieces, true )
+				|| in_array( 'TCMODULEINTERACTION', $pieces, true )
 			) {
 				if ( ! absint( $user_id ) ) {
 					return $value;
@@ -197,14 +221,41 @@ class Tc_Tokens {
 						if ( in_array( 'TCMODULEINTERACTION_maybe_course_url', $pieces, true ) && ! empty( $tin_can_data->course_id ) ) {
 							$value = get_the_permalink( $tin_can_data->course_id );
 						}
-						if ( in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
-							$value = get_the_title( $tin_can_data->lesson_id );
-						}
-						if ( in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
-							$value = $tin_can_data->lesson_id;
-						}
-						if ( in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
-							$value = get_the_permalink( $tin_can_data->lesson_id );
+						$post_type = get_post_type( $tin_can_data->lesson_id );
+						if( 'sfwd-lessons' === $post_type ) {
+							if ( in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
+								$value = get_the_title( $tin_can_data->lesson_id );
+							}
+							if ( in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
+								$value = $tin_can_data->lesson_id;
+							}
+							if ( in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
+								$value = get_the_permalink( $tin_can_data->lesson_id );
+							}
+						} else {
+							if ( in_array( 'TCMODULEINTERACTION_maybe_topic', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
+								$value = get_the_title( $tin_can_data->lesson_id );
+							}
+							if ( in_array( 'TCMODULEINTERACTION_maybe_topic_id', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
+								$value = $tin_can_data->lesson_id;
+							}
+							if ( in_array( 'TCMODULEINTERACTION_maybe_topic_url', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
+								$value = get_the_permalink( $tin_can_data->lesson_id );
+							}
+							if ( in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true ) || in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces, true ) || in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces, true ) ) {
+								if ( ( ! empty( $tin_can_data->course_id ) ) && ( \LearnDash_Settings_Section::get_section_setting( 'LearnDash_Settings_Courses_Builder', 'shared_steps' ) == 'yes' ) ) {
+									$lesson_id = learndash_course_get_single_parent_step( $tin_can_data->course_id, $tin_can_data->lesson_id );
+									if ( in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true ) && ! empty( $lesson_id ) ) {
+										$value = get_the_title( $lesson_id );
+									}
+									if ( in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces, true ) && ! empty( $lesson_id ) ) {
+										$value = $lesson_id;
+									}
+									if ( in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces, true ) && ! empty( $lesson_id ) ) {
+										$value = get_the_permalink( $lesson_id );
+									}
+								}
+							}
 						}
 					}
 				}

@@ -1097,6 +1097,39 @@ class Automator_Get_Data {
 	}
 
 	/**
+	 * @param null $meta_key
+	 * @param null $trigger_id
+	 * @param null $trigger_log_id
+	 * @param null $run_number
+	 * @param null $user_id
+	 *
+	 * @return null|string
+	 */
+	public function get_trigger_log_meta( $meta_key = null, $trigger_id = null, $trigger_log_id = null, $run_number = null, $user_id = null ) {
+
+		if ( is_null( $run_number ) || is_null( $trigger_id ) || is_null( $trigger_log_id ) || is_null( $meta_key ) || is_null( $user_id ) ) {
+			return null;
+		}
+
+		global $wpdb;
+
+		$meta_value = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta 
+									WHERE user_id = $user_id 
+									AND automator_trigger_log_id = $trigger_log_id 
+									AND automator_trigger_id = $trigger_id 
+									AND meta_key = '$meta_key'
+									AND run_number = $run_number
+									LIMIT 0,1" );
+
+		if( ! empty($meta_value) ){
+			return $meta_value;
+		}
+
+		return null;
+
+	}
+
+	/**
 	 * @param $id
 	 *
 	 * @return int

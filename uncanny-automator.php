@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.8.3
+ * Version:             2.9
  * Requires at least:   5.0
  * Requires PHP:        7.0
  */
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.8.3';
+	const PLUGIN_VERSION = '2.9';
 
 	/**
 	 * The database version number
@@ -96,7 +96,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const DATABASE_VERSION = '2.7';
+	const DATABASE_VERSION = '2.9';
 
 	/**
 	 * The database views version number
@@ -105,7 +105,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const DATABASE_VIEWS_VERSION = '2.6.1';
+	const DATABASE_VIEWS_VERSION = '2.9';
 
 	/**
 	 * The full path and filename
@@ -206,18 +206,15 @@ class InitializePlugin {
 	 */
 	private function initialize_config() {
 
-		include_once( dirname( __FILE__ ) . '/src/config.php' );
+		include_once dirname( __FILE__ ) . '/src/config.php';
 
 		$config_instance = Config::get_instance();
 		$config_instance->configure_plugin_before_boot( self::PLUGIN_NAME, self::PLUGIN_PREFIX, self::PLUGIN_VERSION, self::MAIN_FILE, $this->log_debug_messages );
 
 		$db_version = get_option( 'uap_database_version', null );
-		if ( null === $db_version ) {
+		if ( null === $db_version || (string) InitializePlugin::DATABASE_VERSION !== (string) $db_version ) {
 			$config_instance->activation();
-		}
-		if ( (string) InitializePlugin::DATABASE_VERSION !== (string) $db_version ) {
-			// update
-			$config_instance->upgrade();
+			$config_instance->mysql_8_auto_increment_fix();
 		}
 
 		if ( InitializePlugin::DATABASE_VIEWS_VERSION !== get_option( 'uap_database_views_version', 0 ) ) {
@@ -236,7 +233,7 @@ class InitializePlugin {
 		// Only include Module_interface, do not initialize is ... interfaces cannot be initialized
 		add_filter( 'Skip_class_initialization', array( $this, 'add_skipped_classes' ), 10, 1 );
 
-		include_once( dirname( __FILE__ ) . '/src/boot.php' );
+		include_once dirname( __FILE__ ) . '/src/boot.php';
 		Boot::get_instance();
 
 		do_action( Utilities::get_prefix() . '_plugin_loaded' );

@@ -50,7 +50,23 @@ class Set_Up_Automator {
 		}
 
 		if ( isset( $_GET['doing_wp_cron'] ) ) {
-			return;
+
+			$automator_in_cron = false;
+
+			$next_crons_jobs = wp_get_ready_cron_jobs();
+
+			foreach ( $next_crons_jobs as $cron_job ) {
+				if ( isset( $cron_job['uo_ceu_scheduled_learndash_course_completed'] ) ) {
+					$automator_in_cron = true;
+					break;
+				}
+			}
+
+			$automator_in_cron = apply_filters( 'uap_run_automator_actions', $automator_in_cron );
+
+			if ( ! $automator_in_cron ) {
+				return;
+			}
 		}
 
 		$this->default_directories = [ 'actions', 'helpers', 'tokens', 'triggers', 'closures' ];
@@ -287,7 +303,7 @@ class Set_Up_Automator {
 	}
 
 	/**
-	 * @param $directory
+	 * @param      $directory
 	 * @param bool $recursive
 	 *
 	 * @return array|false
@@ -308,7 +324,7 @@ class Set_Up_Automator {
 				if ( 'vendor' === (string) $item && is_dir( $directory . DIRECTORY_SEPARATOR . $item ) ) {
 					continue;
 				}
-				
+
 				if ( true === $recursive && is_dir( $directory . DIRECTORY_SEPARATOR . $item ) ) {
 					$dir                       = basename( $directory . DIRECTORY_SEPARATOR . $item );
 					$integration_files[ $dir ] = self::read_directory( $directory . DIRECTORY_SEPARATOR . $item );
@@ -325,7 +341,8 @@ class Set_Up_Automator {
 					}
 				}
 			}
-		} catch ( \Exception $e ) {
+		}
+		catch ( \Exception $e ) {
 			return false;
 		}
 

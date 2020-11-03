@@ -125,7 +125,25 @@ class BDB_USERPOSTREPLYFORUM {
 						'user_id'          => $user_id,
 					];
 
-					$uncanny_automator->maybe_add_trigger_entry( $args );
+					$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					if ( $args ) {
+						foreach ( $args as $result ) {
+							if ( true === $result['result'] ) {
+								$trigger_meta = [
+									'user_id'        => $user_id,
+									'trigger_id'     => $result['args']['trigger_id'],
+									'trigger_log_id' => $result['args']['get_trigger_id'],
+									'run_number'     => $result['args']['run_number'],
+								];
+
+								$trigger_meta['meta_key']   = 'BDBTOPICREPLY';
+								$trigger_meta['meta_value'] = $reply_id;
+								$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
+								$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							}
+						}
+					}
 				}
 			}
 		}

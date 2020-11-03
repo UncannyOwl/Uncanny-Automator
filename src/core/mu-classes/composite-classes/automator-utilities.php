@@ -118,22 +118,30 @@ class Automator_Utilities {
 
 	/**
 	 * @param null $recipe_id
-	 * @param int $recipe_completed_times
+	 * @param int $completed_times
 	 *
 	 * @return bool
 	 */
-	public function recipe_number_times_completed( $recipe_id = null, $recipe_completed_times = 0 ) {
+	public function recipe_number_times_completed( $recipe_id = null, $completed_times = 0 ) {
 		if ( is_null( $recipe_id ) ) {
 			return false;
 		}
-		$post_meta                  = get_post_meta( $recipe_id, 'recipe_completions_allowed', true );
-		$recipe_completions_allowed = empty( $post_meta ) ? 1 : $post_meta;
+
+		$post_meta = get_post_meta( $recipe_id, 'recipe_completions_allowed', true );
+		if ( empty( $post_meta ) ) {
+			$completions_allowed = 1;
+			// Make sure that the recipe has recipe_completions_allowed saved. @version 2.9
+			update_post_meta( $recipe_id, 'recipe_completions_allowed', 1 );
+		} else {
+			$completions_allowed = $post_meta;
+		}
+
 
 		$return = false;
 
-		if ( intval( '-1' ) === intval( $recipe_completions_allowed ) ) {
+		if ( intval( '-1' ) === intval( $completions_allowed ) ) {
 			$return = false;
-		} else if ( (int) $recipe_completed_times >= (int) $recipe_completions_allowed ) {
+		} elseif ( (int) $completed_times >= (int) $completions_allowed ) {
 			$return = true;
 		}
 

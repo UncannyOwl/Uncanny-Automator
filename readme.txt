@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
-Tested up to: 5.5.1
+Tested up to: 5.5.3
 Requires PHP: 7.0
-Stable tag: 2.8.3
+Stable tag: 2.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -40,6 +40,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/)
 - [Elementor](https://automatorplugin.com/integration/elementor/)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/)
+- [FluentCRM](https://automatorplugin.com/integration/fluentcrm/)
 - [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/)
 - [Forminator](https://automatorplugin.com/integration/forminator/)
@@ -53,14 +54,17 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [LearnPress](https://automatorplugin.com/integration/learnpress/)
 - [LifterLMS](https://automatorplugin.com/integration/lifterlms/)
 - [MailPoet 3](https://automatorplugin.com/integration/mailpoet-3/)
+- [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/)
 - [myCred](https://automatorplugin.com/integration/mycred/)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/)
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/)
+- [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/)
+- [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-ceus/)
 - [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/)
 - [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/)
@@ -72,6 +76,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [wpForo](https://automatorplugin.com/integration/wp-foro/)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/)
+- [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/)
 - [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/)
 - [Zapier](https://automatorplugin.com/integration/zapier/)
 
@@ -97,6 +102,8 @@ Besides more than tripling the number of available triggers and actions for your
 
 Here are some of the other really cool things you can do with Automator Pro:
 
+- Integrate with Zoom Meetings, Zoom Webinars, GoToMeeting, GoToWebinar to automatically enroll users in web conferencing sessions when they complete a recipe
+- Integrate with Twilio to send users SMS messages when they complete a recipe
 - Trigger recipes anonymously; fire automations without users needing to sign in. This also means you can turn any form (including forms from free form plugins like Ninja Forms, Contact Form 7, WP Forms, Formidable Forms and more) into registration forms that not only create a new user, but also set them up with course access, group access and more
 - Have 2 WordPress sites talk to each other. Sell products on one site while Uncanny Automator creates users and sets up access on another!
 - Have external apps trigger recipes and vice versa (without needing Zapier or Integromat!)
@@ -160,6 +167,66 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.9 [2020-11-03] =
+
+**New Integrations:**
+* FluentCRM
+* MasterStudy LMS
+* Restrict Content Pro
+* Uncanny Continuing Education Credits
+* WP Job Manager
+
+**New Triggers:**
+* Automator Core - A user completes a recipe
+* BuddyBoss - A user creates a topic in a forum
+* BuddyBoss - A user replies to a topic in a forum
+* FluentCRM - A tag is added to a user
+* FluentCRM - A user is added to a list
+* MasterStudy LMS - A user completes a course
+* MasterStudy LMS - A user completes a lesson
+* MasterStudy LMS - A user passes a quiz
+* MasterStudy LMS - A user fails a quiz
+* MasterStudy LMS - A user is enrolled in a course
+* Restrict Content Pro - A user purchases a membership level
+* Uncanny Continuing Education Credits - A user earns a specific number of credits
+* WP Job Manager - A user submits a specific type of job
+* WP Job Manager - A user submits a resume
+* WP Job Manager - A user applies for a job
+
+**New Actions:**
+* FluentCRM - Add a tag to the user
+* FluentCRM - Add the user to a list
+* MasterStudyLMS - Mark a course complete for the user
+* Uncanny Continuing Education Credits - Award a number of custom credits to the user
+
+**Updates:**
+* WP Fluent Forms integration renamed to Fluent forms
+* Fluent Forms: "Numeric" field type now available as tokens in integer type action fields
+* Default number of times a recipe will run per user is now Unlimited instead of 1
+* New triggers and actions added to a recipe now default to Live status when the recipe is in Draft status
+* Improved compatibility with Events Manager Zoom and Schema & Structured Data for WP & AMP plugins
+* Automator log database tables structure updates
+* Trigger: LearnDash - A verb is recorded from a Tin Canny module - Created separate tokens for lesson and topic
+* Trigger: The Events Calendar - A user registers for an event now includes the option "Any event"
+* Trigger: WordPress Core - A user creates a post changed to A user publishes a type of post with a taxonomy term in a taxonomy
+* Trigger: WordPress Core - A user comments on a post - Added Post Type selector
+
+**Fixes:**
+* Fluent forms triggering any form without checking form ID
+* Elementor - Checkbox field tokens now return all selected values
+* WP Courseware - User completes a module - Tokens now resolve values correctly
+* "Use a custom value" no longer appears multiple times in a dropdown while the action UI is fetching values
+* Multi-select fields now show a comma-separated list of values when appearing in a trigger or action sentence
+* First recipe attempt after truncation of recipe log table or purge of recipe logs now completes successfully
+* MySQL 8.x recipe table AUTO INCREMENT issue
+* Triggers/actions moved between integrations are now updated in recipes that are set to draft status
+* Recipes with multiple triggers now resolve tokens properly for all triggers
+* Actions in draft status no longer log an entry in the Action log
+* Action: LearnDash - Mark a lesson complete for the user - No longer includes the option "Any lesson"
+* Trigger: WordPress Core - A user is created - Now fires more reliably
+* LearnDash - Triggers/Actions now load all child objects instead of first 20 only
+* PHP Notice: Undefined index in automator-recipe-helpers.php on line 328
 
 = 2.8.3 [2020-10-15] =
 
@@ -228,32 +295,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Fixed: Trigger: WooCommerce - Product tokens now return proper values when "Any product" is selected
 * Fixed: HTML entity not rendering in Anonymous Recipe user selector UI
 * Fixed: LearnDash triggers: Grammar issue: A user _____ 1 times changed to A user _____ 1 time(s)
-
-= 2.7 [2020-08-26] =
-
-* Added: New Integration - Uncanny Codes
-* Added: New Integration - Uncanny Groups
-* Added: New Integration - WP Webhooks
-* Added: New Integration - Wishlist Member
-* Added: New Integration - GiveWP
-* Added: Trigger: Automator Core - An Automator recipe completes with errors
-* Added: Trigger: Uncanny Codes - A code is redeemed
-* Added: Trigger: Uncanny Codes - A user redeems a code with a specific prefix
-* Added: Trigger: Uncanny Codes - A user redeems a code with a specific suffix
-* Added: Action: Uncanny Groups - Create an Uncanny group
-* Added: Trigger: WP Webhooks - A webhook trigger is triggered
-* Added: Trigger: Wishlist Member - A user is added to a membership level
-* Added: Trigger: Wishlist Member - A user is removed from a membership level
-* Added: Action: Wishlist Member - Add the user to a membership level
-* Added: Trigger: GiveWP - A user makes a donation via a form
-* Added: Action: LearnDash - Create a group
-* Added: Action: LearnDash - Make the user leader of a group
-* Updated: All logs now sorted by most recent activity first on initial load
-* Fixed: Manual sorting in logs now works properly on all columns
-* Fixed: User ID token now correctly outputs the user's ID
-* Fixed: Trigger: MemberPress - A user purchases a one-time membership - Now fires consistently when a user account is created during checkout
-* Fixed: MySQL 8.x AUTO_INCREMENT related issues on some server configurations
-* Fixed: Formidable Forms - Fixed PHP notice on tokens for form name, multi-select field and file upload field
-* Fixed: Adding a trigger that uses AJAX to load values while another is open no longer causes AJAX to fail on the first trigger
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

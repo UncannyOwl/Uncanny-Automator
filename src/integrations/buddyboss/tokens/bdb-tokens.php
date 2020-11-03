@@ -19,6 +19,8 @@ class Bdb_Tokens {
 
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_bdb_tokens', [ $this, 'bdb_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_bdb_bdbforumstopic_tokens', [ $this, 'bdb_bdbforums_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_bdb_bdbtopic_tokens', [ $this, 'bdb_topic_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_bp_token' ], 20, 6 );
 
 	}
@@ -58,7 +60,7 @@ class Bdb_Tokens {
 		$fields = [
 			[
 				'tokenId'         => 'BDBUSER',
-				'tokenName'       => 'AVATAR URL',
+				'tokenName'       => __( 'Avatar URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERAVATAR',
 			],
@@ -78,6 +80,30 @@ class Bdb_Tokens {
 				];
 			}
 		}
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+	
+	/**
+	 * @param array $tokens
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function bdb_topic_possible_tokens( $tokens = [], $args = [] ) {
+		$trigger_integration = $args['integration'];
+		$trigger_meta        = $args['meta'];
+
+		$fields = [
+			[
+				'tokenId'         => 'BDBTOPICREPLY',
+				'tokenName'       => __( 'Reply content', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBUSERPOSTREPLYFORUM',
+			],
+		];
 
 		$tokens = array_merge( $tokens, $fields );
 
@@ -103,6 +129,52 @@ class Bdb_Tokens {
 				if ( isset( $pieces[2] ) && ! empty( $pieces[2] ) ) {
 					$value = $this->get_xprofile_data( $user_id, intval( $pieces[2] ) );
 				}
+			} elseif ( in_array( 'BDBTOPICREPLY', $pieces ) ) {
+				$piece = 'BDBTOPIC';
+				global $uncanny_automator;
+				$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+				if ( $trigger_data && $recipe_log_id ) {
+					foreach ( $trigger_data as $trigger ) {
+						if ( key_exists( $piece, $trigger['meta'] ) ) {
+							$trigger_id     = $trigger['ID'];
+							$trigger_log_id = $replace_args['trigger_log_id'];
+							$meta_key       = $pieces[2];
+							$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+							if ( ! empty( $meta_value ) ) {
+								$content = get_post_field( 'post_content', $meta_value );
+								$value   = apply_filters( 'bbp_get_reply_content', $content, $meta_value );
+							}
+						}
+					}
+				}
+			} elseif ( in_array( 'BDBNEWTOPIC', $pieces ) ) {
+				$piece = 'BDBFORUMSTOPIC';
+				global $uncanny_automator;
+				$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+				if ( $trigger_data && $recipe_log_id ) {
+					foreach ( $trigger_data as $trigger ) {
+						if ( key_exists( $piece, $trigger['meta'] ) ) {
+							$trigger_id     = $trigger['ID'];
+							$trigger_log_id = $replace_args['trigger_log_id'];
+							$meta_key       = 'BDBTOPIC';
+							$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+							if ( ! empty( $meta_value ) ) {
+								if ( 'BDBTOPICID' === $pieces[2] ) {
+									$value = $meta_value;
+								} elseif ( 'BDBTOPICTITLE' === $pieces[2] ) {
+									$title = get_the_title( $meta_value );
+									$value = apply_filters( 'bbp_get_topic_title', $title, $meta_value );
+								} elseif ( 'BDBTOPICURL' === $pieces[2] ) {
+									$topic_permalink = get_permalink( $meta_value );
+									$value           = apply_filters( 'bbp_get_topic_permalink', $topic_permalink, $meta_value );
+								} elseif ( 'BDBTOPICCONTENT' === $pieces[2] ) {
+									$content = get_post_field( 'post_content', $meta_value );
+									$value   = apply_filters( 'bbp_get_topic_content', $content, $meta_value );
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -126,5 +198,47 @@ class Bdb_Tokens {
 		}
 
 		return '';
+	}
+
+	/**
+	 * @param array $tokens
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function bdb_bdbforums_possible_tokens( $tokens = [], $args = [] ) {
+		$trigger_integration = $args['integration'];
+		$trigger_meta        = $args['meta'];
+
+		$fields = [
+			[
+				'tokenId'         => 'BDBTOPICID',
+				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBNEWTOPIC',
+			],
+			[
+				'tokenId'         => 'BDBTOPICTITLE',
+				'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBNEWTOPIC',
+			],
+			[
+				'tokenId'         => 'BDBTOPICURL',
+				'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBNEWTOPIC',
+			],
+			[
+				'tokenId'         => 'BDBTOPICCONTENT',
+				'tokenName'       => __( 'Topic content', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBNEWTOPIC',
+			],
+		];
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
 	}
 }

@@ -191,7 +191,7 @@ class Uoa_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any Recipe', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any recipe', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'              => $option_code,

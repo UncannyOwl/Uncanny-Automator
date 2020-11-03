@@ -145,6 +145,7 @@ class Recipe_Post_Type {
 			// Save automator version for future use in case
 			// something has to be changed for older recipes
 			update_post_meta( $post_ID, 'uap_recipe_version', Utilities::get_version() );
+			update_post_meta( $post_ID, 'recipe_completions_allowed', '-1' );
 		}
 	}
 
@@ -646,18 +647,21 @@ class Recipe_Post_Type {
 						update_post_meta( $post_ID, 'code', $item_code );
 						$trigger_integration = $uncanny_automator->get->trigger_integration_from_trigger_code( $item_code );
 						update_post_meta( $post_ID, 'integration', $trigger_integration );
+						update_post_meta( $post_ID, 'uap_trigger_version', Utilities::get_version() );
 					}
 
 					if ( 'create_action' === $action ) {
 						update_post_meta( $post_ID, 'code', $item_code );
 						$action_integration = $uncanny_automator->get->action_integration_from_action_code( $item_code );
 						update_post_meta( $post_ID, 'integration', $action_integration );
+						update_post_meta( $post_ID, 'uap_action_version', Utilities::get_version() );
 					}
 
 					if ( 'create_closure' === $action ) {
 						update_post_meta( $post_ID, 'code', $item_code );
 						$closure_integration = $uncanny_automator->get->closure_integration_from_closure_code( $item_code );
 						update_post_meta( $post_ID, 'integration', $closure_integration );
+						update_post_meta( $post_ID, 'uap_closure_version', Utilities::get_version() );
 					}
 
 					if ( isset( $_POST['default_meta'] ) ) {
@@ -1161,11 +1165,11 @@ class Recipe_Post_Type {
 			$post_id = (int) $post->ID;
 
 			//Added select2 option for the dropdowns
-			wp_enqueue_style( 'select2', Utilities::get_vendor_asset( 'select2/css/select2.min.css' ), array(), Utilities::get_version() );
-			wp_enqueue_script( 'select2', Utilities::get_vendor_asset( 'select2/js/select2.min.js' ), array( 'jquery' ), Utilities::get_version(), true );
+			wp_enqueue_style( 'uap-select2', Utilities::get_vendor_asset( 'select2/css/select2.min.css' ), array(), Utilities::get_version() );
+			wp_enqueue_script( 'uap-select2', Utilities::get_vendor_asset( 'select2/js/select2.min.js' ), array( 'jquery' ), Utilities::get_version(), true );
 
 			// Recipe UI scripts
-			wp_enqueue_script( 'automator-recipe-ui-bundle-js', Utilities::get_recipe_dist( 'automator-recipe-ui.bundle.js' ), array( 'jquery' ), Utilities::get_version(), true );
+			wp_enqueue_script( 'automator-recipe-ui-bundle-js', Utilities::get_recipe_dist( 'automator-recipe-ui.bundle.js' ), array( 'jquery', 'uap-select2' ), Utilities::get_version(), true );
 
 			// Enqueue editor assets
 			wp_enqueue_editor();
@@ -1272,7 +1276,7 @@ class Recipe_Post_Type {
 	 * @return array
 	 */
 	private function get_pro_items() {
-	    
+
 		$pro_items = [
 			'UOA' => [
 				'triggers' => [

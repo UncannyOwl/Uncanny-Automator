@@ -74,7 +74,7 @@ class Event_Tickets_Helpers {
 		];
 
 		global $uncanny_automator;
-		$all_events = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+		$all_events = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any event', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,

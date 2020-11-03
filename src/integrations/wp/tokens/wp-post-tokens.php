@@ -67,8 +67,6 @@ class Wp_Post_Tokens {
 			'WPPOSTTYPES'
 		];
 
-		Utilities::log( $trigger_data, '$trigger_data', true, 'token-s' );
-
 		if ( $pieces && isset( $pieces[2] ) ) {
 			$meta_field = $pieces[2];
 

@@ -42,15 +42,16 @@ class UOA_RECIPECOMPLETED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'sentence'            => sprintf( esc_attr__( 'A user completes {{a recipe:%1$s}}', 'uncanny-automator' ), $this->trigger_meta  ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a recipe:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'select_option_name'  => esc_attr__( 'A user completes {{a recipe}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a recipe}} {{a number of}} time(s)', 'uncanny-automator' ),
 			'action'              => 'uap_recipe_completed',
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'on_completion' ),
 			'options'             => [
 				$uncanny_automator->helpers->recipe->uncanny_automator->options->get_recipes(),
+				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);
 
@@ -89,8 +90,6 @@ class UOA_RECIPECOMPLETED {
 				'user_id'        => $user_id,
 				'post_id'        => $recipe_id,
 			];
-
-			$uncanny_automator->maybe_add_trigger_entry( $args, false );
 
 			$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
 			if ( $args ) {

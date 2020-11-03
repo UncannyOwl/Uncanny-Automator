@@ -303,7 +303,9 @@ class Learndash_Helpers {
 	 * Return all the specific fields of a form ID provided in ajax call
 	 */
 	public function select_lesson_from_course_no_any() {
+		$this->load_any_options = false;
 		$this->select_lesson_from_course_func( 'yes' );
+		$this->load_any_options = true;
 	}
 
 	/**
@@ -340,7 +342,7 @@ class Learndash_Helpers {
 		}
 
 		if ( absint( '-1' ) !== absint( $ld_course_id ) ) {
-			$lessons = learndash_get_lesson_list( $ld_course_id );
+			$lessons = learndash_get_lesson_list( $ld_course_id, array( 'num' => 0 ) );
 
 			foreach ( $lessons as $lesson ) {
 				$fields[] = array(
@@ -402,7 +404,7 @@ class Learndash_Helpers {
 		}
 		//$options     = $uncanny_automator->helpers->recipe->options->wp_query( $args, $include_any, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
-		$lessons = learndash_get_lesson_list( $ld_course_id );
+		$lessons = learndash_get_lesson_list( $ld_course_id, array( 'num' => 0 ) );
 
 		foreach ( $lessons as $lesson ) {
 			$fields[] = array(

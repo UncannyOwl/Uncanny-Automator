@@ -122,12 +122,15 @@ class Elem_Tokens {
 							$trigger_log_id = $replace_args['trigger_log_id'];
 							$token_info     = explode( '|', $pieces[2] );
 							$form_id        = $token_info[0];
-							$meta_key       = $token_info[1];
+							$meta_key       = isset( $token_info[1] ) ? $token_info[1] : '';
 							$meta_field     = $piece . '_' . $form_id;
 							$entry          = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
 							if ( ! empty( $entry ) ) {
-								if ( is_array( $entry ) ) {
+								if ( is_array( $entry ) && ! empty( $meta_key ) ) {
 									$value = isset( $entry[ $meta_key ] ) ? $entry[ $meta_key ] : '';
+									if ( is_array( $value ) ) {
+										$value = implode( ', ', $value );
+									}
 								} else {
 									$value = $entry;
 								}
