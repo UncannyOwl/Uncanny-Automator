@@ -39,10 +39,12 @@ class Add_Wpff_Integration {
 	 */
 	public function plugin_active( $status, $plugin ) {
 
-		if ( function_exists( 'wpFluent' ) ) {
-			$status = true;
-		} else {
-			$status = false;
+		if ( self::$integration === $plugin ) {
+			if ( defined( 'FLUENTFORM' ) ) {
+				$status = true;
+			} else {
+				$status = false;
+			}
 		}
 
 		return $status;

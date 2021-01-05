@@ -68,24 +68,60 @@ class Bdb_Tokens {
 		// Get BDB xprofile fields from DB.
 		global $wpdb;
 		$fields_table    = $wpdb->prefix . "bp_xprofile_fields";
-		$xprofile_fields = $wpdb->get_results( "SELECT * FROM {$fields_table} ORDER BY field_order ASC" );
+		$xprofile_fields = $wpdb->get_results( "SELECT * FROM {$fields_table} WHERE parent_id = 0 ORDER BY field_order ASC" );
 
 		if ( ! empty( $xprofile_fields ) ) {
 			foreach ( $xprofile_fields as $field ) {
-				$fields[] = [
-					'tokenId'         => 'BDBUSER',
-					'tokenName'       => $field->name,
-					'tokenType'       => 'text',
-					'tokenIdentifier' => 'BDBXPROFILE:' . $field->id,
-				];
+				if ( 'socialnetworks' === $field->type ) {
+					$child_fields = $wpdb->get_results( "SELECT * FROM {$fields_table} WHERE parent_id = {$field->id} ORDER BY field_order ASC" );
+					if ( ! empty( $child_fields ) ) {
+						foreach ( $child_fields as $child_field ) {
+							$fields[] = [
+								'tokenId'         => 'BDBUSER',
+								'tokenName'       => $field->name . ' - ' . $child_field->name,
+								'tokenType'       => 'text',
+								'tokenIdentifier' => 'BDBXPROFILE:' . $field->id . '|' . $child_field->name,
+							];
+						}
+					}
+				} elseif ( 'membertypes' === $field->type ) {
+					$fields[] = [
+						'tokenId'         => 'BDBUSER',
+						'tokenName'       => $field->name,
+						'tokenType'       => 'text',
+						'tokenIdentifier' => 'BDBXPROFILE:' . $field->id . '|membertypes',
+					];
+				} else {
+					$fields[] = [
+						'tokenId'         => 'BDBUSER',
+						'tokenName'       => $field->name,
+						'tokenType'       => 'text',
+						'tokenIdentifier' => 'BDBXPROFILE:' . $field->id,
+					];
+				}
 			}
 		}
 
+		if ( isset( $args['triggers_meta']['code'] ) && 'BDBACTIVITYSTRM' === $args['triggers_meta']['code'] ) {
+
+			$fields[] = [
+				'tokenId'         => 'ACTIVITY_ID',
+				'tokenName'       => __( 'Activity ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBUSERACTIVITY',
+			];
+			$fields[] = [
+				'tokenId'         => 'ACTIVITY_CONTENT',
+				'tokenName'       => __( 'Activity content', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBUSERACTIVITY',
+			];
+		}
 		$tokens = array_merge( $tokens, $fields );
 
 		return $tokens;
 	}
-	
+
 	/**
 	 * @param array $tokens
 	 * @param array $args
@@ -127,7 +163,7 @@ class Bdb_Tokens {
 			} elseif ( in_array( 'BDBXPROFILE', $pieces ) ) {
 
 				if ( isset( $pieces[2] ) && ! empty( $pieces[2] ) ) {
-					$value = $this->get_xprofile_data( $user_id, intval( $pieces[2] ) );
+					$value = $this->get_xprofile_data( $user_id, $pieces[2] );
 				}
 			} elseif ( in_array( 'BDBTOPICREPLY', $pieces ) ) {
 				$piece = 'BDBTOPIC';
@@ -175,6 +211,19 @@ class Bdb_Tokens {
 						}
 					}
 				}
+			} elseif ( in_array( 'BDBUSERACTIVITY', $pieces ) ) {
+				global $uncanny_automator;
+				if ( $trigger_data ) {
+					foreach ( $trigger_data as $trigger ) {
+						$trigger_id     = $trigger['ID'];
+						$trigger_log_id = $replace_args['trigger_log_id'];
+						$meta_key       = $pieces[2];
+						$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+						if ( ! empty( $meta_value ) ) {
+							$value = $meta_value;
+						}
+					}
+				}
 			}
 		}
 
@@ -192,9 +241,30 @@ class Bdb_Tokens {
 			return '';
 		}
 
+		$field_token = explode( '|', $field_id );
+		if ( count( $field_token ) > 0 ) {
+			$field_id = $field_token[0];
+		}
+
 		$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT value FROM {$wpdb->prefix}bp_xprofile_data WHERE user_id = %d AND field_id = %s LIMIT 0,1", $user_id, $field_id ) );
 		if ( ! empty( $meta_value ) ) {
-			return maybe_unserialize( $meta_value );
+
+			$meta_data = maybe_unserialize( $meta_value );
+			if ( empty( $meta_data ) ) {
+				return '';
+			}
+			if ( is_array( $meta_data ) ) {
+				if ( isset( $field_token[1] ) ) {
+					return isset( $meta_data[ $field_token[1] ] ) ? $meta_data[ $field_token[1] ] : '';
+				}
+
+				return implode( ', ', $meta_data );
+			}
+
+			if ( isset( $field_token[1] ) && 'membertypes' === $field_token[1] ) {
+				return get_the_title( $meta_data );
+			}
+			return $meta_data;
 		}
 
 		return '';

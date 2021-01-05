@@ -41,12 +41,14 @@ class WPF_ADDEDTOPIC {
 			$forum_options[ $forum['forumid'] ] = $forum['title'];
 		}
 
-		$option = [
-			'option_code' => $this->trigger_meta,
-			'label'       =>  esc_attr__( 'Forums', 'uncanny-automator' ),
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $forum_options,
+		$forum_relevant_tokens = [
+			'WPFORO_FORUM'               => __( 'Forum title', 'uncanny-automator' ),
+			'WPFORO_FORUM_ID'            => __( 'Forum ID', 'uncanny-automator' ),
+			'WPFORO_FORUM_URL'           => __( 'Forum URL', 'uncanny-automator' ),
+			'WPFORO_TOPIC'               => __( 'Topic title', 'uncanny-automator' ),
+			'WPFORO_TOPIC_ID'            => __( 'Topic ID', 'uncanny-automator' ),
+			'WPFORO_TOPIC_URL'           => __( 'Topic URL', 'uncanny-automator' ),
+			'WPFORO_TOPIC_CONTENT'       => __( 'Topic content', 'uncanny-automator' ),
 		];
 
 		$trigger = array(
@@ -55,15 +57,22 @@ class WPF_ADDEDTOPIC {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - wpForo */
-			'sentence'            => sprintf(  esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - wpForo */
-			'select_option_name'  =>  esc_attr__( 'A user creates a {{new topic}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user creates a {{new topic}}', 'uncanny-automator' ),
 			'action'              => 'wpforo_after_add_topic',
 			'priority'            => 5,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'added_topic' ),
 			'options'             => [
-				$option,
+				$uncanny_automator->helpers->recipe->field->select_field_args( [
+					'option_code'     => $this->trigger_meta,
+					'options'         => $forum_options,
+					'label'           => esc_attr__( 'Forums', 'uncanny-automator' ),
+					'required'        => true,
+					'token_name'      => 'Forum ID',
+					'relevant_tokens' => $forum_relevant_tokens,
+				] ),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);
@@ -79,6 +88,12 @@ class WPF_ADDEDTOPIC {
 
 		if ( isset( $args['forumid'] ) ) {
 			$forum_id = absint( $args['forumid'] );
+		} else {
+			return;
+		}
+
+		if ( isset( $args['topicid'] ) ) {
+			$topic_id = absint( $args['topicid'] );
 		} else {
 			return;
 		}
@@ -121,6 +136,24 @@ class WPF_ADDEDTOPIC {
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
+
+							$trigger_meta = [
+								'user_id'        => get_current_user_id(),
+								'trigger_id'     => $result['args']['trigger_id'],
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							];
+
+							$trigger_meta['meta_key']   = 'WPFORO_TOPIC_ID';
+							$trigger_meta['meta_value'] = $topic_id;
+
+							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
+							$trigger_meta['meta_key']   = 'WPFORO_TOPIC_FORUM_ID';
+							$trigger_meta['meta_value'] = $forum_id;
+
+							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
 							$uncanny_automator->maybe_trigger_complete( $result['args'] );
 						}
 					}

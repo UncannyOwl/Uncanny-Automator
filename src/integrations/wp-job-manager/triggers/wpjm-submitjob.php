@@ -50,12 +50,12 @@ class WPJM_SUBMITJOB {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Job Manager */
-			'sentence'            => sprintf(  esc_attr__( 'A user submits a {{specific type of:%1$s}} job', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user submits a {{specific type of:%1$s}} job', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WP Job Manager */
-			'select_option_name'  =>  esc_attr__( 'A user submits a {{specific type of}} job', 'uncanny-automator' ),
-			'action'              => 'job_manager_job_submitted',
+			'select_option_name'  => esc_attr__( 'A user submits a {{specific type of}} job', 'uncanny-automator' ),
+			'action'              => 'save_post_job_listing',
 			'priority'            => 20,
-			'accepted_args'       => 1,
+			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'job_manager_job_submitted' ),
 			'options'             => [
 				$uncanny_automator->helpers->recipe->wp_job_manager->options->list_wpjm_job_types()
@@ -66,13 +66,27 @@ class WPJM_SUBMITJOB {
 	}
 
 	/**
-	 * @param $fields
+	 * @param $job_id
+	 * @param $post
+	 * @param $update
 	 */
-	public function job_manager_job_submitted( $job_id ) {
+	public function job_manager_job_submitted( $job_id, $post, $update ) {
 
 		global $uncanny_automator;
 
 		if ( empty( $job_id ) ) {
+			return;
+		}
+
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
+
+		if ( 'job_listing' !== $post->post_type ) {
+			return;
+		}
+
+		if ( 'pending' !== $post->post_status && 'publish' !== $post->post_status && 'preview' !== $post->post_status ) {
 			return;
 		}
 
@@ -84,8 +98,12 @@ class WPJM_SUBMITJOB {
 		if ( empty( $conditions ) ) {
 			return;
 		}
-		$user_id = get_current_user_id();
 
+		$user_id = absint( $post->post_author );
+		if ( 0 === $user_id || empty( $user_id ) ) {
+			// Fallback to current user ID, could be admin.
+			$user_id = get_current_user_id();
+		}
 		foreach ( $conditions['recipe_ids'] as $recipe_id ) {
 			if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
 				$trigger_args = array(
@@ -145,7 +163,7 @@ class WPJM_SUBMITJOB {
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( in_array( (int) $trigger['meta'][ $trigger_meta ], $entry_to_match, TRUE ) || $trigger['meta'][ $trigger_meta ] === "-1" ) ) {
+				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( in_array( (int) $trigger['meta'][ $trigger_meta ], $entry_to_match, true ) || $trigger['meta'][ $trigger_meta ] === "-1" ) ) {
 					$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
 					break;
 				}

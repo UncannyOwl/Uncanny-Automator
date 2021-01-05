@@ -47,7 +47,7 @@ class BB_NEWTOPIC {
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'bbp_new_topic' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->bbpress->options->list_bbpress_forums(),
+				$uncanny_automator->helpers->recipe->bbpress->options->list_bbpress_forums( null, $this->trigger_meta, true),
 				$uncanny_automator->helpers->recipe->options->number_of_times(),
 			],
 		);

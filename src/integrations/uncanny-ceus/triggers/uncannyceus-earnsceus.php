@@ -65,10 +65,9 @@ class UNCANNYCEUS_EARNSCEUS {
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
 			/* translators: Logged-in trigger - Uncanny CEUs. 1. Credit designation label (plural) */
-			'sentence'            => sprintf( esc_attr__( 'The total number of %1$s earned by a user is greater than or equal to {{a specific number of:%2$s}}', 'uncanny-automator' ), $credit_designation_label_plural, $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'The total number of %1$s earned by a user is greater than or equal to {{a specific number:%2$s}}', 'uncanny-automator' ), $credit_designation_label_plural, $this->trigger_meta ),
 			/* translators: Logged-in trigger - Uncanny CEUs. 1. Credit designation label (plural) */
-			'select_option_name'  => sprintf( esc_attr__( 'The total number of %1$s earned by a user is greater than or equal to {{a specific number of}}', 'uncanny-automator' ), $credit_designation_label_plural ),
-
+			'select_option_name'  => sprintf( esc_attr__( 'The total number of %1$s earned by a user is greater than or equal to {{a specific number}}', 'uncanny-automator' ), $credit_designation_label_plural ),
 			'action'              => 'ceus_after_updated_user_ceu_record',
 			'priority'            => 20,
 			'accepted_args'       => 7,
@@ -80,6 +79,7 @@ class UNCANNYCEUS_EARNSCEUS {
 					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
 					'input_type'      => 'int',
 					'validation_type' => 'integer',
+					'required' => true
 				],
 			],
 		);

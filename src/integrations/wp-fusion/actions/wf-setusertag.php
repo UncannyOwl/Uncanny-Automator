@@ -40,44 +40,18 @@ class WF_SETUSERTAG {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WP Fusion */
-			'sentence'           => sprintf(  esc_attr__( 'Add {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Add {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WP Fusion */
-			'select_option_name' =>  esc_attr__( 'Add {{a tag}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Add {{a tag}} to the user', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'set_user_tag' ),
 			'options'            => [
-				$this->fusion_tags(),
+				Wp_Fusion_Helpers::fusion_tags( '', $this->action_meta ),
 			],
 		);
 
 		$uncanny_automator->register->action( $action );
-	}
-
-	/**
-	 * @param string $label
-	 * @param string $option_code
-	 *
-	 * @return mixed
-	 */
-	public function fusion_tags( $label = '' ) {
-
-		if ( empty( $label ) ) {
-			$label =  esc_attr__( 'Tag', 'uncanny-automator' );
-		}
-
-		$tags = wp_fusion()->settings->get( 'available_tags' );
-
-		$option = [
-			'option_code' => $this->action_meta,
-			'label'       => $label,
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $tags,
-			'custom_value_description' => esc_attr__( 'Tag', 'uncanny-automator' )
-		];
-
-		return apply_filters( 'uap_option_wp_user_roles', $option );
 	}
 
 	/**

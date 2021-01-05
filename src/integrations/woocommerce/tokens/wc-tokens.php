@@ -81,7 +81,12 @@ class Wc_Tokens {
 
 		//Parsing data
 		add_filter( 'automator_maybe_parse_token', [ $this, 'wc_ordertotal_tokens' ], 20, 6 );
-
+		
+		//Adding WC tokens
+		add_filter( 'automator_maybe_trigger_wc_wcshipstationshipped_tokens', [
+			$this,
+			'wc_order_possible_tokens'
+		], 20, 2 );
 	}
 
 	/**
@@ -222,6 +227,7 @@ class Wc_Tokens {
 			'WOOPRODUCT_URL',
 			'WCORDERSTATUS',
 			'WCORDERCOMPLETE',
+			'WCSHIPSTATIONSHIPPED',
 		);
 
 		if ( $pieces ) {
@@ -449,6 +455,16 @@ class Wc_Tokens {
 								case 'payment_method':
 									$value = $order->get_payment_method_title();
 									break;
+								case 'CARRIER':
+									$value = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_CARRIER', $trigger_id, $trigger_log_id, $user_id );
+									break;
+								case 'TRACKING_NUMBER':
+									$value = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_TRACKING_NUMBER', $trigger_id, $trigger_log_id, $user_id );
+									break;
+								case 'SHIP_DATE':
+									$value = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
+									$value = $value ? date( 'Y-m-d H:i:s', $value ) : '';
+									break;
 							}
 						}
 					}
@@ -520,5 +536,37 @@ class Wc_Tokens {
 		}
 
 		return join( ', ', $product_ids );
+	}
+	
+	/**
+	 * @param array $tokens
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function wc_order_possible_tokens( $tokens = [], $args = [] ) {
+		$args['meta'] = 'WCSHIPSTATIONSHIPPED';
+		$fields       = [];
+		$fields[]     = [
+			'tokenId'         => 'TRACKING_NUMBER',
+			'tokenName'       => esc_attr__( 'Shipping tracking number', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => 'WCSHIPSTATIONSHIPPED',
+		];
+		$fields[]     = [
+			'tokenId'         => 'CARRIER',
+			'tokenName'       => esc_attr__( 'Shipping carrier', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => 'WCSHIPSTATIONSHIPPED',
+		];
+		$fields[]     = [
+			'tokenId'         => 'SHIP_DATE',
+			'tokenName'       => esc_attr__( 'Ship date', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => 'WCSHIPSTATIONSHIPPED',
+		];
+		$tokens       = array_merge( $tokens, $fields );
+		
+		return $this->wc_possible_tokens( $tokens, $args, 'order' );
 	}
 }

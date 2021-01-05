@@ -80,35 +80,40 @@ class UC_CODESPREFIX {
 				$trigger_id = $trigger['ID'];
 				if ( isset( $required_prefix[ $recipe_id ] ) && isset( $required_prefix[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( (string) $prefix === (string) $required_prefix[ $recipe_id ][ $trigger_id ] ) {
-						$pass_args = [
-							'code'           => $this->trigger_code,
-							'meta'           => $this->trigger_meta,
-							'ignore_post_id' => true,
-							'user_id'        => $user_id,
-						];
+						if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+							$pass_args = [
+								'code'             => $this->trigger_code,
+								'meta'             => $this->trigger_meta,
+								'ignore_post_id'   => true,
+								'recipe_to_match'  => $recipe_id,
+								'trigger_to_match' => $trigger_id,
+								'user_id'          => $user_id,
+								'is_signed_in'     => true,
+							];
 
-						$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+							$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+
+							if ( isset( $args ) ) {
+								foreach ( $args as $result ) {
+									if ( true === $result['result'] ) {
+
+										$trigger_meta = [
+											'user_id'        => $user_id,
+											'trigger_id'     => $result['args']['trigger_id'],
+											'trigger_log_id' => $result['args']['get_trigger_id'],
+											'run_number'     => $result['args']['run_number'],
+										];
+
+										$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':' . $this->trigger_meta;
+										$trigger_meta['meta_value'] = maybe_serialize( $prefix );
+										$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
+										$uncanny_automator->maybe_trigger_complete( $result['args'] );
+									}
+								}
+							}
+						}
 					}
-				}
-			}
-		}
-
-		if ( isset( $args ) ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] ) {
-
-					$trigger_meta = [
-						'user_id'        => $user_id,
-						'trigger_id'     => $result['args']['trigger_id'],
-						'trigger_log_id' => $result['args']['get_trigger_id'],
-						'run_number'     => $result['args']['run_number'],
-					];
-
-					$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':' . $this->trigger_meta;
-					$trigger_meta['meta_value'] = maybe_serialize( $prefix );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
-
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

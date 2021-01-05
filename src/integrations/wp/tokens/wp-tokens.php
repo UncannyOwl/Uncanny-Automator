@@ -22,6 +22,7 @@ class Wp_Tokens {
 
 		add_filter( 'automator_maybe_trigger_wp_wppostcomments_tokens', [ $this, 'wp_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_anonusercreated_token' ], 20, 6 );
+		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_wproles_token' ], 20, 6 );
 	}
 	
 	/**
@@ -94,6 +95,40 @@ class Wp_Tokens {
 							if ( 'WPPOSTTYPES' === $pieces[2] ) {
 								$value = get_post_type( $post );
 							}
+						}
+					}
+				}
+			}
+		}
+
+		return $value;
+	}
+	
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 *
+	 * @param int $user_id
+	 * @param $replace_args
+	 *
+	 * @return mixed
+	 */
+	public function parse_wproles_token( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args ) {
+		$piece = 'WPROLE';
+		if ( $pieces ) {
+			if ( in_array( $piece, $pieces ) ) {
+				global $uncanny_automator;
+
+				if ( $trigger_data ) {
+					foreach ( $trigger_data as $trigger ) {
+						global $wpdb;
+						$meta_field = $trigger['ID'] . ':' . $pieces[1] . ':' . $pieces[2];
+						$trigger_id = $trigger['ID'];
+						$meta_value = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE '%{$meta_field}%' AND automator_trigger_id = {$trigger_id} ORDER BY ID DESC LIMIT 0,1" );
+						if ( ! empty( $meta_value ) ) {
+							$value = maybe_unserialize( $meta_value );
 						}
 					}
 				}

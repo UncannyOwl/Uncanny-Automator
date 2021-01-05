@@ -43,7 +43,7 @@ jQuery(function($){
 			// Listen click to the close button
 			this.$elements.close.on( 'click', function(){
 				// Perform action
-				_this.doAction( 'maybe-later', _this.$elements.close, 'uap-review-banner__close--loading' );
+				_this.doAction( 'hide-forever', _this.$elements.close, 'uap-review-banner__close--loading' );
 			});
 		},
 

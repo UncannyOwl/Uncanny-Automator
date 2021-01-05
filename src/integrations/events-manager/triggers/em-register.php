@@ -72,20 +72,22 @@ class EM_REGISTER {
 			return $em_status;
 		}
 
-		$em_event_id    = $em_booking_obj->event_id;
-		$user_id        = $em_booking_obj->person_id;
-		$recipes        = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_event = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$em_event_id        = $em_booking_obj->event_id;
+		$user_id            = $em_booking_obj->person_id;
+		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_event     = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$matched_recipe_ids = [];
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
-				if ( $required_event[ $recipe_id ][ $trigger_id ] == $em_event_id || $required_event[ $recipe_id ][ $trigger_id ] == '-1' ) {
-					$matched_recipe_ids[] = [
-						'recipe_id'  => $recipe_id,
-						'trigger_id' => $trigger_id,
-					];
+				if ( isset( $required_event[ $recipe_id ][ $trigger_id ] ) ) {
+					if ( $required_event[ $recipe_id ][ $trigger_id ] == $em_event_id || $required_event[ $recipe_id ][ $trigger_id ] == '-1' ) {
+						$matched_recipe_ids[] = [
+							'recipe_id'  => $recipe_id,
+							'trigger_id' => $trigger_id,
+						];
+					}
 				}
 			}
 		}

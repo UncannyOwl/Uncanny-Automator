@@ -27,22 +27,52 @@ class Automator_Get_Data {
 			return null;
 		}
 
-		$tokens = apply_filters( 'automator_maybe_trigger_pre_tokens', [], $triggers_meta, $recipe_id );
+		$tokens = apply_filters( 'automator_maybe_trigger_pre_tokens', array(), $triggers_meta, $recipe_id );
 		global $uncanny_automator;
 		//Only load these when on edit recipe page or is automator ajax is happening!
 		if ( $uncanny_automator->helpers->recipe->is_edit_page() || $uncanny_automator->helpers->recipe->is_rest() || $uncanny_automator->helpers->recipe->is_ajax() ) {
 			//Add custom tokens regardless of integration / trigger code
-			$filters = [];
+			$filters = array();
 			if ( $triggers_meta ) {
 				$trigger_integration = '';
 				$trigger_meta        = '';
 				$trigger_value       = '';
+				$trigger_code        = isset( $triggers_meta['code'] ) ? $triggers_meta['code'] : '';
 				foreach ( $triggers_meta as $meta_key => $meta_value ) {
-					if ( 'integration' === $meta_key ) {
+					if ( empty( $meta_value ) ) {
+						continue;
+					}
+
+					if ( 'INTEGRATION_NAME' === (string) strtoupper( $meta_key ) ) {
+						continue;
+					}
+
+					if ( 'NUMBERCOND' === (string) strtoupper( $meta_key ) ) {
+						continue;
+					}
+
+					if ( 'uap_trigger_version' === (string) $meta_key ) {
+						continue;
+					}
+
+					if ( 'sentence' === (string) $meta_key ) {
+						continue;
+					}
+
+					if ( 'sentence_human_readable' === (string) $meta_key ) {
+						continue;
+					}
+
+					if ( strpos( $meta_key, 'readable' ) ) {
+						continue;
+					}
+
+					if ( 'integration' === (string) $meta_key ) {
 						$trigger_integration = strtolower( $meta_value );
 					}
+
 					//Ignore NUMTIMES and trigger_integration/trigger_code metas
-					if ( 'NUMTIMES' !== $meta_key && 'integration' !== $meta_key && 'code' !== $meta_key ) {
+					if ( 'NUMTIMES' !== (string) strtoupper( $meta_key ) && 'integration' !== (string) strtolower( $meta_key ) ) {
 						$trigger_meta  = strtolower( $meta_key );
 						$trigger_value = $meta_value;
 					}
@@ -53,35 +83,49 @@ class Automator_Get_Data {
 						$trigger_value = $meta_value;
 					}
 
+					//Deal with trigger_meta special cases
+					if ( 'code' === (string) $meta_key ) {
+						$trigger_meta  = strtolower( $meta_value );
+						$trigger_value = $meta_value;
+					}
+
 					//Add general Integration based filter, like automator_maybe_trigger_gf_tokens
 					if ( ! empty( $trigger_integration ) ) {
 
 						$filter = 'automator_maybe_trigger_' . $trigger_integration . '_tokens';
 						$filter = str_replace( '__', '_', $filter );
 
-						$filters[ $filter ] = [
-							'integration' => strtoupper( $trigger_integration ),
-							'meta'        => strtoupper( $trigger_meta ),
-						];
-					}
+						$filters[ $filter ] = array(
+							'integration'   => strtoupper( $trigger_integration ),
+							'meta'          => strtoupper( $trigger_meta ),
+							'triggers_meta' => $triggers_meta,
+							'recipe_id'     => $recipe_id,
+						);
 
+					}
 					//Add trigger code specific filter, like automator_maybe_trigger_gf_gfforms_tokens
 					if ( ! empty( $trigger_integration ) && ! empty( $triggers_meta ) ) {
 						$filter = 'automator_maybe_trigger_' . $trigger_integration . '_' . $trigger_meta . '_tokens';
 						$filter = str_replace( '__', '_', $filter );
 
-						$filters[ $filter ] = [
-							'value'       => $trigger_value,
-							'integration' => strtoupper( $trigger_integration ),
-							'meta'        => strtoupper( $trigger_meta ),
-						];
+						$filters[ $filter ] = array(
+							'value'         => $trigger_value,
+							'integration'   => strtoupper( $trigger_integration ),
+							'meta'          => strtoupper( $trigger_meta ),
+							'recipe_id'     => $recipe_id,
+							'triggers_meta' => $triggers_meta,
+						);
 					}
 				}
+			}
 
-				if ( $filters ) {
-					foreach ( $filters as $filter => $args ) {
-						$tokens = apply_filters( $filter, $tokens, $args );
-					}
+			/* Filter to add/remove custom filter */
+			/** @var  $filters */
+			$filters = apply_filters( 'automator_trigger_filters', $filters, $triggers_meta );
+
+			if ( $filters ) {
+				foreach ( $filters as $filter => $args ) {
+					$tokens = apply_filters( $filter, $tokens, $args );
 				}
 			}
 		}
@@ -1121,7 +1165,7 @@ class Automator_Get_Data {
 									AND run_number = $run_number
 									LIMIT 0,1" );
 
-		if( ! empty($meta_value) ){
+		if ( ! empty( $meta_value ) ) {
 			return $meta_value;
 		}
 

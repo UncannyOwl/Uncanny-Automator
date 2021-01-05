@@ -148,24 +148,26 @@ class Wpff_Tokens {
 
 							foreach ( $raw_field['fields'] as $field ) {
 								if ( 1 === (int) $field['settings']['visible'] ) {
-									$input_id    = $field['uniqElKey'];
-									$input_title = $field['settings']['label'];
-									$token_id    = "$form_id|$input_id";
+									if( isset($field['uniqElKey']) ){
+										$input_id    = $field['uniqElKey'];
+										$input_title = $field['settings']['label'];
+										$token_id    = "$form_id|$input_id";
 
-									$type = 'text';
-									if ( isset( $f_fields['attributes']['type'] ) ) {
-										if ( 'number' === $field['attributes']['type'] ) {
-											$type = 'int';
-										} else {
-											$type = $field['attributes']['type'];
+										$type = 'text';
+										if ( isset( $f_fields['attributes']['type'] ) ) {
+											if ( 'number' === $field['attributes']['type'] ) {
+												$type = 'int';
+											} else {
+												$type = $field['attributes']['type'];
+											}
 										}
+										$fields_tokens[] = [
+											'tokenId'         => $token_id,
+											'tokenName'       => $input_title,
+											'tokenType'       => $type,
+											'tokenIdentifier' => $trigger_meta,
+										];
 									}
-									$fields_tokens[] = [
-										'tokenId'         => $token_id,
-										'tokenName'       => $input_title,
-										'tokenType'       => $type,
-										'tokenIdentifier' => $trigger_meta,
-									];
 								}
 							}
 						} elseif ( isset( $raw_field['attributes']['name'] ) ) {

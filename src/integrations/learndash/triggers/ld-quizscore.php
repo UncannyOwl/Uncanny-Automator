@@ -39,9 +39,9 @@ class LD_QUIZSCORE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf(  esc_attr__( 'A user achieves a score {{greater than, less than or equal:%1$s}} to {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', 'QUIZSCORE', $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf(  esc_attr__( 'A user achieves a score {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', 'QUIZSCORE', $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  =>  esc_attr__( 'A user achieves a score {{greater than, less than or equal}} to {{a value}} on {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( 'A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'learndash_quiz_completed',
 			'priority'            => 15,
 			'accepted_args'       => 2,
@@ -108,6 +108,7 @@ class LD_QUIZSCORE {
 						'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 						'trigger_to_match' => $matched_recipe_id['trigger_id'],
 						'ignore_post_id'   => true,
+						'post_id'          => $quiz_id,
 					];
 
 					$uncanny_automator->maybe_add_trigger_entry( $args );

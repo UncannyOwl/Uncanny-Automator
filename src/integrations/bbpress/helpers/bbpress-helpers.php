@@ -53,7 +53,7 @@ class Bbpress_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS' ) {
+	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS', $any_option = false ) {
 		if ( ! $this->load_options ) {
 			global $uncanny_automator;
 
@@ -70,6 +70,12 @@ class Bbpress_Helpers {
 			$label =  esc_attr__( 'Forum', 'uncanny-automator' );
 		}
 
+		$any_label = null;
+
+		if ( $any_option ) {
+			$any_label =  esc_attr__( 'Any forum', 'uncanny-automator' );
+		}
+
 		$args = [
 			'post_type'      => bbp_get_forum_post_type(),
 			'posts_per_page' => 999,
@@ -79,7 +85,7 @@ class Bbpress_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, $any_label );
 
 		$option = [
 			'option_code'     => $option_code,

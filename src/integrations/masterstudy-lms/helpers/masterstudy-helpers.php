@@ -70,15 +70,21 @@ class Masterstudy_Helpers {
 		// Nonce and post object validation
 		$uncanny_automator->utilities->ajax_auth_check( $_POST );
 
-		$fields = [];
+		$fields = [
+			[
+				'value' => '-1',
+				'text'  => _x( 'Any lesson', 'MasterStudy LMS', 'uncanny-automator' ),
+			]
+		];
+
 		if ( ! isset( $_POST ) ) {
 			echo wp_json_encode( $fields );
 			die();
 		}
 
-		$mslms_course_id = absint( $_POST['values']['MSLMSCOURSE'] );
+		$mslms_course_id = $_POST['values']['MSLMSCOURSE'];
 
-		if ( absint( $mslms_course_id ) ) {
+		if ( absint( $mslms_course_id ) || '-1' === $mslms_course_id ) {
 			global $wpdb;
 
 			$course_lessons_q =
@@ -91,7 +97,13 @@ class Masterstudy_Helpers {
 				AND post_type = 'stm-lessons'
 				ORDER BY post_title ASC";
 
-			$course_lessons_p = $wpdb->prepare( $course_lessons_q, $mslms_course_id );
+			$course_lessons_p = $wpdb->prepare( $course_lessons_q, absint( $mslms_course_id ) );
+
+			if ( '-1' === $mslms_course_id ) {
+				$course_lessons_p =
+					"Select ID, post_title FROM $wpdb->posts WHERE post_type = 'stm-lessons' ORDER BY post_title ASC";
+			}
+
 
 			$lessons = $wpdb->get_results( $course_lessons_p );
 
@@ -120,18 +132,24 @@ class Masterstudy_Helpers {
 		// Nonce and post object validation
 		$uncanny_automator->utilities->ajax_auth_check( $_POST );
 
-		$fields = [];
+		$fields = [
+			[
+				'value' => '-1',
+				'text'  => _x( 'Any quiz', 'MasterStudy LMS', 'uncanny-automator' ),
+			]
+		];
+
 		if ( ! isset( $_POST ) ) {
 			echo wp_json_encode( $fields );
 			die();
 		}
 
-		$mslms_course_id = absint( $_POST['values']['MSLMSCOURSE'] );
+		$mslms_course_id = $_POST['values']['MSLMSCOURSE'];
 
-		if ( absint( $mslms_course_id ) ) {
+		if ( absint( $mslms_course_id ) || '-1' === $mslms_course_id ) {
 			global $wpdb;
 
-			$course_lessons_q =
+			$course_quiz_q =
 				"Select ID, post_title
 				FROM $wpdb->posts
 				WHERE FIND_IN_SET(
@@ -141,11 +159,19 @@ class Masterstudy_Helpers {
 				AND post_type = 'stm-quizzes'
 				ORDER BY post_title ASC";
 
-			$course_lessons_p = $wpdb->prepare( $course_lessons_q, $mslms_course_id );
+			$course_quiz_p = $wpdb->prepare( $course_quiz_q, absint( $mslms_course_id ) );
 
-			$lessons = $wpdb->get_results( $course_lessons_p );
+			if('-1' === $mslms_course_id){
+				$course_quiz_p =
+					"Select ID, post_title
+				FROM $wpdb->posts
+				WHERE post_type = 'stm-quizzes'
+				ORDER BY post_title ASC";
+			}
 
-			foreach ( $lessons as $lesson ) {
+			$quizzes = $wpdb->get_results( $course_quiz_p );
+
+			foreach ( $quizzes as $lesson ) {
 				$fields[] = array(
 					'value' => $lesson->ID,
 					'text'  => $lesson->post_title,

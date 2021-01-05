@@ -187,6 +187,15 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Wpjm_Helpers
 	 */
 	public $wp_job_manager;
+
+	/**
+	 * @var Wc_Memberships_Helpers
+	 */
+	public $wc_memberships;
+	/**
+	 * @var Affwp_Helpers
+	 */
+	public $affiliate_wp;
 	/**
 	 * @var Automator_Helpers_Recipe
 	 */
@@ -324,8 +333,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	function is_rest() {
 		$prefix = rest_get_url_prefix();
 		if ( defined( 'REST_REQUEST' ) && REST_REQUEST // (#1)
-		     || isset( $_GET['rest_route'] ) // (#2)
-		        && strpos( trim( $_GET['rest_route'], '\\/' ), $prefix, 0 ) === 0 ) {
+			 || isset( $_GET['rest_route'] ) // (#2)
+				&& strpos( trim( $_GET['rest_route'], '\\/' ), $prefix, 0 ) === 0 ) {
 			return true;
 		}
 		// (#3)
@@ -460,10 +469,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	}
 
 	/**
-	 * @param array $args
-	 * @param bool $add_any_option
+	 * @param array  $args
+	 * @param bool   $add_any_option
 	 * @param string $add_any_option_label
-	 * @param bool $is_all_label
+	 * @param bool   $is_all_label
 	 *
 	 * @return array
 	 * @version 2.1.4 - changes made to pass  esc_attr__('All pages', 'uncanny-automator') as string instead of
@@ -493,7 +502,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		/**
 		 * Allow developers to modify $args
 		 *
-		 * @author Saad
+		 * @author  Saad
 		 * @version 2.6
 		 */
 		$args = apply_filters( 'automator_wp_query_args', $args );
@@ -505,7 +514,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		// suffix post type is needed.
 		if ( isset( $args['post_type'] ) ) {
-			$transient_key .= "_{$args['post_type']}";
+			$transient_key .= md5( json_encode( $args ) );
 		}
 
 		// attempt fetching options from transient.
@@ -605,10 +614,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 				 * dropped get_posts() and used direct query to reduce load time
 				 *
 				 * @version 2.6
-				 * @author Saad
+				 * @author  Saad
 				 *
 				 * @var  $query mysql query
-				 * @var  $args array of arguments passed to function
+				 * @var  $args  array of arguments passed to function
 				 */
 				$query = apply_filters( 'automator_maybe_modify_wp_query', $query, $args );
 
@@ -637,7 +646,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 				/**
 				 * Allow developers to modify transient times
 				 *
-				 * @author Saad
+				 * @author  Saad
 				 * @version 2.6
 				 */
 				$transient_time = apply_filters( 'automator_transient_time', 5 * MINUTE_IN_SECONDS );
@@ -660,7 +669,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @param string $limit
 	 *
 	 * @return array
-	 * @author Saad
+	 * @author  Saad
 	 * @version 2.6 - this function replaces wp's get_users()
 	 */
 	public function wp_users( $limit = '99999' ) {
@@ -805,15 +814,15 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * Replacing frequently used helpers function/query to
 	 * central so that it doesn't have to defined repeatedly
 	 *
-	 * @param $meta_key
-	 * @param $trigger_id
-	 * @param $trigger_log_id
+	 * @param      $meta_key
+	 * @param      $trigger_id
+	 * @param      $trigger_log_id
 	 * @param null $user_id
 	 *
 	 * @return mixed|string
 	 * @version 2.2
 	 *
-	 * @author Saad
+	 * @author  Saad
 	 */
 	public function get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id = null ) {
 		if ( empty( $meta_key ) || empty( $trigger_id ) || empty( $trigger_log_id ) ) {
@@ -842,7 +851,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @return bool
 	 */
 	public function maybe_load_trigger_options( $class = '' ) {
-		if ( is_user_logged_in() && is_admin() && isset( $_GET['action'] ) && 'edit' === $_GET['action'] ) {
+		if ( is_user_logged_in() && is_admin() && isset( $_GET['action'] ) && 'edit' === $_GET['action'] && isset( $_GET['post'] ) ) {
 			$post_id = absint( $_GET['post'] );
 			$post    = get_post( $post_id );
 			if ( $post && $post instanceof \WP_Post && 'uo-recipe' === $post->post_type ) {

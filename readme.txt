@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
-Tested up to: 5.5.3
+Tested up to: 5.6
 Requires PHP: 7.0
-Stable tag: 2.9
+Stable tag: 2.10
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -31,6 +31,7 @@ If you've used Zapier, setting things up will be intuitive. And if not, that's o
 The free version of Automator is incredibly powerful and comes with built-in support for all of these popular WordPress plugins:
 
 - [Automator Core](https://automatorplugin.com/integration/automator-core/)
+- [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/)
 - [bbPress](https://automatorplugin.com/integration/bbpress/)
 - [BuddyBoss](https://automatorplugin.com/integration/buddyboss/)
@@ -70,6 +71,8 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/)
 - [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
+- [WooCommerce ShipStation](https://automatorplugin.com/integration/woocommerce-shipstation/)
+- [WooCommerce Memberships](https://automatorplugin.com/integration/woocommerce-memberships/)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/)
 - [WP LMS](https://automatorplugin.com/integration/wp-lms/)
 - [WPForms](https://automatorplugin.com/integration/wp-forms/)
@@ -77,6 +80,7 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/)
 - [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/)
+- [WP Polls](https://automatorplugin.com/integration/wp-polls/)
 - [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/)
 - [Zapier](https://automatorplugin.com/integration/zapier/)
 
@@ -168,9 +172,63 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 
 == Changelog ==
 
+= 2.10 [2021-01-05] =
+
+**New Integrations:**
+
+* AffiliateWP
+* WooCommerce ShipStation
+* WooCommerce Memberships
+* WP Polls
+
+**New Triggers:**
+
+* AffiliateWP - A user becomes an affiliate
+* AffiliateWP - A new affiliate is awaiting approval
+* AffiliateWP - A new affiliate is approved
+* AffiliateWP - An affiliate makes a referral of a specific type
+* WooCommerce ShipStation - An order is shipped
+* WooCommerce Memberships - A user is added to a membership plan
+* WordPress - A user role is added
+* WordPress - A user role is updated
+* WP Polls - A user submits a poll
+
+**New Actions:**
+
+* Restrict Content Pro - Add the user to a membership level
+* WooCommerce Memberships - Add the user to a membership plan
+
+**Added:**
+
+* WP Foro tokens
+* Automator UI will no longer show deprecated triggers
+* BuddyBoss + BuddyPress Activity content and ID as trigger tokens
+
+**Updates:**
+
+* bbPress - A user creates a topic in a forum - Added "Any forum" option
+* Some trigger sentence updates
+* Transient's key name updated from general post_type to md5 post_type to avoid conflicts in trigger options
+
+**Fixes:**
+
+* Automator review banner's X now hides the banner permanently
+* BuddyBoss - Social network profile token now works reliably
+* Event Manager - Fixed notices
+* Fluent Forms no longer shows as an available integration when only Fluent CRM is installed
+* LearnDash - Quiz id is now passed for token parsing
+* MasterStudy LMS tokens now return the proper value when "Any ______" (course, lesson, quiz) is selected
+* PHP Notice: Undefined index: uniqElKey
+* Uncanny Continuing Education Credits - Award a number of custom CEUs to the user now working as expected
+* Uncanny Codes - Prefix/Suffix triggers now fire more reliably when used in multiple recipes
+* WP Foro - PHP Notice: Undefined index: post
+* WP Fusion triggers/actions now list tags as expected on all sites
+* WP Job Manager now fires more reliably when a job listing is posted by the user
+
 = 2.9 [2020-11-03] =
 
 **New Integrations:**
+
 * FluentCRM
 * MasterStudy LMS
 * Restrict Content Pro
@@ -178,6 +236,7 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * WP Job Manager
 
 **New Triggers:**
+
 * Automator Core - A user completes a recipe
 * BuddyBoss - A user creates a topic in a forum
 * BuddyBoss - A user replies to a topic in a forum
@@ -195,12 +254,14 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * WP Job Manager - A user applies for a job
 
 **New Actions:**
+
 * FluentCRM - Add a tag to the user
 * FluentCRM - Add the user to a list
 * MasterStudyLMS - Mark a course complete for the user
 * Uncanny Continuing Education Credits - Award a number of custom credits to the user
 
 **Updates:**
+
 * WP Fluent Forms integration renamed to Fluent forms
 * Fluent Forms: "Numeric" field type now available as tokens in integer type action fields
 * Default number of times a recipe will run per user is now Unlimited instead of 1
@@ -213,6 +274,7 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Trigger: WordPress Core - A user comments on a post - Added Post Type selector
 
 **Fixes:**
+
 * Fluent forms triggering any form without checking form ID
 * Elementor - Checkbox field tokens now return all selected values
 * WP Courseware - User completes a module - Tokens now resolve values correctly
@@ -286,14 +348,5 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Fixed: Inconsistencies in some trigger/action sentences
 * Fixed: Incorrect logic in trigger_meta function affecting custom triggers
 * Fixed: Trigger section label on first creation of an Anonymous recipe now reads "Anonymous trigger"
-
-= 2.7.1 [2020-09-10] =
-
-* Updated: manage_options capability now required to manage Automator recipes
-* Fixed: Action: WordPress - Create a post - Post title no longer replaces spaces with hyphens
-* Fixed: LearnDash - "Any lesson" option not appearing in lesson dropdown when "Any course" is selected
-* Fixed: Trigger: WooCommerce - Product tokens now return proper values when "Any product" is selected
-* Fixed: HTML entity not rendering in Anonymous Recipe user selector UI
-* Fixed: LearnDash triggers: Grammar issue: A user _____ 1 times changed to A user _____ 1 time(s)
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)

@@ -42,7 +42,7 @@ class MASTERSTUDY_QUIZPASSED {
 			'post_status'    => 'publish',
 		];
 
-		$options                = $uncanny_automator->helpers->recipe->options->wp_query( $args, false );
+		$options                = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
 
 		$course_relevant_tokens = [
 			'MSLMSCOURSE'     =>  esc_attr__( 'Course title', 'uncanny-automator' ),
@@ -119,12 +119,39 @@ class MASTERSTUDY_QUIZPASSED {
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
+
+					$source = (!empty($_POST['source'])) ? intval($_POST['source']) : '';
+					$course_id = (!empty($_POST['course_id'])) ? intval($_POST['course_id']) : '';
+					$course_id = apply_filters('user_answers__course_id', $course_id, $source);
+
+					$uncanny_automator->insert_trigger_meta(
+						[
+							'user_id'        => $user_id,
+							'trigger_id'     => $result['args']['trigger_id'],
+							'meta_key'       => 'MSLMSCOURSE',
+							'meta_value'     => $course_id,
+							'trigger_log_id' => $result['args']['get_trigger_id'],
+							'run_number'     => $result['args']['run_number'],
+						]
+					);
+
 					$uncanny_automator->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
 							'meta_key'       => $this->trigger_meta . '_SCORE',
 							'meta_value'     => $user_quiz_progress . '%',
+							'trigger_log_id' => $result['args']['get_trigger_id'],
+							'run_number'     => $result['args']['run_number'],
+						]
+					);
+
+					$uncanny_automator->insert_trigger_meta(
+						[
+							'user_id'        => $user_id,
+							'trigger_id'     => $result['args']['trigger_id'],
+							'meta_key'       => $this->trigger_meta ,
+							'meta_value'     => $quiz_id,
 							'trigger_log_id' => $result['args']['get_trigger_id'],
 							'run_number'     => $result['args']['run_number'],
 						]

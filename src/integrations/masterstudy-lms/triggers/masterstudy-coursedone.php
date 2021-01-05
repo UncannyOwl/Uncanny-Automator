@@ -41,7 +41,7 @@ class MASTERSTUDY_COURSEDONE {
 			'post_status'    => 'publish',
 		];
 
-		$options                = $uncanny_automator->helpers->recipe->options->wp_query( $args, true,esc_attr__( 'Any course', 'uncanny-automator' )  );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
 
 		$trigger = array(
 			'author'              => $uncanny_automator->get_author_name(),
@@ -49,9 +49,9 @@ class MASTERSTUDY_COURSEDONE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MasterStudy LMS */
-			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a course:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a course:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - MasterStudy LMS */
-			'select_option_name'  =>  esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'stm_lms_progress_updated',
 			'priority'            => 20,
 			'accepted_args'       => 3,
@@ -59,14 +59,14 @@ class MASTERSTUDY_COURSEDONE {
 			'options'             => [
 				[
 					'option_code'              => $this->trigger_meta,
-					'label'                    => esc_attr_x( 'Course', 'MasterStudy LMS',  'uncanny-automator' ),
+					'label'                    => esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
 					'input_type'               => 'select',
 					'required'                 => true,
 					'options'                  => $options,
 					'relevant_tokens'          => [
-						'MSLMSCOURSE'     =>  esc_attr__( 'Course title', 'uncanny-automator' ),
-						'MSLMSCOURSE_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
-						'MSLMSCOURSE_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
+						'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
+						'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
+						'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
 					],
 					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' )
 				]
@@ -91,7 +91,8 @@ class MASTERSTUDY_COURSEDONE {
 			return;
 		}
 
-		if( 100 >= absint($progress) ){
+		if ( 100 >= absint( $progress ) ) {
+
 			$args = [
 				'code'    => $this->trigger_code,
 				'meta'    => $this->trigger_meta,
@@ -99,7 +100,24 @@ class MASTERSTUDY_COURSEDONE {
 				'user_id' => $user_id,
 			];
 
-			$uncanny_automator->maybe_add_trigger_entry( $args );
+			$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+			if ( $args ) {
+				foreach ( $args as $result ) {
+					if ( true === $result['result'] ) {
+						$uncanny_automator->insert_trigger_meta(
+							[
+								'user_id'        => $user_id,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'meta_key'       => $this->trigger_meta,
+								'meta_value'     => $course_id,
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							]
+						);
+						$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					}
+				}
+			}
 		}
 	}
 }

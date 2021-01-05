@@ -79,7 +79,7 @@ class Add_Elem_Integration {
 
 		$uncanny_automator->register->integration( self::$integration, array(
 			'name'     => 'Elementor',
-			'icon_svg' => Utilities::get_integration_icon( 'forminator-icon.svg' ),
+			'icon_svg' => Utilities::get_integration_icon( 'elementor-icon.svg' ),
 		) );
 	}
 }

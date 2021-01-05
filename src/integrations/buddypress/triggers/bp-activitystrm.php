@@ -98,7 +98,34 @@ class BP_ACTIVITYSTRM {
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
 				];
-				$uncanny_automator->maybe_add_trigger_entry( $args );
+
+				$returns = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+
+				if ( $returns ) {
+					foreach ( $returns as $result ) {
+						if ( true === $result['result'] ) {
+
+							$trigger_meta = [
+								'user_id'        => $user_id,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							];
+
+							// ACTIVITY_ID Token
+							$trigger_meta['meta_key']   = 'ACTIVITY_ID';
+							$trigger_meta['meta_value'] = $activity_id;
+							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
+							// ACTIVITY_CONTENT Token
+							$trigger_meta['meta_key']   = 'ACTIVITY_CONTENT';
+							$trigger_meta['meta_value'] = $content;
+							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
+							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+						}
+					}
+				}
 			}
 		}
 	}

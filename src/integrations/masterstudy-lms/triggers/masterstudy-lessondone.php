@@ -42,16 +42,17 @@ class MASTERSTUDY_LESSONDONE {
 			'post_status'    => 'publish',
 		];
 
-		$options                = $uncanny_automator->helpers->recipe->options->wp_query( $args, false );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, _x( 'Any course', 'MasterStudy LMS', 'uncanny-automator' ) );
+
 		$course_relevant_tokens = [
-			'MSLMSCOURSE'     =>  esc_attr__( 'Course title', 'uncanny-automator' ),
-			'MSLMSCOURSE_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
-			'MSLMSCOURSE_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
+			'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
+			'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
+			'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
 		];
 		$relevant_tokens        = [
-			$this->trigger_meta          =>  esc_attr__( 'Lesson title', 'uncanny-automator' ),
-			$this->trigger_meta . '_ID'  =>  esc_attr__( 'Lesson ID', 'uncanny-automator' ),
-			$this->trigger_meta . '_URL' =>  esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+			$this->trigger_meta          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
+			$this->trigger_meta . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 		];
 
 		$trigger = array(
@@ -60,9 +61,9 @@ class MASTERSTUDY_LESSONDONE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MasterStudy LMS */
-			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a lesson:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - MasterStudy LMS */
-			'select_option_name'  =>  esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
 			'action'              => 'stm_lms_lesson_passed',
 			'priority'            => 10,
 			'accepted_args'       => 2,
@@ -72,7 +73,7 @@ class MASTERSTUDY_LESSONDONE {
 				$this->trigger_meta => [
 					$uncanny_automator->helpers->recipe->field->select_field_ajax(
 						'MSLMSCOURSE',
-						esc_attr_x( 'Course', 'MasterStudy LMS',  'uncanny-automator' ),
+						esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
 						$options,
 						'',
 						'',
@@ -84,7 +85,7 @@ class MASTERSTUDY_LESSONDONE {
 						],
 						$course_relevant_tokens
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta,  esc_attr_x( 'Lesson', 'MasterStudy LMS', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
+					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr_x( 'Lesson', 'MasterStudy LMS', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
 				],
 			],
 		);
@@ -103,7 +104,7 @@ class MASTERSTUDY_LESSONDONE {
 
 		global $uncanny_automator;
 
-		$course_id = intval($_GET['course']);
+		$course_id = intval( $_GET['course'] );
 
 		$args = [
 			'code'    => $this->trigger_code,
@@ -114,16 +115,28 @@ class MASTERSTUDY_LESSONDONE {
 
 		$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
 
-
-
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
+
+					$course_id = absint($_GET['course']);
+
 					$uncanny_automator->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
-							'meta_key'       => 'LDCOURSE',
+							'meta_key'       => 'MSLMSCOURSE',
+							'meta_value'     => $course_id,
+							'trigger_log_id' => $result['args']['get_trigger_id'],
+							'run_number'     => $result['args']['run_number'],
+						]
+					);
+
+					$uncanny_automator->insert_trigger_meta(
+						[
+							'user_id'        => $user_id,
+							'trigger_id'     => $result['args']['trigger_id'],
+							'meta_key'       => $this->trigger_meta,
 							'meta_value'     => $course_id,
 							'trigger_log_id' => $result['args']['get_trigger_id'],
 							'run_number'     => $result['args']['run_number'],

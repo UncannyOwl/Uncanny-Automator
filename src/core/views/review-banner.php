@@ -43,7 +43,7 @@
 					</div>
 				</div>
 				<div id="uap-review-banner__close">
-					<div class="uap-review-banner__close-tooltip" uap-tooltip-admin="<?php _ex( 'Maybe later', 'Reviews banner', 'uncanny-automator' ); ?>" uap-flow-admin="left"></div>
+					<div class="uap-review-banner__close-tooltip" uap-tooltip-admin="<?php _ex( 'Hide forever', 'Reviews banner', 'uncanny-automator' ); ?>" uap-flow-admin="left"></div>
 					<div class="uap-review-banner__close-icon"></div>
 				</div>
 			</div>
