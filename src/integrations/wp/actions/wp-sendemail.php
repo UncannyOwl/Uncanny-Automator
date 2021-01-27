@@ -81,17 +81,23 @@ class WP_SENDEMAIL {
 	public function send_email( $user_id, $action_data, $recipe_id, $args ) {
 
 		global $uncanny_automator;
-		$to         = $uncanny_automator->parse->text( $action_data['meta']['EMAILTO'], $recipe_id, $user_id, $args );
-		$from       = $uncanny_automator->parse->text( $action_data['meta']['EMAILFROM'], $recipe_id, $user_id, $args );
-		$cc         = $uncanny_automator->parse->text( $action_data['meta']['EMAILCC'], $recipe_id, $user_id, $args );
-		$bcc        = $uncanny_automator->parse->text( $action_data['meta']['EMAILBCC'], $recipe_id, $user_id, $args );
-		$subject    = $uncanny_automator->parse->text( $action_data['meta']['EMAILSUBJECT'], $recipe_id, $user_id, $args );
-		$subject    = do_shortcode( $subject );
-		$body_text  = $action_data['meta']['EMAILBODY'];
-		$reset_pass = ! is_null( $this->key ) ? $this->key : $uncanny_automator->parse->generate_reset_token( $user_id );
-		$body       = str_replace( '{{reset_pass_link}}', $reset_pass, $body_text );
-		$body       = $uncanny_automator->parse->text( $body, $recipe_id, $user_id, $args );
-		$body       = do_shortcode( $body );
+		$to        = $uncanny_automator->parse->text( $action_data['meta']['EMAILTO'], $recipe_id, $user_id, $args );
+		$from      = $uncanny_automator->parse->text( $action_data['meta']['EMAILFROM'], $recipe_id, $user_id, $args );
+		$cc        = $uncanny_automator->parse->text( $action_data['meta']['EMAILCC'], $recipe_id, $user_id, $args );
+		$bcc       = $uncanny_automator->parse->text( $action_data['meta']['EMAILBCC'], $recipe_id, $user_id, $args );
+		$subject   = $uncanny_automator->parse->text( $action_data['meta']['EMAILSUBJECT'], $recipe_id, $user_id, $args );
+		$subject   = do_shortcode( $subject );
+		$body_text = $action_data['meta']['EMAILBODY'];
+
+		if ( false !== strpos( $body_text, '{{reset_pass_link}}' ) ) {
+			$reset_pass = ! is_null( $this->key ) ? $this->key : $uncanny_automator->parse->generate_reset_token( $user_id );
+			$body       = str_replace( '{{reset_pass_link}}', $reset_pass, $body_text );
+		} else {
+			$body = $body_text;
+		}
+
+		$body = $uncanny_automator->parse->text( $body, $recipe_id, $user_id, $args );
+		$body = do_shortcode( $body );
 
 		$headers[] = 'From: <' . $from . '>';
 

@@ -1358,6 +1358,21 @@ class Recipe_Post_Type {
 						'name' => __( 'A user leaves {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
+					array(
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user joins {{a private group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user makes a post to the activity stream of {{a group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - BuddyBoss */
+						'name' => __( 'A user updates their profile with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
 				),
 				'actions'  => array(
 					array(
@@ -1379,6 +1394,14 @@ class Recipe_Post_Type {
 					array(
 						/* translators: Action - BuddyBoss */
 						'name' => __( 'Send {{a private message}} to the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - BuddyBoss */
+						'name' => __( 'Create {{a group}}', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - BuddyBoss */
+						'name' => __( 'Set {{Xprofile data}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1409,6 +1432,21 @@ class Recipe_Post_Type {
 						'name' => __( 'A user\'s member type is set to {{a specific type}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
+					array(
+						/* translators: Logged-in trigger - BuddyPress */
+						'name' => __( 'A user joins {{a private group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - BuddyPress */
+						'name' => __( 'A user makes a post to the activity stream of {{a group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - BuddyPress */
+						'name' => __( 'A user updates their profile with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
 				),
 				'actions'  => array(
 					array(
@@ -1434,6 +1472,14 @@ class Recipe_Post_Type {
 					array(
 						/* translators: Action - BuddyPress */
 						'name' => __( 'Send {{a private message}} to the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - BuddyPress */
+						'name' => __( 'Create {{a group}}', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - BuddyPress */
+						'name' => __( 'Set {{Xprofile data}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1517,6 +1563,16 @@ class Recipe_Post_Type {
 					array(
 						/* translators: Logged-in trigger - Fluent Forms */
 						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - Fluent Forms */
+						'name' => __( '{{A form}} is submitted', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - Fluent Forms */
+						'name' => __( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -1650,6 +1706,11 @@ class Recipe_Post_Type {
 						'name' => __( 'A user makes a donation via {{a form}} for an amount {{great than, less than, or equal to}} {{an amount}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
+					array(
+						/* translators: Logged-in trigger - GiveWP */
+						'name' => __( 'A user continues {{a recurring donation}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
 				),
 				'actions'  => array(
 					array(
@@ -1659,6 +1720,15 @@ class Recipe_Post_Type {
 					array(
 						/* translators: Action - GiveWP */
 						'name' => __( 'Create a donor', 'uncanny-automator' ),
+					),
+				),
+			),
+			'GOOGLESHEET'    => array(
+				'triggers' => array(),
+				'actions'  => array(
+					array(
+						/* translators: Action - Google Sheets */
+						'name' => __( 'Create a row in Google Sheets', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1889,8 +1959,41 @@ class Recipe_Post_Type {
 					),
 				),
 			),
+			'MSLMS'          => array(
+				'triggers' => array(
+					array(
+						/* translators: Logged-in trigger - MasterStudy LMS */
+						'name' => __( 'A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on {{a quiz}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+				),
+				'actions'  => array(
+					array(
+						/* translators: Action - MasterStudy LMS */
+						'name' => __( 'Mark {{a quiz}} complete for the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - MasterStudy LMS */
+						'name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - MasterStudy LMS */
+						'name' => __( 'Reset the user\'s progress in {{a course}}', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - MasterStudy LMS */
+						'name' => __( 'Mark {{a lesson}} not complete for the user', 'uncanny-automator' ),
+					),
+				),
+			),
 			'MP'             => array(
-				'triggers' => array(),
+				'triggers' => array(
+					array(
+						/* translators: Logged-in trigger - MemberPress */
+						'name' => __( 'A user\'s membership to {{a specific product}} is cancelled', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+				),
 				'actions'  => array(
 					array(
 						/* translators: Action - MemberPress */
@@ -1983,6 +2086,26 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Action - Paid Memberships Pro */
+						'name' => __( 'Remove the user from {{a membership level}}', 'uncanny-automator' ),
+					),
+				),
+			),
+			'RC'             => array(
+				'triggers' => array(
+					array(
+						/* translators: Logged-in trigger - Restrict Content */
+						'name' => __( 'A user\'s membership to {{a specific level}} is cancelled', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - Restrict Content */
+						'name' => __( 'A user\'s membership to {{a specific level}} expires', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+				),
+				'actions'  => array(
+					array(
+						/* translators: Action - Restrict Content */
 						'name' => __( 'Remove the user from {{a membership level}}', 'uncanny-automator' ),
 					),
 				),
@@ -2156,7 +2279,12 @@ class Recipe_Post_Type {
 						'type' => 'logged-in',
 					),
 				),
-				'actions'  => array(),
+				'actions'  => array(
+					array(
+						/* translators: Action - WooCommerce */
+						'name' => __( 'Generate and email {{a coupon code}} to the user', 'uncanny-automator' ),
+					),
+				),
 			),
 			'WP'             => array(
 				'triggers' => array(
@@ -2203,6 +2331,21 @@ class Recipe_Post_Type {
 					array(
 						/* translators: Logged-in trigger - WordPress Core */
 						'name' => __( '{{A post}} of {{a specific type}} is moved to the trash', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WordPress Core */
+						'name' => __( 'A user\'s {{profile field}} is updated', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WordPress Core */
+						'name' => __( 'A user\'s {{specific}} meta key is updated', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WordPress Core */
+						'name' => __( 'A user\'s role changes from {{a specific role}} to {{a specific role}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -2266,6 +2409,16 @@ class Recipe_Post_Type {
 						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 					),
 				),
+			),
+			'WPPOLLS'        => array(
+				'triggers' => array(
+					array(
+						/* translators: Logged-in trigger - WP-Polls */
+						'name' => __( 'A user submits a poll with {{a specific choice}} selected', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+				),
+				'actions'  => array(),
 			),
 			'WPF'            => array(
 				'triggers' => array(

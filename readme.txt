@@ -4,7 +4,7 @@ Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
 Tested up to: 5.6
 Requires PHP: 7.0
-Stable tag: 2.10
+Stable tag: 2.10.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -171,6 +171,20 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.10.1 [2021-01-27] =
+
+**Updated:**
+
+* Core: Updates to repeater field UI to support Google Sheets integration in Automator Pro
+* Core: Minor sentence updates
+* Tutor LMS: Enroll a user in a course now has an "All courses" option
+
+**Fixed:**
+
+* Core: "Any option" trigger token saving values twice
+* WordPress Core: Send an email action no longer generating extraneous password reset links
+* WooCommerce: WC Ajax hook exception
 
 = 2.10 [2021-01-05] =
 

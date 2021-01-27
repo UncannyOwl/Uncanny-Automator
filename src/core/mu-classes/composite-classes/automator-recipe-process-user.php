@@ -144,9 +144,12 @@ class Automator_Recipe_Process_User {
 						'run_number'     => $uncanny_automator->get->next_run_number( $recipe_id, $user_id, true ),
 					];
 
-					$meta_results = $this->maybe_trigger_add_any_option_meta( $meta_arg, $trigger_meta );
-					if ( false === $meta_results['result'] ) {
-						Utilities::log( 'ERROR: You are trying to add entry ' . $trigger['meta'][ $trigger_meta ] . ' and post_id = ' . $post_id . '.', 'uap_maybe_add_meta_entry ERROR', false, 'uap-errors' );
+					// Fix to avoid saving value as 0 when Any option is selected
+					if ( 0 !== absint( $post_id ) ) {
+						$meta_results = $this->maybe_trigger_add_any_option_meta( $meta_arg, $trigger_meta );
+						if ( isset( $meta_results['result'] ) && false === $meta_results['result'] ) {
+							Utilities::log( 'ERROR: You are trying to add entry ' . $trigger['meta'][ $trigger_meta ] . ' and post_id = ' . $post_id . '.', 'uap_maybe_add_meta_entry ERROR', false, 'uap-errors' );
+						}
 					}
 
 				}

@@ -22,7 +22,7 @@ class Actionify_Triggers {
 		} elseif ( isset( $_REQUEST['action'] ) && 'heartbeat' === sanitize_text_field( $_REQUEST['action'] ) ) {
 			//Ignore
 			$run_automator_actions = false;
-		} elseif ( isset( $_REQUEST['wc-ajax'] ) && 'checkout' !== (string) sanitize_text_field( $_REQUEST['wc-ajax'] ) ) {
+		} elseif ( isset( $_REQUEST['wc-ajax'] ) && 'checkout' !== (string) sanitize_text_field( $_REQUEST['wc-ajax'] ) && 'complete_order' !== (string) sanitize_text_field( $_REQUEST['wc-ajax'] ) ) {
 			//Ignore
 			$run_automator_actions = false;
 		} elseif ( 'admin-ajax.php' === basename( $_SERVER['REQUEST_URI'] ) && ! isset( $_REQUEST['action'] ) ) {

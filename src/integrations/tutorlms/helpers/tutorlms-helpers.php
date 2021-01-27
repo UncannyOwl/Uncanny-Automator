@@ -104,7 +104,7 @@ class Tutorlms_Helpers {
 	 *
 	 * @since 2.4.0
 	 */
-	public function all_tutorlms_courses( $label = null, $option_code = 'TUTORLMSCOURSE', $any_option = false ) {
+	public function all_tutorlms_courses( $label = null, $option_code = 'TUTORLMSCOURSE', $all_label = false, $any_option = false ) {
 		if ( ! $this->load_options ) {
 			global $uncanny_automator;
 
@@ -126,7 +126,7 @@ class Tutorlms_Helpers {
 		];
 
 		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, 'course', $all_label );
 
 		$option = [
 			'option_code'     => $option_code,

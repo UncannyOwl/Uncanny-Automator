@@ -55,7 +55,7 @@ if ( ! empty( $tab ) ) {
 										<div class='error-message'><?php  esc_attr_e( 'Your application access has expired. Please connect again with new credentials.', 'uncanny-automator');?></div>
 									<?php }?>
 									<?php if( ! empty ( $connected ) && '1' === $connected ) { ?>
-										<div class='updated'><?php  esc_attr_e( 'Your application successfully connected.', 'uncanny-automator');?></div>
+										<div class='updated'><?php  esc_attr_e( 'Your application connected successfully.', 'uncanny-automator');?></div>
 									<?php } elseif( ! empty ( $connected ) && '2' === $connected ) { ?>
 										<div class='error-message'><?php  esc_attr_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator');?></div>
 									<?php }?>
