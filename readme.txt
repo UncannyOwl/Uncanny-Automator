@@ -104,17 +104,18 @@ Uncanny Automator does all of this with a single plugin; there's no need to invi
 
 Besides more than tripling the number of available triggers and actions for your recipes compared to the free version, Automator Pro for WP adds support for [H5P](https://automatorplugin.com/integration/h5p/) triggers.
 
-Here are some of the other really cool things you can do with Automator Pro:
+Here are some of the other really cool things you can do with [Automator Pro](https://automatorplugin.com/pricing/):
 
-- Integrate with Zoom Meetings, Zoom Webinars, GoToMeeting, GoToWebinar to automatically enroll users in web conferencing sessions when they complete a recipe
-- Integrate with Twilio to send users SMS messages when they complete a recipe
-- Trigger recipes anonymously; fire automations without users needing to sign in. This also means you can turn any form (including forms from free form plugins like Ninja Forms, Contact Form 7, WP Forms, Formidable Forms and more) into registration forms that not only create a new user, but also set them up with course access, group access and more
-- Have 2 WordPress sites talk to each other. Sell products on one site while Uncanny Automator creates users and sets up access on another!
-- Have external apps trigger recipes and vice versa (without needing Zapier or Integromat!)
-- Set up buttons that can trigger any recipe on click
+- Integrate with [Google Sheets](https://automatorplugin.com/integration/google-sheets/). Add a row to a Google Sheet when a user makes a purchase, fills out a form, completes a course---the possibilities are endless! Say goodbye to per-transaction fees with Zapier.
+- Integrate with [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/), [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/), [GoToTraining](https://automatorplugin.com/integration/gototraining/), [GoToWebinar](https://automatorplugin.com/integration/gotowebinar/) to automatically enroll users in web conferencing sessions when they complete a recipe
+- Integrate with [Twilio](https://automatorplugin.com/integration/twilio/) to send users SMS messages when they complete a recipe
+- [Trigger recipes anonymously](https://automatorplugin.com/knowledge-base/anonymous-recipes/); fire automations without users needing to sign in. This also means you can turn any form (including forms from free form plugins like Ninja Forms, Contact Form 7, WP Forms, Formidable Forms and more) into registration forms that not only create a new user, but also set them up with course access, group access and more
+- Have 2 WordPress sites talk to each other. [Sell products on one site](https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/) while [Uncanny Automator creates users](https://automatorplugin.com/knowledge-base/webhook-triggers/) and sets up access on another!
+- Have external apps [trigger recipes](https://automatorplugin.com/knowledge-base/webhook-triggers/) and vice versa (without needing Zapier or Integromat!)
+- Set up [buttons](https://automatorplugin.com/knowledge-base/magic-button/) that can trigger any recipe on click
 - Set custom usermeta
 
-An Automator Pro license also includes access to our world-class premium support.
+An [Automator Pro](https://automatorplugin.com/pricing/) license also includes access to our world-class premium support.
 
 For the full list of triggers and actions, make sure to check out [this list](https://automatorplugin.com/all-triggers-and-actions/).
 
