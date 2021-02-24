@@ -131,8 +131,15 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			$subscriber['status'] = $uncanny_automator->parse->text( $action_data['meta']['ADDSUBSCRIBER_STATUS'], $recipe_id, $user_id, $args );
 		}
 		try {
-			$mailpoet->addSubscriber( $subscriber, json_decode( $list_id ), [ 'send_confirmation_email' => true ] );
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			// try to find if user is already a subscriber
+			$existing_subscriber = \MailPoet\Models\Subscriber::findOne($subscriber['email']);
+			if( ! $existing_subscriber ) {
+				$mailpoet->addSubscriber( $subscriber, json_decode( $list_id ), [ 'send_confirmation_email' => true ] );
+				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			} else {
+				$mailpoet->subscribeToLists( $existing_subscriber->id, json_decode( $list_id ), [ 'send_confirmation_email' => true ] );
+				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			}
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
 			$recipe_log_id                       = $action_data['recipe_log_id'];

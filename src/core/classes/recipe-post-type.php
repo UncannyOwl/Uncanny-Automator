@@ -921,7 +921,7 @@ class Recipe_Post_Type {
 
 				$post = array(
 					'ID'          => $post_ID,
-					'post_status' => $post_status
+					'post_status' => $post_status,
 				);
 
 				$updated = wp_update_post( $post );
@@ -1006,7 +1006,7 @@ class Recipe_Post_Type {
 
 				$post = array(
 					'ID'         => $post_ID,
-					'post_title' => $post_title
+					'post_title' => $post_title,
 				);
 
 				$updated = wp_update_post( $post );
@@ -1171,7 +1171,7 @@ class Recipe_Post_Type {
 			// Recipe UI scripts
 			wp_enqueue_script( 'automator-recipe-ui-bundle-js', Utilities::get_recipe_dist( 'automator-recipe-ui.bundle.js' ), array(
 				'jquery',
-				'uap-select2'
+				'uap-select2',
 			), Utilities::get_version(), true );
 
 			// Enqueue editor assets
@@ -1189,7 +1189,7 @@ class Recipe_Post_Type {
 			// Create fields array
 			$fields = [
 				'existingUser' => [],
-				'newUser'      => []
+				'newUser'      => [],
 			];
 			// Check if the user defined a valid source
 			if ( in_array( $source, [ 'existingUser', 'newUser' ] ) ) {
@@ -1241,24 +1241,24 @@ class Recipe_Post_Type {
 						'fields'    => $fields,
 						'isValid'   => false,
 						'resources' => [
-							'roles' => $roles
-						]
+							'roles' => $roles,
+						],
 					],
 
 					'hasLive' => array(
 						'trigger' => false,
 						'action'  => false,
-						'closure' => false
+						'closure' => false,
 					),
 					'message' => array(
 						'error'   => '',
-						'warning' => ''
+						'warning' => '',
 					),
 					'items'   => [],
 					'publish' => array(
 						'timesPerUser' => empty( $recipe_completions_allowed ) ? 1 : $recipe_completions_allowed,
 						'createdOn'    => date_i18n( 'M j, Y @ G:i', get_the_time( 'U', $post_id ) ),
-						'moveToTrash'  => get_delete_post_link( $post_id )
+						'moveToTrash'  => get_delete_post_link( $post_id ),
 					),
 				),
 			);
@@ -1946,6 +1946,35 @@ class Recipe_Post_Type {
 					),
 				),
 			),
+			'MAILCHIMP'      => array(
+				'triggers' => array(),
+				'actions'  => array(
+					array(
+						/* translators: Action - Mailchimp */
+						'name' => __( 'Add the user to {{an audience}}', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - Mailchimp */
+						'name' => __( 'Add {{a tag}} to the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - Mailchimp */
+						'name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - Mailchimp */
+						'name' => __( 'Add {{a note}} to the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - Mailchimp */
+						'name' => __( 'Create and send {{a campaign}}', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - Mailchimp */
+						'name' => __( 'Unsubscribe the user from {{an audience}}', 'uncanny-automator' ),
+					),
+				),
+			),
 			'MAILPOET'       => array(
 				'triggers' => array(),
 				'actions'  => array(
@@ -2110,6 +2139,23 @@ class Recipe_Post_Type {
 					),
 				),
 			),
+			'SLACK'          => array(
+				'triggers' => array(),
+				'actions'  => array(
+					array(
+						/* translators: Action - Slack */
+						'name' => __( 'Send a message to {{a channel}}', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - Slack */
+						'name' => __( 'Send a private message to {{a Slack user}}', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - Slack */
+						'name' => __( 'Create {{a channel}}', 'uncanny-automator' ),
+					),
+				),
+			),
 			'EC'             => array(
 				'triggers' => array(
 					array(
@@ -2224,21 +2270,6 @@ class Recipe_Post_Type {
 						'type' => 'logged-in',
 					),
 					array(
-						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( 'A user\'s subscription to {{a product}} expires', 'uncanny-automator' ),
-						'type' => 'logged-in',
-					),
-					array(
-						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( 'A user cancels a subscription to {{a product}}', 'uncanny-automator' ),
-						'type' => 'logged-in',
-					),
-					array(
-						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( 'A user renews a subscription to {{a product}}', 'uncanny-automator' ),
-						'type' => 'logged-in',
-					),
-					array(
 						/* translators: Anonymous trigger - WooCommerce */
 						'name' => __( 'A guest completes an order with {{a product}}', 'uncanny-automator' ),
 						'type' => 'anonymous',
@@ -2278,11 +2309,50 @@ class Recipe_Post_Type {
 						'name' => __( 'A user completes an order with a specific quantity of {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
+					array(
+						/* translators: Logged-in trigger - WooCommerce Memberships */
+						'name' => __( 'A user\'s access to {{a membership plan}} is cancelled', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WooCommerce Memberships */
+						'name' => __( 'A user\'s access to {{a membership plan}} expires', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WooCommerce ShipStation */
+						'name' => __( 'An order with a total {{greater than, less than or equal to}} {{a specific amount}} is shipped', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WooCommerce ShipStation */
+						'name' => __( 'An order with {{a specific product}} is shipped', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WooCommerce Subscriptions */
+						'name' => __( 'A user\'s subscription to {{a product}} expires', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WooCommerce Subscriptions */
+						'name' => __( 'A user cancels a subscription to {{a product}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WooCommerce Subscriptions */
+						'name' => __( 'A user renews a subscription to {{a product}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - WooCommerce */
 						'name' => __( 'Generate and email {{a coupon code}} to the user', 'uncanny-automator' ),
+					),
+					array(
+						/* translators: Action - WooCommerce Memberships */
+						'name' => __( 'Remove the user from {{a membership plan}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2409,6 +2479,56 @@ class Recipe_Post_Type {
 						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 					),
 				),
+			),
+			'WPUSERMANAGER'  => array(
+				'triggers' => array(
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user registers using {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user is approved', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user is rejected', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user verifies their email address', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user updates their account information', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user joins {{a group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user leaves {{a group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user is approved to join {{a private group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+					array(
+						/* translators: Logged-in trigger - WP User Manager */
+						'name' => __( 'A user is rejected from joining {{a private group}}', 'uncanny-automator' ),
+						'type' => 'logged-in',
+					),
+				),
+				'actions'  => array(),
 			),
 			'WPPOLLS'        => array(
 				'triggers' => array(
@@ -2601,7 +2721,7 @@ class Recipe_Post_Type {
 
 					$child_update = array(
 						'ID'          => $child->ID,
-						'post_status' => 'draft'
+						'post_status' => 'draft',
 					);
 
 					wp_update_post( $child_update );
@@ -2624,7 +2744,7 @@ class Recipe_Post_Type {
 
 					$child_update = array(
 						'ID'          => $child->ID,
-						'post_status' => 'draft'
+						'post_status' => 'draft',
 					);
 
 					wp_update_post( $child_update );
@@ -2647,7 +2767,7 @@ class Recipe_Post_Type {
 
 					$child_update = array(
 						'ID'          => $child->ID,
-						'post_status' => 'draft'
+						'post_status' => 'draft',
 					);
 
 					wp_update_post( $child_update );
@@ -2715,7 +2835,8 @@ class Recipe_Post_Type {
 	}
 
 	/**
-	 * Update recipe status to draft and send admin notification email if pro is not active and the recipe has more than one trigger
+	 * Update recipe status to draft and send admin notification email if pro is not active and the recipe has more
+	 * than one trigger
 	 *
 	 * @param $current_screen
 	 */
@@ -2735,7 +2856,7 @@ class Recipe_Post_Type {
 
 						$recipe_update = array(
 							'ID'          => $recipe_ID,
-							'post_status' => 'draft'
+							'post_status' => 'draft',
 						);
 
 						wp_update_post( $recipe_update );
@@ -2767,7 +2888,7 @@ class Recipe_Post_Type {
 
 					$recipe_update = array(
 						'ID'          => $recipe_ID,
-						'post_status' => 'draft'
+						'post_status' => 'draft',
 					);
 
 					wp_update_post( $recipe_update );

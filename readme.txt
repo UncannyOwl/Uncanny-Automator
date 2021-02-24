@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, automator, woocommerce, learndash, zapier
 Requires at least: 5.0
-Tested up to: 5.6
-Requires PHP: 7.0
-Stable tag: 2.10.1
+Tested up to: 5.6.2
+Requires PHP: 7.2
+Stable tag: 2.10.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -107,6 +107,8 @@ Besides more than tripling the number of available triggers and actions for your
 Here are some of the other really cool things you can do with [Automator Pro](https://automatorplugin.com/pricing/):
 
 - Integrate with [Google Sheets](https://automatorplugin.com/integration/google-sheets/). Add a row to a Google Sheet when a user makes a purchase, fills out a form, completes a course---the possibilities are endless! Say goodbye to per-transaction fees with Zapier.
+- Integrate with [Slack](https://automatorplugin.com/integration/slack/). Integrate your WordPress site directly with Slack and get Slack notifications and direct messages when users make a purchase, cancel a subscription, or any other combination of triggers from any supported plugin.
+- Integrate with [Mailchimp](https://automatorplugin.com/integration/mailchimp/). Add users to your Mailchimp audiences, add or remove tags and even send campaigns. Want to send new blog posts to your list automatically? Automator makes it simple.
 - Integrate with [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/), [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/), [GoToTraining](https://automatorplugin.com/integration/gototraining/), [GoToWebinar](https://automatorplugin.com/integration/gotowebinar/) to automatically enroll users in web conferencing sessions when they complete a recipe
 - Integrate with [Twilio](https://automatorplugin.com/integration/twilio/) to send users SMS messages when they complete a recipe
 - [Trigger recipes anonymously](https://automatorplugin.com/knowledge-base/anonymous-recipes/); fire automations without users needing to sign in. This also means you can turn any form (including forms from free form plugins like Ninja Forms, Contact Form 7, WP Forms, Formidable Forms and more) into registration forms that not only create a new user, but also set them up with course access, group access and more
@@ -172,6 +174,23 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.10.2 [2021-02-24] =
+
+**Updated:**
+
+* WooCommerce triggers: Tokens now include unformatted variants for currency amounts
+* WooCommerce Memberships: Name changed to Woo Memberships
+* Internal code updates
+
+**Fixed:**
+
+* MailPoet: Add a subscriber to a list action now works when the user already exists on a default list
+* MailPoet: Issue with multi-select fields updated via AJAX
+* MemberPress: A user purchases a recurring subscription now fires consistently
+* PHP notices/warnings when using an invalid trigger ID in tokens
+* WooCommerce Memberships: A user is added to a membership plan now also fires when a user is manually added to a membership by an admin
+* WP Job Manager: A user submits a specific type of job now also fires when when jobs are submitted via the admin dashboard
 
 = 2.10.1 [2021-01-27] =
 
@@ -327,41 +346,6 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 * Fixed: Elementor - PHP warning: Invalid argument supplied foreach()
 * Fixed: PHP Uncaught Error: Call to undefined method in Automator Core trigger on activation for some environments
 
-= 2.8 [2020-09-24] =
-
-* New Integration: BuddyBoss
-* New Integration: Elementor
-* New Integration: Events Manager
-* New Integration: HappyForms
-* New Integration: Integromat
-* New Integration: MailPoet 3
-* Added: Action: MailPoet 3 - Add the user to a list
-* Added: Action: MailPoet 3 - Add a subscriber to a list
-* Added: Trigger: HappyForms - A user submits a form
-* Added: Trigger: BuddyBoss - A user updates their profile
-* Added: Trigger: BuddyBoss - A user updates their avatar
-* Added: Trigger: BuddyBoss - A user replies to a topic in a forum
-* Added: Trigger: BuddyBoss - A user accepts a friendship request
-* Added: Trigger: BuddyBoss - A user sends a friendship request
-* Added: Trigger: BuddyBoss - A user gains a new follower
-* Added: Trigger: BuddyBoss - A user sends an email invitation
-* Added: Trigger: BuddyBoss - A user posts activity to their stream
-* Added: Action: BuddyBoss - Add the user to a group
-* Added: Trigger: BuddyBoss - A user activates their account
-* Added: Trigger: BuddyPress - A user updates their profile
-* Added: Trigger: BuddyPress - A user updates their avatar
-* Added: Trigger: BuddyPress - A user accepts a friendship request
-* Added: Trigger: BuddyPress - A user sends a friendship request
-* Added: Trigger: Elementor - A user submits a form
-* Added: Action: Integromat - Send a webhook to Integromat
-* Added: Trigger: Events Manager - A user registers for an event
-* Added: Trigger: WordPress Core - A user creates a post
-* Added: Trigger: Automator Core - A user completes a recipe
-* Fixed: Trigger: The Events Calendar - A user registers for an event now fires reliably when ticket is purchased via WooCommerce
-* Fixed: Logic issue in "Log the user in" option in Anonymous recipes (Automator Pro only)
-* Fixed: WooCommerce triggers - Billing email token can now be used in email address fields
-* Fixed: Inconsistencies in some trigger/action sentences
-* Fixed: Incorrect logic in trigger_meta function affecting custom triggers
-* Fixed: Trigger section label on first creation of an Anonymous recipe now reads "Anonymous trigger"
-
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
+
+== Upgrade Notice ==

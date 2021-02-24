@@ -148,7 +148,7 @@ class Wpff_Tokens {
 
 							foreach ( $raw_field['fields'] as $field ) {
 								if ( 1 === (int) $field['settings']['visible'] ) {
-									if( isset($field['uniqElKey']) ){
+									if ( isset( $field['uniqElKey'] ) ) {
 										$input_id    = $field['uniqElKey'];
 										$input_title = $field['settings']['label'];
 										$token_id    = "$form_id|$input_id";
@@ -228,7 +228,17 @@ class Wpff_Tokens {
 				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
 					$value = $entry[ $to_match ];
 				} else {
-					$value = '';
+					if ( 'WPFFFORMS' === (string) $field ) {
+						$readable = "{$field}_readable";
+						foreach ( $trigger_data as $t_d ) {
+							if ( absint( $trigger_id ) === absint( $t_d['ID'] ) ) {
+								$value = isset( $t_d['meta'][ $readable ] ) ? $t_d['meta'][ $readable ] : '';
+								break;
+							}
+						}
+					} else {
+						$value = '';
+					}
 				}
 			}
 		}

@@ -50,10 +50,14 @@ class Wc_Tokens {
 			'order_id'            => esc_attr__( 'Order ID', 'uncanny-automator' ),
 			'order_comments'      => esc_attr__( 'Order comments', 'uncanny-automator' ),
 			'order_total'         => esc_attr__( 'Order total', 'uncanny-automator' ),
+			'order_total_raw'     => esc_attr__( 'Order total (unformatted)', 'uncanny-automator' ),
 			'order_status'        => esc_attr__( 'Order status', 'uncanny-automator' ),
 			'order_subtotal'      => esc_attr__( 'Order subtotal', 'uncanny-automator' ),
+			'order_subtotal_raw'  => esc_attr__( 'Order subtotal (unformatted)', 'uncanny-automator' ),
 			'order_tax'           => esc_attr__( 'Order tax', 'uncanny-automator' ),
+			'order_tax_raw'       => esc_attr__( 'Order tax (unformatted)', 'uncanny-automator' ),
 			'order_discounts'     => esc_attr__( 'Order discounts', 'uncanny-automator' ),
+			'order_discounts_raw' => esc_attr__( 'Order discounts (unformatted)', 'uncanny-automator' ),
 			'order_coupons'       => esc_attr__( 'Order coupons', 'uncanny-automator' ),
 			'order_products'      => esc_attr__( 'Order products', 'uncanny-automator' ),
 			'order_products_qty'  => esc_attr__( 'Order products and quantity', 'uncanny-automator' ),
@@ -393,14 +397,26 @@ class Wc_Tokens {
 								case 'order_total':
 									$value = wc_price( $order->get_total() );
 									break;
+								case 'order_total_raw':
+									$value = $order->get_total();
+									break;
 								case 'order_subtotal':
 									$value = wc_price( $order->get_subtotal() );
+									break;
+								case 'order_subtotal_raw':
+									$value = $order->get_subtotal();
 									break;
 								case 'order_tax':
 									$value = wc_price( $order->get_total_tax() );
 									break;
+								case 'order_tax_raw':
+									$value = $order->get_total_tax();
+									break;
 								case 'order_discounts':
 									$value = wc_price( $order->get_discount_total() * - 1 );
+									break;
+								case 'order_discounts_raw':
+									$value = ( $order->get_discount_total() * - 1 );
 									break;
 								case 'order_coupons':
 									$coupons = $order->get_coupon_codes();

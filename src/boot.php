@@ -45,6 +45,29 @@ class Boot {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_script' ] );
 		add_action( 'rest_api_init', [ $this, 'uo_register_api' ] );
 		add_action( 'admin_init', [ $this, 'maybe_ask_review' ] );
+
+		// Show upgrade notice from readme.txt
+		add_action( 'in_plugin_update_message-' . plugin_basename( AUTOMATOR_BASE_FILE ), array(
+			$this,
+			'in_plugin_update_message',
+		), 10, 2 );
+
+	}
+
+	/**
+	 * @param $args
+	 * @param $response
+	 */
+	public function in_plugin_update_message( $args, $response ) {
+		$upgrade_notice = '';
+		if ( isset( $response->upgrade_notice ) && ! empty( $response->upgrade_notice ) ) {
+			$upgrade_notice .= '<div class="ua_plugin_upgrade_notice">';
+			$upgrade_notice .= sprintf( '<strong>%s</strong>', __( 'Heads up!', 'uncanny-automator' ) );
+			$upgrade_notice .= preg_replace( '~\[([^\]]*)\]\(([^\)]*)\)~', '<a href="${2}">${1}</a>', $response->upgrade_notice );
+			$upgrade_notice .= '</div>';
+		}
+
+		echo apply_filters( 'uap_in_plugin_update_message', $upgrade_notice ? '</p>' . wp_kses_post( $upgrade_notice ) . '<p class="dummy">' : '' ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -149,7 +172,7 @@ class Boot {
 					'callback'            => array( $this, 'send_feedback' ),
 					'permission_callback' => function () {
 						return true;
-					}
+					},
 				)
 			);
 		}
@@ -163,7 +186,7 @@ class Boot {
 					}
 
 					return false;
-				}
+				},
 			)
 		);
 	}

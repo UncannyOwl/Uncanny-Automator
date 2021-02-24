@@ -43,8 +43,8 @@ class Automator_Input_Parser {
 
 
 	/**
-	 * @param null $url
-	 * @param null $recipe_id
+	 * @param null  $url
+	 * @param null  $recipe_id
 	 * @param array $trigger_args
 	 *
 	 * @return string|string[]|null
@@ -346,73 +346,77 @@ class Automator_Input_Parser {
 				$piece             = $sub_piece[0];
 			}
 
-			if ( key_exists( $piece, $trigger['meta'] ) ) {
-				if ( is_numeric( $trigger['meta'][ $piece ] ) ) {
-					switch ( $piece ) {
-						case 'WPPOST':
-						case 'WPPAGE':
-							if ( isset( $sub_piece ) && key_exists( 1, $sub_piece ) ) {
+			if ( ! isset( $trigger['meta'] ) ) {
+				continue;
+			}
+			if ( ! key_exists( $piece, $trigger['meta'] ) ) {
+				continue;
+			}
+			if ( is_numeric( $trigger['meta'][ $piece ] ) ) {
+				switch ( $piece ) {
+					case 'WPPOST':
+					case 'WPPAGE':
+						if ( isset( $sub_piece ) && key_exists( 1, $sub_piece ) ) {
+							if ( 'ID' === $sub_piece[1] ) {
+								$return = $trigger['meta'][ $piece ];
+							} elseif ( 'URL' === $sub_piece[1] ) {
+								$return = get_permalink( $trigger['meta'][ $piece ] );
+							}
+						} else {
+							$return = get_the_title( $trigger['meta'][ $piece ] );
+						}
+						break;
+					case 'NUMTIMES':
+						$return = $trigger['meta'][ $piece ];
+						break;
+					case 'WPUSER':
+						$user_id = absint( $trigger['meta'][ $piece ] );
+						$user    = get_user_by( 'ID', $user_id );
+						if ( $user ) {
+							$return = $user->user_email;
+						} else {
+							$return = '';
+						}
+						break;
+					default:
+						if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
+							//Find stored post_id for piece, i.e., LDLESSON, LDTOPIC set to Any
+							$post_id = $uncanny_automator->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
+							if ( is_numeric( $post_id ) ) {
+								if ( $is_relevant_token ) {
+									if ( 'ID' === $sub_piece[1] ) {
+										$return = $post_id;
+									} elseif ( 'URL' === $sub_piece[1] ) {
+										$return = get_the_permalink( $post_id );
+									}
+								} else {
+									$return = get_the_title( $post_id );
+								}
+							} else {
+								/* translators: Article. Fallback. Any type of content (post, page, media, etc) */
+								$return = esc_attr__( 'Any', 'uncanny-automator' );
+							}
+						} elseif ( ! preg_match( '/ANON/', $piece ) ) {
+							if ( $is_relevant_token ) {
 								if ( 'ID' === $sub_piece[1] ) {
 									$return = $trigger['meta'][ $piece ];
 								} elseif ( 'URL' === $sub_piece[1] ) {
-									$return = get_permalink( $trigger['meta'][ $piece ] );
+									$return = get_the_permalink( $trigger['meta'][ $piece ] );
 								}
 							} else {
 								$return = get_the_title( $trigger['meta'][ $piece ] );
 							}
-							break;
-						case 'NUMTIMES':
-							$return = $trigger['meta'][ $piece ];
-							break;
-						case 'WPUSER':
-							$user_id = absint( $trigger['meta'][ $piece ] );
-							$user    = get_user_by( 'ID', $user_id );
-							if ( $user ) {
-								$return = $user->user_email;
-							} else {
-								$return = '';
-							}
-							break;
-						default:
-							if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
-								//Find stored post_id for piece, i.e., LDLESSON, LDTOPIC set to Any
-								$post_id = $uncanny_automator->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
-								if ( is_numeric( $post_id ) ) {
-									if ( $is_relevant_token ) {
-										if ( 'ID' === $sub_piece[1] ) {
-											$return = $post_id;
-										} elseif ( 'URL' === $sub_piece[1] ) {
-											$return = get_the_permalink( $post_id );
-										}
-									} else {
-										$return = get_the_title( $post_id );
-									}
-								} else {
-									/* translators: Article. Fallback. Any type of content (post, page, media, etc) */
-									$return = esc_attr__( 'Any', 'uncanny-automator' );
-								}
-							} elseif ( ! preg_match( '/ANON/', $piece ) ) {
-								if ( $is_relevant_token ) {
-									if ( 'ID' === $sub_piece[1] ) {
-										$return = $trigger['meta'][ $piece ];
-									} elseif ( 'URL' === $sub_piece[1] ) {
-										$return = get_the_permalink( $trigger['meta'][ $piece ] );
-									}
-								} else {
-									$return = get_the_title( $trigger['meta'][ $piece ] );
-								}
-							} else {
-								$return = '';
-							}
-							break;
-					}
-				} else {
-					//Non numeric data.. passed custom post type
-					switch ( $piece ) {
-						case 'WPPOSTTYPES':
-							$return = key_exists( 'post_type_label', $args ) && ! empty( $args['post_type_label'] ) ? $args['post_type_label'] : '';
-							break;
-					}
+						} else {
+							$return = '';
+						}
+						break;
+				}
+			} else {
+				//Non numeric data.. passed custom post type
+				switch ( $piece ) {
+					case 'WPPOSTTYPES':
+						$return = key_exists( 'post_type_label', $args ) && ! empty( $args['post_type_label'] ) ? $args['post_type_label'] : '';
+						break;
 				}
 			}
 		}

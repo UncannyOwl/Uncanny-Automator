@@ -494,3 +494,77 @@
 		transform: translate(-50%,-50%) rotate(360deg);
 	}
 }
+
+
+/**
+ * Upgrade notice on Plugins update page
+ */
+#uncanny-automator-update .updating-message .ua_plugin_upgrade_notice,
+#uncanny-automator-pro-update .updating-message .ua_plugin_upgrade_notice {
+	display: none;
+}
+#uncanny-automator-update .dummy,
+#uncanny-automator-pro-update .dummy {
+	display: none;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice {
+	font-weight: normal;
+	background: #fff8e5 !important;
+	border-left: 4px solid #ffb900;
+	border-top: 1px solid #ffb900;
+	padding: 9px 0 9px 12px !important;
+	margin: 0 -12px 0 -16px !important;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice::before,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice::before {
+	content: '\f348';
+	display: inline-block;
+	font: 400 18px/1 dashicons;
+	speak: never;
+	margin: 0 8px 0 -2px;
+	vertical-align: top;
+	color: #f56e28;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor, #uncanny-automator-update .ua_plugin_upgrade_notice.major,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major {
+	padding: 20px 0 !important;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor::before, #uncanny-automator-update .ua_plugin_upgrade_notice.major::before,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor::before, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major::before {
+	display: none;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor p, #uncanny-automator-update .ua_plugin_upgrade_notice.major p,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor p, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major p {
+	padding: 0 20px;
+	margin: 0;
+	max-width: 700px;
+	line-height: 1.5em;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor p::before, #uncanny-automator-update .ua_plugin_upgrade_notice.major p::before,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor p::before, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major p::before {
+	content: '';
+	display: none;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor table.plugin-details-table, #uncanny-automator-update .ua_plugin_upgrade_notice.major table.plugin-details-table,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor table.plugin-details-table, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major table.plugin-details-table {
+	margin: 0.75em 0 0;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor table.plugin-details-table tr, #uncanny-automator-update .ua_plugin_upgrade_notice.major table.plugin-details-table tr,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor table.plugin-details-table tr, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major table.plugin-details-table tr {
+	background: transparent none !important;
+	border: 0 !important;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor table.plugin-details-table th, #uncanny-automator-update .ua_plugin_upgrade_notice.major table.plugin-details-table th, #uncanny-automator-update .ua_plugin_upgrade_notice.minor table.plugin-details-table td, #uncanny-automator-update .ua_plugin_upgrade_notice.major table.plugin-details-table td,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor table.plugin-details-table th, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major table.plugin-details-table th, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor table.plugin-details-table td, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major table.plugin-details-table td {
+	background: transparent none !important;
+	margin: 0;
+	padding: 0.75em 20px 0;
+	border: 0 !important;
+	font-size: 1em;
+	box-shadow: none;
+}
+#uncanny-automator-update .ua_plugin_upgrade_notice.minor table.plugin-details-table th, #uncanny-automator-update .ua_plugin_upgrade_notice.major table.plugin-details-table th,
+#uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor table.plugin-details-table th, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major table.plugin-details-table th {
+	font-weight: bold;
+}

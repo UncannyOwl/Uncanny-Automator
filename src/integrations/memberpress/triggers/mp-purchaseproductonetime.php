@@ -14,7 +14,13 @@ class MP_PURCHASEPRODUCTONETIME {
 	 */
 	public static $integration = 'MP';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -39,11 +45,11 @@ class MP_PURCHASEPRODUCTONETIME {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MemberPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a one-time subscription product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a one-time subscription product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - MemberPress */
-			'select_option_name'  =>  esc_attr__( 'A user purchases {{a one-time subscription product}}', 'uncanny-automator' ),
-			'action'              => 'mepr-event-non-recurring-transaction-completed',
-			'priority'            => 10,
+			'select_option_name'  => esc_attr__( 'A user purchases {{a one-time subscription product}}', 'uncanny-automator' ),
+			'action'              => 'mepr-event-transaction-completed',
+			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'mp_product_purchased' ),
 			'options'             => [
@@ -52,31 +58,78 @@ class MP_PURCHASEPRODUCTONETIME {
 		);
 
 		$uncanny_automator->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
-	 *
-	 * @param object $event transaction object.
+	 * @param \MeprEvent $event
 	 */
-	public function mp_product_purchased( $event ) {
+	public function mp_product_purchased( \MeprEvent $event ) {
 
 		global $uncanny_automator;
 
-		$subscription = $event->get_data();
-		
-		$args = [
-			'code'         => $this->trigger_code,
-			'meta'         => $this->trigger_meta,
-			'post_id'      => intval( $subscription->rec->product_id ),
-			'user_id'      => intval( $subscription->rec->user_id ),
-			'is_signed_in' => intval( $subscription->rec->user_id ),
-		];
+		/** @var \MeprTransaction $transaction */
+		$transaction = $event->get_data();
+		/** @var \MeprProduct $product */
+		$product    = $transaction->product();
+		$product_id = $product->ID;
+		$user_id    = absint( $transaction->user()->ID );
+		if ( 'lifetime' !== (string) $product->period_type ) {
+			return;
+		}
 
-		update_user_meta( $subscription->rec->user_id, 'MPPRODUCT', $subscription->rec->product_id );
+		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		if ( empty( $recipes ) ) {
+			return;
+		}
+		$required_product   = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
+		//Add where option is set to Any product
+		foreach ( $recipes as $recipe_id => $recipe ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id = $trigger['ID'];//return early for all products
+				if ( absint( $required_product[ $recipe_id ][ $trigger_id ] ) === $product_id || intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
+					$matched_recipe_ids[] = [
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+					];
+				}
+			}
+		}
+		if ( empty( $matched_recipe_ids ) ) {
+			return;
+		}
+		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+			$recipe_args = [
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'user_id'          => $user_id,
+				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+				'trigger_to_match' => $matched_recipe_id['trigger_id'],
+				'ignore_post_id'   => true,
+				'is_signed_in'     => true,
+			];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+			$results = $uncanny_automator->maybe_add_trigger_entry( $recipe_args, false );
+			if ( empty( $results ) ) {
+				continue;
+			}
+			foreach ( $results as $result ) {
+				if ( true === $result['result'] ) {
+					$trigger_meta = [
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					];
+
+					$trigger_meta['meta_key']   = $this->trigger_meta;
+					$trigger_meta['meta_value'] = $product_id;
+					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					update_user_meta( $user_id, 'MPPRODUCT', $product_id );
+
+					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+				}
+			}
+		}
 	}
 }

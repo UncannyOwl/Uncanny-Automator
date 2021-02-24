@@ -53,7 +53,7 @@ class WPJM_SUBMITJOB {
 			'sentence'            => sprintf( esc_attr__( 'A user submits a {{specific type of:%1$s}} job', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WP Job Manager */
 			'select_option_name'  => esc_attr__( 'A user submits a {{specific type of}} job', 'uncanny-automator' ),
-			'action'              => 'save_post_job_listing',
+			'action'              => 'transition_post_status',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'job_manager_job_submitted' ),
@@ -70,11 +70,11 @@ class WPJM_SUBMITJOB {
 	 * @param $post
 	 * @param $update
 	 */
-	public function job_manager_job_submitted( $job_id, $post, $update ) {
+	public function job_manager_job_submitted( $new_status, $old_status, $post ) {
 
 		global $uncanny_automator;
 
-		if ( empty( $job_id ) ) {
+		if ( empty( $post ) ) {
 			return;
 		}
 
@@ -82,11 +82,13 @@ class WPJM_SUBMITJOB {
 			return;
 		}
 
+		$job_id = $post->ID;
+
 		if ( 'job_listing' !== $post->post_type ) {
 			return;
 		}
 
-		if ( 'pending' !== $post->post_status && 'publish' !== $post->post_status && 'preview' !== $post->post_status ) {
+		if ( ! in_array( $post->post_status, array( 'pending', 'publish' ), true ) ) {
 			return;
 		}
 
@@ -99,11 +101,8 @@ class WPJM_SUBMITJOB {
 			return;
 		}
 
-		$user_id = absint( $post->post_author );
-		if ( 0 === $user_id || empty( $user_id ) ) {
-			// Fallback to current user ID, could be admin.
-			$user_id = get_current_user_id();
-		}
+		$user_id = $post->post_author;
+
 		foreach ( $conditions['recipe_ids'] as $recipe_id ) {
 			if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
 				$trigger_args = array(

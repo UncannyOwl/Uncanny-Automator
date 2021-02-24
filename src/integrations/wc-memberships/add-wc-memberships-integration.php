@@ -65,7 +65,7 @@ class Add_Wc_Memberships_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'     => 'WooCommerce Memberships',
+			'name'     => 'Woo Memberships',
 			'icon_svg' => Utilities::get_integration_icon( 'woocommerce-icon.svg' ),
 		) );
 	}

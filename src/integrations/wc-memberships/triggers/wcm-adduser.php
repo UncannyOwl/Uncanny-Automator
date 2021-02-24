@@ -39,11 +39,10 @@ class WCM_ADDUSER {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WooCommerce Memberships */
-			'sentence'            => sprintf( esc_attr__( 'A user is added to {{a membership plan:%1$s}}',
-				'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user is added to {{a membership plan:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WooCommerce Memberships */
 			'select_option_name'  => esc_attr__( 'A user is added to {{a membership plan}}', 'uncanny-automator' ),
-			'action'              => 'wc_memberships_user_membership_created',
+			'action'              => 'wc_memberships_user_membership_saved',
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wc_user_added_to_membership_plan' ),
@@ -54,14 +53,11 @@ class WCM_ADDUSER {
 		);
 
 		$uncanny_automator->register->trigger( $trigger );
-
-		return;
-
 	}
 
 	/**
 	 * @param $membership_plan
-	 * @param $args
+	 * @param $data
 	 */
 	public function wc_user_added_to_membership_plan( $membership_plan, $data ) {
 		global $uncanny_automator;
@@ -82,8 +78,7 @@ class WCM_ADDUSER {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( isset( $required_plan[ $recipe_id ] ) && isset( $required_plan[ $recipe_id ][ $trigger_id ] ) ) {
-					if ( - 1 === intval( $required_plan[ $recipe_id ][ $trigger_id ] )
-					     || $membership_plan->id == $required_plan[ $recipe_id ][ $trigger_id ] ) {
+					if ( intval( '-1' ) === intval( $required_plan[ $recipe_id ][ $trigger_id ] ) || absint( $membership_plan->id ) === absint( $required_plan[ $recipe_id ][ $trigger_id ] ) ) {
 						$matched_recipe_ids[] = [
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
@@ -113,20 +108,19 @@ class WCM_ADDUSER {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
 
-							if ( $membership_plan_type === 'purchase' ) {
-								$order_id = get_post_meta( $data['user_membership_id'], '_order_id', true );
+							if ( 'purchase' === $membership_plan_type ) {
+								$order_id     = get_post_meta( $data['user_membership_id'], '_order_id', true );
+								$trigger_meta = [
+									'user_id'        => $data['user_id'],
+									'trigger_id'     => $result['args']['trigger_id'],
+									'trigger_log_id' => $result['args']['get_trigger_id'],
+									'run_number'     => $result['args']['run_number'],
+								];
+
+								$trigger_meta['meta_key']   = 'WCMPLANORDERID';
+								$trigger_meta['meta_value'] = maybe_serialize( $order_id );
+								$uncanny_automator->insert_trigger_meta( $trigger_meta );
 							}
-
-							$trigger_meta = [
-								'user_id'        => $data['user_id'],
-								'trigger_id'     => $result['args']['trigger_id'],
-								'trigger_log_id' => $result['args']['get_trigger_id'],
-								'run_number'     => $result['args']['run_number'],
-							];
-
-							$trigger_meta['meta_key']   = 'WCMPLANORDERID';
-							$trigger_meta['meta_value'] = maybe_serialize( $order_id );
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
 
 							$uncanny_automator->maybe_trigger_complete( $result['args'] );
 						}
@@ -134,8 +128,6 @@ class WCM_ADDUSER {
 				}
 			}
 		}
-
-		return;
 	}
 
 }
