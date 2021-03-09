@@ -3,21 +3,23 @@
 namespace Uncanny_Automator;
 
 /**
- * Class Add_Masterstudy_Integration
+ * Class Add_Wp_User_Manager_Integration
  * @package Uncanny_Automator
  */
-class Add_Masterstudy_Integration {
+class Add_Wp_User_Manager_Integration {
 
 	/**
 	 * Integration code
 	 * @var string
 	 */
-	public static $integration = 'MSLMS';
+	public static $integration = 'WPUSERMANAGER';
 
 	/**
-	 * Add_Masterstudy_Integration constructor.
+	 * Add_Wp_User_Manager_Integration constructor.
 	 */
-	public function __construct() {}
+	public function __construct() {
+
+	}
 
 	/**
 	 * Only load this integration and its triggers and actions if the related plugin is active
@@ -30,7 +32,7 @@ class Add_Masterstudy_Integration {
 	public function plugin_active( $status, $plugin ) {
 
 		if ( self::$integration === $plugin ) {
-			if ( defined( 'STM_LMS_FILE' ) ) {
+			if ( class_exists( 'WP_User_Manager' ) ) {
 				$status = true;
 			} else {
 				$status = false;
@@ -65,9 +67,9 @@ class Add_Masterstudy_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'     => 'MasterStudy LMS',
-			'logo_svg' => Utilities::get_integration_icon( 'masterstudy-lms.svg' ),
-			'icon_svg' => Utilities::get_integration_icon( 'masterstudy-lms.svg' ),
+			'name'     => 'WP User Manager',
+			'icon_svg' => Utilities::get_integration_icon( 'wp-user-manager-icon.svg' ),
 		) );
 	}
+
 }

@@ -126,7 +126,7 @@ class UNCANNYCEUS_EARNSCEUS {
 				$trigger_id = $trigger['ID'];
 				$ceu_amount = $require_ceu_amount[ $recipe_id ][ $trigger_id ];
 
-				if ( ( $total_ceus - $ceu_value ) <= absint( $ceu_amount ) ) {
+				if ( $total_ceus >= absint( $ceu_amount ) ) {
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,

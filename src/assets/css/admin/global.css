@@ -353,8 +353,9 @@
 						border-color: transparent;
 					}
 
-						.uap .uap-review-banner__action--anchor-border {
+						.uap a.uap-review-banner__action--anchor-border {
 							text-decoration: underline;
+							color: #6c757d;
 						}
 
 						.uap .uap-review-banner__action--anchor:hover {

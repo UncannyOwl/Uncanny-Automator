@@ -24,7 +24,7 @@ class Wp_Tokens {
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_anonusercreated_token' ], 20, 6 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_wproles_token' ], 20, 6 );
 	}
-	
+
 	/**
 	 * @param array $tokens
 	 * @param array $args
@@ -38,13 +38,13 @@ class Wp_Tokens {
 		$fields = [
 			[
 				'tokenId'         => 'authorname',
-				'tokenName'       => 'Post\'s Author Name',
+				'tokenName'       => __( "Post's Author Name", 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			],
 			[
 				'tokenId'         => 'authoremail',
-				'tokenName'       => 'Post\'s Author Email',
+				'tokenName'       => __( "Post's Author Email", 'uncanny_automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			],
@@ -56,13 +56,13 @@ class Wp_Tokens {
 	}
 
 	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
+	 * @param     $value
+	 * @param     $pieces
+	 * @param     $recipe_id
+	 * @param     $trigger_data
 	 *
 	 * @param int $user_id
-	 * @param $replace_args
+	 * @param     $replace_args
 	 *
 	 * @return mixed
 	 */
@@ -103,15 +103,15 @@ class Wp_Tokens {
 
 		return $value;
 	}
-	
+
 	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
+	 * @param     $value
+	 * @param     $pieces
+	 * @param     $recipe_id
+	 * @param     $trigger_data
 	 *
 	 * @param int $user_id
-	 * @param $replace_args
+	 * @param     $replace_args
 	 *
 	 * @return mixed
 	 */

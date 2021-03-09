@@ -1,34 +1,34 @@
-=== Uncanny Automator ===
+=== Uncanny Automator - Automate everything with the no-code Automation tool for WordPress ===
 Contributors: uncannyowl
-Tags: automation, automator, woocommerce, learndash, zapier
+Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
-Tested up to: 5.6.2
+Tested up to: 5.7.0
 Requires PHP: 7.2
-Stable tag: 2.10.2
+Stable tag: 2.11
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Uncanny Automator connects your WordPress plugins and sites together automatically. Build recipes in minutes with no code or extra plugins!
+Uncanny Automator is the easiest and most powerful way to connect your WordPress plugins, sites and apps together with powerful automations. Build automated workflows in minutes with no code!
 
 == Description ==
 
-Uncanny Automator is the easiest way to connect things on your WordPress site together. Widely used and trusted on elearning, membership and ecommerce sites since 2018, Automator is free for the first time to everyone!
+Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and external apps together using billions of recipe combinations.
 
 Here's how Uncanny Automator works:
 
 When one thing happens, Automator can make other things happen.
 
-When a user buys a product, add them to a membership level and enroll them in a course. A user passes a pre-test, autocomplete the rest of the course.
+When a user buys a product, add them to a membership level,enroll them in a course and pass their information to Google Sheets.
 
 It's that simple! Here's a video outlining how it all works.
 
 https://www.youtube.com/watch?v=eoQo1dUDYO4
 
-If you've used Zapier, setting things up will be intuitive. And if not, that's okay too!
+If you've used Zapier or Integromat before, setting things up will be intuitive. And if not, that's okay too!
 
 = Free doesn't mean limited =
 
-The free version of Automator is incredibly powerful and comes with built-in support for all of these popular WordPress plugins:
+The free version of Automator is incredibly powerful and comes with built-in automation support for all of these popular WordPress plugins and apps:
 
 - [Automator Core](https://automatorplugin.com/integration/automator-core/)
 - [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/)
@@ -61,9 +61,11 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/)
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/)
+- [Presto Player](https://automatorplugin.com/integration/presto-player/)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/)
+- [Twitter](https://automatorplugin.com/integration/twitter/)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/)
 - [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-ceus/)
 - [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/)
@@ -81,12 +83,14 @@ The free version of Automator is incredibly powerful and comes with built-in sup
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/)
 - [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/)
 - [WP Polls](https://automatorplugin.com/integration/wp-polls/)
+- [WP Simple Pay](https://automatorplugin.com/integration/wp-simple-pay/)
+- [WP User Manager](https://automatorplugin.com/integration/wp-user-manager/)
 - [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/)
 - [Zapier](https://automatorplugin.com/integration/zapier/)
 
-Dozens of triggers and actions are available for the plugins listed above in the free version. There's simple documentation to follow in our [Knowledge Base](https://automatorplugin.com/knowledge-base/), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
+Over 100 automation triggers and actions are available for the plugins listed above in the free version. There's simple documentation to follow in our [Knowledge Base](https://automatorplugin.com/knowledge-base/), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
 
-Beyond the plugin integrations, this free version of Uncanny Automator also supports common WP triggers and actions:
+Beyond the plugin integrations, this free version of Uncanny Automator also supports common WP triggers and actions in automations:
 
 - User views a page
 - User submits a comment
@@ -100,11 +104,11 @@ Uncanny Automator does all of this with a single plugin; there's no need to invi
 
 = Take automation to the next level =
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/), our premium plugin, adds even more features and integrations, including the ability to create new users and posts, connect two separate WordPress sites together and connect your site to non-WordPress applications via webhooks.
+[Uncanny Automator Pro](https://automatorplugin.com/pricing/), our premium plugin, adds even more features and integrations, including the ability to create new users and posts, connect multiple sites together and even connect sites to non-WordPress apps (via webhooks or native integrations for tools like Google Sheets and Mailchimp, all with no per-transaction costs or delays).
 
-Besides more than tripling the number of available triggers and actions for your recipes compared to the free version, Automator Pro for WP adds support for [H5P](https://automatorplugin.com/integration/h5p/) triggers.
+Besides more than tripling the number of available triggers and actions for your recipes compared to the free version, Automator Pro for WP adds support for external apps like Slack, Google Sheets, Mailchimp, Twilio and more.
 
-Here are some of the other really cool things you can do with [Automator Pro](https://automatorplugin.com/pricing/):
+Here are some of the other really cool automations you can create with [Automator Pro](https://automatorplugin.com/pricing/):
 
 - Integrate with [Google Sheets](https://automatorplugin.com/integration/google-sheets/). Add a row to a Google Sheet when a user makes a purchase, fills out a form, completes a course---the possibilities are endless! Say goodbye to per-transaction fees with Zapier.
 - Integrate with [Slack](https://automatorplugin.com/integration/slack/). Integrate your WordPress site directly with Slack and get Slack notifications and direct messages when users make a purchase, cancel a subscription, or any other combination of triggers from any supported plugin.
@@ -135,7 +139,7 @@ Here's what other people are saying about Uncanny Automator:
 
 You can learn more about Uncanny Automator on our website at [https://automatorplugin.com/](https://automatorplugin.com/) and our Knowledge Base is here: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/)
 
-= How do I get started with my first recipe? =
+= How do I get started with my first automation? =
 
 Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/). Don't forget to watch the video there. Hopefully it will be the first recipe of many!
 
@@ -143,25 +147,17 @@ Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](h
 
 Absolutely! The plugin was created with translation in mind and tested with a variety of translation plugins. We will support any translation issues you run into.
 
-= Why is the plugin version so high when it was just released? =
-
-Uncanny Automator was actually launched in September 2018 and has been constantly updated since then with new features and improvements. To make Automator easier for more sites to try, we turned our old "Lite" version into a free plugin!
-
 = How can I request an integration for a plugin? =
 
-The best thing you can do is reach out to the creator of the plugin that you want an integration for.  Let them know you're using Uncanny Automator and that they could greatly extend the capabilities of their plugin by helping us develop an integration for it. As more plugin authors become aware of Uncanny Automator and realize its potential for their users, we'll be able to continue to invest in expanding Uncanny Automator's capabilities! Also, fill out [this form](https://automatorplugin.com/feedback/) on our site to let us know what you're looking for.
+The best thing you can do is reach out to the creator of the plugin that you want an integration for. Let them know you're using Uncanny Automator and that they could greatly extend the capabilities of their plugin by helping us develop an integration for it. As more plugin authors become aware of Uncanny Automator and realize its potential for their users, we'll be able to continue to invest in expanding Uncanny Automator's capabilities! Also, fill out [this form](https://automatorplugin.com/feedback/) on our site to let us know what you're looking for.
 
 = How can I add an integration for my plugin? =
 
 Check out our developer documentation over at [https://automatorplugin.com/article-categories/developers/](https://automatorplugin.com/article-categories/developers/). Also consider reaching out to our team, maybe we can help or even turn it into an official integration!
 
-= Can I help with development? =
-
-Uncanny Automator is open-source and the repository is open to pull requests at [https://bitbucket.org/uncannyowl/uncanny-automator/](https://bitbucket.org/uncannyowl/uncanny-automator/). We would love your contributions!
-
 = Who is Uncanny Owl? =
 
-We're a Toronto-based WordPress company specializing in elearning solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) (now used on over 20,000 elearning sites!) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/).
+We're a Toronto-based WordPress company specializing in elearning and automation solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) (now used on over 30,000 elearning sites!) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/).
 
 == Screenshots ==
 1. Set up your first recipe in 5 minutes
@@ -174,6 +170,42 @@ We're a Toronto-based WordPress company specializing in elearning solutions for 
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 2.11 [2021-03-09] =
+
+**New Integrations:**
+
+* Presto Player
+* Twitter
+* WP Simple Pay
+* WP User Manager
+
+**New Triggers:**
+
+* Presto Player: A user completes a video
+* WP User Manager: A user registers with a form
+* WP User Manager: A user updates their profile photo
+* WP User Manager: A user removes their profile photo
+* WP User Manager: A user updates their profile cover image
+* WP User Manager: A user removes their profile cover image
+* WP User Manager: A user updates their profile description
+* WP Simple Pay: A user completes a purchase with a form
+
+**New Actions:**
+
+* Twitter: Post a tweet
+
+**Updates:**
+
+* GiveWP: Trigger tokens now include custom fields added via Form Field Manager addon
+* Core: Review notification changes
+
+**Fixes:**
+
+* LearnDash: Tokens related to quizzes now work more reliably
+* Uncanny CEUs: The total number of CEUs earned by a user is greater than or equal to a specific number now fires only when the specified number is reached
+* MasterStudy LMS integration no longer appears when MasterStudy is not installed
+* Removed escaping from some strings containing single quotes
 
 = 2.10.2 [2021-02-24] =
 

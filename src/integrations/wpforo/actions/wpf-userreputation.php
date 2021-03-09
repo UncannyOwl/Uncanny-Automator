@@ -55,9 +55,9 @@ class WPF_USERREPUTATION {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - wpForo */
-			'sentence'           => sprintf(  esc_attr__( 'Set the user\'s reputation to {{a reputation:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( "Set the user's reputation to {{a reputation:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - wpForo */
-			'select_option_name' =>  esc_attr__( 'Set the user\'s reputation to {{a reputation}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( "Set the user's reputation to {{a reputation}}", 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'set_reputation' ),

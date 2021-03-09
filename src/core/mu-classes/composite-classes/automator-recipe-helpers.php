@@ -143,7 +143,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	/**
 	 * @var Upsell_Plugin_Helpers
 	 */
-
 	public $upsell_plugin;
 	/**
 	 * @var Wishlist_Member_Helpers
@@ -153,7 +152,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Uoa_Helpers
 	 */
 	public $uncanny_automator;
-
 	/**
 	 * @var Events_Manager_Helpers
 	 */
@@ -170,7 +168,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Wpwh_Helpers
 	 */
 	public $wp_webhooks;
-
 	/**
 	 * @var Happyforms_Helpers
 	 */
@@ -187,7 +184,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Wpjm_Helpers
 	 */
 	public $wp_job_manager;
-
 	/**
 	 * @var Wc_Memberships_Helpers
 	 */
@@ -197,7 +193,23 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $affiliate_wp;
 	/**
+	 * @var Wp_User_Manager_Helpers
+	 */
+	public $wp_user_manager;
+	/**
+	 * @var Wpsp_Helpers
+	 */
+	public $wp_simple_pay;
+	/**
+	 * @var Twitter_Helpers
+	 */
+	public $twitter;
+	/**
 	 * @var Automator_Helpers_Recipe
+	 */
+	public $presto;
+	/**
+	 * @var Presto_Helpers;
 	 */
 	public $options;
 	/*
@@ -222,7 +234,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		$this->field = new Automator_Helpers_Recipe_Field();
 
-		add_action( 'uncanny_automator_add_integration_helpers', [ $this, 'load_helpers_for_recipes' ] );
+		add_action( 'uncanny_automator_add_integration_helpers', array( $this, 'load_helpers_for_recipes' ) );
 
 		if ( $this->is_edit_page() || $this->is_automator_ajax() ) {
 			$this->load_helpers = true;
@@ -269,7 +281,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 
 		//#10488 - ticket fix
-		$ignore_actions = [
+		$ignore_actions = array(
 			'activity_filter',
 			'bp_spam_activity',
 			'post_update',
@@ -294,7 +306,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			'messages_send_message',
 			'groups_filter',
 			'gamipress_track_visit',
-		];
+		);
 
 		//Provide a filter for future use
 		$ignore_actions = apply_filters( 'automator_post_actions_ignore_list', $ignore_actions );
@@ -333,8 +345,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	function is_rest() {
 		$prefix = rest_get_url_prefix();
 		if ( defined( 'REST_REQUEST' ) && REST_REQUEST // (#1)
-			 || isset( $_GET['rest_route'] ) // (#2)
-				&& strpos( trim( $_GET['rest_route'], '\\/' ), $prefix, 0 ) === 0 ) {
+		     || isset( $_GET['rest_route'] ) // (#2)
+		        && strpos( trim( $_GET['rest_route'], '\\/' ), $prefix, 0 ) === 0 ) {
 			return true;
 		}
 		// (#3)
@@ -348,7 +360,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		$regex       = '/\/' . $prefix . '\/(' . str_replace( '/', '\/', AUTOMATOR_REST_API_END_POINT ) . '.+)/';
 		$match       = isset( $current_url['path'] ) ? $current_url['path'] : '';
 
-
 		return preg_match( $regex, $match );
 	}
 
@@ -356,7 +367,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * is_edit_page
 	 * function to check if the current page is a post edit page
 	 *
-	 * @param string $new_edit what page to check for accepts new - new post page ,edit - edit post page, null for either
+	 * @param string $new_edit what page to check for accepts new - new post page ,edit - edit post page, null for
+	 *                         either
 	 *
 	 * @return boolean
 	 */
@@ -372,10 +384,13 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 		if ( isset( $_GET['post'] ) && ! empty( $_GET['post'] ) ) {
 			$current_post = get_post( absint( $_GET['post'] ) );
-			if ( isset( $current_post->post_type ) && 'uo-recipe' === $current_post->post_type && in_array( $pagenow, [
-					'post.php',
-					'post-new.php'
-				] ) ) {
+			if ( isset( $current_post->post_type ) && 'uo-recipe' === $current_post->post_type && in_array(
+					$pagenow,
+					array(
+						'post.php',
+						'post-new.php',
+					)
+				) ) {
 				return true;
 			}
 
@@ -406,7 +421,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			$placeholder = esc_attr__( 'Example: 1', 'uncanny-automator' );
 		}
 
-		$option = [
+		$option = array(
 			'option_code'   => 'NUMTIMES',
 			'label'         => $label,
 			'description'   => $description,
@@ -414,7 +429,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			'input_type'    => 'int',
 			'default_value' => 1,
 			'required'      => true,
-		];
+		);
 
 		return apply_filters( 'uap_option_number_of_times', $option );
 	}
@@ -423,22 +438,22 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @return mixed
 	 */
 	public function less_or_greater_than() {
-		$option = [
+		$option = array(
 			'option_code' => 'NUMBERCOND',
 			/* translators: Noun */
 			'label'       => esc_attr__( 'Condition', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			// 'default_value'      => false,
-			'options'     => [
+			'options'     => array(
 				'='  => esc_attr__( 'equal to', 'uncanny-automator' ),
 				'!=' => esc_attr__( 'not equal to', 'uncanny-automator' ),
 				'<'  => esc_attr__( 'less than', 'uncanny-automator' ),
 				'>'  => esc_attr__( 'greater than', 'uncanny-automator' ),
 				'>=' => esc_attr__( 'greater or equal to', 'uncanny-automator' ),
 				'<=' => esc_attr__( 'less or equal to', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_less_or_greater_than', $option );
 	}
@@ -456,14 +471,14 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			$label = esc_attr__( 'Redirect URL', 'uncanny-automator' );
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'url',
 			'supports_tokens' => true,
 			'required'        => true,
 			'placeholder'     => 'https://',
-		];
+		);
 
 		return apply_filters( 'uap_option_get_redirect_url', $option );
 	}
@@ -491,12 +506,12 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		// bail, if we aren't supposed to do this at all.
 		if ( ! $this->load_helpers ) {
-			return [];
+			return array();
 		}
 
 		// bail if no arguments are supplied.
 		if ( empty( $args ) ) {
-			return [];
+			return array();
 		}
 
 		/**
@@ -522,7 +537,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		// if meta query is set, its better to re-run query instead of transient
 		if ( isset( $args['meta_query'] ) && ! empty( $args['meta_query'] ) ) {
-			$options = [];
+			$options = array();
 		}
 		// if the transient is empty, generate options afresh.
 		if ( empty( $options ) ) {
@@ -554,7 +569,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 				// basic where 1=1 so all other
 				// where clauses can be joined via AND
-				$query .= " WHERE 1=1 ";
+				$query .= ' WHERE 1=1 ';
 
 				// include post_type with fallback to publish
 				if ( isset( $post_status ) ) {
@@ -596,13 +611,13 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 					}
 					$query .= " ORDER BY $order_by";
 				} else {
-					$query .= " ORDER BY p.post_title";
+					$query .= ' ORDER BY p.post_title';
 				}
 
 				if ( isset( $order ) && empty( $order ) ) {
 					$query .= " $order";
 				} else {
-					$query .= " ASC";
+					$query .= ' ASC';
 				}
 
 				if ( isset( $posts_per_page ) ) {
@@ -675,15 +690,18 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	public function wp_users( $limit = '99999' ) {
 		global $wpdb;
 		// prepare transient key.
-		$transient_key = "uap_transient_users";
+		$transient_key = 'uap_transient_users';
 
 		// attempt fetching options from transient.
 		$users = get_transient( $transient_key );
 		if ( empty( $users ) ) {
-			$query = apply_filters( 'automator_get_users_query', "SELECT ID, display_name 
+			$query = apply_filters(
+				'automator_get_users_query',
+				"SELECT ID, display_name 
 																FROM $wpdb->users 
 																ORDER BY display_name ASC
-																LIMIT 0, $limit" );
+																LIMIT 0, $limit"
+			);
 			$users = $wpdb->get_results( $query );
 
 			// save fetched posts in a transient for 5 minutes for performance gains.
@@ -829,14 +847,20 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			return '';
 		}
 		global $wpdb;
-		$qry        = $wpdb->prepare( "SELECT meta_value
+		$qry        = $wpdb->prepare(
+			"SELECT meta_value
 														FROM {$wpdb->prefix}uap_trigger_log_meta
 														WHERE 1 = 1
 														AND user_id = %d
 														AND meta_key = %s
 														AND automator_trigger_id = %d
 														AND automator_trigger_log_id = %d
-														LIMIT 0,1", $user_id, $meta_key, $trigger_id, $trigger_log_id );
+														LIMIT 0,1",
+			$user_id,
+			$meta_key,
+			$trigger_id,
+			$trigger_log_id
+		);
 		$meta_value = $wpdb->get_var( $qry );
 		if ( ! empty( $meta_value ) ) {
 			return maybe_unserialize( $meta_value );
@@ -869,12 +893,38 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @return array
 	 */
 	public function build_default_options_array( $label = 'Sample Label', $option_code = 'SAMPLE' ) {
-		return apply_filters( 'automator_default_options_array', [
-			'option_code' => $option_code,
-			'label'       => $label,
-			'input_type'  => '',
-			'required'    => true,
-			'options'     => [],
-		] );
+		return apply_filters(
+			'automator_default_options_array',
+			array(
+				'option_code' => $option_code,
+				'label'       => $label,
+				'input_type'  => '',
+				'required'    => true,
+				'options'     => array(),
+			)
+		);
 	}
+
+	/**
+	 * Decode data coming from Automator API.
+	 *
+	 * @param string $message Original message string to decode.
+	 * @param string $secret  Secret Key used for encription
+	 *
+	 * @return string|array
+	 */
+	public static function automator_api_decode_message( $message, $secret ) {
+		$tokens = false;
+		if ( ! empty( $message ) and ! empty( $secret ) ) {
+			$message           = base64_decode( $message );
+			$method            = 'AES128';
+			$iv                = substr( $message, 0, 16 );
+			$encrypted_message = substr( $message, 16 );
+			$tokens            = openssl_decrypt( $encrypted_message, $method, $secret, 0, $iv );
+			$tokens            = maybe_unserialize( $tokens );
+		}
+
+		return $tokens;
+	}
+
 }

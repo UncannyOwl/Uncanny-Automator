@@ -160,6 +160,8 @@ class Tc_Tokens {
 				|| in_array( 'TCMODULEINTERACTION_maybe_topic_url', $pieces, true )
 				|| in_array( 'TCVERB', $pieces, true )
 				|| in_array( 'QUIZPERCENT', $pieces, true )
+				|| in_array( 'LDQUIZ', $pieces, true )
+				|| in_array( 'LDQUIZ_ID', $pieces, true )
 				|| in_array( 'TCMODULEINTERACTION', $pieces, true )
 			) {
 				if ( ! absint( $user_id ) ) {
@@ -222,7 +224,7 @@ class Tc_Tokens {
 							$value = get_the_permalink( $tin_can_data->course_id );
 						}
 						$post_type = get_post_type( $tin_can_data->lesson_id );
-						if( 'sfwd-lessons' === $post_type ) {
+						if ( 'sfwd-lessons' === $post_type ) {
 							if ( in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true ) && ! empty( $tin_can_data->lesson_id ) ) {
 								$value = get_the_title( $tin_can_data->lesson_id );
 							}
@@ -253,6 +255,34 @@ class Tc_Tokens {
 									}
 									if ( in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces, true ) && ! empty( $lesson_id ) ) {
 										$value = get_the_permalink( $lesson_id );
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				if ( $trigger_data ) {
+					foreach ( $trigger_data as $trigger ) {
+						$quiz_id = 0;
+						if ( isset( $trigger['meta']['LDQUIZ'] ) ) {
+							$quiz_id = $trigger['meta']['LDQUIZ'];
+						}
+
+						if ( intval( '-1' ) === intval( $quiz_id ) ) {
+							if ( isset( $_REQUEST['quiz'] ) ) {
+								$quiz_id = absint( $_REQUEST['quiz'] );
+								if ( $quiz_id > 0 ) {
+									if ( in_array( 'LDQUIZ', $pieces, true ) ) {
+										$value = get_the_title( $quiz_id );
+									}
+
+									if ( in_array( 'LDQUIZ_ID', $pieces, true ) ) {
+										$value = $quiz_id;
+									}
+
+									if ( in_array( 'LDQUIZ_URL', $pieces, true ) ) {
+										$value = get_permalink( $quiz_id );
 									}
 								}
 							}

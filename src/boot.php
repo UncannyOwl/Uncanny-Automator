@@ -45,6 +45,7 @@ class Boot {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_script' ] );
 		add_action( 'rest_api_init', [ $this, 'uo_register_api' ] );
 		add_action( 'admin_init', [ $this, 'maybe_ask_review' ] );
+		add_action( 'init', [ $this, 'save_review_settings_action' ] );
 
 		// Show upgrade notice from readme.txt
 		add_action( 'in_plugin_update_message-' . plugin_basename( AUTOMATOR_BASE_FILE ), array(
@@ -219,7 +220,7 @@ class Boot {
 	 * @since 2.1.4
 	 */
 	public function maybe_ask_review() {
-
+		
 		// check plugin install date
 		$review_time = get_option( '_uncanny_automator_review_time', '' );
 
@@ -233,6 +234,7 @@ class Boot {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
+
 		if ( ceil( ( $current_date - $review_time ) / 86400 ) > $days_after ) {
 
 			$_is_reminder   = get_option( '_uncanny_automator_review_reminder', '' );
@@ -248,9 +250,33 @@ class Boot {
 					return;
 				}
 			}
+			
+			$_previous_display_date = get_option( '_uncanny_automator_previous_display_date', '' );
+			
+			if ( ! empty( $_previous_display_date ) ) {
+				$_previous_display_date = strtotime( $_previous_display_date );
+				$current_date = strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) );
+				if ( $_previous_display_date != $current_date && ceil( ( $current_date - $_previous_display_date ) / 86400 ) < 3 ) {
+					return;
+				}
+			}
 
 			add_action( 'admin_notices', function () {
-
+				
+				// Check only Automator related pages.
+				global $typenow;
+				
+				if ( empty( $typenow ) || 'uo-recipe' !== $typenow ) {
+					return;
+				}
+				
+				$screen = get_current_screen();
+				
+				if ( $screen->base == 'post' ) {
+					return;
+				}
+				
+				update_option( '_uncanny_automator_previous_display_date', date( 'Y-m-d', current_time( 'timestamp' ) ) );
 				// Get data about Automator's version
 				$is_pro  = false;
 				$version = InitializePlugin::PLUGIN_VERSION;
@@ -260,12 +286,14 @@ class Boot {
 				}
 
 				// Send review URL
-				$url_send_review = 'https://wordpress.org/support/plugin/uncanny-automator/reviews/#new-post';
+				$url_send_review = 'https://wordpress.org/support/plugin/uncanny-automator/reviews/?filter=5#new-post';
 
 				// Send feedback URL
 				$url_send_feedback_version = $is_pro ? 'Uncanny%20Automator%20Pro%20' . $version : 'Uncanny%20Automator%20' . $version;
 				$url_send_feedback_source  = $is_pro ? 'uncanny_automator_pro' : 'uncanny_automator';
 				$url_send_feedback         = 'https://automatorplugin.com/feedback/?version=' . $url_send_feedback_version . '&utm_source=' . $url_send_feedback_source . '&utm_medium=review_banner';
+				$url_hide_forever          = add_query_arg(['action'=>'uo-hide-forever']);
+				$url_remind_later          = add_query_arg(['action'=>'uo-maybe-later']);
 				include Utilities::get_view( 'review-banner.php' );
 			} );
 		}
@@ -290,6 +318,29 @@ class Boot {
 		}
 
 		return new WP_REST_Response( [ 'success' => false ], 200 );
+	}
+	
+	/**
+	 * Callback for saving user selection for review by querystring.
+	 *
+	 * @param object $request
+	 *
+	 * @return object
+	 * @since 2.11
+	 */
+	public function save_review_settings_action() {
+		// check if its a valid request.
+		if ( isset( $_GET['action'] ) && ( 'uo-maybe-later' === $_GET['action'] || 'uo-hide-forever' === $_GET['action'] ) ) {
+			if ( function_exists( 'is_admin' ) && is_admin() ) {
+				$_action = str_replace( 'uo-', '', $_GET['action'] );
+				
+				update_option( '_uncanny_automator_review_reminder', $_action );
+				update_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
+				$back_url = remove_query_arg( 'action' );
+				wp_safe_redirect( $back_url );
+				die;
+			}
+		}
 	}
 }
 

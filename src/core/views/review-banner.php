@@ -9,17 +9,17 @@
 			</div>
 			<div class="uap-review-banner-right">
 				<div class="uap-review-banner__title">
-					<?php _ex( 'Automator\'s robot would love to get your opinion', 'Reviews banner', 'uncanny-automator' ); ?>
+					<?php _ex( "Automator's robot would love to get your opinion", 'Reviews banner', 'uncanny-automator' ); ?>
 				</div>
 				<div class="uap-review-banner__description">
-					<?php _ex( 'The robot\'s favorite food is 5-star reviews!', 'Reviews banner', 'uncanny-automator' ); ?>
+					<?php _ex( "The robot's favorite food is 5-star reviews!", 'Reviews banner', 'uncanny-automator' ); ?>
 				</div>
 				<div class="uap-review-banner__actions">
 					<a href="<?php echo $url_send_review; ?>" target="_blank" class="uap-review-banner__action uap-review-banner__action--primary" data-action="hide-forever">
 						<?php
 
 						/* translators: Non-personal infinitive verb */
-						_ex( 'Add my review', 'Reviews banner', 'uncanny-automator' );
+						_ex( 'Add my 5-star review', 'Reviews banner', 'uncanny-automator' );
 
 						?>
 					</a>
@@ -33,12 +33,12 @@
 						?>
 					</a>
 					
-					<div class="uap-review-banner__action uap-review-banner__action--secondary" data-action="maybe-later">
+					<a href="<?php echo $url_remind_later;?>" class="uap-review-banner__action uap-review-banner__action--secondary" data-action="maybe-later">
 						<?php _ex( 'Maybe later', 'Reviews banner', 'uncanny-automator' ); ?>
-					</div>
+					</a>
 					
 					<div class="uap-review-banner__action uap-review-banner__action--anchor uap-review-banner__action--no-margin-right" data-action="hide-forever">
-						<span class="uap-review-banner__action--anchor-border"><?php _ex( 'Nah, a robot doesn\'t have feelings anyway', 'Reviews banner', 'uncanny-automator' ); ?></span>
+						<a href="<?php echo $url_hide_forever;?>" class="uap-review-banner__action--anchor-border"><?php _ex( 'Nah, a robot doesn\'t have feelings anyway', 'Reviews banner', 'uncanny-automator' ); ?></a>
 						<span class="uap-review-banner__disclaimer"><?php _ex( '(Plot twist, it does)', 'Reviews banner', 'uncanny-automator' ); ?></span>
 					</div>
 				</div>

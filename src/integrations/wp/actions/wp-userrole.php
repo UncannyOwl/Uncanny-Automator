@@ -41,9 +41,9 @@ class WP_USERROLE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WordPress */
-			'sentence'           => sprintf(  esc_attr__( 'Change the user\'s role to {{a new role:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(  esc_attr__( "Change the user's role to {{a new role:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WordPress */
-			'select_option_name' =>  esc_attr__( 'Change the user\'s role to {{a new role}}', 'uncanny-automator' ),
+			'select_option_name' =>  esc_attr__( "Change the user's role to {{a new role}}", 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'user_role' ),

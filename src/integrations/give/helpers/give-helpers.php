@@ -81,4 +81,100 @@ class Give_Helpers {
 		return apply_filters( 'uap_option_list_all_give_forms', $option );
 	}
 
+	/**
+	 * @param null $form_id
+	 *
+	 * @return mixed|void
+	 */
+	public function get_form_fields_and_ffm( $form_id = null ) {
+
+		$fields = [
+			'give_title'  => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'Name Title Prefix', 'uncanny-automator' ),
+				'key'      => 'title'
+			],
+			'give_first'  => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'First Name', 'uncanny-automator' ),
+				'key'      => 'first_name'
+			],
+			'give_last'   => [
+				'type'     => 'text',
+				'required' => false,
+				'label'    => __( 'Last Name', 'uncanny-automator' ),
+				'key'      => 'last_name'
+			],
+			'give_email'  => [
+				'type'     => 'email',
+				'required' => true,
+				'label'    => __( 'Email', 'uncanny-automator' ),
+				'key'      => 'user_email'
+			],
+			'give-amount' => [
+				'type'     => 'tel',
+				'required' => true,
+				'label'    => __( 'Donation Amount', 'uncanny-automator' ),
+				'key'      => 'price'
+			],
+			'address1'    => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'Address line 1', 'uncanny-automator' ),
+				'key'      => 'address1'
+			],
+			'address2'    => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'Address line 2', 'uncanny-automator' ),
+				'key'      => 'address2'
+			],
+			'city'        => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'City', 'uncanny-automator' ),
+				'key'      => 'city'
+			],
+			'state'       => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'State', 'uncanny-automator' ),
+				'key'      => 'state'
+			],
+			'zip'         => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'Zip', 'uncanny-automator' ),
+				'key'      => 'zip'
+			],
+			'country'     => [
+				'type'     => 'text',
+				'required' => true,
+				'label'    => __( 'Country', 'uncanny-automator' ),
+				'key'      => 'country'
+			],
+		];
+
+		if ( $form_id != null && $form_id != '-1' ) {
+			$customFormFields = \Give_FFM_Render_Form::get_input_fields( $form_id );
+			if ( ! empty( $customFormFields[2] ) && is_array( $customFormFields[2] ) ) {
+				foreach ( $customFormFields[2] as $custom_form_field ) {
+					$custom_form_field['required']        = ( $custom_form_field['required'] == 'no' ) ? false : true;
+					$fields[ $custom_form_field['name'] ] = [
+						'type'     => $custom_form_field['input_type'],
+						'required' => $custom_form_field['required'],
+						'label'    => $custom_form_field['label'],
+						'key'      => $custom_form_field['name'],
+						'custom'   => true,
+					];
+				}
+			}
+		}
+
+
+		return apply_filters( 'automator_give_wp_form_field', $fields );
+	}
+
 }

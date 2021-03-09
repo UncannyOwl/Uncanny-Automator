@@ -3,21 +3,23 @@
 namespace Uncanny_Automator;
 
 /**
- * Class Add_Masterstudy_Integration
+ * Class Add_Wpsp_Integration
  * @package Uncanny_Automator
  */
-class Add_Masterstudy_Integration {
+class Add_Wpsp_Integration {
 
 	/**
 	 * Integration code
 	 * @var string
 	 */
-	public static $integration = 'MSLMS';
+	public static $integration = 'WPSIMPLEPAY';
 
 	/**
-	 * Add_Masterstudy_Integration constructor.
+	 * Add_Integration constructor.
 	 */
-	public function __construct() {}
+	public function __construct() {
+
+	}
 
 	/**
 	 * Only load this integration and its triggers and actions if the related plugin is active
@@ -30,7 +32,7 @@ class Add_Masterstudy_Integration {
 	public function plugin_active( $status, $plugin ) {
 
 		if ( self::$integration === $plugin ) {
-			if ( defined( 'STM_LMS_FILE' ) ) {
+			if ( defined( 'SIMPLE_PAY_VERSION' ) ) {
 				$status = true;
 			} else {
 				$status = false;
@@ -41,7 +43,7 @@ class Add_Masterstudy_Integration {
 	}
 
 	/**
-	 * Set the directories that the auto loader will run in
+	 * et the directories that the auto loader will run in
 	 *
 	 * @param $directory
 	 *
@@ -65,9 +67,9 @@ class Add_Masterstudy_Integration {
 		global $uncanny_automator;
 
 		$uncanny_automator->register->integration( self::$integration, array(
-			'name'     => 'MasterStudy LMS',
-			'logo_svg' => Utilities::get_integration_icon( 'masterstudy-lms.svg' ),
-			'icon_svg' => Utilities::get_integration_icon( 'masterstudy-lms.svg' ),
+			'name'     => 'WP Simple Pay',
+			'icon_svg' => Utilities::get_integration_icon( 'wp-simple-pay-icon.svg' ),
 		) );
 	}
+
 }

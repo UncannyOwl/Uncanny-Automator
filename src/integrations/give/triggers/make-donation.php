@@ -69,6 +69,15 @@ class MAKE_DONATION {
 			return;
 		}
 
+		$form_fields       = $uncanny_automator->helpers->recipe->give->get_form_fields_and_ffm( $give_form_id );
+		$custom_field_data = give_get_meta( $payment_id, '_give_payment_meta', true );
+
+		foreach ( $form_fields as $i => $field ) {
+			if ( $field['custom'] == true ) {
+				$payment_data[ $field['key'] ] = $custom_field_data[ $field['key'] ];
+			}
+		}
+
 		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_form      = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$matched_recipe_ids = [];
@@ -117,7 +126,11 @@ class MAKE_DONATION {
 								'run_number'     => $result['args']['run_number'],
 							];
 
-							$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':ACTUALDONATEDAMOUNT';
+							$trigger_meta['meta_key']   = $this->trigger_meta;
+							$trigger_meta['meta_value'] = maybe_serialize( $payment_data['give_form_title'] );
+							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+
+							$trigger_meta['meta_key']   = 'ACTUALDONATEDAMOUNT';
 							$trigger_meta['meta_value'] = maybe_serialize( $amount );
 							$uncanny_automator->insert_trigger_meta( $trigger_meta );
 

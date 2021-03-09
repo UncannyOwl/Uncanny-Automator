@@ -52,9 +52,9 @@ class PMP_MEMBERSHIPEXPIRES {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'sentence'            => sprintf(  esc_attr__( 'A user\'s subscription to {{a membership:%1$s}} expires', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(  esc_attr__( "A user's subscription to {{a membership:%1\$s}} expires", 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'select_option_name'  =>  esc_attr__( 'A user\'s subscription to {{a membership}} expires', 'uncanny-automator' ),
+			'select_option_name'  =>  esc_attr__( "A user's subscription to {{a membership}} expires", 'uncanny-automator' ),
 			'action'              => 'pmpro_membership_post_membership_expiry',
 			'priority'            => 100,
 			'accepted_args'       => 2,

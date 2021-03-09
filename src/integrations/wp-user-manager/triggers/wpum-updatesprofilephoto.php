@@ -3,26 +3,32 @@
 namespace Uncanny_Automator;
 
 /**
- * Class BDB_ACCACTIVATE
+ * Class WPUM_UPDATESPROFILEPHOTO
  * @package Uncanny_Automator
  */
-class BDB_ACCACTIVATE {
+class WPUM_UPDATESPROFILEPHOTO {
 
 	/**
 	 * Integration code
 	 * @var string
 	 */
-	public static $integration = 'BDB';
+	public static $integration = 'WPUSERMANAGER';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code = 'BDBACCACTIVATE';
-		$this->trigger_meta = 'BDBUSERS';
+		$this->trigger_code = 'WPUMUSERPPHOTO';
+		$this->trigger_meta = 'WPUMPPUPDATED';
 		$this->define_trigger();
 	}
 
@@ -32,20 +38,19 @@ class BDB_ACCACTIVATE {
 	public function define_trigger() {
 
 		global $uncanny_automator;
-
 		$trigger = array(
 			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
 			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - BuddyPress */
-			'sentence'            => __( "User's account is activated", 'uncanny-automator' ),
-			/* translators: Logged-in trigger - BuddyPress */
-			'select_option_name'  => __( "User's account is activated", 'uncanny-automator' ),
-			'action'              => 'bp_core_activated_user',
-			'priority'            => 10,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'bp_core_activated_user' ),
+			/* translators: Logged-in trigger - WP User Manager */
+			'sentence'            => __( 'A user updates their profile photo', 'uncanny-automator' ),
+			/* translators: Logged-in trigger - WP User Manager */
+			'select_option_name'  => __( 'A user updates their profile photo', 'uncanny-automator' ),
+			'action'              => 'wpum_user_update_change_avatar',
+			'priority'            => 99,
+			'accepted_args'       => 2,
+			'validation_function' => array( $this, 'wpum_profile_photo_updated' ),
 			'options'             => [],
 		);
 
@@ -53,24 +58,26 @@ class BDB_ACCACTIVATE {
 	}
 
 	/**
-	 *  Validation function when the trigger action is hit
-	 *
 	 * @param $user_id
-	 * @param $key
-	 * @param $user
+	 * @param $value
 	 */
-	public function bp_core_activated_user( $user_id, $key, $user ) {
-
+	public function wpum_profile_photo_updated( $user_id, $value ) {
 		global $uncanny_automator;
 
-		$args = [
+		if ( 0 === absint( $user_id ) ) {
+			// Its a logged in recipe and
+			// user ID is 0. Skip process
+			return;
+		}
+
+		$pass_args = [
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $user_id,
 			'ignore_post_id' => true,
-			'is_signed_in'   => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		$uncanny_automator->maybe_add_trigger_entry( $pass_args );
 	}
+
 }
