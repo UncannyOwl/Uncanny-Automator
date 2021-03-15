@@ -185,6 +185,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * Google Sheets: Some special characters no longer being encoded when sent to a Google Sheet
 * Gravity Forms tokens in anonymous recipes now populate correctly when a dummy user is selected
+* GiveWP: Form Field Manager dependency check to avoid an error
 
 = 2.11 [2021-03-09] =
 

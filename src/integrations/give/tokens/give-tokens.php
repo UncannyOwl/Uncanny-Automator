@@ -88,6 +88,7 @@ class Give_Tokens {
 											}
 										}
 									}
+
 								}
 							} elseif ( ! empty( $field_key ) && in_array( $field_key, $billing_fields, true ) ) {
 								$meta_key   = 'payment_id';

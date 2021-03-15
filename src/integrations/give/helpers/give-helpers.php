@@ -57,7 +57,7 @@ class Give_Helpers {
 		$query_args = [
 			'post_type'      => 'give_forms',
 			'posts_per_page' => 9999,
-			'post_status'    => 'publish'
+			'post_status'    => 'publish',
 		];
 		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args, true, __( 'Any form', 'uncanny-automator' ) );
 		$type       = 'select';
@@ -92,76 +92,76 @@ class Give_Helpers {
 			'give_title'  => [
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Name Title Prefix', 'uncanny-automator' ),
-				'key'      => 'title'
+				'label'    => __( 'Name title prefix', 'uncanny-automator' ),
+				'key'      => 'title',
 			],
 			'give_first'  => [
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'First Name', 'uncanny-automator' ),
-				'key'      => 'first_name'
+				'label'    => __( 'First name', 'uncanny-automator' ),
+				'key'      => 'first_name',
 			],
 			'give_last'   => [
 				'type'     => 'text',
 				'required' => false,
-				'label'    => __( 'Last Name', 'uncanny-automator' ),
-				'key'      => 'last_name'
+				'label'    => __( 'Last name', 'uncanny-automator' ),
+				'key'      => 'last_name',
 			],
 			'give_email'  => [
 				'type'     => 'email',
 				'required' => true,
 				'label'    => __( 'Email', 'uncanny-automator' ),
-				'key'      => 'user_email'
+				'key'      => 'user_email',
 			],
 			'give-amount' => [
 				'type'     => 'tel',
 				'required' => true,
-				'label'    => __( 'Donation Amount', 'uncanny-automator' ),
-				'key'      => 'price'
+				'label'    => __( 'Donation amount', 'uncanny-automator' ),
+				'key'      => 'price',
 			],
 			'address1'    => [
 				'type'     => 'text',
 				'required' => true,
 				'label'    => __( 'Address line 1', 'uncanny-automator' ),
-				'key'      => 'address1'
+				'key'      => 'address1',
 			],
 			'address2'    => [
 				'type'     => 'text',
 				'required' => true,
 				'label'    => __( 'Address line 2', 'uncanny-automator' ),
-				'key'      => 'address2'
+				'key'      => 'address2',
 			],
 			'city'        => [
 				'type'     => 'text',
 				'required' => true,
 				'label'    => __( 'City', 'uncanny-automator' ),
-				'key'      => 'city'
+				'key'      => 'city',
 			],
 			'state'       => [
 				'type'     => 'text',
 				'required' => true,
 				'label'    => __( 'State', 'uncanny-automator' ),
-				'key'      => 'state'
+				'key'      => 'state',
 			],
 			'zip'         => [
 				'type'     => 'text',
 				'required' => true,
 				'label'    => __( 'Zip', 'uncanny-automator' ),
-				'key'      => 'zip'
+				'key'      => 'zip',
 			],
 			'country'     => [
 				'type'     => 'text',
 				'required' => true,
 				'label'    => __( 'Country', 'uncanny-automator' ),
-				'key'      => 'country'
+				'key'      => 'country',
 			],
 		];
 
-		if ( $form_id != null && $form_id != '-1' ) {
+		if ( class_exists( '\Give_FFM_Render_Form' ) && $form_id != null && $form_id != '-1' ) {
 			$customFormFields = \Give_FFM_Render_Form::get_input_fields( $form_id );
 			if ( ! empty( $customFormFields[2] ) && is_array( $customFormFields[2] ) ) {
 				foreach ( $customFormFields[2] as $custom_form_field ) {
-					$custom_form_field['required']        = ( $custom_form_field['required'] == 'no' ) ? false : true;
+					$custom_form_field['required']        = ( 'no' === $custom_form_field['required'] ) ? false : true;
 					$fields[ $custom_form_field['name'] ] = [
 						'type'     => $custom_form_field['input_type'],
 						'required' => $custom_form_field['required'],
