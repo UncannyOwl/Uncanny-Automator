@@ -36,11 +36,16 @@ class Recipe_Post_Type {
 
 		// Change to before delete post
 		add_action( 'delete_post', array( $this, 'delete_triggers_actions' ), 10, 1 );
+
 		// Draft when recipe moved to trash
 		add_action( 'wp_trash_post', array( $this, 'draft_triggers_actions' ), 10, 1 );
 
+		// Prepopulate recipe from a URL query
+		add_action( 'wp_insert_post', array( 'Uncanny_Automator\Populate_From_Query', 'maybe_populate' ), 9, 3 );
+
 		// Change Default new recipe post from auto-draft to draft
 		add_action( 'wp_insert_post', array( $this, 'change_default_post_status' ), 10, 3 );
+
 		add_filter( 'default_title', array( $this, 'default_recipe_title' ), 20, 2 );
 		add_filter( 'replace_editor', array( $this, 'redirect_to_recipe' ), 20, 2 );
 
@@ -242,41 +247,41 @@ class Recipe_Post_Type {
 
 		switch ( $column ) {
 			case 'triggers':
-				$q = "SELECT post_title FROM {$wpdb->posts} WHERE post_parent = {$post_id} AND post_type = 'uo-trigger'";
+				$q              = "SELECT post_title FROM {$wpdb->posts} WHERE post_parent = {$post_id} AND post_type = 'uo-trigger'";
 				$trigger_titles = $wpdb->get_results( $q );
 
 				?>
 
-                <div class="uap">
-                    <div class="uo-post-column__list">
+				<div class="uap">
+					<div class="uo-post-column__list">
 
 						<?php foreach ( $trigger_titles as $title ) { ?>
 
-                            <div class="uo-post-column__item"><?php echo $title->post_title; ?></div>
+							<div class="uo-post-column__item"><?php echo $title->post_title; ?></div>
 
 						<?php } ?>
-                    </div>
-                </div>
+					</div>
+				</div>
 
 				<?php
 
 				break;
 			case 'actions':
-				$q = "SELECT post_title FROM {$wpdb->posts} WHERE post_parent = {$post_id} AND post_type = 'uo-action'";
+				$q             = "SELECT post_title FROM {$wpdb->posts} WHERE post_parent = {$post_id} AND post_type = 'uo-action'";
 				$action_titles = $wpdb->get_results( $q );
 
 				?>
 
-                <div class="uap">
-                    <div class="uo-post-column__list">
+				<div class="uap">
+					<div class="uo-post-column__list">
 
 						<?php foreach ( $action_titles as $title ) { ?>
 
-                            <div class="uo-post-column__item"><?php echo $title->post_title; ?></div>
+							<div class="uo-post-column__item"><?php echo $title->post_title; ?></div>
 
 						<?php } ?>
-                    </div>
-                </div>
+					</div>
+				</div>
 
 				<?php
 
@@ -307,7 +312,6 @@ class Recipe_Post_Type {
 		$new_columns = array();
 
 		foreach ( $columns as $key => $column ) {
-
 
 			if ( 'author' === $key ) {
 
@@ -353,39 +357,39 @@ class Recipe_Post_Type {
 			function () {
 				ob_start();
 				?>
-                <div class="uap">
-                    <div id="recipe-triggers-ui" class="metabox__content uap-clear">
+				<div class="uap">
+					<div id="recipe-triggers-ui" class="metabox__content uap-clear">
 
-                        <!-- Placeholder content -->
-                        <div class="uap-placeholder">
-                            <div class="item item--trigger">
-                                <div>
-                                    <div class="item-actions">
-                                        <div class="item-actions__btn">
-                                            <i class="uo-icon uo-icon--ellipsis-h"></i>
-                                        </div>
-                                    </div>
-                                    <div class="item-icon"></div>
-                                    <div class="item-title"></div>
-                                </div>
-                                <div class="item__content">
-                                    <div class="item-integrations">
-                                        <div class="item-integration">
-                                            <div class="item-integration__logo"></div>
-                                            <div class="item-integration__name"></div>
-                                        </div>
-                                        <div class="item-integration">
-                                            <div class="item-integration__logo"></div>
-                                            <div class="item-integration__name"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End of placeholder content -->
+						<!-- Placeholder content -->
+						<div class="uap-placeholder">
+							<div class="item item--trigger">
+								<div>
+									<div class="item-actions">
+										<div class="item-actions__btn">
+											<i class="uo-icon uo-icon--ellipsis-h"></i>
+										</div>
+									</div>
+									<div class="item-icon"></div>
+									<div class="item-title"></div>
+								</div>
+								<div class="item__content">
+									<div class="item-integrations">
+										<div class="item-integration">
+											<div class="item-integration__logo"></div>
+											<div class="item-integration__name"></div>
+										</div>
+										<div class="item-integration">
+											<div class="item-integration__logo"></div>
+											<div class="item-integration__name"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End of placeholder content -->
 
-                    </div>
-                </div>
+					</div>
+				</div>
 				<?php
 				echo ob_get_clean();
 			},
@@ -400,33 +404,33 @@ class Recipe_Post_Type {
 			function () {
 				ob_start();
 				?>
-                <div class="uap">
-                    <div id="recipe-actions-ui" class="metabox__content uap-clear">
+				<div class="uap">
+					<div id="recipe-actions-ui" class="metabox__content uap-clear">
 
-                        <!-- Placeholder content -->
-                        <div class="uap-placeholder">
-                            <div class="item item--action">
-                                <div>
-                                    <div class="item-actions">
-                                        <div class="item-actions__btn">
-                                            <i class="uo-icon uo-icon--ellipsis-h"></i>
-                                        </div>
-                                    </div>
-                                    <div class="item-icon"></div>
-                                    <div class="item-title"></div>
-                                </div>
-                            </div>
-                            <div class="metabox__footer">
-                                <div class="uap-placeholder-checkbox">
-                                    <div class="uap-placeholder-checkbox__field"></div>
-                                    <div class="uap-placeholder-checkbox__label"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End of placeholder content -->
+						<!-- Placeholder content -->
+						<div class="uap-placeholder">
+							<div class="item item--action">
+								<div>
+									<div class="item-actions">
+										<div class="item-actions__btn">
+											<i class="uo-icon uo-icon--ellipsis-h"></i>
+										</div>
+									</div>
+									<div class="item-icon"></div>
+									<div class="item-title"></div>
+								</div>
+							</div>
+							<div class="metabox__footer">
+								<div class="uap-placeholder-checkbox">
+									<div class="uap-placeholder-checkbox__field"></div>
+									<div class="uap-placeholder-checkbox__label"></div>
+								</div>
+							</div>
+						</div>
+						<!-- End of placeholder content -->
 
-                    </div>
-                </div>
+					</div>
+				</div>
 				<?php
 				echo ob_get_clean();
 			},
@@ -435,11 +439,14 @@ class Recipe_Post_Type {
 			'high'
 		);
 
-		add_action( 'edit_form_after_title', function () {
-			global $post, $wp_meta_boxes;
-			do_meta_boxes( get_current_screen(), 'uap_items', $post );
-			unset( $wp_meta_boxes[ get_post_type( $post ) ]['uap_items'] );
-		} );
+		add_action(
+			'edit_form_after_title',
+			function () {
+				global $post, $wp_meta_boxes;
+				do_meta_boxes( get_current_screen(), 'uap_items', $post );
+				unset( $wp_meta_boxes[ get_post_type( $post ) ]['uap_items'] );
+			}
+		);
 
 		add_meta_box(
 			'uo-automator-publish',
@@ -447,52 +454,52 @@ class Recipe_Post_Type {
 			function () {
 				ob_start();
 				?>
-                <div id="uo-automator-publish-metabox" class="uap">
+				<div id="uo-automator-publish-metabox" class="uap">
 
-                    <!-- Placeholder content -->
-                    <div class="uap-placeholder">
-                        <div id="uap-publish-metabox">
-                            <div class="metabox__content">
-                                <div class="publish-row">
-                                    <div class="publish-row__visible">
-                                        <span class="publish-row__icon"></span>
-                                        <span class="publish-row__name"></span>
-                                        <span class="publish-row__value"></span>
-                                        <span class="publish-row__edit"></span>
-                                    </div>
-                                </div>
-                                <div class="publish-row">
-                                    <div class="publish-row__visible">
-                                        <span class="publish-row__icon"></span>
-                                        <span class="publish-row__name"></span>
-                                        <span class="publish-row__value"></span>
-                                        <span class="publish-row__edit"></span>
-                                    </div>
-                                </div>
-                                <div class="publish-row">
-                                    <div class="publish-row__visible">
-                                        <span class="publish-row__icon"></span>
-                                        <span class="publish-row__name"></span>
-                                        <span class="publish-row__value"></span>
-                                        <span class="publish-row__edit"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="metabox__footer">
-                                <div class="publish-footer">
-                                    <div class="publish-footer__row uap-clear">
-                                        <div class="publish-footer__left">
-                                            <a class="publish-footer__move-to-draft"></a>
-                                        </div>
-                                        <div class="publish-footer__right"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End of placeholder content -->
+					<!-- Placeholder content -->
+					<div class="uap-placeholder">
+						<div id="uap-publish-metabox">
+							<div class="metabox__content">
+								<div class="publish-row">
+									<div class="publish-row__visible">
+										<span class="publish-row__icon"></span>
+										<span class="publish-row__name"></span>
+										<span class="publish-row__value"></span>
+										<span class="publish-row__edit"></span>
+									</div>
+								</div>
+								<div class="publish-row">
+									<div class="publish-row__visible">
+										<span class="publish-row__icon"></span>
+										<span class="publish-row__name"></span>
+										<span class="publish-row__value"></span>
+										<span class="publish-row__edit"></span>
+									</div>
+								</div>
+								<div class="publish-row">
+									<div class="publish-row__visible">
+										<span class="publish-row__icon"></span>
+										<span class="publish-row__name"></span>
+										<span class="publish-row__value"></span>
+										<span class="publish-row__edit"></span>
+									</div>
+								</div>
+							</div>
+							<div class="metabox__footer">
+								<div class="publish-footer">
+									<div class="publish-footer__row uap-clear">
+										<div class="publish-footer__left">
+											<a class="publish-footer__move-to-draft"></a>
+										</div>
+										<div class="publish-footer__right"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- End of placeholder content -->
 
-                </div>
+				</div>
 				<?php
 				echo ob_get_clean();
 			},
@@ -509,66 +516,106 @@ class Recipe_Post_Type {
 	 */
 	public function register_routes() {
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/add/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'add' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/add/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'add' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/delete/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'delete' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/delete/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'delete' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/update/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'update' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/update/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'update' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/get_options/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'get_options' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/get_options/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_options' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/change_post_status/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'change_post_status' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/change_post_status/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'change_post_status' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/change_post_recipe_type/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'change_post_recipe_type' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/change_post_recipe_type/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'change_post_recipe_type' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/change_post_title/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'change_post_title' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/change_post_title/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'change_post_title' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/recipe_completions_allowed/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'recipe_completions_allowed' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/recipe_completions_allowed/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'recipe_completions_allowed' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/set_recipe_terms/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'set_recipe_terms' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/set_recipe_terms/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'set_recipe_terms' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 
 		//Rest APIs for User Selector Automator v2.0
-		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/user-selector/', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'user_selector' ),
-			'permission_callback' => array( $this, 'save_settings_permissions' ),
-		) );
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/user-selector/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'user_selector' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 	}
 
 	/**
@@ -594,7 +641,6 @@ class Recipe_Post_Type {
 				$post_action = sanitize_text_field( $_POST['action'] );
 				// Make sure we have the post type ( trigger OR action )
 				if ( isset( $_POST['action'] ) && ( 'add-new-trigger' === (string) $post_action || 'add-new-action' === (string) $post_action || 'add-new-closure' === (string) $post_action ) ) {
-
 
 					if ( 'add-new-trigger' === (string) $post_action ) {
 						$post_type = 'uo-trigger';
@@ -752,7 +798,6 @@ class Recipe_Post_Type {
 			$meta_key   = (string) $uncanny_automator->uap_sanitize( $_POST['optionCode'] );
 			$meta_value = $uncanny_automator->uap_sanitize( $_POST['optionValue'], 'mixed' );
 
-
 			/*
 			 * Save human readable sentence that will be stored as trigger and action meta.
 			 * Once a trigger is completed, the human readable post meta value will be saved as trigger or action log
@@ -778,7 +823,7 @@ class Recipe_Post_Type {
 				$return['message'] = 'Option updated!';
 				$return['success'] = true;
 				$return['action']  = 'updated_option';
-				$return['data']    = [ $item, $meta_key, $meta_value ];
+				$return['data']    = array( $item, $meta_key, $meta_value );
 
 				$return['recipes_object'] = $uncanny_automator->get_recipes_data( true );
 
@@ -897,7 +942,7 @@ class Recipe_Post_Type {
 	 * @return \WP_REST_Response
 	 */
 	public function change_post_status( $request ) {
-
+		
 		// Make sure we have a post ID and a post status
 		if ( isset( $_POST['post_ID'] ) && isset( $_POST['post_status'] ) ) {
 
@@ -907,7 +952,6 @@ class Recipe_Post_Type {
 			$post_ID     = absint( $_POST['post_ID'] );
 
 			if ( in_array( $post_status, $status_types ) && $post_ID ) {
-
 
 				/*
 				 * Save human readable sentence that will be stored as trigger and action meta.
@@ -964,7 +1008,6 @@ class Recipe_Post_Type {
 			$post_ID     = absint( $_POST['post_ID'] );
 
 			if ( in_array( $recipe_type, $recipe_types ) && $post_ID ) {
-
 
 				$updated = $uncanny_automator->utilities->set_recipe_type( $post_ID, $recipe_type );
 
@@ -1105,7 +1148,12 @@ class Recipe_Post_Type {
 			}
 
 			if ( $update_count ) {
-				$all_terms = get_terms( [ 'taxonomy' => $taxonomy, 'hide_empty' => false ] );
+				$all_terms = get_terms(
+					array(
+						'taxonomy'   => $taxonomy,
+						'hide_empty' => false,
+					)
+				);
 				if ( $all_terms ) {
 					$term_ids = array_column( $all_terms, 'term_id' );
 					wp_update_term_count_now( $term_ids, $taxonomy );
@@ -1169,10 +1217,16 @@ class Recipe_Post_Type {
 			wp_enqueue_script( 'uap-select2', Utilities::get_vendor_asset( 'select2/js/select2.min.js' ), array( 'jquery' ), Utilities::get_version(), true );
 
 			// Recipe UI scripts
-			wp_enqueue_script( 'automator-recipe-ui-bundle-js', Utilities::get_recipe_dist( 'automator-recipe-ui.bundle.js' ), array(
-				'jquery',
-				'uap-select2',
-			), Utilities::get_version(), true );
+			wp_enqueue_script(
+				'automator-recipe-ui-bundle-js',
+				Utilities::get_recipe_dist( 'automator-recipe-ui.bundle.js' ),
+				array(
+					'jquery',
+					'uap-select2',
+				),
+				Utilities::get_version(),
+				true
+			);
 
 			// Enqueue editor assets
 			wp_enqueue_editor();
@@ -1187,75 +1241,75 @@ class Recipe_Post_Type {
 			// Get source
 			$source = get_post_meta( $post_id, 'source', true );
 			// Create fields array
-			$fields = [
-				'existingUser' => [],
-				'newUser'      => [],
-			];
+			$fields = array(
+				'existingUser' => array(),
+				'newUser'      => array(),
+			);
 			// Check if the user defined a valid source
-			if ( in_array( $source, [ 'existingUser', 'newUser' ] ) ) {
+			if ( in_array( $source, array( 'existingUser', 'newUser' ) ) ) {
 				// If the user did it, then add the fields
 				$fields[ $source ] = get_post_meta( $post_id, 'fields', true );
 			}
 
 			$editable_roles = get_editable_roles();
-			$roles          = [];
+			$roles          = array();
 			foreach ( $editable_roles as $role_key => $role_data ) {
 				$roles[ $role_key ] = $role_data['name'];
 			}
 
 			$api_setup = array(
-				'wp'      => false,
-				'restURL' => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
-				'siteURL' => get_site_url(),
-				'nonce'   => \wp_create_nonce( 'wp_rest' ),
+				'wp'             => false,
+				'restURL'        => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
+				'siteURL'        => get_site_url(),
+				'nonce'          => \wp_create_nonce( 'wp_rest' ),
 
-				'dev'          => array(
+				'dev'            => array(
 					'debugMode' => WP_DEBUG === true ? true : false,
 				),
 
 				// 'recipe_types' => $uncanny_automator->get_recipe_types(),
-				'integrations' => $uncanny_automator->get_integrations(),
-				'triggers'     => $uncanny_automator->get_triggers(),
-				'actions'      => $uncanny_automator->get_actions(),
-				'closures'     => $uncanny_automator->get_closures(),
+				'integrations'   => $uncanny_automator->get_integrations(),
+				'triggers'       => $uncanny_automator->get_triggers(),
+				'actions'        => $uncanny_automator->get_actions(),
+				'closures'       => $uncanny_automator->get_closures(),
 
 				'i18n'           => $uncanny_automator->i18n->get_all(),
 				'recipes_object' => $uncanny_automator->get_recipes_data( true ),
 
-				'version' => Utilities::get_version(),
+				'version'        => Utilities::get_version(),
 
-				'proFeatures' => $this->get_pro_items(),
+				'proFeatures'    => $this->get_pro_items(),
 
-				'recipe' => array(
-					'id'     => $post_id,
-					'author' => $post->post_author,
-					'status' => $post->post_status,
-					'type'   => empty( $recipe_type ) ? null : $recipe_type,
-					'isLive' => ( 'publish' === $post->post_status ) ? true : false,
+				'recipe'         => array(
+					'id'           => $post_id,
+					'author'       => $post->post_author,
+					'status'       => $post->post_status,
+					'type'         => empty( $recipe_type ) ? null : $recipe_type,
+					'isLive'       => ( 'publish' === $post->post_status ) ? true : false,
 
-					'errorMode' => false,
-					'isValid'   => false,
+					'errorMode'    => false,
+					'isValid'      => false,
 
-					'userSelector' => [
+					'userSelector' => array(
 						'source'    => $source,
 						'fields'    => $fields,
 						'isValid'   => false,
-						'resources' => [
+						'resources' => array(
 							'roles' => $roles,
-						],
-					],
+						),
+					),
 
-					'hasLive' => array(
+					'hasLive'      => array(
 						'trigger' => false,
 						'action'  => false,
 						'closure' => false,
 					),
-					'message' => array(
+					'message'      => array(
 						'error'   => '',
 						'warning' => '',
 					),
-					'items'   => [],
-					'publish' => array(
+					'items'        => array(),
+					'publish'      => array(
 						'timesPerUser' => empty( $recipe_completions_allowed ) ? 1 : $recipe_completions_allowed,
 						'createdOn'    => date_i18n( 'M j, Y @ G:i', get_the_time( 'U', $post_id ) ),
 						'moveToTrash'  => get_delete_post_link( $post_id ),
@@ -1285,17 +1339,17 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Automator Core */
-						'name' => __( "A user clicks {{a magic button}}", 'uncanny-automator' ),
+						'name' => __( 'A user clicks {{a magic button}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Automator Core */
-						'name' => __( "A user clicks {{a magic link}}", 'uncanny-automator' ),
+						'name' => __( 'A user clicks {{a magic link}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Anonymous trigger - Automator Core */
-						'name' => __( "Receive data from a webhook", 'uncanny-automator' ),
+						'name' => __( 'Receive data from a webhook', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 				),
@@ -1305,7 +1359,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - bbPress */
-						'name' => __( "A user replies to {{a topic}}", 'uncanny-automator' ),
+						'name' => __( 'A user replies to {{a topic}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -1320,17 +1374,17 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user registers with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user registers with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user registers a new account via an email invitation", 'uncanny-automator' ),
+						'name' => __( 'A user registers a new account via an email invitation', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user activates a new account via an email invitation", 'uncanny-automator' ),
+						'name' => __( 'A user activates a new account via an email invitation', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -1350,27 +1404,27 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user joins {{a public group}}", 'uncanny-automator' ),
+						'name' => __( 'A user joins {{a public group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user leaves {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'A user leaves {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user joins {{a private group}}", 'uncanny-automator' ),
+						'name' => __( 'A user joins {{a private group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user makes a post to the activity stream of {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'A user makes a post to the activity stream of {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyBoss */
-						'name' => __( "A user updates their profile with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user updates their profile with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -1385,23 +1439,23 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Action - BuddyBoss */
-						'name' => __( "Add a post to the activity stream of {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Add a post to the activity stream of {{a group}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyBoss */
-						'name' => __( "Add a post to the sitewide activity stream", 'uncanny-automator' ),
+						'name' => __( 'Add a post to the sitewide activity stream', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyBoss */
-						'name' => __( "Send {{a private message}} to the user", 'uncanny-automator' ),
+						'name' => __( 'Send {{a private message}} to the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyBoss */
-						'name' => __( "Create {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Create {{a group}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyBoss */
-						'name' => __( "Set {{Xprofile data}}", 'uncanny-automator' ),
+						'name' => __( 'Set {{Xprofile data}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1409,12 +1463,12 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __( "A user joins {{a public group}}", 'uncanny-automator' ),
+						'name' => __( 'A user joins {{a public group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __( "A user leaves {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'A user leaves {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -1424,7 +1478,7 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __( " A user registers with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( ' A user registers with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -1434,24 +1488,24 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __( "A user joins {{a private group}}", 'uncanny-automator' ),
+						'name' => __( 'A user joins {{a private group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __( "A user makes a post to the activity stream of {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'A user makes a post to the activity stream of {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - BuddyPress */
-						'name' => __( "A user updates their profile with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user updates their profile with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - BuddyPress */
-						'name' => __( "Remove the user from {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a group}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyPress */
@@ -1463,23 +1517,23 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Action - BuddyPress */
-						'name' => __( "Add a post to the activity stream of {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Add a post to the activity stream of {{a group}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyPress */
-						'name' => __( "Add a post to the sitewide {{activity}} stream", 'uncanny-automator' ),
+						'name' => __( 'Add a post to the sitewide {{activity}} stream', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyPress */
-						'name' => __( "Send {{a private message}} to the user", 'uncanny-automator' ),
+						'name' => __( 'Send {{a private message}} to the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyPress */
-						'name' => __( "Create {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Create {{a group}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - BuddyPress */
-						'name' => __( "Set {{Xprofile data}}", 'uncanny-automator' ),
+						'name' => __( 'Set {{Xprofile data}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1487,14 +1541,14 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Caldera Forms */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Caldera Forms */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1502,14 +1556,14 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Contact Form 7 */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Contact Form 7 */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1517,24 +1571,24 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Elementor */
-						'name' => __( " A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( ' A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Anonymous trigger - Elementor */
-						'name' => __( "{{A form}} is submitted with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 					array(
 						/* translators: Anonymous trigger - Elementor */
-						'name' => __( "A user submits {{a form}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}}', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Elementor */
-						'name' => __( "Show {{a popup}} to the user", 'uncanny-automator' ),
+						'name' => __( 'Show {{a popup}} to the user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1542,19 +1596,19 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Events Manager */
-						'name' => __( "A user unregisters from {{an event}}", 'uncanny-automator' ),
+						'name' => __( 'A user unregisters from {{an event}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Events Manager */
-						'name' => __( "A user registers for {{an event}} with {{a specific ticket}}", 'uncanny-automator' ),
+						'name' => __( 'A user registers for {{an event}} with {{a specific ticket}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Events Manager */
-						'name' => __( "Unregister the user from {{an event}}", 'uncanny-automator' ),
+						'name' => __( 'Unregister the user from {{an event}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1562,24 +1616,24 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Fluent Forms */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Fluent Forms */
-						'name' => __( "{{A form}} is submitted", 'uncanny-automator' ),
+						'name' => __( '{{A form}} is submitted', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Fluent Forms */
-						'name' => __( "{{A form}} is submitted with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Fluent Forms */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1587,23 +1641,23 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - FluentCRM */
-						'name' => __( "A user is removed from {{a list}}", 'uncanny-automator' ),
+						'name' => __( 'A user is removed from {{a list}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - FluentCRM */
-						'name' => __( "{{A tag}} is removed from a user", 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is removed from a user', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - FluentCRM */
-						'name' => __( "Remove the user from {{a list}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a list}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - FluentCRM */
-						'name' => __( "Remove {{a tag}} from the user", 'uncanny-automator' ),
+						'name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1611,24 +1665,24 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Formidable Forms */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Formidable Forms */
-						'name' => __( "A user submits {{a form}} with payment", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Formidable Forms */
-						'name' => __( "A user updates an entry in {{a form}}", 'uncanny-automator' ),
+						'name' => __( 'A user updates an entry in {{a form}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Formidable Forms */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1636,14 +1690,14 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Forminator */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Forminator */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1651,36 +1705,36 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => __( "A user earns {{an achievement}}", 'uncanny-automator' ),
+						'name' => __( 'A user earns {{an achievement}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => __( "A user earns {{a number}} {{of a specfic type of}} points", 'uncanny-automator' ),
+						'name' => __( 'A user earns {{a number}} {{of a specfic type of}} points', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - GamiPress */
-						'name' => __( "A user attains {{a rank}}", 'uncanny-automator' ),
+						'name' => __( 'A user attains {{a rank}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - GamiPress */
-						'name' => __( "Revoke {{an achievement}} from the user", 'uncanny-automator' ),
+						'name' => __( 'Revoke {{an achievement}} from the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - GamiPress */
-						'name' => __( "Revoke {{a rank}} from the user", 'uncanny-automator' ),
+						'name' => __( 'Revoke {{a rank}} from the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - GamiPress */
-						'name' => __( "Revoke {{a number}} {{of a certain type of}} points from the user", 'uncanny-automator' ),
+						'name' => __( 'Revoke {{a number}} {{of a certain type of}} points from the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - GamiPress */
-						'name' => __( "Revoke all {{of a certain type of}} points from the user", 'uncanny-automator' ),
+						'name' => __( 'Revoke all {{of a certain type of}} points from the user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1688,38 +1742,38 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - GiveWP */
-						'name' => __( "A user cancels {{a recurring donation}}", 'uncanny-automator' ),
+						'name' => __( 'A user cancels {{a recurring donation}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Anonymous trigger - GiveWP */
-						'name' => __( "{{A donation form}} is submitted", 'uncanny-automator' ),
+						'name' => __( '{{A donation form}} is submitted', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 					array(
 						/* translators: Logged-in trigger - GiveWP */
-						'name' => __( "A user makes a donation via {{a form}} with {{a specific value}} in {{a specifc field}}", 'uncanny-automator' ),
+						'name' => __( 'A user makes a donation via {{a form}} with {{a specific value}} in {{a specifc field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - GiveWP */
-						'name' => __( "A user makes a donation via {{a form}} for an amount {{great than, less than, or equal to}} {{an amount}}", 'uncanny-automator' ),
+						'name' => __( 'A user makes a donation via {{a form}} for an amount {{great than, less than, or equal to}} {{an amount}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - GiveWP */
-						'name' => __( "A user continues {{a recurring donation}}", 'uncanny-automator' ),
+						'name' => __( 'A user continues {{a recurring donation}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - GiveWP */
-						'name' => __( "Add a note to {{a donor}}", 'uncanny-automator' ),
+						'name' => __( 'Add a note to {{a donor}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - GiveWP */
-						'name' => __( "Create a donor", 'uncanny-automator' ),
+						'name' => __( 'Create a donor', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1728,7 +1782,7 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - Google Sheets */
-						'name' => __( "Create a row in Google Sheets", 'uncanny-automator' ),
+						'name' => __( 'Create a row in Google Sheets', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1737,11 +1791,11 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - GoToTraining */
-						'name' => __( "Add the user to a {{training session}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to a {{training session}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - GoToTraining */
-						'name' => __( "Remove the user from a {{training session}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from a {{training session}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1750,11 +1804,11 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - GoToWebinar */
-						'name' => __( "Add the user to {{a webinar}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to {{a webinar}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - GoToWebinar */
-						'name' => __( "Remove the user from {{a webinar}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1762,19 +1816,19 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Gravity Forms */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Gravity Forms */
-						'name' => __( "A user submits {{a form}} with payment", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with payment', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Gravity Forms */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1782,12 +1836,12 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Groundhogg */
-						'name' => __( "{{A tag}} is added to a user", 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is added to a user', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Groundhogg */
-						'name' => __( "{{A tag}} is removed from a user", 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is removed from a user', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -1797,17 +1851,17 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - H5P */
-						'name' => __( "A user completes {{H5P content}}", 'uncanny-automator' ),
+						'name' => __( 'A user completes {{H5P content}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - H5P */
-						'name' => __( "A user completes any {{of a specific type of}} H5P content", 'uncanny-automator' ),
+						'name' => __( 'A user completes any {{of a specific type of}} H5P content', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - H5P */
-						'name' => __( "A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{H5P content}}", 'uncanny-automator' ),
+						'name' => __( 'A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{H5P content}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -1817,17 +1871,17 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - HappyForms */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Anonymous trigger - HappyForms */
-						'name' => __( "{{A form}} is submitted", 'uncanny-automator' ),
+						'name' => __( '{{A form}} is submitted', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 					array(
 						/* translators: Anonymous trigger - HappyForms */
-						'name' => __( "{{A form}} is submitted with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 				),
@@ -1837,7 +1891,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Anonymous trigger - Integromat */
-						'name' => __( "Receive data from {{Integromat webhook}}", 'uncanny-automator' ),
+						'name' => __( 'Receive data from {{Integromat webhook}}', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 				),
@@ -1847,24 +1901,24 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => __( "A user submits an assignment for {{a lesson or topic}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits an assignment for {{a lesson or topic}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => __( "A user is enrolled in {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - LearnDash */
-						'name' => __( "A user is added to {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'A user is added to {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - LearnDash */
-						'name' => __( "Unenroll the user from {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Unenroll the user from {{a course}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LearnDash */
@@ -1876,11 +1930,11 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Action - LearnDash */
-						'name' => __( "Add the user to {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to {{a group}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LearnDash */
-						'name' => __( "Remove the user from {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a group}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LearnDash */
@@ -1888,15 +1942,15 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Action - LearnDash */
-						'name' => __( "Mark {{a lesson}} not complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a lesson}} not complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LearnDash */
-						'name' => __( "Mark {{a topic}} not complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a topic}} not complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LearnDash */
-						'name' => __( "Generate and email a certificate", 'uncanny-automator' ),
+						'name' => __( 'Generate and email a certificate', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1905,15 +1959,15 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - LearnPress */
-						'name' => __( "Enroll the user in {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LearnPress */
-						'name' => __( "Mark {{a course}} complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LearnPress */
-						'name' => __( "Remove the user from {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1922,23 +1976,23 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - LifterLMS */
-						'name' => __( "Remove the user from {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LifterLMS */
-						'name' => __( "Enroll the user in {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LifterLMS */
-						'name' => __( "Mark {{a course}} complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LifterLMS */
-						'name' => __( "Remove the user from {{a membership}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a membership}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LifterLMS */
-						'name' => __( "Enroll the user in {{a membership}}", 'uncanny-automator' ),
+						'name' => __( 'Enroll the user in {{a membership}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - LifterLMS */
@@ -1951,27 +2005,27 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - Mailchimp */
-						'name' => __( "Add the user to {{an audience}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to {{an audience}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Mailchimp */
-						'name' => __( "Add {{a tag}} to the user", 'uncanny-automator' ),
+						'name' => __( 'Add {{a tag}} to the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Mailchimp */
-						'name' => __( "Remove {{a tag}} from the user", 'uncanny-automator' ),
+						'name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Mailchimp */
-						'name' => __( "Add {{a note}} to the user", 'uncanny-automator' ),
+						'name' => __( 'Add {{a note}} to the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Mailchimp */
-						'name' => __( "Create and send {{a campaign}}", 'uncanny-automator' ),
+						'name' => __( 'Create and send {{a campaign}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Mailchimp */
-						'name' => __( "Unsubscribe the user from {{an audience}}", 'uncanny-automator' ),
+						'name' => __( 'Unsubscribe the user from {{an audience}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1980,11 +2034,11 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - MailPoet */
-						'name' => __( "Remove {{a subscriber}} from {{a list}}", 'uncanny-automator' ),
+						'name' => __( 'Remove {{a subscriber}} from {{a list}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - MailPoet */
-						'name' => __( "Remove the user from {{a list}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a list}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -1992,18 +2046,18 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - MasterStudy LMS */
-						'name' => __( "A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on {{a quiz}}", 'uncanny-automator' ),
+						'name' => __( 'A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on {{a quiz}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - MasterStudy LMS */
-						'name' => __( "Mark {{a quiz}} complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a quiz}} complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - MasterStudy LMS */
-						'name' => __( "Mark {{a lesson}} complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - MasterStudy LMS */
@@ -2011,7 +2065,7 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Action - MasterStudy LMS */
-						'name' => __( "Mark {{a lesson}} not complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a lesson}} not complete for the user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2026,11 +2080,11 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - MemberPress */
-						'name' => __( "Add the user to {{a membership}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to {{a membership}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - MemberPress */
-						'name' => __( "Remove the user from {{a membership}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a membership}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2038,7 +2092,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - myCred */
-						'name' => __( "A user earns {{a rank}}", 'uncanny-automator' ),
+						'name' => __( 'A user earns {{a rank}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2055,15 +2109,15 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - myCred */
-						'name' => __( "Revoke {{a number of}} {{a specific type of}} points from the user", 'uncanny-automator' ),
+						'name' => __( 'Revoke {{a number of}} {{a specific type of}} points from the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - myCred */
-						'name' => __( "Revoke all {{of a specific type of}} points from the user", 'uncanny-automator' ),
+						'name' => __( 'Revoke all {{of a specific type of}} points from the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - myCred */
-						'name' => __( "Revoke {{a badge}} from the user", 'uncanny-automator' ),
+						'name' => __( 'Revoke {{a badge}} from the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - myCred */
@@ -2079,7 +2133,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Anonymous trigger - Newsletter */
-						'name' => __( "{{A subscription form}} is submitted with {{a specific list}} selected", 'uncanny-automator' ),
+						'name' => __( '{{A subscription form}} is submitted with {{a specific list}} selected', 'uncanny-automator' ),
 						'type' => 'logged-in_and_anonymous',
 					),
 				),
@@ -2089,14 +2143,14 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Ninja Forms */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Ninja Forms */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2104,18 +2158,18 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Paid Memberships Pro */
-						'name' => __( "A user renews {{a membership}}", 'uncanny-automator' ),
+						'name' => __( 'A user renews {{a membership}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Paid Memberships Pro */
-						'name' => __( "Add the user to {{a membership level}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to {{a membership level}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Paid Memberships Pro */
-						'name' => __( "Remove the user from {{a membership level}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a membership level}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2135,7 +2189,7 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - Restrict Content */
-						'name' => __( "Remove the user from {{a membership level}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a membership level}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2144,15 +2198,15 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - Slack */
-						'name' => __( "Send a message to {{a channel}}", 'uncanny-automator' ),
+						'name' => __( 'Send a message to {{a channel}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Slack */
-						'name' => __( "Send a private message to {{a Slack user}}", 'uncanny-automator' ),
+						'name' => __( 'Send a private message to {{a Slack user}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Slack */
-						'name' => __( "Create {{a channel}}", 'uncanny-automator' ),
+						'name' => __( 'Create {{a channel}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2160,14 +2214,14 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - The Events Calendar */
-						'name' => __( "A user attends {{an event}}", 'uncanny-automator' ),
+						'name' => __( 'A user attends {{an event}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - The Events Calendar */
-						'name' => __( "RSVP for {{an event}}", 'uncanny-automator' ),
+						'name' => __( 'RSVP for {{an event}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2175,27 +2229,27 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Tutor LMS */
-						'name' => __( "A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on a quiz", 'uncanny-automator' ),
+						'name' => __( 'A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on a quiz', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Tutor LMS */
-						'name' => __( "A user is enrolled in {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Tutor LMS */
-						'name' => __( "Mark {{a lesson}} complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Tutor LMS */
-						'name' => __( "Mark {{a course}} complete for the user", 'uncanny-automator' ),
+						'name' => __( 'Mark {{a course}} complete for the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Tutor LMS */
-						'name' => __( "Enroll the user in {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Tutor LMS */
@@ -2208,7 +2262,7 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - Twilio */
-						'name' => __( "Send an SMS message to {{a number}}", 'uncanny-automator' ),
+						'name' => __( 'Send an SMS message to {{a number}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2216,7 +2270,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Ultimate Member */
-						'name' => __( "A user registers with {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user registers with {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -2231,7 +2285,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Upsell Plugin */
-						'name' => __( "A user subscribes to {{a product}}", 'uncanny-automator' ),
+						'name' => __( 'A user subscribes to {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -2241,19 +2295,19 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - Wishlist Member */
-						'name' => __( "A user submits {{a registration form}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a registration form}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - Wishlist Member */
-						'name' => __( "A user submits a registration form with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits a registration form with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - Wishlist Member */
-						'name' => __( "Remove the user from {{a membership level}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a membership level}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2261,7 +2315,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( "A user completes {{an order}} with a value {{greater than, less than or equal to}} {{an amount}}", 'uncanny-automator' ),
+						'name' => __( 'A user completes {{an order}} with a value {{greater than, less than or equal to}} {{an amount}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2271,22 +2325,22 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Anonymous trigger - WooCommerce */
-						'name' => __( "A guest completes an order with {{a product}}", 'uncanny-automator' ),
+						'name' => __( 'A guest completes an order with {{a product}}', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( "A user completes an order with a product with {{a tag}}", 'uncanny-automator' ),
+						'name' => __( 'A user completes an order with a product with {{a tag}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( "A user completes an order with a product in {{a category}}", 'uncanny-automator' ),
+						'name' => __( 'A user completes an order with a product in {{a category}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( "A user purchases {{a variable product}} with {{a variation}} selected", 'uncanny-automator' ),
+						'name' => __( 'A user purchases {{a variable product}} with {{a variation}} selected', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2296,7 +2350,7 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( "A user reviews {{a product}}", 'uncanny-automator' ),
+						'name' => __( 'A user reviews {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2306,7 +2360,7 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce */
-						'name' => __( "A user completes an order with a specific quantity of {{a product}}", 'uncanny-automator' ),
+						'name' => __( 'A user completes an order with a specific quantity of {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2321,12 +2375,12 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce ShipStation */
-						'name' => __( "An order with a total {{greater than, less than or equal to}} {{a specific amount}} is shipped", 'uncanny-automator' ),
+						'name' => __( 'An order with a total {{greater than, less than or equal to}} {{a specific amount}} is shipped', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce ShipStation */
-						'name' => __( "An order with {{a specific product}} is shipped", 'uncanny-automator' ),
+						'name' => __( 'An order with {{a specific product}} is shipped', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2336,23 +2390,23 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce Subscriptions */
-						'name' => __( "A user cancels a subscription to {{a product}}", 'uncanny-automator' ),
+						'name' => __( 'A user cancels a subscription to {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WooCommerce Subscriptions */
-						'name' => __( "A user renews a subscription to {{a product}}", 'uncanny-automator' ),
+						'name' => __( 'A user renews a subscription to {{a product}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - WooCommerce */
-						'name' => __( "Generate and email {{a coupon code}} to the user", 'uncanny-automator' ),
+						'name' => __( 'Generate and email {{a coupon code}} to the user', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - WooCommerce Memberships */
-						'name' => __( "Remove the user from {{a membership plan}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a membership plan}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2360,27 +2414,27 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __( "A user is created", 'uncanny-automator' ),
+						'name' => __( 'A user is created', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __( "{{A post}} is updated", 'uncanny-automator' ),
+						'name' => __( '{{A post}} is updated', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __( "A user resets their password", 'uncanny-automator' ),
+						'name' => __( 'A user resets their password', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Anonymous trigger - WordPress Core */
-						'name' => __( "A guest comment is submitted on {{a post}}", 'uncanny-automator' ),
+						'name' => __( 'A guest comment is submitted on {{a post}}', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 					array(
 						/* translators: Anonymous trigger - WordPress Core */
-						'name' => __( "A guest comment on {{a post}} is approved", 'uncanny-automator' ),
+						'name' => __( 'A guest comment on {{a post}} is approved', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 					array(
@@ -2390,7 +2444,7 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __( "A post in {{a specific taxonomy}} is updated", 'uncanny-automator' ),
+						'name' => __( 'A post in {{a specific taxonomy}} is updated', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2400,7 +2454,7 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Logged-in trigger - WordPress Core */
-						'name' => __( "{{A post}} of {{a specific type}} is moved to the trash", 'uncanny-automator' ),
+						'name' => __( '{{A post}} of {{a specific type}} is moved to the trash', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
@@ -2426,15 +2480,15 @@ class Recipe_Post_Type {
 					),
 					array(
 						/* translators: Action - WordPress Core */
-						'name' => __( "Set {{post meta}}", 'uncanny-automator' ),
+						'name' => __( 'Set {{post meta}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - WordPress Core */
-						'name' => __( "Set {{user meta}}", 'uncanny-automator' ),
+						'name' => __( 'Set {{user meta}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - WordPress Core */
-						'name' => __( "Update {{the user}}", 'uncanny-automator' ),
+						'name' => __( 'Update {{the user}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2443,11 +2497,11 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - WP Courseware */
-						'name' => __( "Remove the user from {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a course}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - WP Courseware */
-						'name' => __( "Enroll the user in {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2455,19 +2509,19 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - WP Fusion */
-						'name' => __( "{{A tag}} is added to a user", 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is added to a user', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP Fusion */
-						'name' => __( "{{A tag}} is removed from a user", 'uncanny-automator' ),
+						'name' => __( '{{A tag}} is removed from a user', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - WP Fusion */
-						'name' => __( "Remove {{a tag}} from the user", 'uncanny-automator' ),
+						'name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2476,7 +2530,7 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - WP LMS */
-						'name' => __( "Enroll the user in {{a course}}", 'uncanny-automator' ),
+						'name' => __( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2484,47 +2538,47 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user registers using {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user registers using {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user is approved", 'uncanny-automator' ),
+						'name' => __( 'A user is approved', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user is rejected", 'uncanny-automator' ),
+						'name' => __( 'A user is rejected', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user verifies their email address", 'uncanny-automator' ),
+						'name' => __( 'A user verifies their email address', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user updates their account information", 'uncanny-automator' ),
+						'name' => __( 'A user updates their account information', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user joins {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'A user joins {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user leaves {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'A user leaves {{a group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user is approved to join {{a private group}}", 'uncanny-automator' ),
+						'name' => __( 'A user is approved to join {{a private group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 					array(
 						/* translators: Logged-in trigger - WP User Manager */
-						'name' => __( "A user is rejected from joining {{a private group}}", 'uncanny-automator' ),
+						'name' => __( 'A user is rejected from joining {{a private group}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -2534,7 +2588,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - WP-Polls */
-						'name' => __( "A user submits a poll with {{a specific choice}} selected", 'uncanny-automator' ),
+						'name' => __( 'A user submits a poll with {{a specific choice}} selected', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
@@ -2544,14 +2598,14 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - WPForms */
-						'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+						'name' => __( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - WPForms */
-						'name' => __( "Register a new user", 'uncanny-automator' ),
+						'name' => __( 'Register a new user', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2559,14 +2613,14 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Logged-in trigger - wpForo */
-						'name' => __( "A user replies to {{a topic}} in {{a forum}}", 'uncanny-automator' ),
+						'name' => __( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
 						'type' => 'logged-in',
 					),
 				),
 				'actions'  => array(
 					array(
 						/* translators: Action - wpForo */
-						'name' => __( "Remove the user from {{a group}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a group}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2574,7 +2628,7 @@ class Recipe_Post_Type {
 				'triggers' => array(
 					array(
 						/* translators: Anonymous trigger - Zapier */
-						'name' => __( "Receive data from Zapier webhook", 'uncanny-automator' ),
+						'name' => __( 'Receive data from Zapier webhook', 'uncanny-automator' ),
 						'type' => 'anonymous',
 					),
 				),
@@ -2585,11 +2639,11 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - Zoom Meetings */
-						'name' => __( "Add the user to {{a meeting}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to {{a meeting}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Zoom Meetings */
-						'name' => __( "Remove the user from {{a meeting}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a meeting}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2598,11 +2652,11 @@ class Recipe_Post_Type {
 				'actions'  => array(
 					array(
 						/* translators: Action - Zoom Webinars */
-						'name' => __( "Add the user to {{a webinar}}", 'uncanny-automator' ),
+						'name' => __( 'Add the user to {{a webinar}}', 'uncanny-automator' ),
 					),
 					array(
 						/* translators: Action - Zoom Webinars */
-						'name' => __( "Remove the user from {{a webinar}}", 'uncanny-automator' ),
+						'name' => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -2684,7 +2738,6 @@ class Recipe_Post_Type {
 					self::delete_closure_logs( $child->ID );
 				}
 			}
-
 		} elseif ( $post && 'uo-action' === $post->post_type ) {
 			self::delete_action_logs( $post_ID );
 		} elseif ( $post && 'uo-trigger' === $post->post_type ) {
@@ -2773,7 +2826,6 @@ class Recipe_Post_Type {
 					wp_update_post( $child_update );
 				}
 			}
-
 		}
 	}
 
@@ -2946,22 +2998,22 @@ class Recipe_Post_Type {
 		ob_start();
 		?>
 
-        <p>
-            Hi,
-        </p>
-        <p>
-            This email is to let you know that the recipe "<?php echo $recipe->post_title; ?>" was automatically set to
-            draft status because it contains multiple triggers and the Uncanny Automator Pro plugin is either not
-            installed or not activated. To reactivate the recipe, ensure the Uncanny Automator Pro plugin is active,
-            then edit the recipe to switch its status to Live.
-        </p>
-        <p>
-            Recipe URL: <a
-                    href="<?php echo get_edit_post_link( $recipe->ID ); ?>"><?php echo $recipe->post_title; ?></a>
-        </p>
-        <p>
-            The Uncanny Automator Bot
-        </p>
+		<p>
+			Hi,
+		</p>
+		<p>
+			This email is to let you know that the recipe "<?php echo $recipe->post_title; ?>" was automatically set to
+			draft status because it contains multiple triggers and the Uncanny Automator Pro plugin is either not
+			installed or not activated. To reactivate the recipe, ensure the Uncanny Automator Pro plugin is active,
+			then edit the recipe to switch its status to Live.
+		</p>
+		<p>
+			Recipe URL: <a
+					href="<?php echo get_edit_post_link( $recipe->ID ); ?>"><?php echo $recipe->post_title; ?></a>
+		</p>
+		<p>
+			The Uncanny Automator Bot
+		</p>
 
 		<?php
 
@@ -2972,3 +3024,5 @@ class Recipe_Post_Type {
 		wp_mail( $to, $subject, $body, $headers );
 	}
 }
+
+

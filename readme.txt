@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
-Tested up to: 5.7.0
+Tested up to: 5.7
 Requires PHP: 7.2
-Stable tag: 2.11
+Stable tag: 2.11.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -171,6 +171,21 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 2.11.1 [2021-03-15] =
+
+**New Triggers:**
+
+* Uncanny Codes: A user redeems a code from a batch
+
+**Added:**
+
+* Ability to pre-populate a recipe from querystring parameters
+
+**Fixed:**
+
+* Google Sheets: Some special characters no longer being encoded when sent to a Google Sheet
+* Gravity Forms tokens in anonymous recipes now populate correctly when a dummy user is selected
+
 = 2.11 [2021-03-09] =
 
 **New Integrations:**
@@ -195,12 +210,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * Twitter: Post a tweet
 
-**Updates:**
+**Updated:**
 
 * GiveWP: Trigger tokens now include custom fields added via Form Field Manager addon
 * Core: Review notification changes
 
-**Fixes:**
+**Fixed:**
 
 * LearnDash: Tokens related to quizzes now work more reliably
 * Uncanny CEUs: The total number of CEUs earned by a user is greater than or equal to a specific number now fires only when the specified number is reached
@@ -270,13 +285,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Automator UI will no longer show deprecated triggers
 * BuddyBoss + BuddyPress Activity content and ID as trigger tokens
 
-**Updates:**
+**Updated:**
 
 * bbPress - A user creates a topic in a forum - Added "Any forum" option
 * Some trigger sentence updates
 * Transient's key name updated from general post_type to md5 post_type to avoid conflicts in trigger options
 
-**Fixes:**
+**Fixed:**
 
 * Automator review banner's X now hides the banner permanently
 * BuddyBoss - Social network profile token now works reliably
@@ -326,7 +341,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * MasterStudyLMS - Mark a course complete for the user
 * Uncanny Continuing Education Credits - Award a number of custom credits to the user
 
-**Updates:**
+**Updated:**
 
 * WP Fluent Forms integration renamed to Fluent forms
 * Fluent Forms: "Numeric" field type now available as tokens in integer type action fields
@@ -339,7 +354,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Trigger: WordPress Core - A user creates a post changed to A user publishes a type of post with a taxonomy term in a taxonomy
 * Trigger: WordPress Core - A user comments on a post - Added Post Type selector
 
-**Fixes:**
+**Fixed:**
 
 * Fluent forms triggering any form without checking form ID
 * Elementor - Checkbox field tokens now return all selected values
@@ -370,13 +385,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Fixed: Description on Password field in Anonymous Recipe User Selector updated to reduce confusion (Uncanny Automator Pro only)
 * Fixed: Integromat - Namespace in helper file use statement
 * Fixed: Child dropdown values now load previously saved values when editing recipes
-
-= 2.8.1 [2020-10-01] =
-
-* Added: WooCommerce token: Order product links
-* Updated: Performance optimizations
-* Fixed: Elementor - PHP warning: Invalid argument supplied foreach()
-* Fixed: PHP Uncaught Error: Call to undefined method in Automator Core trigger on activation for some environments
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 

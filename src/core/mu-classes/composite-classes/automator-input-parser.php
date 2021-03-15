@@ -363,7 +363,7 @@ class Automator_Input_Parser {
 								$return = get_permalink( $trigger['meta'][ $piece ] );
 							}
 						} else {
-							$return = get_the_title( $trigger['meta'][ $piece ] );
+							$return = html_entity_decode( get_the_title( $trigger['meta'][ $piece ] ), ENT_QUOTES, 'UTF-8' );
 						}
 						break;
 					case 'NUMTIMES':
@@ -390,7 +390,7 @@ class Automator_Input_Parser {
 										$return = get_the_permalink( $post_id );
 									}
 								} else {
-									$return = get_the_title( $post_id );
+									$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
 								}
 							} else {
 								/* translators: Article. Fallback. Any type of content (post, page, media, etc) */
@@ -404,7 +404,7 @@ class Automator_Input_Parser {
 									$return = get_the_permalink( $trigger['meta'][ $piece ] );
 								}
 							} else {
-								$return = get_the_title( $trigger['meta'][ $piece ] );
+								$return = html_entity_decode( get_the_title( $trigger['meta'][ $piece ] ), ENT_QUOTES, 'UTF-8' );
 							}
 						} else {
 							$return = '';

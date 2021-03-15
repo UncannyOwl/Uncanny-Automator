@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             2.11
+ * Version:             2.11.1
  * Requires at least:   5.0
  * Requires PHP:        7.2
  */
@@ -87,7 +87,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '2.11';
+	const PLUGIN_VERSION = '2.11.1';
 
 	/**
 	 * The database version number

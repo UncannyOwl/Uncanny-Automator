@@ -146,6 +146,7 @@ class Boot {
 		self::$core_class_inits['Admin_Menu']           = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/admin-menu.php';
 		self::$core_class_inits['Closures_Post_Type']   = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/closures-post-type.php';
 		self::$core_class_inits['Recipe_Post_Type']     = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/recipe-post-type.php';
+		self::$core_class_inits['Populate_From_Query']  = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/populate-from-query.php';
 		self::$core_class_inits['Recipe_Taxonomies']    = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/recipe-taxonomies.php';
 		self::$core_class_inits['Set_Up_Automator']     = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/set-up-automator.php';
 		self::$core_class_inits['Triggers_Post_Type']   = dirname( AUTOMATOR_BASE_FILE ) . '/src/core/classes/triggers-post-type.php';
