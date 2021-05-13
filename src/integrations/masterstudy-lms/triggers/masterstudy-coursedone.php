@@ -31,7 +31,7 @@ class MASTERSTUDY_COURSEDONE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -41,11 +41,11 @@ class MASTERSTUDY_COURSEDONE {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/masterstudy-lms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MasterStudy LMS */
@@ -68,12 +68,12 @@ class MASTERSTUDY_COURSEDONE {
 						'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 						'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
 					],
-					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' )
-				]
+					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
+				],
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -85,7 +85,7 @@ class MASTERSTUDY_COURSEDONE {
 	 */
 	public function course_done( $course_id, $user_id, $progress ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( empty( $progress ) ) {
 			return;
@@ -100,11 +100,11 @@ class MASTERSTUDY_COURSEDONE {
 				'user_id' => $user_id,
 			];
 
-			$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+			$args = Automator()->maybe_add_trigger_entry( $args, false );
 			if ( $args ) {
 				foreach ( $args as $result ) {
 					if ( true === $result['result'] ) {
-						$uncanny_automator->insert_trigger_meta(
+						Automator()->insert_trigger_meta(
 							[
 								'user_id'        => $user_id,
 								'trigger_id'     => $result['args']['trigger_id'],
@@ -114,7 +114,7 @@ class MASTERSTUDY_COURSEDONE {
 								'run_number'     => $result['args']['run_number'],
 							]
 						);
-						$uncanny_automator->maybe_trigger_complete( $result['args'] );
+						Automator()->maybe_trigger_complete( $result['args'] );
 					}
 				}
 			}

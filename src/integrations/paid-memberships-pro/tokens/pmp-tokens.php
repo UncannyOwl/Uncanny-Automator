@@ -51,7 +51,7 @@ class Pmp_Tokens {
 	}
 
 	public function uap_save_pmp_membership_level( $membership_id, $args, $user_id, $meta ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$args = [
 			'user_id'        => $user_id,
 			'trigger_id'     => $args['trigger_id'],
@@ -61,7 +61,7 @@ class Pmp_Tokens {
 			'trigger_log_id' => $args['get_trigger_id'],
 		];
 
-		$uncanny_automator->insert_trigger_meta( $args );
+		Automator()->insert_trigger_meta( $args );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Pmp_Tokens {
 	 *
 	 * @return array
 	 */
-	function pmp_possible_tokens( $tokens = [], $args = [] ) {
+	function pmp_possible_tokens( $tokens = array(), $args = array() ) {
 
 		return $tokens;
 	}
@@ -93,9 +93,9 @@ class Pmp_Tokens {
 				$trigger_id     = $pieces[0];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$qry            = "SELECT meta_value 
-									FROM {$wpdb->prefix}uap_trigger_log_meta 
-									WHERE meta_key = '$field' 
+				$qry            = "SELECT meta_value
+									FROM {$wpdb->prefix}uap_trigger_log_meta
+									WHERE meta_key = '$field'
 									AND automator_trigger_log_id = $trigger_log_id
 									AND automator_trigger_id = $trigger_id
 									LIMIT 0,1";

@@ -31,42 +31,42 @@ class WPF_USERREPUTATION {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$reputation_options = [];
+		$reputation_options = array();
 		$levels             = WPF()->member->levels();
 
 		foreach ( $levels as $level ) {
-			$title                                        =  esc_attr__( 'Level', 'wpforo' ) . ' ' . $level . ' - ' . WPF()->member->rating( $level, 'title' );
+			$title                                        = esc_attr__( 'Level', 'wpforo' ) . ' ' . $level . ' - ' . WPF()->member->rating( $level, 'title' );
 			$reputation_options[ 'L' . strval( $level ) ] = $title;
 		}
 
 		$option = [
 			'option_code' => $this->action_meta,
-			'label'       =>  esc_attr__( 'Reputation', 'uncanny-automator' ),
+			'label'       => esc_attr__( 'Reputation', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $reputation_options,
 		];
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wpforo/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - wpForo */
-			'sentence'           => sprintf(  esc_attr__( "Set the user's reputation to {{a reputation:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( "Set the user's reputation to {{a reputation:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - wpForo */
-			'select_option_name' =>  esc_attr__( "Set the user's reputation to {{a reputation}}", 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( "Set the user's reputation to {{a reputation}}", 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'set_reputation' ),
 			'options'            => [
-				$option
+				$option,
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class WPF_USERREPUTATION {
 	 */
 	public function set_reputation( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$reputation_id = absint( str_replace( "L", "", $action_data['meta'][ $this->action_meta ] ) );
 		$points        = WPF()->member->rating( $reputation_id, 'points' );
@@ -85,6 +85,6 @@ class WPF_USERREPUTATION {
 		WPF()->member->update_profile_fields( $user_id, $args, false );
 		WPF()->member->reset( $user_id );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

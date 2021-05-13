@@ -26,8 +26,8 @@ class Restrict_Content_Helpers {
 	 * Restrict_content_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -51,12 +51,12 @@ class Restrict_Content_Helpers {
 	 *
 	 * @return mixed|void
 	 */
-	public function get_membership_levels( $label = null, $option_code = null, $args = [] ) {
+	public function get_membership_levels( $label = null, $option_code = null, $args = array() ) {
 
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( null === $label ) {
@@ -73,7 +73,7 @@ class Restrict_Content_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$any          = key_exists( 'any', $args ) ? $args['any'] : false;
 
-		$options = [];
+		$options = array();
 
 		if ( $any ) {
 			$options['-1'] = esc_attr_x( 'Any membership', 'Restrict Content', 'uncanny-automator' );
@@ -85,7 +85,7 @@ class Restrict_Content_Helpers {
 
 			if ( ! empty( $levels ) ) {
 				foreach ( $levels as $level ) {
-					$options[ $level->get_id()] = $level->get_name();
+					$options[ $level->get_id() ] = $level->get_name();
 				}
 			}
 		}
@@ -99,7 +99,7 @@ class Restrict_Content_Helpers {
 			'is_ajax'         => $is_ajax,
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
-			'options'         => $options
+			'options'         => $options,
 		];
 
 		return apply_filters( 'uap_option_rc_get_membership_levels', $option );

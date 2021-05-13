@@ -37,11 +37,11 @@ class MP_PURCHASEPRODUCTRECURRING {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/memberpress/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MemberPress */
@@ -53,11 +53,11 @@ class MP_PURCHASEPRODUCTRECURRING {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'mp_product_purchased' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->memberpress->options->all_memberpress_products_recurring( null, $this->trigger_meta, [ 'uo_include_any' => true ] ),
+				Automator()->helpers->recipe->memberpress->options->all_memberpress_products_recurring( null, $this->trigger_meta, [ 'uo_include_any' => true ] ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -65,7 +65,7 @@ class MP_PURCHASEPRODUCTRECURRING {
 	 */
 	public function mp_product_purchased( \MeprEvent $event ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		/** @var \MeprTransaction $transaction */
 		$transaction = $event->get_data();
@@ -77,11 +77,11 @@ class MP_PURCHASEPRODUCTRECURRING {
 			return;
 		}
 
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		if ( empty( $recipes ) ) {
 			return;
 		}
-		$required_product   = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$required_product   = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$matched_recipe_ids = array();
 		//Add where option is set to Any product
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -109,7 +109,7 @@ class MP_PURCHASEPRODUCTRECURRING {
 				'is_signed_in'     => true,
 			];
 
-			$results = $uncanny_automator->maybe_add_trigger_entry( $recipe_args, false );
+			$results = Automator()->maybe_add_trigger_entry( $recipe_args, false );
 			if ( empty( $results ) ) {
 				continue;
 			}
@@ -124,10 +124,10 @@ class MP_PURCHASEPRODUCTRECURRING {
 
 					$trigger_meta['meta_key']   = $this->trigger_meta;
 					$trigger_meta['meta_value'] = $product_id;
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 					update_user_meta( $user_id, 'MPPRODUCT', $product_id );
 
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

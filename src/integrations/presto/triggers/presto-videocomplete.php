@@ -31,11 +31,11 @@ class PRESTO_VIDEOCOMPLETE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/presto-player/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Presto Player */
@@ -47,16 +47,16 @@ class PRESTO_VIDEOCOMPLETE {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'video_progress' ),
 			'options'             => array(
-				$uncanny_automator->helpers->recipe->presto->options->list_presto_videos( null, $this->trigger_meta ),
+				Automator()->helpers->recipe->presto->options->list_presto_videos( null, $this->trigger_meta ),
 			),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	public function video_progress( $video_id, $percent ) {
 		if ( $percent == 100 ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 			$user_id = get_current_user_id();
 
 			$args = array(
@@ -66,12 +66,12 @@ class PRESTO_VIDEOCOMPLETE {
 				'user_id' => $user_id,
 			);
 
-			$arr = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+			$arr = Automator()->maybe_add_trigger_entry( $args, false );
 
 			if ( $arr ) {
 				foreach ( $arr as $result ) {
 					if ( true === $result['result'] ) {
-						$uncanny_automator->maybe_trigger_complete( $result['args'] );
+						Automator()->maybe_trigger_complete( $result['args'] );
 					}
 				}
 			}

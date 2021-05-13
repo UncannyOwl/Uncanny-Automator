@@ -31,11 +31,11 @@ class MAKE_DONATION {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/givewp/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - GiveWP */
@@ -47,17 +47,17 @@ class MAKE_DONATION {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'givewp_make_donation' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->give->options->list_all_give_forms( __( 'Form', 'uncanny-automator' ), $this->trigger_meta ),
+				Automator()->helpers->recipe->give->options->list_all_give_forms( __( 'Form', 'uncanny-automator' ), $this->trigger_meta ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
 
 	public function givewp_make_donation( $payment_id, $payment_data ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$give_form_id = $payment_data['give_form_id'];
 		$user_id      = $payment_data['user_info']['id'];
@@ -69,7 +69,7 @@ class MAKE_DONATION {
 			return;
 		}
 
-		$form_fields       = $uncanny_automator->helpers->recipe->give->get_form_fields_and_ffm( $give_form_id );
+		$form_fields       = Automator()->helpers->recipe->give->get_form_fields_and_ffm( $give_form_id );
 		$custom_field_data = give_get_meta( $payment_id, '_give_payment_meta', true );
 
 		foreach ( $form_fields as $i => $field ) {
@@ -78,9 +78,9 @@ class MAKE_DONATION {
 			}
 		}
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_form      = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_form      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -113,7 +113,7 @@ class MAKE_DONATION {
 					'ignore_post_id'   => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
@@ -128,17 +128,17 @@ class MAKE_DONATION {
 
 							$trigger_meta['meta_key']   = $this->trigger_meta;
 							$trigger_meta['meta_value'] = maybe_serialize( $payment_data['give_form_title'] );
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
 							$trigger_meta['meta_key']   = 'ACTUALDONATEDAMOUNT';
 							$trigger_meta['meta_value'] = maybe_serialize( $amount );
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
 							$trigger_meta['meta_key']   = 'payment_data';
 							$trigger_meta['meta_value'] = maybe_serialize( $payment_data );
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

@@ -30,8 +30,8 @@ class Upsell_Plugin_Helpers {
 	 * Upsell_Plugin_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -56,13 +56,13 @@ class Upsell_Plugin_Helpers {
 	 */
 	public function all_upsell_products( $label = null, $option_code = 'USPRODUCT' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Product', 'uncanny-automator' );
+			$label = esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -73,8 +73,8 @@ class Upsell_Plugin_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true,  esc_attr__( 'Any product', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any product', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -83,9 +83,9 @@ class Upsell_Plugin_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 

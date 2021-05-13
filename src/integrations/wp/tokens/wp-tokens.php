@@ -31,7 +31,7 @@ class Wp_Tokens {
 	 *
 	 * @return array
 	 */
-	public function wp_possible_tokens( $tokens = [], $args = [] ) {
+	public function wp_possible_tokens( $tokens = array(), $args = array() ) {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
@@ -70,7 +70,7 @@ class Wp_Tokens {
 		$piece = 'WPPOSTCOMMENTS';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				global $uncanny_automator;
+				// global $uncanny_automator;
 
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
@@ -119,7 +119,7 @@ class Wp_Tokens {
 		$piece = 'WPROLE';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				global $uncanny_automator;
+				// global $uncanny_automator;
 
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {

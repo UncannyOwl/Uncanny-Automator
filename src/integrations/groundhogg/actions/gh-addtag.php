@@ -33,11 +33,11 @@ class GH_ADDTAG {
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	public function define_action() {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$tags = new Tags;
 
-		$tag_options = [];
+		$tag_options = array();
 		foreach ( $tags->get_tags() as $tag ) {
 			$tag_options[ $tag->tag_id ] = $tag->tag_name;
 		}
@@ -51,8 +51,8 @@ class GH_ADDTAG {
 		];
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/groundhogg/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - Groundhogg */
@@ -63,11 +63,11 @@ class GH_ADDTAG {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_tag_to_user' ),
 			'options'            => [
-				$option
+				$option,
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -77,7 +77,7 @@ class GH_ADDTAG {
 	 */
 	public function add_tag_to_user( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$tag_id = absint( $action_data['meta'][ $this->action_meta ] );
 
@@ -93,6 +93,6 @@ class GH_ADDTAG {
 
 		}
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

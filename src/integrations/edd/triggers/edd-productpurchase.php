@@ -31,27 +31,27 @@ class EDD_PRODUCTPURCHASE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/easy-digital-downloads/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'select_option_name'  =>  esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
 			'action'              => 'edd_complete_purchase',
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'edd_product_purchase' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->edd->options->all_edd_downloads(  esc_attr__( 'Product', 'uncanny-automator' ), $this->trigger_meta ),
+				Automator()->helpers->recipe->edd->options->all_edd_downloads( esc_attr__( 'Product', 'uncanny-automator' ), $this->trigger_meta ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -63,7 +63,7 @@ class EDD_PRODUCTPURCHASE {
 	 */
 	public function edd_product_purchase( $payment_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$cart_items = edd_get_payment_meta_cart_details( $payment_id );
 		if ( empty( $cart_items ) ) {
@@ -79,7 +79,7 @@ class EDD_PRODUCTPURCHASE {
 				'post_id' => $post_id,
 				'user_id' => $user_id,
 			];
-			$uncanny_automator->maybe_add_trigger_entry( $args );
+			Automator()->maybe_add_trigger_entry( $args );
 		}
 	}
 }

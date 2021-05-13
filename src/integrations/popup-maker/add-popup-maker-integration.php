@@ -80,11 +80,11 @@ class Add_Popup_Maker_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Popup Maker',
-			'icon_svg' => Utilities::get_integration_icon( 'popup-maker-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/popup-maker-icon.svg' ),
 		) );
 	}
 
@@ -99,13 +99,13 @@ class Add_Popup_Maker_Integration {
 
 		$triggers['automator'] = array(
 			/* translators: 1. Trademarked term */
-			'name'            => sprintf(  esc_attr__( '%1$s recipe is completed', 'uncanny-automator' ), 'Automator' ),
-			'modal_title'     =>  esc_attr__( 'Settings', 'uncanny-automator' ),
-			'settings_column' => sprintf( '<strong>%1$s</strong>: %2$s',  esc_attr__( 'Recipes', 'uncanny-automator' ), '{{data.recipe}}' ),
+			'name'            => sprintf( esc_attr__( '%1$s recipe is completed', 'uncanny-automator' ), 'Automator' ),
+			'modal_title'     => esc_attr__( 'Settings', 'uncanny-automator' ),
+			'settings_column' => sprintf( '<strong>%1$s</strong>: %2$s', esc_attr__( 'Recipes', 'uncanny-automator' ), '{{data.recipe}}' ),
 			'fields'          => array(
 				'general' => array(
 					'recipe' => array(
-						'label'     =>  esc_attr__( 'Recipe', 'uncanny-automator' ),
+						'label'     => esc_attr__( 'Recipe', 'uncanny-automator' ),
 						'type'      => 'postselect',
 						'post_type' => 'uo-recipe',
 						'multiple'  => true,
@@ -134,7 +134,7 @@ class Add_Popup_Maker_Integration {
 		$popup_settings = $wpdb->get_results( "SELECT post_id, meta_value as settings FROM $wpdb->postmeta WHERE meta_key = 'popup_settings'" );
 
 		// All recipes that have popup maker triggers
-		$recipes_enabled_in_popups = [];
+		$recipes_enabled_in_popups = array();
 
 		foreach ( $popup_settings as $popup ) {
 

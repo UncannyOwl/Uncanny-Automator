@@ -31,11 +31,11 @@ class BDB_USERSENTINVITE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddyboss/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'sentence'            => __( 'A user sends an email invitation', 'uncanny-automator' ),
@@ -44,10 +44,10 @@ class BDB_USERSENTINVITE {
 			'priority'            => 10,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'bp_core_activated_user' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -59,7 +59,7 @@ class BDB_USERSENTINVITE {
 	 */
 	public function bp_core_activated_user( $user_id, $post ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'code'           => $this->trigger_code,
@@ -68,6 +68,6 @@ class BDB_USERSENTINVITE {
 			'ignore_post_id' => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

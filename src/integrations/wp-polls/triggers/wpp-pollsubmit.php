@@ -31,14 +31,14 @@ class WPP_POLLSUBMIT {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		global $wpdb;
 
 		// Get Poll Questions
 		$questions = $wpdb->get_results( "SELECT pollq_id, pollq_question FROM $wpdb->pollsq ORDER BY pollq_id DESC" );
 
-		$questions_options = [];
+		$questions_options = array();
 
 		$questions_options[0] = __( 'Any poll', 'uncanny-automator-pro' );
 
@@ -53,8 +53,8 @@ class WPP_POLLSUBMIT {
 		}
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-polls/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
@@ -66,7 +66,7 @@ class WPP_POLLSUBMIT {
 			'accepted_args'       => 0,
 			'validation_function' => array( $this, 'poll_success' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->field->select_field(
+				Automator()->helpers->recipe->field->select_field(
 					$this->trigger_meta,
 					esc_attr__( 'Poll', 'uncanny-automator' ),
 					$questions_options,
@@ -80,12 +80,12 @@ class WPP_POLLSUBMIT {
 						$this->trigger_meta . '_END'          => __( 'Poll end date', 'uncanny-automator' ),
 						$this->trigger_meta . '_WPPOLLANSWER' => __( 'Poll selected answer(s)', 'uncanny-automator' ),
 					]
-				)
+				),
 			],
-			'options_group'       => []
+			'options_group'       => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -111,9 +111,9 @@ class WPP_POLLSUBMIT {
 			if ( 'process' === $view ) {
 				$poll_aid_array = array_unique( array_map( 'intval', array_map( 'sanitize_key', explode( ',', $_POST["poll_$poll_id"] ) ) ) );
 
-				global $uncanny_automator;
-				$recipes          = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-				$required_poll_id = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
+				// global $uncanny_automator;
+				$recipes          = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+				$required_poll_id = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 
 				foreach ( $recipes as $recipe_id => $recipe ) {
 					foreach ( $recipe['triggers'] as $trigger ) {
@@ -134,7 +134,7 @@ class WPP_POLLSUBMIT {
 									'user_id'        => get_current_user_id(),
 								];
 
-								$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+								$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 								if ( isset( $args ) ) {
 									foreach ( $args as $result ) {
@@ -149,13 +149,13 @@ class WPP_POLLSUBMIT {
 
 											$trigger_meta['meta_key']   = $this->trigger_meta;
 											$trigger_meta['meta_value'] = $poll_id;
-											$uncanny_automator->insert_trigger_meta( $trigger_meta );
+											Automator()->insert_trigger_meta( $trigger_meta );
 
 											$trigger_meta['meta_key']   = 'WPPOLLANSWER';
 											$trigger_meta['meta_value'] = maybe_serialize( $poll_aid_array );
-											$uncanny_automator->insert_trigger_meta( $trigger_meta );
+											Automator()->insert_trigger_meta( $trigger_meta );
 
-											$uncanny_automator->maybe_trigger_complete( $result['args'] );
+											Automator()->maybe_trigger_complete( $result['args'] );
 										}
 									}
 								}

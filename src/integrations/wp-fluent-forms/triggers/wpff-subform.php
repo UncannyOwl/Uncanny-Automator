@@ -37,28 +37,28 @@ class WPFF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-fluent-forms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Ninja Forms */
-			'sentence'            => sprintf(  esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Ninja Forms */
-			'select_option_name'  =>  esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'fluentform_before_insert_submission',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpffform_submit' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -71,7 +71,7 @@ class WPFF_SUBFORM {
 	 * @param $form
 	 */
 	public function wpffform_submit( $inser_data, $data, $form ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$user_id = get_current_user_id();
 
 		// Logged in users only
@@ -81,7 +81,7 @@ class WPFF_SUBFORM {
 		if ( empty( $form ) ) {
 			return;
 		}
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$matches = $this->match_condition( $form, $data, $recipes );
 
 		if ( ! $matches ) {
@@ -90,7 +90,7 @@ class WPFF_SUBFORM {
 
 		if ( ! empty( $matches ) ) {
 			foreach ( $matches as $recipe_id => $match ) {
-				if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 					$args = [
 						'code'            => $this->trigger_code,
 						'meta'            => $this->trigger_meta,
@@ -100,7 +100,7 @@ class WPFF_SUBFORM {
 						'user_id'         => $user_id,
 					];
 
-					$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 					if ( $result ) {
 						foreach ( $result as $r ) {
@@ -114,8 +114,8 @@ class WPFF_SUBFORM {
 										'trigger_log_id' => $r['args']['get_trigger_id'],
 										'run_number'     => $r['args']['run_number'],
 									];
-									$uncanny_automator->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
-									$uncanny_automator->maybe_add_trigger_entry( $args );
+									Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
+									Automator()->maybe_add_trigger_entry( $args );
 								}
 							}
 						}
@@ -141,7 +141,7 @@ class WPFF_SUBFORM {
 			return false;
 		}
 
-		$matches = [];
+		$matches = array();
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {

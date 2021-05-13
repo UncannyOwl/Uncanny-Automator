@@ -32,11 +32,11 @@ class WF_SETUSERTAG {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wp-fusion/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WP Fusion */
@@ -51,7 +51,7 @@ class WF_SETUSERTAG {
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -62,7 +62,7 @@ class WF_SETUSERTAG {
 	 * @param $recipe_id
 	 */
 	public function set_user_tag( $user_id, $action_data, $recipe_id ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 
 		if ( ! empty( $user_id ) ) {
@@ -88,12 +88,12 @@ class WF_SETUSERTAG {
 				wp_fusion()->user->apply_tags( array( $tag ), $user_id );
 			}
 		} else {
-			$error_msg = $uncanny_automator->error_message->get( 'not-logged-in' );
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+			$error_msg = Automator()->error_message->get( 'not-logged-in' );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
 			return;
 		}
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

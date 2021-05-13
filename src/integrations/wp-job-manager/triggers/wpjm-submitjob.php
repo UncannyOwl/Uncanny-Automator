@@ -31,22 +31,15 @@ class WPJM_SUBMITJOB {
 	}
 
 	/**
-	 *
-	 */
-	public function plugins_loaded() {
-		$this->define_trigger();
-	}
-
-	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-job-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Job Manager */
@@ -58,11 +51,18 @@ class WPJM_SUBMITJOB {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'job_manager_job_submitted' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_job_manager->options->list_wpjm_job_types()
+				Automator()->helpers->recipe->wp_job_manager->options->list_wpjm_job_types(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 *
+	 */
+	public function plugins_loaded() {
+		$this->define_trigger();
 	}
 
 	/**
@@ -72,7 +72,7 @@ class WPJM_SUBMITJOB {
 	 */
 	public function job_manager_job_submitted( $new_status, $old_status, $post ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( empty( $post ) ) {
 			return;
@@ -94,7 +94,7 @@ class WPJM_SUBMITJOB {
 
 		$job_terms = wpjm_get_the_job_types( $job_id );
 
-		$recipes    = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$conditions = $this->match_condition( $job_terms, $recipes, $this->trigger_meta, $this->trigger_code );
 
 		if ( empty( $conditions ) ) {
@@ -104,7 +104,7 @@ class WPJM_SUBMITJOB {
 		$user_id = $post->post_author;
 
 		foreach ( $conditions['recipe_ids'] as $recipe_id ) {
-			if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+			if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 				$trigger_args = array(
 					'code'            => $this->trigger_code,
 					'meta'            => $this->trigger_meta,
@@ -113,7 +113,7 @@ class WPJM_SUBMITJOB {
 					'user_id'         => $user_id,
 				);
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $trigger_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $trigger_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
@@ -127,8 +127,8 @@ class WPJM_SUBMITJOB {
 
 							$trigger_meta['meta_key']   = $this->trigger_code;
 							$trigger_meta['meta_value'] = $job_id;
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->insert_trigger_meta( $trigger_meta );
+							Automator()->maybe_trigger_complete( $result['args'] );
 							break;
 						}
 					}
@@ -152,7 +152,7 @@ class WPJM_SUBMITJOB {
 		}
 
 		$recipe_ids     = array();
-		$entry_to_match = [];
+		$entry_to_match = array();
 		if ( empty( $terms ) ) {
 			return false;
 		}

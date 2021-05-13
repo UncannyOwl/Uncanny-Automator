@@ -27,8 +27,8 @@ class Mycred_Helpers {
 	 * Mycred_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -48,18 +48,18 @@ class Mycred_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function list_mycred_points_types( $label = null, $option_code = 'MYCREDPOINTSTYPES', $args = [] ) {
+	public function list_mycred_points_types( $label = null, $option_code = 'MYCREDPOINTSTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Point type', 'uncanny-automator' );
+			$label = esc_attr__( 'Point type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -68,14 +68,14 @@ class Mycred_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$include_all  = key_exists( 'include_all', $args ) ? $args['include_all'] : false;
 
-		$options = [];
+		$options = array();
 
 		if ( $include_all ) {
-			$options['ua-all-mycred-points'] =  esc_attr__( 'All point types', 'uncanny-automator' );
+			$options['ua-all-mycred-points'] = esc_attr__( 'All point types', 'uncanny-automator' );
 		}
 
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		// global $uncanny_automator;
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			$posts = mycred_get_types();
 
 			if ( ! empty( $posts ) ) {
@@ -87,15 +87,15 @@ class Mycred_Helpers {
 		$type = 'select';
 
 		$option = [
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => $type,
-			'required'        => true,
-			'supports_tokens' => $token,
-			'is_ajax'         => $is_ajax,
-			'fill_values_in'  => $target_field,
-			'endpoint'        => $end_point,
-			'options'         => $options,
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => $type,
+			'required'                 => true,
+			'supports_tokens'          => $token,
+			'is_ajax'                  => $is_ajax,
+			'fill_values_in'           => $target_field,
+			'endpoint'                 => $end_point,
+			'options'                  => $options,
 			'custom_value_description' => esc_attr__( 'Point type meta key', 'uncanny-automator' ),
 		];
 
@@ -103,20 +103,20 @@ class Mycred_Helpers {
 	}
 
 	/**
-	 * @param null $label
+	 * @param null   $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed|void
 	 */
-	public function list_mycred_rank_types( $label = null, $option_code = 'MYCREDRANKTYPES', $args = [] ) {
+	public function list_mycred_rank_types( $label = null, $option_code = 'MYCREDRANKTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Ranks', 'uncanny-automator' );
+			$label = esc_attr__( 'Ranks', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -124,15 +124,15 @@ class Mycred_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$include_all  = key_exists( 'include_all', $args ) ? $args['include_all'] : false;
-		$options      = [];
+		$options      = array();
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( $include_all ) {
-			$options['ua-all-mycred-ranks'] =  esc_attr__( 'All ranks', 'uncanny-automator' );
+			$options['ua-all-mycred-ranks'] = esc_attr__( 'All ranks', 'uncanny-automator' );
 		}
 
-		/*if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		/*if ( Automator()->helpers->recipe->load_helpers ) {
 			$posts = get_posts( [
 				'post_type'      => 'mycred_rank',
 				'posts_per_page' => 9999,
@@ -150,35 +150,35 @@ class Mycred_Helpers {
 		$query_args = [
 			'post_type'      => 'mycred_rank',
 			'posts_per_page' => 9999,
-			'post_status'    => 'publish'
+			'post_status'    => 'publish',
 		];
-		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+		$options    = Automator()->helpers->recipe->wp_query( $query_args );
 		$type       = 'select';
 
 		$option = [
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => $type,
-			'required'        => true,
-			'supports_tokens' => $token,
-			'is_ajax'         => $is_ajax,
-			'fill_values_in'  => $target_field,
-			'endpoint'        => $end_point,
-			'options'         => $options,
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => $type,
+			'required'                 => true,
+			'supports_tokens'          => $token,
+			'is_ajax'                  => $is_ajax,
+			'fill_values_in'           => $target_field,
+			'endpoint'                 => $end_point,
+			'options'                  => $options,
 			'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_list_mycred_rank_types', $option );
 	}
 
-	public function list_mycred_badges( $label = null, $option_code = 'MYCREDBADGETYPES', $args = [] ) {
+	public function list_mycred_badges( $label = null, $option_code = 'MYCREDBADGETYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Badges', 'uncanny-automator' );
+			$label = esc_attr__( 'Badges', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -186,14 +186,14 @@ class Mycred_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$include_all  = key_exists( 'include_all', $args ) ? $args['include_all'] : false;
-		$options      = [];
+		$options      = array();
 
 		if ( $include_all ) {
-			$options['ua-all-mycred-badges'] =  esc_attr__( 'All badges', 'uncanny-automator' );
+			$options['ua-all-mycred-badges'] = esc_attr__( 'All badges', 'uncanny-automator' );
 		}
 
-		global $uncanny_automator;
-		/*if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		// global $uncanny_automator;
+		/*if ( Automator()->helpers->recipe->load_helpers ) {
 			$posts = get_posts( [
 				'post_type'      => 'mycred_badge',
 				'posts_per_page' => 9999,
@@ -211,21 +211,21 @@ class Mycred_Helpers {
 		$query_args = [
 			'post_type'      => 'mycred_badge',
 			'posts_per_page' => 9999,
-			'post_status'    => 'publish'
+			'post_status'    => 'publish',
 		];
-		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+		$options    = Automator()->helpers->recipe->wp_query( $query_args );
 		$type       = 'select';
 
 		$option = [
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => $type,
-			'required'        => true,
-			'supports_tokens' => $token,
-			'is_ajax'         => $is_ajax,
-			'fill_values_in'  => $target_field,
-			'endpoint'        => $end_point,
-			'options'         => $options,
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => $type,
+			'required'                 => true,
+			'supports_tokens'          => $token,
+			'is_ajax'                  => $is_ajax,
+			'fill_values_in'           => $target_field,
+			'endpoint'                 => $end_point,
+			'options'                  => $options,
 			'custom_value_description' => esc_attr__( 'Badge ID', 'uncanny-automator' ),
 		];
 

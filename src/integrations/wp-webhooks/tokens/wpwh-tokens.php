@@ -41,19 +41,20 @@ class Wpwh_Tokens {
 
 		return $status;
 	}
+
 	/**
 	 * @param array $tokens
 	 * @param array $args
 	 *
 	 * @return array
 	 */
-	function wpwh_possible_tokens( $tokens = [], $args = [] ) {
+	function wpwh_possible_tokens( $tokens = array(), $args = array() ) {
 		if ( 'WPWHTRIGGER' === $args['meta'] ) {
 			$trigger_meta = $args['meta'];
 			$triggers     = WPWHPRO()->webhook->get_triggers();
 
 			if ( ! empty( $triggers ) ) {
-				$returns_code = [];
+				$returns_code = array();
 				if ( ! empty( $args['value'] ) ) {
 					switch ( $args['value'] ) {
 						case 'create_user':

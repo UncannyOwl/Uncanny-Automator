@@ -31,31 +31,31 @@ class BP_ACTIVITYSTRM {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$bp_users_args = array(
 			'uo_include_any' => true,
 		);
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddypress/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - BuddyPress */
-			'sentence'            => sprintf(  esc_attr__( '{{A user:%1$s}} posts activity to their stream', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( '{{A user:%1$s}} posts activity to their stream', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - BuddyPress */
-			'select_option_name'  =>  esc_attr__( '{{A user}} posts activity to their stream', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( '{{A user}} posts activity to their stream', 'uncanny-automator' ),
 			'action'              => 'bp_activity_posted_update',
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'bp_activity_posted_update' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->buddypress->options->all_buddypress_users( null, 'BPUSERS', $bp_users_args ),
+				Automator()->helpers->recipe->buddypress->options->all_buddypress_users( null, 'BPUSERS', $bp_users_args ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -69,11 +69,11 @@ class BP_ACTIVITYSTRM {
 	 */
 	public function bp_activity_posted_update( $content, $user_id, $activity_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_users     = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_users     = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -99,7 +99,7 @@ class BP_ACTIVITYSTRM {
 					'ignore_post_id'   => true,
 				];
 
-				$returns = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+				$returns = Automator()->maybe_add_trigger_entry( $args, false );
 
 				if ( $returns ) {
 					foreach ( $returns as $result ) {
@@ -115,14 +115,14 @@ class BP_ACTIVITYSTRM {
 							// ACTIVITY_ID Token
 							$trigger_meta['meta_key']   = 'ACTIVITY_ID';
 							$trigger_meta['meta_value'] = $activity_id;
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
 							// ACTIVITY_CONTENT Token
 							$trigger_meta['meta_key']   = 'ACTIVITY_CONTENT';
 							$trigger_meta['meta_value'] = $content;
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

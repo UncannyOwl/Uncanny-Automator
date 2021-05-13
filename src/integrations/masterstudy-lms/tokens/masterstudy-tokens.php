@@ -23,13 +23,13 @@ class Masterstudy_Tokens {
 	/**
 	 * Parse the token.
 	 *
-	 * @param string $value .
-	 * @param array $pieces .
+	 * @param string $value     .
+	 * @param array  $pieces    .
 	 * @param string $recipe_id .
 	 *
-	 * @param $trigger_data
-	 * @param $user_id
-	 * @param $replace_args
+	 * @param        $trigger_data
+	 * @param        $user_id
+	 * @param        $replace_args
 	 *
 	 * @return null|string
 	 */
@@ -47,7 +47,7 @@ class Masterstudy_Tokens {
 													AND automator_trigger_log_id = $trigger_log_id
 													AND automator_trigger_id = $trigger_id
 													LIMIT 0, 1" );
-				$value = $entry;
+				$value          = $entry;
 			}
 		}
 

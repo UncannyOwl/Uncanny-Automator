@@ -32,24 +32,24 @@ class GP_AWARDPOINTS_A {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/gamipress/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - GamiPress */
-			'sentence'           => sprintf(  esc_attr__( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'GPPOINTVALUE', $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'GPPOINTVALUE', $this->action_meta ),
 			/* translators: Action - GamiPress */
-			'select_option_name' =>  esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_points' ],
-			'options'            => [],
+			'options'            => array(),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->gamipress->options->list_gp_points_types(  esc_attr__( 'Point type', 'uncanny-automator' ), $this->action_meta, [
+					Automator()->helpers->recipe->gamipress->options->list_gp_points_types( esc_attr__( 'Point type', 'uncanny-automator' ), $this->action_meta, [
 						'token'   => false,
 						'is_ajax' => false,
 					] ),
@@ -59,7 +59,7 @@ class GP_AWARDPOINTS_A {
 						'input_type' => 'int',
 
 						'option_code' => 'GPPOINTVALUE',
-						'label'       =>  esc_attr__( 'Points', 'uncanny-automator' ),
+						'label'       => esc_attr__( 'Points', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
 						'required'        => true,
@@ -68,7 +68,7 @@ class GP_AWARDPOINTS_A {
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -80,13 +80,13 @@ class GP_AWARDPOINTS_A {
 	 */
 	public function award_points( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$points_type = $action_data['meta'][ $this->action_meta ];
-		$points      = $uncanny_automator->parse->text( $action_data['meta']['GPPOINTVALUE'], $recipe_id, $user_id, $args );
+		$points      = Automator()->parse->text( $action_data['meta']['GPPOINTVALUE'], $recipe_id, $user_id, $args );
 		gamipress_award_points_to_user( absint( $user_id ), absint( $points ), $points_type );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 }

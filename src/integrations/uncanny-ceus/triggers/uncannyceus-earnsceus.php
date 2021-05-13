@@ -34,22 +34,6 @@ class UNCANNYCEUS_EARNSCEUS {
 		}
 	}
 
-	public function maybe_allow_triggers_to_actionify( $run_automator_actions, $REQUEST ) {
-
-		if ( false === $run_automator_actions ) {
-
-			$next_crons_jobs = wp_get_ready_cron_jobs();
-
-			foreach ( $next_crons_jobs as $cron_job ) {
-				if ( isset( $cron_job['uo_ceu_scheduled_learndash_course_completed'] ) ) {
-					return true;
-				}
-			}
-		}
-
-		return $run_automator_actions;
-	}
-
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
@@ -57,10 +41,10 @@ class UNCANNYCEUS_EARNSCEUS {
 
 		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-continuing-education-credits-for-learndash/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
@@ -79,14 +63,30 @@ class UNCANNYCEUS_EARNSCEUS {
 					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
 					'input_type'      => 'int',
 					'validation_type' => 'integer',
-					'required' => true
+					'required'        => true,
 				],
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
+	}
+
+	public function maybe_allow_triggers_to_actionify( $run_automator_actions, $REQUEST ) {
+
+		if ( false === $run_automator_actions ) {
+
+			$next_crons_jobs = wp_get_ready_cron_jobs();
+
+			foreach ( $next_crons_jobs as $cron_job ) {
+				if ( isset( $cron_job['uo_ceu_scheduled_learndash_course_completed'] ) ) {
+					return true;
+				}
+			}
+		}
+
+		return $run_automator_actions;
 	}
 
 	/**
@@ -100,7 +100,7 @@ class UNCANNYCEUS_EARNSCEUS {
 	 */
 	public function updated_user_ceu_record( $current_user, $is_manual_creation, $completion_date, $current_course_id, $current_course_title, $course_slug, $ceu_value ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		// The class contains all ceu creation code
 		$ceu_shortcodes = \uncanny_ceu\Utilities::get_class_instance( 'CeuShortcodes' );
@@ -114,10 +114,10 @@ class UNCANNYCEUS_EARNSCEUS {
 		}
 
 		// Get all recipes that have this trigger
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		// Get the specific WPFFORUMID meta data from the recipes
-		$require_ceu_amount = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$require_ceu_amount = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		// Loop through recipe
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -147,12 +147,12 @@ class UNCANNYCEUS_EARNSCEUS {
 					'is_signed_in'     => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

@@ -37,7 +37,7 @@ class Add_Wpp_Integration {
 				//$automator_version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
 
 				//if ( version_compare( $automator_version, '2.10', '>=' ) ) {
-					$status = true;
+				$status = true;
 				//}
 			} else {
 				$status = false;
@@ -69,11 +69,11 @@ class Add_Wpp_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
-			'name'        => 'WP-Polls',
-			'icon_svg'    => Utilities::get_integration_icon( 'wp-polls-icon.svg' ),
+		Automator()->register->integration( self::$integration, array(
+			'name'     => 'WP-Polls',
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/wp-polls-icon.svg' ),
 		) );
 	}
 }

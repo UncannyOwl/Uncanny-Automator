@@ -31,35 +31,35 @@ class UPSELL_PLUGIN_PURCHPROD {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/upsell-plugin/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Upsell */
-			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Upsell */
-			'select_option_name'  =>  esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
 			'action'              => 'upsell_order_status_completed',
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'upsell_order_completed' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->upsell_plugin->options->all_upsell_products(  esc_attr__( 'Product', 'uncanny-automator' ) ),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->upsell_plugin->options->all_upsell_products( esc_attr__( 'Product', 'uncanny-automator' ) ),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 
 	}
 
 	public function upsell_order_completed( $order ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( ! $order ) {
 			return;
@@ -78,9 +78,9 @@ class UPSELL_PLUGIN_PURCHPROD {
 			return;
 		}
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_product   = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_product   = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		//Add where option is set to Any product
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -133,7 +133,7 @@ class UPSELL_PLUGIN_PURCHPROD {
 					'is_signed_in'     => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				//Adding an action to save order id in trigger meta
 				do_action( 'uap_wc_trigger_save_meta', $order->id, $matched_recipe_id['recipe_id'], $args, 'product' );
@@ -141,7 +141,7 @@ class UPSELL_PLUGIN_PURCHPROD {
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

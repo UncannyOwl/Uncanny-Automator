@@ -29,8 +29,8 @@ class Bbpress_Helpers {
 	 * Bbpress_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -55,25 +55,25 @@ class Bbpress_Helpers {
 	 */
 	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS', $any_option = false ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Forum', 'uncanny-automator' );
+			$label = esc_attr__( 'Forum', 'uncanny-automator' );
 		}
 
 		$any_label = null;
 
 		if ( $any_option ) {
-			$any_label =  esc_attr__( 'Any forum', 'uncanny-automator' );
+			$any_label = esc_attr__( 'Any forum', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -84,8 +84,8 @@ class Bbpress_Helpers {
 			'post_status'    => [ 'publish', 'private' ],
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, $any_label );
+		// global $uncanny_automator;
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, $any_label );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -94,9 +94,9 @@ class Bbpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Forum title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Forum ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Forum URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Forum title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Forum ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Forum URL', 'uncanny-automator' ),
 			],
 		];
 

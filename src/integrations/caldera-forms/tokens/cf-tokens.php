@@ -57,11 +57,11 @@ class Cf_Tokens {
 	 *
 	 * @return array
 	 */
-	public function cf_possible_tokens( $tokens = [], $args = [] ) {
+	public function cf_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
-		$fields              = [];
+		$fields              = array();
 		if ( empty( $form_id ) ) {
 			return $tokens;
 		}

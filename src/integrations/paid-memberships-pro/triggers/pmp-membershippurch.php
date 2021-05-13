@@ -40,21 +40,21 @@ class PMP_MEMBERSHIPPURCH {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->paid_memberships_pro->options->all_memberships(  esc_attr__( 'Membership', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' =>  esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
+		$options['options'] = array( '-1' => esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/paid-memberships-pro/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a membership:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a membership:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'select_option_name'  =>  esc_attr__( 'A user purchases {{a membership}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user purchases {{a membership}}', 'uncanny-automator' ),
 			'action'              => 'pmpro_after_checkout',
 			'priority'            => 99,
 			'accepted_args'       => 2,
@@ -64,7 +64,7 @@ class PMP_MEMBERSHIPPURCH {
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -75,7 +75,7 @@ class PMP_MEMBERSHIPPURCH {
 	 * @param MemberOrder $morder
 	 */
 	public function pmpro_payment_completed( $user_id, MemberOrder $morder ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( ! $morder instanceof MemberOrder ) {
 			return;
@@ -85,9 +85,9 @@ class PMP_MEMBERSHIPPURCH {
 		$membership          = $morder->getMembershipLevel();
 		$user_id             = $user->ID;
 		$membership_id       = $membership->id;
-		$recipes             = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_membership = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids  = [];
+		$recipes             = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_membership = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids  = array();
 
 		//Add where option is set to Any membership
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -128,13 +128,13 @@ class PMP_MEMBERSHIPPURCH {
 					'ignore_post_id'   => true,
 				];
 
-				$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+				$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 				if ( $result ) {
 					foreach ( $result as $r ) {
 						if ( true === $r['result'] ) {
 							do_action( 'uap_save_pmp_membership_level', $membership_id, $r['args'], $user_id, $this->trigger_meta );
-							$uncanny_automator->maybe_trigger_complete( $r['args'] );
+							Automator()->maybe_trigger_complete( $r['args'] );
 						}
 					}
 				}

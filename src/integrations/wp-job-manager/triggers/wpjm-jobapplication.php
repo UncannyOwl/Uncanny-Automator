@@ -26,8 +26,36 @@ class WPJM_JOBAPPLICATION {
 		//if ( is_admin() ) {
 		//	add_action( 'init', [ $this, 'plugins_loaded' ], 19 );
 		//} else {
-			$this->define_trigger();
+		$this->define_trigger();
 		//}
+	}
+
+	/**
+	 * Define and register the trigger by pushing it into the Automator object
+	 */
+	public function define_trigger() {
+
+		// global $uncanny_automator;
+
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-job-manager/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - WP Job Manager */
+			'sentence'            => sprintf( esc_attr__( 'A user applies for {{a job:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - WP Job Manager */
+			'select_option_name'  => esc_attr__( 'A user applies for {{a job}}', 'uncanny-automator' ),
+			'action'              => 'new_job_application',
+			'priority'            => 20,
+			'accepted_args'       => 2,
+			'validation_function' => array( $this, 'new_job_application' ),
+			'options'             => [
+				Automator()->helpers->recipe->wp_job_manager->options->list_wpjm_jobs( null, $this->trigger_meta ),
+			],
+		);
+
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -38,44 +66,16 @@ class WPJM_JOBAPPLICATION {
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
-	public function define_trigger() {
-
-		global $uncanny_automator;
-
-		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WP Job Manager */
-			'sentence'            => sprintf(  esc_attr__( 'A user applies for {{a job:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - WP Job Manager */
-			'select_option_name'  =>  esc_attr__( 'A user applies for {{a job}}', 'uncanny-automator' ),
-			'action'              => 'new_job_application',
-			'priority'            => 20,
-			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'new_job_application' ),
-			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_job_manager->options->list_wpjm_jobs(null, $this->trigger_meta)
-			],
-		);
-
-		$uncanny_automator->register->trigger( $trigger );
-	}
-
-	/**
 	 * @param $fields
 	 */
 	public function new_job_application( $application_id, $job_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( empty( $job_id ) || ! is_numeric( $job_id ) ) {
 			return;
 		}
-		$recipes    = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$conditions = $this->match_condition( $job_id, $recipes, $this->trigger_meta, $this->trigger_code );
 
 		if ( empty( $conditions ) ) {
@@ -88,7 +88,7 @@ class WPJM_JOBAPPLICATION {
 			}
 		}
 		foreach ( $conditions['recipe_ids'] as $recipe_id => $trigger_id ) {
-			if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+			if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 				$trigger_args = [
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
@@ -98,7 +98,7 @@ class WPJM_JOBAPPLICATION {
 					'user_id'          => $user_id,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $trigger_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $trigger_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
@@ -112,12 +112,12 @@ class WPJM_JOBAPPLICATION {
 
 							$trigger_meta['meta_key']   = $this->trigger_meta;
 							$trigger_meta['meta_value'] = $job_id;
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
 							$trigger_meta['meta_key']   = 'WPJMJOBAPPLICATIONID';
 							$trigger_meta['meta_value'] = $application_id;
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->insert_trigger_meta( $trigger_meta );
+							Automator()->maybe_trigger_complete( $result['args'] );
 							break;
 						}
 					}

@@ -30,17 +30,17 @@ class Masterstudy_Helpers {
 	 * Masterstudy_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_mslms_lesson_from_course_LESSONDONE', array(
 			$this,
-			'select_lesson_from_course_func'
+			'select_lesson_from_course_func',
 		) );
 
 		add_action( 'wp_ajax_select_mslms_quiz_from_course_QUIZ', array(
 			$this,
-			'select_quiz_from_course_func'
+			'select_quiz_from_course_func',
 		) );
 	}
 
@@ -65,16 +65,16 @@ class Masterstudy_Helpers {
 	 */
 	public function select_lesson_from_course_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		// Nonce and post object validation
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check( $_POST );
 
 		$fields = [
 			[
 				'value' => '-1',
 				'text'  => _x( 'Any lesson', 'MasterStudy LMS', 'uncanny-automator' ),
-			]
+			],
 		];
 
 		if ( ! isset( $_POST ) ) {
@@ -127,16 +127,16 @@ class Masterstudy_Helpers {
 	 */
 	public function select_quiz_from_course_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		// Nonce and post object validation
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check( $_POST );
 
 		$fields = [
 			[
 				'value' => '-1',
 				'text'  => _x( 'Any quiz', 'MasterStudy LMS', 'uncanny-automator' ),
-			]
+			],
 		];
 
 		if ( ! isset( $_POST ) ) {
@@ -161,7 +161,7 @@ class Masterstudy_Helpers {
 
 			$course_quiz_p = $wpdb->prepare( $course_quiz_q, absint( $mslms_course_id ) );
 
-			if('-1' === $mslms_course_id){
+			if ( '-1' === $mslms_course_id ) {
 				$course_quiz_p =
 					"Select ID, post_title
 				FROM $wpdb->posts

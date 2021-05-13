@@ -31,28 +31,28 @@ class LF_QUIZATTEMPTED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/lifterlms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LifterLMS */
-			'sentence'            => sprintf(  esc_attr__( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LifterLMS */
-			'select_option_name'  =>  esc_attr__( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'lifterlms_quiz_completed',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'lf_quiz_attempted' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_quizs( null, $this->trigger_meta ),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->lifterlms->options->all_lf_quizs( null, $this->trigger_meta ),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -70,7 +70,7 @@ class LF_QUIZATTEMPTED {
 			return;
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'code'    => $this->trigger_code,
@@ -79,6 +79,6 @@ class LF_QUIZATTEMPTED {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

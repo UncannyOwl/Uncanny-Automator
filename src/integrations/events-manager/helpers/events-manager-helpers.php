@@ -25,6 +25,12 @@ class Events_Manager_Helpers {
 	public $load_options;
 
 	/**
+	 * Event_Tickets_Helpers constructor.
+	 */
+	public function __construct() {
+	}
+
+	/**
 	 * @param Events_Manager_Helpers $options
 	 */
 	public function setOptions( Events_Manager_Helpers $options ) {
@@ -38,13 +44,7 @@ class Events_Manager_Helpers {
 		$this->pro = $pro;
 	}
 
-	/**
-	 * Event_Tickets_Helpers constructor.
-	 */
-	public function __construct() {
-	}
-
-	public function all_em_events( $label = null, $option_code = 'EMALLEVENTS', $args = [] ) {
+	public function all_em_events( $label = null, $option_code = 'EMALLEVENTS', $args = array() ) {
 		if ( ! $label ) {
 			$label = __( 'Event', 'uncanny-automator' );
 		}
@@ -54,7 +54,7 @@ class Events_Manager_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$any_option   = key_exists( 'any_option', $args ) ? $args['any_option'] : false;
-		$options      = [];
+		$options      = array();
 
 		if ( isset( $any_option ) && $any_option == true ) {
 			$options['-1'] = __( 'Any event', 'uncanny-automator' );

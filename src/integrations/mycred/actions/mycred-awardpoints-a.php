@@ -31,24 +31,24 @@ class MYCRED_AWARDPOINTS_A {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mycred/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - myCred */
-			'sentence'           => sprintf(  esc_attr__( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'MYCREDPOINTVALUE', $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'MYCREDPOINTVALUE', $this->action_meta ),
 			/* translators: Action - myCred */
-			'select_option_name' =>  esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_mycred_points' ],
-			'options'            => [],
+			'options'            => array(),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_points_types(  esc_attr__( 'Point type', 'uncanny-automator' ), $this->action_meta, [
+					Automator()->helpers->recipe->mycred->options->list_mycred_points_types( esc_attr__( 'Point type', 'uncanny-automator' ), $this->action_meta, [
 						'token'   => false,
 						'is_ajax' => false,
 					] ),
@@ -58,7 +58,7 @@ class MYCRED_AWARDPOINTS_A {
 						'input_type' => 'int',
 
 						'option_code' => 'MYCREDPOINTVALUE',
-						'label'       =>  esc_attr__( 'Points', 'uncanny-automator' ),
+						'label'       => esc_attr__( 'Points', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
 						'required'        => true,
@@ -67,7 +67,7 @@ class MYCRED_AWARDPOINTS_A {
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -79,13 +79,13 @@ class MYCRED_AWARDPOINTS_A {
 	 */
 	public function award_mycred_points( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$points_type = $action_data['meta'][ $this->action_meta ];
-		$points      = $uncanny_automator->parse->text( $action_data['meta']['MYCREDPOINTVALUE'], $recipe_id, $user_id, $args );
-		$reference   = $uncanny_automator->parse->text( $action_data['meta']['MYCREDPOINTS_readable'], $recipe_id, $user_id, $args );
+		$points      = Automator()->parse->text( $action_data['meta']['MYCREDPOINTVALUE'], $recipe_id, $user_id, $args );
+		$reference   = Automator()->parse->text( $action_data['meta']['MYCREDPOINTS_readable'], $recipe_id, $user_id, $args );
 		mycred_add( $reference, absint( $user_id ), $points, 'Added by uncanny automator action', '', '', $points_type );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

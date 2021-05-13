@@ -32,7 +32,7 @@ class LD_MARKLESSONDONE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -42,47 +42,47 @@ class LD_MARKLESSONDONE {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf(  esc_attr__( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' =>  esc_attr__( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_lesson' ),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_args([
-						'option_code'  => 'LDCOURSE',
-						'options'      => $options,
-						'label'        => esc_attr__( 'Course', 'uncanny-automator' ),
+					Automator()->helpers->recipe->field->select_field_args( [
+						'option_code' => 'LDCOURSE',
+						'options'     => $options,
+						'label'       => esc_attr__( 'Course', 'uncanny-automator' ),
 
-						'required'     => true,
+						'required'                 => true,
 						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
 
 						'is_ajax'      => true,
 						'target_field' => $this->action_meta,
 						'endpoint'     => 'select_lesson_from_course_MARKLESSONDONE',
-					]),
+					] ),
 
-					$uncanny_automator->helpers->recipe->field->select_field_args([
-						'option_code' => $this->action_meta,
-						'options'     => [],
-						'label'       => esc_attr__( 'Lesson', 'uncanny-automator' ),
-						'required'    => true,
-						'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' )
-					]),
+					Automator()->helpers->recipe->field->select_field_args( [
+						'option_code'              => $this->action_meta,
+						'options'                  => array(),
+						'label'                    => esc_attr__( 'Lesson', 'uncanny-automator' ),
+						'required'                 => true,
+						'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+					] ),
 				],
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -94,13 +94,13 @@ class LD_MARKLESSONDONE {
 	 */
 	public function mark_completes_a_lesson( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$course_id = $action_data['meta']['LDCOURSE'];
 		$lesson_id = $action_data['meta'][ $this->action_meta ];
 		$this->mark_steps_done( $user_id, $lesson_id, $course_id );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 	/**
@@ -147,7 +147,7 @@ class LD_MARKLESSONDONE {
 	 */
 	public function mark_quiz_complete( $user_id, $course_id = null ) {
 
-		$quizz_progress = [];
+		$quizz_progress = array();
 
 		if ( ! empty( $this->quiz_list ) ) {
 
@@ -206,7 +206,7 @@ class LD_MARKLESSONDONE {
 			update_user_meta( $user_id, '_sfwd-quizzes', $quizz_progress );
 		}
 
-		$this->quiz_list = [];
+		$this->quiz_list = array();
 	}
 
 }

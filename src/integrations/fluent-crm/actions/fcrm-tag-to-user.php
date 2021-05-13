@@ -33,11 +33,11 @@ class FCRM_TAG_TO_USER {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/fluentcrm/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
@@ -48,11 +48,11 @@ class FCRM_TAG_TO_USER {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'tag_to_user' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->action_meta, [ 'supports_multiple_values' => true ] )
+				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->action_meta, [ 'supports_multiple_values' => true ] ),
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 
@@ -65,7 +65,7 @@ class FCRM_TAG_TO_USER {
 	 */
 	public function tag_to_user( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$tags      = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
 		$user_info = get_userdata( $user_id );
@@ -76,7 +76,7 @@ class FCRM_TAG_TO_USER {
 			if ( $subscriber ) {
 
 				$existingTags   = $subscriber->tags;
-				$existingTagIds = [];
+				$existingTagIds = array();
 				foreach ( $existingTags as $tag ) {
 					if ( in_array( $tag->id, $tags ) ) {
 						$existingTagIds[] = $tag->title;
@@ -85,7 +85,7 @@ class FCRM_TAG_TO_USER {
 
 				$subscriber->attachTags( $tags );
 				if ( empty( $existingTagIds ) ) {
-					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
 				} else {
@@ -104,13 +104,13 @@ class FCRM_TAG_TO_USER {
 							)
 						);
 
-						$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $message );
+						Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
 
 						return;
 					}
 
 					// SOME tags were already assigned
-					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
 				}
@@ -124,7 +124,7 @@ class FCRM_TAG_TO_USER {
 					$user_info->user_email
 				);
 
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $message );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
 
 				return;
 			}
@@ -138,7 +138,7 @@ class FCRM_TAG_TO_USER {
 				$user_id
 			);
 
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
 
 			return;
 		}

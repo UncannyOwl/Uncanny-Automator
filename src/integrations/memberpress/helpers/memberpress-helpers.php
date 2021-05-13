@@ -29,8 +29,8 @@ class Memberpress_Helpers {
 	 * Memberpress_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -50,36 +50,36 @@ class Memberpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Product', 'uncanny-automator' );
+			$label = esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   =>  esc_attr__( 'Any product', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr__( 'Any product', 'uncanny-automator' ),
 			)
 		);
 
-		$options = [];
-		global $uncanny_automator;
+		$options = array();
+		// global $uncanny_automator;
 
 		if ( $args['uo_include_any'] ) {
 			$options[ - 1 ] = $args['uo_any_label'];
 		}
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( [ 'post_type' => 'memberpressproduct', ] );
+		$options = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'memberpressproduct', ] );
 
 
 		$option = [
@@ -89,9 +89,9 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -102,30 +102,30 @@ class Memberpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Product', 'uncanny-automator' );
+			$label = esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   =>  esc_attr__( 'Any one-time subscription product', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr__( 'Any one-time subscription product', 'uncanny-automator' ),
 			)
 		);
 
-		$options = [];
-		global $uncanny_automator;
+		$options = array();
+		// global $uncanny_automator;
 		if ( $args['uo_include_any'] ) {
 			$options[ - 1 ] = $args['uo_any_label'];
 		}
@@ -140,10 +140,10 @@ class Memberpress_Helpers {
 					'key'     => '_mepr_product_period_type',
 					'value'   => 'lifetime',
 					'compare' => '=',
-				]
-			]
+				],
+			],
 		];
-		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+		$options    = Automator()->helpers->recipe->wp_query( $query_args );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -152,9 +152,9 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -165,30 +165,30 @@ class Memberpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = [] ) {
+	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Product', 'uncanny-automator' );
+			$label = esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   =>  esc_attr__( 'Any recurring subscription product', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr__( 'Any recurring subscription product', 'uncanny-automator' ),
 			)
 		);
 
-		$options = [];
-		global $uncanny_automator;
+		$options = array();
+		// global $uncanny_automator;
 		if ( $args['uo_include_any'] ) {
 			$options[ - 1 ] = $args['uo_any_label'];
 		}
@@ -202,10 +202,10 @@ class Memberpress_Helpers {
 					'key'     => '_mepr_product_period_type',
 					'value'   => 'lifetime',
 					'compare' => '!=',
-				]
-			]
+				],
+			],
 		];
-		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args );
+		$options    = Automator()->helpers->recipe->wp_query( $query_args );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -214,9 +214,9 @@ class Memberpress_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];
 

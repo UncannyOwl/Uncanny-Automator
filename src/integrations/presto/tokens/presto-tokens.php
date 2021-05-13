@@ -36,8 +36,8 @@ class Presto_Tokens {
 		$piece = 'PRESTOVIDEO';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				global $uncanny_automator;
-				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+				// global $uncanny_automator;
+				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
 						if ( key_exists( $piece, $trigger['meta'] ) ) {

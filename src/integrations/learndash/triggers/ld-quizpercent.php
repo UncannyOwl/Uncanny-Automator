@@ -31,11 +31,11 @@ class LD_QUIZPERCENT {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
@@ -48,14 +48,14 @@ class LD_QUIZPERCENT {
 			'validation_function' => array( $this, 'learndash_quiz_completed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => [
-				$uncanny_automator->helpers->recipe->field->less_or_greater_than(),
-				$uncanny_automator->helpers->recipe->field->integer_field( 'QUIZPERCENT', esc_attr__( 'Percentage', 'uncanny-automator' ), '' ),
-				$uncanny_automator->helpers->recipe->learndash->options->all_ld_quiz(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->field->less_or_greater_than(),
+				Automator()->helpers->recipe->field->integer_field( 'QUIZPERCENT', esc_attr__( 'Percentage', 'uncanny-automator' ), '' ),
+				Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -72,21 +72,21 @@ class LD_QUIZPERCENT {
 			return;
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$quiz                = $data['quiz'];
 		$quiz_id             = is_object( $quiz ) ? $quiz->ID : $quiz;
 		$percentage          = $data['percentage'];
-		$recipes             = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_percentage = $uncanny_automator->get->meta_from_recipes( $recipes, 'QUIZPERCENT' );
-		$required_quiz       = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$required_conditions = $uncanny_automator->get->meta_from_recipes( $recipes, 'NUMBERCOND' );
-		$matched_recipe_ids  = [];
+		$recipes             = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_percentage = Automator()->get->meta_from_recipes( $recipes, 'QUIZPERCENT' );
+		$required_quiz       = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$required_conditions = Automator()->get->meta_from_recipes( $recipes, 'NUMBERCOND' );
+		$matched_recipe_ids  = array();
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
-				if ( $uncanny_automator->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_percentage[ $recipe_id ][ $trigger_id ], $percentage ) ) {
+				if ( Automator()->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_percentage[ $recipe_id ][ $trigger_id ], $percentage ) ) {
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
@@ -110,7 +110,7 @@ class LD_QUIZPERCENT {
 						'post_id'          => $quiz_id,
 					];
 
-					$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 					if ( $result ) {
 						foreach ( $result as $r ) {
@@ -130,10 +130,10 @@ class LD_QUIZPERCENT {
 										'run_number'     => $run_number,
 									];
 
-									$uncanny_automator->insert_trigger_meta( $insert );
+									Automator()->insert_trigger_meta( $insert );
 								}
 
-								$uncanny_automator->maybe_trigger_complete( $r['args'] );
+								Automator()->maybe_trigger_complete( $r['args'] );
 							}
 						}
 					}

@@ -21,8 +21,8 @@ class Wc_Memberships_Helpers {
 	 * Wc_Memberships_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -32,11 +32,11 @@ class Wc_Memberships_Helpers {
 		$this->options = $options;
 	}
 
-	public function wcm_get_all_membership_plans( $label = null, $option_code = 'WCMEMBERSHIPPLANS', $args = [] ) {
+	public function wcm_get_all_membership_plans( $label = null, $option_code = 'WCMEMBERSHIPPLANS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -57,8 +57,8 @@ class Wc_Memberships_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $is_any, esc_attr__( 'Any membership plan', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $is_any, esc_attr__( 'Any membership plan', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,

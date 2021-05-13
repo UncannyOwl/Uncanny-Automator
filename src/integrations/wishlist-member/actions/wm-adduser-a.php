@@ -31,11 +31,11 @@ class WM_ADDUSER_A {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wishlist-member/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - Wishlist Member */
@@ -46,16 +46,16 @@ class WM_ADDUSER_A {
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'add_user_to_membership_levels' ],
 			'options'            => [
-				$uncanny_automator->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null,
+				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null,
 					$this->action_meta,
 					[
-						'include_all' => true
+						'include_all' => true,
 					]
 				),
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -67,16 +67,16 @@ class WM_ADDUSER_A {
 	 */
 	public function add_user_to_membership_levels( $user_id, $action_data, $recipe_id, $args ) {
 		global $WishListMemberInstance;
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$level_ids = [];
+		$level_ids = array();
 		$wm_level  = $action_data['meta'][ $this->action_meta ];
 
 		if ( $wm_level == '-1' ) {
 			$all_levels = $WishListMemberInstance->GetOption( 'wpm_levels' );
 			if ( is_array( $all_levels ) ) {
 				foreach ( $all_levels as $Id => $levels ) {
-					$level_ids [] = $Id;
+					$level_ids = $Id;
 				}
 			}
 		} else {
@@ -87,6 +87,6 @@ class WM_ADDUSER_A {
 		}
 
 		$WishListMemberInstance->SetMembershipLevels( $user_id, $level_ids );
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

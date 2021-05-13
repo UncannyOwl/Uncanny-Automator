@@ -32,47 +32,47 @@ class BO_AWARDACHIEVEMENT_A {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link($this->action_code, 'integration/badgeos/'),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - BadgeOS */
-			'sentence'           => sprintf(  esc_attr__( 'Award {{an achievement:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Award {{an achievement:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - BadgeOS */
-			'select_option_name' =>  esc_attr__( 'Award {{an achievement}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Award {{an achievement}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_an_achievement' ),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->badgeos->options->list_bo_award_types(
-						 esc_attr__( 'Achievement type', 'uncanny-automator' ),
+					Automator()->helpers->recipe->badgeos->options->list_bo_award_types(
+						esc_attr__( 'Achievement type', 'uncanny-automator' ),
 						'BOAWARDTYPES',
 						[
-							'token'        => false,
-							'is_ajax'      => true,
-							'target_field' => $this->action_meta,
+							'token'                 => false,
+							'is_ajax'               => true,
+							'target_field'          => $this->action_meta,
 							'supports_custom_value' => false,
-							'endpoint'     => 'select_achievements_from_types_BOAWARDACHIEVEMENT',
+							'endpoint'              => 'select_achievements_from_types_BOAWARDACHIEVEMENT',
 						]
 					),
 
-					$uncanny_automator->helpers->recipe->field->select_field_args([
-						'option_code' => $this->action_meta,
-						'options'     => [],
+					Automator()->helpers->recipe->field->select_field_args( [
+						'option_code'              => $this->action_meta,
+						'options'                  => array(),
 						/* translators: Noun */
-						'label'       => esc_attr__( 'Award', 'uncanny-automator' ),
-						'required'    => true,
-						'custom_value_description' => esc_attr__( 'Award ID', 'uncanny-automator' )
-					]),
+						'label'                    => esc_attr__( 'Award', 'uncanny-automator' ),
+						'required'                 => true,
+						'custom_value_description' => esc_attr__( 'Award ID', 'uncanny-automator' ),
+					] ),
 				],
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -84,12 +84,12 @@ class BO_AWARDACHIEVEMENT_A {
 	 */
 	public function award_an_achievement( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$achievement_id = $action_data['meta'][ $this->action_meta ];
 		badgeos_award_achievement_to_user( absint( $achievement_id ), absint( $user_id ) );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 }

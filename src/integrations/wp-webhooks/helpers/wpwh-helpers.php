@@ -29,8 +29,8 @@ class Wpwh_Helpers {
 	 * Wpwh_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 	}
 
@@ -50,13 +50,13 @@ class Wpwh_Helpers {
 
 
 	/**
-	 * @param null $label
+	 * @param null   $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed|void
 	 */
-	public function list_webhook_triggers( $label = null, $option_code = 'WPWHTRIGGER', $args = [] ) {
+	public function list_webhook_triggers( $label = null, $option_code = 'WPWHTRIGGER', $args = array() ) {
 
 		if ( ! $label ) {
 			$label = __( 'Webhook triggers', 'uncanny-automator' );
@@ -68,7 +68,7 @@ class Wpwh_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 
 
-		$options       = [];
+		$options       = array();
 		$options['-1'] = __( 'Any trigger', 'uncanny-automator-pro' );
 
 		$triggers        = WPWHPRO()->webhook->get_triggers();
@@ -90,7 +90,7 @@ class Wpwh_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'relevant_tokens' => [],
+			'relevant_tokens' => array(),
 		];
 
 		return apply_filters( 'uap_option_list_webhook_triggers', $option );
@@ -99,10 +99,10 @@ class Wpwh_Helpers {
 	/**
 	 * Match condition for form field and value.
 	 *
-	 * @param $action
-	 * @param null|array $recipes .
-	 * @param null|string $trigger_meta .
-	 * @param null|string $trigger_code .
+	 * @param             $action
+	 * @param null|array  $recipes             .
+	 * @param null|string $trigger_meta        .
+	 * @param null|string $trigger_code        .
 	 * @param null|string $trigger_second_code .
 	 *
 	 * @return array|bool
@@ -112,7 +112,7 @@ class Wpwh_Helpers {
 			return false;
 		}
 
-		$recipe_ids = [];
+		$recipe_ids = array();
 
 		//Limiting to specific recipe IDs
 		foreach ( $recipes as $recipe ) {
@@ -149,7 +149,7 @@ class Wpwh_Helpers {
 		$meta_key       = (string) $args['meta_key'];
 
 		if ( $data ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 			$insert = [
 				'user_id'        => $user_id,
 				'trigger_id'     => $trigger_id,
@@ -159,7 +159,7 @@ class Wpwh_Helpers {
 				'run_number'     => $run_number,
 			];
 
-			$uncanny_automator->insert_trigger_meta( $insert );
+			Automator()->insert_trigger_meta( $insert );
 		}
 
 		return $data;
@@ -171,7 +171,7 @@ class Wpwh_Helpers {
 	 * @return array
 	 */
 	public function XML2Array( \SimpleXMLElement $parent ) {
-		$array = [];
+		$array = array();
 
 		foreach ( $parent as $name => $element ) {
 			( $node = &$array[ $name ] )

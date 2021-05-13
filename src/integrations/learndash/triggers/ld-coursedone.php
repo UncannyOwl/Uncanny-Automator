@@ -31,29 +31,29 @@ class LD_COURSEDONE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  =>  esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'learndash_course_completed',
 			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'course_done' ),
 			'options'             => [
 
-				$uncanny_automator->helpers->recipe->learndash->options->all_ld_courses(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->learndash->options->all_ld_courses(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -65,7 +65,7 @@ class LD_COURSEDONE {
 	 */
 	public function course_done( $data ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( empty( $data ) ) {
 			return;
@@ -81,6 +81,6 @@ class LD_COURSEDONE {
 			'user_id' => $user->ID,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

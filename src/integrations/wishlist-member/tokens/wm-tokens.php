@@ -39,13 +39,13 @@ class Wm_Tokens {
 	}
 
 	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
+	 * @param     $value
+	 * @param     $pieces
+	 * @param     $recipe_id
+	 * @param     $trigger_data
 	 *
 	 * @param int $user_id
-	 * @param $replace_args
+	 * @param     $replace_args
 	 *
 	 * @return mixed
 	 */

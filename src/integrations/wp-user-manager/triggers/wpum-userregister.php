@@ -39,10 +39,10 @@ class WPUM_USERREGISTER {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-user-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP User Manager */
@@ -55,12 +55,12 @@ class WPUM_USERREGISTER {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpum_register_user' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_user_manager->options->get_all_forms(
+				Automator()->helpers->recipe->wp_user_manager->options->get_all_forms(
 					__( 'Form', 'uncanny-automator' ), $this->trigger_meta, [ 'is_any' => true ] ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class WPUM_USERREGISTER {
 	 * @param $form
 	 */
 	public function wpum_register_user( $new_user_id, $values, $form ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( 0 === absint( $new_user_id ) ) {
 			// Its a logged in recipe and
@@ -77,9 +77,9 @@ class WPUM_USERREGISTER {
 			return;
 		}
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_form      = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_form      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -107,7 +107,7 @@ class WPUM_USERREGISTER {
 					'is_signed_in'     => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
@@ -120,15 +120,15 @@ class WPUM_USERREGISTER {
 
 							$trigger_meta['meta_key']   = $this->trigger_meta;
 							$trigger_meta['meta_value'] = maybe_serialize( $form->name );
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
 							foreach ( $values['register'] as $key => $value ) {
 								$trigger_meta['meta_key']   = $key;
 								$trigger_meta['meta_value'] = maybe_serialize( $value );
-								$uncanny_automator->insert_trigger_meta( $trigger_meta );
+								Automator()->insert_trigger_meta( $trigger_meta );
 							}
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

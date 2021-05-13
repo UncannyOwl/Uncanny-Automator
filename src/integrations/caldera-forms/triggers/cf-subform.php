@@ -24,7 +24,12 @@ class CF_SUBFORM {
 		$this->trigger_code = 'CFSUBFORM';
 		$this->trigger_meta = 'CFFORMS';
 		add_filter( 'wpcf_verify_nonce', '__return_true' );
-		$this->define_trigger();
+		add_action(
+			'plugins_loaded',
+			function () {
+				$this->define_trigger();
+			}
+		);
 	}
 
 
@@ -33,28 +38,28 @@ class CF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/caldera-forms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Caldera Forms */
-			'sentence'            => sprintf(  esc_attr__( 'User submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'User submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Caldera Forms */
-			'select_option_name'  =>  esc_attr__( 'User submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'User submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'caldera_forms_submit_complete',
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'caldera_forms_submit' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->caldera_forms->options->list_caldera_forms_forms(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->caldera_forms->options->list_caldera_forms_forms(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -65,9 +70,9 @@ class CF_SUBFORM {
 	 */
 	public function caldera_forms_submit( $form, $referrer, $process_id, $entryid ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$user_id    = wp_get_current_user()->ID;
-		$recipes    = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$conditions = $this->match_condition( $form, $recipes, $this->trigger_meta, $this->trigger_code );
 
 		if ( ! $conditions ) {
@@ -76,7 +81,7 @@ class CF_SUBFORM {
 
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
-				if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 					$args = [
 						'code'            => $this->trigger_code,
 						'meta'            => $this->trigger_meta,
@@ -85,7 +90,7 @@ class CF_SUBFORM {
 						'user_id'         => $user_id,
 					];
 
-					$uncanny_automator->maybe_add_trigger_entry( $args );
+					Automator()->maybe_add_trigger_entry( $args );
 				}
 			}
 		}
@@ -107,7 +112,7 @@ class CF_SUBFORM {
 			return false;
 		}
 
-		$recipe_ids     = [];
+		$recipe_ids     = array();
 		$entry_to_match = $form['ID'];
 
 		foreach ( $recipes as $recipe ) {

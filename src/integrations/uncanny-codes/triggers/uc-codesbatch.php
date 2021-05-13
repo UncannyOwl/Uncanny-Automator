@@ -35,10 +35,10 @@ class UC_CODESBATCH {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-codes/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
@@ -51,11 +51,11 @@ class UC_CODESBATCH {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'user_redeemed_code_batch' ),
 			'options'             => array(
-				$uncanny_automator->helpers->recipe->uncanny_codes->options->get_all_code_batch( esc_attr__( 'Batch', 'uncanny-automator' ), $this->trigger_meta ),
+				Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch( esc_attr__( 'Batch', 'uncanny-automator' ), $this->trigger_meta ),
 			),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -66,7 +66,7 @@ class UC_CODESBATCH {
 	 * @param $result
 	 */
 	public function user_redeemed_code_batch( $user_id, $coupon_id, $result ) {
-		global $uncanny_automator, $wpdb;
+		global $wpdb;
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
 		}
@@ -74,8 +74,8 @@ class UC_CODESBATCH {
 			return;
 		}
 
-		$recipes        = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_batch = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$recipes        = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_batch = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 
 		$batch = $wpdb->get_var( $wpdb->prepare( "SELECT g.id FROM `{$wpdb->prefix}uncanny_codes_groups` g LEFT JOIN `{$wpdb->prefix}uncanny_codes_codes` c ON g.ID = c.code_group WHERE c.ID = %d", $coupon_id ) );
 
@@ -84,7 +84,7 @@ class UC_CODESBATCH {
 				$trigger_id = $trigger['ID'];
 				if ( isset( $required_batch[ $recipe_id ] ) && isset( $required_batch[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( (string) $batch === (string) $required_batch[ $recipe_id ][ $trigger_id ] ) {
-						if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+						if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 							$pass_args = array(
 								'code'             => $this->trigger_code,
 								'meta'             => $this->trigger_meta,
@@ -95,24 +95,24 @@ class UC_CODESBATCH {
 								'is_signed_in'     => true,
 							);
 
-							$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+							$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 							if ( isset( $args ) ) {
 								foreach ( $args as $result ) {
 									if ( true === $result['result'] ) {
 
 										$trigger_meta = array(
-											'user_id'    => $user_id,
-											'trigger_id' => $result['args']['trigger_id'],
+											'user_id'        => $user_id,
+											'trigger_id'     => $result['args']['trigger_id'],
 											'trigger_log_id' => $result['args']['get_trigger_id'],
-											'run_number' => $result['args']['run_number'],
+											'run_number'     => $result['args']['run_number'],
 										);
 
 										$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':' . $this->trigger_meta;
 										$trigger_meta['meta_value'] = maybe_serialize( $batch );
-										$uncanny_automator->insert_trigger_meta( $trigger_meta );
+										Automator()->insert_trigger_meta( $trigger_meta );
 
-										$uncanny_automator->maybe_trigger_complete( $result['args'] );
+										Automator()->maybe_trigger_complete( $result['args'] );
 									}
 								}
 							}

@@ -32,7 +32,7 @@ class MASTERSTUDY_QUIZFAILED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -42,7 +42,7 @@ class MASTERSTUDY_QUIZFAILED {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
 
 		$course_relevant_tokens = [
 			'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
@@ -57,8 +57,8 @@ class MASTERSTUDY_QUIZFAILED {
 		];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/masterstudy-lms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MasterStudy LMS */
@@ -69,10 +69,10 @@ class MASTERSTUDY_QUIZFAILED {
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'quiz_failed' ),
-			'options'             => [],
+			'options'             => array(),
 			'options_group'       => [
 				$this->trigger_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_ajax(
+					Automator()->helpers->recipe->field->select_field_ajax(
 						'MSLMSCOURSE',
 						esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
 						$options,
@@ -86,12 +86,12 @@ class MASTERSTUDY_QUIZFAILED {
 						],
 						$course_relevant_tokens
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Quiz', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
+					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Quiz', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 				],
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -103,7 +103,7 @@ class MASTERSTUDY_QUIZFAILED {
 	 */
 	public function quiz_failed( $user_id, $quiz_id, $user_quiz_progress ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'code'    => $this->trigger_code,
@@ -112,7 +112,7 @@ class MASTERSTUDY_QUIZFAILED {
 			'user_id' => $user_id,
 		];
 
-		$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+		$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
@@ -122,7 +122,7 @@ class MASTERSTUDY_QUIZFAILED {
 					$course_id = ( ! empty( $_POST['course_id'] ) ) ? intval( $_POST['course_id'] ) : '';
 					$course_id = apply_filters( 'user_answers__course_id', $course_id, $source );
 
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -133,7 +133,7 @@ class MASTERSTUDY_QUIZFAILED {
 						]
 					);
 
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -144,7 +144,7 @@ class MASTERSTUDY_QUIZFAILED {
 						]
 					);
 
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -154,7 +154,7 @@ class MASTERSTUDY_QUIZFAILED {
 							'run_number'     => $result['args']['run_number'],
 						]
 					);
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

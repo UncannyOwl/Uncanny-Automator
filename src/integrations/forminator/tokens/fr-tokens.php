@@ -36,7 +36,7 @@ class Fr_Tokens {
 	 * Only load this integration and its triggers and actions if the related
 	 * plugin is active
 	 *
-	 * @param bool $status status of plugin.
+	 * @param bool   $status status of plugin.
 	 * @param string $plugin plugin code.
 	 *
 	 * @return bool
@@ -58,18 +58,18 @@ class Fr_Tokens {
 	 * Prepare tokens.
 	 *
 	 * @param array $tokens .
-	 * @param array $args .
+	 * @param array $args   .
 	 *
 	 * @return array
 	 */
-	public function fr_possible_tokens( $tokens = [], $args = [] ) {
+	public function fr_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 			$form_meta = Forminator_API::get_form_fields( $form_id );
 			if ( isset( $form_meta ) && ! empty( $form_meta ) ) {
-				$fields = [];
+				$fields = array();
 				foreach ( $form_meta as $field ) {
 					$input_id    = $field->slug;
 					$input_title = $field->raw['field_label'];
@@ -107,8 +107,8 @@ class Fr_Tokens {
 		$piece = 'FRFORM';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				global $uncanny_automator;
-				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+				// global $uncanny_automator;
+				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
 						if ( key_exists( $piece, $trigger['meta'] ) ) {
@@ -118,7 +118,7 @@ class Fr_Tokens {
 							$form_id        = $token_info[0];
 							$meta_key       = $token_info[1];
 							$meta_field     = $piece . '_' . $form_id;
-							$entry_id       = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
+							$entry_id       = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
 							if ( ! empty( $entry_id ) ) {
 								$entry = Forminator_API::get_entry( $form_id, $entry_id );
 								$value = $entry->get_meta( $meta_key );
@@ -145,7 +145,7 @@ class Fr_Tokens {
 		if ( is_array( $args ) ) {
 			foreach ( $args as $trigger_result ) {
 				if ( true === $trigger_result['result'] ) {
-					global $uncanny_automator;
+					// global $uncanny_automator;
 					if ( $recipes && absint( $form_id ) > 0 ) {
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];
@@ -159,7 +159,7 @@ class Fr_Tokens {
 										$form_entry        = forminator_get_latest_entry_by_form_id( $form_id );
 										$data              = $form_entry->entry_id;
 										$user_id           = (int) $trigger_result['args']['user_id'];
-										$recipe_log_id_raw = isset( $trigger_result['args']['recipe_log_id'] ) ? (int) $trigger_result['args']['recipe_log_id'] : $uncanny_automator->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
+										$recipe_log_id_raw = isset( $trigger_result['args']['recipe_log_id'] ) ? (int) $trigger_result['args']['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
 										if ( $recipe_log_id_raw ) {
 											$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 											$run_number     = (int) $trigger_result['args']['run_number'];
@@ -172,7 +172,7 @@ class Fr_Tokens {
 												'trigger_log_id' => $trigger_log_id,
 											];
 
-											$uncanny_automator->insert_trigger_meta( $args );
+											Automator()->insert_trigger_meta( $args );
 										}
 									}
 								}

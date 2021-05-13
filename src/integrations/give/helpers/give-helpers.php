@@ -11,15 +11,19 @@ use Uncanny_Automator_Pro\Give_Pro_Helpers;
 class Give_Helpers {
 
 	/**
+	 * @var Give_Helpers
+	 */
+	public $options;
+	/**
+	 * @var Give_Pro_Helpers
+	 */
+	public $pro;
+
+	/**
 	 * Give_Helpers constructor.
 	 */
 	public function __construct() {
 	}
-
-	/**
-	 * @var Give_Helpers
-	 */
-	public $options;
 
 	/**
 	 * @param Give_Helpers $options
@@ -29,20 +33,15 @@ class Give_Helpers {
 	}
 
 	/**
-	 * @var Give_Pro_Helpers
-	 */
-	public $pro;
-
-	/**
 	 * @param Give_Pro_Helpers $pro
 	 */
 	public function setPro( Give_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
-	public function list_all_give_forms( $label = null, $option_code = 'MAKEDONATION', $args = [] ) {
+	public function list_all_give_forms( $label = null, $option_code = 'MAKEDONATION', $args = array() ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );
@@ -52,14 +51,14 @@ class Give_Helpers {
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
+		$options      = array();
 
 		$query_args = [
 			'post_type'      => 'give_forms',
 			'posts_per_page' => 9999,
 			'post_status'    => 'publish',
 		];
-		$options    = $uncanny_automator->helpers->recipe->wp_query( $query_args, true, __( 'Any form', 'uncanny-automator' ) );
+		$options    = Automator()->helpers->recipe->wp_query( $query_args, true, __( 'Any form', 'uncanny-automator' ) );
 		$type       = 'select';
 
 		$option = [

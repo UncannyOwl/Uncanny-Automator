@@ -31,8 +31,8 @@ class Paid_Memberships_Pro_Helpers {
 	 * Paid_Memberships_Pro_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -50,28 +50,28 @@ class Paid_Memberships_Pro_Helpers {
 	}
 
 	/**
-	 * @param null $label
+	 * @param null   $label
 	 * @param string $option_code
 	 *
 	 * @return mixed|void
 	 */
 	public function all_memberships( $label = null, $option_code = 'PMPMEMBERSHIP' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Membership', 'uncanny-automator' );
+			$label = esc_attr__( 'Membership', 'uncanny-automator' );
 		}
 
 		global $wpdb;
 		$qry     = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
 		$levels  = $wpdb->get_results( $qry );
-		$options = [];
+		$options = array();
 		if ( $levels ) {
-			$options['-1'] =  esc_attr__( 'Any membership', 'uncanny-automator' );
+			$options['-1'] = esc_attr__( 'Any membership', 'uncanny-automator' );
 			foreach ( $levels as $level ) {
 				$options[ $level->id ] = $level->name;
 			}
@@ -83,8 +83,8 @@ class Paid_Memberships_Pro_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code         =>  esc_attr__( 'Membership title', 'uncanny-automator' ),
-				$option_code . '_ID' =>  esc_attr__( 'Membership ID', 'uncanny-automator' ),
+				$option_code         => esc_attr__( 'Membership title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr__( 'Membership ID', 'uncanny-automator' ),
 				//$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
 			],
 		];

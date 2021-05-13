@@ -31,7 +31,7 @@ class BP_ADDTOGROUP {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$bp_group_args = array(
 			'uo_include_any' => false,
@@ -39,24 +39,24 @@ class BP_ADDTOGROUP {
 		);
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/buddypress/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - BuddyPress */
-			'sentence'           => sprintf(  esc_attr__( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - BuddyPress */
-			'select_option_name' =>  esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_to_bp_group' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->buddypress->options->all_buddypress_groups( null, 'BPGROUPS', $bp_group_args ),
+				Automator()->helpers->recipe->buddypress->options->all_buddypress_groups( null, 'BPGROUPS', $bp_group_args ),
 			],
 		);
 
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -68,12 +68,12 @@ class BP_ADDTOGROUP {
 	 */
 	public function add_to_bp_group( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$add_to_bp_gropu = $action_data['meta'][ $this->action_meta ];
 
 		groups_join_group( $add_to_bp_gropu, $user_id );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

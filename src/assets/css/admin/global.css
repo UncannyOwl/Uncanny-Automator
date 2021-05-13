@@ -24,7 +24,7 @@
 */
 
 [uap-tooltip-admin] {
-	position: relative; 
+	position: relative;
 }
 
 [uap-tooltip-admin]::before,
@@ -568,4 +568,17 @@
 #uncanny-automator-update .ua_plugin_upgrade_notice.minor table.plugin-details-table th, #uncanny-automator-update .ua_plugin_upgrade_notice.major table.plugin-details-table th,
 #uncanny-automator-pro-update .ua_plugin_upgrade_notice.minor table.plugin-details-table th, #uncanny-automator-pro-update .ua_plugin_upgrade_notice.major table.plugin-details-table th {
 	font-weight: bold;
+}
+.recipe-ui-dash{
+	font-size: 14px;
+	margin-top: 2px;
+	width: 14px;
+	height: 14px;
+}
+
+.dashicons-yes-alt.recipe-ui-dash {
+	color:green;
+}
+.dashicons-warning.recipe-ui-dash {
+	color:orange;
 }

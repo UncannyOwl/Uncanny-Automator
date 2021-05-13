@@ -32,29 +32,29 @@ class WP_VIEWPOST {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user views {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user views {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  =>  esc_attr__( 'A user views {{a post}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user views {{a post}}', 'uncanny-automator' ),
 			'action'              => 'template_redirect',
 			'priority'            => 90,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_post' ),
 			// very last call in WP, we need to make sure they viewed the post and didn't skip before is was fully viewable
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp->options->all_posts(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wp->options->all_posts(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -64,7 +64,7 @@ class WP_VIEWPOST {
 	 */
 	public function view_post() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		global $post;
 		$user_id = get_current_user_id();
@@ -80,6 +80,6 @@ class WP_VIEWPOST {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

@@ -49,13 +49,13 @@ class Mp_Tokens {
 	 *
 	 * @return array
 	 */
-	public function mp_possible_tokens( $tokens = [], $args = [] ) {
+	public function mp_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 		$mepr_options        = MeprOptions::fetch();
 
-		$fields = [];
+		$fields = array();
 		if ( $mepr_options->show_fname_lname ) {
 			$fields[] = [
 				'tokenId'         => 'first_name',
@@ -114,7 +114,7 @@ class Mp_Tokens {
 		if ( $pieces ) {
 			$matches = [ 'MPPRODUCT', 'MPPRODUCT_ID', 'MPPRODUCT_URL', 'first_name', 'last_name' ];
 			if ( array_intersect( $matches, $pieces ) ) {
-				//global $uncanny_automator;
+				//// global $uncanny_automator;
 				//$user_id = wp_get_current_user()->ID;
 				// all memberpress values will be saved in usermeta.
 				$value = get_user_meta( $user_id, 'MPPRODUCT', true );

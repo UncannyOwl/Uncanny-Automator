@@ -32,7 +32,7 @@ class MASTERSTUDY_LESSONDONE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -42,7 +42,7 @@ class MASTERSTUDY_LESSONDONE {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, _x( 'Any course', 'MasterStudy LMS', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, _x( 'Any course', 'MasterStudy LMS', 'uncanny-automator' ) );
 
 		$course_relevant_tokens = [
 			'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
@@ -56,8 +56,8 @@ class MASTERSTUDY_LESSONDONE {
 		];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/masterstudy-lms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MasterStudy LMS */
@@ -68,10 +68,10 @@ class MASTERSTUDY_LESSONDONE {
 			'priority'            => 10,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'lesson_completed' ),
-			'options'             => [],
+			'options'             => array(),
 			'options_group'       => [
 				$this->trigger_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_ajax(
+					Automator()->helpers->recipe->field->select_field_ajax(
 						'MSLMSCOURSE',
 						esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
 						$options,
@@ -85,12 +85,12 @@ class MASTERSTUDY_LESSONDONE {
 						],
 						$course_relevant_tokens
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr_x( 'Lesson', 'MasterStudy LMS', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
+					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr_x( 'Lesson', 'MasterStudy LMS', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 				],
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -102,7 +102,7 @@ class MASTERSTUDY_LESSONDONE {
 	 */
 	public function lesson_completed( $user_id, $lesson_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$course_id = intval( $_GET['course'] );
 
@@ -113,15 +113,15 @@ class MASTERSTUDY_LESSONDONE {
 			'user_id' => $user_id,
 		];
 
-		$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+		$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
 
-					$course_id = absint($_GET['course']);
+					$course_id = absint( $_GET['course'] );
 
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -132,7 +132,7 @@ class MASTERSTUDY_LESSONDONE {
 						]
 					);
 
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -142,7 +142,7 @@ class MASTERSTUDY_LESSONDONE {
 							'run_number'     => $result['args']['run_number'],
 						]
 					);
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

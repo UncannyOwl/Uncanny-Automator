@@ -31,29 +31,29 @@ class EDD_ORDERDONE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/easy-digital-downloads/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'sentence'            => sprintf(  esc_attr__( 'Order total is {{equals to:%1$s}} ${{0:%2$s}} and placed {{a number of:%3$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'Order total is {{equals to:%1$s}} ${{0:%2$s}} and placed {{a number of:%3$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'select_option_name'  =>  esc_attr__( 'User completes {{an order}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'User completes {{an order}}', 'uncanny-automator' ),
 			'action'              => 'edd_complete_purchase',
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'edd_complete_purchase' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->field->integer_field( $this->trigger_meta ),
-				$uncanny_automator->helpers->recipe->field->less_or_greater_than(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->field->integer_field( $this->trigger_meta ),
+				Automator()->helpers->recipe->field->less_or_greater_than(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -66,7 +66,7 @@ class EDD_ORDERDONE {
 	public function edd_complete_purchase( $payment_id ) {
 
 		//TODO:: Complete this function
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$post_id = 0;
 		$user_id = get_current_user_id();
@@ -77,6 +77,6 @@ class EDD_ORDERDONE {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

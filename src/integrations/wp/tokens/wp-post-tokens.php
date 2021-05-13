@@ -40,13 +40,13 @@ class Wp_Post_Tokens {
 	}
 
 	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
+	 * @param     $value
+	 * @param     $pieces
+	 * @param     $recipe_id
+	 * @param     $trigger_data
 	 *
 	 * @param int $user_id
-	 * @param $replace_args
+	 * @param     $replace_args
 	 *
 	 * @return mixed
 	 */
@@ -64,7 +64,7 @@ class Wp_Post_Tokens {
 			'POSTID',
 			'POSTTITLE',
 			'WPTAXONOMYTERM',
-			'WPPOSTTYPES'
+			'WPPOSTTYPES',
 		];
 
 		if ( $pieces && isset( $pieces[2] ) ) {

@@ -34,38 +34,38 @@ class MYCRED_AWARDBADGE_A {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mycred/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - myCred */
-			'sentence'           => sprintf(  esc_attr__( 'Award {{a badge:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Award {{a badge:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - myCred */
-			'select_option_name' =>  esc_attr__( 'Award {{a badge}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Award {{a badge}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_mycred_badge' ],
-			'options'            => [],
+			'options'            => array(),
 			'options_group'      => [
 				$this->action_meta => [
 					/* translators: Noun */
-					$uncanny_automator->helpers->recipe->mycred->options->list_mycred_badges(
-						 esc_attr__( 'Badge', 'uncanny-automator' ),
+					Automator()->helpers->recipe->mycred->options->list_mycred_badges(
+						esc_attr__( 'Badge', 'uncanny-automator' ),
 						$this->action_meta,
 						[
 							'token'        => false,
 							'is_ajax'      => true,
-							'target_field' => $this->action_meta
+							'target_field' => $this->action_meta,
 						]
-					)
-				]
+					),
+				],
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -77,12 +77,12 @@ class MYCRED_AWARDBADGE_A {
 	 */
 	public function award_mycred_badge( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$badge_id = $action_data['meta'][ $this->action_meta ];
 
 		mycred_assign_badge_to_user( absint( $user_id ), absint( $badge_id ) );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

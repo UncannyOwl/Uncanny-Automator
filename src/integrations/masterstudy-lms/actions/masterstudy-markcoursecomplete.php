@@ -32,7 +32,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -42,11 +42,11 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false );
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/masterstudy-lms/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
@@ -63,12 +63,12 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 					'input_type'               => 'select',
 					'required'                 => true,
 					'options'                  => $options,
-					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' )
-				]
+					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
+				],
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -79,7 +79,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 * @param $recipe_id
 	 */
 	public function mark_course_complete( $user_id, $action_data, $recipe_id ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$course_id = $action_data['meta'][ $this->action_meta ];
 
@@ -101,8 +101,8 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 				// Enroll the user is the course if they are not already enrolled
 				$course = stm_lms_get_user_course( $user_id, $course_id, array( 'user_course_id' ) );
 				if ( ! count( $course ) ) {
-						\STM_LMS_Course::add_user_course( $course_id, $user_id, \STM_LMS_Course::item_url( $course_id, '' ), 0 );
-						\STM_LMS_Course::add_student( $course_id );
+					\STM_LMS_Course::add_user_course( $course_id, $user_id, \STM_LMS_Course::item_url( $course_id, '' ), 0 );
+					\STM_LMS_Course::add_student( $course_id );
 				}
 
 
@@ -150,7 +150,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 
 					}
 				}
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id );
 			}
 		}
 	}

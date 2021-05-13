@@ -28,8 +28,8 @@ class Wishlist_Member_Helpers {
 	 * Wishlist_Member_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -47,17 +47,17 @@ class Wishlist_Member_Helpers {
 	}
 
 	/**
-	 * @param null $label
+	 * @param null   $label
 	 * @param string $option_code
 	 * @param string $type
 	 *
 	 * @return mixed|void
 	 */
-	public function wm_get_all_membership_levels( $label = null, $option_code = 'WMMEMBERSHIPLEVELS', $args = [] ) {
+	public function wm_get_all_membership_levels( $label = null, $option_code = 'WMMEMBERSHIPLEVELS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -71,7 +71,7 @@ class Wishlist_Member_Helpers {
 		$include_all  = key_exists( 'include_all', $args ) ? $args['include_all'] : false;
 		$any          = key_exists( 'any', $args ) ? $args['any'] : false;
 
-		$options = [];
+		$options = array();
 		if ( $include_all ) {
 			$options['-1'] = esc_attr__( 'All levels', 'uncanny-automator' );
 		}

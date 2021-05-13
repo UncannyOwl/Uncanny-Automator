@@ -31,27 +31,27 @@ class GF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Gravity Forms */
-			'sentence'            => sprintf(  esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Gravity Forms */
-			'select_option_name'  =>  esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'gform_after_submission',
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'gform_submit' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->gravity_forms->options->list_gravity_forms(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->gravity_forms->options->list_gravity_forms(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -64,7 +64,7 @@ class GF_SUBFORM {
 	 */
 	public function gform_submit( $entry, $form ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( empty( $entry ) ) {
 			return;
@@ -79,6 +79,6 @@ class GF_SUBFORM {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

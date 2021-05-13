@@ -39,7 +39,7 @@ class Add_Wm_Integration {
 	public function plugin_active( $status, $plugin ) {
 
 		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'WishListMember' )) {
+			if ( class_exists( 'WishListMember' ) ) {
 				$status = true;
 			} else {
 				$status = false;
@@ -71,11 +71,11 @@ class Add_Wm_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Wishlist Member',
-			'icon_svg' => Utilities::get_integration_icon( 'wishlist-member-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/wishlist-member-icon.svg' ),
 		) );
 	}
 }

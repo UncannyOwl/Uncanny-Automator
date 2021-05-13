@@ -30,8 +30,8 @@ class Ninja_Forms_Helpers {
 	 * Ninja_Forms_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -51,30 +51,30 @@ class Ninja_Forms_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function list_ninja_forms( $label = null, $option_code = 'NFFORMS', $args = [] ) {
+	public function list_ninja_forms( $label = null, $option_code = 'NFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
+		$options      = array();
 
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		// global $uncanny_automator;
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			$forms = Ninja_Forms()->form()->get_forms();
 
 			if ( ! empty( $forms ) ) {
@@ -108,7 +108,7 @@ class Ninja_Forms_Helpers {
 	 * @return array
 	 */
 	public function extract_save_ninja_fields( $entry, $args ) {
-		$data = [];
+		$data = array();
 		if ( $entry && class_exists( '\Ninja_Forms' ) ) {
 			$fields  = $entry['fields'];
 			$form_id = (int) $entry['form_id'];
@@ -127,7 +127,7 @@ class Ninja_Forms_Helpers {
 			}
 
 			if ( $data ) {
-				global $uncanny_automator;
+				// global $uncanny_automator;
 				$insert = [
 					'user_id'        => $user_id,
 					'trigger_id'     => $trigger_id,
@@ -137,7 +137,7 @@ class Ninja_Forms_Helpers {
 					'run_number'     => $run_number,
 				];
 
-				$uncanny_automator->insert_trigger_meta( $insert );
+				Automator()->insert_trigger_meta( $insert );
 			}
 		}
 
@@ -147,10 +147,10 @@ class Ninja_Forms_Helpers {
 	/**
 	 * Matching form fields values.
 	 *
-	 * @param array $entry form data.
-	 * @param array|null $recipes recipe data.
-	 * @param string|null $trigger_meta trigger meta key.
-	 * @param string|null $trigger_code trigger code key.
+	 * @param array       $entry               form data.
+	 * @param array|null  $recipes             recipe data.
+	 * @param string|null $trigger_meta        trigger meta key.
+	 * @param string|null $trigger_code        trigger code key.
 	 * @param string|null $trigger_second_code trigger second code key.
 	 *
 	 * @return array|bool
@@ -160,8 +160,8 @@ class Ninja_Forms_Helpers {
 			return false;
 		}
 
-		$matches        = [];
-		$recipe_ids     = [];
+		$matches        = array();
+		$recipe_ids     = array();
 		$entry_to_match = $entry['form_id'];
 		//Matching recipe ids that has trigger meta
 		foreach ( $recipes as $recipe ) {

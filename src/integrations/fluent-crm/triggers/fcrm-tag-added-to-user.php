@@ -37,11 +37,11 @@ class FCRM_TAG_ADDED_TO_USER {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/fluentcrm/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Fluent Forms */
@@ -53,11 +53,11 @@ class FCRM_TAG_ADDED_TO_USER {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'contact_added_to_tags' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->fluent_crm->options->fluent_crm_tags()
+				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -67,31 +67,31 @@ class FCRM_TAG_ADDED_TO_USER {
 	 */
 	public function contact_added_to_tags( $attachedTagIds, $subscriber ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$user_id = $uncanny_automator
+		$user_id = Automator()
 			->helpers
 			->recipe
 			->fluent_crm
-			->get_subscriber_user_id($subscriber);
+			->get_subscriber_user_id( $subscriber );
 
 		if ( 0 === $user_id ) {
 			// There is no wp user associated with the subscriber
 			return;
 		}
 
-		$tag_ids = $uncanny_automator
+		$tag_ids = Automator()
 			->helpers
 			->recipe
 			->fluent_crm
-			->get_attached_tag_ids($attachedTagIds);
+			->get_attached_tag_ids( $attachedTagIds );
 
 		if ( empty( $tag_ids ) ) {
 			// sanity check
 			return;
 		}
 
-		$matched_recipes = $uncanny_automator
+		$matched_recipes = Automator()
 			->helpers
 			->recipe
 			->fluent_crm
@@ -99,7 +99,7 @@ class FCRM_TAG_ADDED_TO_USER {
 
 		if ( ! empty( $matched_recipes ) ) {
 			foreach ( $matched_recipes as $matched_recipe ) {
-				if ( ! $uncanny_automator->is_recipe_completed( $matched_recipe->recipe_id, $user_id ) ) {
+				if ( ! Automator()->is_recipe_completed( $matched_recipe->recipe_id, $user_id ) ) {
 
 					$args = [
 						'code'            => $this->trigger_code,
@@ -109,7 +109,7 @@ class FCRM_TAG_ADDED_TO_USER {
 						'user_id'         => $user_id,
 					];
 
-					$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 					if ( $result ) {
 						foreach ( $result as $r ) {
@@ -125,7 +125,7 @@ class FCRM_TAG_ADDED_TO_USER {
 										'run_number'     => $r['args']['run_number'],
 									];
 
-									$uncanny_automator->insert_trigger_meta( $insert );
+									Automator()->insert_trigger_meta( $insert );
 
 									$insert = [
 										'user_id'        => $user_id,
@@ -136,10 +136,10 @@ class FCRM_TAG_ADDED_TO_USER {
 										'run_number'     => $r['args']['run_number'],
 									];
 
-									$uncanny_automator->insert_trigger_meta( $insert );
+									Automator()->insert_trigger_meta( $insert );
 								}
 
-								$uncanny_automator->maybe_trigger_complete( $r['args'] );
+								Automator()->maybe_trigger_complete( $r['args'] );
 							}
 						}
 					}

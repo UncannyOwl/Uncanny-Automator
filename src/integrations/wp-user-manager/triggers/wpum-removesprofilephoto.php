@@ -37,10 +37,10 @@ class WPUM_REMOVESPROFILEPHOTO {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-user-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP User Manager */
@@ -51,17 +51,17 @@ class WPUM_REMOVESPROFILEPHOTO {
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'wpum_profile_photo_removed' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
 	 * @param $user_id
 	 */
 	public function wpum_profile_photo_removed( $user_id ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( 0 === absint( $user_id ) ) {
 			// Its a logged in recipe and
@@ -76,7 +76,7 @@ class WPUM_REMOVESPROFILEPHOTO {
 			'ignore_post_id' => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $pass_args );
+		Automator()->maybe_add_trigger_entry( $pass_args );
 	}
 
 }

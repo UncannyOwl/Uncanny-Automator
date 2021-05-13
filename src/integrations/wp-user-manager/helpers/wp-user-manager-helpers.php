@@ -28,8 +28,8 @@ class Wp_User_Manager_Helpers {
 	 * Wp_User_Manager_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 	}
 
@@ -54,11 +54,11 @@ class Wp_User_Manager_Helpers {
 	 *
 	 * @return array|mixed|void
 	 */
-	public function get_all_forms( $label = null, $option_code = 'WPUMFORMS', $args = [] ) {
+	public function get_all_forms( $label = null, $option_code = 'WPUMFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -70,7 +70,7 @@ class Wp_User_Manager_Helpers {
 		$is_any       = key_exists( 'is_any', $args ) ? $args['is_any'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
+		$options      = array();
 
 		if ( $is_any ) {
 			$options['-1'] = __( 'Any form', 'uncanny-automator-pro' );

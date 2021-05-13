@@ -31,11 +31,11 @@ class BDB_USERUPDATEAVATAR {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddyboss/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
@@ -47,10 +47,10 @@ class BDB_USERUPDATEAVATAR {
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'bp_user_updated_avatar' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class BDB_USERUPDATEAVATAR {
 	 */
 	public function bp_user_updated_avatar( $item_id, $type, $avatar_data ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( empty( $avatar_data ) || 'user' !== $avatar_data['object'] ) {
 			return;
@@ -78,6 +78,6 @@ class BDB_USERUPDATEAVATAR {
 			'is_signed_in'   => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

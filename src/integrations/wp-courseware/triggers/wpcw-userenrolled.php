@@ -31,28 +31,28 @@ class WPCW_USERENROLLED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-courseware/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Courseware */
-			'sentence'            => sprintf(  esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user is enrolled in {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP Courseware */
-			'select_option_name'  =>  esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user is enrolled in {{a course}}', 'uncanny-automator' ),
 			'action'              => 'wpcw_enroll_user',
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wpcw_user_enrolled' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_courseware->options->all_wpcw_courses(  esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wp_courseware->options->all_wpcw_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -69,7 +69,7 @@ class WPCW_USERENROLLED {
 			return;
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		foreach ( $courses_enrolled as $course_key ) {
 
@@ -82,7 +82,7 @@ class WPCW_USERENROLLED {
 				'user_id' => $user_id,
 			];
 
-			$uncanny_automator->maybe_add_trigger_entry( $args );
+			Automator()->maybe_add_trigger_entry( $args );
 		}
 	}
 }

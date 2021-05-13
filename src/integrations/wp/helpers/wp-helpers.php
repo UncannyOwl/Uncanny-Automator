@@ -31,14 +31,14 @@ class Wp_Helpers {
 	 * Wp_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
 		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
 		add_action( 'wp_ajax_select_terms_for_selected_taxonomy', array(
 			$this,
-			'select_terms_for_selected_taxonomy'
+			'select_terms_for_selected_taxonomy',
 		) );
 
 		add_action( 'wp_ajax_nopriv_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
@@ -63,10 +63,10 @@ class Wp_Helpers {
 	 * Return all the specific fields of post type in ajax call
 	 */
 	function select_custom_post_func() {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
-		$fields = [];
+		Automator()->utilities->ajax_auth_check( $_POST );
+		$fields = array();
 		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
 			$post_type = sanitize_text_field( $_POST['value'] );
 
@@ -81,7 +81,7 @@ class Wp_Helpers {
 			);
 
 			//$posts_list = get_posts( $args );
-			$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+			$posts_list = Automator()->helpers->recipe->options->wp_query( $args );
 			if ( ! empty( $posts_list ) ) {
 				foreach ( $posts_list as $post_id => $title ) {
 					// Check if the post title is defined
@@ -106,9 +106,9 @@ class Wp_Helpers {
 	 */
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -124,8 +124,8 @@ class Wp_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$all_posts = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any post', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$all_posts = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any post', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -152,9 +152,9 @@ class Wp_Helpers {
 	 */
 	public function all_pages( $label = null, $option_code = 'WPPAGE', $any_option = false ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -169,8 +169,8 @@ class Wp_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$all_pages = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'All pages', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$all_pages = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'All pages', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -196,9 +196,9 @@ class Wp_Helpers {
 	 */
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -206,9 +206,9 @@ class Wp_Helpers {
 			$label = esc_attr__( 'Role', 'uncanny-automator' );
 		}
 
-		$roles = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$roles = array();
+		// global $uncanny_automator;
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			foreach ( wp_roles()->roles as $role_name => $role_info ) {
 				$roles[ $role_name ] = $role_info['name'];
 			}
@@ -219,7 +219,7 @@ class Wp_Helpers {
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $roles,
-			'custom_value_description' => esc_attr__( 'Role slug', 'uncanny-automator' )
+			'custom_value_description' => esc_attr__( 'Role slug', 'uncanny-automator' ),
 		];
 
 		return apply_filters( 'uap_option_wp_user_roles', $option );
@@ -231,11 +231,11 @@ class Wp_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function all_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = [] ) {
+	public function all_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -246,9 +246,9 @@ class Wp_Helpers {
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options      = array();
+		// global $uncanny_automator;
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			$args = [
 				'public'   => true,
 				'_builtin' => false,
@@ -287,12 +287,12 @@ class Wp_Helpers {
 	 */
 	public function sendtest_webhook() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check( $_POST );
 
-		$key_values   = [];
-		$values       = (array) $uncanny_automator->uap_sanitize( $_POST['values'], 'mixed' );
+		$key_values   = array();
+		$values       = (array) Automator()->utilities->automator_sanitize( $_POST['values'], 'mixed' );
 		$request_type = 'POST';
 		if ( isset( $values['WEBHOOKURL'] ) ) {
 			$webhook_url = esc_url_raw( $values['WEBHOOKURL'] );
@@ -380,10 +380,10 @@ class Wp_Helpers {
 	 * Return all the specific taxonomies of selected post type in ajax call
 	 */
 	function select_post_type_taxonomies() {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
-		$fields = [];
+		Automator()->utilities->ajax_auth_check( $_POST );
+		$fields = array();
 
 		$fields[] = array(
 			'value' => '0',
@@ -419,10 +419,10 @@ class Wp_Helpers {
 	 * Return all the specific terms of the selected taxonomy in ajax call
 	 */
 	function select_terms_for_selected_taxonomy() {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
-		$fields = [];
+		Automator()->utilities->ajax_auth_check( $_POST );
+		$fields = array();
 
 		$fields[] = array(
 			'value' => '0',

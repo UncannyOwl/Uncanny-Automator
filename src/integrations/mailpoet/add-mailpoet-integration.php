@@ -75,11 +75,11 @@ class Add_Mailpoet_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
-			'name' => 'MailPoet',
-			'icon_svg' => Utilities::get_integration_icon( 'mailpoet-icon.svg' ),
+		Automator()->register->integration( self::$integration, array(
+			'name'     => 'MailPoet',
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/mailpoet-icon.svg' ),
 		) );
 	}
 

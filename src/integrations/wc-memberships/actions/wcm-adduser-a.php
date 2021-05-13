@@ -30,11 +30,11 @@ class WCM_ADDUSER_A {
 	}
 
 	public function define_action() {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/woocommerce-memberships/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WooCommerce Memberships */
@@ -46,12 +46,12 @@ class WCM_ADDUSER_A {
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'add_user_to_membership_plan' ],
 			'options'            => [
-				$uncanny_automator->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans( null,
-					$this->action_meta )
+				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans( null,
+					$this->action_meta ),
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class WCM_ADDUSER_A {
 	 */
 	public function add_user_to_membership_plan( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$plan                  = $action_data['meta'][ $this->action_meta ];
 		$check_membership_plan = wc_memberships_is_user_member( $user_id, $plan );
@@ -75,23 +75,23 @@ class WCM_ADDUSER_A {
 			$action_data['do-nothing'] = true;
 			$action_data['completed']  = true;
 			$error_message             = esc_attr__( 'This user is already in the specified membership plan', 'uncanny-automator' );
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		} else {
 
 			try {
 				$arguments       = array(
 					'plan_id' => $plan,
-					'user_id' => $user_id
+					'user_id' => $user_id,
 				);
 				$user_membership = wc_memberships_create_user_membership( $arguments );
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id );
 			} catch ( WC_REST_Exception $e ) {
 				$error_message                       = $e->getMessage();
 				$recipe_log_id                       = $action_data['recipe_log_id'];
 				$args['do-nothing']                  = true;
 				$action_data['do-nothing']           = true;
 				$action_data['complete_with_errors'] = true;
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 			} catch ( SV_WC_Plugin_Exception $e ) {
 			}
 		}

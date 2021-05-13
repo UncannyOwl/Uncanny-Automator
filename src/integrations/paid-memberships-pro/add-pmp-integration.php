@@ -73,11 +73,11 @@ class Add_Pmp_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Paid Memberships Pro',
-			'icon_svg' => Utilities::get_integration_icon( 'paid-memberships-pro-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/paid-memberships-pro-icon.svg' ),
 		) );
 	}
 }

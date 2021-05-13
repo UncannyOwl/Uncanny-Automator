@@ -30,8 +30,8 @@ class Wpjm_Helpers {
 	 * Wpjm_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -51,32 +51,32 @@ class Wpjm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
 
-	public function list_wpjm_job_types( $label = null, $option_code = 'WPJMJOBTYPE', $args = [] ) {
+	public function list_wpjm_job_types( $label = null, $option_code = 'WPJMJOBTYPE', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Job type', 'uncanny-automator' );
+			$label = esc_attr__( 'Job type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
+		$options      = array();
 
 		$options['-1'] = __( 'Any type', 'uncanny-automator' );
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			// WP Job Manager is hidding terms on non job template
 			$terms = get_terms( 'job_listing_type', [ 'hide_empty' => false, 'public' => false ] );
 			if ( ! is_wp_error( $terms ) ) {
@@ -107,32 +107,32 @@ class Wpjm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
 
-	public function list_wpjm_jobs( $label = null, $option_code = 'WPJMJOBS', $args = [] ) {
+	public function list_wpjm_jobs( $label = null, $option_code = 'WPJMJOBS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Job', 'uncanny-automator' );
+			$label = esc_attr__( 'Job', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
+		$options      = array();
 
 		$options['-1'] = __( 'Any job', 'uncanny-automator' );
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			// WP Job Manager is hidding terms on non job template
 			$args = [
 				'post_type'      => 'job_listing',
@@ -163,7 +163,7 @@ class Wpjm_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 		];
-		
+
 		return apply_filters( 'uap_option_list_wpjm_jobs', $option );
 	}
 }

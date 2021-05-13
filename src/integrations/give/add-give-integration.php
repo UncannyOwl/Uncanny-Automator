@@ -75,11 +75,11 @@ class Add_Give_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'GiveWP',
-			'icon_svg' => Utilities::get_integration_icon( 'givewp-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/givewp-icon.svg' ),
 		) );
 	}
 }

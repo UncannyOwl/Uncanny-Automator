@@ -31,8 +31,8 @@ class Zapier_Helpers {
 	 * Zapier_Pro_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_nopriv_sendtest_zp_webhook', array( $this, 'sendtest_webhook' ) );
 		add_action( 'wp_ajax_sendtest_zp_webhook', array( $this, 'sendtest_webhook' ) );
@@ -58,16 +58,16 @@ class Zapier_Helpers {
 	 */
 	public function sendtest_webhook() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check( $_POST );
 
-		$key_values = [];
-		$headers    = [];
-		$values     = (array) $uncanny_automator->uap_sanitize( $_POST['values'], 'mixed' );
+		$key_values = array();
+		$headers    = array();
+		$values     = (array) Automator()->utilities->automator_sanitize( $_POST['values'], 'mixed' );
 		// Sanitizing webhook key pairs
-		$pairs          = [];
-		$webhook_fields = isset( $_POST['values']['WEBHOOK_FIELDS'] ) ? $_POST['values']['WEBHOOK_FIELDS'] : [];
+		$pairs          = array();
+		$webhook_fields = isset( $_POST['values']['WEBHOOK_FIELDS'] ) ? $_POST['values']['WEBHOOK_FIELDS'] : array();
 		if ( ! empty( $webhook_fields ) ) {
 			foreach ( $webhook_fields as $key_index => $pair ) {
 				$pairs[] = [
@@ -84,7 +84,7 @@ class Zapier_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
@@ -102,14 +102,14 @@ class Zapier_Helpers {
 			if ( empty( $webhook_url ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
 				] );
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
 				wp_send_json( [
 					'type'    => 'error',
-					'message' =>  esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
+					'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
 				] );
 			}
 			$fields = $values['WEBHOOK_FIELDS'];
@@ -120,7 +120,7 @@ class Zapier_Helpers {
 				$key_values[ $key ] = $value;
 			}
 
-			$header_meta = isset( $values['WEBHOOK_HEADERS'] ) ? $values['WEBHOOK_HEADERS'] : [];
+			$header_meta = isset( $values['WEBHOOK_HEADERS'] ) ? $values['WEBHOOK_HEADERS'] : array();
 			if ( ! empty( $header_meta ) ) {
 				for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
 					$key = isset( $header_meta[ $i ]['NAME'] ) ? sanitize_text_field( $header_meta[ $i ]['NAME'] ) : null;
@@ -159,7 +159,7 @@ class Zapier_Helpers {
 
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
-				$error_message = sprintf(  esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
+				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				wp_send_json( [
 					'type'    => 'error',
 					'message' => $error_message,
@@ -167,7 +167,7 @@ class Zapier_Helpers {
 			}
 
 			/* translators: 1. Webhook URL */
-			$success_message = sprintf(  esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
+			$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
 			wp_send_json( array(
 				'type'    => 'success',
@@ -177,9 +177,9 @@ class Zapier_Helpers {
 	}
 	/**
 	 *        if ( ! $this->load_options ) {
-	 * global $uncanny_automator;
+	 * // global $uncanny_automator;
 	 *
-	 * return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+	 * return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 	 * }
 	 */
 }

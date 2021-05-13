@@ -31,28 +31,28 @@ class WPCW_MODULECOMPLETED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-courseware/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Courseware */
-			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a module:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a module:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP Courseware */
-			'select_option_name'  =>  esc_attr__( 'A user completes {{a module}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a module}}', 'uncanny-automator' ),
 			'action'              => 'wpcw_user_completed_module',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpcw_module_completed' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_courseware->options->all_wpcw_modules(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wp_courseware->options->all_wpcw_modules(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -70,7 +70,7 @@ class WPCW_MODULECOMPLETED {
 			return;
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$module_id = $parent->parent_module_id;
 
@@ -80,7 +80,7 @@ class WPCW_MODULECOMPLETED {
 			'post_id' => intval( $module_id ),
 			'user_id' => $user_id,
 		];
-		$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+		$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
@@ -94,8 +94,8 @@ class WPCW_MODULECOMPLETED {
 
 					$trigger_meta['meta_key']   = $this->trigger_meta;
 					$trigger_meta['meta_value'] = $module_id;
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->insert_trigger_meta( $trigger_meta );
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

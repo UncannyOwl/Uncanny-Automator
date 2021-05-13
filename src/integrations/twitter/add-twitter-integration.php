@@ -3,7 +3,7 @@
  * Contains Integration class.
  *
  * @version 2.4.0
- * @since 2.4.0
+ * @since   2.4.0
  * @package Uncanny_Automator
  */
 
@@ -30,7 +30,8 @@ class Add_Twitter_Integration {
 	 *
 	 * @since 2.4.0
 	 */
-	public function __construct() {}
+	public function __construct() {
+	}
 
 	/**
 	 * Registers Integration.
@@ -42,14 +43,14 @@ class Add_Twitter_Integration {
 		// set up configuration.
 		$integration_config = array(
 			'name'     => 'Twitter',
-			'icon_svg' => Utilities::get_integration_icon( 'twitter-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/twitter-icon.svg' ),
 		);
 
 		// global automator object.
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		// register integration into automator.
-		$uncanny_automator->register->integration( self::$integration, $integration_config );
+		Automator()->register->integration( self::$integration, $integration_config );
 
 	}
 

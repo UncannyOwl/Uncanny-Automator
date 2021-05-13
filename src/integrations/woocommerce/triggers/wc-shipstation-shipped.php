@@ -34,26 +34,26 @@ class WC_SHIPSTATION_SHIPPED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/woocommerce-shipstation/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'trigger_meta'        => $this->trigger_code,
 			/* translators: Logged-in trigger - WooCommerce */
 			'sentence'            => esc_attr__( 'An order is shipped', 'uncanny-automator' ),
 			/* translators: Logged-in trigger - WooCommerce */
-			'select_option_name'  =>  esc_attr__( 'An order is shipped', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'An order is shipped', 'uncanny-automator' ),
 			'action'              => 'woocommerce_shipstation_shipnotify',
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'shipping_completed' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -66,7 +66,7 @@ class WC_SHIPSTATION_SHIPPED {
 	 */
 
 	public function shipping_completed( $order, $argu ) {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( ! $order ) {
 			return;
@@ -90,13 +90,13 @@ class WC_SHIPSTATION_SHIPPED {
 			'is_signed_in'   => $user_id,
 		];
 
-		$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
 					// Add token for options
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -107,7 +107,7 @@ class WC_SHIPSTATION_SHIPPED {
 						]
 					);
 					// Add token for options
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -118,7 +118,7 @@ class WC_SHIPSTATION_SHIPPED {
 						]
 					);
 					// Add token for options
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -129,7 +129,7 @@ class WC_SHIPSTATION_SHIPPED {
 						]
 					);
 					// Add token for options
-					$uncanny_automator->insert_trigger_meta(
+					Automator()->insert_trigger_meta(
 						[
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
@@ -140,7 +140,7 @@ class WC_SHIPSTATION_SHIPPED {
 						]
 					);
 
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

@@ -36,8 +36,8 @@ class WP_CREATEPOST {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
-		$custom_post_types = $uncanny_automator->helpers->recipe->wp->options->all_post_types( esc_attr__( 'Type', 'uncanny-automator' ), $this->action_code, [
+		// global $uncanny_automator;
+		$custom_post_types = Automator()->helpers->recipe->wp->options->all_post_types( esc_attr__( 'Type', 'uncanny-automator' ), $this->action_code, [
 			'token'   => false,
 			'is_ajax' => false,
 		] );
@@ -49,7 +49,7 @@ class WP_CREATEPOST {
 
 		$output     = 'object';
 		$operator   = 'and';
-		$options    = [];
+		$options    = array();
 		$post_types = get_post_types( $args, $output, $operator );
 		if ( ! empty( $post_types ) ) {
 			foreach ( $post_types as $post_type ) {
@@ -60,10 +60,10 @@ class WP_CREATEPOST {
 		$custom_post_types['options'] = $options;
 
 		// get all the post stati objects
-		$post_statuses = get_post_stati( [], 'objects' );
+		$post_statuses = get_post_stati( array(), 'objects' );
 
 		// initialise options
-		$status_options = [];
+		$status_options = array();
 
 		// make sure there are post stati
 		if ( ! empty( $post_statuses ) ) {
@@ -100,11 +100,11 @@ class WP_CREATEPOST {
 			unset( $status_options['inherit'] );
 		}
 
-		$post_status_field = $uncanny_automator->helpers->recipe->field->select_field( 'WPCPOSTSTATUS', esc_attr__( 'Status', 'uncanny-automator' ), $status_options );
+		$post_status_field = Automator()->helpers->recipe->field->select_field( 'WPCPOSTSTATUS', esc_attr__( 'Status', 'uncanny-automator' ), $status_options );
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WordPress Core */
@@ -118,10 +118,10 @@ class WP_CREATEPOST {
 				$this->action_code => [
 					$custom_post_types,
 					$post_status_field,
-					$uncanny_automator->helpers->recipe->field->text_field( 'WPCPOSTAUTHOR', esc_attr__( 'Author', 'uncanny-automator' ), true, 'text', '{{admin_email}}', true, esc_attr__( 'Accepts user ID, email or username', 'uncanny-automator' ) ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'WPCPOSTTITLE', esc_attr__( 'Title', 'uncanny-automator' ), true, 'text', '', true ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'WPCPOSTSLUG', esc_attr__( 'Slug', 'uncanny-automator' ), true, 'text', '', false ),
-					$uncanny_automator->helpers->recipe->field->text_field( 'WPCPOSTCONTENT', esc_attr__( 'Content', 'uncanny-automator' ), true, 'textarea', '', false ),
+					Automator()->helpers->recipe->field->text_field( 'WPCPOSTAUTHOR', esc_attr__( 'Author', 'uncanny-automator' ), true, 'text', '{{admin_email}}', true, esc_attr__( 'Accepts user ID, email or username', 'uncanny-automator' ) ),
+					Automator()->helpers->recipe->field->text_field( 'WPCPOSTTITLE', esc_attr__( 'Title', 'uncanny-automator' ), true, 'text', '', true ),
+					Automator()->helpers->recipe->field->text_field( 'WPCPOSTSLUG', esc_attr__( 'Slug', 'uncanny-automator' ), true, 'text', '', false ),
+					Automator()->helpers->recipe->field->text_field( 'WPCPOSTCONTENT', esc_attr__( 'Content', 'uncanny-automator' ), true, 'textarea', '', false ),
 					[
 						'input_type'        => 'repeater',
 						'option_code'       => 'CPMETA_PAIRS',
@@ -150,7 +150,7 @@ class WP_CREATEPOST {
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	public function plugins_loaded() {
@@ -166,16 +166,16 @@ class WP_CREATEPOST {
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$post_title   = $uncanny_automator->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
-		$post_slug    = $uncanny_automator->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
-		$post_content = $uncanny_automator->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
-		$post_author  = $uncanny_automator->parse->text( $action_data['meta']['WPCPOSTAUTHOR'], $recipe_id, $user_id, $args );
-		$post_status  = $uncanny_automator->parse->text( $action_data['meta']['WPCPOSTSTATUS'], $recipe_id, $user_id, $args );
+		$post_title   = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
+		$post_slug    = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
+		$post_content = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+		$post_author  = Automator()->parse->text( $action_data['meta']['WPCPOSTAUTHOR'], $recipe_id, $user_id, $args );
+		$post_status  = Automator()->parse->text( $action_data['meta']['WPCPOSTSTATUS'], $recipe_id, $user_id, $args );
 		$post_type    = $action_data['meta'][ $this->action_code ];
 
-		$post_args                 = [];
+		$post_args                 = array();
 		$post_args['post_title']   = sanitize_text_field( $post_title );
 		$post_args['post_name']    = sanitize_title( $post_slug );
 		$post_args['post_content'] = $post_content;
@@ -205,13 +205,13 @@ class WP_CREATEPOST {
 			if ( ! empty( $meta_pairs ) ) {
 				foreach ( $meta_pairs as $pair ) {
 					$meta_key   = sanitize_title( $pair['KEY'] );
-					$meta_value = sanitize_text_field( $uncanny_automator->parse->text( $pair['VALUE'], $recipe_id, $user_id, $args ) );
+					$meta_value = sanitize_text_field( Automator()->parse->text( $pair['VALUE'], $recipe_id, $user_id, $args ) );
 					update_post_meta( $post_id, $meta_key, $meta_value );
 				}
 			}
 		}
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 }

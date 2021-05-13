@@ -29,8 +29,8 @@ class Buddyboss_Helpers {
 	 * Buddyboss_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -55,26 +55,26 @@ class Buddyboss_Helpers {
 	 */
 	public function all_buddyboss_groups( $label = null, $option_code = 'BDBGROUPS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		$args = wp_parse_args( $args, array(
 			'uo_include_any' => false,
-			'uo_any_label'   =>  esc_attr__( 'Any group', 'uncanny-automator' ),
+			'uo_any_label'   => esc_attr__( 'Any group', 'uncanny-automator' ),
 			'status'         => array( 'public' ),
 		) );
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Group', 'uncanny-automator' );
+			$label = esc_attr__( 'Group', 'uncanny-automator' );
 		}
 
 		global $wpdb;
 		$qry     = "SHOW TABLES LIKE '{$wpdb->prefix}bp_groups';";
-		$options = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options = array();
+		// global $uncanny_automator;
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
@@ -99,12 +99,12 @@ class Buddyboss_Helpers {
 		}
 
 		$option = [
-			'option_code' => $option_code,
-			'label'       => $label,
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $options,
-			'custom_value_description' => _x( 'Group ID', 'BuddyBoss', 'uncanny-automator' )
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => 'select',
+			'required'                 => true,
+			'options'                  => $options,
+			'custom_value_description' => _x( 'Group ID', 'BuddyBoss', 'uncanny-automator' ),
 		];
 
 
@@ -119,30 +119,30 @@ class Buddyboss_Helpers {
 	 */
 	public function all_buddyboss_users( $label = null, $option_code = 'BDBUSERS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'User', 'uncanny-automator' );
+			$label = esc_attr__( 'User', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   =>  esc_attr__( 'Any user', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr__( 'Any user', 'uncanny-automator' ),
 			)
 		);
 
-		$options = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options = array();
+		// global $uncanny_automator;
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
 
-			$users = $uncanny_automator->helpers->recipe->wp_users();
+			$users = Automator()->helpers->recipe->wp_users();
 
 			foreach ( $users as $user ) {
 				$options[ $user->ID ] = $user->display_name;
@@ -150,47 +150,48 @@ class Buddyboss_Helpers {
 		}
 
 		$option = [
-			'option_code' => $option_code,
-			'label'       => $label,
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $options,
-			'custom_value_description' => esc_attr__( 'User ID', 'uncanny-automator' )
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => 'select',
+			'required'                 => true,
+			'options'                  => $options,
+			'custom_value_description' => esc_attr__( 'User ID', 'uncanny-automator' ),
 		];
 
 
 		return apply_filters( 'uap_option_all_buddyboss_users', $option );
 	}
+
 	/**
 	 * @param string $label
 	 * @param string $option_code
 	 *
 	 * @return mixed
 	 */
-	public function list_buddyboss_forums( $label = null, $option_code = 'BDBFORUMS', $args = array()  ) {
+	public function list_buddyboss_forums( $label = null, $option_code = 'BDBFORUMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   =>  esc_attr__( 'Any forum', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr__( 'Any forum', 'uncanny-automator' ),
 			)
 		);
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Forum', 'uncanny-automator' );
+			$label = esc_attr__( 'Forum', 'uncanny-automator' );
 		}
 
-		$options    = [];
+		$options    = array();
 		$forum_args = [
 			'post_type'      => bbp_get_forum_post_type(),
 			'posts_per_page' => 999,
@@ -200,17 +201,17 @@ class Buddyboss_Helpers {
 		];
 
 		if ( $args['uo_include_any'] ) {
-			$options[-1] = $args['uo_any_label'];
+			$options[ - 1 ] = $args['uo_any_label'];
 		}
-		global $uncanny_automator;
-		$forums  = $uncanny_automator->helpers->recipe->options->wp_query( $forum_args );
+		// global $uncanny_automator;
+		$forums = Automator()->helpers->recipe->options->wp_query( $forum_args );
 		if ( ! empty( $forums ) ) {
 			foreach ( $forums as $key => $forum ) {
 				$options[ $key ] = $forum;
 			}
 		}
 
-		$option  = [
+		$option = [
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',

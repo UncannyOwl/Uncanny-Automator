@@ -34,11 +34,11 @@ class UOA_ERRORS {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/automator-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Uncanny Automator */
@@ -52,7 +52,7 @@ class UOA_ERRORS {
 			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -67,7 +67,7 @@ class UOA_ERRORS {
 	 */
 	public function error( $recipe_id, $user_id, $recipe_log_id, $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		global $wpdb;
 		// get recipe actions
@@ -88,9 +88,9 @@ class UOA_ERRORS {
 				'ignore_post_id' => true,
 			];
 
-			$uncanny_automator->maybe_add_trigger_entry( $args, false );
+			Automator()->maybe_add_trigger_entry( $args, false );
 
-			$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+			$args = Automator()->maybe_add_trigger_entry( $args, false );
 			if ( $args ) {
 				foreach ( $args as $result ) {
 					if ( true === $result['result'] ) {
@@ -99,7 +99,7 @@ class UOA_ERRORS {
 
 						if ( $recipe ) {
 
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -109,7 +109,7 @@ class UOA_ERRORS {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -119,7 +119,7 @@ class UOA_ERRORS {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -129,7 +129,7 @@ class UOA_ERRORS {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -139,7 +139,7 @@ class UOA_ERRORS {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -153,7 +153,7 @@ class UOA_ERRORS {
 							//				foreach ( $errors as $error ) {
 							//					$automator_action_id = $error->automator_action_id;
 							//					$action = get_post($automator_action_id);
-							//					$uncanny_automator->insert_trigger_meta(
+							//					Automator()->insert_trigger_meta(
 							//						[
 							//							'user_id'        => $user_id,
 							//							'trigger_id'     => $args['trigger_id'],
@@ -167,7 +167,7 @@ class UOA_ERRORS {
 							//
 							//				}
 						}
-						$uncanny_automator->maybe_trigger_complete( $result['args'] );
+						Automator()->maybe_trigger_complete( $result['args'] );
 					}
 				}
 			}

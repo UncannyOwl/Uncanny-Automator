@@ -30,7 +30,7 @@ class LD_MAKEUSERLEADER {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'post_type'      => 'groups',
@@ -40,11 +40,11 @@ class LD_MAKEUSERLEADER {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+		$options = Automator()->helpers->recipe->options->wp_query( $args );
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Logged-in trigger - Uncanny Groups */
@@ -85,7 +85,7 @@ class LD_MAKEUSERLEADER {
 				],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -98,10 +98,10 @@ class LD_MAKEUSERLEADER {
 	 */
 	public function make_user_leader_of_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uo_group                     = $uncanny_automator->parse->text( $action_data['meta']['LDGROUP'], $recipe_id, $user_id, $args );
-		$group_leader_role_assignment = $uncanny_automator->parse->text( $action_data['meta']['GROUP_LEADER_ROLE_ASSIGNMENT'], $recipe_id, $user_id, $args );
+		$uo_group                     = Automator()->parse->text( $action_data['meta']['LDGROUP'], $recipe_id, $user_id, $args );
+		$group_leader_role_assignment = Automator()->parse->text( $action_data['meta']['GROUP_LEADER_ROLE_ASSIGNMENT'], $recipe_id, $user_id, $args );
 
 		$user = get_user_by( 'ID', $user_id );
 
@@ -111,7 +111,7 @@ class LD_MAKEUSERLEADER {
 
 		if ( user_can( $user, 'group_leader' ) ) {
 			ld_update_leader_group_access( $user_id, $uo_group );
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 			return;
 		}
@@ -127,7 +127,7 @@ class LD_MAKEUSERLEADER {
 				break;
 		}
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 		return;
 	}

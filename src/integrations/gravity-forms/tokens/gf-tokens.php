@@ -56,11 +56,11 @@ class Gf_Tokens {
 	 *
 	 * @return array
 	 */
-	function gf_possible_tokens( $tokens = [], $args = [] ) {
+	function gf_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 
-		$form_ids = [];
+		$form_ids = array();
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 			$form = GFFormsModel::get_form( $form_id );
 			if ( $form ) {
@@ -77,7 +77,7 @@ class Gf_Tokens {
 
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
-				$fields = [];
+				$fields = array();
 				$meta   = RGFormsModel::get_form_meta( $form_id );
 				if ( is_array( $meta['fields'] ) ) {
 					foreach ( $meta['fields'] as $field ) {
@@ -159,7 +159,7 @@ class Gf_Tokens {
 				$token_info = explode( '|', $pieces[2] );
 				$form_id    = $token_info[0];
 				$meta_key   = $token_info[1];
-				
+
 				if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
 					$table_name = RGFormsModel::get_entry_table_name();
 				} else {
@@ -169,13 +169,13 @@ class Gf_Tokens {
 				$qq            = $wpdb->prepare( "SELECT id FROM {$table_name} WHERE $where_user_id AND form_id = %d ORDER BY date_created DESC LIMIT 0,1", $form_id );
 				$lead_id       = (int) $wpdb->get_var( $qq );
 				if ( $lead_id ) {
-					
+
 					if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
 						$table_name = RGFormsModel::get_entry_meta_table_name();
 					} else {
 						$table_name = RGFormsModel::get_lead_meta_table_name();
 					}
-					
+
 					$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
 				} else {
 					if ( 0 !== (int) $user_id && is_user_logged_in() ) {
@@ -194,7 +194,7 @@ class Gf_Tokens {
 							} else {
 								$table_name = RGFormsModel::get_lead_meta_table_name();
 							}
-							
+
 							$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
 						} else {
 							// Try again for anonymous user when its using a different email address
@@ -212,7 +212,7 @@ class Gf_Tokens {
 								} else {
 									$table_name = RGFormsModel::get_lead_meta_table_name();
 								}
-								
+
 								$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
 							}
 						}
@@ -232,16 +232,16 @@ class Gf_Tokens {
 							} else {
 								$table_name = RGFormsModel::get_lead_meta_table_name();
 							}
-							
+
 							$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
 						}
-					}else {
+					} else {
 						$value = '';
 					}
 				}
 			}
 		}
-		
+
 		return $value;
 	}
 }

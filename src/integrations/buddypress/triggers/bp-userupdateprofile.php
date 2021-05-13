@@ -31,11 +31,11 @@ class BP_USERUPDATEPROFILE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddypress/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
@@ -47,10 +47,10 @@ class BP_USERUPDATEPROFILE {
 			'priority'            => 10,
 			'accepted_args'       => 5,
 			'validation_function' => array( $this, 'bp_user_updated_profile' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class BP_USERUPDATEPROFILE {
 	 */
 	public function bp_user_updated_profile( $user_id, $posted_field_ids, $errors, $old_values, $new_values ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'code'           => $this->trigger_code,
@@ -74,6 +74,6 @@ class BP_USERUPDATEPROFILE {
 			'is_signed_in'   => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

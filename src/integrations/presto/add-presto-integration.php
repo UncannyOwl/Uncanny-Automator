@@ -63,13 +63,13 @@ class Add_Presto_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration(
+		Automator()->register->integration(
 			self::$integration,
 			array(
 				'name'     => 'Presto',
-				'icon_svg' => Utilities::get_integration_icon( 'presto-player-icon.svg' ),
+				'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/presto-player-icon.svg' ),
 			)
 		);
 	}

@@ -33,11 +33,11 @@ class FCRM_USER_TO_LIST {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/fluentcrm/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
@@ -48,11 +48,11 @@ class FCRM_USER_TO_LIST {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'list_to_user' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->fluent_crm->options->fluent_crm_lists( null, $this->action_meta, [ 'supports_multiple_values' => true ] )
+				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists( null, $this->action_meta, [ 'supports_multiple_values' => true ] ),
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 
@@ -65,7 +65,7 @@ class FCRM_USER_TO_LIST {
 	 */
 	public function list_to_user( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$lists     = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
 		$user_info = get_userdata( $user_id );
@@ -76,7 +76,7 @@ class FCRM_USER_TO_LIST {
 			if ( $subscriber ) {
 
 				$existingLists   = $subscriber->lists;
-				$existingListIds = [];
+				$existingListIds = array();
 				foreach ( $existingLists as $list ) {
 					if ( in_array( $list->id, $lists ) ) {
 						$existingListIds[] = $list->title;
@@ -86,7 +86,7 @@ class FCRM_USER_TO_LIST {
 				$subscriber->attachLists( $lists );
 
 				if ( empty( $existingListIds ) ) {
-					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
 				} else {
@@ -106,12 +106,12 @@ class FCRM_USER_TO_LIST {
 							)
 						);
 
-						$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $message );
+						Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
 
 						return;
 					}
 
-					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
 
@@ -129,7 +129,7 @@ class FCRM_USER_TO_LIST {
 					$user_info->user_email
 				);
 
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $message );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
 
 				return;
 			}
@@ -139,13 +139,13 @@ class FCRM_USER_TO_LIST {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 
-			$message                             = sprintf(
+			$message = sprintf(
 			/* translators: 1. The user id */
 				_x( 'User does not exist: %1$s', 'FluentCRM', 'uncanny-automator' ),
 				$user_id
 			);
 
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
 
 			return;
 		}

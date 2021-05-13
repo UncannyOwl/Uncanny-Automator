@@ -18,7 +18,10 @@ class Wpjm_Tokens {
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_wpjm_wpjmjobtype_tokens', [ $this, 'wpjm_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_trigger_pre_tokens', [ $this, 'wpjm_resume_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_wpjm_wpjmjobapplication_tokens', [ $this, 'wpjm_jobapplication_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_wpjm_wpjmjobapplication_tokens', [
+			$this,
+			'wpjm_jobapplication_possible_tokens',
+		], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'wpjm_token' ], 20, 6 );
 	}
 
@@ -49,13 +52,13 @@ class Wpjm_Tokens {
 	 *
 	 * @return array
 	 */
-	function wpjm_possible_tokens( $tokens = [], $args = [] ) {
+	function wpjm_possible_tokens( $tokens = array(), $args = array() ) {
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
 		$fields = [
-			
+
 			[
 				'tokenId'         => 'WPJMJOBOWNERNAME',
 				'tokenName'       => __( 'Job owner username', 'uncanny-automator' ),
@@ -153,7 +156,7 @@ class Wpjm_Tokens {
 	 *
 	 * @return array
 	 */
-	function wpjm_jobapplication_possible_tokens( $tokens = [], $args = [] ) {
+	function wpjm_jobapplication_possible_tokens( $tokens = array(), $args = array() ) {
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -286,7 +289,7 @@ class Wpjm_Tokens {
 	 *
 	 * @return array
 	 */
-	function wpjm_resume_possible_tokens( $tokens = [], $args = [] ) {
+	function wpjm_resume_possible_tokens( $tokens = array(), $args = array() ) {
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['code'];
@@ -356,6 +359,7 @@ class Wpjm_Tokens {
 
 			$tokens = array_merge( $tokens, $fields );
 		}
+
 		return $tokens;
 	}
 
@@ -379,10 +383,10 @@ class Wpjm_Tokens {
 				$trigger_meta   = $pieces[1];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value 
-													FROM {$wpdb->prefix}uap_trigger_log_meta 
-													WHERE meta_key = '{$trigger_meta}' 
-													AND automator_trigger_log_id = {$trigger_log_id} 
+				$entry          = $wpdb->get_var( "SELECT meta_value
+													FROM {$wpdb->prefix}uap_trigger_log_meta
+													WHERE meta_key = '{$trigger_meta}'
+													AND automator_trigger_log_id = {$trigger_log_id}
 													AND automator_trigger_id = {$trigger_id}
 													LIMIT 0,1" );
 
@@ -390,7 +394,7 @@ class Wpjm_Tokens {
 
 				if ( $pieces[2] === 'WPJMJOBTYPE' ) {
 					$job_terms   = wpjm_get_the_job_types( $entry );
-					$entry_terms = [];
+					$entry_terms = array();
 					if ( ! empty( $job_terms ) ) {
 						foreach ( $job_terms as $term ) {
 							$entry_terms[] = esc_html( $term->name );
@@ -538,7 +542,7 @@ class Wpjm_Tokens {
 						}
 					}
 					$return .= '</ul>';
-					$value = $return;
+					$value  = $return;
 				} elseif ( $pieces[2] === 'WPJMRESUMEEDUCATION' ) {
 					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {
 						$entry = $_resume_id;
@@ -587,7 +591,7 @@ class Wpjm_Tokens {
 					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {
 						$entry = $_resume_id;
 					}
-					
+
 					$return = '';
 					if ( $attachments = get_job_application_attachments( $entry ) ) {
 						$return = '<ul class="resume-links">';

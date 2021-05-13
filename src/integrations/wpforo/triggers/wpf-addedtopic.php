@@ -32,7 +32,7 @@ class WPF_ADDEDTOPIC {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$forums = WPF()->forum->get_forums( [ 'type' => 'forum' ] );
 
@@ -42,18 +42,18 @@ class WPF_ADDEDTOPIC {
 		}
 
 		$forum_relevant_tokens = [
-			'WPFORO_FORUM'               => __( 'Forum title', 'uncanny-automator' ),
-			'WPFORO_FORUM_ID'            => __( 'Forum ID', 'uncanny-automator' ),
-			'WPFORO_FORUM_URL'           => __( 'Forum URL', 'uncanny-automator' ),
-			'WPFORO_TOPIC'               => __( 'Topic title', 'uncanny-automator' ),
-			'WPFORO_TOPIC_ID'            => __( 'Topic ID', 'uncanny-automator' ),
-			'WPFORO_TOPIC_URL'           => __( 'Topic URL', 'uncanny-automator' ),
-			'WPFORO_TOPIC_CONTENT'       => __( 'Topic content', 'uncanny-automator' ),
+			'WPFORO_FORUM'         => __( 'Forum title', 'uncanny-automator' ),
+			'WPFORO_FORUM_ID'      => __( 'Forum ID', 'uncanny-automator' ),
+			'WPFORO_FORUM_URL'     => __( 'Forum URL', 'uncanny-automator' ),
+			'WPFORO_TOPIC'         => __( 'Topic title', 'uncanny-automator' ),
+			'WPFORO_TOPIC_ID'      => __( 'Topic ID', 'uncanny-automator' ),
+			'WPFORO_TOPIC_URL'     => __( 'Topic URL', 'uncanny-automator' ),
+			'WPFORO_TOPIC_CONTENT' => __( 'Topic content', 'uncanny-automator' ),
 		];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wpforo/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - wpForo */
@@ -65,7 +65,7 @@ class WPF_ADDEDTOPIC {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'added_topic' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->field->select_field_args( [
+				Automator()->helpers->recipe->field->select_field_args( [
 					'option_code'     => $this->trigger_meta,
 					'options'         => $forum_options,
 					'label'           => esc_attr__( 'Forums', 'uncanny-automator' ),
@@ -73,18 +73,18 @@ class WPF_ADDEDTOPIC {
 					'token_name'      => 'Forum ID',
 					'relevant_tokens' => $forum_relevant_tokens,
 				] ),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
 
 	public function added_topic( $args ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		if ( isset( $args['forumid'] ) ) {
 			$forum_id = absint( $args['forumid'] );
@@ -99,10 +99,10 @@ class WPF_ADDEDTOPIC {
 		}
 
 		// Get all recipes that have the "$this->trigger_code = 'ADDEDTOPIC'" trigger
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		// Get the specific WPFFORUMID meta data from the recipes
-		$recipe_trigger_meta_data = $uncanny_automator->get->meta_from_recipes( $recipes, 'WPFFORUMID' );
-		$matched_recipe_ids       = [];
+		$recipe_trigger_meta_data = Automator()->get->meta_from_recipes( $recipes, 'WPFFORUMID' );
+		$matched_recipe_ids       = array();
 
 		// Loop through recipe
 		foreach ( $recipe_trigger_meta_data as $recipe_id => $trigger_meta ) {
@@ -131,7 +131,7 @@ class WPF_ADDEDTOPIC {
 					'ignore_post_id'   => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
@@ -147,14 +147,14 @@ class WPF_ADDEDTOPIC {
 							$trigger_meta['meta_key']   = 'WPFORO_TOPIC_ID';
 							$trigger_meta['meta_value'] = $topic_id;
 
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
 							$trigger_meta['meta_key']   = 'WPFORO_TOPIC_FORUM_ID';
 							$trigger_meta['meta_value'] = $forum_id;
 
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

@@ -37,11 +37,11 @@ class HF_FORMSUBMIT {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/happyforms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Anonymous trigger - HappyForms */
@@ -53,7 +53,7 @@ class HF_FORMSUBMIT {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'hf_form_submitted' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->happyforms->options->all_happyforms_forms( null, $this->trigger_meta,
+				Automator()->helpers->recipe->happyforms->options->all_happyforms_forms( null, $this->trigger_meta,
 					[
 						'include_any' => true,
 						'any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
@@ -61,7 +61,7 @@ class HF_FORMSUBMIT {
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -76,7 +76,7 @@ class HF_FORMSUBMIT {
 
 	public function hf_form_submitted( $submission, $form, $misc ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$user_id = get_current_user_id();
 
@@ -87,7 +87,7 @@ class HF_FORMSUBMIT {
 			'user_id' => intval( $user_id ),
 		];
 
-		$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+		$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 		if ( $result ) {
 			foreach ( $result as $r ) {
@@ -102,9 +102,9 @@ class HF_FORMSUBMIT {
 							'run_number'     => $r['args']['run_number'],
 						];
 
-						$uncanny_automator->helpers->recipe->happyforms->extract_save_hf_fields( $submission, $form['ID'], $hf_args );
+						Automator()->helpers->recipe->happyforms->extract_save_hf_fields( $submission, $form['ID'], $hf_args );
 					}
-					$uncanny_automator->maybe_trigger_complete( $r['args'] );
+					Automator()->maybe_trigger_complete( $r['args'] );
 				}
 			}
 		}

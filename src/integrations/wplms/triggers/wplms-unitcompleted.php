@@ -31,28 +31,28 @@ class WPLMS_UNITCOMPLETED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-lms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP LMS */
-			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a unit:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a unit:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP LMS */
-			'select_option_name'  =>  esc_attr__( 'A user completes {{a unit}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a unit}}', 'uncanny-automator' ),
 			'action'              => 'wplms_unit_complete',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wplms_unit_completed' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wplms->options->all_wplms_units(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wplms->options->all_wplms_units(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -74,7 +74,7 @@ class WPLMS_UNITCOMPLETED {
 			return;
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'code'    => $this->trigger_code,
@@ -83,6 +83,6 @@ class WPLMS_UNITCOMPLETED {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

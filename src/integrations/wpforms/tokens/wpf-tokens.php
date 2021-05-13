@@ -55,12 +55,12 @@ class Wpf_Tokens {
 	 *
 	 * @return array
 	 */
-	function wpf_possible_tokens( $tokens = [], $args = [] ) {
+	function wpf_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$form_ids = [];
+		$form_ids = array();
 		$wpforms  = new WPForms_Form_Handler();
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 			$form = $wpforms->get( $form_id );
@@ -80,7 +80,7 @@ class Wpf_Tokens {
 
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
-				$fields = [];
+				$fields = array();
 				$form   = $wpforms->get( $form_id );
 				$meta   = wpforms_decode( $form->post_content );
 				if ( is_array( $meta['fields'] ) ) {
@@ -122,17 +122,17 @@ class Wpf_Tokens {
 				$trigger_meta   = $pieces[1];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value 
-													FROM {$wpdb->prefix}uap_trigger_log_meta 
-													WHERE meta_key = '{$trigger_meta}' 
-													AND automator_trigger_log_id = {$trigger_log_id} 
+				$entry          = $wpdb->get_var( "SELECT meta_value
+													FROM {$wpdb->prefix}uap_trigger_log_meta
+													WHERE meta_key = '{$trigger_meta}'
+													AND automator_trigger_log_id = {$trigger_log_id}
 													AND automator_trigger_id = {$trigger_id}
 													LIMIT 0,1" );
 				if ( empty( $entry ) ) {
-					$entry = $wpdb->get_var( "SELECT meta_value 
-												FROM {$wpdb->prefix}uap_trigger_log_meta 
-												WHERE meta_key = '$field' 
-												AND automator_trigger_log_id = $trigger_log_id 
+					$entry = $wpdb->get_var( "SELECT meta_value
+												FROM {$wpdb->prefix}uap_trigger_log_meta
+												WHERE meta_key = '$field'
+												AND automator_trigger_log_id = $trigger_log_id
 												AND automator_trigger_id = {$trigger_id}
 												LIMIT 0,1" );
 				}
@@ -161,7 +161,7 @@ class Wpf_Tokens {
 			foreach ( $args as $trigger_result ) {
 				//$trigger_result = array_pop( $args );
 				if ( true === $trigger_result['result'] ) {
-					global $uncanny_automator;
+					// global $uncanny_automator;
 					if ( $recipes ) {
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];
@@ -174,7 +174,7 @@ class Wpf_Tokens {
 										$trigger_args = $trigger_result['args'];
 										$meta_key     = $trigger_args['meta'];
 										$form_id      = $form_data['id'];
-										$data         = [];
+										$data         = array();
 										if ( $fields ) {
 											foreach ( $fields as $field ) {
 												$field_id     = $field['id'];
@@ -196,7 +196,7 @@ class Wpf_Tokens {
 											'trigger_log_id' => $trigger_log_id,
 										];
 
-										$uncanny_automator->insert_trigger_meta( $args );
+										Automator()->insert_trigger_meta( $args );
 									}
 								}
 							}

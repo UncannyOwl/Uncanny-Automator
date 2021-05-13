@@ -75,15 +75,15 @@ class Add_Nf_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->register->integration( 'NF', array(
+		Automator()->register->integration( 'NF', array(
 			'name'        => 'Ninja Forms',
-			'icon_16'     => Utilities::get_integration_icon( 'integration-ninjaforms-icon-16.png' ),
-			'icon_32'     => Utilities::get_integration_icon( 'integration-ninjaforms-icon-32.png' ),
-			'icon_64'     => Utilities::get_integration_icon( 'integration-ninjaforms-icon-64.png' ),
-			'logo'        => Utilities::get_integration_icon( 'integration-ninjaforms.png' ),
-			'logo_retina' => Utilities::get_integration_icon( 'integration-ninjaforms@2x.png' ),
+			'icon_16'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-ninjaforms-icon-16.png' ),
+			'icon_32'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-ninjaforms-icon-32.png' ),
+			'icon_64'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-ninjaforms-icon-64.png' ),
+			'logo'        => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-ninjaforms.png' ),
+			'logo_retina' => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-ninjaforms@2x.png' ),
 		) );
 	}
 }

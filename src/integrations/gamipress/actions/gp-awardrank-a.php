@@ -33,24 +33,24 @@ class GP_AWARDRANK_A {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/gamipress/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - GamiPress */
-			'sentence'           => sprintf(  esc_attr__( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Award {{a rank:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - GamiPress */
-			'select_option_name' =>  esc_attr__( 'Award {{a rank}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Award {{a rank}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'award_points' ],
-			'options'            => [],
+			'options'            => array(),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->gamipress->options->list_gp_rank_types(
+					Automator()->helpers->recipe->gamipress->options->list_gp_rank_types(
 						'',
 						'GPRANKTYPES',
 						[
@@ -61,19 +61,19 @@ class GP_AWARDRANK_A {
 						]
 					),
 
-					$uncanny_automator->helpers->recipe->field->select_field_args([
-						'option_code' => $this->action_meta,
-						'options'     => [],
+					Automator()->helpers->recipe->field->select_field_args( [
+						'option_code'              => $this->action_meta,
+						'options'                  => array(),
 						/* translators: Noun */
-						'label'       => esc_attr__( 'Rank', 'uncanny-automator' ),
-						'required'    => true,
-						'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' )
-					]),
+						'label'                    => esc_attr__( 'Rank', 'uncanny-automator' ),
+						'required'                 => true,
+						'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' ),
+					] ),
 				],
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -85,11 +85,11 @@ class GP_AWARDRANK_A {
 	 */
 	public function award_points( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$rank_id = $action_data['meta'][ $this->action_meta ];
 		gamipress_update_user_rank( $user_id, $rank_id );
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 }

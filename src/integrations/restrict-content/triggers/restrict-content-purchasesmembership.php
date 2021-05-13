@@ -38,11 +38,11 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/restrict-content/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Wishlist Member */
@@ -54,7 +54,7 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'user_purchases_membership_level' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->restrict_content->options->get_membership_levels(
+				Automator()->helpers->recipe->restrict_content->options->get_membership_levels(
 					null,
 					$this->trigger_meta,
 					[ 'any' => true ]
@@ -62,18 +62,18 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
 
 	/**
-	 * @param int             $membership_id ID of the membership.
-	 * @param \RCP_Membership $membership    Membership object.
+	 * @param int $membership_id ID of the membership.
+	 * @param \RCP_Membership $membership Membership object.
 	 */
 	public function user_purchases_membership_level( $membership_id, \RCP_Membership $RCP_Membership ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$user_id = $RCP_Membership->get_user_id();
 
@@ -81,11 +81,11 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 			return;
 		}
 
-		$level_id   = $RCP_Membership->get_object_id();
+		$level_id = $RCP_Membership->get_object_id();
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_level     = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_level     = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		//Add where Membership Level is set for trigger
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -94,7 +94,7 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 				if ( $required_level[ $recipe_id ][ $trigger_id ] === '-1' || $required_level[ $recipe_id ][ $trigger_id ] === $level_id ) {
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,
-						'trigger_id' => $trigger_id
+						'trigger_id' => $trigger_id,
 					];
 				}
 			}
@@ -112,14 +112,14 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 					'ignore_post_id'   => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
 
 							// Add token for options
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -130,7 +130,7 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 								]
 							);
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

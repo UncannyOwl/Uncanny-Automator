@@ -30,8 +30,8 @@ class Caldera_Helpers {
 	 * Caldera_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -54,23 +54,23 @@ class Caldera_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function list_caldera_forms_forms( $label = null, $option_code = 'CFFORMS', $args = [] ) {
+	public function list_caldera_forms_forms( $label = null, $option_code = 'CFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options      = array();
+		// global $uncanny_automator;
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			$forms = Caldera_Forms_Forms::get_forms( true );
 
 			if ( ! empty( $forms ) ) {

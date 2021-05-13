@@ -32,7 +32,7 @@ class Restrict_Content_Tokens {
 	 *
 	 * @return array
 	 */
-	public function possible_tokens( $tokens = [], $args = [] ) {
+	public function possible_tokens( $tokens = array(), $args = array() ) {
 
 		if ( ! isset( $args['value'] ) || ! isset( $args['meta'] ) ) {
 			return $tokens;
@@ -42,9 +42,9 @@ class Restrict_Content_Tokens {
 			return $tokens;
 		}
 
-		$id           = $args['value'];
+		$id = $args['value'];
 
-		$new_tokens = [];
+		$new_tokens = array();
 		if ( ! empty( $id ) && absint( $id ) ) {
 			$new_tokens[] = [
 				'tokenId'         => 'RCMEMBERSHIPLEVEL_INITIAL',
@@ -74,7 +74,7 @@ class Restrict_Content_Tokens {
 	 *
 	 * @return string|null
 	 */
-	public function rc_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = [] ) {
+	public function rc_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
 
 		if ( $pieces ) {
 			if ( in_array( 'RCPURCHASESMEMBERSHIP', $pieces ) ) {
@@ -86,14 +86,14 @@ class Restrict_Content_Tokens {
 					return $value;
 				}
 
-				global $uncanny_automator;
+				// global $uncanny_automator;
 				$replace_pieces = $replace_args['pieces'];
 				$trigger_log_id = $replace_args['trigger_log_id'];
 				$run_number     = $replace_args['run_number'];
 				$user_id        = $replace_args['user_id'];
 				$trigger_id     = absint( $replace_pieces[0] );
 
-				$membership_id = $uncanny_automator->get->get_trigger_log_meta(
+				$membership_id = Automator()->get->get_trigger_log_meta(
 					'RCMEMBERSHIPLEVEL_MEMBERSHIPID',
 					$trigger_id,
 					$trigger_log_id,

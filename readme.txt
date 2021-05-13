@@ -175,7 +175,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **New Triggers:**
 
-* Uncanny Codes: A user redeems a code from a batch
+* Uncanny Codes: A user redeems a code from {a batch}
 
 **Added:**
 

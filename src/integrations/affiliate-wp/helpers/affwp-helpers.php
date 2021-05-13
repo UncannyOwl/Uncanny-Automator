@@ -26,6 +26,12 @@ class Affwp_Helpers {
 	public $load_options;
 
 	/**
+	 * Affwp_Helpers constructor.
+	 */
+	public function __construct() {
+	}
+
+	/**
 	 * @param Affwp_Helpers $options
 	 */
 	public function setOptions( Affwp_Helpers $options ) {
@@ -40,19 +46,13 @@ class Affwp_Helpers {
 	}
 
 	/**
-	 * Affwp_Helpers constructor.
-	 */
-	public function __construct() {
-	}
-
-	/**
-	 * @param null $label
+	 * @param null   $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed|void
 	 */
-	public function get_referral_types( $label = null, $option_code = 'REFERRALTYPES', $args = [] ) {
+	public function get_referral_types( $label = null, $option_code = 'REFERRALTYPES', $args = array() ) {
 		if ( ! $label ) {
 			$label = __( 'Referral type', 'uncanny-automator' );
 		}
@@ -62,7 +62,7 @@ class Affwp_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$any_option   = key_exists( 'any_option', $args ) ? $args['any_option'] : false;
-		$options      = [];
+		$options      = array();
 
 		if ( isset( $any_option ) && $any_option == true ) {
 			$options['-1'] = __( 'Any type', 'uncanny-automator' );

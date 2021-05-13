@@ -29,8 +29,8 @@ class Uoa_Helpers {
 	 * Uoa_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 		add_action( 'wp_ajax_nopriv_sendtest_uoa_webhook', array( $this, 'sendtest_webhook' ) );
 		add_action( 'wp_ajax_sendtest_uoa_webhook', array( $this, 'sendtest_webhook' ) );
 	}
@@ -54,13 +54,13 @@ class Uoa_Helpers {
 	 */
 	public function sendtest_webhook() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check( $_POST );
 
-		$key_values   = [];
-		$headers      = [];
-		$values       = (array) $uncanny_automator->uap_sanitize( $_POST['values'], 'mixed' );
+		$key_values   = array();
+		$headers      = array();
+		$values       = (array) Automator()->utilities->automator_sanitize( $_POST['values'], 'mixed' );
 		$request_type = 'POST';
 		if ( isset( $values['WEBHOOKURL'] ) ) {
 			$webhook_url = esc_url_raw( $values['WEBHOOKURL'] );
@@ -106,7 +106,7 @@ class Uoa_Helpers {
 					}
 				}
 			}
-			$header_meta = isset( $values['WEBHOOK_HEADERS'] ) ? $values['WEBHOOK_HEADERS'] : [];
+			$header_meta = isset( $values['WEBHOOK_HEADERS'] ) ? $values['WEBHOOK_HEADERS'] : array();
 
 			if ( ! empty( $header_meta ) ) {
 				for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
@@ -171,13 +171,13 @@ class Uoa_Helpers {
 	 */
 	public function get_recipes( $label = null, $option_code = 'UOARECIPE', $any_option = false ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Recipe', 'uncanny-automator' );
+			$label = esc_attr__( 'Recipe', 'uncanny-automator' );
 		}
 
 		// post query arguments.
@@ -190,8 +190,8 @@ class Uoa_Helpers {
 
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any recipe', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any recipe', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'              => $option_code,

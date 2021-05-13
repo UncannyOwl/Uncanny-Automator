@@ -31,11 +31,11 @@ class BDB_USERSENDSFRIENDREQUEST {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddyboss/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - BuddyPress */
@@ -46,10 +46,10 @@ class BDB_USERSENDSFRIENDREQUEST {
 			'priority'            => 10,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'bp_friends_friendship_requested' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -62,7 +62,7 @@ class BDB_USERSENDSFRIENDREQUEST {
 	 */
 	public function bp_friends_friendship_requested( $id, $initiator_user_id, $friend_user_id, $friendship ) {
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		$args = [
 			'code'           => $this->trigger_code,
@@ -72,6 +72,6 @@ class BDB_USERSENDSFRIENDREQUEST {
 			'is_signed_in'   => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

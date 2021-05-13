@@ -30,8 +30,8 @@ class Wp_Courseware_Helpers {
 	 * Wp_Courseware_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -56,14 +56,14 @@ class Wp_Courseware_Helpers {
 	 */
 	public function all_wpcw_courses( $label = null, $option_code = 'WPCW_COURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Course', 'uncanny-automator' );
+			$label = esc_attr__( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -74,7 +74,7 @@ class Wp_Courseware_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -86,9 +86,9 @@ class Wp_Courseware_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Course title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -105,25 +105,25 @@ class Wp_Courseware_Helpers {
 
 	public function all_wpcw_modules( $label = null, $option_code = 'WPCW_MODULE', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 
-		global $uncanny_automator;
+		// global $uncanny_automator;
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Module', 'uncanny-automator' );
+			$label = esc_attr__( 'Module', 'uncanny-automator' );
 		}
 		$modules = array();
-		$options = [];
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options = array();
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( function_exists( 'wpcw_get_modules' ) ) {
 				$modules = wpcw_get_modules();
 			}
 
 			if ( $any_option ) {
-				$options['-1'] =  esc_attr__( 'Any module', 'uncanny-automator' );
+				$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
 			}
 			if ( ! empty( $modules ) ) {
 				foreach ( $modules as $module ) {
@@ -153,14 +153,14 @@ class Wp_Courseware_Helpers {
 	 */
 	public function all_wpcw_units( $label = null, $option_code = 'WPCW_UNIT', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Unit', 'uncanny-automator' );
+			$label = esc_attr__( 'Unit', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -171,8 +171,8 @@ class Wp_Courseware_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any unit', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any unit', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -184,9 +184,9 @@ class Wp_Courseware_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Unit title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Unit ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Unit URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Unit title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Unit ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Unit URL', 'uncanny-automator' ),
 			],
 		];
 

@@ -3,7 +3,7 @@
  * Contains Integration class.
  *
  * @version 2.4.0
- * @since 2.4.0
+ * @since   2.4.0
  * @package Uncanny_Automator
  */
 
@@ -51,14 +51,14 @@ class Add_Tutorlms_Integration {
 		// set up configuration.
 		$integration_config = [
 			'name'     => 'Tutor LMS',
-			'icon_svg' => Utilities::get_integration_icon( 'tutorlms-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/tutorlms-icon.svg' ),
 		];
 
 		// global automator object.
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		// register integration into automator.
-		$uncanny_automator->register->integration( self::$integration, $integration_config );
+		Automator()->register->integration( self::$integration, $integration_config );
 
 	}
 
@@ -82,7 +82,7 @@ class Add_Tutorlms_Integration {
 	/**
 	 * Conditionally Loads Integration.
 	 *
-	 * @param bool $status Is Integration already active?
+	 * @param bool   $status Is Integration already active?
 	 * @param string $plugin The integration identifier.
 	 *
 	 * @return bool

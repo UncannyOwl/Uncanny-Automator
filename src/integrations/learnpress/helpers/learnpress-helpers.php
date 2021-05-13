@@ -29,20 +29,20 @@ class Learnpress_Helpers {
 	 * Learnpress_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		// global $uncanny_automator;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_section_from_course_LPMARKLESSONDONE', array(
 			$this,
-			'select_section_from_course_func'
+			'select_section_from_course_func',
 		) );
 		add_action( 'wp_ajax_select_lesson_from_section_LPMARKLESSONDONE', array(
 			$this,
-			'select_lesson_from_section_func'
+			'select_lesson_from_section_func',
 		) );
 		add_action( 'wp_ajax_select_section_from_course_LPMARKLESSONDONE', [
 			$this,
-			'select_section_from_course_func'
+			'select_section_from_course_func',
 		] );
 	}
 
@@ -63,20 +63,20 @@ class Learnpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool $any_option
+	 * @param bool   $any_option
 	 *
 	 * @return mixed
 	 */
 	public function all_lp_courses( $label = null, $option_code = 'LPCOURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Course', 'uncanny-automator' );
+			$label = esc_attr__( 'Course', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -87,8 +87,8 @@ class Learnpress_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any course', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -100,9 +100,9 @@ class Learnpress_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Course title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Course ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Course URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -117,14 +117,14 @@ class Learnpress_Helpers {
 	 */
 	public function all_lp_lessons( $label = null, $option_code = 'LPLESSON', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
+			// global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Lesson', 'uncanny-automator' );
+			$label = esc_attr__( 'Lesson', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -135,8 +135,8 @@ class Learnpress_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option,  esc_attr__( 'Any lesson', 'uncanny-automator' ) );
+		// global $uncanny_automator;
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -148,9 +148,9 @@ class Learnpress_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Lesson title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Lesson ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -161,12 +161,12 @@ class Learnpress_Helpers {
 	 * Return all the sections of course ID provided in ajax call
 	 */
 	public function select_section_from_course_func() {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		// Nonce and post object validation
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check( $_POST );
 
-		$fields = [];
+		$fields = array();
 		if ( isset( $_POST ) ) {
 			if ( absint( $_POST['value'] ) > 0 ) {
 				$course_curd = new LP_Course_CURD();
@@ -189,12 +189,12 @@ class Learnpress_Helpers {
 	 * Return all the lessons of section ID provided in ajax call
 	 */
 	public function select_lesson_from_section_func() {
-		global $uncanny_automator;
+		// global $uncanny_automator;
 
 		// Nonce and post object validation
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check( $_POST );
 
-		$fields = [];
+		$fields = array();
 		if ( isset( $_POST ) ) {
 			$course_id = absint( $_POST['values']['LPCOURSE'] );
 			if ( $course_id > 0 ) {
