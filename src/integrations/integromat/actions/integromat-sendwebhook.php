@@ -42,8 +42,8 @@ class INTEGROMAT_SENDWEBHOOK {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/working-with-integromat-actions' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			'sentence'           => sprintf( esc_attr__( 'Send a webhook to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => esc_attr__( 'Send a webhook to Integromat {{webhook}}', 'uncanny-automator' ),
+			'sentence'           => sprintf( esc_attr__( 'Send data to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name' => esc_attr__( 'Send data to Integromat {{webhook}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'send_webhook' ),
@@ -188,74 +188,74 @@ class INTEGROMAT_SENDWEBHOOK {
 		// This must have only one anonymous function
 		?>
 
-        <script>
+		<script>
 
-            // Do when the user clicks on send test
-            function ($button, data, modules) {
-                // Add loading animation to the button
-                $button.addClass('uap-btn--loading uap-btn--disabled');
+			// Do when the user clicks on send test
+			function ($button, data, modules) {
+				// Add loading animation to the button
+				$button.addClass('uap-btn--loading uap-btn--disabled');
 
-                // Get the data we're going to send to the AJAX request
-                let dataToBeSent = {
-                    action: 'sendtest_integ_webhook',
-                    nonce: UncannyAutomator.nonce,
+				// Get the data we're going to send to the AJAX request
+				let dataToBeSent = {
+					action: 'sendtest_integ_webhook',
+					nonce: UncannyAutomator.nonce,
 
-                    integration_id: data.item.integrationCode,
-                    item_id: data.item.id,
-                    values: data.values
-                }
+					integration_id: data.item.integrationCode,
+					item_id: data.item.id,
+					values: data.values
+				}
 
-                // Do AJAX
-                $.ajax({
-                    method: 'POST',
-                    dataType: 'json',
-                    url: ajaxurl,
-                    data: dataToBeSent,
+				// Do AJAX
+				$.ajax({
+					method: 'POST',
+					dataType: 'json',
+					url: ajaxurl,
+					data: dataToBeSent,
 
-                    success: function (response) {
-                        // Remove loading animation from the button
-                        $button.removeClass('uap-btn--loading uap-btn--disabled');
+					success: function (response) {
+						// Remove loading animation from the button
+						$button.removeClass('uap-btn--loading uap-btn--disabled');
 
-                        // Create notice
-                        // But first check if the message is defined
-                        if (typeof response.message !== 'undefined') {
-                            // Get notice type
-                            let noticeType = typeof response.type !== 'undefined' ? response.type : 'gray';
+						// Create notice
+						// But first check if the message is defined
+						if (typeof response.message !== 'undefined') {
+							// Get notice type
+							let noticeType = typeof response.type !== 'undefined' ? response.type : 'gray';
 
-                            // Parse message using markdown
-                            let markdown = new modules.Markdown(response.message);
+							// Parse message using markdown
+							let markdown = new modules.Markdown(response.message);
 
-                            // Create notice
-                            let $notice = $('<div/>', {
-                                'class': 'item-options__notice item-options__notice--' + noticeType
-                            });
+							// Create notice
+							let $notice = $('<div/>', {
+								'class': 'item-options__notice item-options__notice--' + noticeType
+							});
 
-                            // Get markdown HTML
-                            let $message = markdown.getHTML();
+							// Get markdown HTML
+							let $message = markdown.getHTML();
 
-                            // Add message to the notice container
-                            $notice.html($message);
+							// Add message to the notice container
+							$notice.html($message);
 
-                            // Get the notices container
-                            let $noticesContainer = $('.item[data-id="' + data.item.id + '"] .item-options__notices');
+							// Get the notices container
+							let $noticesContainer = $('.item[data-id="' + data.item.id + '"] .item-options__notices');
 
-                            // Add notice
-                            $noticesContainer.html($notice);
-                        }
-                    },
+							// Add notice
+							$noticesContainer.html($notice);
+						}
+					},
 
-                    statusCode: {
-                        403: function () {
-                            location.reload();
-                        }
-                    },
+					statusCode: {
+						403: function () {
+							location.reload();
+						}
+					},
 
-                    fail: function (response) {
-                    }
-                });
-            }
+					fail: function (response) {
+					}
+				});
+			}
 
-        </script>
+		</script>
 
 		<?php
 

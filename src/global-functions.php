@@ -66,52 +66,53 @@ function automator_get_integration_by_name( string $name ): string {
 }
 
 /**
- * @param array $integrations
  * @param string $path
  * @param string $integration
  *
- * @return array
+ * @return bool
  */
-function automator_add_trigger( array $integrations, string $path, string $integration ): array {
+function automator_add_trigger( string $path, string $integration ): bool {
 	$integration = strtolower( $integration );
 	if ( ! automator_integration_exists( $integration ) ) {
-		return $integrations;
+		return false;
 	}
 
-	$integrations[ $integration ]['triggers'][] = $path;
+	Set_Up_Automator::$all_integrations[ $integration ]['triggers'][] = $path;
 
-	return $integrations;
+	return true;
 }
 
 /**
- * @param array $integrations
  * @param string $path
  * @param string $integration
  *
- * @return array
+ * @return bool
  */
-function automator_add_action( array $integrations, string $path, string $integration ): array {
+function automator_add_action( string $path, string $integration ): bool {
 	$integration = strtolower( $integration );
 	if ( ! automator_integration_exists( $integration ) ) {
-		return $integrations;
+		return false;
 	}
 
-	$integrations[ $integration ]['actions'][] = $path;
+	Set_Up_Automator::$all_integrations[ $integration ]['actions'][] = $path;
 
-	return $integrations;
+	return true;
 }
 
 /**
  * @param string $integration_code
  * @param array $directory
- * @param array $directories
  *
- * @return array
+ * @return bool
  */
-function automator_add_integration_directory( string $integration_code, array $directory, array $directories ): array {
-	$directories[ $integration_code ] = $directory;
+function automator_add_integration_directory( string $integration_code, array $directory ): bool {
+	if ( ! isset( $directory['main'] ) ) {
+		return false;
+	}
+	Set_Up_Automator::$auto_loaded_directories[]             = dirname( $directory['main'] );
+	Set_Up_Automator::$all_integrations[ $integration_code ] = $directory;
 
-	return $directories;
+	return true;
 }
 
 /**

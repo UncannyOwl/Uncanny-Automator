@@ -129,6 +129,7 @@ PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
 KEY completed (`completed`),
 KEY automator_recipe_id (`automator_recipe_id`),
+KEY automator_trigger_id (`automator_trigger_id`),
 KEY automator_recipe_log_id (`automator_recipe_log_id`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_trigger_log_meta} (
@@ -142,6 +143,7 @@ CREATE TABLE {$tbl_trigger_log_meta} (
 `run_time` datetime DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
+KEY run_number (`run_number`),
 KEY automator_trigger_id (`automator_trigger_id`),
 KEY automator_trigger_log_id (`automator_trigger_log_id`),
 KEY meta_key (meta_key(20))
@@ -158,6 +160,7 @@ CREATE TABLE {$tbl_action_log} (
 PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
 KEY completed (`completed`),
+KEY automator_action_id (`automator_action_id`),
 KEY automator_recipe_log_id (`automator_recipe_log_id`),
 KEY automator_recipe_id (`automator_recipe_id`)
 ) ENGINE=InnoDB {$charset_collate};
@@ -171,6 +174,7 @@ CREATE TABLE {$tbl_action_log_meta} (
 PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
 KEY automator_action_log_id (`automator_action_log_id`),
+KEY automator_action_id (`automator_action_id`),
 KEY meta_key (meta_key(20))
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_closure_log} (
@@ -183,6 +187,7 @@ CREATE TABLE {$tbl_closure_log} (
 PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
 KEY automator_recipe_id (`automator_recipe_id`),
+KEY automator_closure_id (`automator_closure_id`),
 KEY completed (`completed`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_closure_log_meta} (
@@ -193,6 +198,7 @@ CREATE TABLE {$tbl_closure_log_meta} (
 `meta_value` longtext NULL,
 PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
+KEY automator_closure_id (`automator_closure_id`),
 KEY meta_key (meta_key(15))
 ) ENGINE=InnoDB {$charset_collate};";
 	}

@@ -347,4 +347,37 @@ class Fluent_Crm_Helpers {
 
 		return $list_ids;
 	}
+
+	/**
+	 * Get all formatted statuses.
+	 * 
+	 * @return array The list of subscribers statuses.
+	 */
+	public function get_subscriber_statuses() {
+
+		if ( ! function_exists( 'fluentcrm_subscriber_statuses') ) {
+			return array();
+		}
+
+		$statuses = fluentcrm_subscriber_statuses(); 
+		
+		$formattedStatues = [];
+
+        $transMaps = [
+            'subscribed' => __('Subscribed', 'uncanny-automator'),
+            'pending' => __('Pending', 'uncanny-automator'),
+            'unsubscribed' => __('Unsubscribed', 'uncanny-automator'),
+            'bounced' => __('Bounced', 'uncanny-automator'),
+            'complained' => __('Complained', 'uncanny-automator')
+        ];
+
+		$formattedStatues['-1'] = esc_html__('Any status', 'uncanny-automator');
+
+        foreach ($statuses as $status) {
+            $formattedStatues[$status] = isset($transMaps[$status]) ? $transMaps[$status] :  ucfirst($status);
+        }
+
+		return $formattedStatues;
+	
+	}
 }

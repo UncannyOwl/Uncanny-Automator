@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
 /**
@@ -48,6 +48,7 @@ class Mec_Event_Tokens {
 	public function parse_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		$to_match = array(
+			$this->token . 'EVENT_TITLE',
 			$this->token . 'EVENT_DATE',
 			$this->token . 'EVENT_TIME',
 			$this->token . 'EVENT_LOCATION',
@@ -117,6 +118,9 @@ class Mec_Event_Tokens {
 
 			switch ( $parse ) {
 
+				case $this->token . 'EVENT_TITLE':
+					$value = $the_event->get_event_title();
+					break;
 				case $this->token . 'EVENT_DATE':
 					$value = $the_event->get_event_date();
 					break;
