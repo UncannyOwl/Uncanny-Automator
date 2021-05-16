@@ -159,6 +159,16 @@ Check out our developer documentation over at [https://automatorplugin.com/artic
 
 We're a Toronto-based WordPress company specializing in elearning and automation solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) (now used on over 30,000 elearning sites!) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/).
 
+## Screenshots ##
+![Set up your first recipe in 5 minutes](https://ps.w.org/uncanny-automator/assets/screenshot-1.gif?rev=2283509)
+![Add one or more triggers from dozens of plugins and thousands of apps](https://ps.w.org/uncanny-automator/assets/screenshot-2.png?rev=2283509)
+![Identify what starts the recipe, like a purchase or form submission](https://ps.w.org/uncanny-automator/assets/screenshot-3.png?rev=2283509)
+![Set conditions and options for the trigger(s)](https://ps.w.org/uncanny-automator/assets/screenshot-4.png?rev=2283509)
+![Add one or more actions from any of the available integrations](https://ps.w.org/uncanny-automator/assets/screenshot-5.png?rev=2283509)
+![When the triggers are completed, actions run automatically](https://ps.w.org/uncanny-automator/assets/screenshot-6.png?rev=2283509)
+![Customize your actions to do exactly what you need](https://ps.w.org/uncanny-automator/assets/screenshot-7.png?rev=2283509)
+![Create powerful recipes that just work, all with one plugin](https://ps.w.org/uncanny-automator/assets/screenshot-8.png?rev=2283509)
+
 ## Changelog ##
 
 ### 2.11.1 [2021-03-15] ###
