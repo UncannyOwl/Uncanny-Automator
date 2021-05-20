@@ -30,7 +30,7 @@ class WCM_ADDUSER_A {
 	}
 
 	public function define_action() {
-		// global $uncanny_automator;
+
 
 		$action = [
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -64,17 +64,16 @@ class WCM_ADDUSER_A {
 	 */
 	public function add_user_to_membership_plan( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
 
 		$plan                  = $action_data['meta'][ $this->action_meta ];
 		$check_membership_plan = wc_memberships_is_user_member( $user_id, $plan );
 
-		if ( $check_membership_plan === true ) {
+		if ( true === $check_membership_plan && true === wc_memberships_is_user_active_member( $user_id, $plan ) ) {
 			$recipe_log_id             = $action_data['recipe_log_id'];
 			$args['do-nothing']        = true;
 			$action_data['do-nothing'] = true;
 			$action_data['completed']  = true;
-			$error_message             = esc_attr__( 'This user is already in the specified membership plan', 'uncanny-automator' );
+			$error_message             = esc_attr__( 'This user has already an active membership in the specified membership plan', 'uncanny-automator' );
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		} else {
 

@@ -35,7 +35,7 @@ class WPJM_JOBAPPLICATION {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -70,7 +70,7 @@ class WPJM_JOBAPPLICATION {
 	 */
 	public function new_job_application( $application_id, $job_id ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $job_id ) || ! is_numeric( $job_id ) ) {
 			return;

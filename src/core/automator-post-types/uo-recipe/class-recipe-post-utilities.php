@@ -336,7 +336,7 @@ class Recipe_Post_Utilities {
 				'isValid'      => false,
 				'userSelector' => array(
 					'source'    => $source,
-					'fields'    => $fields,
+					'data'      => $fields,
 					'isValid'   => false,
 					'resources' => array(
 						'roles' => $roles,
@@ -607,7 +607,7 @@ class Recipe_Post_Utilities {
 				<?php
 				break;
 			case 'runs':
-				$count = $wpdb->get_var( $wpdb->prepare( "SELECT MAX(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d", $post_id ) );
+				$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $post_id, 1 ) );
 				$url   = add_query_arg(
 					array(
 						'post_type' => 'uo-recipe',

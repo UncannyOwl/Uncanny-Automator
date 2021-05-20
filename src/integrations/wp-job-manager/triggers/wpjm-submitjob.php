@@ -35,7 +35,7 @@ class WPJM_SUBMITJOB {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -72,7 +72,7 @@ class WPJM_SUBMITJOB {
 	 */
 	public function job_manager_job_submitted( $new_status, $old_status, $post ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $post ) ) {
 			return;

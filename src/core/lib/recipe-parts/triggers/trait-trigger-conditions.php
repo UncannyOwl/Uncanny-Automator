@@ -59,35 +59,35 @@ trait Trigger_Conditions {
 	/**
 	 * @param mixed $find_any
 	 */
-	public function do_find_any( $find_any ): void {
+	public function do_find_any( $find_any ) {
 		$this->find_any = $find_any;
 	}
 
 	/**
 	 * @return array
 	 */
-	protected function get_find_in(): array {
+	protected function get_find_in() {
 		return $this->find_in;
 	}
 
 	/**
 	 * @param mixed $find_in
 	 */
-	protected function do_find_in( $find_in ): void {
+	protected function do_find_in( $find_in ) {
 		$this->find_in[] = $find_in;
 	}
 
 	/**
 	 * @return array
 	 */
-	protected function get_find_this(): array {
+	protected function get_find_this() {
 		return $this->find_this;
 	}
 
 	/**
 	 * @param mixed $find_this
 	 */
-	protected function do_find_this( $find_this ): void {
+	protected function do_find_this( $find_this ) {
 		$this->find_this[] = $find_this;
 	}
 
@@ -107,7 +107,7 @@ trait Trigger_Conditions {
 	/**
 	 * @return bool
 	 */
-	protected function is_conditional_trigger(): bool {
+	protected function is_conditional_trigger() {
 		return $this->conditional_trigger;
 	}
 
@@ -115,7 +115,7 @@ trait Trigger_Conditions {
 	 * @return object
 	 * @throws \Exception
 	 */
-	protected function get_conditions(): object {
+	protected function get_conditions() {
 		$match_value    = $this->get_find_in();
 		$match_value_in = $this->get_find_this();
 
@@ -157,7 +157,7 @@ trait Trigger_Conditions {
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
-	protected function validate_conditions( $args ): array {
+	protected function validate_conditions( $args ) {
 		$matched_recipe_ids = array();
 		/*
 		 * Get recipes that matches the current trigger.
@@ -213,7 +213,7 @@ trait Trigger_Conditions {
 	 *
 	 * @return array
 	 */
-	protected function trigger_recipes(): array {
+	protected function trigger_recipes() {
 		return Automator()->get->recipes_from_trigger_code( $this->get_trigger_code() );
 	}
 
@@ -225,7 +225,7 @@ trait Trigger_Conditions {
 	 *
 	 * @return array
 	 */
-	protected function required_condition_in_trigger_meta( $recipes, $required_condition = '' ): array {
+	protected function required_condition_in_trigger_meta( $recipes, $required_condition = '' ) {
 		$required_condition = empty( $required_condition ) ? $this->get_trigger_meta() : $required_condition;
 
 		return Automator()->get->meta_from_recipes( $recipes, $required_condition );
@@ -240,7 +240,7 @@ trait Trigger_Conditions {
 	 *
 	 * @return array
 	 */
-	protected function find_value_in_trigger_meta( $value, $match_in, $recipes ): array {
+	protected function find_value_in_trigger_meta( $value, $match_in, $recipes ) {
 		$matched = array();
 		if ( empty( $recipes ) ) {
 			return $matched;

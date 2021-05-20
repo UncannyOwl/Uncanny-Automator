@@ -60,7 +60,7 @@ class Cf7_Tokens {
 			foreach ( $args as $trigger_result ) {
 				//$trigger_result = array_pop( $args );
 				if ( true === $trigger_result['result'] ) {
-					// global $uncanny_automator;
+
 					if ( $recipes && $contact_form instanceof WPCF7_ContactForm ) {
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];
@@ -115,7 +115,7 @@ class Cf7_Tokens {
 		$data = array();
 		if ( $contact_form instanceof WPCF7_ContactForm ) {
 			$tags = $contact_form->scan_form_tags();
-			// global $uncanny_automator;
+
 			foreach ( $tags as $tag ) {
 				if ( empty( $tag->name ) ) {
 					continue;
@@ -219,7 +219,7 @@ class Cf7_Tokens {
 		$piece_fields = 'CF7FIELDS';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) || in_array( $piece_fields, $pieces ) ) {
-				// global $uncanny_automator;
+
 				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {

@@ -1,4 +1,4 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php
 
 namespace Uncanny_Automator;
 
@@ -68,13 +68,13 @@ class Add_Mec_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
 
-		$uncanny_automator->register->integration(
+
+		Automator()->register->integration(
 			self::$integration,
 			array(
 				'name'     => 'M.E. Calendar',
-				'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/modern-events-calendar-icon.svg' ),
+				'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/modern-events-calendar-icon.svg' )
 			)
 		);
 	}

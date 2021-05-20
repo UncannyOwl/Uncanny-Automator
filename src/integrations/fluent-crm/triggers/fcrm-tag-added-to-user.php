@@ -37,7 +37,7 @@ class FCRM_TAG_ADDED_TO_USER {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -67,7 +67,7 @@ class FCRM_TAG_ADDED_TO_USER {
 	 */
 	public function contact_added_to_tags( $attachedTagIds, $subscriber ) {
 
-		// global $uncanny_automator;
+
 
 		$user_id = Automator()
 			->helpers

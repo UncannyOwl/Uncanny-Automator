@@ -51,7 +51,7 @@ class Pmp_Tokens {
 	}
 
 	public function uap_save_pmp_membership_level( $membership_id, $args, $user_id, $meta ) {
-		// global $uncanny_automator;
+
 		$args = [
 			'user_id'        => $user_id,
 			'trigger_id'     => $args['trigger_id'],

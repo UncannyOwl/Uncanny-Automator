@@ -161,7 +161,7 @@ class Wpf_Tokens {
 			foreach ( $args as $trigger_result ) {
 				//$trigger_result = array_pop( $args );
 				if ( true === $trigger_result['result'] ) {
-					// global $uncanny_automator;
+
 					if ( $recipes ) {
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];

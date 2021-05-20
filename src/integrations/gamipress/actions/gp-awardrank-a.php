@@ -33,7 +33,7 @@ class GP_AWARDRANK_A {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = [
 			'author'             => Automator()->get_author_name(),
@@ -85,7 +85,7 @@ class GP_AWARDRANK_A {
 	 */
 	public function award_points( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$rank_id = $action_data['meta'][ $this->action_meta ];
 		gamipress_update_user_rank( $user_id, $rank_id );

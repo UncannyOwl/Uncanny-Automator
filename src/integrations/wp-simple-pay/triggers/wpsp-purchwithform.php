@@ -31,7 +31,7 @@ class WPSP_PURCHWITHFORM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -62,7 +62,7 @@ class WPSP_PURCHWITHFORM {
 	 * @param $payintent
 	 */
 	public function simple_pay_charge_created( $charge, $payintent ) {
-		// global $uncanny_automator;
+
 		$form_id = $payintent->simpay_form_id;
 
 		if ( empty( $form_id ) ) {

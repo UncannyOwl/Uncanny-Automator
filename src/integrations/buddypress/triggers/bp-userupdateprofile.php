@@ -31,7 +31,7 @@ class BP_USERUPDATEPROFILE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -64,7 +64,7 @@ class BP_USERUPDATEPROFILE {
 	 */
 	public function bp_user_updated_profile( $user_id, $posted_field_ids, $errors, $old_values, $new_values ) {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'           => $this->trigger_code,

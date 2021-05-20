@@ -31,7 +31,7 @@ class BDB_ACTIVITYSTRM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$bp_users_args = array(
 			'uo_include_any' => true,
@@ -69,7 +69,7 @@ class BDB_ACTIVITYSTRM {
 	 */
 	public function bp_activity_posted_update( $content, $user_id, $activity_id ) {
 
-		// global $uncanny_automator;
+
 
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_users     = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );

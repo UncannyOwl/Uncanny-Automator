@@ -31,7 +31,7 @@ class EM_REGISTER {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -66,7 +66,7 @@ class EM_REGISTER {
 	 * @return mixed
 	 */
 	public function user_registered_for_event( $em_status, $em_booking_obj ) {
-		// global $uncanny_automator;
+
 
 		if ( 0 === (int) get_option( 'dbem_bookings_approval', 0 ) || $em_booking_obj->get_status() != 'Approved' ) {
 			return $em_status;

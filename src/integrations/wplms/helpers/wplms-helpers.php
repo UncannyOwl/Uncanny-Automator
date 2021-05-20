@@ -30,7 +30,7 @@ class Wplms_Helpers {
 	 * Wplms_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -56,12 +56,12 @@ class Wplms_Helpers {
 	 */
 	public function all_wplms_quizs( $label = null, $option_code = 'WPLMS_QUIZ', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Quiz', 'uncanny-automator' );
 		}
@@ -104,12 +104,12 @@ class Wplms_Helpers {
 	 */
 	public function all_wplms_courses( $label = null, $option_code = 'WPLMS_COURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Course', 'uncanny-automator' );
 		}
@@ -151,12 +151,12 @@ class Wplms_Helpers {
 	 */
 	public function all_wplms_units( $label = null, $option_code = 'WPLMS_UNIT', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Unit', 'uncanny-automator' );
 		}

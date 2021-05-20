@@ -40,7 +40,7 @@ class PMP_MEMBERSHIPEXPIRES {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
 
@@ -82,7 +82,7 @@ class PMP_MEMBERSHIPEXPIRES {
 	 * @param $membership_id
 	 */
 	public function pmpro_subscription_expired( $user_id, $membership_id ) {
-		// global $uncanny_automator;
+
 		if ( empty( $user_id ) || empty( $membership_id ) ) {
 			return;
 		}

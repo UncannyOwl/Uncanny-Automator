@@ -31,7 +31,7 @@ class LD_PASSQUIZ {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -73,7 +73,7 @@ class LD_PASSQUIZ {
 
 		if ( 0 !== (int) $q_status ) {
 
-			// global $uncanny_automator;
+
 
 			$user    = $current_user;
 			$quiz    = $data['quiz'];

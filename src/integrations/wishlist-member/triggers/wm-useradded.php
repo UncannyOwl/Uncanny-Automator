@@ -36,7 +36,7 @@ class WM_USERADDED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -68,7 +68,7 @@ class WM_USERADDED {
 	 */
 	public function add_user_to_membership_level( $user_id, $new_levels, $old_levels ) {
 
-		// global $uncanny_automator;
+
 
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();

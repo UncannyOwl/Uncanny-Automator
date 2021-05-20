@@ -76,10 +76,14 @@ class Automator_Load {
 		add_action( 'admin_footer', array( $this, 'global_utm_r_links' ) );
 
 		// Show 'Upgrade to Pro' on plugins page.
-		add_filter( 'plugin_action_links_' . plugin_basename( AUTOMATOR_BASE_FILE ), array(
-			$this,
-			'uo_automator_upgrade_to_pro_link',
-		), 99 );
+		add_filter(
+			'plugin_action_links_' . plugin_basename( AUTOMATOR_BASE_FILE ),
+			array(
+				$this,
+				'uo_automator_upgrade_to_pro_link',
+			),
+			99
+		);
 
 		$this->load_automator();
 

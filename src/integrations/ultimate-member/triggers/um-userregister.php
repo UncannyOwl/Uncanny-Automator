@@ -37,7 +37,7 @@ class UM_USERREGISTER {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$options = Automator()->helpers->recipe->ultimate_member->options->get_um_forms( esc_attr__( 'Form', 'uncanny-automator' ) );
 
@@ -78,7 +78,7 @@ class UM_USERREGISTER {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'         => $this->trigger_code,

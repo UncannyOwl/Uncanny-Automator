@@ -31,7 +31,7 @@ class BP_ADDTOGROUP {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$bp_group_args = array(
 			'uo_include_any' => false,
@@ -68,7 +68,7 @@ class BP_ADDTOGROUP {
 	 */
 	public function add_to_bp_group( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$add_to_bp_gropu = $action_data['meta'][ $this->action_meta ];
 

@@ -32,7 +32,7 @@ class BO_AWARDACHIEVEMENT_A {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -84,7 +84,7 @@ class BO_AWARDACHIEVEMENT_A {
 	 */
 	public function award_an_achievement( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$achievement_id = $action_data['meta'][ $this->action_meta ];
 		badgeos_award_achievement_to_user( absint( $achievement_id ), absint( $user_id ) );

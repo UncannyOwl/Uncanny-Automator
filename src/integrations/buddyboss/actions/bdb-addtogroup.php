@@ -31,7 +31,7 @@ class BDB_ADDTOGROUP {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$bp_group_args = array(
 			'uo_include_any' => false,
@@ -40,7 +40,7 @@ class BDB_ADDTOGROUP {
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
-			'support_link'       => Automator()->get_author_support_link( '', 'integration/buddyboss/' ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/buddyboss/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - BuddyBoss */
@@ -68,7 +68,7 @@ class BDB_ADDTOGROUP {
 	 */
 	public function add_to_bb_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$add_to_bp_group = $action_data['meta'][ $this->action_meta ];
 

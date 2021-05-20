@@ -31,7 +31,7 @@ class WPCW_COURSECOMPLETED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -70,7 +70,7 @@ class WPCW_COURSECOMPLETED {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$course_id = $parent->course_post_id;
 

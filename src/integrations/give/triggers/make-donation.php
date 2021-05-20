@@ -31,7 +31,7 @@ class MAKE_DONATION {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -57,7 +57,7 @@ class MAKE_DONATION {
 	}
 
 	public function givewp_make_donation( $payment_id, $payment_data ) {
-		// global $uncanny_automator;
+
 
 		$give_form_id = $payment_data['give_form_id'];
 		$user_id      = $payment_data['user_info']['id'];

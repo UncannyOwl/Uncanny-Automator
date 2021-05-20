@@ -40,7 +40,7 @@ class PMP_MEMBERSHIPPURCH {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
 
@@ -75,7 +75,7 @@ class PMP_MEMBERSHIPPURCH {
 	 * @param MemberOrder $morder
 	 */
 	public function pmpro_payment_completed( $user_id, MemberOrder $morder ) {
-		// global $uncanny_automator;
+
 
 		if ( ! $morder instanceof MemberOrder ) {
 			return;

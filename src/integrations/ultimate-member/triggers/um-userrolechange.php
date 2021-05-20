@@ -37,7 +37,7 @@ class UM_USERROLECHANGE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -71,7 +71,7 @@ class UM_USERROLECHANGE {
 	 */
 	public function set_user_role( $user_id, $role, $old_roles ) {
 
-		// global $uncanny_automator;
+
 		$matched_recipe_ids = $this->match_condition( $role );
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
@@ -100,7 +100,7 @@ class UM_USERROLECHANGE {
 	 * @return array
 	 */
 	public function match_condition( $role ) {
-		// global $uncanny_automator;
+
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_role      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$matched_recipe_ids = array();

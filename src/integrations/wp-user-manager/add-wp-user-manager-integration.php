@@ -64,7 +64,7 @@ class Add_Wp_User_Manager_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'WP User Manager',

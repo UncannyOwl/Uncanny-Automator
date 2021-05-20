@@ -68,28 +68,28 @@ trait Closure_Setup {
 	/**
 	 * @param mixed $integration
 	 */
-	public function set_integration( string $integration ): void {
+	public function set_integration( string $integration ) {
 		$this->integration = $integration;
 	}
 
 	/**
 	 * @param mixed $action_hook
 	 */
-	public function set_action_hook( $action_hook ): void {
+	public function set_action_hook( $action_hook ) {
 		$this->action_hook = $action_hook;
 	}
 
 	/**
 	 * @param mixed $sentence
 	 */
-	public function set_sentence( $sentence ): void {
+	public function set_sentence( $sentence ) {
 		$this->sentence = $sentence;
 	}
 
 	/**
 	 * @param mixed $readable_sentence
 	 */
-	public function set_readable_sentence( $readable_sentence ): void {
+	public function set_readable_sentence( $readable_sentence ) {
 		$this->readable_sentence = $readable_sentence;
 	}
 
@@ -118,35 +118,35 @@ trait Closure_Setup {
 	/**
 	 * @param mixed $closure_code
 	 */
-	public function set_closure_code( $closure_code ): void {
+	public function set_closure_code( $closure_code ) {
 		$this->closure_code = $closure_code;
 	}
 
 	/**
 	 * @param mixed $closure_meta
 	 */
-	public function set_closure_meta( $closure_meta ): void {
+	public function set_closure_meta( $closure_meta ) {
 		$this->closure_meta = $closure_meta;
 	}
 
 	/**
 	 * @param bool $is_pro
 	 */
-	public function set_is_pro( bool $is_pro ): void {
+	public function set_is_pro( bool $is_pro ) {
 		$this->is_pro = $is_pro;
 	}
 
 	/**
 	 * @param bool $is_deprecated
 	 */
-	public function set_is_deprecated( bool $is_deprecated ): void {
+	public function set_is_deprecated( bool $is_deprecated ) {
 		$this->is_deprecated = $is_deprecated;
 	}
 
 	/**
 	 * @param mixed $options
 	 */
-	public function set_options( array $options ): void {
+	public function set_options( array $options ) {
 		$this->options = $options;
 	}
 
@@ -181,14 +181,14 @@ trait Closure_Setup {
 	/**
 	 * @return bool
 	 */
-	public function get_is_pro(): bool {
+	public function get_is_pro() {
 		return $this->is_pro;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function get_is_deprecated(): bool {
+	public function get_is_deprecated() {
 		return $this->is_deprecated;
 	}
 

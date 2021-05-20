@@ -31,7 +31,7 @@ class Integromat_Helpers {
 	 * Integromat_Pro_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_nopriv_sendtest_integ_webhook', array( $this, 'sendtest_webhook' ) );
@@ -58,7 +58,7 @@ class Integromat_Helpers {
 	 */
 	public function sendtest_webhook() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->utilities->ajax_auth_check( $_POST );
 

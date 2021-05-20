@@ -75,7 +75,7 @@ class Add_Et_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'The Events Calendar',

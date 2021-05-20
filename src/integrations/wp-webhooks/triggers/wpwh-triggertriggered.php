@@ -31,7 +31,7 @@ class WPWH_TRIGGERTRIGGERED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -61,7 +61,7 @@ class WPWH_TRIGGERTRIGGERED {
 	 */
 	public function save_data( $response, $url, $http_args, $webhook ) {
 
-		// global $uncanny_automator;
+
 		if ( ! isset( $webhook['webhook_name'] ) || empty( $webhook['webhook_name'] ) ) {
 			return;
 		}

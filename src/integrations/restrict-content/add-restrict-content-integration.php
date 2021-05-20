@@ -60,7 +60,7 @@ class Add_Restrict_Content_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Restrict Content Pro',

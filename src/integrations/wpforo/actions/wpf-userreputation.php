@@ -31,7 +31,7 @@ class WPF_USERREPUTATION {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$reputation_options = array();
 		$levels             = WPF()->member->levels();
@@ -76,7 +76,7 @@ class WPF_USERREPUTATION {
 	 */
 	public function set_reputation( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$reputation_id = absint( str_replace( "L", "", $action_data['meta'][ $this->action_meta ] ) );
 		$points        = WPF()->member->rating( $reputation_id, 'points' );

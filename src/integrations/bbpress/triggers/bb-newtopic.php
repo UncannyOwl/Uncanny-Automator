@@ -31,7 +31,7 @@ class BB_NEWTOPIC {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -67,7 +67,7 @@ class BB_NEWTOPIC {
 	 */
 	public function bbp_new_topic( $topic_id, $forum_id, $anonymous_data, $topic_author ) {
 
-		// global $uncanny_automator;
+
 		$user_id = get_current_user_id();
 
 		$args = [

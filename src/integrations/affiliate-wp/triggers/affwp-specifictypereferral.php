@@ -32,7 +32,7 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -61,7 +61,7 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 	 * @param $referral_id
 	 */
 	public function affwp_insert_specific_type_referral( $referral_id ) {
-		// global $uncanny_automator;
+
 
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_type      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );

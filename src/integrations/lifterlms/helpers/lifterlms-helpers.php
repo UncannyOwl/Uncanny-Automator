@@ -30,7 +30,7 @@ class Lifterlms_Helpers {
 	 * Lifterlms_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -57,7 +57,7 @@ class Lifterlms_Helpers {
 	 */
 	public function all_lf_courses( $label = null, $option_code = 'LFCOURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -75,7 +75,7 @@ class Lifterlms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
@@ -105,7 +105,7 @@ class Lifterlms_Helpers {
 	 */
 	public function all_lf_lessons( $label = null, $option_code = 'LFLESSON', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -123,7 +123,7 @@ class Lifterlms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
@@ -154,7 +154,7 @@ class Lifterlms_Helpers {
 	 */
 	public function all_lf_sections( $label = null, $option_code = 'LFSECTION', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -172,7 +172,7 @@ class Lifterlms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any section', 'uncanny-automator' ) );
 
 		$option = [
@@ -203,7 +203,7 @@ class Lifterlms_Helpers {
 	 */
 	public function all_lf_memberships( $label = null, $option_code = 'LFMEMBERSHIP', $any_option = true, $is_all_label = false ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -221,7 +221,7 @@ class Lifterlms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any membership', 'uncanny-automator' ), $is_all_label );
 
 		$option = [
@@ -252,7 +252,7 @@ class Lifterlms_Helpers {
 	 */
 	public function all_lf_quizs( $label = null, $option_code = 'LFQUIZ', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -270,7 +270,7 @@ class Lifterlms_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [

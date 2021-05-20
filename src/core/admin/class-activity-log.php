@@ -55,6 +55,7 @@ class Activity_Log {
 			#lity-container,
 			.notice,
 			.uap .uap-review-banner,
+			div.uap-log-table-container div.error,
 			#adminmenumain {
 				display: none !important;
 			}

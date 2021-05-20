@@ -171,7 +171,7 @@ class Bdb_Tokens {
 				}
 			} elseif ( in_array( 'BDBTOPICREPLY', $pieces ) ) {
 				$piece = 'BDBTOPIC';
-				// global $uncanny_automator;
+
 				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
@@ -189,7 +189,7 @@ class Bdb_Tokens {
 				}
 			} elseif ( in_array( 'BDBNEWTOPIC', $pieces ) ) {
 				$piece = 'BDBFORUMSTOPIC';
-				// global $uncanny_automator;
+
 				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
@@ -216,7 +216,7 @@ class Bdb_Tokens {
 					}
 				}
 			} elseif ( in_array( 'BDBUSERACTIVITY', $pieces ) ) {
-				// global $uncanny_automator;
+
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
 						$trigger_id     = $trigger['ID'];

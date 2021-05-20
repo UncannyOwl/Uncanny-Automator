@@ -13,7 +13,7 @@ class Add_User_Recipe_Type {
 
 	public function add_user_type_recipe() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->recipe_type( 'user', array(
 			'name'        => 'User',

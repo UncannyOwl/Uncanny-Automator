@@ -31,7 +31,7 @@ class WPCW_USERENROLLED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -69,17 +69,18 @@ class WPCW_USERENROLLED {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		foreach ( $courses_enrolled as $course_key ) {
 
 			$course_detail = WPCW_courses_getCourseDetails( $course_key );
 
 			$args = [
-				'code'    => $this->trigger_code,
-				'meta'    => $this->trigger_meta,
-				'post_id' => intval( $course_detail->course_post_id ),
-				'user_id' => $user_id,
+				'code'         => $this->trigger_code,
+				'meta'         => $this->trigger_meta,
+				'post_id'      => intval( $course_detail->course_post_id ),
+				'user_id'      => $user_id,
+				'is_signed_in' => true,
 			];
 
 			Automator()->maybe_add_trigger_entry( $args );

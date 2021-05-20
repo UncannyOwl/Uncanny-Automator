@@ -21,7 +21,7 @@ class Wc_Memberships_Helpers {
 	 * Wc_Memberships_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -34,7 +34,7 @@ class Wc_Memberships_Helpers {
 
 	public function wcm_get_all_membership_plans( $label = null, $option_code = 'WCMEMBERSHIPPLANS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -57,7 +57,7 @@ class Wc_Memberships_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $is_any, esc_attr__( 'Any membership plan', 'uncanny-automator' ) );
 
 		$option = [

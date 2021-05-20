@@ -33,7 +33,7 @@ class EC_REGISTER {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -68,7 +68,7 @@ class EC_REGISTER {
 	 * @param $order_id
 	 */
 	public function user_registered( $product_id, $order_id, $qty ) {
-		// global $uncanny_automator;
+
 		if ( ! $order_id ) {
 			return;
 		}

@@ -33,7 +33,7 @@ class CF7_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -65,7 +65,7 @@ class CF7_SUBFORM {
 	 */
 	public function wpcf7_submit( $form, $result ) {
 		if ( 'validation_failed' !== $result['status'] ) {
-			// global $uncanny_automator;
+
 			$user_id = wp_get_current_user()->ID;
 
 			$args = [

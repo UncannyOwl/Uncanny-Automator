@@ -31,7 +31,7 @@ class UOG_CREATEUNCANNYGROUP {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -113,7 +113,7 @@ class UOG_CREATEUNCANNYGROUP {
 	 */
 	public function create_uncanny_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$uo_group_title               = Automator()->parse->text( $action_data['meta']['UOGROUPTITLE'], $recipe_id, $user_id, $args );
 		$uo_group_num_seats           = absint( Automator()->parse->text( $action_data['meta']['UOGROUPNUMSEATS'], $recipe_id, $user_id, $args ) );

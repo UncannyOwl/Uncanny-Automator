@@ -33,7 +33,7 @@ class PM_POPUPSHOW {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		global $wpdb;
 
@@ -89,7 +89,7 @@ class PM_POPUPSHOW {
 	 */
 	public function display_pop_up( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$popup_id = absint( $action_data['meta']['POPUPID'] );
 

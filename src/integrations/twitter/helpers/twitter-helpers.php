@@ -27,15 +27,15 @@ class Twitter_Helpers {
 	 * Twitter_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		$this->setting_tab   = 'twitter_api';
 		$this->automator_api = 'https://api.automatorplugin.com/twitter/';
 
-		add_filter( 'uap_settings_tabs', array( $this, 'add_twitter_api_settings' ), 15 );
+		add_filter( 'automator_settings_tabs', array( $this, 'add_twitter_api_settings' ), 15 );
 		add_action( 'init', array( $this, 'capture_oauth_tokens' ), 100, 3 );
-		add_filter( 'uap_after_settings_extra_buttons', array( $this, 'twitter_connect_html' ), 10, 3 );
+		add_filter( 'automator_after_settings_extra_buttons', array( $this, 'twitter_connect_html' ), 10, 3 );
 
 	}
 

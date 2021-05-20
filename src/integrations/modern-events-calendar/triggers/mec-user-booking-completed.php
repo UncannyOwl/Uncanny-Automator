@@ -1,4 +1,4 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php
 
 namespace Uncanny_Automator;
 
@@ -51,7 +51,7 @@ class MEC_USER_BOOKING_COMPLETED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$helper = new MEC_HELPERS();
 
@@ -60,33 +60,32 @@ class MEC_USER_BOOKING_COMPLETED {
 				'option_code'     => $this->trigger_code,
 				'fill_values_in'  => '',
 				'is_ajax'         => false,
-				'description'     => esc_html__( 'Select from the list of available Events', 'uncanny-automator' ),
+				'description'     => esc_html__( 'Select from the list of available Events. Select `Any Event` if you wish to run this Trigger for all Events.', 'uncanny-automator' ),
 				'relevant_tokens' => array(
-					$this->token . 'EVENT_TITLE'     => esc_html__( 'Event title', 'uncanny-automator' ),
-					$this->token . 'EVENT_DATE'      => esc_html__( 'Event date', 'uncanny-automator' ),
-					$this->token . 'EVENT_TIME'      => esc_html__( 'Event time', 'uncanny-automator' ),
-					$this->token . 'EVENT_LOCATION'  => esc_html__( 'Event location', 'uncanny-automator' ),
-					$this->token . 'EVENT_ORGANIZER' => esc_html__( 'Event organizer', 'uncanny-automator' ),
-					$this->token . 'EVENT_COST'      => esc_html__( 'Event cost', 'uncanny-automator' ),
+					$this->token . 'EVENT_DATE'      => esc_html__( 'Event Date', 'uncanny-automator' ),
+					$this->token . 'EVENT_TIME'      => esc_html__( 'Event Time', 'uncanny-automator' ),
+					$this->token . 'EVENT_LOCATION'  => esc_html__( 'Event Location', 'uncanny-automator' ),
+					$this->token . 'EVENT_ORGANIZER' => esc_html__( 'Event Organizer', 'uncanny-automator' ),
+					$this->token . 'EVENT_COST'      => esc_html__( 'Event Cost', 'uncanny-automator' ),
 				),
 			)
 		);
 
-		$events_options['options'] = array( '-1' => __( 'Any event', 'uncanny-automator' ) ) + $events_options['options'];
+		$events_options['options'] = array( '-1' => sprintf( 'Any Event', 'uncanny-automator' ) ) + $events_options['options'];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link(),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'is_pro'              => false,
 			'sentence'            => sprintf(
-				/* translators: The Event or `Any Event` */
-				esc_attr__( "A user's booking of {{an event:%1\$s}} is completed", 'uncanny-automator' ),
+				/* translators: &#8216; is an HTML character for single qoute. %1$s The Event or `Any Event` */
+				esc_attr__( 'A user&#8216;s booking of {{an event:%1$s}} is completed', 'uncanny-automator' ),
 				$this->trigger_code
 			),
 			'select_option_name'  => esc_attr__( "A user's booking of {{an event}} is completed", 'uncanny-automator' ),
-			'action'              => 'mec_booking_completed',
+			'action'              => 'mec_booking_completed', //mec_booking_completed
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'mec_booking_completed' ),
@@ -95,7 +94,7 @@ class MEC_USER_BOOKING_COMPLETED {
 			),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 	}
 
@@ -108,13 +107,13 @@ class MEC_USER_BOOKING_COMPLETED {
 	 */
 	public function mec_booking_completed( $booking_id ) {
 
-		global $uncanny_automator;
+
 
 		$matched_recipe_ids = array();
 
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 
-		$event = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_code );
+		$event = Automator()->get->meta_from_recipes( $recipes, $this->trigger_code );
 
 		$event_id = absint( get_post_meta( $booking_id, 'mec_event_id', true ) );
 
@@ -161,7 +160,7 @@ class MEC_USER_BOOKING_COMPLETED {
 							'ignore_post_id'   => true,
 						);
 
-						$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+						$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 						// Save trigger meta
 						if ( $args ) {
@@ -170,7 +169,7 @@ class MEC_USER_BOOKING_COMPLETED {
 
 								if ( true === $result['result'] && $result['args']['trigger_id'] && $result['args']['get_trigger_id'] ) {
 
-									$run_number = $uncanny_automator->get->trigger_run_number( $result['args']['trigger_id'], $result['args']['get_trigger_id'], $user->ID );
+									$run_number = Automator()->get->trigger_run_number( $result['args']['trigger_id'], $result['args']['get_trigger_id'], $user->ID );
 
 									$event_book_id_action_meta = array(
 										'user_id'        => $user->ID,
@@ -181,7 +180,7 @@ class MEC_USER_BOOKING_COMPLETED {
 										'meta_value'     => sprintf( 'EVENT_BOOKING_%d_COMPLETED', $booking_id ),
 									);
 
-									$uncanny_automator->insert_trigger_meta( $event_book_id_action_meta );
+									Automator()->insert_trigger_meta( $event_book_id_action_meta );
 
 									// Save the Event Id as trigger meta.
 									$event_id_action_meta = array(
@@ -193,9 +192,9 @@ class MEC_USER_BOOKING_COMPLETED {
 										'meta_value'     => sprintf( '%d', $event_id ),
 									);
 
-									$uncanny_automator->insert_trigger_meta( $event_id_action_meta );
+									Automator()->insert_trigger_meta( $event_id_action_meta );
 
-									$uncanny_automator->maybe_trigger_complete( $result['args'] );
+									Automator()->maybe_trigger_complete( $result['args'] );
 
 								}
 							}

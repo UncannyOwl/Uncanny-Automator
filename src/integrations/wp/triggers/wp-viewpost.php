@@ -32,7 +32,7 @@ class WP_VIEWPOST {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -64,7 +64,7 @@ class WP_VIEWPOST {
 	 */
 	public function view_post() {
 
-		// global $uncanny_automator;
+
 
 		global $post;
 		$user_id = get_current_user_id();

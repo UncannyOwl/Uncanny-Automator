@@ -303,7 +303,7 @@ KEY meta_key (meta_key(15))
 	/**
 	 * @return string
 	 */
-	public static function recipe_log_view_query(): string {
+	public static function recipe_log_view_query() {
 		global $wpdb;
 
 		return apply_filters(
@@ -328,7 +328,7 @@ KEY meta_key (meta_key(15))
 	/**
 	 * @return string
 	 */
-	public static function trigger_log_view_query(): string {
+	public static function trigger_log_view_query() {
 		global $wpdb;
 
 		return apply_filters(
@@ -370,7 +370,7 @@ KEY meta_key (meta_key(15))
 	 *
 	 * @return string
 	 */
-	public static function action_log_view_query( $group_by = true ): string {
+	public static function action_log_view_query( $group_by = true ) {
 		global $wpdb;
 		$qry = "SELECT a.automator_action_id,
 					a.date_time AS action_date,
@@ -396,7 +396,7 @@ KEY meta_key (meta_key(15))
 			JOIN {$wpdb->posts} pa
 			ON pa.ID = a.automator_action_id
 			LEFT JOIN {$wpdb->prefix}uap_action_log_meta am
-			ON am.automator_action_id = a.automator_action_id  AND am.meta_key = 'sentence_human_readable_html'
+			ON a.automator_action_id = am.automator_action_id AND am.automator_action_log_id = a.ID AND am.user_id = a.user_id AND am.meta_key = 'sentence_human_readable_html'
 			LEFT JOIN {$wpdb->users} u
 			ON a.user_id = u.ID";
 		if ( $group_by ) {
@@ -416,7 +416,7 @@ KEY meta_key (meta_key(15))
 	 *
 	 * @return bool
 	 */
-	public static function is_view_exists( string $type = 'recipe' ): bool {
+	public static function is_view_exists( string $type = 'recipe' ) {
 		global $wpdb;
 		$recipe_view = '';
 		if ( 'recipe' === $type ) {
@@ -432,7 +432,7 @@ KEY meta_key (meta_key(15))
 		if ( empty( $recipe_view ) ) {
 			return false;
 		}
-		$results = self::all_views();
+		$results = self::all_views( true );
 		if ( ! in_array( $recipe_view, $results, true ) ) {
 			return true;
 		}
@@ -448,7 +448,7 @@ KEY meta_key (meta_key(15))
 	 * @return array
 	 * @version 3.0
 	 */
-	public static function all_views( bool $return_missing = false ): array {
+	public static function all_views( bool $return_missing = false ) {
 		global $wpdb;
 		$db      = DB_NAME;
 		$results = $wpdb->get_results( "SHOW FULL TABLES IN $db WHERE TABLE_TYPE LIKE '%VIEW%'" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

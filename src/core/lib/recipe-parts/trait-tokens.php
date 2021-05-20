@@ -55,7 +55,7 @@ trait Tokens {
 //	/**
 //	 * @param mixed $token_parser
 //	 */
-//	public static function set_token_parser( $token_parser ): void {
+//	public static function set_token_parser( $token_parser ) {
 //		self::$token_parser = $token_parser;
 //	}
 

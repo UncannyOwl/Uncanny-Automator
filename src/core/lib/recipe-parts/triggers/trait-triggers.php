@@ -1,10 +1,10 @@
 <?php
 /**
- * Class Name
+ * Trait - Triggers
  *
- * Short description
+ * Has all the functionality of Triggers
  *
- * @class   Triggers
+ * @trait   Triggers
  * @since   3.0
  * @version 3.0
  * @package Uncanny_Automator
@@ -48,11 +48,11 @@ trait Triggers {
 	/**
 	 * Set values before trigger is processed. For example, setting post id, setting conditional trigger to true etc.
 	 *
-	 * @param mixed ...$args
+	 * @param mixed $args
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
-	abstract protected function prepare_to_run( ...$args );
+	abstract protected function prepare_to_run( $args );
 
 	/**
 	 * @param $args
@@ -73,7 +73,7 @@ trait Triggers {
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function validate( ...$args ): bool {
+	public function validate( ...$args ) {
 		/**
 		 * By default, ...$args contains all the arguments in array. If a developer wants to manipulate the arguments
 		 * array to add assign values as key=>value pair, they can do it here.

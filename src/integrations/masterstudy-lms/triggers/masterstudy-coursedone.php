@@ -31,7 +31,7 @@ class MASTERSTUDY_COURSEDONE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -85,7 +85,7 @@ class MASTERSTUDY_COURSEDONE {
 	 */
 	public function course_done( $course_id, $user_id, $progress ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $progress ) ) {
 			return;

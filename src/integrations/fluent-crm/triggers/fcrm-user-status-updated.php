@@ -31,12 +31,13 @@ class FCRM_USER_STATUS_UPDATED {
 	protected $trigger_meta;
 
 	protected $helper_status = '';
+
 	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
 
-		global $uncanny_automator;
+
 		$this->helper_status = new Fcrm_Status_Helpers();
 
 		$this->trigger_code = 'FCRMUSERSTATUSUPDATED';
@@ -55,16 +56,15 @@ class FCRM_USER_STATUS_UPDATED {
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/fluentcrm/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Fluent Forms */
@@ -79,7 +79,7 @@ class FCRM_USER_STATUS_UPDATED {
 				array(
 					'input_type'               => 'select',
 					'option_code'              => $this->trigger_code,
-					'options'                  => $uncanny_automator->helpers->recipe->fluent_crm->get_subscriber_statuses(),
+					'options'                  => Automator()->helpers->recipe->fluent_crm->get_subscriber_statuses(),
 					'required'                 => true,
 					'label'                    => esc_html__( 'List of all available status values for Fluent CRM contacts.', 'uncanny-automator' ),
 					'description'              => esc_html__( 'Select from dropdown list of the options above.', 'uncanny-automator' ),
@@ -87,11 +87,11 @@ class FCRM_USER_STATUS_UPDATED {
 					'supports_multiple_values' => false,
 					'supports_custom_value'    => false,
 					'relevant_tokens'          => $this->helper_status->get_tokens(),
-				)
+				),
 			),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 	}
 
@@ -100,7 +100,6 @@ class FCRM_USER_STATUS_UPDATED {
 	 */
 	public function user_status_updated( $subscriber, $old_value ) {
 
-		global $uncanny_automator;
 
 		$user = get_user_by( 'email', $subscriber->email );
 

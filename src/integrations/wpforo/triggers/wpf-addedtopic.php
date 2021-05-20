@@ -32,7 +32,7 @@ class WPF_ADDEDTOPIC {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$forums = WPF()->forum->get_forums( [ 'type' => 'forum' ] );
 
@@ -84,7 +84,7 @@ class WPF_ADDEDTOPIC {
 
 	public function added_topic( $args ) {
 
-		// global $uncanny_automator;
+
 
 		if ( isset( $args['forumid'] ) ) {
 			$forum_id = absint( $args['forumid'] );

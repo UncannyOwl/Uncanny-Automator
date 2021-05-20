@@ -29,7 +29,7 @@ class Buddyboss_Helpers {
 	 * Buddyboss_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -55,7 +55,7 @@ class Buddyboss_Helpers {
 	 */
 	public function all_buddyboss_groups( $label = null, $option_code = 'BDBGROUPS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -73,7 +73,7 @@ class Buddyboss_Helpers {
 		global $wpdb;
 		$qry     = "SHOW TABLES LIKE '{$wpdb->prefix}bp_groups';";
 		$options = array();
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
@@ -119,7 +119,7 @@ class Buddyboss_Helpers {
 	 */
 	public function all_buddyboss_users( $label = null, $option_code = 'BDBUSERS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -136,7 +136,7 @@ class Buddyboss_Helpers {
 		);
 
 		$options = array();
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
@@ -170,13 +170,13 @@ class Buddyboss_Helpers {
 	 */
 	public function list_buddyboss_forums( $label = null, $option_code = 'BDBFORUMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -203,7 +203,7 @@ class Buddyboss_Helpers {
 		if ( $args['uo_include_any'] ) {
 			$options[ - 1 ] = $args['uo_any_label'];
 		}
-		// global $uncanny_automator;
+
 		$forums = Automator()->helpers->recipe->options->wp_query( $forum_args );
 		if ( ! empty( $forums ) ) {
 			foreach ( $forums as $key => $forum ) {

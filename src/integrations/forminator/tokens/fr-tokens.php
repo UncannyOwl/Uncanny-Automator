@@ -71,15 +71,17 @@ class Fr_Tokens {
 			if ( isset( $form_meta ) && ! empty( $form_meta ) ) {
 				$fields = array();
 				foreach ( $form_meta as $field ) {
-					$input_id    = $field->slug;
-					$input_title = $field->raw['field_label'];
-					$token_id    = "$form_id|$input_id";
-					$fields[]    = [
-						'tokenId'         => $token_id,
-						'tokenName'       => $input_title,
-						'tokenType'       => $field->raw['type'],
-						'tokenIdentifier' => $trigger_meta,
-					];
+					if ( isset( $field->raw['field_label'] ) ) {
+						$input_id    = $field->slug;
+						$input_title = $field->raw['field_label'];
+						$token_id    = "$form_id|$input_id";
+						$fields[]    = [
+							'tokenId'         => $token_id,
+							'tokenName'       => $input_title,
+							'tokenType'       => $field->raw['type'],
+							'tokenIdentifier' => $trigger_meta,
+						];
+					}
 				}
 
 				$tokens = array_merge( $tokens, $fields );
@@ -107,7 +109,7 @@ class Fr_Tokens {
 		$piece = 'FRFORM';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				// global $uncanny_automator;
+
 				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
@@ -145,7 +147,7 @@ class Fr_Tokens {
 		if ( is_array( $args ) ) {
 			foreach ( $args as $trigger_result ) {
 				if ( true === $trigger_result['result'] ) {
-					// global $uncanny_automator;
+
 					if ( $recipes && absint( $form_id ) > 0 ) {
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];

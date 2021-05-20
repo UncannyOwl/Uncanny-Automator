@@ -33,7 +33,7 @@ class WC_PURCHPROD {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$options = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_attr__( 'Product', 'uncanny-automator' ) );
 
@@ -73,7 +73,7 @@ class WC_PURCHPROD {
 	 * @param $order_id
 	 */
 	public function payment_completed( $order_id ) {
-		// global $uncanny_automator;
+
 
 		if ( ! $order_id ) {
 			return;

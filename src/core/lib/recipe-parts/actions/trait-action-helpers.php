@@ -30,7 +30,7 @@ trait Action_Helpers {
 	/**
 	 * @param mixed $error_message
 	 */
-	public function set_error_message( $error_message ): void {
+	public function set_error_message( $error_message ) {
 		$this->error_message[] = $error_message;
 	}
 }

@@ -31,7 +31,7 @@ class AFFWP_NEWAFFILIATE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -62,7 +62,7 @@ class AFFWP_NEWAFFILIATE {
 	 * @return mixed
 	 */
 	public function affwp_user_becomes_affiliate( $affiliate_id, $status, $data ) {
-		// global $uncanny_automator;
+
 
 		$affwp_settings = maybe_unserialize( get_option( 'affwp_settings', 0 ) );
 

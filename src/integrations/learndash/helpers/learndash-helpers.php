@@ -30,7 +30,7 @@ class Learndash_Helpers {
 	 * Learndash_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_lesson_from_course_LESSONDONE', array( $this, 'select_lesson_from_course_func' ) );
@@ -75,12 +75,12 @@ class Learndash_Helpers {
 	 */
 	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Course', 'uncanny-automator' );
 		}
@@ -120,12 +120,12 @@ class Learndash_Helpers {
 	 */
 	public function all_ld_lessons( $label = null, $any_lesson = true, $option_code = 'LDLESSON' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Lesson', 'uncanny-automator' );
@@ -166,12 +166,12 @@ class Learndash_Helpers {
 	 */
 	public function all_ld_topics( $label = null, $option_code = 'LDTOPIC' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Topic', 'uncanny-automator' );
@@ -212,12 +212,12 @@ class Learndash_Helpers {
 	 */
 	public function all_ld_groups( $label = null, $option_code = 'LDGROUP', $all_label = false, $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Group', 'uncanny-automator' );
 		}
@@ -261,12 +261,12 @@ class Learndash_Helpers {
 	 */
 	public function all_ld_quiz( $label = null, $option_code = 'LDQUIZ', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Quiz', 'uncanny-automator' );
@@ -315,7 +315,7 @@ class Learndash_Helpers {
 	 */
 	public function select_lesson_from_course_func() {
 
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );
@@ -371,7 +371,7 @@ class Learndash_Helpers {
 	 */
 	public function lesson_from_course_func() {
 
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );
@@ -433,7 +433,7 @@ class Learndash_Helpers {
 	 */
 	public function topic_from_lesson_func() {
 
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );

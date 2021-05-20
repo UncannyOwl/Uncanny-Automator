@@ -32,7 +32,7 @@ class LD_LESSONDONE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -107,7 +107,7 @@ class LD_LESSONDONE {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$user   = $data['user'];
 		$lesson = $data['lesson'];

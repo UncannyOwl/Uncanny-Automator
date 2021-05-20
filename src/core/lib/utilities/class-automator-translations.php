@@ -88,6 +88,8 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.action.asyncActions.closuresLabelInstant
 					'closuresLabelAsyncOnly' => esc_attr__( 'Redirect when all triggers are completed', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.action.asyncActions.closuresLabelAsyncOnly
+					'pleaseSave' => esc_attr__( 'Please, save the action first', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.action.asyncActions.pleaseSave
 					'modal'                  => array(
 						'title'           => esc_attr__( 'Delay or schedule this action', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.title
@@ -117,7 +119,7 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.action.asyncActions.modal.after
 						'scheduleDesc'    => esc_attr__( 'Run this action at a specific date and time', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.scheduleDesc
-						'scheduleNotice1' => __( "Note: If the recipe is triggered after the specified date, this action won't be executed.", 'uncanny-automator' ),
+						'scheduleNotice1' => __( "Note: If the action is triggered after the specified date, this action will run immediately.", 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.scheduleNotice1
 						'scheduleNotice2' => esc_attr__( "Note: Changes will not affect previously delayed or scheduled actions.", 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.scheduleNotice2
@@ -125,6 +127,8 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezone
 						'timezoneString'  => wp_timezone_string(),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneString
+						'timezoneLink'  => admin_url('options-general.php#timezone_string'),
+						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneLink
 						'dateFormat'      => get_option( 'date_format' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.dateFormat
 						'today' => date( get_option('date_format') ),

@@ -27,7 +27,7 @@ class Gamipress_Helpers {
 	 * Gamipress_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_achievements_from_types_AWARDACHIEVEMENT', [
@@ -60,7 +60,7 @@ class Gamipress_Helpers {
 	 */
 	public function list_gp_award_types( $label = null, $option_code = 'GPAWARDTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -121,7 +121,7 @@ class Gamipress_Helpers {
 	 */
 	public function list_gp_points_types( $label = null, $option_code = 'GPPOINTSTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -182,7 +182,7 @@ class Gamipress_Helpers {
 	 */
 	public function list_gp_rank_types( $label = null, $option_code = 'GPRANKTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -233,7 +233,7 @@ class Gamipress_Helpers {
 	 */
 	public function select_achievements_from_types_func() {
 
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );
@@ -267,7 +267,7 @@ class Gamipress_Helpers {
 	 */
 	public function select_ranks_from_types_func() {
 
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation.
 		Automator()->utilities->ajax_auth_check( $_POST );

@@ -94,10 +94,27 @@ class Automator_Email_Helpers {
 		 * @param array $attachments
 		 * @param array $is_html
 		 */
-		extract( $mail ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
-		$error = Automator()->error;
-		if ( empty( $to ) ) {
-			$error->add_error( 'wp_mail', esc_attr__( 'To address is empty.', 'uncanny-automator' ), $mail );
+		$to          = $mail['to'];
+		$subject     = $mail['subject'];
+		$body        = $mail['body'];
+		$headers     = $mail['headers'];
+		$attachments = $mail['attachment'];
+		$is_html     = $mail['is_html'];
+		$error       = Automator()->error;
+		if ( $to ) {
+			if ( is_array( $to ) ) {
+				foreach ( $to as $tt ) {
+					if ( empty( $tt ) || ! is_email( $tt ) ) {
+						if ( ! $error->get_message( 'wp_mail_to' ) ) {
+							$error->add_error( 'wp_mail_to', esc_attr__( 'To address is empty.', 'uncanny-automator' ), $mail );
+						}
+					}
+				}
+			} elseif ( empty( $to ) || ! is_email( $to ) ) {
+				if ( ! $error->get_message( 'wp_mail_to' ) ) {
+					$error->add_error( 'wp_mail_to', esc_attr__( 'To address is empty.', 'uncanny-automator' ), $mail );
+				}
+			}
 		}
 		if ( empty( $headers ) ) {
 			$headers = array();
@@ -114,9 +131,11 @@ class Automator_Email_Helpers {
 		if ( empty( $attachments ) ) {
 			$attachments = array();
 		}
+
 		if ( ! empty( $error->get_messages() ) ) {
 			return $error;
 		}
+
 		return wp_mail( $to, $subject, $body, $headers, $attachments );
 	}
 }

@@ -30,7 +30,7 @@ class Upsell_Plugin_Helpers {
 	 * Upsell_Plugin_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -56,7 +56,7 @@ class Upsell_Plugin_Helpers {
 	 */
 	public function all_upsell_products( $label = null, $option_code = 'USPRODUCT' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -73,7 +73,7 @@ class Upsell_Plugin_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any product', 'uncanny-automator' ) );
 
 		$option = [

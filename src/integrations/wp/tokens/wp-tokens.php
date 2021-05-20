@@ -70,7 +70,7 @@ class Wp_Tokens {
 		$piece = 'WPPOSTCOMMENTS';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				// global $uncanny_automator;
+
 
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
@@ -119,7 +119,7 @@ class Wp_Tokens {
 		$piece = 'WPROLE';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
-				// global $uncanny_automator;
+
 
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {

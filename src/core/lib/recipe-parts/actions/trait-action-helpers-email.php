@@ -71,6 +71,7 @@ trait Action_Helpers_Email {
 	 * @param $data
 	 */
 	public function set_mail_values( $data ) {
+
 		$defaults = array(
 			'from'      => Automator()->parse->text( '{{admin_email}}' ),
 			'from_name' => Automator()->parse->text( '{{site_name}}' ),
@@ -84,7 +85,8 @@ trait Action_Helpers_Email {
 			'body'      => '',
 		);
 
-		$data       = wp_parse_args( $data, $defaults );
+		$data = wp_parse_args( $data, $defaults );
+
 		$from_email = sanitize_email( $data['from'] );
 		$from_name  = sanitize_text_field( $data['from_name'] );
 		$to_email   = sanitize_email( $data['to'] );
@@ -93,8 +95,8 @@ trait Action_Helpers_Email {
 		$reply_to   = sanitize_email( $data['reply_to'] );
 		$content    = sanitize_text_field( $data['content'] );
 		$charset    = sanitize_text_field( $data['charset'] );
-		$subject    = sanitize_text_field( $data['subject'] );
-		$body       = sanitize_textarea_field( $data['body'] );
+		$subject    = sanitize_text_field( stripslashes( $data['subject'] ) );
+		$body       = wp_filter_post_kses( stripslashes( $data['body'] ) );
 
 		$this->set_to( $to_email );
 		$this->set_from( $from_email );
@@ -118,7 +120,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $headers
 	 */
-	public function set_headers( $headers ): void {
+	public function set_headers( $headers ) {
 		$this->headers = $headers;
 	}
 
@@ -132,7 +134,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $from
 	 */
-	public function set_from( $from ): void {
+	public function set_from( $from ) {
 		$this->from = $from;
 	}
 
@@ -146,7 +148,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $from_name
 	 */
-	public function set_from_name( $from_name ): void {
+	public function set_from_name( $from_name ) {
 		$this->from_name = $from_name;
 	}
 
@@ -160,7 +162,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $cc
 	 */
-	public function set_cc( $cc ): void {
+	public function set_cc( $cc ) {
 		$this->cc[] = $cc;
 	}
 
@@ -174,7 +176,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $bcc
 	 */
-	public function set_bcc( $bcc ): void {
+	public function set_bcc( $bcc ) {
 		$this->bcc[] = $bcc;
 	}
 
@@ -188,7 +190,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $reply_to
 	 */
-	public function set_reply_to( $reply_to ): void {
+	public function set_reply_to( $reply_to ) {
 		$this->reply_to = $reply_to;
 	}
 
@@ -202,7 +204,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $to
 	 */
-	public function set_to( $to ): void {
+	public function set_to( $to ) {
 		$this->to[] = $to;
 	}
 
@@ -216,7 +218,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $subject
 	 */
-	public function set_subject( $subject ): void {
+	public function set_subject( $subject ) {
 		$this->subject = $subject;
 	}
 
@@ -230,49 +232,49 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $body
 	 */
-	public function set_body( $body ): void {
+	public function set_body( $body ) {
 		$this->body = $body;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function is_is_html(): bool {
+	public function is_is_html() {
 		return $this->is_html;
 	}
 
 	/**
 	 * @param bool $is_html
 	 */
-	public function set_is_html( bool $is_html ): void {
+	public function set_is_html( bool $is_html ) {
 		$this->is_html = $is_html;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function get_content_type(): string {
+	public function get_content_type() {
 		return $this->content_type;
 	}
 
 	/**
 	 * @param string $content_type
 	 */
-	public function set_content_type( string $content_type ): void {
+	public function set_content_type( string $content_type ) {
 		$this->content_type = $content_type;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function get_charset(): string {
+	public function get_charset() {
 		return $this->charset;
 	}
 
 	/**
 	 * @param string $charset
 	 */
-	public function set_charset( string $charset ): void {
+	public function set_charset( string $charset ) {
 		$this->charset = $charset;
 	}
 
@@ -286,7 +288,7 @@ trait Action_Helpers_Email {
 	/**
 	 * @param mixed $attachments
 	 */
-	public function set_attachments( $attachments ): void {
+	public function set_attachments( $attachments ) {
 		$this->attachments[] = $attachments;
 	}
 
@@ -307,8 +309,8 @@ trait Action_Helpers_Email {
 
 		$headers     = apply_filters( 'automator_email_headers', Automator()->helpers->email->headers( $header_raw ), $this );
 		$to          = apply_filters( 'automator_email_to', $this->get_to(), $this );
-		$subject     = apply_filters( 'automator_email_subject', $this->get_subject(), $this );
-		$body        = apply_filters( 'automator_email_subject', $this->get_body(), $this );
+		$subject     = apply_filters( 'automator_email_subject', stripslashes( $this->get_subject() ), $this );
+		$body        = apply_filters( 'automator_email_body', stripslashes( $this->get_body() ), $this );
 		$attachments = apply_filters( 'automator_email_attachments', $this->get_attachments(), $this );
 		$pass        = array(
 			'to'         => $to,
@@ -319,9 +321,8 @@ trait Action_Helpers_Email {
 			'is_html'    => $this->is_is_html(),
 		);
 		$mailed      = Automator()->helpers->email->send( $pass );
-
 		if ( is_automator_error( $mailed ) ) {
-			$errors = $mailed->get_messages( 'wp_mail' );
+			$errors = $mailed->get_messages( 'wp_mail' ) + $mailed->get_messages( 'wp_mail_to' );
 			if ( $errors ) {
 				foreach ( $errors as $error ) {
 					$this->set_error_message( $error );

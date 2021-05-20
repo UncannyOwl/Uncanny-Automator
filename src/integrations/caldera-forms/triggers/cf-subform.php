@@ -38,7 +38,7 @@ class CF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -70,7 +70,7 @@ class CF_SUBFORM {
 	 */
 	public function caldera_forms_submit( $form, $referrer, $process_id, $entryid ) {
 
-		// global $uncanny_automator;
+
 		$user_id    = wp_get_current_user()->ID;
 		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$conditions = $this->match_condition( $form, $recipes, $this->trigger_meta, $this->trigger_code );

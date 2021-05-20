@@ -33,7 +33,7 @@ class UM_USERINACTIVE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -66,7 +66,7 @@ class UM_USERINACTIVE {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'           => $this->trigger_code,

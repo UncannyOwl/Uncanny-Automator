@@ -1,4 +1,4 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php
 namespace Uncanny_Automator;
 
 /**
@@ -48,7 +48,6 @@ class Mec_Event_Tokens {
 	public function parse_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		$to_match = array(
-			$this->token . 'EVENT_TITLE',
 			$this->token . 'EVENT_DATE',
 			$this->token . 'EVENT_TIME',
 			$this->token . 'EVENT_LOCATION',
@@ -76,12 +75,12 @@ class Mec_Event_Tokens {
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
-		global $uncanny_automator;
+
 
 		$trigger_meta = $pieces[1];
 		$parse        = $pieces[2];
 
-		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 
 		if ( ! $trigger_data || ! $recipe_log_id ) {
 			return $value;
@@ -118,9 +117,6 @@ class Mec_Event_Tokens {
 
 			switch ( $parse ) {
 
-				case $this->token . 'EVENT_TITLE':
-					$value = $the_event->get_event_title();
-					break;
 				case $this->token . 'EVENT_DATE':
 					$value = $the_event->get_event_date();
 					break;
@@ -163,12 +159,12 @@ class Mec_Event_Tokens {
 
 		$meta_value = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT meta_value 
-				FROM {$wpdb->prefix}uap_trigger_log_meta 
-				WHERE user_id = %d 
-				AND meta_key = %s 
-				AND automator_trigger_id = %d 
-				AND automator_trigger_log_id = %d 
+				"SELECT meta_value
+				FROM {$wpdb->prefix}uap_trigger_log_meta
+				WHERE user_id = %d
+				AND meta_key = %s
+				AND automator_trigger_id = %d
+				AND automator_trigger_log_id = %d
 				ORDER BY ID DESC LIMIT 0,1",
 				$user_id,
 				$meta_key,

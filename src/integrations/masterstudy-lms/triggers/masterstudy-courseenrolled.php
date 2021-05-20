@@ -31,7 +31,7 @@ class MASTERSTUDY_COURSEENROLLED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -85,7 +85,7 @@ class MASTERSTUDY_COURSEENROLLED {
 	 */
 	public function course_enrolled( $user_id, $course_id ) {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'    => $this->trigger_code,

@@ -1,4 +1,4 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php
 namespace Uncanny_Automator;
 
 /**
@@ -135,17 +135,6 @@ class MEC_EVENT_HELPERS {
 		}
 
 		return implode( ', ', $costs );
-
-	}
-
-	/**
-	 * Returns the event title.
-	 *
-	 * @return string The event title.
-	 */
-	public function get_event_title() {
-
-		return get_the_title( $this->event_id );
 
 	}
 

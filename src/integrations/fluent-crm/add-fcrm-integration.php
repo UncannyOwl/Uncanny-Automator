@@ -59,7 +59,7 @@ class Add_Fcrm_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( 'FCRM', array(
 			'name'     => 'FluentCRM',

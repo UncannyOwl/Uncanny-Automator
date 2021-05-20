@@ -37,7 +37,7 @@ class FCRM_ADD_USER_TO_LIST {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -67,7 +67,7 @@ class FCRM_ADD_USER_TO_LIST {
 	 */
 	public function contact_added_to_lists( $attachedListIds, $subscriber ) {
 
-		// global $uncanny_automator;
+
 
 		$user_id = Automator()
 			->helpers

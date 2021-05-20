@@ -37,7 +37,7 @@ class HF_FORMSUBMIT {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
@@ -76,7 +76,7 @@ class HF_FORMSUBMIT {
 
 	public function hf_form_submitted( $submission, $form, $misc ) {
 
-		// global $uncanny_automator;
+
 
 		$user_id = get_current_user_id();
 

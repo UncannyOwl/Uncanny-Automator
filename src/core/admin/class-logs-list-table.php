@@ -252,6 +252,13 @@ class Logs_List_Table extends WP_List_Table {
 				$search_conditions .= " AND r.run_number = '" . absint( automator_filter_input( 'run_number' ) ) . "' ";
 			}
 		}
+		if ( automator_filter_has_var( 'user_id' ) && '' !== automator_filter_input( 'user_id' ) ) {
+			if ( $view_exists ) {
+				$search_conditions .= " AND user_id = '" . absint( automator_filter_input( 'user_id' ) ) . "' ";
+			} else {
+				$search_conditions .= " AND u.ID = '" . absint( automator_filter_input( 'user_id' ) ) . "' ";
+			}
+		}
 		if ( $view_exists ) {
 			return "SELECT * FROM {$wpdb->prefix}uap_trigger_logs_view WHERE ($search_conditions) ";
 		} else {
@@ -293,6 +300,13 @@ class Logs_List_Table extends WP_List_Table {
 				$search_conditions .= " AND recipe_run_number = '" . absint( automator_filter_input( 'run_number' ) ) . "' ";
 			} else {
 				$search_conditions .= " AND r.run_number = '" . absint( automator_filter_input( 'run_number' ) ) . "' ";
+			}
+		}
+		if ( automator_filter_has_var( 'user_id' ) && '' !== automator_filter_input( 'user_id' ) ) {
+			if ( $view_exists ) {
+				$search_conditions .= " AND user_id = '" . absint( automator_filter_input( 'user_id' ) ) . "' ";
+			} else {
+				$search_conditions .= " AND u.ID = '" . absint( automator_filter_input( 'user_id' ) ) . "' ";
 			}
 		}
 		if ( $view_exists ) {
@@ -351,9 +365,9 @@ class Logs_List_Table extends WP_List_Table {
 				$recipe_status = esc_attr_x( 'In progress', 'Recipe', 'uncanny-automator' );
 			}
 
-			$run_number            = $recipe->run_number;
 			$recipe_date_completed = ( 1 === absint( $recipe->recipe_completed ) || 2 === absint( $recipe->recipe_completed ) || 9 === absint( $recipe->recipe_completed ) ) ? $recipe->recipe_date_time : '';
 			$current_type          = Automator()->utilities->get_recipe_type( $recipe_id );
+			$run_number            = 'anonymous' === $current_type ? 'N/A' : $recipe->run_number;
 
 			/* translators: Recipe type. Logged-in recipes are triggered only by logged-in users */
 			$recipe_type_name = esc_attr_x( 'Logged-in', 'Recipe', 'uncanny-automator' );
@@ -366,14 +380,15 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_type_name = esc_attr_x( 'Anonymous', 'Recipe', 'uncanny-automator' );
 				}
 			}
-
+			$run_number_log = 'anonymous' === $current_type ? 1 : $run_number;
 			$url = sprintf(
-				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&minimal=1',
+				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&user_id=%d&minimal=1',
 				admin_url( 'edit.php' ),
 				'uo-recipe',
 				'uncanny-automator-recipe-activity-details',
 				$recipe_id,
-				$run_number
+				$run_number_log,
+				absint( $recipe->user_id )
 			);
 
 			$actions = array(
@@ -442,23 +457,25 @@ class Logs_List_Table extends WP_List_Table {
 				$recipe_status = esc_attr_x( 'In progress', 'Recipe', 'uncanny-automator' );
 			}
 
-			$run_number            = $recipe->run_number;
 			$recipe_date_completed = ( 1 === absint( $recipe->recipe_completed ) || 2 === absint( $recipe->recipe_completed ) || 9 === absint( $recipe->recipe_completed ) ) ? $recipe->recipe_date_time : '';
 			$current_type          = Automator()->utilities->get_recipe_type( $recipe_id );
+			$run_number            = 'anonymous' === $current_type ? 'N/A' : $recipe->run_number;
 
 			/* translators: Recipe type. Logged-in recipes are triggered only by logged-in users */
 			$recipe_type_name = esc_attr_x( 'Logged-in', 'Recipe', 'uncanny-automator' );
 			if ( ! empty( $current_type ) ) {
-				if ( $current_type == 'user' ) {
+				if ( 'user' === $current_type ) {
 					/* translators: Recipe type. Logged-in recipes are triggered only by logged-in users */
 					$recipe_type_name = esc_attr_x( 'Logged-in', 'Recipe', 'uncanny-automator' );
-				} elseif ( $current_type == 'anonymous' ) {
+				} elseif ( 'anonymous' === $current_type ) {
 					/* translators: Recipe type. Anonymous recipes can be triggered by logged-in or anonymous users. Anonymous recipes can create new users or modify existing users. */
 					$recipe_type_name = esc_attr_x( 'Anonymous', 'Recipe', 'uncanny-automator' );
 				}
 			}
 
-			$url     = sprintf( '%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&minimal=1', admin_url( 'edit.php' ), 'uo-recipe', 'uncanny-automator-recipe-activity-details', $recipe_id, $run_number );
+			$run_number_log = 'anonymous' === $current_type ? 1 : $run_number;
+
+			$url     = sprintf( '%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&user_id=%d&minimal=1', admin_url( 'edit.php' ), 'uo-recipe', 'uncanny-automator-recipe-activity-details', $recipe_id, $run_number_log, absint( $recipe->user_id ) );
 			$actions = array(
 				'view'  => sprintf( '<a href="%s" data-lity>%s</a>', $url, esc_attr__( 'Details', 'uncanny-automator' ) ),
 				'rerun' => sprintf( '<a href="%s" onclick="return confirm(\"%s\")">%s</a>', '#', esc_attr__( 'Are you sure you want to re-run this recipe?', 'uncanny-automator' ), esc_attr__( 'Re-run', 'uncanny-automator' ) ),
@@ -527,13 +544,13 @@ class Logs_List_Table extends WP_List_Table {
 				/* translators: User type */
 				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
 			} else {
-				$user_link = get_edit_user_link( absint( $trigger->user_id ) );
+				$user_link       = get_edit_user_link( absint( $trigger->user_id ) );
 				$user_email_link = sprintf(
 					'<a href="mailto:%1$s" title="%2$s">(%1$s)</a>',
 					sanitize_email( $trigger->user_email ),
-					esc_attr__('Send Email', 'uncanny-automator'),
+					esc_attr__( 'Send Email', 'uncanny-automator' )
 				);
-				$user_name = '<a href="' . $user_link . '">' . $trigger->display_name . '</a> <br>' . $user_email_link;
+				$user_name       = '<a href="' . $user_link . '">' . $trigger->display_name . '</a> <br>' . $user_email_link;
 			}
 
 			/* translators: 1. Trigger ID */
@@ -560,6 +577,7 @@ class Logs_List_Table extends WP_List_Table {
 			$recipe_run_number   = absint( $trigger->recipe_run_number );
 			$trigger_run_number  = ( 0 === absint( $trigger->trigger_run_number ) || empty( $trigger->trigger_run_number ) ) ? 1 : absint( $trigger->trigger_run_number );
 			$trigger_total_times = ( 0 === absint( $trigger->trigger_total_times ) || empty( $trigger->trigger_total_times ) ) ? 1 : $trigger->trigger_total_times;
+			$recipe_run_number   = 'anonymous' === (string) Automator()->utilities->get_recipe_type( absint( $trigger->automator_recipe_id ) ) ? 'N/A' : $recipe_run_number;
 
 			$data[] = array(
 				'trigger_id'         => $trigger->ID,
@@ -708,14 +726,15 @@ class Logs_List_Table extends WP_List_Table {
 
 			$recipe_date_completed = ( 1 === absint( $action->recipe_completed ) || 2 === absint( $action->recipe_completed ) || 9 === absint( $action->recipe_completed ) ) ? $action->recipe_date_time : '';
 			$recipe_run_number     = $action->recipe_run_number;
+			$recipe_run_number     = 'anonymous' === (string) Automator()->utilities->get_recipe_type( absint( $action->automator_recipe_id ) ) ? 'N/A' : $recipe_run_number;
 			if ( ! is_null( $action->user_id ) ) {
-				$user_link = get_edit_user_link( absint( $action->user_id ) );
+				$user_link       = get_edit_user_link( absint( $action->user_id ) );
 				$user_email_link = sprintf(
 					'<a href="mailto:%1$s" title="%2$s">(%1$s)</a>',
 					sanitize_email( $action->user_email ),
-					esc_attr__('Send Email', 'uncanny-automator'),
+					esc_attr__( 'Send Email', 'uncanny-automator' )
 				);
-				$user_name = '<a href="' . $user_link . '">' . $action->display_name . '</a><br>' . $user_email_link;
+				$user_name       = '<a href="' . $user_link . '">' . $action->display_name . '</a><br>' . $user_email_link;
 			} else {
 				/* translators: User type */
 				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );

@@ -54,7 +54,7 @@ trait Trigger_Filters {
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
-	protected function do_continue_anon_trigger( ...$args ): bool {
+	protected function do_continue_anon_trigger( ...$args ) {
 		return false;
 	}
 
@@ -73,7 +73,7 @@ trait Trigger_Filters {
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
-	protected function is_user_logged_in_required( ...$args ): bool {
+	protected function is_user_logged_in_required( ...$args ) {
 		return $this->is_login_required;
 	}
 

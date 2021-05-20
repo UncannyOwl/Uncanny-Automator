@@ -31,7 +31,7 @@ class Wpforms_Helpers {
 	 * Wpforms_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -59,12 +59,12 @@ class Wpforms_Helpers {
 
 	public function list_wp_forms( $label = null, $option_code = 'WPFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}

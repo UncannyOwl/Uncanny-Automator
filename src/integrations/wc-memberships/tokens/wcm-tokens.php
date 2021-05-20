@@ -145,7 +145,7 @@ class Wcm_Tokens {
 	 * @return array|string|null
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		// global $uncanny_automator;
+
 		global $wpdb;
 		$trigger_meta  = $pieces[1];
 		$parse         = $pieces[2];

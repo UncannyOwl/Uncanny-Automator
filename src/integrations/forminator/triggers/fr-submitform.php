@@ -31,7 +31,7 @@ class FR_SUBMITFORM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
@@ -65,7 +65,7 @@ class FR_SUBMITFORM {
 	 */
 	public function fr_submit_form( $form_id, $response, $method ) {
 		if ( true === $response['success'] ) {
-			// global $uncanny_automator;
+
 
 			$user_id = get_current_user_id();
 			if ( empty( $user_id ) ) {

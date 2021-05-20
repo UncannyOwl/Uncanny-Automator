@@ -29,7 +29,7 @@ class Bbpress_Helpers {
 	 * Bbpress_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -55,13 +55,13 @@ class Bbpress_Helpers {
 	 */
 	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS', $any_option = false ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -84,7 +84,7 @@ class Bbpress_Helpers {
 			'post_status'    => [ 'publish', 'private' ],
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, $any_label );
 
 		$option = [

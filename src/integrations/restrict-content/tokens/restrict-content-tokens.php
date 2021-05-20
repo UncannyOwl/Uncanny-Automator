@@ -86,7 +86,7 @@ class Restrict_Content_Tokens {
 					return $value;
 				}
 
-				// global $uncanny_automator;
+
 				$replace_pieces = $replace_args['pieces'];
 				$trigger_log_id = $replace_args['trigger_log_id'];
 				$run_number     = $replace_args['run_number'];

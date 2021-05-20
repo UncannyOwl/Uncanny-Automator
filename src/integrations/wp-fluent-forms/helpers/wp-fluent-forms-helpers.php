@@ -29,7 +29,7 @@ class Wp_Fluent_Forms_Helpers {
 	 * Wp_Fluent_Forms_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -57,7 +57,7 @@ class Wp_Fluent_Forms_Helpers {
 	 */
 	public function list_wp_fluent_forms( $label = null, $option_code = 'WPFFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -72,7 +72,7 @@ class Wp_Fluent_Forms_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		// global $uncanny_automator;
+
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( function_exists( 'wpFluent' ) ) {
@@ -139,7 +139,7 @@ class Wp_Fluent_Forms_Helpers {
 			}
 
 			if ( $data ) {
-				// global $uncanny_automator;
+
 				$insert = [
 					'user_id'        => $user_id,
 					'trigger_id'     => $trigger_id,

@@ -30,7 +30,7 @@ class Contact_Form7_Helpers {
 	 * Contact_Form7_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -56,7 +56,7 @@ class Contact_Form7_Helpers {
 	 */
 	public function list_contact_form7_forms( $label = null, $option_code = 'CF7FORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -78,7 +78,7 @@ class Contact_Form7_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args );
 		$type    = 'select';
 

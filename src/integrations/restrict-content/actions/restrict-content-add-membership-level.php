@@ -31,7 +31,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = [
 			'author'             => 'Uncanny Automator',
@@ -69,7 +69,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 	 */
 	public function add_rcp_membership( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$level_id    = absint( $action_data['meta'][ $this->action_meta ] );
 		$expiry_date = Automator()->parse->text( $action_data['meta']['RCMEMBERSHIPEXPIRY'], $recipe_id, $user_id, $args );

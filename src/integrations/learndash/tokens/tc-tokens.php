@@ -172,7 +172,7 @@ class Tc_Tokens {
 					return $value;
 				}
 
-				// global $uncanny_automator;
+
 				$replace_pieces = $replace_args['pieces'];
 				$recipe_id      = $replace_args['recipe_id'];
 				$trigger_log_id = $replace_args['trigger_log_id'];

@@ -31,7 +31,7 @@ class BP_USERSENDSFRIENDREQUEST {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -62,7 +62,7 @@ class BP_USERSENDSFRIENDREQUEST {
 	 */
 	public function bp_friends_friendship_requested( $id, $initiator_user_id, $friend_user_id, $friendship ) {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'           => $this->trigger_code,

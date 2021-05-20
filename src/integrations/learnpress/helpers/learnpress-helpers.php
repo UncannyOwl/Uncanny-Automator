@@ -29,7 +29,7 @@ class Learnpress_Helpers {
 	 * Learnpress_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_section_from_course_LPMARKLESSONDONE', array(
@@ -69,7 +69,7 @@ class Learnpress_Helpers {
 	 */
 	public function all_lp_courses( $label = null, $option_code = 'LPCOURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -87,7 +87,7 @@ class Learnpress_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$option = [
@@ -117,7 +117,7 @@ class Learnpress_Helpers {
 	 */
 	public function all_lp_lessons( $label = null, $option_code = 'LPLESSON', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -135,7 +135,7 @@ class Learnpress_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
@@ -161,7 +161,7 @@ class Learnpress_Helpers {
 	 * Return all the sections of course ID provided in ajax call
 	 */
 	public function select_section_from_course_func() {
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );
@@ -189,7 +189,7 @@ class Learnpress_Helpers {
 	 * Return all the lessons of section ID provided in ajax call
 	 */
 	public function select_lesson_from_section_func() {
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );

@@ -31,7 +31,7 @@ class BDB_USERUPDATEAVATAR {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -64,7 +64,7 @@ class BDB_USERUPDATEAVATAR {
 	 */
 	public function bp_user_updated_avatar( $item_id, $type, $avatar_data ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $avatar_data ) || 'user' !== $avatar_data['object'] ) {
 			return;

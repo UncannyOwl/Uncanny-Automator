@@ -75,7 +75,7 @@ class Add_Gp_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'GamiPress',

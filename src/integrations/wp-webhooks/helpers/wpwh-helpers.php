@@ -29,7 +29,7 @@ class Wpwh_Helpers {
 	 * Wpwh_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 	}
@@ -149,7 +149,7 @@ class Wpwh_Helpers {
 		$meta_key       = (string) $args['meta_key'];
 
 		if ( $data ) {
-			// global $uncanny_automator;
+
 			$insert = [
 				'user_id'        => $user_id,
 				'trigger_id'     => $trigger_id,

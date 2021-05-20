@@ -30,7 +30,7 @@ class UNCANNYCEUS_AWARDCEUS {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
 
@@ -87,7 +87,7 @@ class UNCANNYCEUS_AWARDCEUS {
 	 */
 	public function award_ceus( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$date   = Automator()->parse->text( $action_data['meta']['AWARDCEUSDATE'], $recipe_id, $user_id, $args );
 		$course = Automator()->parse->text( $action_data['meta']['AWARDCEUSCOURSE'], $recipe_id, $user_id, $args );

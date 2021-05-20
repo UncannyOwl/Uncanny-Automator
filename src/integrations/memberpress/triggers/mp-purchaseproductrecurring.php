@@ -37,7 +37,7 @@ class MP_PURCHASEPRODUCTRECURRING {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
@@ -65,7 +65,7 @@ class MP_PURCHASEPRODUCTRECURRING {
 	 */
 	public function mp_product_purchased( \MeprEvent $event ) {
 
-		// global $uncanny_automator;
+
 
 		/** @var \MeprTransaction $transaction */
 		$transaction = $event->get_data();

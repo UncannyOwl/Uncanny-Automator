@@ -114,7 +114,7 @@ class Mp_Tokens {
 		if ( $pieces ) {
 			$matches = [ 'MPPRODUCT', 'MPPRODUCT_ID', 'MPPRODUCT_URL', 'first_name', 'last_name' ];
 			if ( array_intersect( $matches, $pieces ) ) {
-				//// global $uncanny_automator;
+				//
 				//$user_id = wp_get_current_user()->ID;
 				// all memberpress values will be saved in usermeta.
 				$value = get_user_meta( $user_id, 'MPPRODUCT', true );

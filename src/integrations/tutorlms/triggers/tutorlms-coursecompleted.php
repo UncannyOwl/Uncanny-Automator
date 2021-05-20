@@ -3,7 +3,7 @@
  * Contains Course Completion Trigger.
  *
  * @version 2.4.0
- * @since   2.4.0
+ * @since 2.4.0
  */
 
 namespace Uncanny_Automator;
@@ -45,7 +45,7 @@ class TUTORLMS_COURSECOMPLETED {
 	public function define_trigger() {
 
 		// global automator object.
-		// global $uncanny_automator;
+
 
 		// setup trigger configuration.
 		$trigger = array(
@@ -63,7 +63,7 @@ class TUTORLMS_COURSECOMPLETED {
 			'validation_function' => array( $this, 'complete' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => [
-				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_courses( null, $this->trigger_meta, true ),
+				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_courses( null, $this->trigger_meta, true, true ),
 				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
@@ -97,7 +97,7 @@ class TUTORLMS_COURSECOMPLETED {
 			'user_id' => $user_id,
 		];
 
-		// global $uncanny_automator;
+
 
 		// run trigger.
 		Automator()->maybe_add_trigger_entry( $args );

@@ -43,7 +43,7 @@ class TUTORLMS_QUIZFAILED {
 	public function define_trigger() {
 
 		// global automator object.
-		// global $uncanny_automator;
+
 
 		// setup trigger configuration.
 		$trigger = array(
@@ -91,7 +91,7 @@ class TUTORLMS_QUIZFAILED {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		// bail if they have passed.
 		if ( Automator()->helpers->recipe->tutorlms->options->was_quiz_attempt_successful( $attempt ) ) {

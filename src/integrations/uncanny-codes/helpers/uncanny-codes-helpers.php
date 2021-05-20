@@ -23,7 +23,7 @@ class Uncanny_Codes_Helpers {
 	 * Uoa_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -36,7 +36,7 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_codes( $label = null, $option_code = 'UNCANNYCODES' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -72,7 +72,7 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_prefix( $label = null, $option_code = 'UCPREFIX' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -112,7 +112,7 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_suffix( $label = null, $option_code = 'UCSUFFIX' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -153,7 +153,7 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_batch( $label = null, $option_code = 'UCBATCH' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}

@@ -29,7 +29,7 @@ class Gravity_Forms_Helpers {
 	 * Gravity_Forms_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -56,7 +56,7 @@ class Gravity_Forms_Helpers {
 	 */
 	public function list_gravity_forms( $label = null, $option_code = 'GFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -71,7 +71,7 @@ class Gravity_Forms_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			$forms = GFFormsModel::get_forms();
 

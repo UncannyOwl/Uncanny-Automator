@@ -35,7 +35,7 @@ class WP_SUBMITCOMMENT {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types( null, 'WPPOSTTYPES', [
 			'token'        => false,
 			'is_ajax'      => true,
@@ -118,7 +118,7 @@ class WP_SUBMITCOMMENT {
 	 */
 	public function submitted_comment( $comment_id, $comment_approved, $commentdata ) {
 
-		// global $uncanny_automator;
+
 
 		$user_id   = get_current_user_id();
 		$post_type = get_post_type( $commentdata['comment_post_ID'] );

@@ -3,7 +3,6 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Wp_Pro_Helpers;
 use WP_Error;
 
@@ -31,15 +30,20 @@ class Wp_Helpers {
 	 * Wp_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
+
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
 		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
-		add_action( 'wp_ajax_select_terms_for_selected_taxonomy', array(
-			$this,
-			'select_terms_for_selected_taxonomy',
-		) );
+		add_action(
+			'wp_ajax_select_terms_for_selected_taxonomy',
+			array(
+				$this,
+				'select_terms_for_selected_taxonomy',
+			)
+		);
 
 		add_action( 'wp_ajax_nopriv_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
 		add_action( 'wp_ajax_sendtest_wp_webhook', array( $this, 'sendtest_webhook' ) );
@@ -60,10 +64,44 @@ class Wp_Helpers {
 	}
 
 	/**
+	 * Validate post status to see if its 'Draft' - 'Publish'
+	 *
+	 * @param $id The id of the post.
+	 * @param $post_object The post object.
+	 * @param $update The status of the post. Revision and auto-draft is triggered so $update is always equals to yes.
+	 *
+	 * @return boolean Returns true when post status is from 'Draft' to 'Publish', otherwise true.
+	 */
+	public function is_draft_to_publish( $new_status, $old_status, $post ) {
+
+		// Prevent from doing autosave.
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return false;
+		}
+
+		// Prevent auto draft, pending, revisions, and other post status.
+		if ( 'publish' !== $post->post_status ) {
+			return false;
+		}
+
+		// Prevent existing posts to trigger from post update.
+		if ( 'publish' === $old_status && 'publish' === $new_status ) {
+			return false;
+		}
+
+		// Create a hook once the validation have passed.
+		do_action( 'uo_automator_post_draft_to_publish', $new_status, $old_status, $post );
+
+		return true;
+
+	}
+
+	/**
 	 * Return all the specific fields of post type in ajax call
 	 */
-	function select_custom_post_func() {
-		// global $uncanny_automator;
+	public function select_custom_post_func() {
+
+
 
 		Automator()->utilities->ajax_auth_check( $_POST );
 		$fields = array();
@@ -80,12 +118,17 @@ class Wp_Helpers {
 				'fields'           => array( 'ids', 'titles' ),
 			);
 
-			//$posts_list = get_posts( $args );
 			$posts_list = Automator()->helpers->recipe->options->wp_query( $args );
+
 			if ( ! empty( $posts_list ) ) {
+
 				foreach ( $posts_list as $post_id => $title ) {
-					// Check if the post title is defined
-					$post_title = ! empty( $title ) ? $title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
+
+					$post_title = ! empty( $title ) ? $title : sprintf(
+						/* translators: %1$s The ID of the post */
+						esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ),
+						$post_id
+					);
 
 					$fields[] = array(
 						'value' => $post_id,
@@ -106,7 +149,7 @@ class Wp_Helpers {
 	 */
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -116,29 +159,29 @@ class Wp_Helpers {
 			$label = esc_attr__( 'Post', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'post',
 			'post_status'    => 'publish',
-		];
+		);
 
-		// global $uncanny_automator;
+
 		$all_posts = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any post', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			'options'         => $all_posts,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Post title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Post ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_posts', $option );
 	}
@@ -152,7 +195,7 @@ class Wp_Helpers {
 	 */
 	public function all_pages( $label = null, $option_code = 'WPPAGE', $any_option = false ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -161,29 +204,29 @@ class Wp_Helpers {
 			$label = esc_attr__( 'Page', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'page',
 			'post_status'    => 'publish',
-		];
+		);
 
-		// global $uncanny_automator;
+
 		$all_pages = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'All pages', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			'options'         => $all_pages,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Page title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Page ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Page URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_pages', $option );
 	}
@@ -196,7 +239,7 @@ class Wp_Helpers {
 	 */
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -207,20 +250,20 @@ class Wp_Helpers {
 		}
 
 		$roles = array();
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			foreach ( wp_roles()->roles as $role_name => $role_info ) {
 				$roles[ $role_name ] = $role_info['name'];
 			}
 		}
-		$option = [
+		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $roles,
 			'custom_value_description' => esc_attr__( 'Role slug', 'uncanny-automator' ),
-		];
+		);
 
 		return apply_filters( 'uap_option_wp_user_roles', $option );
 	}
@@ -233,7 +276,7 @@ class Wp_Helpers {
 	 */
 	public function all_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -247,12 +290,12 @@ class Wp_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
-			$args = [
+			$args = array(
 				'public'   => true,
 				'_builtin' => false,
-			];
+			);
 
 			$output   = 'object';
 			$operator = 'and';
@@ -266,7 +309,7 @@ class Wp_Helpers {
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -276,8 +319,7 @@ class Wp_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
-
+		);
 
 		return apply_filters( 'uap_option_all_post_types', $option );
 	}
@@ -287,21 +329,23 @@ class Wp_Helpers {
 	 */
 	public function sendtest_webhook() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->utilities->ajax_auth_check( $_POST );
 
 		$key_values   = array();
-		$values       = (array) Automator()->utilities->automator_sanitize( $_POST['values'], 'mixed' );
+		$values       = (array) Automator()->uap_sanitize( $_POST['values'], 'mixed' );
 		$request_type = 'POST';
 		if ( isset( $values['WEBHOOKURL'] ) ) {
 			$webhook_url = esc_url_raw( $values['WEBHOOKURL'] );
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			for ( $i = 1; $i <= WP_SENDWEBHOOK::$number_of_keys; $i ++ ) {
@@ -309,27 +353,32 @@ class Wp_Helpers {
 				$value              = sanitize_text_field( $values[ 'VALUE' . $i ] );
 				$key_values[ $key ] = $value;
 			}
-
 		} elseif ( isset( $values['WEBHOOK_URL'] ) ) {
 			$webhook_url = esc_url_raw( $values['WEBHOOK_URL'] );
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			$fields = $values['WEBHOOK_FIELDS'];
 
-			for ( $i = 0; $i <= count( $fields ); $i ++ ) {
+			$fields_count = count( $fields );
+
+			for ( $i = 0; $i <= $fields_count; $i ++ ) {
 				$key   = isset( $fields[ $i ]['KEY'] ) ? sanitize_text_field( $fields[ $i ]['KEY'] ) : null;
 				$value = isset( $fields[ $i ]['VALUE'] ) ? sanitize_text_field( $fields[ $i ]['VALUE'] ) : null;
 				if ( ! is_null( $key ) && ! is_null( $value ) ) {
@@ -360,27 +409,31 @@ class Wp_Helpers {
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
 				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => $error_message,
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => $error_message,
+					)
+				);
 			}
 
 			/* translators: 1. Webhook URL */
 			$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
-			wp_send_json( array(
-				'type'    => 'success',
-				'message' => $success_message,
-			) );
+			wp_send_json(
+				array(
+					'type'    => 'success',
+					'message' => $success_message,
+				)
+			);
 		}
 	}
 
 	/**
 	 * Return all the specific taxonomies of selected post type in ajax call
 	 */
-	function select_post_type_taxonomies() {
-		// global $uncanny_automator;
+	public function select_post_type_taxonomies() {
+
 
 		Automator()->utilities->ajax_auth_check( $_POST );
 		$fields = array();
@@ -418,8 +471,8 @@ class Wp_Helpers {
 	/**
 	 * Return all the specific terms of the selected taxonomy in ajax call
 	 */
-	function select_terms_for_selected_taxonomy() {
-		// global $uncanny_automator;
+	public function select_terms_for_selected_taxonomy() {
+
 
 		Automator()->utilities->ajax_auth_check( $_POST );
 		$fields = array();
@@ -433,20 +486,22 @@ class Wp_Helpers {
 
 			$taxonomy = sanitize_text_field( $_POST['value'] );
 
-			if ( $taxonomy !== '0' ) {
+			if ( '0' !== $taxonomy ) {
 
 				$taxonomy = get_taxonomy( $taxonomy );
 
 				if ( false !== $taxonomy ) {
 
-					$terms = get_terms( array(
-						'taxonomy'   => $taxonomy->name,
-						'hide_empty' => false,
-					) );
+					$terms = get_terms(
+						array(
+							'taxonomy'   => $taxonomy->name,
+							'hide_empty' => false,
+						)
+					);
 
 					if ( ! empty( $terms ) ) {
 						foreach ( $terms as $term ) {
-							// Check if the post title is defined
+							/* translators: %1$s The ID of the post. */
 							$term_name = ! empty( $term->name ) ? $term->name : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $term->term_id );
 
 							$fields[] = array(
@@ -457,7 +512,6 @@ class Wp_Helpers {
 					}
 				}
 			}
-
 		}
 
 		echo wp_json_encode( $fields );

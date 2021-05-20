@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Automator_Input_Parser
  * @package Uncanny_Automator
@@ -26,7 +25,9 @@ class Automator_Input_Parser {
 	 * Automator_Input_Parser constructor.
 	 */
 	public function __construct() {
-		$this->defined_tokens = apply_filters( 'automator_pre_defined_tokens', array(
+		$this->defined_tokens = apply_filters(
+			'automator_pre_defined_tokens',
+			array(
 				'site_name',
 				'user_id',
 				'user_username',
@@ -77,15 +78,14 @@ class Automator_Input_Parser {
 			$url = '{{site_url}}' . $url;
 		}
 
-
 		// Replace Tokens
-		$args = [
+		$args = array(
 			'field_text'  => $url,
 			'meta_key'    => null,
 			'user_id'     => null,
 			'action_data' => null,
 			'recipe_id'   => $recipe_id,
-		];
+		);
 
 		$url = $this->parse_vars( $args, $trigger_args );
 
@@ -93,13 +93,13 @@ class Automator_Input_Parser {
 			// if the url is not valid and / isn't the first character then the url is missing the site url
 			$url = '{{site_url}}' . '/' . $url;
 			// Replace Tokens
-			$args = [
+			$args = array(
 				'field_text'  => $url,
 				'meta_key'    => null,
 				'user_id'     => null,
 				'action_data' => null,
 				'recipe_id'   => $recipe_id,
-			];
+			);
 			$url  = $this->parse_vars( $args, $trigger_args );
 
 		}
@@ -133,7 +133,7 @@ class Automator_Input_Parser {
 		$run_number     = key_exists( 'run_number', $args ) ? $args['run_number'] : null;
 
 		// find brackets and replace with real data
-		if ( preg_match_all( "/\{\{\s*(.*?)\s*\}\}/", $field_text, $arr ) ) {
+		if ( preg_match_all( '/\{\{\s*(.*?)\s*\}\}/', $field_text, $arr ) ) {
 			$matches = $arr[1];
 			foreach ( $matches as $match ) {
 
@@ -196,13 +196,13 @@ class Automator_Input_Parser {
 						if ( $run_func ) {
 							$pieces = explode( ':', $match );
 							if ( $pieces ) {
-								$replace_args = [
+								$replace_args = array(
 									'pieces'         => $pieces,
 									'recipe_id'      => $recipe_id,
 									'trigger_log_id' => $trigger_log_id,
 									'run_number'     => $run_number,
 									'user_id'        => $user_id,
-								];
+								);
 
 								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
 							}
@@ -292,7 +292,7 @@ class Automator_Input_Parser {
 			}
 		}
 
-		$field_text = str_replace( [ '{{', '}}' ], '', $field_text );
+		$field_text = str_replace( array( '{{', '}}' ), '', $field_text );
 
 		return $field_text;
 
@@ -305,7 +305,7 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function replace_recipe_variables( $replace_args, $args = array() ) {
-		// // global $uncanny_automator;
+		//
 		$pieces         = $replace_args['pieces'];
 		$recipe_id      = $replace_args['recipe_id'];
 		$trigger_log_id = $replace_args['trigger_log_id'];
@@ -407,7 +407,15 @@ class Automator_Input_Parser {
 		}
 		$return = $this->v3_parser( $return, $replace_args, $args );
 
-		return apply_filters( 'automator_maybe_parse_token', $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
+		$return = apply_filters( 'automator_maybe_parse_token', $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
+
+		/*
+		 * May be run a do_shortcode on the field itself if it contains a shortcode?
+		 * Ticket# 22255
+		 * @since 3.0
+		 */
+
+		return do_shortcode( $return );
 	}
 
 	/**
@@ -472,23 +480,34 @@ class Automator_Input_Parser {
 	 *
 	 * @return null|string
 	 */
-	public function text( $field_text = null, $recipe_id = null, $user_id = null, $trigger_args = null ) {
-
+	public function text( $field_text = null, $recipe_id = null, $user_id = null, $trigger_args = array() ) {
 		// Sanity check that there was a $field_text passed
 		if ( null === $field_text ) {
 			return null;
 		}
 		$args = array(
-			'field_text'     => $field_text,
-			'meta_key'       => null,
-			'user_id'        => $user_id,
-			'action_data'    => null,
-			'recipe_id'      => $recipe_id,
-			'trigger_log_id' => $trigger_args['trigger_log_id'],
-			'run_number'     => $trigger_args['run_number'],
+			'field_text'  => $field_text,
+			'meta_key'    => null,
+			'user_id'     => $user_id,
+			'action_data' => null,
+			'recipe_id'   => $recipe_id,
 		);
 
-		return $this->parse_vars( $args, $trigger_args );
+		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
+			$args['trigger_log_id'] = $trigger_args['trigger_log_id'];
+		}
+		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
+			$args['run_number'] = $trigger_args['run_number'];
+		}
+
+		$return = apply_filters( 'automator_text_field_parsed', $this->parse_vars( $args, $trigger_args ), $args );
+
+		/**
+		 * May be run a do_shortcode on the field itself if it contains a shortcode?
+		 * Ticket# 22255
+		 * @since 3.0
+		 */
+		return do_shortcode( stripslashes( $return ) );
 	}
 
 }

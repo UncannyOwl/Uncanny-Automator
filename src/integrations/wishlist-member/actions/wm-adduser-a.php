@@ -31,7 +31,7 @@ class WM_ADDUSER_A {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = [
 			'author'             => Automator()->get_author_name(),
@@ -67,7 +67,7 @@ class WM_ADDUSER_A {
 	 */
 	public function add_user_to_membership_levels( $user_id, $action_data, $recipe_id, $args ) {
 		global $WishListMemberInstance;
-		// global $uncanny_automator;
+
 
 		$level_ids = array();
 		$wm_level  = $action_data['meta'][ $this->action_meta ];

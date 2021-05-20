@@ -26,6 +26,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'placeholder' => esc_attr__( 'Example: 1', 'uncanny-automator' ),
 			'required'    => true,
 			'input_type'  => 'int',
+			'default'     => '',
 		);
 		$args        = wp_parse_args( $args, $defaults );
 		$option_code = $args['option_code'];
@@ -33,14 +34,16 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$description = $args['description'];
 		$placeholder = $args['placeholder'];
 		$required    = $args['required'];
+		$default     = $args['default'];
 
 		$option = array(
-			'option_code' => $option_code,
-			'label'       => $label,
-			'description' => $description,
-			'placeholder' => $placeholder,
-			'input_type'  => 'int',
-			'required'    => $required,
+			'option_code'   => $option_code,
+			'label'         => $label,
+			'description'   => $description,
+			'placeholder'   => $placeholder,
+			'input_type'    => 'int',
+			'required'      => $required,
+			'default_value' => $default,
 		);
 
 		return apply_filters( 'automator_option_' . strtolower( $option_code ) . '_field', $option, $args );
@@ -61,6 +64,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'placeholder' => esc_attr__( 'Example: 1', 'uncanny-automator' ),
 			'required'    => true,
 			'input_type'  => 'int',
+			'default'     => '',
 		);
 		$args     = wp_parse_args( $args, $defaults );
 
@@ -108,6 +112,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'placeholder' => esc_attr__( 'Example: 1.1', 'uncanny-automator' ),
 			'required'    => true,
 			'input_type'  => 'float',
+			'default'     => '',
 		);
 		$args     = wp_parse_args( $args, $defaults );
 
@@ -148,7 +153,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	 * @return mixed|void
 	 */
 	public function text( array $args = array() ) {
-		$defaults = array(
+		$defaults    = array(
 			'option_code' => 'TEXT',
 			'input_type'  => 'text',
 			'label'       => esc_attr__( 'Text', 'uncanny-automator' ),
@@ -158,7 +163,6 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'tokens'      => true,
 			'default'     => null,
 		);
-
 		$args        = wp_parse_args( $args, $defaults );
 		$option_code = $args['option_code'];
 		$label       = $args['label'];
@@ -212,13 +216,12 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'input_type'      => $type,
 			'supports_tokens' => $tokens,
 			'required'        => $required,
-			'default_value'   => $default,
+			'default'         => $default,
 		);
 
 		if ( 'textarea' === $type ) {
 			$option['supports_tinymce'] = true;
 		}
-
 		$option = $this->text( $option );
 		$option = apply_filters_deprecated( 'uap_option_text_field', array( $option ), '3.0', 'automator_option_text_field' );
 

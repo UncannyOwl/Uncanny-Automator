@@ -31,7 +31,7 @@ class LD_ENRLCOURSE_A {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -63,7 +63,7 @@ class LD_ENRLCOURSE_A {
 	 */
 	public function enroll_in_course( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		if ( ! function_exists( 'ld_update_course_access' ) ) {
 			$error_message = 'The function ld_update_course_access does not exist';

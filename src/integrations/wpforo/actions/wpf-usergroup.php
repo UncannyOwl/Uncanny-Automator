@@ -30,7 +30,7 @@ class WPF_USERGROUP {
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	public function define_action() {
-		// global $uncanny_automator;
+
 
 
 		$usergroups = WPF()->usergroup->get_usergroups();
@@ -75,7 +75,7 @@ class WPF_USERGROUP {
 	 */
 	public function enrol_in_to_group( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 		$group_id = $action_data['meta'][ $this->action_meta ];
 
 		if ( wpforo_feature( 'role-synch' ) ) {

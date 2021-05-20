@@ -31,7 +31,7 @@ class PRESTO_VIDEOCOMPLETE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -56,7 +56,7 @@ class PRESTO_VIDEOCOMPLETE {
 
 	public function video_progress( $video_id, $percent ) {
 		if ( $percent == 100 ) {
-			// global $uncanny_automator;
+
 			$user_id = get_current_user_id();
 
 			$args = array(

@@ -31,7 +31,7 @@ class LF_QUIZFAILED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -70,7 +70,7 @@ class LF_QUIZFAILED {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'    => $this->trigger_code,

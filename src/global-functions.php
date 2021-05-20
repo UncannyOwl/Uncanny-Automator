@@ -9,10 +9,23 @@ use Uncanny_Automator\Utilities;
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'helper-functions' . DIRECTORY_SEPARATOR . 'automator-helper-functions.php';
 
 /**
+ * @param int $item_id
+ *
+ * @return int
+ */
+function automator_get_recipe_id( int $item_id ) {
+	return Automator()->get->maybe_get_recipe_id( $item_id );
+}
+
+/**
  * @param $directory
  *
  * @return array|false
- * @throws Exception
+ * @since 3.0
+ * @throws Automator_Exception
+ *
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_add_integration( $directory ) {
 	return Set_Up_Automator::read_directory( $directory );
@@ -22,6 +35,10 @@ function automator_add_integration( $directory ) {
  * @param string $integration
  *
  * @return bool
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_integration_exists( string $integration ) {
 	$integration = strtolower( $integration );
@@ -36,8 +53,12 @@ function automator_integration_exists( string $integration ) {
  * @param string $name
  *
  * @return string
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function automator_get_integration_by_name( string $name ): string {
+function automator_get_integration_by_name( string $name ) {
 	$integration      = strtolower(
 		str_replace(
 			array( ' ', '_' ),
@@ -70,8 +91,12 @@ function automator_get_integration_by_name( string $name ): string {
  * @param string $integration
  *
  * @return bool
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function automator_add_trigger( string $path, string $integration ): bool {
+function automator_add_trigger( string $path, string $integration ) {
 	$integration = strtolower( $integration );
 	if ( ! automator_integration_exists( $integration ) ) {
 		return false;
@@ -87,8 +112,12 @@ function automator_add_trigger( string $path, string $integration ): bool {
  * @param string $integration
  *
  * @return bool
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function automator_add_action( string $path, string $integration ): bool {
+function automator_add_action( string $path, string $integration ) {
 	$integration = strtolower( $integration );
 	if ( ! automator_integration_exists( $integration ) ) {
 		return false;
@@ -101,16 +130,22 @@ function automator_add_action( string $path, string $integration ): bool {
 
 /**
  * @param string $integration_code
- * @param array $directory
+ * @param string $directory
  *
  * @return bool
+ *
+ * @since 3.0
+ * @throws Automator_Exception
+ * @version 3.0
+ * @package Uncanny_Automator
  */
-function automator_add_integration_directory( string $integration_code, array $directory ): bool {
-	if ( ! isset( $directory['main'] ) ) {
+function automator_add_integration_directory( string $integration_code, string $directory ) {
+	$int_directory = automator_add_integration( $directory );
+	if ( ! isset( $int_directory['main'] ) ) {
 		return false;
 	}
-	Set_Up_Automator::$auto_loaded_directories[]             = dirname( $directory['main'] );
-	Set_Up_Automator::$all_integrations[ $integration_code ] = $directory;
+	Set_Up_Automator::$auto_loaded_directories[]             = dirname( $int_directory['main'] );
+	Set_Up_Automator::$all_integrations[ $integration_code ] = $int_directory;
 
 	return true;
 }
@@ -121,6 +156,10 @@ function automator_add_integration_directory( string $integration_code, array $d
  * @param string $flags
  *
  * @return mixed
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = FILTER_SANITIZE_STRING ) {
 	/*
@@ -137,6 +176,10 @@ function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = F
  * @param string $flags
  *
  * @return mixed
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_filter_has_var( $variable = null, $type = INPUT_GET ) {
 	return filter_has_var( $type, $variable );
@@ -148,6 +191,10 @@ function automator_filter_has_var( $variable = null, $type = INPUT_GET ) {
  * @param string $flags
  *
  * @return mixed
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_filter_input_array( $variable = null, $type = INPUT_GET, $flags = array() ) {
 	if ( empty( $flags ) ) {
@@ -170,7 +217,11 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
  * @param mixed $message
  * @param int $code
  *
+ * @since 3.0
  * @throws Automator_Exception
+ *
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_exception( $message, int $code = 999 ) {
 	throw new Automator_Exception( $message, $code );
@@ -180,6 +231,10 @@ function automator_exception( $message, int $code = 999 ) {
  * @param $message
  * @param mixed $error_code
  * @param mixed $data
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_wp_error( $message, $error_code = 'something_wrong', $data = '' ) {
 	Automator()->error->add_error( $error_code, $message, $data );
@@ -188,6 +243,10 @@ function automator_wp_error( $message, $error_code = 'something_wrong', $data = 
 
 /**
  * @param string $error_code
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_wp_error_messages( $error_code = '' ) {
 	Automator()->error->get_messages( $error_code );
@@ -195,6 +254,10 @@ function automator_wp_error_messages( $error_code = '' ) {
 
 /**
  * @param string|mixed $error_code
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_wp_error_get_message( $error_code = 'something_wrong' ) {
 	Automator()->error->get_message( $error_code );
@@ -205,9 +268,22 @@ function automator_wp_error_get_message( $error_code = 'something_wrong' ) {
  * @param mixed $thing
  *
  * @return bool
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function is_automator_error( $thing ): bool {
+function is_automator_error( $thing ) {
 	return $thing instanceof Automator_WP_Error;
+}
+
+/**
+ * @param string $type
+ *
+ * @return bool
+ */
+function automator_db_view_exists( $type = 'recipe' ) {
+	return \Uncanny_Automator\Automator_DB::is_view_exists( $type );
 }
 
 /**
@@ -218,6 +294,10 @@ function is_automator_error( $thing ): bool {
  * @param false bool $force_log
  * @param mixed $log_file
  * @param false bool $backtrace
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_log( $message = '', $subject = '', $force_log = false, $log_file = 'debug', $backtrace = false ) {
 	Utilities::log( $message, $subject, $force_log, $log_file, $backtrace );

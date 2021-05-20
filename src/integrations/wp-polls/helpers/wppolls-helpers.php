@@ -28,7 +28,7 @@ class Wppolls_Helpers {
 	 * Buddypress_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 

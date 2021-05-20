@@ -27,7 +27,7 @@ class Woocommerce_Helpers {
 	public $load_options;
 
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -53,7 +53,7 @@ class Woocommerce_Helpers {
 	 */
 	public function all_wc_products( $label = null, $option_code = 'WOOPRODUCT' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -70,7 +70,7 @@ class Woocommerce_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any product', 'uncanny-automator' ) );
 
 		$option = [
@@ -98,7 +98,7 @@ class Woocommerce_Helpers {
 	public function wc_order_statuses( $label = null, $option_code = 'WCORDERSTATUS' ) {
 
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}

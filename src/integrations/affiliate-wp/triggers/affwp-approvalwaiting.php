@@ -31,7 +31,7 @@ class AFFWP_APPROVALWAITING {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -62,7 +62,7 @@ class AFFWP_APPROVALWAITING {
 	 * @return mixed
 	 */
 	public function affwp_approval_awaiting( $affiliate_id, $status, $args ) {
-		// global $uncanny_automator;
+
 		$affwp_settings = maybe_unserialize( get_option( 'affwp_settings', 0 ) );
 
 		if ( 0 === (int) $affwp_settings['require_approval'] || $status != 'pending' ) {

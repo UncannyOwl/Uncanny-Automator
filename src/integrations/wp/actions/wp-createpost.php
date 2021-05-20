@@ -36,7 +36,7 @@ class WP_CREATEPOST {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 		$custom_post_types = Automator()->helpers->recipe->wp->options->all_post_types( esc_attr__( 'Type', 'uncanny-automator' ), $this->action_code, [
 			'token'   => false,
 			'is_ajax' => false,
@@ -166,7 +166,7 @@ class WP_CREATEPOST {
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$post_title   = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
 		$post_slug    = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );

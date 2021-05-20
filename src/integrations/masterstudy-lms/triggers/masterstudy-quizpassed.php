@@ -32,7 +32,7 @@ class MASTERSTUDY_QUIZPASSED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -105,7 +105,7 @@ class MASTERSTUDY_QUIZPASSED {
 	 */
 	public function quiz_passed( $user_id, $quiz_id, $user_quiz_progress ) {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'    => $this->trigger_code,

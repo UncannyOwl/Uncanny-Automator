@@ -31,7 +31,7 @@ class LD_TOPICDONE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -134,7 +134,7 @@ class LD_TOPICDONE {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$user   = $data['user'];
 		$topic  = $data['topic'];

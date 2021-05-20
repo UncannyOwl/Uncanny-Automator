@@ -28,7 +28,7 @@ class Wishlist_Member_Helpers {
 	 * Wishlist_Member_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -55,7 +55,7 @@ class Wishlist_Member_Helpers {
 	 */
 	public function wm_get_all_membership_levels( $label = null, $option_code = 'WMMEMBERSHIPLEVELS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}

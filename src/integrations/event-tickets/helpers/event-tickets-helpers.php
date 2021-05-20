@@ -30,7 +30,7 @@ class Event_Tickets_Helpers {
 	 * Event_Tickets_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -56,7 +56,7 @@ class Event_Tickets_Helpers {
 	 */
 	public function all_ec_events( $label = null, $option_code = 'ECEVENTS' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -73,7 +73,7 @@ class Event_Tickets_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		// global $uncanny_automator;
+
 		$all_events = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any event', 'uncanny-automator' ) );
 
 		$option = [
@@ -101,7 +101,7 @@ class Event_Tickets_Helpers {
 	 */
 	public function all_ec_rsvp_events( $label = null, $option_code = 'ECEVENTS' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -118,7 +118,7 @@ class Event_Tickets_Helpers {
 			'post_status'    => 'publish',
 		];
 		$options = array();
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			//$posts          = get_posts( $args );
 			$posts          = Automator()->helpers->recipe->options->wp_query( $args );

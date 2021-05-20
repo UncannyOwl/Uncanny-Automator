@@ -177,7 +177,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $buddyboss;
 	/**
-	 * @var Wpwh_Helpers
+	 * @var Elementor_Helpers
 	 */
 	public $elementor;
 	/**
@@ -547,7 +547,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 					$meta_key   = sanitize_text_field( $mq['key'] );
 					$meta_value = sanitize_text_field( $mq['value'] );
 					$compare    = isset( $mq['compare'] ) ? $mq['compare'] : 'LIKE';
-					$join       .= "INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'"; //phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+					$join       .= " INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'"; //phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 				}
 
 				// Join tables

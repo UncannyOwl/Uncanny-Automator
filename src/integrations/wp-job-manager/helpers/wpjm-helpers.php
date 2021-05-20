@@ -30,7 +30,7 @@ class Wpjm_Helpers {
 	 * Wpjm_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -58,12 +58,12 @@ class Wpjm_Helpers {
 
 	public function list_wpjm_job_types( $label = null, $option_code = 'WPJMJOBTYPE', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Job type', 'uncanny-automator' );
 		}
@@ -114,12 +114,12 @@ class Wpjm_Helpers {
 
 	public function list_wpjm_jobs( $label = null, $option_code = 'WPJMJOBS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		// global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Job', 'uncanny-automator' );
 		}

@@ -69,7 +69,7 @@ class WPF_TOPIC_ADDED_TOKENS {
 						$run_number     = $replace_args['run_number'];
 						$user_id        = $replace_args['user_id'];
 
-						// global $uncanny_automator;
+
 
 						$forum_id = absint( Automator()->get->get_trigger_log_meta(
 							'WPFORO_TOPIC_FORUM_ID',

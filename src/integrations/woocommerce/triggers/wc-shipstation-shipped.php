@@ -34,7 +34,7 @@ class WC_SHIPSTATION_SHIPPED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -66,7 +66,7 @@ class WC_SHIPSTATION_SHIPPED {
 	 */
 
 	public function shipping_completed( $order, $argu ) {
-		// global $uncanny_automator;
+
 
 		if ( ! $order ) {
 			return;

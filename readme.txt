@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
-Tested up to: 5.7
+Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 2.11.1
+Stable tag: 3.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -57,6 +57,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [MailPoet 3](https://automatorplugin.com/integration/mailpoet-3/)
 - [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/)
+- [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/)
 - [myCred](https://automatorplugin.com/integration/mycred/)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/)
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/)
@@ -104,7 +105,7 @@ Uncanny Automator does all of this with a single plugin; there's no need to invi
 
 = Take automation to the next level =
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/), our premium plugin, adds even more features and integrations, including the ability to create new users and posts, connect multiple sites together and even connect sites to non-WordPress apps (via webhooks or native integrations for tools like Google Sheets and Mailchimp, all with no per-transaction costs or delays).
+[Uncanny Automator Pro](https://automatorplugin.com/pricing/), our premium plugin, adds even more features and integrations, including the ability to create new users and posts, delay and schedule actions to run on future dates, connect multiple sites together and even connect sites to non-WordPress apps.
 
 Besides more than tripling the number of available triggers and actions for your recipes compared to the free version, Automator Pro for WP adds support for external apps like Slack, Google Sheets, Mailchimp, Twilio and more.
 
@@ -120,6 +121,7 @@ Here are some of the other really cool automations you can create with [Automato
 - Have external apps [trigger recipes](https://automatorplugin.com/knowledge-base/webhook-triggers/) and vice versa (without needing Zapier or Integromat!)
 - Set up [buttons](https://automatorplugin.com/knowledge-base/magic-button/) that can trigger any recipe on click
 - Set custom usermeta
+- Delay or Schedule an action
 
 An [Automator Pro](https://automatorplugin.com/pricing/) license also includes access to our world-class premium support.
 
@@ -170,6 +172,75 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.0 [2021-05-20] =
+
+**New Integration:**
+
+* [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/)
+
+**New Triggers:**
+
+* Modern Events Calendar: A user's booking of an event is completed
+* Fluent CRM: A user is set to a specific status
+* Uncanny Continuing Education Credits: A user earns a number of credits
+
+**Added:**
+
+* Ability to delay actions or schedule actions for specific dates/times
+* Ability to set the total number of times a recipe can be run across all users
+* Ability to use shortcodes in action fields
+* Ability to duplicate recipes
+* User-friendly token display and modal dialog for setting usermeta token key
+* Ability to override token validation and use any token in any field
+* Ability to view triggers/actions for a recipe run without leaving the recipe log page
+* Tools section with system report, debug logs and database tools
+* Draft/live icons to show trigger/action status on the recipe list page
+* Linked "Completed runs" column in the recipe list to recipe log
+* Improved error handling on Edit Recipe page
+* Date and time selector fields
+* Added filter automator_mail_wpautop to disable wpautop
+* Numerous apply_filters and do_actions for code accessibility
+* Added Automator global functions for code accessibility
+
+**Updated:**
+
+* Updated the plugin architecture to streamline the addition of new triggers, actions and tokens both internally and for third-party developers
+* WordPress Core: Send an email: Added From name field
+* Anonymous recipes now show N/A in run # column
+* MyCred: Actions now support custom description (where supported)
+* Improved translation support for trigger and actions sentences that used single quotes
+* Support links for all triggers and actions
+* Fallback for database "VIEWS" if db user cannot access or create on server 
+* Tutor LMS: A user completes a course - Add "Any course" option
+* Integromat: Change action sentence for consistency
+
+**Fixed:**
+
+* PHP notice when Forminator is active
+* WP Courseware: A user in enrolled in course now triggers when paid via PayPal IPN
+* WordPress: A user publishes a type of post no longer fires when post is updated
+* Integromat: Send data to a webhook: Changed sentence for consistency
+* Tin Canny Reporting: Triggers now ignore duplicate statements sent by some modules
+* WordPress: User views a page: PHP notice: Trying to get property ‘ID’ of non-object
+* GiveWP: Compatibility issue on some environments
+* WooCommerce Memberships: Add the user to a membership plan now considers current membership
+
+**Internal:**
+
+* Framework, integration & children structure updated
+* Improved error handling
+* Added DB Handlers for Triggers, Actions, Recipes, Tokens and Closures
+* Added Traits for Closures, Actions, Triggers, Integrations and Tokens
+* Moved list of pro integrations in to a separate file
+* Reduced duplicate code and code complexity
+* Added deprecated notices to apply_filters, do_actions and some functions
+* Added get_trigger/action_meta function
+* Reorganized folders
+* Changed global $uncanny_automator to Automator()
+* Prefixed most core file types
+* Moved icons in to integrations
+* Support for Scheduled actions
 
 = 2.11.1 [2021-03-15] =
 
@@ -377,16 +448,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Fixed: Token QUIZPERCENT for A user achieves a percentage greater than, less than or equal to a value on a quiz
 * Fixed: Incorrect namespace on helper files for some integrations
 
-= 2.8.2 [2020-10-14] =
-
-* Added: Additional tokens for GiveWP triggers
-* Update: Renamed WP Fluent Forms to Fluent Forms
-* Updated: Twilio API - Folders now excluded from loader
-* Updated: Added compatibility with Phlox theme
-* Fixed: Description on Password field in Anonymous Recipe User Selector updated to reduce confusion (Uncanny Automator Pro only)
-* Fixed: Integromat - Namespace in helper file use statement
-* Fixed: Child dropdown values now load previously saved values when editing recipes
-
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
+= 3.0 =
+Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

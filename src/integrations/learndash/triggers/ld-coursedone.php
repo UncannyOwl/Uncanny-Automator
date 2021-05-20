@@ -31,7 +31,7 @@ class LD_COURSEDONE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
@@ -65,7 +65,7 @@ class LD_COURSEDONE {
 	 */
 	public function course_done( $data ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $data ) ) {
 			return;

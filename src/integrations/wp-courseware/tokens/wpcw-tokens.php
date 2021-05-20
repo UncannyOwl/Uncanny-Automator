@@ -32,7 +32,7 @@ class Wpcw_Tokens {
 		$piece = 'WPCW_MODULE';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces, true ) ) {
-				// global $uncanny_automator;
+
 				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {

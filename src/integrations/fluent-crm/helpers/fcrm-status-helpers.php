@@ -17,9 +17,9 @@ class Fcrm_Status_Helpers {
 	 */
 	public function __construct() {
 
-		global $uncanny_automator;
 
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		$fluent_crm_targetted_actions = array(
 			'fluentcrm_subscriber_status_to_subscribed',
@@ -76,9 +76,9 @@ class Fcrm_Status_Helpers {
 	 */
 	public function get_matched_recipes_ids( $uncanny_automator, FCRM_USER_STATUS_UPDATED $trigger, $subscriber = null ) {
 
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $trigger->get_trigger_code() );
+		$recipes = Automator()->get->recipes_from_trigger_code( $trigger->get_trigger_code() );
 
-		$status = $uncanny_automator->get->meta_from_recipes( $recipes, $trigger->get_trigger_code() );
+		$status = Automator()->get->meta_from_recipes( $recipes, $trigger->get_trigger_code() );
 
 		$matched_recipe_ids = array();
 
@@ -131,7 +131,7 @@ class Fcrm_Status_Helpers {
 					'ignore_post_id'   => true,
 				);
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+				$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 				if ( $args ) {
 
@@ -139,7 +139,7 @@ class Fcrm_Status_Helpers {
 
 						if ( true === $result['result'] && $result['args']['trigger_id'] && $result['args']['get_trigger_id'] ) {
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 
 						}
 					}

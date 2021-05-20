@@ -31,7 +31,7 @@ class WPP_POLLSUBMIT {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		global $wpdb;
 
@@ -111,7 +111,7 @@ class WPP_POLLSUBMIT {
 			if ( 'process' === $view ) {
 				$poll_aid_array = array_unique( array_map( 'intval', array_map( 'sanitize_key', explode( ',', $_POST["poll_$poll_id"] ) ) ) );
 
-				// global $uncanny_automator;
+
 				$recipes          = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 				$required_poll_id = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 

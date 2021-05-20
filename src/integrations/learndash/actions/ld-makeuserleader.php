@@ -30,7 +30,7 @@ class LD_MAKEUSERLEADER {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'groups',
@@ -98,7 +98,7 @@ class LD_MAKEUSERLEADER {
 	 */
 	public function make_user_leader_of_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$uo_group                     = Automator()->parse->text( $action_data['meta']['LDGROUP'], $recipe_id, $user_id, $args );
 		$group_leader_role_assignment = Automator()->parse->text( $action_data['meta']['GROUP_LEADER_ROLE_ASSIGNMENT'], $recipe_id, $user_id, $args );

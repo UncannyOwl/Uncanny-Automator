@@ -112,42 +112,42 @@ trait Trigger_Setup {
 	/**
 	 * @param bool $is_anonymous
 	 */
-	public function set_is_anonymous( bool $is_anonymous ): void {
+	public function set_is_anonymous( bool $is_anonymous ) {
 		$this->is_anonymous = $is_anonymous;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function get_is_anonymous(): bool {
+	public function get_is_anonymous() {
 		return $this->is_anonymous;
 	}
 
 	/**
 	 * @param mixed $integration
 	 */
-	public function set_integration( string $integration ): void {
+	public function set_integration( string $integration ) {
 		$this->integration = $integration;
 	}
 
 	/**
 	 * @param mixed $action_hook
 	 */
-	public function set_action_hook( $action_hook ): void {
+	public function set_action_hook( $action_hook ) {
 		$this->action_hook = $action_hook;
 	}
 
 	/**
 	 * @param mixed $sentence
 	 */
-	public function set_sentence( $sentence ): void {
+	public function set_sentence( $sentence ) {
 		$this->sentence = $sentence;
 	}
 
 	/**
 	 * @param mixed $readable_sentence
 	 */
-	public function set_readable_sentence( $readable_sentence ): void {
+	public function set_readable_sentence( $readable_sentence ) {
 		$this->readable_sentence = $readable_sentence;
 	}
 
@@ -176,35 +176,35 @@ trait Trigger_Setup {
 	/**
 	 * @param mixed $trigger_code
 	 */
-	public function set_trigger_code( $trigger_code ): void {
+	public function set_trigger_code( $trigger_code ) {
 		$this->trigger_code = $trigger_code;
 	}
 
 	/**
 	 * @param mixed $trigger_meta
 	 */
-	public function set_trigger_meta( $trigger_meta ): void {
+	public function set_trigger_meta( $trigger_meta ) {
 		$this->trigger_meta = $trigger_meta;
 	}
 
 	/**
 	 * @param bool $is_pro
 	 */
-	public function set_is_pro( bool $is_pro ): void {
+	public function set_is_pro( bool $is_pro ) {
 		$this->is_pro = $is_pro;
 	}
 
 	/**
 	 * @param bool $is_deprecated
 	 */
-	public function set_is_deprecated( bool $is_deprecated ): void {
+	public function set_is_deprecated( bool $is_deprecated ) {
 		$this->is_deprecated = $is_deprecated;
 	}
 
 	/**
 	 * @param int $action_priority
 	 */
-	public function set_action_priority( int $action_priority = 10 ): void {
+	public function set_action_priority( int $action_priority = 10 ) {
 		$this->action_priority = $action_priority;
 	}
 
@@ -218,7 +218,7 @@ trait Trigger_Setup {
 	/**
 	 * @param mixed $options
 	 */
-	public function set_options( array $options ): void {
+	public function set_options( array $options ) {
 		$this->options = $options;
 	}
 
@@ -285,14 +285,14 @@ trait Trigger_Setup {
 	/**
 	 * @return bool
 	 */
-	public function get_is_pro(): bool {
+	public function get_is_pro() {
 		return $this->is_pro;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function get_is_deprecated(): bool {
+	public function get_is_deprecated() {
 		return $this->is_deprecated;
 	}
 
@@ -348,21 +348,21 @@ trait Trigger_Setup {
 	/**
 	 * @param mixed $options_group
 	 */
-	public function set_options_group( $options_group ): void {
+	public function set_options_group( $options_group ) {
 		$this->options_group = $options_group;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	public function get_trigger_tokens(): array {
+	public function get_trigger_tokens() {
 		return $this->trigger_tokens;
 	}
 
 	/**
 	 * @param mixed $trigger_tokens
 	 */
-	public function set_trigger_tokens( array $trigger_tokens ): void {
+	public function set_trigger_tokens( array $trigger_tokens ) {
 		$this->trigger_tokens = $trigger_tokens;
 	}
 
@@ -376,7 +376,7 @@ trait Trigger_Setup {
 	/**
 	 * @param mixed $token_parser
 	 */
-	public function set_token_parser( $token_parser ): void {
+	public function set_token_parser( $token_parser ) {
 		$this->token_parser = $token_parser;
 	}
 

@@ -31,7 +31,7 @@ class GF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ),
@@ -64,7 +64,7 @@ class GF_SUBFORM {
 	 */
 	public function gform_submit( $entry, $form ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $entry ) ) {
 			return;

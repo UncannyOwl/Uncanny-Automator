@@ -38,7 +38,7 @@ class WP_USERROLEUPDATED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -69,7 +69,7 @@ class WP_USERROLEUPDATED {
 	 * @param $old_roles
 	 */
 	public function set_user_role( $user_id, $role, $old_roles ) {
-		// global $uncanny_automator;
+
 
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_user_role = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );

@@ -297,7 +297,7 @@ class Automator_Functions {
 	 *
 	 * @return array
 	 */
-	public function get_integrations(): array {
+	public function get_integrations() {
 		$this->integrations = apply_filters_deprecated( 'uap_integrations', array( $this->integrations ), '3.0', 'automator_integrations' );
 
 		return apply_filters( 'automator_integrations', $this->integrations );
@@ -308,7 +308,7 @@ class Automator_Functions {
 	 *
 	 * @return array
 	 */
-	public function get_triggers(): array {
+	public function get_triggers() {
 		$this->triggers = apply_filters_deprecated( 'uap_triggers', array( $this->triggers ), '3.0', 'automator_triggers' );
 
 		return apply_filters( 'automator_triggers', $this->triggers );
@@ -319,7 +319,7 @@ class Automator_Functions {
 	 *
 	 * @return array
 	 */
-	public function get_actions(): array {
+	public function get_actions() {
 		$this->actions = apply_filters_deprecated( 'uap_actions', array( $this->actions ), '3.0', 'automator_actions' );
 
 		return apply_filters( 'automator_actions', $this->actions );
@@ -330,7 +330,7 @@ class Automator_Functions {
 	 *
 	 * @return array
 	 */
-	public function get_closures(): array {
+	public function get_closures() {
 		$this->closures = apply_filters_deprecated( 'uap_closures', array( $this->closures ), '3.0', 'automator_closures' );
 
 		return apply_filters( 'automator_closures', $this->closures );
@@ -393,7 +393,7 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_recipes_data( $force_new_data_load = false, $recipe_id = null ) {
-		if ( ( false === $force_new_data_load ) && ! empty( $this->recipes_data ) ) {
+		if ( ( false === $force_new_data_load ) && ! empty( $this->recipes_data ) && null === $recipe_id ) {
 			return $this->recipes_data;
 		}
 
@@ -852,6 +852,15 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 			}
 			$code = array_key_exists( 'code', $child_meta_single ) ? $child_meta_single['code'] : '';
 
+			/** Fix to show MAGIC BUTTON ID
+			 *
+			 * @since 3.0
+			 * @package Uncanny_Automator
+			 */
+			if ( 'WPMAGICBUTTON' === (string) $code && ! array_key_exists( 'WPMAGICBUTTON', $child_meta_single ) ) {
+				$child_meta_single['WPMAGICBUTTON'] = $child['ID'];
+			}
+
 			$item_not_found = true;
 
 			if ( 'uo-trigger' === $type ) {
@@ -912,7 +921,15 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 			}
 		}
 
-		return $recipe_children_data;
+		return apply_filters(
+			'automator_recipe_children_data',
+			$recipe_children_data,
+			array(
+				'type'            => $type,
+				'recipe_id'       => $recipe_id,
+				'recipe_children' => $recipe_children,
+			)
+		);
 	}
 
 	/**

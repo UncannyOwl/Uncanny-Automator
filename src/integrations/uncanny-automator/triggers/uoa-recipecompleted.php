@@ -34,7 +34,7 @@ class UOA_RECIPECOMPLETED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -45,7 +45,7 @@ class UOA_RECIPECOMPLETED {
 			'sentence'            => sprintf( esc_attr__( 'A user completes {{a recipe:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Uncanny Automator */
 			'select_option_name'  => esc_attr__( 'A user completes {{a recipe}} {{a number of}} time(s)', 'uncanny-automator' ),
-			'action'              => 'uap_recipe_completed',
+			'action'              => 'automator_recipe_completed',
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'on_completion' ),
@@ -70,7 +70,7 @@ class UOA_RECIPECOMPLETED {
 	 */
 	public function on_completion( $recipe_id, $user_id, $recipe_log_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		global $wpdb;
 		// get recipe actions

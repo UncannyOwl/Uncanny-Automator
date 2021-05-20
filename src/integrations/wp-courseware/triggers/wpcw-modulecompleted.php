@@ -31,7 +31,7 @@ class WPCW_MODULECOMPLETED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -70,7 +70,7 @@ class WPCW_MODULECOMPLETED {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$module_id = $parent->parent_module_id;
 

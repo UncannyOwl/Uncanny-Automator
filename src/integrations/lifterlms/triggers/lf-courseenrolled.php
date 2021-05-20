@@ -31,7 +31,7 @@ class LF_COURSEENROLLED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -68,7 +68,7 @@ class LF_COURSEENROLLED {
 		if ( empty( $user_id ) ) {
 			return;
 		}
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'    => $this->trigger_code,

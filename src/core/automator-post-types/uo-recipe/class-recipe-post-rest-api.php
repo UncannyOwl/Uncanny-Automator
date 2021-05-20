@@ -173,12 +173,30 @@ class Recipe_Post_Rest_Api {
 	}
 
 	/**
+	 * Checks the nonce of Rest API requests
+	 *
+	 * @return bool
+	 */
+	public function valid_nonce() {
+
+		if ( empty( $_SERVER['HTTP_X_WP_NONCE'] ) ) {
+			return false;
+		}
+
+		return wp_verify_nonce( $_SERVER['HTTP_X_WP_NONCE'], 'wp_rest' );
+	}
+
+	/**
 	 * Permission callback function that let the rest API allow or disallow access
 	 */
 	/**
 	 * @return bool|WP_Error
 	 */
 	public function save_settings_permissions() {
+
+		if ( ! $this->valid_nonce() ) {
+			return false;
+		}
 
 		$capability = 'manage_options';
 		$capability = apply_filters_deprecated( 'uap_roles_modify_recipe', array( $capability ), '3.0', 'automator_capability_required' );
@@ -314,6 +332,15 @@ class Recipe_Post_Rest_Api {
 			update_post_meta( $post_id, 'uap_trigger_version', Utilities::automator_get_version() );
 			$add_action_hook = Automator()->get->trigger_actions_from_trigger_code( $item_code );
 			update_post_meta( $post_id, 'add_action', $add_action_hook );
+			/**
+			 * @param int $post_id Trigger ID
+			 * @param string $item_code Trigger item code
+			 * @param WP_REST_Request $request
+			 *
+			 * @since 3.0
+			 * @package Uncanny_Automator
+			 */
+			do_action( 'automator_trigger_created', $post_id, $item_code, $request );
 		}
 
 		if ( 'create_action' === $action ) {
@@ -321,6 +348,15 @@ class Recipe_Post_Rest_Api {
 			$action_integration = Automator()->get->action_integration_from_action_code( $item_code );
 			update_post_meta( $post_id, 'integration', $action_integration );
 			update_post_meta( $post_id, 'uap_action_version', Utilities::automator_get_version() );
+			/**
+			 * @param int $post_id Action ID
+			 * @param string $item_code Action item code
+			 * @param WP_REST_Request $request
+			 *
+			 * @since 3.0
+			 * @package Uncanny_Automator
+			 */
+			do_action( 'automator_action_created', $post_id, $item_code, $request );
 		}
 
 		if ( 'create_closure' === $action ) {
@@ -328,6 +364,15 @@ class Recipe_Post_Rest_Api {
 			$closure_integration = Automator()->get->closure_integration_from_closure_code( $item_code );
 			update_post_meta( $post_id, 'integration', $closure_integration );
 			update_post_meta( $post_id, 'uap_closure_version', Utilities::automator_get_version() );
+			/**
+			 * @param int $post_id Closure ID
+			 * @param string $item_code Closure item code
+			 * @param WP_REST_Request $request
+			 *
+			 * @since 3.0
+			 * @package Uncanny_Automator
+			 */
+			do_action( 'automator_closure_created', $post_id, $item_code, $request );
 		}
 
 		if ( $request->has_param( 'default_meta' ) ) {
@@ -397,6 +442,7 @@ class Recipe_Post_Rest_Api {
 		if ( $request->has_param( 'itemId' ) && is_numeric( $request->get_param( 'itemId' ) ) && $request->has_param( 'optionCode' ) && $request->has_param( 'optionValue' ) ) {
 
 			$item_id    = absint( $request->get_param( 'itemId' ) );
+			$recipe_id  = Automator()->get->maybe_get_recipe_id( $item_id );
 			$meta_key   = (string) Automator()->utilities->automator_sanitize( $request->get_param( 'optionCode' ) );
 			$meta_value = Automator()->utilities->automator_sanitize( $request->get_param( 'optionValue' ), 'mixed' );
 
@@ -427,12 +473,11 @@ class Recipe_Post_Rest_Api {
 					update_post_meta( $item_id, $meta_key, $meta_value );
 				}
 
-				$return['message'] = 'Option updated!';
-				$return['success'] = true;
-				$return['action']  = 'updated_option';
-				$return['data']    = array( $item, $meta_key, $meta_value );
-
-				$return['recipes_object'] = Automator()->get_recipes_data( true );
+				$return['message']        = 'Option updated!';
+				$return['success']        = true;
+				$return['action']         = 'updated_option';
+				$return['data']           = array( $item, $meta_key, $meta_value );
+				$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 
 				$return = apply_filters( 'automator_option_updated', $return, $item, $meta_key, $meta_value );
 
@@ -811,7 +856,7 @@ class Recipe_Post_Rest_Api {
 		// Make sure we have a post ID and a post status
 		if ( $request->has_param( 'source' ) && $request->has_param( 'source' ) ) {
 			$source    = Automator()->utilities->automator_sanitize( $request->get_param( 'source' ) );
-			$fields    = Automator()->utilities->automator_sanitize( $request->get_param( 'fields' ), 'mixed' );
+			$fields    = Automator()->utilities->automator_sanitize( $request->get_param( 'data' ), 'mixed' );
 			$recipe_id = (int) $request->get_param( 'recipeId' );
 			//get recipe post id or action post id
 			update_post_meta( $recipe_id, 'source', $source );

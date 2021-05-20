@@ -31,21 +31,21 @@ class Paid_Memberships_Pro_Helpers {
 	 * Paid_Memberships_Pro_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
 	 * @param Paid_Memberships_Pro_Pro_Helpers $pro
 	 */
-	public function setPro( Paid_Memberships_Pro_Pro_Helpers $pro ): void {
+	public function setPro( Paid_Memberships_Pro_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
 	/**
 	 * @param Paid_Memberships_Pro_Helpers $options
 	 */
-	public function setOptions( Paid_Memberships_Pro_Helpers $options ): void {
+	public function setOptions( Paid_Memberships_Pro_Helpers $options ) {
 		$this->options = $options;
 	}
 
@@ -57,7 +57,7 @@ class Paid_Memberships_Pro_Helpers {
 	 */
 	public function all_memberships( $label = null, $option_code = 'PMPMEMBERSHIP' ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}

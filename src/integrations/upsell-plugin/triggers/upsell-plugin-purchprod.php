@@ -31,7 +31,7 @@ class UPSELL_PLUGIN_PURCHPROD {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -59,7 +59,7 @@ class UPSELL_PLUGIN_PURCHPROD {
 	}
 
 	public function upsell_order_completed( $order ) {
-		// global $uncanny_automator;
+
 
 		if ( ! $order ) {
 			return;

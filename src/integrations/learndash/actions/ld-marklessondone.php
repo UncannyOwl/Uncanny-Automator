@@ -32,7 +32,7 @@ class LD_MARKLESSONDONE {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -94,7 +94,7 @@ class LD_MARKLESSONDONE {
 	 */
 	public function mark_completes_a_lesson( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$course_id = $action_data['meta']['LDCOURSE'];
 		$lesson_id = $action_data['meta'][ $this->action_meta ];

@@ -27,7 +27,7 @@ class WP_VIEWPAGE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -60,7 +60,18 @@ class WP_VIEWPAGE {
 
 		global $post;
 
-		if ( ! is_page() && ! is_archive() ) {
+		// Bail out if the page is not of a post type 'page'.
+		if ( ! is_singular( 'page' ) ) {
+			return;
+		}
+
+		// Bail out if post id is null.
+		if ( ! isset ( $post->ID ) ) {
+			return;
+		}
+
+		// Return if post id is zero or empty. Some plugins like BuddyPress overwrites post id.
+		if ( empty( $post->ID ) ) {
 			return;
 		}
 
@@ -86,7 +97,6 @@ class WP_VIEWPAGE {
 							Automator()->process->user->maybe_trigger_complete( $result['args'] );
 						} else {
 							Automator()->maybe_trigger_complete( $result['args'] );
-
 						}
 					}
 				}

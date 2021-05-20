@@ -38,7 +38,7 @@ class PMP_MEMBERSHIPCANCEL {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
 
@@ -75,7 +75,7 @@ class PMP_MEMBERSHIPCANCEL {
 	 * @param $cancel_level
 	 */
 	public function pmpro_subscription_cancelled( $level_id, $user_id, $cancel_level ) {
-		// global $uncanny_automator;
+
 		if ( 0 !== absint( $level_id ) ) {
 			return;
 		}

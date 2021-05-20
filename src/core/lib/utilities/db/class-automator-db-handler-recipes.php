@@ -37,7 +37,7 @@ class Automator_DB_Handler_Recipes {
 	 *
 	 * @since 3.0
 	 */
-	public function add( int $user_id, int $recipe_id, int $completed, int $run_number ): int {
+	public function add( int $user_id, int $recipe_id, int $completed, int $run_number ) {
 		global $wpdb;
 
 		$table_name = isset( Automator()->db->tables->recipe ) ? Automator()->db->tables->recipe : 'uap_recipe_log';

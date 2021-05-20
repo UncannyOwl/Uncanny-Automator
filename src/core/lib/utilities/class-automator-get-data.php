@@ -1126,6 +1126,10 @@ class Automator_Get_Data {
 
 		$post = get_post( $id );
 
+		if ( $post instanceof \WP_Post && 'uo-recipe' === $post->post_type ) {
+			return absint( $post->ID );
+		}
+
 		if ( $post instanceof \WP_Post && in_array( $post->post_type, $allowed_post_types, true ) ) {
 			return absint( $post->post_parent );
 		}

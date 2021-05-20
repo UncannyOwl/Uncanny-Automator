@@ -29,7 +29,7 @@ class Memberpress_Helpers {
 	 * Memberpress_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -56,7 +56,7 @@ class Memberpress_Helpers {
 	 */
 	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -73,7 +73,7 @@ class Memberpress_Helpers {
 		);
 
 		$options = array();
-		// global $uncanny_automator;
+
 
 		if ( $args['uo_include_any'] ) {
 			$options[ - 1 ] = $args['uo_any_label'];
@@ -108,7 +108,7 @@ class Memberpress_Helpers {
 	 */
 	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -125,7 +125,7 @@ class Memberpress_Helpers {
 		);
 
 		$options = array();
-		// global $uncanny_automator;
+
 		if ( $args['uo_include_any'] ) {
 			$options[ - 1 ] = $args['uo_any_label'];
 		}
@@ -171,7 +171,7 @@ class Memberpress_Helpers {
 	 */
 	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -188,7 +188,7 @@ class Memberpress_Helpers {
 		);
 
 		$options = array();
-		// global $uncanny_automator;
+
 		if ( $args['uo_include_any'] ) {
 			$options[ - 1 ] = $args['uo_any_label'];
 		}

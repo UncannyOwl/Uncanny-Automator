@@ -103,7 +103,7 @@ class Wc_Tokens {
 		if ( ! empty( $order_id ) && is_array( $args ) && $recipe_id ) {
 			foreach ( $args as $trigger_result ) {
 				if ( true === $trigger_result['result'] ) {
-					// global $uncanny_automator;
+
 					$recipe = Automator()->get_recipes_data( true, $recipe_id );
 					if ( is_array( $recipe ) ) {
 						$recipe = array_pop( $recipe );
@@ -254,7 +254,7 @@ class Wc_Tokens {
 	 * @return array|string|null
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		// global $uncanny_automator;
+
 		$trigger_meta  = $pieces[1];
 		$parse         = $pieces[2];
 		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];

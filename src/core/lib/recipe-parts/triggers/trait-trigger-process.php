@@ -64,14 +64,14 @@ trait Trigger_Process {
 	/**
 	 * @return array
 	 */
-	public function get_trigger_args(): array {
+	public function get_trigger_args() {
 		return $this->trigger_args;
 	}
 
 	/**
 	 * @param array $trigger_args
 	 */
-	public function set_trigger_args( array $trigger_args ): void {
+	public function set_trigger_args( array $trigger_args ) {
 		$this->trigger_args = $trigger_args;
 	}
 
@@ -89,21 +89,21 @@ trait Trigger_Process {
 	/**
 	 * @param mixed $user_id
 	 */
-	public function set_user_id( $user_id ): void {
+	public function set_user_id( $user_id ) {
 		$this->user_id = $user_id;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function do_trigger_autocomplete(): bool {
+	public function do_trigger_autocomplete() {
 		return $this->trigger_autocomplete;
 	}
 
 	/**
 	 * @param bool $trigger_autocomplete
 	 */
-	public function set_trigger_autocomplete( bool $trigger_autocomplete = true ): void {
+	public function set_trigger_autocomplete( bool $trigger_autocomplete = true ) {
 		$this->trigger_autocomplete = $trigger_autocomplete;
 	}
 
@@ -117,7 +117,7 @@ trait Trigger_Process {
 	/**
 	 * @param mixed $trigger_to_match
 	 */
-	public function set_trigger_to_match( $trigger_to_match ): void {
+	public function set_trigger_to_match( $trigger_to_match ) {
 		$this->trigger_to_match = $trigger_to_match;
 	}
 
@@ -131,21 +131,21 @@ trait Trigger_Process {
 	/**
 	 * @param mixed $recipe_to_match
 	 */
-	public function set_recipe_to_match( $recipe_to_match ): void {
+	public function set_recipe_to_match( $recipe_to_match ) {
 		$this->recipe_to_match = $recipe_to_match;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function is_ignore_post_id(): bool {
+	public function is_ignore_post_id() {
 		return $this->ignore_post_id;
 	}
 
 	/**
 	 * @param bool $ignore_post_id
 	 */
-	public function set_ignore_post_id( bool $ignore_post_id ): void {
+	public function set_ignore_post_id( bool $ignore_post_id ) {
 		$this->ignore_post_id = $ignore_post_id;
 	}
 
@@ -159,7 +159,7 @@ trait Trigger_Process {
 	/**
 	 * @param mixed $is_signed_in
 	 */
-	public function set_is_signed_in( $is_signed_in ): void {
+	public function set_is_signed_in( $is_signed_in ) {
 		$this->is_signed_in = $is_signed_in;
 	}
 
@@ -173,7 +173,7 @@ trait Trigger_Process {
 	/**
 	 * @param mixed $post_id
 	 */
-	public function set_post_id( $post_id ): void {
+	public function set_post_id( $post_id ) {
 		$this->post_id = $post_id;
 	}
 

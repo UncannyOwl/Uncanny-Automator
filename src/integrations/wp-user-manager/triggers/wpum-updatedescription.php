@@ -37,7 +37,7 @@ class WPUM_UPDATEDESCRIPTION {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-user-manager/' ),
@@ -63,7 +63,7 @@ class WPUM_UPDATEDESCRIPTION {
 	 * @param $updated_id
 	 */
 	public function wpum_description_update( $obj, $values, $updated_id ) {
-		// global $uncanny_automator;
+
 
 		if ( 0 === absint( $updated_id ) ) {
 			// Its a logged in recipe and

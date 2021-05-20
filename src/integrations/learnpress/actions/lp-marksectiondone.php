@@ -37,7 +37,7 @@ class LP_MARKSECTIONDONE {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 		$args    = [
 			'post_type'      => 'lp_course',
 			'posts_per_page' => 999,
@@ -99,7 +99,7 @@ class LP_MARKSECTIONDONE {
 	 */
 	public function lp_mark_section_done( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		if ( ! function_exists( 'learn_press_get_current_user' ) ) {
 			$error_message = 'The function learn_press_get_current_user does not exist';

@@ -39,7 +39,7 @@ class WPUM_USERREGISTER {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-user-manager/' ),
@@ -69,7 +69,7 @@ class WPUM_USERREGISTER {
 	 * @param $form
 	 */
 	public function wpum_register_user( $new_user_id, $values, $form ) {
-		// global $uncanny_automator;
+
 
 		if ( 0 === absint( $new_user_id ) ) {
 			// Its a logged in recipe and

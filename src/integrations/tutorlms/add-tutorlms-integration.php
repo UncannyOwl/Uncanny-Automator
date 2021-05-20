@@ -55,7 +55,7 @@ class Add_Tutorlms_Integration {
 		];
 
 		// global automator object.
-		// global $uncanny_automator;
+
 
 		// register integration into automator.
 		Automator()->register->integration( self::$integration, $integration_config );

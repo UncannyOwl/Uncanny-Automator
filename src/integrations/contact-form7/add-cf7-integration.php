@@ -74,7 +74,7 @@ class Add_Cf7_Integration {
 	 * Register the integration by pushing it into the global automator object
 	 */
 	public function add_integration_func() {
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Contact Form 7',

@@ -27,7 +27,7 @@ class Mycred_Helpers {
 	 * Mycred_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -54,7 +54,7 @@ class Mycred_Helpers {
 	 */
 	public function list_mycred_points_types( $label = null, $option_code = 'MYCREDPOINTSTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -74,7 +74,7 @@ class Mycred_Helpers {
 			$options['ua-all-mycred-points'] = esc_attr__( 'All point types', 'uncanny-automator' );
 		}
 
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			$posts = mycred_get_types();
 
@@ -111,7 +111,7 @@ class Mycred_Helpers {
 	 */
 	public function list_mycred_rank_types( $label = null, $option_code = 'MYCREDRANKTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -126,7 +126,7 @@ class Mycred_Helpers {
 		$include_all  = key_exists( 'include_all', $args ) ? $args['include_all'] : false;
 		$options      = array();
 
-		// global $uncanny_automator;
+
 
 		if ( $include_all ) {
 			$options['ua-all-mycred-ranks'] = esc_attr__( 'All ranks', 'uncanny-automator' );
@@ -173,7 +173,7 @@ class Mycred_Helpers {
 
 	public function list_mycred_badges( $label = null, $option_code = 'MYCREDBADGETYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -192,7 +192,7 @@ class Mycred_Helpers {
 			$options['ua-all-mycred-badges'] = esc_attr__( 'All badges', 'uncanny-automator' );
 		}
 
-		// global $uncanny_automator;
+
 		/*if ( Automator()->helpers->recipe->load_helpers ) {
 			$posts = get_posts( [
 				'post_type'      => 'mycred_badge',

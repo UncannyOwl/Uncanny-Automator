@@ -1,23 +1,18 @@
 <?php
 
 /**
- * File in process
- * @author  Saad
- * @version 2.1.5
- */
-
-/*******************************/
-/*********** RECIPE ************/
-/*******************************/
-/**
  * @param int $user_id
  * @param int $recipe_id
  * @param int $completed
  * @param int $run_number
  *
  * @return int
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function automator_insert_recipe_run( int $user_id, int $recipe_id, int $completed, int $run_number ) {
+function automator_add_recipe_run( int $user_id, int $recipe_id, int $completed, int $run_number ) {
 	return Automator()->db->recipe->add( $user_id, $recipe_id, $completed, $run_number );
 }
 
@@ -28,164 +23,130 @@ function automator_insert_recipe_run( int $user_id, int $recipe_id, int $complet
  * @param array $where_format
  *
  * @return int
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
 function automator_update_recipe_run( array $update, array $where, array $update_format, array $where_format ) {
 	return Automator()->db->recipe->update( $update, $where, $update_format, $where_format );
 }
 
-/**
- * @param      $recipe_id
- * @param      $meta_key
- * @param bool $single
- *
- * @return string
- */
-function get_uap_recipe_meta( $recipe_id, $meta_key, $single = true ) {
-	$value = '';
 
-	return $value;
+/**
+ * @param $field_code
+ * @param $label
+ * @param string $default
+ * @param bool $required
+ *
+ * @return mixed|void
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
+ */
+function automator_add_text_field( $field_code, $label, string $default = '', bool $required = true ) {
+	$options = array(
+		'option_code' => $field_code,
+		'input_type'  => 'text',
+		'label'       => $label,
+		'default'     => $default,
+		'required'    => $required,
+	);
+
+	return Automator()->helpers->recipe->field->text( $options );
 }
 
 /**
- * @param        $recipe_id
- * @param        $meta_key
- * @param string $meta_value
+ * @param $field_code
+ * @param $label
+ * @param string $default
+ * @param bool $required
  *
- * @return bool
+ * @return mixed|void
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function add_uap_recipe_meta( $recipe_id, $meta_key, $meta_value = '' ) {
+function automator_add_email_field( $field_code, $label, string $default = '', bool $required = true ) {
+	$options = array(
+		'option_code' => $field_code,
+		'input_type'  => 'email',
+		'label'       => $label,
+		'default'     => $default,
+		'required'    => $required,
+	);
 
-	return true;
+	return Automator()->helpers->recipe->field->text( $options );
 }
 
 /**
- * @param        $recipe_id
- * @param        $meta_key
- * @param string $meta_value
+ * @param $field_code
+ * @param $label
+ * @param string $default
+ * @param bool $required
  *
- * @return bool
+ * @return mixed|void
+ *
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function update_uap_recipe_meta( $recipe_id, $meta_key, $meta_value = '' ) {
+function automator_add_integer_field( $field_code, $label, string $default = '', bool $required = true ) {
+	$options = array(
+		'option_code' => $field_code,
+		'label'       => $label,
+		'default'     => $default,
+		'required'    => $required,
+	);
 
-	return true;
+	return Automator()->helpers->recipe->field->int( $options );
 }
 
 /**
- * @param        $recipe_id
- * @param        $meta_key
- * @param string $meta_value
+ * @param $field_code
+ * @param $label
+ * @param string $default
+ * @param bool $required
  *
- * @return bool
- */
-function delete_uap_recipe_meta( $recipe_id, $meta_key, $meta_value = '' ) {
-
-	return true;
-}
-
-/*******************************/
-/********** TRIGGER ************/
-/*******************************/
-
-
-/**
- * @param      $trigger_id
- * @param      $meta_key
- * @param bool $single
+ * @return mixed|void
  *
- * @return string
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function get_uap_trigger_meta( $trigger_id, $meta_key, $single = true ) {
-	$value = '';
+function automator_add_float_field( $field_code, $label, string $default = '', bool $required = true ) {
+	$options = array(
+		'option_code' => $field_code,
+		'label'       => $label,
+		'default'     => $default,
+		'required'    => $required,
+	);
 
-	return $value;
+	return Automator()->helpers->recipe->field->float( $options );
 }
 
 /**
- * @param        $trigger_id
- * @param        $meta_key
- * @param string $meta_value
+ * @param $field_code
+ * @param $label
+ * @param string $default
+ * @param bool $required
  *
- * @return bool
- */
-function add_uap_trigger_meta( $trigger_id, $meta_key, $meta_value = '' ) {
-	return true;
-
-}
-
-/**
- * @param        $trigger_id
- * @param        $meta_key
- * @param string $meta_value
+ * @return mixed|void
  *
- * @return bool
+ * @since 3.0
+ * @package Uncanny_Automator
+ * @version 3.0
  */
-function update_uap_trigger_meta( $trigger_id, $meta_key, $meta_value = '' ) {
-	return true;
+function automator_add_textarea_field( $field_code, $label, string $default = '', bool $required = true ) {
+	$options = array(
+		'option_code' => $field_code,
+		'input_type'  => 'textarea',
+		'label'       => $label,
+		'default'     => $default,
+		'required'    => $required,
+	);
 
+	return Automator()->helpers->recipe->field->text( $options );
 }
-
-/**
- * @param        $trigger_id
- * @param        $meta_key
- * @param string $meta_value
- *
- * @return bool
- */
-function delete_uap_trigger_meta( $trigger_id, $meta_key, $meta_value = '' ) {
-	return true;
-
-}
-
-/*******************************/
-/*********** ACTION ************/
-/*******************************/
-
-
-/**
- * @param      $action_id
- * @param      $meta_key
- * @param bool $single
- *
- * @return string
- */
-function get_uap_action_meta( $action_id, $meta_key, $single = true ) {
-	$value = '';
-
-	return $value;
-}
-
-/**
- * @param        $action_id
- * @param        $meta_key
- * @param string $meta_value
- *
- * @return bool
- */
-function add_uap_action_meta( $action_id, $meta_key, $meta_value = '' ) {
-	return true;
-
-}
-
-/**
- * @param        $action_id
- * @param        $meta_key
- * @param string $meta_value
- *
- * @return bool
- */
-function update_uap_action_meta( $action_id, $meta_key, $meta_value = '' ) {
-	return true;
-
-}
-
-/**
- * @param        $action_id
- * @param        $meta_key
- * @param string $meta_value
- *
- * @return bool
- */
-function delete_uap_action_meta( $action_id, $meta_key, $meta_value = '' ) {
-	return true;
-}
-

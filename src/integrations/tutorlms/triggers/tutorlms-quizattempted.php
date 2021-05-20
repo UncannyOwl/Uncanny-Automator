@@ -43,7 +43,7 @@ class TUTORLMS_QUIZATTEMPTED {
 	public function define_trigger() {
 
 		// global automator object.
-		// global $uncanny_automator;
+
 
 		// setup trigger configuration.
 		$trigger = array(
@@ -97,7 +97,7 @@ class TUTORLMS_QUIZATTEMPTED {
 			'user_id' => $user_id,
 		];
 
-		// global $uncanny_automator;
+
 
 		// run trigger.
 		Automator()->maybe_add_trigger_entry( $args, true );

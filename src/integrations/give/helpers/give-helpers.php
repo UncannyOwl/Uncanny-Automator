@@ -41,7 +41,7 @@ class Give_Helpers {
 
 	public function list_all_give_forms( $label = null, $option_code = 'MAKEDONATION', $args = array() ) {
 
-		// global $uncanny_automator;
+
 
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );

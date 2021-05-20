@@ -31,7 +31,7 @@ class UC_CODEREDEEMED {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-codes/' ),
@@ -61,7 +61,7 @@ class UC_CODEREDEEMED {
 	 */
 	public function user_redeemed_code( $user_id, $coupon_id, $result ) {
 
-		// global $uncanny_automator;
+
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
 		}

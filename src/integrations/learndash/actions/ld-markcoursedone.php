@@ -32,7 +32,7 @@ class LD_MARKCOURSEDONE {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -62,7 +62,7 @@ class LD_MARKCOURSEDONE {
 	 * @param $recipe_id
 	 */
 	public function mark_completes_a_course( $user_id, $action_data, $recipe_id ) {
-		// global $uncanny_automator;
+
 		$course_id = $action_data['meta'][ $this->action_meta ];
 		//$courses   = learndash_user_get_enrolled_courses( $user_id, array(), true );
 		//if ( in_array( $course_id, $courses ) ) {

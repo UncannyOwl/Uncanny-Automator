@@ -83,63 +83,63 @@ trait Action_Setup {
 	/**
 	 * @param mixed $integration
 	 */
-	public function set_integration( $integration ): void {
+	public function set_integration( $integration ) {
 		$this->integration = $integration;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function get_author(): string {
+	public function get_author() {
 		return $this->author;
 	}
 
 	/**
 	 * @param string $author
 	 */
-	public function set_author( string $author ): void {
+	public function set_author( string $author ) {
 		$this->author = $author;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function get_support_link(): string {
+	public function get_support_link() {
 		return $this->support_link;
 	}
 
 	/**
 	 * @param string $support_link
 	 */
-	public function set_support_link( string $support_link ): void {
+	public function set_support_link( string $support_link ) {
 		$this->support_link = $support_link;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function is_is_pro(): bool {
+	public function is_is_pro() {
 		return $this->is_pro;
 	}
 
 	/**
 	 * @param bool $is_pro
 	 */
-	public function set_is_pro( bool $is_pro ): void {
+	public function set_is_pro( bool $is_pro ) {
 		$this->is_pro = $is_pro;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function is_is_deprecated(): bool {
+	public function is_is_deprecated() {
 		return $this->is_deprecated;
 	}
 
 	/**
 	 * @param bool $is_deprecated
 	 */
-	public function set_is_deprecated( bool $is_deprecated ): void {
+	public function set_is_deprecated( bool $is_deprecated ) {
 		$this->is_deprecated = $is_deprecated;
 	}
 
@@ -153,7 +153,7 @@ trait Action_Setup {
 	/**
 	 * @param mixed $action_code
 	 */
-	public function set_action_code( $action_code ): void {
+	public function set_action_code( $action_code ) {
 		$this->action_code = $action_code;
 	}
 
@@ -167,7 +167,7 @@ trait Action_Setup {
 	/**
 	 * @param mixed $action_meta
 	 */
-	public function set_action_meta( $action_meta ): void {
+	public function set_action_meta( $action_meta ) {
 		$this->action_meta = $action_meta;
 	}
 
@@ -181,7 +181,7 @@ trait Action_Setup {
 	/**
 	 * @param mixed $sentence
 	 */
-	public function set_sentence( $sentence ): void {
+	public function set_sentence( $sentence ) {
 		$this->sentence = $sentence;
 	}
 
@@ -195,7 +195,7 @@ trait Action_Setup {
 	/**
 	 * @param mixed $readable_sentence
 	 */
-	public function set_readable_sentence( $readable_sentence ): void {
+	public function set_readable_sentence( $readable_sentence ) {
 		$this->readable_sentence = $readable_sentence;
 	}
 
@@ -209,7 +209,7 @@ trait Action_Setup {
 	/**
 	 * @param mixed $options
 	 */
-	public function set_options( $options ): void {
+	public function set_options( $options ) {
 		$this->options = $options;
 	}
 
@@ -223,7 +223,7 @@ trait Action_Setup {
 	/**
 	 * @param mixed $options_group
 	 */
-	public function set_options_group( $options_group ): void {
+	public function set_options_group( $options_group ) {
 		$this->options_group = $options_group;
 	}
 

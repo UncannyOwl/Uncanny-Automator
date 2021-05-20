@@ -31,7 +31,7 @@ class WPF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -63,7 +63,7 @@ class WPF_SUBFORM {
 	 */
 	public function wpform_submit( $fields, $entry, $form_data, $entry_id ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $form_data ) ) {
 			return;

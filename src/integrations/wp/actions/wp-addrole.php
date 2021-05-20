@@ -33,7 +33,7 @@ class WP_ADDROLE {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -64,7 +64,7 @@ class WP_ADDROLE {
 	 */
 	public function add_role( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$role = $action_data['meta'][ $this->action_meta ];
 

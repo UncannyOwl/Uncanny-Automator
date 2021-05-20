@@ -33,7 +33,7 @@ class GH_REMOVETAG {
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	public function define_action() {
-		// global $uncanny_automator;
+
 
 		$tags = new Tags;
 
@@ -77,7 +77,7 @@ class GH_REMOVETAG {
 	 */
 	public function remove_tag_to_user( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$tag_id = absint( $action_data['meta'][ $this->action_meta ] );
 

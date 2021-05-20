@@ -36,7 +36,7 @@ class ZAPIER_SENDWEBHOOK {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -318,7 +318,7 @@ class ZAPIER_SENDWEBHOOK {
 	 */
 	public function send_webhook( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 		$key_values   = array();
 		$headers      = array();
 		$request_type = 'POST';

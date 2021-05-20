@@ -34,7 +34,7 @@ class UOA_ERRORS {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -45,7 +45,7 @@ class UOA_ERRORS {
 			'sentence'            => sprintf( esc_attr__( 'An Automator recipe completes with errors', 'uncanny-automator' ) ),
 			/* translators: Logged-in trigger - Uncanny Automator */
 			'select_option_name'  => esc_attr__( 'An Automator recipe completes with errors', 'uncanny-automator' ),
-			'action'              => 'uap_recipe_completed',
+			'action'              => 'automator_recipe_completed',
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'error' ),
@@ -67,7 +67,7 @@ class UOA_ERRORS {
 	 */
 	public function error( $recipe_id, $user_id, $recipe_log_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		global $wpdb;
 		// get recipe actions

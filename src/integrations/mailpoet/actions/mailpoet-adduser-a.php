@@ -31,7 +31,7 @@ class MAILPOET_ADDUSER_A {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -45,8 +45,13 @@ class MAILPOET_ADDUSER_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mailpoet_add_user_to_list' ),
-			'options'            => [
-				Automator()->helpers->recipe->mailpoet->options->get_all_mailpoet_lists( esc_attr__( 'List', 'uncanny-automator' ), $this->action_meta ),
+			'options'            => array(),
+			'options_group'      => [
+				$this->action_meta    =>
+					[
+						Automator()->helpers->recipe->mailpoet->options->get_all_mailpoet_lists( esc_attr__( 'List', 'uncanny-automator' ), $this->action_meta ),
+						Automator()->helpers->recipe->field->text_field( 'USERADDEDTOLIST_CONFIRMATIONEMAIL', esc_attr__( 'Add the user directly to the list - Do not send confirmation email', 'uncanny-automator' ), true, 'checkbox', '', false ),
+					]
 			],
 		);
 
@@ -61,8 +66,8 @@ class MAILPOET_ADDUSER_A {
 	 * @param array $action_data action data.
 	 * @param string $recipe_id recipe id.
 	 */
-	public function mailpoet_add_user_to_list( $user_id, $action_data, $recipe_id ) {
-		// global $uncanny_automator;
+	public function mailpoet_add_user_to_list( $user_id, $action_data, $recipe_id, $args ) {
+
 
 		if ( ! class_exists( '\MailPoet\API\API' ) ) {
 			$error_message = 'The class \MailPoet\API\API does not exist';
@@ -79,8 +84,14 @@ class MAILPOET_ADDUSER_A {
 		$userdata = get_userdata( $user_id );
 
 		$subscriber = $mailpoet->getSubscriber( $userdata->user_email );
+		$disable_confirmation_email = true;
+		if( isset( $action_data['meta']['USERADDEDTOLIST_CONFIRMATIONEMAIL'] ) ) {
+			$disable_confirmation_email = Automator()->parse->text( $action_data['meta']['USERADDEDTOLIST_CONFIRMATIONEMAIL'], $recipe_id, $user_id, $args );
+			$disable_confirmation_email = "true" === $disable_confirmation_email ? false : true;
+		}
+
 		try {
-			$mailpoet->subscribeToList( $subscriber['id'], $list_id, [ 'send_confirmation_email' => true ] );
+			$mailpoet->subscribeToList( $subscriber['id'], $list_id, [ 'send_confirmation_email' => $disable_confirmation_email ] );
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();

@@ -29,7 +29,7 @@ class Buddypress_Helpers {
 	 * Buddypress_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_topic_from_forum_BDBTOPICREPLY', [ $this, 'select_topic_fields_func' ] );
@@ -57,7 +57,7 @@ class Buddypress_Helpers {
 	 */
 	public function all_buddypress_groups( $label = null, $option_code = 'BPGROUPS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -75,7 +75,7 @@ class Buddypress_Helpers {
 		global $wpdb;
 		$qry     = "SHOW TABLES LIKE '{$wpdb->prefix}bp_groups';";
 		$options = array();
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
@@ -121,7 +121,7 @@ class Buddypress_Helpers {
 	 */
 	public function all_buddypress_users( $label = null, $option_code = 'BPUSERS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -138,7 +138,7 @@ class Buddypress_Helpers {
 		);
 
 		$options = array();
-		// global $uncanny_automator;
+
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
@@ -169,7 +169,7 @@ class Buddypress_Helpers {
 	 */
 	public function select_topic_fields_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->utilities->ajax_auth_check( $_POST );
 

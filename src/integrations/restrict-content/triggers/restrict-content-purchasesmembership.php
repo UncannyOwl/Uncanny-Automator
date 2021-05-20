@@ -38,7 +38,7 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -73,7 +73,7 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 	 */
 	public function user_purchases_membership_level( $membership_id, \RCP_Membership $RCP_Membership ) {
 
-		// global $uncanny_automator;
+
 
 		$user_id = $RCP_Membership->get_user_id();
 

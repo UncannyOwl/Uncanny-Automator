@@ -27,7 +27,7 @@ class Automator_Recipe_Process_Complete {
 	/**
 	 * @return Automator_Recipe_Process_Complete
 	 */
-	public static function get_instance(): Automator_Recipe_Process_Complete {
+	public static function get_instance() {
 
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -325,7 +325,6 @@ class Automator_Recipe_Process_Complete {
 		do_action( 'automator_before_action_completed', $do_action_args );
 
 		$error_message = $this->get_action_error_message( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
-
 
 		$process_further = apply_filters( 'automator_before_action_created', true, $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 

@@ -1,4 +1,4 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php
 namespace Uncanny_Automator;
 
 /**
@@ -88,7 +88,7 @@ class MEC_HELPERS {
 	 */
 	public function get_events( $is_from_endpoint = false ) {
 
-		global $uncanny_automator;
+
 
 		$args = array(
 			'post_type'      => 'mec-events',
@@ -100,7 +100,7 @@ class MEC_HELPERS {
 
 		$events = array();
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, null );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false, null );
 
 		$events = array();
 
@@ -130,8 +130,8 @@ class MEC_HELPERS {
 			'option_code'              => 'MEC_SELECTED_EVENT_ID',
 			'options'                  => $this->get_events(),
 			'required'                 => true,
-			'label'                    => esc_html__( 'List of available events', 'uncanny-automator' ),
-			'description'              => esc_html__( 'Select from the list of available events. The selected event must have a ticket.', 'uncanny-automator' ),
+			'label'                    => esc_html__( 'List of available Events', 'uncanny-automator' ),
+			'description'              => esc_html__( 'Select from the list of available Events. The selected Event must have a Ticket.', 'uncanny-automator' ),
 			'is_ajax'                  => true,
 			'endpoint'                 => 'ua_mec_select_event_ticket',
 			'fill_values_in'           => 'MEC_SELECTED_TICKET_ID',
@@ -158,8 +158,8 @@ class MEC_HELPERS {
 			'option_code'              => 'MEC_SELECTED_TICKET_ID',
 			'options'                  => array(),
 			'required'                 => true,
-			'label'                    => esc_html__( 'Select a ticket', 'uncanny-automator' ),
-			'description'              => esc_html__( 'Use the dropdown to select a ticket associated from the previously selected event', 'uncanny-automator' ),
+			'label'                    => esc_html__( 'Select a Ticket', 'uncanny-automator' ),
+			'description'              => esc_html__( 'Use the dropdown to select a Ticket associated from the previously selected Event', 'uncanny-automator' ),
 			'supports_token'           => false,
 			'supports_multiple_values' => false,
 			'supports_custom_value'    => false,

@@ -32,7 +32,7 @@ class MASTERSTUDY_LESSONDONE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -102,7 +102,7 @@ class MASTERSTUDY_LESSONDONE {
 	 */
 	public function lesson_completed( $user_id, $lesson_id ) {
 
-		// global $uncanny_automator;
+
 
 		$course_id = intval( $_GET['course'] );
 

@@ -41,7 +41,7 @@ require __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'legacy.ph
 /**
  * @return Automator_Functions
  */
-function Automator(): Automator_Functions { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
+function Automator() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	// this global variable stores many functions that can be used for integrations, triggers, actions, and closures.
 	include_once UA_ABSPATH . 'src/core/lib/class-automator-functions.php';
 

@@ -142,7 +142,7 @@ class Bp_Tokens {
 					$value = $this->get_xprofile_data( $user_id, $pieces[2] );
 				}
 			} elseif ( in_array( 'BPUSERACTIVITY', $pieces ) ) {
-				// global $uncanny_automator;
+
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
 						$trigger_id     = $trigger['ID'];

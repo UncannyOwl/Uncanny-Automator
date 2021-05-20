@@ -31,7 +31,7 @@ class LD_QUIZSCORE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -73,7 +73,7 @@ class LD_QUIZSCORE {
 			return;
 		}
 
-		// global $uncanny_automator;
+
 
 		$quiz                = $data['quiz'];
 		$quiz_id             = is_object( $quiz ) ? $quiz->ID : $quiz;

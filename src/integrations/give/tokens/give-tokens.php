@@ -120,7 +120,7 @@ class Give_Tokens {
 			return $tokens;
 		}
 
-		// global $uncanny_automator;
+
 		$form_fields = Automator()->helpers->recipe->give->get_form_fields_and_ffm( $form_id );
 
 		if ( empty( $form_fields ) ) {

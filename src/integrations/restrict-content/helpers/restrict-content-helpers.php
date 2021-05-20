@@ -26,7 +26,7 @@ class Restrict_Content_Helpers {
 	 * Restrict_content_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -54,7 +54,7 @@ class Restrict_Content_Helpers {
 	public function get_membership_levels( $label = null, $option_code = null, $args = array() ) {
 
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}

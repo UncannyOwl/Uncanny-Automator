@@ -75,7 +75,7 @@ class Add_Nf_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( 'NF', array(
 			'name'        => 'Ninja Forms',

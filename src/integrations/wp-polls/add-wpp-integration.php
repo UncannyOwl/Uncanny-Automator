@@ -69,7 +69,7 @@ class Add_Wpp_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'WP-Polls',

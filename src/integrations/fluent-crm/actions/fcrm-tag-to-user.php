@@ -33,7 +33,7 @@ class FCRM_TAG_TO_USER {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -65,7 +65,7 @@ class FCRM_TAG_TO_USER {
 	 */
 	public function tag_to_user( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		$tags      = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
 		$user_info = get_userdata( $user_id );

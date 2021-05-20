@@ -41,7 +41,7 @@ class UNCANNYCEUS_EARNSCEUS {
 
 		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
 
-		// global $uncanny_automator;
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-continuing-education-credits-for-learndash/' ),
@@ -100,7 +100,7 @@ class UNCANNYCEUS_EARNSCEUS {
 	 */
 	public function updated_user_ceu_record( $current_user, $is_manual_creation, $completion_date, $current_course_id, $current_course_title, $course_slug, $ceu_value ) {
 
-		// global $uncanny_automator;
+
 
 		// The class contains all ceu creation code
 		$ceu_shortcodes = \uncanny_ceu\Utilities::get_class_instance( 'CeuShortcodes' );

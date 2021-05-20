@@ -34,7 +34,7 @@ class WP_CREATEUSER {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -108,7 +108,7 @@ class WP_CREATEUSER {
 	public function create_user( $user_id, $action_data, $recipe_id, $args ) {
 
 
-		// global $uncanny_automator;
+
 
 		// Username is mandatory. Return error its not valid.
 		if ( isset( $action_data['meta']['USERNAME'] ) ) {

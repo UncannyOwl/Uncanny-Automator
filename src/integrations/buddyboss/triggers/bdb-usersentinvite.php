@@ -31,7 +31,7 @@ class BDB_USERSENTINVITE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -59,7 +59,7 @@ class BDB_USERSENTINVITE {
 	 */
 	public function bp_core_activated_user( $user_id, $post ) {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'           => $this->trigger_code,

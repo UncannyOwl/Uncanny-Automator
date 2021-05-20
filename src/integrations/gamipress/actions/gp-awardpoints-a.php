@@ -32,7 +32,7 @@ class GP_AWARDPOINTS_A {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = [
 			'author'             => Automator()->get_author_name(),
@@ -80,7 +80,7 @@ class GP_AWARDPOINTS_A {
 	 */
 	public function award_points( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$points_type = $action_data['meta'][ $this->action_meta ];
 		$points      = Automator()->parse->text( $action_data['meta']['GPPOINTVALUE'], $recipe_id, $user_id, $args );

@@ -31,7 +31,7 @@ class BDB_USERPOSTREPLYFORUM {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'forum',
@@ -102,7 +102,7 @@ class BDB_USERPOSTREPLYFORUM {
 	 */
 	public function bbp_insert_reply( $reply_id, $topic_id, $forum_id ) {
 
-		// global $uncanny_automator;
+
 
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 

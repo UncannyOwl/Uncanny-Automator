@@ -104,7 +104,7 @@ class Set_Up_Automator {
 	 * @param bool $recursive
 	 *
 	 * @return array|false
-	 * @throws Exception
+	 * @throws Automator_Exception
 	 */
 	public static function read_directory( $directory, $recursive = true ) {
 		if ( is_dir( $directory ) === false ) {
@@ -138,6 +138,15 @@ class Set_Up_Automator {
 					if ( preg_match( '/(add-)/', $item ) ) {
 						$integration_files['main'] = $directory . DIRECTORY_SEPARATOR . $item;
 					} else {
+						// Avoid Integromat fatal error if Pro < 3.0 and Free is >= 3.0
+						if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+							$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+							if ( version_compare( $version, '3.0', '<' ) ) {
+								if ( 'integromat-pro-helpers.php' === (string) $item || strpos( $item, 'integromat-pro-helpers' ) ) {
+									continue;
+								}
+							}
+						}
 						$integration_files[] = $directory . DIRECTORY_SEPARATOR . $item;
 					}
 				}

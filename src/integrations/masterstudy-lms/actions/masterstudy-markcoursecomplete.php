@@ -32,7 +32,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -79,7 +79,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 * @param $recipe_id
 	 */
 	public function mark_course_complete( $user_id, $action_data, $recipe_id ) {
-		// global $uncanny_automator;
+
 
 		$course_id = $action_data['meta'][ $this->action_meta ];
 

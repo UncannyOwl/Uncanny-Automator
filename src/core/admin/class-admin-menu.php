@@ -44,7 +44,8 @@ class Admin_Menu {
 			),
 		);
 
-		self::$tabs = apply_filters( 'uap_settings_tabs', $tabs );
+		$tabs       = apply_filters( 'uap_settings_tabs', $tabs );
+		self::$tabs = apply_filters( 'automator_settings_tabs', $tabs );
 		if ( self::$tabs ) {
 			$tabs = json_decode( wp_json_encode( self::$tabs ), false );
 			foreach ( $tabs as $tab => $tab_settings ) {

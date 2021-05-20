@@ -32,7 +32,7 @@ class WF_SETUSERTAG {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -62,7 +62,7 @@ class WF_SETUSERTAG {
 	 * @param $recipe_id
 	 */
 	public function set_user_tag( $user_id, $action_data, $recipe_id ) {
-		// global $uncanny_automator;
+
 
 
 		if ( ! empty( $user_id ) ) {

@@ -30,7 +30,7 @@ class Masterstudy_Helpers {
 	 * Masterstudy_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_mslms_lesson_from_course_LESSONDONE', array(
@@ -65,7 +65,7 @@ class Masterstudy_Helpers {
 	 */
 	public function select_lesson_from_course_func() {
 
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );
@@ -127,7 +127,7 @@ class Masterstudy_Helpers {
 	 */
 	public function select_quiz_from_course_func() {
 
-		// global $uncanny_automator;
+
 
 		// Nonce and post object validation
 		Automator()->utilities->ajax_auth_check( $_POST );

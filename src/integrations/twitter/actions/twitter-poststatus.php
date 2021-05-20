@@ -42,7 +42,7 @@ class TWITTER_POSTSTATUS {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -76,7 +76,7 @@ class TWITTER_POSTSTATUS {
 	 * @return mixed
 	 */
 	public function post_status( $user_id, $action_data, $recipe_id, $args ) {
-		// global $uncanny_automator;
+
 
 		$status = Automator()->parse->text( $action_data['meta']['TWITTERSTATUSCONTENT'], $recipe_id, $user_id, $args );
 
@@ -122,7 +122,7 @@ class TWITTER_POSTSTATUS {
 	 */
 	public function statuses_update( $status ) {
 
-		// global $uncanny_automator;
+
 
 		// Get twitter credentials.
 		$request_body = Automator()->helpers->recipe->twitter->get_client();

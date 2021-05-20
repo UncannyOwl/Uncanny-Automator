@@ -57,7 +57,7 @@ trait Integrations {
 	/**
 	 * @param mixed $external_integration
 	 */
-	public function set_external_integration( $external_integration ): void {
+	public function set_external_integration( $external_integration ) {
 		$this->external_integration = $external_integration;
 	}
 
@@ -78,7 +78,7 @@ trait Integrations {
 	/**
 	 * @param mixed $icon_path
 	 */
-	public function set_icon_path( $icon_path ): void {
+	public function set_icon_path( $icon_path ) {
 		$this->icon_path = $icon_path;
 	}
 
@@ -192,21 +192,21 @@ trait Integrations {
 	/**
 	 * @param mixed $plugin_file_path
 	 */
-	protected function set_plugin_file_path( $plugin_file_path ): void {
+	protected function set_plugin_file_path( $plugin_file_path ) {
 		$this->plugin_file_path = $plugin_file_path;
 	}
 
 	/**
 	 * @param mixed $icon
 	 */
-	protected function set_icon( $icon ): void {
+	protected function set_icon( $icon ) {
 		$this->icon = $icon;
 	}
 
 	/**
 	 * @param mixed $name
 	 */
-	protected function set_name( $name ): void {
+	protected function set_name( $name ) {
 		$this->name = $name;
 	}
 

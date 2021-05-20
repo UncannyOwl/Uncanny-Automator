@@ -29,42 +29,42 @@ trait Action_Parser {
 	/**
 	 * @return array
 	 */
-	public function get_not_token_keys(): array {
+	public function get_not_token_keys() {
 		return $this->not_token_keys;
 	}
 
 	/**
 	 * @param array $not_token_keys
 	 */
-	public function set_not_token_keys( array $not_token_keys ): void {
+	public function set_not_token_keys( array $not_token_keys ) {
 		$this->not_token_keys = $not_token_keys;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function is_do_shortcode(): bool {
+	public function is_do_shortcode() {
 		return $this->do_shortcode;
 	}
 
 	/**
 	 * @param bool $do_shortcode
 	 */
-	public function set_do_shortcode( bool $do_shortcode ): void {
+	public function set_do_shortcode( bool $do_shortcode ) {
 		$this->do_shortcode = $do_shortcode;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function is_wpautop(): bool {
-		return $this->wpautop;
+	public function is_wpautop() {
+		return apply_filters( 'automator_mail_wpautop', $this->wpautop, $this );
 	}
 
 	/**
 	 * @param bool $wpautop
 	 */
-	public function set_wpautop( bool $wpautop ): void {
+	public function set_wpautop( bool $wpautop ) {
 		$this->wpautop = $wpautop;
 	}
 
@@ -78,7 +78,7 @@ trait Action_Parser {
 	/**
 	 * @param mixed $parsed
 	 */
-	public function set_parsed( $meta_key, $parsed ): void {
+	public function set_parsed( $meta_key, $parsed ) {
 		$this->parsed[ $meta_key ] = $parsed;
 	}
 
@@ -127,8 +127,7 @@ trait Action_Parser {
 		foreach ( $metas as $meta_key => $meta_value ) {
 			if ( ! $this->is_valid_token( $meta_key, $meta_value ) ) {
 				$parsed = Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args );
-
-				$this->set_parsed( $meta_key, $parsed );
+				$this->set_parsed( $meta_key, $this->should_wpautop( $parsed ) );
 				continue;
 			}
 
@@ -146,11 +145,7 @@ trait Action_Parser {
 				$parsed = do_shortcode( $parsed );
 			}
 
-			if ( $this->is_wpautop() && ! is_email( $parsed ) ) {
-				$parsed = wpautop( $parsed );
-			}
-
-			$parsed = apply_filters( 'automator_post_token_parsed', $parsed, $meta_key, $token_args );
+			$parsed = apply_filters( 'automator_post_token_parsed', $this->should_wpautop( $parsed ), $meta_key, $token_args );
 
 			$this->set_parsed( $meta_key, $parsed );
 		}
@@ -159,12 +154,26 @@ trait Action_Parser {
 	}
 
 	/**
+	 * @param $parsed
+	 *
+	 * @return mixed|string
+	 */
+	private function should_wpautop( $parsed ) {
+		$is_wpautop = apply_filters( 'automator_mail_wpautop', $this->is_wpautop(), $this );
+		if ( $is_wpautop && ! is_email( $parsed ) ) {
+			$parsed = wpautop( $parsed );
+		}
+
+		return $parsed;
+	}
+
+	/**
 	 * @param $meta_key
 	 * @param $meta_value
 	 *
 	 * @return bool
 	 */
-	public function is_valid_token( $meta_key, $meta_value ): bool {
+	public function is_valid_token( $meta_key, $meta_value ) {
 
 		if ( array_intersect( array( $meta_key ), $this->get_not_token_keys() ) ) {
 			return false;

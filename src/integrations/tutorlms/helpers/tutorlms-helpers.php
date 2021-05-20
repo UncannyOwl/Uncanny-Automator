@@ -31,7 +31,7 @@ class Tutorlms_Helpers {
 	 * Tutorlms_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -56,7 +56,7 @@ class Tutorlms_Helpers {
 	 */
 	public function all_tutorlms_lessons( $label = null, $option_code = 'TUTORLMSLESSON', $any_option = false ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -76,7 +76,7 @@ class Tutorlms_Helpers {
 
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$option = [
@@ -106,7 +106,7 @@ class Tutorlms_Helpers {
 	 */
 	public function all_tutorlms_courses( $label = null, $option_code = 'TUTORLMSCOURSE', $all_label = false, $any_option = false ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -125,8 +125,8 @@ class Tutorlms_Helpers {
 
 		];
 
-		// global $uncanny_automator;
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, 'course', $all_label );
+
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ), $all_label );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -155,7 +155,7 @@ class Tutorlms_Helpers {
 	 */
 	public function all_tutorlms_quizzes( $label = null, $option_code = 'TUTORLMSQUIZ', $any_option = false ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -175,7 +175,7 @@ class Tutorlms_Helpers {
 
 		];
 
-		// global $uncanny_automator;
+
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any quiz', 'uncanny-automator' ) );
 
 		$option = [

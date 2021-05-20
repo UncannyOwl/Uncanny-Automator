@@ -30,7 +30,7 @@ class WC_VIEWPRODUCT {
 	 *
 	 */
 	public function define_trigger() {
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
@@ -62,7 +62,7 @@ class WC_VIEWPRODUCT {
 	 */
 	public function view_woo_product() {
 
-		// global $uncanny_automator;
+
 
 		global $post;
 

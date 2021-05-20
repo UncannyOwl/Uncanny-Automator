@@ -30,7 +30,7 @@ class LD_CREATEGROUP {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -105,7 +105,7 @@ class LD_CREATEGROUP {
 	 */
 	public function create_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$uo_group_title               = Automator()->parse->text( $action_data['meta']['LDGROUPTITLE'], $recipe_id, $user_id, $args );
 		$uo_group_courses             = Automator()->parse->text( $action_data['meta']['LDGROUPCOURSES'], $recipe_id, $user_id, $args );

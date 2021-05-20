@@ -73,7 +73,7 @@ class Add_Upsell_Plugin_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Upsell Plugin',

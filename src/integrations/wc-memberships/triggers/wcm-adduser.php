@@ -31,7 +31,7 @@ class WCM_ADDUSER {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -60,7 +60,7 @@ class WCM_ADDUSER {
 	 * @param $data
 	 */
 	public function wc_user_added_to_membership_plan( $membership_plan, $data ) {
-		// global $uncanny_automator;
+
 
 		if ( 0 === $data['user_id'] ) {
 			// Its a logged in recipe and

@@ -31,7 +31,7 @@ class EDD_PRODUCTPURCHASE {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -63,7 +63,7 @@ class EDD_PRODUCTPURCHASE {
 	 */
 	public function edd_product_purchase( $payment_id ) {
 
-		// global $uncanny_automator;
+
 
 		$cart_items = edd_get_payment_meta_cart_details( $payment_id );
 		if ( empty( $cart_items ) ) {

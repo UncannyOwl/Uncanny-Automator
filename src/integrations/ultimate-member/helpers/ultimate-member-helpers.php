@@ -28,7 +28,7 @@ class Ultimate_Member_Helpers {
 	 * Ultimate_Member_Helpers constructor.
 	 */
 	public function __construct() {
-		// global $uncanny_automator;
+
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -55,7 +55,7 @@ class Ultimate_Member_Helpers {
 	 */
 	public function get_um_forms( $label = null, $option_code = 'UMFORM', $type = 'register', $params = array() ) {
 		if ( ! $this->load_options ) {
-			// global $uncanny_automator;
+
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -95,7 +95,7 @@ class Ultimate_Member_Helpers {
 		}
 
 		//$forms_list = get_posts( $args );
-		// global $uncanny_automator;
+
 		$forms_list = Automator()->helpers->recipe->options->wp_query( $args );
 		/*if ( ! empty( $forms_list ) ) {
 			foreach ( $forms_list as $form ) {

@@ -34,7 +34,7 @@ class MYCRED_AWARDBADGE_A {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = [
 			'author'             => Automator()->get_author_name(),
@@ -77,7 +77,7 @@ class MYCRED_AWARDBADGE_A {
 	 */
 	public function award_mycred_badge( $user_id, $action_data, $recipe_id, $args ) {
 
-		// global $uncanny_automator;
+
 
 		$badge_id = $action_data['meta'][ $this->action_meta ];
 

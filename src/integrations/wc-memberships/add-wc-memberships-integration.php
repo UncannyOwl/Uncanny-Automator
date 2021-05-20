@@ -62,7 +62,7 @@ class Add_Wc_Memberships_Integration {
 	 */
 	public function add_integration_func() {
 
-		// global $uncanny_automator;
+
 
 		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Woo Memberships',

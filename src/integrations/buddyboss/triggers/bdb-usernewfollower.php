@@ -31,7 +31,7 @@ class BDB_USERNEWFOLLOWER {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -61,7 +61,7 @@ class BDB_USERNEWFOLLOWER {
 	 */
 	public function bp_start_following_user( $follow ) {
 
-		// global $uncanny_automator;
+
 
 		$args = [
 			'code'           => $this->trigger_code,

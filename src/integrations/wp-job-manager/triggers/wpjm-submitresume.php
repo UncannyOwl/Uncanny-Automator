@@ -31,7 +31,7 @@ class WPJM_SUBMITRESUME {
 	 */
 	public function define_trigger() {
 
-		// global $uncanny_automator;
+
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -57,7 +57,7 @@ class WPJM_SUBMITRESUME {
 	 */
 	public function resume_manager_resume_submitted( $resume_id ) {
 
-		// global $uncanny_automator;
+
 
 		if ( empty( $resume_id ) ) {
 			return;

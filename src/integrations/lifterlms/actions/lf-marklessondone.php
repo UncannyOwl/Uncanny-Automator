@@ -31,7 +31,7 @@ class LF_MARKLESSONDONE {
 	 */
 	public function define_action() {
 
-		// global $uncanny_automator;
+
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -63,7 +63,7 @@ class LF_MARKLESSONDONE {
 	 */
 	public function lf_mark_lesson_done( $user_id, $action_data, $recipe_id ) {
 
-		// global $uncanny_automator;
+
 
 		if ( ! function_exists( 'llms_mark_complete' ) ) {
 			$error_message = 'The function llms_mark_complete does not exist';

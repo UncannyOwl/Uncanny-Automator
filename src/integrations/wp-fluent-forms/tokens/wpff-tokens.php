@@ -145,7 +145,7 @@ class Wpff_Tokens {
 								}
 							}
 						} elseif ( isset( $raw_field['fields'] ) ) {
-
+							$field_group_name = $raw_field['attributes']['name'];
 							foreach ( $raw_field['fields'] as $field ) {
 								if ( 1 === (int) $field['settings']['visible'] ) {
 									if ( isset( $field['uniqElKey'] ) ) {
@@ -167,6 +167,8 @@ class Wpff_Tokens {
 											'tokenType'       => $type,
 											'tokenIdentifier' => $trigger_meta,
 										];
+									} else {
+										$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
 									}
 								}
 							}
@@ -209,7 +211,13 @@ class Wpff_Tokens {
 	 */
 	public function create_token( $form_id, $field, $trigger_meta, $field_group_name = '' ) {
 
-		$field_label = $field['settings']['label'];
+		$field_label = '';
+		if( isset( $field['settings']['label'] ) ) {
+			$field_label = $field['settings']['label'];
+		} elseif( isset( $field['settings']['admin_field_label'] ) ) {
+			$field_label = $field['settings']['admin_field_label'];
+		}
+
 		$field_name  = $field['attributes']['name'];
 
 		if ( isset( $field['attributes']['type'] ) ) {
