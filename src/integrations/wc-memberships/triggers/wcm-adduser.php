@@ -31,11 +31,11 @@ class WCM_ADDUSER {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/woocommerce-memberships/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WooCommerce Memberships */
@@ -47,12 +47,12 @@ class WCM_ADDUSER {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wc_user_added_to_membership_plan' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans( null, $this->trigger_meta,
+				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans( null, $this->trigger_meta,
 					[ 'is_any' => true ] ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -60,7 +60,7 @@ class WCM_ADDUSER {
 	 * @param $data
 	 */
 	public function wc_user_added_to_membership_plan( $membership_plan, $data ) {
-		global $uncanny_automator;
+
 
 		if ( 0 === $data['user_id'] ) {
 			// Its a logged in recipe and
@@ -68,9 +68,9 @@ class WCM_ADDUSER {
 			return;
 		}
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_plan      = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_plan      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 		$order_id           = '';
 
 		//Add where option is set to Any product
@@ -103,7 +103,7 @@ class WCM_ADDUSER {
 					'post_id'          => $membership_plan->id,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
@@ -119,10 +119,10 @@ class WCM_ADDUSER {
 
 								$trigger_meta['meta_key']   = 'WCMPLANORDERID';
 								$trigger_meta['meta_value'] = maybe_serialize( $order_id );
-								$uncanny_automator->insert_trigger_meta( $trigger_meta );
+								Automator()->insert_trigger_meta( $trigger_meta );
 							}
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

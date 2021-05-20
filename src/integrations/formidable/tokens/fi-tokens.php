@@ -61,12 +61,12 @@ class Fi_Tokens {
 	 *
 	 * @return array
 	 */
-	public function fi_possible_tokens( $tokens = [], $args = [] ) {
+	public function fi_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$form_ids = [];
+		$form_ids = array();
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 
 			$form = FrmForm::getOne( $form_id );
@@ -94,7 +94,7 @@ class Fi_Tokens {
 
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
-				$fields = [];
+				$fields = array();
 				$meta   = FrmField::get_all_for_form( $form_id );
 				if ( is_array( $meta ) ) {
 					foreach ( $meta as $field ) {
@@ -140,17 +140,17 @@ class Fi_Tokens {
 					$form_id  = $token_info[0];
 					$meta_key = $token_info[1];
 					//$user_id               = get_current_user_id();
-					$s_query               = [];
+					$s_query               = array();
 					$s_query['it.form_id'] = $form_id;
 					$s_query['it.user_id'] = $user_id;
 					$order                 = ' ORDER BY id DESC ';
 					$enrties               = FrmEntry::getAll( $s_query, $order, 1, true, false );
-					$fields = FrmField::get_all_for_form( $form_id );
+					$fields                = FrmField::get_all_for_form( $form_id );
 
 					// Collect all file field types
-					$file_fields = [];
-					foreach($fields as $field ){
-						if(isset($field->type) && 'file' === $field->type){
+					$file_fields = array();
+					foreach ( $fields as $field ) {
+						if ( isset( $field->type ) && 'file' === $field->type ) {
 							$file_fields[] = $field->id;
 						}
 					}
@@ -158,30 +158,30 @@ class Fi_Tokens {
 					if ( ! empty( $enrties ) ) {
 						foreach ( $enrties as $enrty ) {
 							if ( isset( $enrty->metas )
-								 && isset( $enrty->metas[ $meta_key ] )
+							     && isset( $enrty->metas[ $meta_key ] )
 							) {
 
 								if ( is_array( $enrty->metas[ $meta_key ] ) ) {
 									$value = implode( ', ', $enrty->metas[ $meta_key ] );
-								} elseif( in_array($meta_key, $file_fields)){
+								} elseif ( in_array( $meta_key, $file_fields ) ) {
 
 									$media_id = $enrty->metas[ $meta_key ];
 
-									$attachment = get_post($media_id);
+									$attachment = get_post( $media_id );
 									if ( ! $attachment ) {
 										$value = $enrty->metas[ $meta_key ];
 									}
 
-									$image = $orig_image = wp_get_attachment_image($media_id, 'thumbnail', true);
+									$image = $orig_image = wp_get_attachment_image( $media_id, 'thumbnail', true );
 
 									//if this is a mime type icon
 									if ( $image && ! preg_match( '/wp-content\/uploads/', $image ) ) {
-										$label = basename($attachment->guid);
+										$label = basename( $attachment->guid );
 									}
 									if ( $image ) {
 										$value = '<a href="' . esc_url( wp_get_attachment_url( $media_id ) ) . '">' . $label . '</a>';
 									}
-								}else {
+								} else {
 									$value = $enrty->metas[ $meta_key ];
 								}
 								break;

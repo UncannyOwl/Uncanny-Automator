@@ -52,15 +52,15 @@ class Cf7_Tokens {
 
 	/**
 	 * @param WPCF7_ContactForm $contact_form
-	 * @param $recipes
-	 * @param $args
+	 * @param                   $recipes
+	 * @param                   $args
 	 */
 	public function automator_save_cf7_form_func( WPCF7_ContactForm $contact_form, $recipes, $args ) {
 		if ( is_array( $args ) ) {
 			foreach ( $args as $trigger_result ) {
 				//$trigger_result = array_pop( $args );
 				if ( true === $trigger_result['result'] ) {
-					global $uncanny_automator;
+
 					if ( $recipes && $contact_form instanceof WPCF7_ContactForm ) {
 						foreach ( $recipes as $recipe ) {
 							$triggers = $recipe['triggers'];
@@ -78,7 +78,7 @@ class Cf7_Tokens {
 										$data    = $this->get_data_from_contact_form( $contact_form );
 										$user_id = (int) $trigger_result['args']['user_id'];
 										if ( $user_id ) {
-											$recipe_log_id_raw = $uncanny_automator->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
+											$recipe_log_id_raw = Automator()->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
 											if ( is_array( $recipe_log_id_raw ) && key_exists( 'recipe_log_id', $recipe_log_id_raw ) ) {
 												//$recipe_log_id  = absint( $recipe_log_id_raw['recipe_log_id'] );
 												$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
@@ -93,7 +93,7 @@ class Cf7_Tokens {
 													'trigger_log_id' => $trigger_log_id,
 												];
 
-												$uncanny_automator->insert_trigger_meta( $args );
+												Automator()->insert_trigger_meta( $args );
 											}
 										}
 									}
@@ -112,10 +112,10 @@ class Cf7_Tokens {
 	 * @return array
 	 */
 	public function get_data_from_contact_form( WPCF7_ContactForm $contact_form ) {
-		$data = [];
+		$data = array();
 		if ( $contact_form instanceof WPCF7_ContactForm ) {
 			$tags = $contact_form->scan_form_tags();
-			global $uncanny_automator;
+
 			foreach ( $tags as $tag ) {
 				if ( empty( $tag->name ) ) {
 					continue;
@@ -123,10 +123,10 @@ class Cf7_Tokens {
 
 				$pipes = $tag->pipes;
 
-				$value = ( ! empty( $_POST[ $tag->name ] ) ) ? $uncanny_automator->uap_sanitize( $_POST[ $tag->name ], 'mixed' ) : '';
+				$value = ( ! empty( $_POST[ $tag->name ] ) ) ? Automator()->utilities->automator_sanitize( $_POST[ $tag->name ], 'mixed' ) : '';
 				if ( WPCF7_USE_PIPE && $pipes instanceof WPCF7_Pipes && ! $pipes->zero() ) {
 					if ( is_array( $value ) ) {
-						$new_value = [];
+						$new_value = array();
 
 						foreach ( $value as $v ) {
 							$new_value[] = $pipes->do_pipe( wp_unslash( $v ) );
@@ -151,7 +151,7 @@ class Cf7_Tokens {
 	 *
 	 * @return mixed
 	 */
-	public function cf7_general_tokens( $tokens = [], $args = [] ) {
+	public function cf7_general_tokens( $tokens = array(), $args = array() ) {
 
 		return $tokens;
 	}
@@ -162,7 +162,7 @@ class Cf7_Tokens {
 	 *
 	 * @return array
 	 */
-	public function cf7_possible_tokens( $tokens = [], $args = [] ) {
+	public function cf7_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id      = absint( $args['value'] );
 		$trigger_meta = $args['meta'];
 
@@ -176,7 +176,7 @@ class Cf7_Tokens {
 
 		$cf7_tags = $contact_form7->scan_form_tags();
 		if ( $cf7_tags ) {
-			$fields = [];
+			$fields = array();
 			foreach ( $cf7_tags as $tag ) {
 				if ( empty( $tag->name ) ) {
 					continue;
@@ -219,8 +219,8 @@ class Cf7_Tokens {
 		$piece_fields = 'CF7FIELDS';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) || in_array( $piece_fields, $pieces ) ) {
-				global $uncanny_automator;
-				$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+
+				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
 						if ( key_exists( $piece, $trigger['meta'] ) || key_exists( $piece_fields, $trigger['meta'] ) ) {
@@ -230,7 +230,7 @@ class Cf7_Tokens {
 							$form_id        = $token_info[0];
 							$meta_key       = $token_info[1];
 							$meta_field     = $piece . '_' . $form_id;
-							$user_meta      = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
+							$user_meta      = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
 							if ( is_array( $user_meta ) && key_exists( trim( $meta_key ), $user_meta ) ) {
 								if ( is_array( $user_meta[ $meta_key ] ) ) {
 									$value = join( ', ', $user_meta[ $meta_key ] );

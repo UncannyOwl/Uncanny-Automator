@@ -29,8 +29,8 @@ class Wp_Fluent_Forms_Helpers {
 	 * Wp_Fluent_Forms_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -55,39 +55,39 @@ class Wp_Fluent_Forms_Helpers {
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function list_wp_fluent_forms( $label = null, $option_code = 'WPFFFORMS', $args = [] ) {
+	public function list_wp_fluent_forms( $label = null, $option_code = 'WPFFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
+		$options      = array();
 
-		global $uncanny_automator;
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
 
-			$forms = wpFluent()->table( 'fluentform_forms' )
-			                   ->select( [ 'id', 'title' ] )
-			                   ->orderBy( 'id', 'DESC' )
-			                   ->get();
+		if ( Automator()->helpers->recipe->load_helpers ) {
+			if ( function_exists( 'wpFluent' ) ) {
+				$forms = wpFluent()->table( 'fluentform_forms' )
+				                   ->select( [ 'id', 'title' ] )
+				                   ->orderBy( 'id', 'DESC' )
+				                   ->get();
 
-			if ( ! empty( $forms ) ) {
-				foreach ( $forms as $form ) {
-					$options[ $form->id ] = esc_html( $form->title );
+				if ( ! empty( $forms ) ) {
+					foreach ( $forms as $form ) {
+						$options[ $form->id ] = esc_html( $form->title );
+					}
 				}
 			}
 		}
-
 		$type = 'select';
 
 		$option = [
@@ -114,7 +114,7 @@ class Wp_Fluent_Forms_Helpers {
 	 * @return array
 	 */
 	public function extract_save_wp_fluent_form_fields( $insert_data, $form, $args ) {
-		$data = [];
+		$data = array();
 		if ( $form && function_exists( 'wpFluent' ) ) {
 			//$fields  = $form['fields'];
 			$form_id        = (int) $form->id;
@@ -139,7 +139,7 @@ class Wp_Fluent_Forms_Helpers {
 			}
 
 			if ( $data ) {
-				global $uncanny_automator;
+
 				$insert = [
 					'user_id'        => $user_id,
 					'trigger_id'     => $trigger_id,
@@ -149,7 +149,7 @@ class Wp_Fluent_Forms_Helpers {
 					'run_number'     => $run_number,
 				];
 
-				$uncanny_automator->insert_trigger_meta( $insert );
+				Automator()->insert_trigger_meta( $insert );
 			}
 		}
 
@@ -172,8 +172,8 @@ class Wp_Fluent_Forms_Helpers {
 			return false;
 		}
 
-		$matches        = [];
-		$recipe_ids     = [];
+		$matches        = array();
+		$recipe_ids     = array();
 		$entry_to_match = $entry['form_id'];
 		//Matching recipe ids that has trigger meta
 		foreach ( $recipes as $recipe ) {

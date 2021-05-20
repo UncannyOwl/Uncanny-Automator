@@ -37,21 +37,21 @@ class UM_USERREGISTER {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->ultimate_member->options->get_um_forms(  esc_attr__( 'Form', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' =>  esc_attr__( 'Any form', 'uncanny-automator' ) ) + $options['options'];
+		$options = Automator()->helpers->recipe->ultimate_member->options->get_um_forms( esc_attr__( 'Form', 'uncanny-automator' ) );
+
+		$options['options'] = array( '-1' => esc_attr__( 'Any form', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/ultimate-member/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Ultimate Member */
-			'sentence'            => sprintf(  esc_attr__( 'A user registers with {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user registers with {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Ultimate Member */
-			'select_option_name'  =>  esc_attr__( 'A user registers with {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user registers with {{a form}}', 'uncanny-automator' ),
 			'action'              => 'um_registration_complete',
 			'priority'            => 99,
 			'accepted_args'       => 2,
@@ -61,7 +61,7 @@ class UM_USERREGISTER {
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -78,7 +78,7 @@ class UM_USERREGISTER {
 			return;
 		}
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'code'         => $this->trigger_code,
@@ -88,10 +88,10 @@ class UM_USERREGISTER {
 			'is_signed_in' => true,
 		];
 
-		if ( isset( $uncanny_automator->process ) && isset( $uncanny_automator->process->user ) && $uncanny_automator->process->user instanceof Automator_Recipe_Process_User ) {
-			$uncanny_automator->process->user->maybe_add_trigger_entry( $args );
+		if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
+			Automator()->process->user->maybe_add_trigger_entry( $args );
 		} else {
-			$uncanny_automator->maybe_add_trigger_entry( $args );
+			Automator()->maybe_add_trigger_entry( $args );
 		}
 
 		return;

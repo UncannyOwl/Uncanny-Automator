@@ -31,26 +31,26 @@ class LD_ENRLCOURSE_A {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf(  esc_attr__( 'Enroll the user in {{a course:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Enroll the user in {{a course:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' =>  esc_attr__( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Enroll the user in {{a course}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'enroll_in_course' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
+				Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 
@@ -63,11 +63,11 @@ class LD_ENRLCOURSE_A {
 	 */
 	public function enroll_in_course( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+
 
 		if ( ! function_exists( 'ld_update_course_access' ) ) {
 			$error_message = 'The function ld_update_course_access does not exist';
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
@@ -77,6 +77,6 @@ class LD_ENRLCOURSE_A {
 		//Enroll to New Course
 		ld_update_course_access( $user_id, $course_id );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

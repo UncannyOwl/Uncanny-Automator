@@ -33,7 +33,7 @@ class PM_POPUPSHOW {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		global $wpdb;
 
@@ -48,27 +48,27 @@ class PM_POPUPSHOW {
 			//'include'        => $automator_popups,
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any popup', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any popup', 'uncanny-automator' ) );
 
 		$option = [
-			'option_code' => 'POPUPID',
-			'label'       =>  esc_attr__( 'Popup', 'uncanny-automator' ),
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $options,
+			'option_code'              => 'POPUPID',
+			'label'                    => esc_attr__( 'Popup', 'uncanny-automator' ),
+			'input_type'               => 'select',
+			'required'                 => true,
+			'options'                  => $options,
 			'custom_value_description' => esc_attr__( 'Popup ID', 'uncanny-automator' ),
 		];
 
 
 		$action = array(
 			'author'             => 'Uncanny Automator',
-			'support_link'       => 'https://www.automatorplugin.com/#support',
+			'support_link'       => Automator()->get_author_support_link($this->action_code,'knowledge-base/working-with-popup-maker-actions'),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Logged-in trigger - Popup Maker */
-			'sentence'           => sprintf(  esc_attr__( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Logged-in trigger - Popup Maker */
-			'select_option_name' =>  esc_attr__( 'Show {{a popup}}', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Show {{a popup}}', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => [ $this, 'display_pop_up' ],
@@ -77,7 +77,7 @@ class PM_POPUPSHOW {
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -89,7 +89,7 @@ class PM_POPUPSHOW {
 	 */
 	public function display_pop_up( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+
 
 		$popup_id = absint( $action_data['meta']['POPUPID'] );
 
@@ -98,19 +98,19 @@ class PM_POPUPSHOW {
 
 		if ( ! $popup ) {
 			$error_message = 'The pop up doesn\'t exist. ID: ' . $popup_id;
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
 
 		if ( 'publish' !== $popup->post_status ) {
 			$error_message = 'The pop was not published or does not exist anymore. ID: ' . $popup_id;
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
 
-		$found_it = [];
+		$found_it = array();
 
 		// update Popup triggers
 		$settings = get_post_meta( $popup->ID, 'popup_settings', true );
@@ -130,14 +130,14 @@ class PM_POPUPSHOW {
 
 		if ( ! $found_it ) {
 			$error_message = 'The pop did no have the associated Recipe set as a pop up trigger. ID: ' . $popup_id;
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
 
 
 		update_user_meta( $user_id, 'display_pop_up_' . $popup_id, $popup_id );
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 	/**
@@ -145,7 +145,7 @@ class PM_POPUPSHOW {
 	 */
 	public function automator_option_updated( $return, $item, $meta_key, $meta_value ) {
 
-		$found_it = [];
+		$found_it = array();
 
 		if ( isset( $item->post_type ) && 'uo-action' === $item->post_type ) {
 			if ( 'POPUPID' === $meta_key ) {

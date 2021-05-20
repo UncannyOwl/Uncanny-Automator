@@ -20,7 +20,7 @@ class Wcm_Tokens {
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_wcmemberships_wcmmembershipplan_tokens', [
 			$this,
-			'wcm_possible_order_tokens'
+			'wcm_possible_order_tokens',
 		], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'wcm_parse_tokens' ], 20, 6 );
 	}
@@ -47,14 +47,14 @@ class Wcm_Tokens {
 	}
 
 	/**
-	 * @param array $tokens
-	 * @param array $args
+	 * @param array  $tokens
+	 * @param array  $args
 	 * @param string $type
 	 *
 	 * @return array
 	 */
-	public function wcm_possible_order_tokens( $tokens = [], $args = [], $type = 'order' ) {
-		$fields          = [];
+	public function wcm_possible_order_tokens( $tokens = array(), $args = array(), $type = 'order' ) {
+		$fields          = array();
 		$trigger_meta    = $args['meta'];
 		$possible_tokens = array(
 			'billing_first_name'   => esc_attr__( 'Billing first name', 'uncanny-automator' ),
@@ -145,11 +145,11 @@ class Wcm_Tokens {
 	 * @return array|string|null
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		global $uncanny_automator;
+
 		global $wpdb;
 		$trigger_meta  = $pieces[1];
 		$parse         = $pieces[2];
-		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 		if ( $trigger_data && $recipe_log_id ) {
 			foreach ( $trigger_data as $trigger ) {
 				if ( key_exists( $trigger_meta, $trigger['meta'] ) || ( isset( $trigger['meta']['code'] ) && $trigger_meta === $trigger['meta']['code'] ) ) {
@@ -168,7 +168,7 @@ class Wcm_Tokens {
 							$value = get_the_title( $entry );
 						}
 					} else {
-						$order_id = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'WCMPLANORDERID', $trigger_id, $trigger_log_id, $user_id );
+						$order_id = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WCMPLANORDERID', $trigger_id, $trigger_log_id, $user_id );
 						if ( ! empty( $order_id ) ) {
 							$order = wc_get_order( $order_id );
 							if ( $order && $order instanceof \WC_Order ) {

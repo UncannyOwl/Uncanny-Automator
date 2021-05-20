@@ -31,11 +31,11 @@ class AFFWP_APPROVALWAITING {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/affiliatewp/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Affiliate WP */
@@ -46,10 +46,10 @@ class AFFWP_APPROVALWAITING {
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'affwp_approval_awaiting' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -62,7 +62,7 @@ class AFFWP_APPROVALWAITING {
 	 * @return mixed
 	 */
 	public function affwp_approval_awaiting( $affiliate_id, $status, $args ) {
-		global $uncanny_automator;
+
 		$affwp_settings = maybe_unserialize( get_option( 'affwp_settings', 0 ) );
 
 		if ( 0 === (int) $affwp_settings['require_approval'] || $status != 'pending' ) {
@@ -87,7 +87,7 @@ class AFFWP_APPROVALWAITING {
 			'is_signed_in'   => true,
 		];
 
-		$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
@@ -102,47 +102,47 @@ class AFFWP_APPROVALWAITING {
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPID';
 					$trigger_meta['meta_value'] = maybe_serialize( $affiliate_id );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPSTATUS';
 					$trigger_meta['meta_value'] = maybe_serialize( $affiliate->status );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPREGISTERDATE';
 					$trigger_meta['meta_value'] = maybe_serialize( $affiliate->date_registered );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPPAYMENTEMAIL';
 					$trigger_meta['meta_value'] = maybe_serialize( $affiliate->payment_email );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPACCEMAIL';
 					$trigger_meta['meta_value'] = maybe_serialize( $user->user_email );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPWEBSITE';
 					$trigger_meta['meta_value'] = maybe_serialize( $user->user_url );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPURL';
 					$trigger_meta['meta_value'] = maybe_serialize( affwp_get_affiliate_referral_url( array( 'affiliate_id' => $affiliate_id ) ) );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPREFRATE';
 					$trigger_meta['meta_value'] = ! empty( $affiliate->rate ) ? maybe_serialize( $affiliate->rate ) : maybe_serialize( '0' );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPREFRATETYPE';
 					$trigger_meta['meta_value'] = ! empty( $affiliate->rate_type ) ? maybe_serialize( $affiliate->rate_type ) : maybe_serialize( '0' );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPPROMOMETHODS';
 					$trigger_meta['meta_value'] = maybe_serialize( get_user_meta( $affiliate->user_id, 'affwp_promotion_method', true ) );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPNOTES';
 					$trigger_meta['meta_value'] = maybe_serialize( affwp_get_affiliate_meta( $affiliate->affiliate_id, 'notes', true ) );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$dynamic_coupons = affwp_get_dynamic_affiliate_coupons( $affiliate->ID, false );
 					$coupons         = '';
@@ -154,9 +154,9 @@ class AFFWP_APPROVALWAITING {
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPCOUPON';
 					$trigger_meta['meta_value'] = maybe_serialize( $coupons );
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
+					Automator()->insert_trigger_meta( $trigger_meta );
 
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->maybe_trigger_complete( $result['args'] );
 					break;
 				}
 			}

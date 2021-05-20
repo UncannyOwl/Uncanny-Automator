@@ -3,7 +3,6 @@
 namespace Uncanny_Automator;
 
 
-
 /**
  * Class Hf_Tokens
  *
@@ -27,7 +26,7 @@ class Hf_Tokens {
 	 * Only load this integration and its triggers and actions if the related
 	 * plugin is active
 	 *
-	 * @param bool $status status of plugin.
+	 * @param bool   $status status of plugin.
 	 * @param string $plugin plugin code.
 	 *
 	 * @return bool
@@ -49,11 +48,11 @@ class Hf_Tokens {
 	 * Prepare tokens.
 	 *
 	 * @param array $tokens .
-	 * @param array $args .
+	 * @param array $args   .
 	 *
 	 * @return array
 	 */
-	public function hf_possible_tokens( $tokens = [], $args = [] ) {
+	public function hf_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -62,7 +61,7 @@ class Hf_Tokens {
 			$form_controller = happyforms_get_form_controller();
 			$form            = $form_controller->get( $form_id );
 			if ( $form ) {
-				$fields = [];
+				$fields = array();
 				$meta   = $form['parts'];
 				if ( is_array( $meta ) && ! empty( $meta ) ) {
 					foreach ( $meta as $field ) {
@@ -87,13 +86,13 @@ class Hf_Tokens {
 	/**
 	 * Parse the token.
 	 *
-	 * @param string $value .
-	 * @param array $pieces .
+	 * @param string $value     .
+	 * @param array  $pieces    .
 	 * @param string $recipe_id .
 	 *
-	 * @param $trigger_data
-	 * @param $user_id
-	 * @param $replace_args
+	 * @param        $trigger_data
+	 * @param        $user_id
+	 * @param        $replace_args
 	 *
 	 * @return null|string
 	 */

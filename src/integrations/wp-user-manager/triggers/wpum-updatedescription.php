@@ -37,10 +37,10 @@ class WPUM_UPDATEDESCRIPTION {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-user-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP User Manager */
@@ -51,10 +51,10 @@ class WPUM_UPDATEDESCRIPTION {
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpum_description_update' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -63,7 +63,7 @@ class WPUM_UPDATEDESCRIPTION {
 	 * @param $updated_id
 	 */
 	public function wpum_description_update( $obj, $values, $updated_id ) {
-		global $uncanny_automator;
+
 
 		if ( 0 === absint( $updated_id ) ) {
 			// Its a logged in recipe and
@@ -84,7 +84,7 @@ class WPUM_UPDATEDESCRIPTION {
 			'ignore_post_id' => true,
 		];
 
-		$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
@@ -99,10 +99,10 @@ class WPUM_UPDATEDESCRIPTION {
 					foreach ( $values['account'] as $key => $value ) {
 						$trigger_meta['meta_key']   = $key;
 						$trigger_meta['meta_value'] = maybe_serialize( $value );
-						$uncanny_automator->insert_trigger_meta( $trigger_meta );
+						Automator()->insert_trigger_meta( $trigger_meta );
 					}
 
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

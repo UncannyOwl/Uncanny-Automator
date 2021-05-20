@@ -34,28 +34,28 @@ class UOA_RECIPECOMPLETED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/automator-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Uncanny Automator */
 			'sentence'            => sprintf( esc_attr__( 'A user completes {{a recipe:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Uncanny Automator */
 			'select_option_name'  => esc_attr__( 'A user completes {{a recipe}} {{a number of}} time(s)', 'uncanny-automator' ),
-			'action'              => 'uap_recipe_completed',
+			'action'              => 'automator_recipe_completed',
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'on_completion' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->uncanny_automator->options->get_recipes(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->uncanny_automator->options->get_recipes(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -70,7 +70,7 @@ class UOA_RECIPECOMPLETED {
 	 */
 	public function on_completion( $recipe_id, $user_id, $recipe_log_id, $args ) {
 
-		global $uncanny_automator;
+
 
 		global $wpdb;
 		// get recipe actions
@@ -85,13 +85,13 @@ class UOA_RECIPECOMPLETED {
 		if ( empty( $errors ) ) {
 
 			$args = [
-				'code'           => $this->trigger_code,
-				'meta'           => $this->trigger_meta,
-				'user_id'        => $user_id,
-				'post_id'        => $recipe_id,
+				'code'    => $this->trigger_code,
+				'meta'    => $this->trigger_meta,
+				'user_id' => $user_id,
+				'post_id' => $recipe_id,
 			];
 
-			$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+			$args = Automator()->maybe_add_trigger_entry( $args, false );
 			if ( $args ) {
 				foreach ( $args as $result ) {
 					if ( true === $result['result'] ) {
@@ -100,7 +100,7 @@ class UOA_RECIPECOMPLETED {
 
 						if ( $recipe ) {
 
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -110,7 +110,7 @@ class UOA_RECIPECOMPLETED {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -120,7 +120,7 @@ class UOA_RECIPECOMPLETED {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -130,7 +130,7 @@ class UOA_RECIPECOMPLETED {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -140,7 +140,7 @@ class UOA_RECIPECOMPLETED {
 									'run_number'     => $result['args']['run_number'],
 								]
 							);
-							$uncanny_automator->insert_trigger_meta(
+							Automator()->insert_trigger_meta(
 								[
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
@@ -151,7 +151,7 @@ class UOA_RECIPECOMPLETED {
 								]
 							);
 						}
-						$uncanny_automator->maybe_trigger_complete( $result['args'] );
+						Automator()->maybe_trigger_complete( $result['args'] );
 					}
 				}
 			}

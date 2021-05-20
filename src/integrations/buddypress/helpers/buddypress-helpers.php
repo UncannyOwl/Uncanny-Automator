@@ -29,8 +29,8 @@ class Buddypress_Helpers {
 	 * Buddypress_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_topic_from_forum_BDBTOPICREPLY', [ $this, 'select_topic_fields_func' ] );
 	}
@@ -57,26 +57,26 @@ class Buddypress_Helpers {
 	 */
 	public function all_buddypress_groups( $label = null, $option_code = 'BPGROUPS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		$args = wp_parse_args( $args, array(
 			'uo_include_any' => false,
-			'uo_any_label'   =>  esc_attr__( 'Any group', 'uncanny-automator' ),
+			'uo_any_label'   => esc_attr__( 'Any group', 'uncanny-automator' ),
 			'status'         => array( 'public' ),
 		) );
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Group', 'uncanny-automator' );
+			$label = esc_attr__( 'Group', 'uncanny-automator' );
 		}
 
 		global $wpdb;
 		$qry     = "SHOW TABLES LIKE '{$wpdb->prefix}bp_groups';";
-		$options = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options = array();
+
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
@@ -101,12 +101,12 @@ class Buddypress_Helpers {
 		}
 
 		$option = [
-			'option_code' => $option_code,
-			'label'       => $label,
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $options,
-			'custom_value_description' => _x( 'Group ID', 'BuddyPress', 'uncanny-automator' )
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => 'select',
+			'required'                 => true,
+			'options'                  => $options,
+			'custom_value_description' => _x( 'Group ID', 'BuddyPress', 'uncanny-automator' ),
 		];
 
 
@@ -121,30 +121,30 @@ class Buddypress_Helpers {
 	 */
 	public function all_buddypress_users( $label = null, $option_code = 'BPUSERS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'User', 'uncanny-automator' );
+			$label = esc_attr__( 'User', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args( $args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   =>  esc_attr__( 'Any user', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr__( 'Any user', 'uncanny-automator' ),
 			)
 		);
 
-		$options = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options = array();
+
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
 
-			$users = $uncanny_automator->helpers->recipe->wp_users();
+			$users = Automator()->helpers->recipe->wp_users();
 
 			foreach ( $users as $user ) {
 				$options[ $user->ID ] = $user->display_name;
@@ -152,12 +152,12 @@ class Buddypress_Helpers {
 		}
 
 		$option = [
-			'option_code' => $option_code,
-			'label'       => $label,
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $options,
-			'custom_value_description' => esc_attr__( 'User ID', 'uncanny-automator' )
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => 'select',
+			'required'                 => true,
+			'options'                  => $options,
+			'custom_value_description' => esc_attr__( 'User ID', 'uncanny-automator' ),
 		];
 
 
@@ -169,11 +169,11 @@ class Buddypress_Helpers {
 	 */
 	public function select_topic_fields_func() {
 
-		global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
 
-		$fields = [];
+		Automator()->utilities->ajax_auth_check( $_POST );
+
+		$fields = array();
 		if ( isset( $_POST ) ) {
 			$fields[] = [
 				'value' => - 1,
@@ -189,7 +189,7 @@ class Buddypress_Helpers {
 					'posts_per_page' => 9999,
 				];
 
-				$topics = $uncanny_automator->helpers->recipe->wp_query( $args );
+				$topics = Automator()->helpers->recipe->wp_query( $args );
 
 				if ( ! empty( $topics ) ) {
 					foreach ( $topics as $input_id => $input_title ) {

@@ -51,7 +51,7 @@ class Bp_Tokens {
 	 *
 	 * @return array
 	 */
-	public function bp_possible_tokens( $tokens = [], $args = [] ) {
+	public function bp_possible_tokens( $tokens = array(), $args = array() ) {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
@@ -120,6 +120,7 @@ class Bp_Tokens {
 
 		return $tokens;
 	}
+
 	/**
 	 * @param $value
 	 * @param $pieces
@@ -141,13 +142,13 @@ class Bp_Tokens {
 					$value = $this->get_xprofile_data( $user_id, $pieces[2] );
 				}
 			} elseif ( in_array( 'BPUSERACTIVITY', $pieces ) ) {
-				global $uncanny_automator;
+
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
 						$trigger_id     = $trigger['ID'];
 						$trigger_log_id = $replace_args['trigger_log_id'];
 						$meta_key       = $pieces[2];
-						$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+						$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 						if ( ! empty( $meta_value ) ) {
 							$value = $meta_value;
 						}
@@ -162,6 +163,7 @@ class Bp_Tokens {
 	/**
 	 * @param $user_id
 	 * @param $field_id
+	 *
 	 * @return mixed|string
 	 */
 	public function get_xprofile_data( $user_id, $field_id ) {
@@ -193,6 +195,7 @@ class Bp_Tokens {
 			if ( isset( $field_token[1] ) && 'membertypes' === $field_token[1] ) {
 				return get_the_title( $meta_data );
 			}
+
 			return $meta_data;
 		}
 

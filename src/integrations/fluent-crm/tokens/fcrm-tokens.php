@@ -34,7 +34,7 @@ class Fcrm_Tokens {
 	 *
 	 * @return array
 	 */
-	function fcrm_possible_tokens( $tokens = [], $args = [] ) {
+	function fcrm_possible_tokens( $tokens = array(), $args = array() ) {
 
 		$trigger_meta = $args['meta'];
 
@@ -104,7 +104,7 @@ class Fcrm_Tokens {
 						$list_ids = maybe_unserialize( $entry );
 
 						if ( is_array( $list_ids ) ) {
-							$list_names = [];
+							$list_names = array();
 
 							// All lists available in Fluent CRM
 							$lists = Lists::orderBy( 'title', 'DESC' )->get();
@@ -133,7 +133,7 @@ class Fcrm_Tokens {
 						$tag_ids = maybe_unserialize( $entry );
 
 						if ( is_array( $tag_ids ) ) {
-							$tag_names = [];
+							$tag_names = array();
 
 							// All tags available in Fluent CRM
 							$tags = Tag::orderBy( 'title', 'DESC' )->get();

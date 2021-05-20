@@ -31,7 +31,7 @@ class BDB_ADDTOGROUP {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$bp_group_args = array(
 			'uo_include_any' => false,
@@ -39,24 +39,24 @@ class BDB_ADDTOGROUP {
 		);
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/buddyboss/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - BuddyBoss */
-			'sentence'           => sprintf(  esc_attr__( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - BuddyBoss */
-			'select_option_name' =>  esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_to_bb_group' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->buddyboss->options->all_buddyboss_groups( null, 'BDBGROUPS', $bp_group_args ),
+				Automator()->helpers->recipe->buddyboss->options->all_buddyboss_groups( null, 'BDBGROUPS', $bp_group_args ),
 			],
 		);
 
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -68,16 +68,16 @@ class BDB_ADDTOGROUP {
 	 */
 	public function add_to_bb_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+
 
 		$add_to_bp_group = $action_data['meta'][ $this->action_meta ];
 
 		if ( function_exists( 'groups_join_group' ) ) {
 			groups_join_group( $add_to_bp_group, $user_id );
 
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} else {
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, __( ' groups_join_group Function does not exist.' ) );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, __( ' groups_join_group Function does not exist.' ) );
 		}
 
 	}

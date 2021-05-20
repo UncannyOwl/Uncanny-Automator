@@ -31,28 +31,28 @@ class WP_LOGIN {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user logs in to the site {{a number of:%1$s}} time(s)', 'uncanny-automator' ), 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user logs in to the site {{a number of:%1$s}} time(s)', 'uncanny-automator' ), 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  =>  esc_attr__( 'A user logs in to the site', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user logs in to the site', 'uncanny-automator' ),
 			'action'              => 'wp_login',
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wp_login' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => [
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -65,7 +65,7 @@ class WP_LOGIN {
 	 */
 	public function wp_login( $user_login, $user ) {
 
-		global $uncanny_automator;
+
 
 		$user_id = $user->ID;
 
@@ -77,6 +77,6 @@ class WP_LOGIN {
 			'is_signed_in'   => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

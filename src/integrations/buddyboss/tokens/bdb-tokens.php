@@ -19,7 +19,10 @@ class Bdb_Tokens {
 
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_bdb_tokens', [ $this, 'bdb_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_bdb_bdbforumstopic_tokens', [ $this, 'bdb_bdbforums_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_bdb_bdbforumstopic_tokens', [
+			$this,
+			'bdb_bdbforums_possible_tokens',
+		], 20, 2 );
 		add_filter( 'automator_maybe_trigger_bdb_bdbtopic_tokens', [ $this, 'bdb_topic_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_bp_token' ], 20, 6 );
 
@@ -53,7 +56,7 @@ class Bdb_Tokens {
 	 *
 	 * @return array
 	 */
-	public function bdb_possible_tokens( $tokens = [], $args = [] ) {
+	public function bdb_possible_tokens( $tokens = array(), $args = array() ) {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
@@ -128,7 +131,7 @@ class Bdb_Tokens {
 	 *
 	 * @return array
 	 */
-	public function bdb_topic_possible_tokens( $tokens = [], $args = [] ) {
+	public function bdb_topic_possible_tokens( $tokens = array(), $args = array() ) {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
@@ -145,6 +148,7 @@ class Bdb_Tokens {
 
 		return $tokens;
 	}
+
 	/**
 	 * @param $value
 	 * @param $pieces
@@ -167,15 +171,15 @@ class Bdb_Tokens {
 				}
 			} elseif ( in_array( 'BDBTOPICREPLY', $pieces ) ) {
 				$piece = 'BDBTOPIC';
-				global $uncanny_automator;
-				$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+
+				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
 						if ( key_exists( $piece, $trigger['meta'] ) ) {
 							$trigger_id     = $trigger['ID'];
 							$trigger_log_id = $replace_args['trigger_log_id'];
 							$meta_key       = $pieces[2];
-							$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+							$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 							if ( ! empty( $meta_value ) ) {
 								$content = get_post_field( 'post_content', $meta_value );
 								$value   = apply_filters( 'bbp_get_reply_content', $content, $meta_value );
@@ -185,15 +189,15 @@ class Bdb_Tokens {
 				}
 			} elseif ( in_array( 'BDBNEWTOPIC', $pieces ) ) {
 				$piece = 'BDBFORUMSTOPIC';
-				global $uncanny_automator;
-				$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+
+				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
 						if ( key_exists( $piece, $trigger['meta'] ) ) {
 							$trigger_id     = $trigger['ID'];
 							$trigger_log_id = $replace_args['trigger_log_id'];
 							$meta_key       = 'BDBTOPIC';
-							$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+							$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 							if ( ! empty( $meta_value ) ) {
 								if ( 'BDBTOPICID' === $pieces[2] ) {
 									$value = $meta_value;
@@ -212,13 +216,13 @@ class Bdb_Tokens {
 					}
 				}
 			} elseif ( in_array( 'BDBUSERACTIVITY', $pieces ) ) {
-				global $uncanny_automator;
+
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
 						$trigger_id     = $trigger['ID'];
 						$trigger_log_id = $replace_args['trigger_log_id'];
 						$meta_key       = $pieces[2];
-						$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+						$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 						if ( ! empty( $meta_value ) ) {
 							$value = $meta_value;
 						}
@@ -233,6 +237,7 @@ class Bdb_Tokens {
 	/**
 	 * @param $user_id
 	 * @param $field_id
+	 *
 	 * @return mixed|string
 	 */
 	public function get_xprofile_data( $user_id, $field_id ) {
@@ -264,6 +269,7 @@ class Bdb_Tokens {
 			if ( isset( $field_token[1] ) && 'membertypes' === $field_token[1] ) {
 				return get_the_title( $meta_data );
 			}
+
 			return $meta_data;
 		}
 
@@ -276,7 +282,7 @@ class Bdb_Tokens {
 	 *
 	 * @return array
 	 */
-	public function bdb_bdbforums_possible_tokens( $tokens = [], $args = [] ) {
+	public function bdb_bdbforums_possible_tokens( $tokens = array(), $args = array() ) {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 

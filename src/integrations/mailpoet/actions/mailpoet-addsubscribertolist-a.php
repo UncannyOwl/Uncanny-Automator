@@ -52,11 +52,11 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			'bounced'      => 'Bounced',
 		];
 
-		global $uncanny_automator;
+
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mailpoet/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - MailPoet */
@@ -66,15 +66,16 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mailpoet_add_subscriber_to_list' ),
-			'options'            => [],
+			'options'            => array(),
 			'options_group'      =>
 				[
 					'ADDSUBSCRIBER'    =>
 						[
-							$uncanny_automator->helpers->recipe->field->text_field( 'ADDSUBSCRIBER', esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
-							$uncanny_automator->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_FIRSTNAME', esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-							$uncanny_automator->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_LASTNAME', esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-							$uncanny_automator->helpers->recipe->field->select_field( 'ADDSUBSCRIBER_STATUS', esc_attr__( 'Subscriber Status', 'uncanny-automator' ), $subscriber_status ),
+							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER', esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
+							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_FIRSTNAME', esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_LASTNAME', esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+							Automator()->helpers->recipe->field->select_field( 'ADDSUBSCRIBER_STATUS', esc_attr__( 'Subscriber Status', 'uncanny-automator' ), $subscriber_status ),
+							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_CONFIRMATIONEMAIL', esc_attr__( 'Add the user directly to the list - Do not send confirmation email', 'uncanny-automator' ), true, 'checkbox', '', false ),
 						],
 					$this->action_meta => [
 						[
@@ -83,13 +84,13 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 							'input_type'               => 'select',
 							'supports_multiple_values' => true,
 							'required'                 => true,
-							'options'                  => $options
+							'options'                  => $options,
 						],
 					],
 				],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 
@@ -102,11 +103,11 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 * @param array $args arguments.
 	 */
 	public function mailpoet_add_subscriber_to_list( $user_id, $action_data, $recipe_id, $args ) {
-		global $uncanny_automator;
+
 
 		if ( ! class_exists( '\MailPoet\API\API' ) ) {
 			$error_message = 'The class \MailPoet\API\API does not exist';
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
@@ -116,29 +117,36 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 		$mailpoet = \MailPoet\API\API::MP( 'v1' );
 
 		if ( isset( $action_data['meta']['ADDSUBSCRIBER'] ) && ! empty( $action_data['meta']['ADDSUBSCRIBER'] ) ) {
-			$subscriber['email'] = $uncanny_automator->parse->text( $action_data['meta']['ADDSUBSCRIBER'], $recipe_id, $user_id, $args );
+			$subscriber['email'] = Automator()->parse->text( $action_data['meta']['ADDSUBSCRIBER'], $recipe_id, $user_id, $args );
 		}
 
 		if ( isset( $action_data['meta']['ADDSUBSCRIBER_FIRSTNAME'] ) && ! empty( $action_data['meta']['ADDSUBSCRIBER_FIRSTNAME'] ) ) {
-			$subscriber['first_name'] = $uncanny_automator->parse->text( $action_data['meta']['ADDSUBSCRIBER_FIRSTNAME'], $recipe_id, $user_id, $args );
+			$subscriber['first_name'] = Automator()->parse->text( $action_data['meta']['ADDSUBSCRIBER_FIRSTNAME'], $recipe_id, $user_id, $args );
 		}
 
 		if ( isset( $action_data['meta']['ADDSUBSCRIBER_LASTNAME'] ) && ! empty( $action_data['meta']['ADDSUBSCRIBER_LASTNAME'] ) ) {
-			$subscriber['last_name'] = $uncanny_automator->parse->text( $action_data['meta']['ADDSUBSCRIBER_LASTNAME'], $recipe_id, $user_id, $args );
+			$subscriber['last_name'] = Automator()->parse->text( $action_data['meta']['ADDSUBSCRIBER_LASTNAME'], $recipe_id, $user_id, $args );
 		}
 
 		if ( isset( $action_data['meta']['ADDSUBSCRIBER_STATUS'] ) && ! empty( $action_data['meta']['ADDSUBSCRIBER_STATUS'] ) ) {
-			$subscriber['status'] = $uncanny_automator->parse->text( $action_data['meta']['ADDSUBSCRIBER_STATUS'], $recipe_id, $user_id, $args );
+			$subscriber['status'] = Automator()->parse->text( $action_data['meta']['ADDSUBSCRIBER_STATUS'], $recipe_id, $user_id, $args );
 		}
+
+		$disable_confirmation_email = true;
+		if( isset( $action_data['meta']['ADDSUBSCRIBER_CONFIRMATIONEMAIL'] ) ) {
+			$disable_confirmation_email = Automator()->parse->text( $action_data['meta']['ADDSUBSCRIBER_CONFIRMATIONEMAIL'], $recipe_id, $user_id, $args );
+			$disable_confirmation_email = "true" === $disable_confirmation_email ? false : true;
+		}
+
 		try {
 			// try to find if user is already a subscriber
-			$existing_subscriber = \MailPoet\Models\Subscriber::findOne($subscriber['email']);
-			if( ! $existing_subscriber ) {
-				$mailpoet->addSubscriber( $subscriber, json_decode( $list_id ), [ 'send_confirmation_email' => true ] );
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			$existing_subscriber = \MailPoet\Models\Subscriber::findOne( $subscriber['email'] );
+			if ( ! $existing_subscriber ) {
+				$mailpoet->addSubscriber( $subscriber, json_decode( $list_id ), [ 'send_confirmation_email' => $disable_confirmation_email ] );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id );
 			} else {
-				$mailpoet->subscribeToLists( $existing_subscriber->id, json_decode( $list_id ), [ 'send_confirmation_email' => true ] );
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+				$mailpoet->subscribeToLists( $existing_subscriber->id, json_decode( $list_id ), [ 'send_confirmation_email' => $disable_confirmation_email ] );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id );
 			}
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
@@ -146,7 +154,7 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			$args['do-nothing']                  = true;
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		}
 
 		return;

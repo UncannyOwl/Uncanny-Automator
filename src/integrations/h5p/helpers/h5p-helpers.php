@@ -29,8 +29,8 @@ class H5p_Helpers {
 	 * H5p_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -42,9 +42,9 @@ class H5p_Helpers {
 
 	/*
 	 * 	if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 	 */
 

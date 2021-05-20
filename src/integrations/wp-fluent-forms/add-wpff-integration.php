@@ -72,11 +72,11 @@ class Add_Wpff_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
 
-		$uncanny_automator->register->integration( 'WPFF', array(
+
+		Automator()->register->integration( 'WPFF', array(
 			'name'     => 'Fluent Forms',
-			'icon_svg' => Utilities::get_integration_icon( 'wp-fluent-forms-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/wp-fluent-forms-icon.svg' ),
 		) );
 	}
 }

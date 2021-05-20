@@ -1,0 +1,251 @@
+.uap.uap-tools nav.uap-nav-tab-wrapper,
+.uap h2.tools-header {
+	margin: 0;
+}
+/*Initial State*/
+.uap .uap-logs #debug-report {
+	display: none;
+}
+.uap .uap-logs #debug-report p.submit {
+	position: relative;
+}
+.uap .uap-logs #debug-report > textarea {
+	width: 100%;
+	height: 250px;
+	resize: both;
+	box-shadow: inset 0 2px 5px 0 rgba(0, 0, 0, 0.1);
+	border: 1px solid #cdcdcd;
+}
+/*Info Message*/
+.uap .updated.automator-message {
+	border-left-color: #0790e8;
+}
+/*Clipboard Status*/
+.uap span#copy-for-support-status {
+	width: 140px;
+	position: absolute;
+	top: 8px;
+	left: -34px;
+	display: none;
+}
+/*Tables*/
+table.automator_status_table {
+	margin-bottom: 1em;
+}
+table.automator_status_table tr:nth-child(2n) td,table.automator_status_table tr:nth-child(2n) th {
+	background: #fcfcfc;
+}
+table.automator_status_table td:first-child {
+	width: 33%;
+}
+table.automator_status_table thead tr th {
+	padding: 9px;
+}
+table.automator_status_table thead tr th h2 {
+	margin: 0;
+	font-size: 14px;
+	line-height: 20.02px;
+}
+
+table.automator_status_table thead tr th h2 > strong {
+    background: #fff1f1;
+    font-size: 14px;
+    display: inline-block;
+    margin: 10px 0;
+    padding: 5px;
+    border-radius: 3px;
+}
+table.automator_status_table td {
+	font-size: 14px;
+	color: #747474;
+}
+/*Help Tip*/
+table.automator_status_table td.help {
+	position: relative;
+	width: 26px;
+}
+table.automator_status_table td.help:before {
+	font-family: Dashicons;
+	font-weight: 400;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	margin: 0;
+	text-indent: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	content: "\f223";
+	cursor: help;
+	/*Vertical Pos*/
+	display: inline-flex;
+	align-items: flex-start;
+	margin-top: 10.5px;
+	/*Size*/
+	font-size: 18px;
+	color: rgb(0 0 0 / 60%);
+}
+table.automator_status_table td.help.no-tooltip-text:before {
+	display: none;
+}
+table.automator_status_table td.help > span {
+	display: none;
+}
+table.automator_status_table td.help > span:before {
+	content: "";
+	height: 10px;
+	width: 10px;
+	background: #fff;
+	margin-top: -13px;
+	display: block;
+	left: 55px;
+	transform: rotate(45deg);
+	box-shadow: -0.5px -0.5px 0px 0px #b7b7b7;
+}
+table.automator_status_table td.help > span:hover::before {
+	box-shadow: -0.5px -0.5px 0px 0px #0790e8;
+}
+table.automator_status_table td.help:hover > span {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	position: absolute;
+	z-index: 999;
+	left: -71px;
+	width: 160px;
+	text-align: center;
+	border-radius: 3px;
+	padding: 0.618em 1em;
+	box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+	top: 35px;
+	background: #fff;
+	border: 1px solid #b7b7b7;
+	color: #747474;
+	font-weight: 400;
+	line-height: 1.4em;
+	font-size: 12px;
+}
+table.automator_status_table td.help:hover > span:hover {
+	color: #0790e8;
+	border: 1px solid #0790e8;
+}
+table.automator_status_table td.help:hover::before {
+	color: #0790e8;
+}
+/*Marks*/
+table.automator_status_table td mark.error {
+	color: #a00;
+}
+table.automator_status_table td mark.yes {
+	color: #7ad03a;
+}
+table.automator_status_table td mark {
+	background: none;
+}
+/*Icons*/
+table.automator_status_table td .dashicons {
+	font-size: 16px;
+	margin-top: 5px;
+}
+/*Logs*/
+.uap ul.nav-tab-wrapper li {
+	margin: 0;
+}
+.uap ul.nav-tab-wrapper li.ui-state-active a {
+	background-color: #fff;
+}
+/*Help text*/
+.automator-tooltip-help-wrap {
+	position: relative;
+	top: 5px;
+	display: inline-flex;
+	flex-wrap: nowrap;
+	justify-content: center;
+	cursor: help;
+}
+.automator-tooltip-help-wrap .dashicons {
+	color: #777;
+}
+.automator-tooltip-help-wrap:hover span.automator-tooltip-help-text-wrap {
+	display: block;
+}
+span.automator-tooltip-help-text-wrap {
+	position: absolute;
+	top: -10px;
+	display: none;
+}
+span.automator-tooltip-help-text {
+	position: relative;
+	width: 170px;
+	padding: 7.5px 10px 10px 10px;
+	margin: 3em;
+	background-color: #fff;
+	color: #747474;
+	border-radius: 3px;
+	border: 1px solid #b7b7b7;
+	font-size: 12px;
+	font-weight: 400;
+	text-align: center;
+	display: block;
+	cursor: default;
+	box-shadow: 0 2px 5px 0 rgb(0 0 0 / 10%);
+}
+span.automator-tooltip-help-text:hover {
+	color: #0790e8;
+	border: 1px solid #0790e8;
+}
+span.automator-tooltip-help-text:hover::before {
+	border-bottom-color: #0790e8;
+}
+span.automator-tooltip-help-text:before,span.automator-tooltip-help-text:after {
+	content: "\0020";
+	display: block;
+	position: absolute;
+	top: -8px;
+	left: calc(50% - 8px);
+	z-index: 2;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	border: solid 8px #0000;
+	border-top: 0;
+	border-bottom-color: #fff;
+}
+span.automator-tooltip-help-text:before {
+	top: -9px;
+	z-index: 1;
+	border-bottom-color: #b7b7b7;
+}
+/*Buttons*/
+.automator-message .submit .button-primary {
+	/*uap-btn*/
+	outline: none;
+	display: inline-block;
+	font-weight: 500;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	user-select: none;
+	border: 1px solid #0000;
+	padding: 5px 15px;
+	font-size: 14px;
+	line-height: 1.5;
+	border-radius: 8px;
+	background-color: #0000;
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	cursor: pointer;
+	box-shadow: 0 2px 5px 0 rgb(0 0 0 / 10%);
+	position: relative;
+	/*uap-button--primary*/
+	border-color: #b7b7b7;
+	color: #6c757d;
+}
+.automator-message .submit .button-primary:hover {
+	/*.uap .uap-btn--primary:hover*/
+	color: #0790e8;
+	border-color: #0790e8;
+}

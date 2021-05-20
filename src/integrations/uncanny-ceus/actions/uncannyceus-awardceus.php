@@ -30,13 +30,13 @@ class UNCANNYCEUS_AWARDCEUS {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code,'knowledge-base/uncanny-continuing-education-credits' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Logged-in trigger - Uncanny CEUs. 2. Credit designation label (plural) */
@@ -55,7 +55,7 @@ class UNCANNYCEUS_AWARDCEUS {
 								'label'       => esc_attr__( 'Date', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
-								'description' => __( 'Format: MM/DD/YYYY Example: 12/05/2020', 'uncanny-automator' )
+								'description' => __( 'Format: MM/DD/YYYY Example: 12/05/2020', 'uncanny-automator' ),
 							],
 							[
 								'option_code' => 'AWARDCEUSCOURSE',
@@ -75,7 +75,7 @@ class UNCANNYCEUS_AWARDCEUS {
 				],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -87,11 +87,11 @@ class UNCANNYCEUS_AWARDCEUS {
 	 */
 	public function award_ceus( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
 
-		$date   = $uncanny_automator->parse->text( $action_data['meta']['AWARDCEUSDATE'], $recipe_id, $user_id, $args );
-		$course = $uncanny_automator->parse->text( $action_data['meta']['AWARDCEUSCOURSE'], $recipe_id, $user_id, $args );
-		$ceus   = absint( $uncanny_automator->parse->text( $action_data['meta']['AWARDCEUS'], $recipe_id, $user_id, $args ) );
+
+		$date   = Automator()->parse->text( $action_data['meta']['AWARDCEUSDATE'], $recipe_id, $user_id, $args );
+		$course = Automator()->parse->text( $action_data['meta']['AWARDCEUSCOURSE'], $recipe_id, $user_id, $args );
+		$ceus   = absint( Automator()->parse->text( $action_data['meta']['AWARDCEUS'], $recipe_id, $user_id, $args ) );
 
 		// convert date from user input to accepted input
 		$date = date( "F d Y, g:i:s a", strtotime( $date ) );
@@ -104,23 +104,23 @@ class UNCANNYCEUS_AWARDCEUS {
 		];
 
 		// The class contains all ceu creation code
-		$award_cert_class = Utilities::get_class_instance( 'AwardCertificate' );
+		$award_cert_class = \uncanny_ceu\Utilities::get_class_instance( 'AwardCertificate' );
 
 		$version = \uncanny_ceu\Utilities::get_version();
 		if ( version_compare( $version, '3.0.7', '>' ) ) {
-			$course_data = $data = [
+			$course_data   = $data = [
 				'user'             => new \WP_User( $user_id ),
 				'course'           => null,
 				'course_completed' => 0,
 				'custom_course'    => $course,
 				'custom_date'      => $date,
 				'custom_ceus'      => $ceus,
-				'custom_creation' => true
+				'custom_creation'  => true,
 			];
-			$returned_data    = $award_cert_class->learndash_course_completed( $course_data );
-		}else{
+			$returned_data = $award_cert_class->learndash_course_completed( $course_data );
+		} else {
 			//* @deprecated CEUs 3.1
-			$returned_data    = $award_cert_class->learndash_before_course_completed( $user_id, 'manual-ceu', true, $data );
+			$returned_data = $award_cert_class->learndash_before_course_completed( $user_id, 'manual-ceu', true, $data );
 		}
 
 
@@ -129,7 +129,7 @@ class UNCANNYCEUS_AWARDCEUS {
 			$error = $returned_data->error;
 		}
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error );
 
 		return;
 	}

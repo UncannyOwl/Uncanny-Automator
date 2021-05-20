@@ -31,27 +31,27 @@ class FI_SUBMITFORM {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/formidable-forms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Formidable */
-			'sentence'            => sprintf(  esc_attr__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Formidable */
-			'select_option_name'  =>  esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'frm_after_create_entry',
 			'priority'            => 10,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'fi_submit_form' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->formidable->options->all_formidable_forms( null, $this->trigger_meta ),
+				Automator()->helpers->recipe->formidable->options->all_formidable_forms( null, $this->trigger_meta ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -64,7 +64,7 @@ class FI_SUBMITFORM {
 	 */
 	public function fi_submit_form( $entry_id, $form_id ) {
 
-		global $uncanny_automator;
+
 
 		$user_id = get_current_user_id();
 		if ( empty( $user_id ) ) {
@@ -78,7 +78,7 @@ class FI_SUBMITFORM {
 			'user_id' => intval( $user_id ),
 		];
 
-		$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+		$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 		if ( $result ) {
 			foreach ( $result as $r ) {
@@ -93,9 +93,9 @@ class FI_SUBMITFORM {
 							'run_number'     => $r['args']['run_number'],
 						];
 
-						$uncanny_automator->helpers->recipe->formidable->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
+						Automator()->helpers->recipe->formidable->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
 					}
-					$uncanny_automator->maybe_trigger_complete( $r['args'] );
+					Automator()->maybe_trigger_complete( $r['args'] );
 				}
 			}
 		}

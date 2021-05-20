@@ -32,15 +32,15 @@ class Wpcw_Tokens {
 		$piece = 'WPCW_MODULE';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces, true ) ) {
-				global $uncanny_automator;
-				$recipe_log_id = $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+
+				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
 						if ( key_exists( $piece, $trigger['meta'] ) ) {
 							$trigger_id     = $trigger['ID'];
 							$trigger_log_id = $replace_args['trigger_log_id'];
 							$meta_key       = $pieces[2];
-							$meta_value     = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+							$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 							if ( ! empty( $meta_value ) && is_numeric( $meta_value ) ) {
 								if ( function_exists( 'wpcw_get_module' ) ) {
 									$module = wpcw_get_module( $meta_value );

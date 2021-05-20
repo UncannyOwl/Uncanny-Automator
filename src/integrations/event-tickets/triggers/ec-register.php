@@ -33,17 +33,17 @@ class EC_REGISTER {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/the-events-calendar/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - The Events Calendar */
-			'sentence'            => sprintf(  esc_attr__( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Calendar */
-			'select_option_name'  =>  esc_attr__( 'A user registers for {{an event}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user registers for {{an event}}', 'uncanny-automator' ),
 			'action'              => [
 				'event_tickets_rsvp_tickets_generated_for_product',
 				'event_tickets_woocommerce_tickets_generated_for_product',
@@ -53,11 +53,11 @@ class EC_REGISTER {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'user_registered' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->event_tickets->options->all_ec_events(),
+				Automator()->helpers->recipe->event_tickets->options->all_ec_events(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -68,7 +68,7 @@ class EC_REGISTER {
 	 * @param $order_id
 	 */
 	public function user_registered( $product_id, $order_id, $qty ) {
-		global $uncanny_automator;
+
 		if ( ! $order_id ) {
 			return;
 		}
@@ -85,6 +85,6 @@ class EC_REGISTER {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

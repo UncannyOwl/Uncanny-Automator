@@ -27,28 +27,28 @@ class WP_VIEWPAGE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user views {{a page:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user views {{a page:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  =>  esc_attr__( 'A user views {{a page}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user views {{a page}}', 'uncanny-automator' ),
 			'action'              => 'template_redirect',
 			'priority'            => 90,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_page' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp->options->all_pages(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wp->options->all_pages(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -58,9 +58,20 @@ class WP_VIEWPAGE {
 	 */
 	public function view_page() {
 
-		global $uncanny_automator, $post;
+		global $post;
 
-		if ( ! is_page() && ! is_archive() ) {
+		// Bail out if the page is not of a post type 'page'.
+		if ( ! is_singular( 'page' ) ) {
+			return;
+		}
+
+		// Bail out if post id is null.
+		if ( ! isset ( $post->ID ) ) {
+			return;
+		}
+
+		// Return if post id is zero or empty. Some plugins like BuddyPress overwrites post id.
+		if ( empty( $post->ID ) ) {
 			return;
 		}
 
@@ -73,20 +84,19 @@ class WP_VIEWPAGE {
 				'user_id' => $user_id,
 			];
 
-			if ( isset( $uncanny_automator->process ) && isset( $uncanny_automator->process->user ) && $uncanny_automator->process->user instanceof Automator_Recipe_Process_User ) {
-				$arr = $uncanny_automator->process->user->maybe_add_trigger_entry( $args, false );
+			if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
+				$arr = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 			} else {
-				$arr = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+				$arr = Automator()->maybe_add_trigger_entry( $args, false );
 			}
 
 			if ( $arr ) {
 				foreach ( $arr as $result ) {
 					if ( true === $result['result'] ) {
-						if ( isset( $uncanny_automator->process ) && isset( $uncanny_automator->process->user ) && $uncanny_automator->process->user instanceof Automator_Recipe_Process_User ) {
-							$uncanny_automator->process->user->maybe_trigger_complete( $result['args'] );
+						if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
+							Automator()->process->user->maybe_trigger_complete( $result['args'] );
 						} else {
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
-
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

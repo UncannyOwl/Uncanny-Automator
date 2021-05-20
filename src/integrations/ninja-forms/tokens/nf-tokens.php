@@ -54,12 +54,12 @@ class Nf_Tokens {
 	 *
 	 * @return array
 	 */
-	function nf_possible_tokens( $tokens = [], $args = [] ) {
+	function nf_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$form_ids = [];
+		$form_ids = array();
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 			$form = Ninja_Forms()->form( $form_id )->get();
 			if ( $form ) {
@@ -76,7 +76,7 @@ class Nf_Tokens {
 
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
-				$fields = [];
+				$fields = array();
 				$meta   = Ninja_Forms()->form( $form_id )->get_fields();
 				if ( is_array( $meta ) ) {
 					foreach ( $meta as $field ) {
@@ -115,9 +115,9 @@ class Nf_Tokens {
 				$trigger_meta   = $pieces[1];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value 
-													FROM {$wpdb->prefix}uap_trigger_log_meta 
-													WHERE meta_key = '$trigger_meta' 
+				$entry          = $wpdb->get_var( "SELECT meta_value
+													FROM {$wpdb->prefix}uap_trigger_log_meta
+													WHERE meta_key = '$trigger_meta'
 													AND automator_trigger_log_id = $trigger_log_id
 													AND automator_trigger_id = $trigger_id
 													LIMIT 0, 1" );

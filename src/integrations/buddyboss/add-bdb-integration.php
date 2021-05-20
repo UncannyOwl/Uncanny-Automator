@@ -75,11 +75,11 @@ class Add_Bdb_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'BuddyBoss',
-			'icon_svg' => Utilities::get_integration_icon( 'buddyboss-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/buddyboss-icon.svg' ),
 		) );
 	}
 }

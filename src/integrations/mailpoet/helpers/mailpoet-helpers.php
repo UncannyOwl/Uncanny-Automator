@@ -29,8 +29,8 @@ class Mailpoet_Helpers {
 	 * Uoa_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -47,11 +47,11 @@ class Mailpoet_Helpers {
 		$this->pro = $pro;
 	}
 
-	public function get_all_mailpoet_lists( $label = null, $option_code = 'MAILPOETLISTS', $args = [] ) {
+	public function get_all_mailpoet_lists( $label = null, $option_code = 'MAILPOETLISTS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		$any_option  = key_exists( 'any_option', $args ) ? $args['any_option'] : false;
@@ -61,7 +61,7 @@ class Mailpoet_Helpers {
 			$label = esc_attr__( 'List', 'uncanny-automator' );
 		}
 
-		$options = [];
+		$options = array();
 		if ( $any_option === true ) {
 			$options['-1'] = esc_attr__( 'Any list', 'uncanny-automator' );
 		}
@@ -93,18 +93,18 @@ class Mailpoet_Helpers {
 		return apply_filters( 'uap_option_get_all_mailpoet_lists', $option );
 	}
 
-	public function get_all_mailpoet_subscribers( $label = null, $option_code = 'MAILPOETSUBSCRIBERS', $args = [] ) {
+	public function get_all_mailpoet_subscribers( $label = null, $option_code = 'MAILPOETSUBSCRIBERS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Subscriber', 'uncanny-automator' );
 		}
 
-		$options = [];
+		$options = array();
 
 		global $wpdb;
 

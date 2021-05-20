@@ -23,8 +23,8 @@ class Uncanny_Codes_Helpers {
 	 * Uoa_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -36,16 +36,16 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_codes( $label = null, $option_code = 'UNCANNYCODES' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Code', 'uncanny-automator' );
 		}
 
-		global $uncanny_automator, $wpdb;
+		global $wpdb;
 
 		$options = array();
 
@@ -72,26 +72,26 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_prefix( $label = null, $option_code = 'UCPREFIX' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Prefix', 'uncanny-automator' );
 		}
 
-		global $wpdb, $uncanny_automator;
+		global $wpdb;
 
 		$options = array();
 
 		$all_codes = $wpdb->get_results( 'SELECT DISTINCT prefix FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
 		if ( ! $all_codes ) {
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		foreach ( $all_codes as $code ) {
 			if ( ! empty( $code['prefix'] ) ) {
-				$prefix             = $uncanny_automator->uap_sanitize( $code['prefix'] );
+				$prefix             = Automator()->utilities->automator_sanitize( $code['prefix'] );
 				$options[ $prefix ] = $code['prefix'];
 			}
 		}
@@ -112,27 +112,27 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_suffix( $label = null, $option_code = 'UCSUFFIX' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Suffix', 'uncanny-automator' );
 		}
 
-		global $wpdb, $uncanny_automator;
+		global $wpdb;
 
 		$options = array();
 
 		$all_codes = $wpdb->get_results( 'SELECT DISTINCT suffix FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
 		if ( ! $all_codes ) {
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		foreach ( $all_codes as $code ) {
 			if ( ! empty( $code['suffix'] ) ) {
-				$suffix             = $uncanny_automator->uap_sanitize( $code['suffix'] );
+				$suffix             = Automator()->utilities->automator_sanitize( $code['suffix'] );
 				$options[ $suffix ] = $code['suffix'];
 			}
 		}
@@ -153,23 +153,23 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_batch( $label = null, $option_code = 'UCBATCH' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Prefix', 'uncanny-automator' );
 		}
 
-		global $wpdb, $uncanny_automator;
+		global $wpdb;
 
 		$options = array();
 
 		$all_batches = $wpdb->get_results( 'SELECT DISTINCT id, name FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
 
 		if ( ! $all_batches ) {
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 		foreach ( $all_batches as $batch ) {
 			if ( ! empty( $batch['name'] ) ) {

@@ -33,28 +33,28 @@ class CF7_SUBFORM {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/contact-form-7/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Contact Form 7 */
-			'sentence'            => sprintf(  esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Contact Form 7 */
-			'select_option_name'  =>  esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
 			'action'              => 'wpcf7_submit',
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wpcf7_submit' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->contact_form7->options->list_contact_form7_forms(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->contact_form7->options->list_contact_form7_forms(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -65,7 +65,7 @@ class CF7_SUBFORM {
 	 */
 	public function wpcf7_submit( $form, $result ) {
 		if ( 'validation_failed' !== $result['status'] ) {
-			global $uncanny_automator;
+
 			$user_id = wp_get_current_user()->ID;
 
 			$args = [
@@ -75,16 +75,16 @@ class CF7_SUBFORM {
 				'user_id' => $user_id,
 			];
 
-			$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+			$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 			//Adding an action to save contact form submission in trigger meta
-			$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+			$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 			do_action( 'automator_save_cf7_form', $form, $recipes, $args );
 
 			if ( $args ) {
 				foreach ( $args as $result ) {
 					if ( true === $result['result'] ) {
-						$uncanny_automator->maybe_trigger_complete( $result['args'] );
+						Automator()->maybe_trigger_complete( $result['args'] );
 					}
 				}
 			}

@@ -13,15 +13,15 @@ class Affwp_Tokens {
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_affwp_trigger_tokens' ], 20, 6 );
 		add_filter( 'automator_maybe_trigger_affwp_tokens', [
 			$this,
-			'affwp_possible_affiliate_tokens'
+			'affwp_possible_affiliate_tokens',
 		], 20, 2 );
 		add_filter( 'automator_maybe_trigger_affwp_specificetyperef_tokens', [
 			$this,
-			'affwp_possible_affiliate_ref_tokens'
+			'affwp_possible_affiliate_ref_tokens',
 		], 20, 2 );
 	}
 
-	function affwp_possible_affiliate_tokens( $tokens = [], $args = [] ) {
+	function affwp_possible_affiliate_tokens( $tokens = array(), $args = array() ) {
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -109,7 +109,7 @@ class Affwp_Tokens {
 		return $tokens;
 	}
 
-	function affwp_possible_affiliate_ref_tokens( $tokens = [], $args = [] ) {
+	function affwp_possible_affiliate_ref_tokens( $tokens = array(), $args = array() ) {
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -237,12 +237,12 @@ class Affwp_Tokens {
 	}
 
 	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
+	 * @param     $value
+	 * @param     $pieces
+	 * @param     $recipe_id
+	 * @param     $trigger_data
 	 * @param int $user_id
-	 * @param $replace_args
+	 * @param     $replace_args
 	 *
 	 * @return int|mixed|string
 	 */

@@ -31,11 +31,11 @@ class WPJM_SUBMITRESUME {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-job-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Job Manager */
@@ -46,10 +46,10 @@ class WPJM_SUBMITRESUME {
 			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'resume_manager_resume_submitted' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -57,12 +57,12 @@ class WPJM_SUBMITRESUME {
 	 */
 	public function resume_manager_resume_submitted( $resume_id ) {
 
-		global $uncanny_automator;
+
 
 		if ( empty( $resume_id ) ) {
 			return;
 		}
-		$user_id = get_current_user_id();
+		$user_id      = get_current_user_id();
 		$trigger_args = [
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
@@ -71,7 +71,7 @@ class WPJM_SUBMITRESUME {
 			'user_id'        => $user_id,
 		];
 
-		$args = $uncanny_automator->maybe_add_trigger_entry( $trigger_args, false );
+		$args = Automator()->maybe_add_trigger_entry( $trigger_args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
@@ -85,8 +85,8 @@ class WPJM_SUBMITRESUME {
 
 					$trigger_meta['meta_key']   = $this->trigger_code;
 					$trigger_meta['meta_value'] = $resume_id;
-					$uncanny_automator->insert_trigger_meta( $trigger_meta );
-					$uncanny_automator->maybe_trigger_complete( $result['args'] );
+					Automator()->insert_trigger_meta( $trigger_meta );
+					Automator()->maybe_trigger_complete( $result['args'] );
 					break;
 				}
 			}

@@ -35,22 +35,8 @@ class Wp_Fusion_Helpers {
 	 * Learndash_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-	}
 
-	/**
-	 * @param Wp_Fusion_Helpers $options
-	 */
-	public function setOptions( Wp_Fusion_Helpers $options ) {
-		$this->options = $options;
-	}
-
-	/**
-	 * @param Wp_Fusion_Pro_Helpers $pro
-	 */
-	public function setPro( Wp_Fusion_Pro_Helpers $pro ) {
-		$this->pro = $pro;
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -86,6 +72,20 @@ class Wp_Fusion_Helpers {
 		);
 
 		return apply_filters( 'uap_option_wp_fusion_tags', $option );
+	}
+
+	/**
+	 * @param Wp_Fusion_Helpers $options
+	 */
+	public function setOptions( Wp_Fusion_Helpers $options ) {
+		$this->options = $options;
+	}
+
+	/**
+	 * @param Wp_Fusion_Pro_Helpers $pro
+	 */
+	public function setPro( Wp_Fusion_Pro_Helpers $pro ) {
+		$this->pro = $pro;
 	}
 
 }

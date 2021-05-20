@@ -34,13 +34,13 @@ class Um_Tokens {
 	 *
 	 * @return array
 	 */
-	public function um_possible_tokens( $tokens = [], $args = [] ) {
+	public function um_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id      = absint( $args['value'] );
 		$trigger_meta = $args['meta'];
 		if ( function_exists( 'UM' ) ) {
 			$um_fields = UM()->query()->get_attr( 'custom_fields', $form_id );
 			if ( $um_fields ) {
-				$fields = [];
+				$fields = array();
 				foreach ( $um_fields as $field ) {
 					if ( isset( $field['public'] ) && 1 === absint( $field['public'] ) ) {
 						$input_id    = $field['metakey'];

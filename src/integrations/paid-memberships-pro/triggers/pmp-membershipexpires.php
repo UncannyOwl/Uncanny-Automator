@@ -40,21 +40,21 @@ class PMP_MEMBERSHIPEXPIRES {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->paid_memberships_pro->options->all_memberships(  esc_attr__( 'Membership', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' =>  esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
+		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
+
+		$options['options'] = array( '-1' => esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/paid-memberships-pro/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'sentence'            => sprintf(  esc_attr__( "A user's subscription to {{a membership:%1\$s}} expires", 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( "A user's subscription to {{a membership:%1\$s}} expires", 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Paid Memberships Pro */
-			'select_option_name'  =>  esc_attr__( "A user's subscription to {{a membership}} expires", 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( "A user's subscription to {{a membership}} expires", 'uncanny-automator' ),
 			'action'              => 'pmpro_membership_post_membership_expiry',
 			'priority'            => 100,
 			'accepted_args'       => 2,
@@ -64,7 +64,7 @@ class PMP_MEMBERSHIPEXPIRES {
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -82,15 +82,15 @@ class PMP_MEMBERSHIPEXPIRES {
 	 * @param $membership_id
 	 */
 	public function pmpro_subscription_expired( $user_id, $membership_id ) {
-		global $uncanny_automator;
+
 		if ( empty( $user_id ) || empty( $membership_id ) ) {
 			return;
 		}
 
 		if ( is_numeric( $membership_id ) ) {
-			$recipes             = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-			$required_membership = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-			$matched_recipe_ids  = [];
+			$recipes             = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+			$required_membership = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+			$matched_recipe_ids  = array();
 
 			//Add where option is set to Any membership
 			foreach ( $recipes as $recipe_id => $recipe ) {
@@ -131,13 +131,13 @@ class PMP_MEMBERSHIPEXPIRES {
 						'ignore_post_id'   => true,
 						'is_signed_in'     => true,
 					];
-					$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 					if ( $result ) {
 						foreach ( $result as $r ) {
 							if ( true === $r['result'] ) {
 								do_action( 'uap_save_pmp_membership_level', $membership_id, $r['args'], $user_id, $this->trigger_meta );
-								$uncanny_automator->maybe_trigger_complete( $r['args'] );
+								Automator()->maybe_trigger_complete( $r['args'] );
 							}
 						}
 					}

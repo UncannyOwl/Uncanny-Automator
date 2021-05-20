@@ -29,8 +29,8 @@ class Presto_Helpers {
 	 * Presto_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -50,18 +50,18 @@ class Presto_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
 	public function list_presto_videos( $label = null, $option_code = 'PRESTOVIDEO', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		global $uncanny_automator;
+
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Video', 'uncanny-automator' );
@@ -74,7 +74,7 @@ class Presto_Helpers {
 
 		$options = array();
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			$videos = ( new \PrestoPlayer\Models\Video() )->all();
 			if ( $videos ) {
 				foreach ( $videos as $video ) {

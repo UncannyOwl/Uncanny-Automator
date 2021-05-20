@@ -75,13 +75,13 @@ class Add_Et_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'The Events Calendar',
-			'icon_svg' => Utilities::get_integration_icon( 'the-events-calendar-icon.svg' ),
-			'logo_svg' => Utilities::get_integration_icon( 'the-events-calendar-icon.svg' ),
-			// 'logo_svg'    => Utilities::get_integration_icon( 'integration-tec.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/the-events-calendar-icon.svg' ),
+			'logo_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/the-events-calendar-icon.svg' ),
+			// 'logo_svg'    => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-tec.svg' ),
 		) );
 	}
 }

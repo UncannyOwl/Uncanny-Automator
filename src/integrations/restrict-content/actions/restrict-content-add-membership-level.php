@@ -31,11 +31,11 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$action = [
 			'author'             => 'Uncanny Automator',
-			'support_link'       => 'https://www.automatorplugin.com/#support',
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/restrict-content/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Logged-in trigger - Popup Maker */
@@ -47,17 +47,17 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 			'execution_function' => [ $this, 'add_rcp_membership' ],
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->restrict_content->options->get_membership_levels(
+					Automator()->helpers->recipe->restrict_content->options->get_membership_levels(
 						null,
 						$this->action_meta,
 						[ 'any' => false ]
 					),
-					$uncanny_automator->helpers->recipe->field->text_field( 'RCMEMBERSHIPEXPIRY', esc_attr__( 'Expiry date', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Leave empty to use expiry settings from the membership level, or type a specific date in the format YYYY-MM-DD', 'uncanny-automator' ) ),
+					Automator()->helpers->recipe->field->text_field( 'RCMEMBERSHIPEXPIRY', esc_attr__( 'Expiry date', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Leave empty to use expiry settings from the membership level, or type a specific date in the format YYYY-MM-DD', 'uncanny-automator' ) ),
 				],
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -69,14 +69,14 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 	 */
 	public function add_rcp_membership( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+
 
 		$level_id    = absint( $action_data['meta'][ $this->action_meta ] );
-		$expiry_date = $uncanny_automator->parse->text( $action_data['meta']['RCMEMBERSHIPEXPIRY'], $recipe_id, $user_id, $args );
+		$expiry_date = Automator()->parse->text( $action_data['meta']['RCMEMBERSHIPEXPIRY'], $recipe_id, $user_id, $args );
 		// Get all the active membership level IDs.
 		$level_ids = rcp_get_membership_levels( [ 'status' => 'active', 'fields' => 'id' ] );
 		if ( empty( $level_ids ) ) {
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, __( 'You must have at least one active membership level.', 'rcp' ) );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, __( 'You must have at least one active membership level.', 'rcp' ) );
 
 			return;
 		}
@@ -103,7 +103,8 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 		$membership_args = [
 			'customer_id'      => absint( $customer_id ),
 			'user_id'          => $user_id,
-			'object_id'        => ! empty( $level_id ) ? $level_id : $level_ids[ array_rand( $level_ids ) ], // specified or random membership level ID
+			'object_id'        => ! empty( $level_id ) ? $level_id : $level_ids[ array_rand( $level_ids ) ],
+			// specified or random membership level ID
 			'status'           => $status,
 			'created_date'     => $created_date,
 			'gateway'          => 'manual',
@@ -137,7 +138,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 			'status'           => 'pending' == $membership_args['status'] ? 'pending' : 'complete',
 			'gateway'          => 'manual',
 			'customer_id'      => $customer_id,
-			'membership_id'    => $membership_id
+			'membership_id'    => $membership_id,
 		);
 
 		$rcp_payments = new \RCP_Payments();
@@ -146,6 +147,6 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 		// Add payment meta to designate this as a generated record so we can delete it later.
 		$rcp_payments->add_meta( $payment_id, 'rcp_generated_via_UA', $recipe_id );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

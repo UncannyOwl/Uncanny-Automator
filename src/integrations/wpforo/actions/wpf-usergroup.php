@@ -30,42 +30,42 @@ class WPF_USERGROUP {
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	public function define_action() {
-		global $uncanny_automator;
+
 
 
 		$usergroups = WPF()->usergroup->get_usergroups();
 
-		$group_options = [];
+		$group_options = array();
 		foreach ( $usergroups as $key => $group ) {
 			$group_options[ $group['groupid'] ] = $group['name'];
 		}
 
 		$option = [
 			'option_code' => 'FOROGROUP',
-			'label'       =>  esc_attr__( 'User groups', 'uncanny-automator' ),
+			'label'       => esc_attr__( 'User groups', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $group_options,
 		];
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wpforo/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - wpForo */
-			'sentence'           => sprintf(  esc_attr__( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Add the user to {{a group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - wpForo */
-			'select_option_name' =>  esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Add the user to {{a group}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'enrol_in_to_group' ),
 			'options'            => [
-				$option
+				$option,
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -75,7 +75,7 @@ class WPF_USERGROUP {
 	 */
 	public function enrol_in_to_group( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+
 		$group_id = $action_data['meta'][ $this->action_meta ];
 
 		if ( wpforo_feature( 'role-synch' ) ) {
@@ -84,6 +84,6 @@ class WPF_USERGROUP {
 			WPF()->usergroup->set_users_groupid( array( $group_id => [ $user_id ] ) );
 		}
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

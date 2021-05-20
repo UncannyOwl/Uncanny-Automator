@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use WP_Error;
-
 /**
  * Class UOG_CREATEUNCANNYGROUP
  * @package Uncanny_Automator
@@ -33,7 +31,7 @@ class UOG_CREATEUNCANNYGROUP {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -43,12 +41,12 @@ class UOG_CREATEUNCANNYGROUP {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+		$options = Automator()->helpers->recipe->options->wp_query( $args );
 
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/uncanny-groups/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Logged-in trigger - Uncanny Groups */
@@ -74,7 +72,7 @@ class UOG_CREATEUNCANNYGROUP {
 								'input_type'               => 'select',
 								'required'                 => true,
 								'supports_multiple_values' => true,
-								'options'                  => $options
+								'options'                  => $options,
 							],
 							[
 								'option_code' => 'UOGROUPNUMSEATS',
@@ -103,7 +101,7 @@ class UOG_CREATEUNCANNYGROUP {
 				],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -115,12 +113,12 @@ class UOG_CREATEUNCANNYGROUP {
 	 */
 	public function create_uncanny_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
 
-		$uo_group_title               = $uncanny_automator->parse->text( $action_data['meta']['UOGROUPTITLE'], $recipe_id, $user_id, $args );
-		$uo_group_num_seats           = absint( $uncanny_automator->parse->text( $action_data['meta']['UOGROUPNUMSEATS'], $recipe_id, $user_id, $args ) );
-		$uo_group_courses             = $uncanny_automator->parse->text( $action_data['meta']['UOGROUPCOURSES'], $recipe_id, $user_id, $args );
-		$group_leader_role_assignment = $uncanny_automator->parse->text( $action_data['meta']['GROUP_LEADER_ROLE_ASSIGNMENT'], $recipe_id, $user_id, $args );
+
+		$uo_group_title               = Automator()->parse->text( $action_data['meta']['UOGROUPTITLE'], $recipe_id, $user_id, $args );
+		$uo_group_num_seats           = absint( Automator()->parse->text( $action_data['meta']['UOGROUPNUMSEATS'], $recipe_id, $user_id, $args ) );
+		$uo_group_courses             = Automator()->parse->text( $action_data['meta']['UOGROUPCOURSES'], $recipe_id, $user_id, $args );
+		$group_leader_role_assignment = Automator()->parse->text( $action_data['meta']['GROUP_LEADER_ROLE_ASSIGNMENT'], $recipe_id, $user_id, $args );
 
 		$create_group = false;
 		$user         = get_user_by( 'ID', $user_id );
@@ -198,7 +196,7 @@ class UOG_CREATEUNCANNYGROUP {
 		}
 
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 		return;
 	}

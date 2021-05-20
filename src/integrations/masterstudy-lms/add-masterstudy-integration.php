@@ -17,7 +17,8 @@ class Add_Masterstudy_Integration {
 	/**
 	 * Add_Masterstudy_Integration constructor.
 	 */
-	public function __construct() {}
+	public function __construct() {
+	}
 
 	/**
 	 * Only load this integration and its triggers and actions if the related plugin is active
@@ -62,12 +63,12 @@ class Add_Masterstudy_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'MasterStudy LMS',
-			'logo_svg' => Utilities::get_integration_icon( 'masterstudy-lms.svg' ),
-			'icon_svg' => Utilities::get_integration_icon( 'masterstudy-lms.svg' ),
+			'logo_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/masterstudy-lms.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/masterstudy-lms.svg' ),
 		) );
 	}
 }

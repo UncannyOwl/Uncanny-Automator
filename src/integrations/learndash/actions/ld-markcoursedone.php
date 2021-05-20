@@ -32,26 +32,26 @@ class LD_MARKCOURSEDONE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link(),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf(  esc_attr__( 'Mark {{a course:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Mark {{a course:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' =>  esc_attr__( 'Mark {{a course}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Mark {{a course}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_course' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
+				Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -62,15 +62,15 @@ class LD_MARKCOURSEDONE {
 	 * @param $recipe_id
 	 */
 	public function mark_completes_a_course( $user_id, $action_data, $recipe_id ) {
-		global $uncanny_automator;
+
 		$course_id = $action_data['meta'][ $this->action_meta ];
-		//$courses   = learndash_user_get_enrolled_courses( $user_id, [], true );
+		//$courses   = learndash_user_get_enrolled_courses( $user_id, array(), true );
 		//if ( in_array( $course_id, $courses ) ) {
 		$this->mark_steps_done( $user_id, $course_id );
 		//all steps done.. mark course complete
 		learndash_process_mark_complete( $user_id, $course_id );
 		//}
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 
@@ -128,7 +128,7 @@ class LD_MARKCOURSEDONE {
 				$this->quiz_list[ $quiz['post']->ID ] = 0;
 			}
 		}
-		$quizz_progress = [];
+		$quizz_progress = array();
 		if ( ! empty( $this->quiz_list ) ) {
 			$usermeta       = get_user_meta( $user_id, '_sfwd-quizzes', true );
 			$quizz_progress = empty( $usermeta ) ? array() : $usermeta;

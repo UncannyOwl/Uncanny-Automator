@@ -28,8 +28,8 @@ class Ultimate_Member_Helpers {
 	 * Ultimate_Member_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -47,21 +47,21 @@ class Ultimate_Member_Helpers {
 	}
 
 	/**
-	 * @param null $label
+	 * @param null   $label
 	 * @param string $option_code
 	 * @param string $type
 	 *
 	 * @return mixed|void
 	 */
-	public function get_um_forms( $label = null, $option_code = 'UMFORM', $type = 'register', $params = [] ) {
+	public function get_um_forms( $label = null, $option_code = 'UMFORM', $type = 'register', $params = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $params ) ? $params['token'] : false;
@@ -70,9 +70,9 @@ class Ultimate_Member_Helpers {
 		$end_point    = key_exists( 'endpoint', $params ) ? $params['endpoint'] : '';
 		$any          = key_exists( 'any', $params ) ? $params['any'] : true;
 
-		$options = [];
+		$options = array();
 		if ( $any ) {
-			$options['-1'] =  esc_attr__( 'Any form', 'uncanny-automator' );
+			$options['-1'] = esc_attr__( 'Any form', 'uncanny-automator' );
 		}
 		$args = array(
 			'posts_per_page'   => 999,
@@ -89,14 +89,14 @@ class Ultimate_Member_Helpers {
 				[
 					'key'     => '_um_mode',
 					'value'   => $type,
-					'compare' => 'LIKE'
-				]
+					'compare' => 'LIKE',
+				],
 			];
 		}
 
 		//$forms_list = get_posts( $args );
-		global $uncanny_automator;
-		$forms_list = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+
+		$forms_list = Automator()->helpers->recipe->options->wp_query( $args );
 		/*if ( ! empty( $forms_list ) ) {
 			foreach ( $forms_list as $form ) {
 				// Check if the form title is defined
@@ -117,8 +117,8 @@ class Ultimate_Member_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $forms_list,
 			'relevant_tokens' => [
-				$option_code         =>  esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' =>  esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
 			],
 		];
 

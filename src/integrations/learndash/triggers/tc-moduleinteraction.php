@@ -37,43 +37,55 @@ class TC_MODULEINTERACTION {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
 
-		$options       = [];
+
+		$options       = array();
 		$modules       = Database::get_modules();
-		$options['-1'] =  esc_attr__( 'Any module', 'uncanny-automator' );
+		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
 
 		foreach ( $modules as $module ) {
 			$options[ $module->ID ] = $module->file_name;
 		}
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf(  esc_attr__( '{{A Tin Can verb:%1$s}} is recorded from {{a Tin Can module:%2$s}}', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( '{{A Tin Can verb:%1$s}} is recorded from {{a Tin Can module:%2$s}}', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  =>  esc_attr__( '{{A Tin Can verb}} is recorded from {{a Tin Can module}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( '{{A Tin Can verb}} is recorded from {{a Tin Can module}}', 'uncanny-automator' ),
 			'action'              => 'tincanny_module_completed',
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'tincanny_module_completed_func' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta,  esc_attr__( 'Module', 'uncanny-automator' ), $options ),
-				$uncanny_automator->helpers->recipe->field->select_field( 'TCVERB',  esc_attr_x( 'Verb', 'Tin Can verb', 'uncanny-automator' ), [
-					'completed'   => 'Completed',
-					'passed'      => 'Passed',
-					'failed'      => 'Failed',
-					'answered'    => 'Answered',
-					'attempted'   => 'Attempted',
-					'experienced' => 'Experienced',
-				] ),
+				Automator()->helpers->recipe->field->select(
+					array(
+						'option_code' => $this->trigger_meta,
+						'label'       => esc_attr__( 'Module', 'uncanny-automator' ),
+						'options'     => $options,
+					)
+				),
+				Automator()->helpers->recipe->field->select(
+					array(
+						'option_code' => 'TCVERB',
+						'label'       => esc_attr_x( 'Verb', 'Tin Can verb', 'uncanny-automator' ),
+						'options'     => array(
+							'completed'   => 'Completed',
+							'passed'      => 'Passed',
+							'failed'      => 'Failed',
+							'answered'    => 'Answered',
+							'attempted'   => 'Attempted',
+							'experienced' => 'Experienced',
+						),
+					)
+				),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -82,7 +94,7 @@ class TC_MODULEINTERACTION {
 	 * @param $verb
 	 * @param $data
 	 */
-	public function tincanny_module_completed_func( $module_id, $user_id, $verb, $data = [] ) {
+	public function tincanny_module_completed_func( $module_id, $user_id, $verb, $data = array() ) {
 
 		if ( empty( $user_id ) ) {
 			return;
@@ -98,13 +110,13 @@ class TC_MODULEINTERACTION {
 			}
 		}
 
-		global $uncanny_automator;
 
-		$recipes    = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$module_ids = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$verbs      = $uncanny_automator->get->meta_from_recipes( $recipes, 'TCVERB' );
 
-		$matched_recipe_ids = [];
+		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$module_ids = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$verbs      = Automator()->get->meta_from_recipes( $recipes, 'TCVERB' );
+
+		$matched_recipe_ids = array();
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 
@@ -112,7 +124,7 @@ class TC_MODULEINTERACTION {
 
 				$trigger_id = $trigger['ID'];
 
-				if ( ( $module_ids[ $recipe_id ][ $trigger_id ] === $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && $verbs[ $recipe_id ][ $trigger_id ] === $verb ) {
+				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && $verbs[ $recipe_id ][ $trigger_id ] === $verb ) {
 
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,
@@ -124,47 +136,68 @@ class TC_MODULEINTERACTION {
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+				// Custom check for duplicate recipe run within 10 second window. Similar to Tin Canny Plugin
+				global $wpdb;
+				$results = $wpdb->get_row(
+					$wpdb->prepare(
+						"SELECT date_time, CURRENT_TIMESTAMP as current_mysql_time
+						FROM {$wpdb->prefix}uap_recipe_log
+						WHERE 1=1
+						AND user_id = %d
+						AND automator_recipe_id = %d
+						AND completed = 1 ORDER BY ID DESC ",
+						$user_id,
+						$matched_recipe_id['recipe_id']
+					)
+				);
+				$can_run = true;
+				if( ! empty( $results ) ) {
+					$last_time = strtotime( $results->date_time );
+					//$last_time_round = round(ceil($last_time/10) * 10 );
+					$current_time = strtotime( $results->current_mysql_time );
+					//$current_time_round = round(ceil($current_time/10) * 10 );
 
-				$args = [
-					'code'             => $this->trigger_code,
-					'meta'             => $this->trigger_meta,
-					'user_id'          => $user_id,
-					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
-					'trigger_to_match' => $matched_recipe_id['trigger_id'],
-					'ignore_post_id'   => true,
-					'is_signed_in'     => true,
-					'post_id'          => $module_id,
-				];
+					if( ( $current_time - $last_time ) <= 10 ) {
+						$can_run = false;
+					}
+				}
 
-				//$uncanny_automator->maybe_add_trigger_entry( $args );
-				$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
-				if ( $args ) {
-					foreach ( $args as $result ) {
-						if ( true === $result['result'] ) {
-							$uncanny_automator->insert_trigger_meta(
-								[
+				if ( ! Automator()->is_recipe_completed( $matched_recipe_id['recipe_id'], $user_id ) && $can_run ) {
+					$args = [
+						'code'             => $this->trigger_code,
+						'meta'             => $this->trigger_meta,
+						'user_id'          => $user_id,
+						'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+						'trigger_to_match' => $matched_recipe_id['trigger_id'],
+						'ignore_post_id'   => TRUE,
+						'is_signed_in'     => TRUE,
+						'post_id'          => $module_id,
+					];
+
+					$args = Automator()->process->user->maybe_add_trigger_entry( $args, FALSE );
+					if ( $args ) {
+						foreach ( $args as $result ) {
+							if ( TRUE === $result['result'] ) {
+
+								Automator()->db->trigger->add_meta( $result['args']['trigger_id'], $result['args']['get_trigger_id'], $result['args']['run_number'], [
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
 									'meta_key'       => 'TCVERB',
 									'meta_value'     => $verb,
 									'trigger_log_id' => $result['args']['get_trigger_id'],
 									'run_number'     => $result['args']['run_number'],
-								]
-							);
-
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
-							$uncanny_automator->insert_trigger_meta(
-								[
+								] );
+								Automator()->db->trigger->add_meta( $result['args']['trigger_id'], $result['args']['get_trigger_id'], $result['args']['run_number'], [
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
 									'meta_key'       => $this->trigger_meta,
 									'meta_value'     => $module_id,
 									'trigger_log_id' => $result['args']['get_trigger_id'],
 									'run_number'     => $result['args']['run_number'],
-								]
-							);
+								] );
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+								Automator()->process->user->maybe_trigger_complete( $result['args'] );
+							}
 						}
 					}
 				}

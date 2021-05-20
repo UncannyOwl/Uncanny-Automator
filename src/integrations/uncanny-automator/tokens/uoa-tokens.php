@@ -30,9 +30,9 @@ class Uoa_Tokens {
 	 *
 	 * @return array
 	 */
-	public function possible_tokens( $tokens = [], $args = [] ) {
+	public function possible_tokens( $tokens = array(), $args = array() ) {
 
-		$new_tokens = [];
+		$new_tokens = array();
 
 		$new_tokens[] = [
 			'tokenId'         => 'UOAERRORS',
@@ -73,16 +73,16 @@ class Uoa_Tokens {
 	}
 
 	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
-	 * @param $user_id
+	 * @param       $value
+	 * @param       $pieces
+	 * @param       $recipe_id
+	 * @param       $trigger_data
+	 * @param       $user_id
 	 * @param array $replace_args
 	 *
 	 * @return string|null
 	 */
-	public function uoa_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = [] ) {
+	public function uoa_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
 
 		if ( in_array( 'UOAERRORS', $pieces, true ) || in_array( 'UOARECIPES', $pieces, true ) ) {
 			global $wpdb;
@@ -114,17 +114,17 @@ class Uoa_Tokens {
 
 		return $value;
 	}
-	
+
 	/**
 	 * @param array $tokens
 	 * @param array $args
 	 *
 	 * @return array
 	 */
-	public function possible_recipe_tokens( $tokens = [], $args = [] ) {
-		
-		$new_tokens = [];
-		
+	public function possible_recipe_tokens( $tokens = array(), $args = array() ) {
+
+		$new_tokens = array();
+
 		$new_tokens[] = [
 			'tokenId'         => 'UOARECIPES',
 			'tokenName'       => esc_attr__( 'Recipe ID', 'uncanny-automator' ),

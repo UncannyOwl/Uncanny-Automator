@@ -64,7 +64,12 @@ class Wp_Post_Tokens {
 			'POSTID',
 			'POSTTITLE',
 			'WPTAXONOMYTERM',
-			'WPPOSTTYPES'
+			'WPPOSTTYPES',
+			'POSTCOMMENTCONTENT',
+			'POSTCOMMENTDATE',
+			'POSTCOMMENTEREMAIL',
+			'POSTCOMMENTERNAME',
+			'POSTCOMMENTSTATUS'
 		];
 
 		if ( $pieces && isset( $pieces[2] ) ) {

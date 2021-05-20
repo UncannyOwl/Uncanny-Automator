@@ -37,11 +37,11 @@ class WM_USERREMOVED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wishlist-member/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Wishlist Member */
@@ -53,11 +53,11 @@ class WM_USERREMOVED {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'remove_user_to_membership_level' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null, $this->trigger_meta ),
+				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null, $this->trigger_meta ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -69,7 +69,7 @@ class WM_USERREMOVED {
 	 */
 	public function remove_user_to_membership_level( $user_id, $remove_levels, $new_levels ) {
 
-		global $uncanny_automator;
+
 
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
@@ -78,9 +78,9 @@ class WM_USERREMOVED {
 			return;
 		}
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_level     = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_level     = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		//Add where Membership Level is set for trigger
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -106,12 +106,12 @@ class WM_USERREMOVED {
 					'ignore_post_id'   => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

@@ -29,8 +29,8 @@ class Happyforms_Helpers {
 	 * Happyforms_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 
@@ -47,19 +47,19 @@ class Happyforms_Helpers {
 	public function setOptions( Happyforms_Helpers $options ) {
 		$this->options = $options;
 	}
-	
+
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function all_happyforms_forms( $label = null, $option_code = 'HFFORMS', $args = [] ) {
+	public function all_happyforms_forms( $label = null, $option_code = 'HFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -77,9 +77,9 @@ class Happyforms_Helpers {
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options      = array();
+
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
@@ -116,7 +116,7 @@ class Happyforms_Helpers {
 	 * @return array
 	 */
 	public function extract_save_hf_fields( $submission, $form_id, $args ) {
-		$data = [];
+		$data = array();
 		if ( ! empty( $submission ) ) {
 			$metas          = $submission;
 			$trigger_id     = (int) $args['trigger_id'];
@@ -131,7 +131,7 @@ class Happyforms_Helpers {
 			}
 
 			if ( $data ) {
-				global $uncanny_automator;
+
 				$insert = [
 					'user_id'        => $user_id,
 					'trigger_id'     => $trigger_id,
@@ -141,7 +141,7 @@ class Happyforms_Helpers {
 					'run_number'     => $run_number,
 				];
 
-				$uncanny_automator->insert_trigger_meta( $insert );
+				Automator()->insert_trigger_meta( $insert );
 			}
 		}
 

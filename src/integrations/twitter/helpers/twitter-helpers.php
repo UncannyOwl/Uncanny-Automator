@@ -27,15 +27,15 @@ class Twitter_Helpers {
 	 * Twitter_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		$this->setting_tab   = 'twitter_api';
 		$this->automator_api = 'https://api.automatorplugin.com/twitter/';
 
-		add_filter( 'uap_settings_tabs', array( $this, 'add_twitter_api_settings' ), 15 );
+		add_filter( 'automator_settings_tabs', array( $this, 'add_twitter_api_settings' ), 15 );
 		add_action( 'init', array( $this, 'capture_oauth_tokens' ), 100, 3 );
-		add_filter( 'uap_after_settings_extra_buttons', array( $this, 'twitter_connect_html' ), 10, 3 );
+		add_filter( 'automator_after_settings_extra_buttons', array( $this, 'twitter_connect_html' ), 10, 3 );
 
 	}
 
@@ -45,21 +45,6 @@ class Twitter_Helpers {
 	public function setOptions( Twitter_Helpers $options ) {
 		$this->options = $options;
 	}
-
-	/**
-	 *
-	 * @return array $tokens
-	 */
-	public function get_client() {
-		$tokens = get_option( '_uncannyowl_twitter_settings', array() );
-
-		if ( empty( $tokens ) ) {
-			return false;
-		}
-
-		return $tokens;
-	}
-
 
 	/**
 	 * @param $tabs
@@ -103,9 +88,9 @@ class Twitter_Helpers {
 				$button_class = 'uo-disconnect-button';
 				$button_url   = $tab_url . '&disconnect=1';
 			} else {
-				$nonce        = wp_create_nonce( 'automator_twitter_api_authentication' );
-				$plugin_ver   = InitializePlugin::PLUGIN_VERSION;
-				$api_ver      = '1.0';
+				$nonce      = wp_create_nonce( 'automator_twitter_api_authentication' );
+				$plugin_ver = AUTOMATOR_PLUGIN_VERSION;
+				$api_ver    = '1.0';
 
 				$action       = 'twitter_authorization_request';
 				$redirect_url = urlencode( $tab_url );
@@ -145,6 +130,20 @@ class Twitter_Helpers {
 		}
 
 		return $content;
+	}
+
+	/**
+	 *
+	 * @return array $tokens
+	 */
+	public function get_client() {
+		$tokens = get_option( '_uncannyowl_twitter_settings', array() );
+
+		if ( empty( $tokens ) ) {
+			return false;
+		}
+
+		return $tokens;
 	}
 
 	/**

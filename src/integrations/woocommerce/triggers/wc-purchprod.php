@@ -33,21 +33,21 @@ class WC_PURCHPROD {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
 
-		$options = $uncanny_automator->helpers->recipe->woocommerce->options->all_wc_products(  esc_attr__( 'Product', 'uncanny-automator' ) );
 
-		$options['options'] = array( '-1' =>  esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
+		$options = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_attr__( 'Product', 'uncanny-automator' ) );
+
+		$options['options'] = array( '-1' => esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/woocommerce/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WooCommerce */
-			'sentence'            => sprintf(  esc_attr__( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WooCommerce */
-			'select_option_name'  =>  esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
 			'action'              => [
 				'woocommerce_order_status_completed',
 				'woocommerce_thankyou',
@@ -57,12 +57,12 @@ class WC_PURCHPROD {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'payment_completed' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->options->number_of_times(),
 				$options,
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -73,7 +73,7 @@ class WC_PURCHPROD {
 	 * @param $order_id
 	 */
 	public function payment_completed( $order_id ) {
-		global $uncanny_automator;
+
 
 		if ( ! $order_id ) {
 			return;
@@ -96,9 +96,9 @@ class WC_PURCHPROD {
 			return;
 		}
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_product   = $uncanny_automator->get->meta_from_recipes( $recipes, 'WOOPRODUCT' );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_product   = Automator()->get->meta_from_recipes( $recipes, 'WOOPRODUCT' );
+		$matched_recipe_ids = array();
 
 		//Add where option is set to Any product
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -148,7 +148,7 @@ class WC_PURCHPROD {
 					'ignore_post_id'   => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				//Adding an action to save order id in trigger meta
 				do_action( 'uap_wc_trigger_save_meta', $order_id, $matched_recipe_id['recipe_id'], $args, 'product' );
@@ -156,7 +156,7 @@ class WC_PURCHPROD {
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

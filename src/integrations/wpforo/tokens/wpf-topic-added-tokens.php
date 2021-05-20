@@ -69,9 +69,9 @@ class WPF_TOPIC_ADDED_TOKENS {
 						$run_number     = $replace_args['run_number'];
 						$user_id        = $replace_args['user_id'];
 
-						global $uncanny_automator;
 
-						$forum_id = absint( $uncanny_automator->get->get_trigger_log_meta(
+
+						$forum_id = absint( Automator()->get->get_trigger_log_meta(
 							'WPFORO_TOPIC_FORUM_ID',
 							$trigger_id,
 							$trigger_log_id,
@@ -79,12 +79,12 @@ class WPF_TOPIC_ADDED_TOKENS {
 							$user_id
 						) );
 
-						$forum = [];
+						$forum = array();
 						if ( $forum_id ) {
 							$forum = WPF()->forum->get_forum( $forum_id );
 						}
 
-						$topic_id = absint( $uncanny_automator->get->get_trigger_log_meta(
+						$topic_id = absint( Automator()->get->get_trigger_log_meta(
 							'WPFORO_TOPIC_ID',
 							$trigger_id,
 							$trigger_log_id,
@@ -92,7 +92,7 @@ class WPF_TOPIC_ADDED_TOKENS {
 							$user_id
 						) );
 
-						$topic = [];
+						$topic = array();
 						if ( $topic_id ) {
 							$topic = WPF()->topic->get_topic( $topic_id );
 						}

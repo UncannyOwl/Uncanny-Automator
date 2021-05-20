@@ -31,11 +31,11 @@ class BP_ACCACTIVATE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddypress/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - BuddyPress */
@@ -46,10 +46,10 @@ class BP_ACCACTIVATE {
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'bp_core_activated_user' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -61,7 +61,7 @@ class BP_ACCACTIVATE {
 	 */
 	public function bp_core_activated_user( $user_id, $key, $user ) {
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'code'           => $this->trigger_code,
@@ -70,6 +70,6 @@ class BP_ACCACTIVATE {
 			'ignore_post_id' => true,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

@@ -30,8 +30,8 @@ class Contact_Form7_Helpers {
 	 * Contact_Form7_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -54,21 +54,21 @@ class Contact_Form7_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function list_contact_form7_forms( $label = null, $option_code = 'CF7FORMS', $args = [] ) {
+	public function list_contact_form7_forms( $label = null, $option_code = 'CF7FORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = [];
+		$options      = array();
 
 		$args = [
 			'post_type'      => 'wpcf7_contact_form',
@@ -78,8 +78,8 @@ class Contact_Form7_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+
+		$options = Automator()->helpers->recipe->options->wp_query( $args );
 		$type    = 'select';
 
 		$option = [
@@ -93,9 +93,9 @@ class Contact_Form7_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Form ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Form URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Form URL', 'uncanny-automator' ),
 			],
 		];
 

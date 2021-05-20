@@ -49,12 +49,12 @@ class Wpff_Tokens {
 	 *
 	 * @return array
 	 */
-	function wpff_possible_tokens( $tokens = [], $args = [] ) {
+	function wpff_possible_tokens( $tokens = array(), $args = array() ) {
 
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 
-		$forms = [];
+		$forms = array();
 		global $wpdb;
 		$fluent_active = true;
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}fluentform_forms'" ) !== "{$wpdb->prefix}fluentform_forms" ) {
@@ -73,8 +73,8 @@ class Wpff_Tokens {
 
 		if ( ! empty( $forms ) ) {
 			foreach ( $forms as $id => $meta ) {
-				$fields_tokens = [];
-				$raw_fields    = isset( $meta['fields'] ) ? $meta['fields'] : [];
+				$fields_tokens = array();
+				$raw_fields    = isset( $meta['fields'] ) ? $meta['fields'] : array();
 				if ( is_array( $meta ) && ! empty( $raw_fields ) ) {
 					foreach ( $raw_fields as $raw_field ) {
 
@@ -145,7 +145,7 @@ class Wpff_Tokens {
 								}
 							}
 						} elseif ( isset( $raw_field['fields'] ) ) {
-
+							$field_group_name = $raw_field['attributes']['name'];
 							foreach ( $raw_field['fields'] as $field ) {
 								if ( 1 === (int) $field['settings']['visible'] ) {
 									if ( isset( $field['uniqElKey'] ) ) {
@@ -167,6 +167,8 @@ class Wpff_Tokens {
 											'tokenType'       => $type,
 											'tokenIdentifier' => $trigger_meta,
 										];
+									} else {
+										$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
 									}
 								}
 							}
@@ -200,53 +202,6 @@ class Wpff_Tokens {
 	}
 
 	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
-	 * @param $user_id
-	 * @param $replace_args
-	 *
-	 * @return null|string
-	 */
-	public function wpff_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		if ( $pieces ) {
-			if ( in_array( 'WPFFFORMS', $pieces ) ) {
-				global $wpdb;
-				$trigger_id     = $pieces[0];
-				$trigger_meta   = $pieces[1];
-				$field          = $pieces[2];
-				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value 
-													FROM {$wpdb->prefix}uap_trigger_log_meta 
-													WHERE meta_key = '$trigger_meta' 
-													AND automator_trigger_log_id = $trigger_log_id
-													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1" );
-				$entry          = maybe_unserialize( $entry );
-				$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
-				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
-					$value = $entry[ $to_match ];
-				} else {
-					if ( 'WPFFFORMS' === (string) $field ) {
-						$readable = "{$field}_readable";
-						foreach ( $trigger_data as $t_d ) {
-							if ( absint( $trigger_id ) === absint( $t_d['ID'] ) ) {
-								$value = isset( $t_d['meta'][ $readable ] ) ? $t_d['meta'][ $readable ] : '';
-								break;
-							}
-						}
-					} else {
-						$value = '';
-					}
-				}
-			}
-		}
-
-		return $value;
-	}
-
-	/**
 	 * @param $form_id
 	 * @param $field
 	 * @param $trigger_meta
@@ -256,7 +211,13 @@ class Wpff_Tokens {
 	 */
 	public function create_token( $form_id, $field, $trigger_meta, $field_group_name = '' ) {
 
-		$field_label = $field['settings']['label'];
+		$field_label = '';
+		if( isset( $field['settings']['label'] ) ) {
+			$field_label = $field['settings']['label'];
+		} elseif( isset( $field['settings']['admin_field_label'] ) ) {
+			$field_label = $field['settings']['admin_field_label'];
+		}
+
 		$field_name  = $field['attributes']['name'];
 
 		if ( isset( $field['attributes']['type'] ) ) {
@@ -288,5 +249,52 @@ class Wpff_Tokens {
 			'tokenIdentifier' => $trigger_meta,
 		];
 
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return null|string
+	 */
+	public function wpff_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( $pieces ) {
+			if ( in_array( 'WPFFFORMS', $pieces ) ) {
+				global $wpdb;
+				$trigger_id     = $pieces[0];
+				$trigger_meta   = $pieces[1];
+				$field          = $pieces[2];
+				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
+				$entry          = $wpdb->get_var( "SELECT meta_value
+													FROM {$wpdb->prefix}uap_trigger_log_meta
+													WHERE meta_key = '$trigger_meta'
+													AND automator_trigger_log_id = $trigger_log_id
+													AND automator_trigger_id = $trigger_id
+													LIMIT 0, 1" );
+				$entry          = maybe_unserialize( $entry );
+				$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
+				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
+					$value = $entry[ $to_match ];
+				} else {
+					if ( 'WPFFFORMS' === (string) $field ) {
+						$readable = "{$field}_readable";
+						foreach ( $trigger_data as $t_d ) {
+							if ( absint( $trigger_id ) === absint( $t_d['ID'] ) ) {
+								$value = isset( $t_d['meta'][ $readable ] ) ? $t_d['meta'][ $readable ] : '';
+								break;
+							}
+						}
+					} else {
+						$value = '';
+					}
+				}
+			}
+		}
+
+		return $value;
 	}
 }

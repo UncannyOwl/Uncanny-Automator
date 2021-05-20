@@ -31,28 +31,28 @@ class BB_NEWTOPIC {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/bbpress/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - bbPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - bbPress */
-			'select_option_name'  =>  esc_attr__( 'A user creates a topic in {{a forum}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user creates a topic in {{a forum}}', 'uncanny-automator' ),
 			'action'              => 'bbp_new_topic',
 			'priority'            => 10,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'bbp_new_topic' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->bbpress->options->list_bbpress_forums( null, $this->trigger_meta, true),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->bbpress->options->list_bbpress_forums( null, $this->trigger_meta, true ),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -67,7 +67,7 @@ class BB_NEWTOPIC {
 	 */
 	public function bbp_new_topic( $topic_id, $forum_id, $anonymous_data, $topic_author ) {
 
-		global $uncanny_automator;
+
 		$user_id = get_current_user_id();
 
 		$args = [
@@ -77,6 +77,6 @@ class BB_NEWTOPIC {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

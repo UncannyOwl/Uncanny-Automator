@@ -31,11 +31,11 @@ class WPWH_TRIGGERTRIGGERED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/automator-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
@@ -47,11 +47,11 @@ class WPWH_TRIGGERTRIGGERED {
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'save_data' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_webhooks->options->list_webhook_triggers( null, $this->trigger_meta ),
+				Automator()->helpers->recipe->wp_webhooks->options->list_webhook_triggers( null, $this->trigger_meta ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -61,7 +61,7 @@ class WPWH_TRIGGERTRIGGERED {
 	 */
 	public function save_data( $response, $url, $http_args, $webhook ) {
 
-		global $uncanny_automator;
+
 		if ( ! isset( $webhook['webhook_name'] ) || empty( $webhook['webhook_name'] ) ) {
 			return;
 		}
@@ -72,9 +72,9 @@ class WPWH_TRIGGERTRIGGERED {
 			$body_data_format = $webhook['settings']['wpwhpro_trigger_response_type'];
 		}
 
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 
-		$conditions = $uncanny_automator->helpers->recipe->wp_webhooks->options->match_action_condition( $trigger, $recipes, $this->trigger_meta, $this->trigger_code );
+		$conditions = Automator()->helpers->recipe->wp_webhooks->options->match_action_condition( $trigger, $recipes, $this->trigger_meta, $this->trigger_code );
 
 		if ( ! $conditions ) {
 			return;
@@ -83,7 +83,7 @@ class WPWH_TRIGGERTRIGGERED {
 		$user_id = get_current_user_id();
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
-				if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 					$args = [
 						'code'            => $this->trigger_code,
 						'meta'            => $this->trigger_meta,
@@ -92,12 +92,12 @@ class WPWH_TRIGGERTRIGGERED {
 						'user_id'         => $user_id,
 					];
 
-					$result = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 					if ( $result ) {
 						foreach ( $result as $r ) {
 							if ( true === $r['result'] ) {
-								$_args = [];
+								$_args = array();
 								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
 									//Saving params in trigger log meta for token parsing!
 									$_args = [
@@ -115,12 +115,12 @@ class WPWH_TRIGGERTRIGGERED {
 									} elseif ( 'xml' === $body_data_format ) {
 										// convert xml to array
 										$xml_data = new \SimpleXMLElement( $params );
-										$params   = $uncanny_automator->helpers->recipe->wp_webhooks->options->XML2Array( $xml_data );
+										$params   = Automator()->helpers->recipe->wp_webhooks->options->XML2Array( $xml_data );
 									}
 
-									$uncanny_automator->helpers->recipe->wp_webhooks->options->extract_and_save_data( $params, $_args );
+									Automator()->helpers->recipe->wp_webhooks->options->extract_and_save_data( $params, $_args );
 								}
-								$uncanny_automator->maybe_trigger_complete( $r['args'] );
+								Automator()->maybe_trigger_complete( $r['args'] );
 							}
 						}
 					}

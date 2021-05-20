@@ -31,19 +31,12 @@ class WP_SUBMITCOMMENT {
 	}
 
 	/**
-	 *
-	 */
-	public function plugins_loaded() {
-		$this->define_trigger();
-	}
-
-	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
-		$all_post_types = $uncanny_automator->helpers->recipe->wp->options->all_post_types( null, 'WPPOSTTYPES', [
+
+		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types( null, 'WPPOSTTYPES', [
 			'token'        => false,
 			'is_ajax'      => true,
 			'target_field' => $this->trigger_meta,
@@ -56,11 +49,11 @@ class WP_SUBMITCOMMENT {
 			'_builtin' => true,
 		];
 
-		$output        = 'object';
-		$operator      = 'and';
-		$options       = [];
+		$output         = 'object';
+		$operator       = 'and';
+		$options        = array();
 		$options['- 1'] = __( 'Any post type', 'uncanny-automator' );
-		$post_types    = get_post_types( $args, $output, $operator );
+		$post_types     = get_post_types( $args, $output, $operator );
 		if ( ! empty( $post_types ) ) {
 			foreach ( $post_types as $post_type ) {
 				$options[ $post_type->name ] = esc_html( $post_type->labels->singular_name );
@@ -68,13 +61,13 @@ class WP_SUBMITCOMMENT {
 		}
 		$options                   = array_merge( $options, $all_post_types['options'] );
 		$all_post_types['options'] = $options;
-		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+		$trigger                   = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf(  esc_attr__( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WordPress */
 			'select_option_name'  => esc_attr__( 'A user submits a comment on {{a post}}', 'uncanny-automator' ),
 			'action'              => 'comment_post',
@@ -82,12 +75,12 @@ class WP_SUBMITCOMMENT {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'submitted_comment' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 			'options_group'       => [
 				$this->trigger_meta => [
 					$all_post_types,
-					$uncanny_automator->helpers->recipe->field->select_field(
+					Automator()->helpers->recipe->field->select_field(
 						$this->trigger_meta,
 						__( 'Post', 'uncanny-automator-pro' ),
 						[],
@@ -104,9 +97,16 @@ class WP_SUBMITCOMMENT {
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
+	}
+
+	/**
+	 *
+	 */
+	public function plugins_loaded() {
+		$this->define_trigger();
 	}
 
 	/**
@@ -118,13 +118,13 @@ class WP_SUBMITCOMMENT {
 	 */
 	public function submitted_comment( $comment_id, $comment_approved, $commentdata ) {
 
-		global $uncanny_automator;
+
 
 		$user_id   = get_current_user_id();
 		$post_type = get_post_type( $commentdata['comment_post_ID'] );
 		// We need backword compatibility along with new change
-		$recipes    = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$conditions = $this->match_condition( $commentdata['comment_post_ID'], $post_type , $recipes, $this->trigger_meta, $this->trigger_code );
+		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$conditions = $this->match_condition( $commentdata['comment_post_ID'], $post_type, $recipes, $this->trigger_meta, $this->trigger_code );
 
 		if ( ! $conditions ) {
 			return;
@@ -132,7 +132,7 @@ class WP_SUBMITCOMMENT {
 		$post_type = get_post_type_object( $post_type );
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
-				if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 					$args = [
 						'code'            => $this->trigger_code,
 						'meta'            => $this->trigger_meta,
@@ -141,7 +141,7 @@ class WP_SUBMITCOMMENT {
 						'user_id'         => $user_id,
 					];
 
-					$arr = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$arr = Automator()->maybe_add_trigger_entry( $args, false );
 					if ( $arr ) {
 						foreach ( $arr as $result ) {
 							if ( true === $result['result'] ) {
@@ -155,14 +155,14 @@ class WP_SUBMITCOMMENT {
 								// Post
 								$trigger_meta['meta_key']   = 'WPPOSTCOMMENTS';
 								$trigger_meta['meta_value'] = $commentdata['comment_post_ID'];
-								$uncanny_automator->insert_trigger_meta( $trigger_meta );
+								Automator()->insert_trigger_meta( $trigger_meta );
 
 								// Post Type Token
 								$trigger_meta['meta_key']   = 'WPPOSTTYPES';
 								$trigger_meta['meta_value'] = maybe_serialize( $post_type->labels->singular_name );
-								$uncanny_automator->insert_trigger_meta( $trigger_meta );
+								Automator()->insert_trigger_meta( $trigger_meta );
 
-								$uncanny_automator->maybe_trigger_complete( $result['args'] );
+								Automator()->maybe_trigger_complete( $result['args'] );
 							}
 						}
 					}
@@ -188,12 +188,12 @@ class WP_SUBMITCOMMENT {
 			return false;
 		}
 
-		$recipe_ids      = [];
+		$recipe_ids      = array();
 		$match_post_id   = $post_id;
 		$match_post_type = $post_type;
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				if( ! key_exists('WPPOSTTYPES', $trigger['meta'])){
+				if ( ! key_exists( 'WPPOSTTYPES', $trigger['meta'] ) ) {
 					if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( (string) $trigger['meta'][ $trigger_meta ] === (string) $match_post_id || '-1' === (string) $trigger['meta'][ $trigger_meta ] ) ) {
 						$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
 					}

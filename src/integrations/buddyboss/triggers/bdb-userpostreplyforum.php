@@ -31,7 +31,7 @@ class BDB_USERPOSTREPLYFORUM {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'forum',
@@ -41,7 +41,7 @@ class BDB_USERPOSTREPLYFORUM {
 			'post_status'    => [ 'publish', 'private' ],
 		];
 
-		$options               = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any forum', 'uncanny-automator' ) );
+		$options               = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any forum', 'uncanny-automator' ) );
 		$forum_relevant_tokens = [
 			'BDBFORUMS'     => __( 'Forum title', 'uncanny-automator' ),
 			'BDBFORUMS_ID'  => __( 'Forum ID', 'uncanny-automator' ),
@@ -55,8 +55,8 @@ class BDB_USERPOSTREPLYFORUM {
 		];
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddyboss/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - bbPress */
@@ -69,7 +69,7 @@ class BDB_USERPOSTREPLYFORUM {
 			'validation_function' => array( $this, 'bbp_insert_reply' ),
 			'options_group'       => [
 				$this->trigger_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_ajax(
+					Automator()->helpers->recipe->field->select_field_ajax(
 						'BDBFORUMS',
 						__( 'Forum', 'uncanny-automator' ),
 						$options,
@@ -83,12 +83,12 @@ class BDB_USERPOSTREPLYFORUM {
 						],
 						$forum_relevant_tokens
 					),
-					$uncanny_automator->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Topic', 'uncanny-automator' ), [], false, false, false, $relevant_tokens ),
+					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 				],
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -102,9 +102,9 @@ class BDB_USERPOSTREPLYFORUM {
 	 */
 	public function bbp_insert_reply( $reply_id, $topic_id, $forum_id ) {
 
-		global $uncanny_automator;
 
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
+
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 
 		$conditions = $this->match_condition( $topic_id, $forum_id, $recipes, $this->trigger_meta, $this->trigger_code, 'SUBVALUE' );
 
@@ -115,7 +115,7 @@ class BDB_USERPOSTREPLYFORUM {
 		$user_id = get_current_user_id();
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id => $trigger_id ) {
-				if ( ! $uncanny_automator->is_recipe_completed( $recipe_id, $user_id ) ) {
+				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 					$args = [
 						'code'             => $this->trigger_code,
 						'meta'             => $this->trigger_meta,
@@ -125,7 +125,7 @@ class BDB_USERPOSTREPLYFORUM {
 						'user_id'          => $user_id,
 					];
 
-					$args = $uncanny_automator->maybe_add_trigger_entry( $args, false );
+					$args = Automator()->maybe_add_trigger_entry( $args, false );
 					if ( $args ) {
 						foreach ( $args as $result ) {
 							if ( true === $result['result'] ) {
@@ -138,9 +138,9 @@ class BDB_USERPOSTREPLYFORUM {
 
 								$trigger_meta['meta_key']   = 'BDBTOPICREPLY';
 								$trigger_meta['meta_value'] = $reply_id;
-								$uncanny_automator->insert_trigger_meta( $trigger_meta );
+								Automator()->insert_trigger_meta( $trigger_meta );
 
-								$uncanny_automator->maybe_trigger_complete( $result['args'] );
+								Automator()->maybe_trigger_complete( $result['args'] );
 							}
 						}
 					}
@@ -166,7 +166,7 @@ class BDB_USERPOSTREPLYFORUM {
 			return false;
 		}
 
-		$recipe_ids = [];
+		$recipe_ids = array();
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				if ( key_exists( 'BDBFORUMS', $trigger['meta'] ) && ( $trigger['meta']['BDBFORUMS'] == - 1 || $trigger['meta']['BDBFORUMS'] == $forum_id ) ) {

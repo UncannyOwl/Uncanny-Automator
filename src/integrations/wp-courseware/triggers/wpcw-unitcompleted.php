@@ -31,28 +31,28 @@ class WPCW_UNITCOMPLETED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-courseware/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Courseware */
-			'sentence'            => sprintf(  esc_attr__( 'A user completes {{a unit:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a unit:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP Courseware */
-			'select_option_name'  =>  esc_attr__( 'A user completes {{a unit}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a unit}}', 'uncanny-automator' ),
 			'action'              => 'wpcw_user_completed_unit',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpcw_unit_completed' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp_courseware->options->all_wpcw_units(),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wp_courseware->options->all_wpcw_units(),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -70,7 +70,7 @@ class WPCW_UNITCOMPLETED {
 			return;
 		}
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'code'    => $this->trigger_code,
@@ -79,6 +79,6 @@ class WPCW_UNITCOMPLETED {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 	}
 }

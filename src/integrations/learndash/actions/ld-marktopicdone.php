@@ -35,7 +35,7 @@ class LD_MARKTOPICDONE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'sfwd-courses',
@@ -45,71 +45,71 @@ class LD_MARKTOPICDONE {
 			'post_status'    => 'publish',
 		];
 
-		$course_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$course_options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$args = [
 			'post_type'      => 'sfwd-lessons',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
-			'post_status'    => 'publish'
+			'post_status'    => 'publish',
 		];
 
-		$lesson_options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any lesson', 'uncanny-automator' ) );
+		$lesson_options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnDash */
-			'sentence'           => sprintf(  esc_attr__( 'Mark {{a topic:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Mark {{a topic:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnDash */
-			'select_option_name' =>  esc_attr__( 'Mark {{a topic}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Mark {{a topic}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_topic' ),
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_args([
-						'option_code'  => 'LDCOURSE',
-						'options'      => $course_options,
-						'label'        => esc_attr__( 'Course', 'uncanny-automator' ),
+					Automator()->helpers->recipe->field->select_field_args( [
+						'option_code' => 'LDCOURSE',
+						'options'     => $course_options,
+						'label'       => esc_attr__( 'Course', 'uncanny-automator' ),
 
-						'required'     => true,
+						'required'                 => true,
 						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
 
 						'is_ajax'      => true,
 						'target_field' => 'LDLESSON',
 						'endpoint'     => 'select_lesson_from_course_MARKTOPICDONE',
-					]),
+					] ),
 
-					$uncanny_automator->helpers->recipe->field->select_field_args([
-						'option_code'  => 'LDLESSON',
-						'options'      => $lesson_options,
-						'label'        => esc_attr__( 'Lesson', 'uncanny-automator' ),
+					Automator()->helpers->recipe->field->select_field_args( [
+						'option_code' => 'LDLESSON',
+						'options'     => $lesson_options,
+						'label'       => esc_attr__( 'Lesson', 'uncanny-automator' ),
 
-						'required'     => true,
+						'required'                 => true,
 						'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 
 						'is_ajax'      => true,
 						'target_field' => 'LDTOPIC',
 						'endpoint'     => 'select_topic_from_lesson_MARKTOPICDONE',
-					]),
+					] ),
 
-					$uncanny_automator->helpers->recipe->field->select_field_args([
+					Automator()->helpers->recipe->field->select_field_args( [
 						'option_code' => 'LDTOPIC',
-						'options'     => [],
+						'options'     => array(),
 
-						'label'       => esc_attr__( 'Topic', 'uncanny-automator' ),
-						'required'    => true,
-						'custom_value_description' => esc_attr__( 'Topic ID', 'uncanny-automator' )
-					]),
+						'label'                    => esc_attr__( 'Topic', 'uncanny-automator' ),
+						'required'                 => true,
+						'custom_value_description' => esc_attr__( 'Topic ID', 'uncanny-automator' ),
+					] ),
 				],
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -121,7 +121,7 @@ class LD_MARKTOPICDONE {
 	 */
 	public function mark_completes_a_topic( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+
 
 		$topic_id = $action_data['meta'][ $this->action_meta ];
 
@@ -140,7 +140,7 @@ class LD_MARKTOPICDONE {
 
 		learndash_process_mark_complete( $user_id, $topic_id, false, $course_id );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 
@@ -150,7 +150,7 @@ class LD_MARKTOPICDONE {
 	 */
 	public function mark_quiz_complete( $user_id, $course_id = null ) {
 
-		$quizz_progress = [];
+		$quizz_progress = array();
 
 		if ( ! empty( $this->quiz_list ) ) {
 

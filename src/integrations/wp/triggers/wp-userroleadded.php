@@ -38,11 +38,11 @@ class WP_USERROLEADDED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
@@ -56,11 +56,11 @@ class WP_USERROLEADDED {
 			'validation_function' => array( $this, 'add_user_role' ),
 			'options_group'       => array(),
 			'options'             => array(
-				$uncanny_automator->helpers->recipe->wp->options->wp_user_roles(),
+				Automator()->helpers->recipe->wp->options->wp_user_roles(),
 			),
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -69,10 +69,10 @@ class WP_USERROLEADDED {
 	 * @param $old_roles
 	 */
 	public function add_user_role( $user_id, $role ) {
-		global $uncanny_automator;
 
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_user_role = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
+
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_user_role = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 
 		if ( ! $recipes ) {
 			return;
@@ -117,7 +117,7 @@ class WP_USERROLEADDED {
 					'ignore_post_id'   => true,
 				];
 
-				$results = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$results = Automator()->maybe_add_trigger_entry( $pass_args, false );
 				if ( $results ) {
 					foreach ( $results as $result ) {
 						if ( true === $result['result'] ) {
@@ -128,7 +128,7 @@ class WP_USERROLEADDED {
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
 							];
-							$roles = [];
+							$roles        = array();
 							foreach ( wp_roles()->roles as $role_name => $role_info ) {
 								$roles[ $role_name ] = $role_info['name'];
 							}
@@ -136,9 +136,9 @@ class WP_USERROLEADDED {
 							// Post Title Token
 							$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':WPROLE';
 							$trigger_meta['meta_value'] = maybe_serialize( $role_label );
-							$uncanny_automator->insert_trigger_meta( $trigger_meta );
+							Automator()->insert_trigger_meta( $trigger_meta );
 
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

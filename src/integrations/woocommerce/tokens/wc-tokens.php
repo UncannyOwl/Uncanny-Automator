@@ -20,49 +20,49 @@ class Wc_Tokens {
 	/**
 	 * @var array
 	 */
-	public $possible_order_fields = [];
+	public $possible_order_fields = array();
 
 	/**
 	 * Pmp_Tokens constructor.
 	 */
 	public function __construct() {
 		$this->possible_order_fields = array(
-			'billing_first_name'  => esc_attr__( 'Billing first name', 'uncanny-automator' ),
-			'billing_last_name'   => esc_attr__( 'Billing last name', 'uncanny-automator' ),
-			'billing_company'     => esc_attr__( 'Billing company', 'uncanny-automator' ),
-			'billing_country'     => esc_attr__( 'Billing country', 'uncanny-automator' ),
-			'billing_address_1'   => esc_attr__( 'Billing address line 1', 'uncanny-automator' ),
-			'billing_address_2'   => esc_attr__( 'Billing address line 2', 'uncanny-automator' ),
-			'billing_city'        => esc_attr__( 'Billing city', 'uncanny-automator' ),
-			'billing_state'       => esc_attr__( 'Billing state', 'uncanny-automator' ),
-			'billing_postcode'    => esc_attr__( 'Billing postcode', 'uncanny-automator' ),
-			'billing_phone'       => esc_attr__( 'Billing phone', 'uncanny-automator' ),
-			'billing_email'       => esc_attr__( 'Billing email', 'uncanny-automator' ),
-			'shipping_first_name' => esc_attr__( 'Shipping first name', 'uncanny-automator' ),
-			'shipping_last_name'  => esc_attr__( 'Shipping last name', 'uncanny-automator' ),
-			'shipping_company'    => esc_attr__( 'Shipping company', 'uncanny-automator' ),
-			'shipping_country'    => esc_attr__( 'Shipping country', 'uncanny-automator' ),
-			'shipping_address_1'  => esc_attr__( 'Shipping address line 1', 'uncanny-automator' ),
-			'shipping_address_2'  => esc_attr__( 'Shipping address line 2', 'uncanny-automator' ),
-			'shipping_city'       => esc_attr__( 'Shipping city', 'uncanny-automator' ),
-			'shipping_state'      => esc_attr__( 'Shipping state', 'uncanny-automator' ),
-			'shipping_postcode'   => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
-			'order_id'            => esc_attr__( 'Order ID', 'uncanny-automator' ),
-			'order_comments'      => esc_attr__( 'Order comments', 'uncanny-automator' ),
-			'order_total'         => esc_attr__( 'Order total', 'uncanny-automator' ),
-			'order_total_raw'     => esc_attr__( 'Order total (unformatted)', 'uncanny-automator' ),
-			'order_status'        => esc_attr__( 'Order status', 'uncanny-automator' ),
-			'order_subtotal'      => esc_attr__( 'Order subtotal', 'uncanny-automator' ),
-			'order_subtotal_raw'  => esc_attr__( 'Order subtotal (unformatted)', 'uncanny-automator' ),
-			'order_tax'           => esc_attr__( 'Order tax', 'uncanny-automator' ),
-			'order_tax_raw'       => esc_attr__( 'Order tax (unformatted)', 'uncanny-automator' ),
-			'order_discounts'     => esc_attr__( 'Order discounts', 'uncanny-automator' ),
-			'order_discounts_raw' => esc_attr__( 'Order discounts (unformatted)', 'uncanny-automator' ),
-			'order_coupons'       => esc_attr__( 'Order coupons', 'uncanny-automator' ),
-			'order_products'      => esc_attr__( 'Order products', 'uncanny-automator' ),
-			'order_products_qty'  => esc_attr__( 'Order products and quantity', 'uncanny-automator' ),
-			'payment_method'      => esc_attr__( 'Payment method', 'uncanny-automator' ),
-			'order_products_links'=> esc_attr__( 'Order products links', 'uncanny-automator' ),
+			'billing_first_name'   => esc_attr__( 'Billing first name', 'uncanny-automator' ),
+			'billing_last_name'    => esc_attr__( 'Billing last name', 'uncanny-automator' ),
+			'billing_company'      => esc_attr__( 'Billing company', 'uncanny-automator' ),
+			'billing_country'      => esc_attr__( 'Billing country', 'uncanny-automator' ),
+			'billing_address_1'    => esc_attr__( 'Billing address line 1', 'uncanny-automator' ),
+			'billing_address_2'    => esc_attr__( 'Billing address line 2', 'uncanny-automator' ),
+			'billing_city'         => esc_attr__( 'Billing city', 'uncanny-automator' ),
+			'billing_state'        => esc_attr__( 'Billing state', 'uncanny-automator' ),
+			'billing_postcode'     => esc_attr__( 'Billing postcode', 'uncanny-automator' ),
+			'billing_phone'        => esc_attr__( 'Billing phone', 'uncanny-automator' ),
+			'billing_email'        => esc_attr__( 'Billing email', 'uncanny-automator' ),
+			'shipping_first_name'  => esc_attr__( 'Shipping first name', 'uncanny-automator' ),
+			'shipping_last_name'   => esc_attr__( 'Shipping last name', 'uncanny-automator' ),
+			'shipping_company'     => esc_attr__( 'Shipping company', 'uncanny-automator' ),
+			'shipping_country'     => esc_attr__( 'Shipping country', 'uncanny-automator' ),
+			'shipping_address_1'   => esc_attr__( 'Shipping address line 1', 'uncanny-automator' ),
+			'shipping_address_2'   => esc_attr__( 'Shipping address line 2', 'uncanny-automator' ),
+			'shipping_city'        => esc_attr__( 'Shipping city', 'uncanny-automator' ),
+			'shipping_state'       => esc_attr__( 'Shipping state', 'uncanny-automator' ),
+			'shipping_postcode'    => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
+			'order_id'             => esc_attr__( 'Order ID', 'uncanny-automator' ),
+			'order_comments'       => esc_attr__( 'Order comments', 'uncanny-automator' ),
+			'order_total'          => esc_attr__( 'Order total', 'uncanny-automator' ),
+			'order_total_raw'      => esc_attr__( 'Order total (unformatted)', 'uncanny-automator' ),
+			'order_status'         => esc_attr__( 'Order status', 'uncanny-automator' ),
+			'order_subtotal'       => esc_attr__( 'Order subtotal', 'uncanny-automator' ),
+			'order_subtotal_raw'   => esc_attr__( 'Order subtotal (unformatted)', 'uncanny-automator' ),
+			'order_tax'            => esc_attr__( 'Order tax', 'uncanny-automator' ),
+			'order_tax_raw'        => esc_attr__( 'Order tax (unformatted)', 'uncanny-automator' ),
+			'order_discounts'      => esc_attr__( 'Order discounts', 'uncanny-automator' ),
+			'order_discounts_raw'  => esc_attr__( 'Order discounts (unformatted)', 'uncanny-automator' ),
+			'order_coupons'        => esc_attr__( 'Order coupons', 'uncanny-automator' ),
+			'order_products'       => esc_attr__( 'Order products', 'uncanny-automator' ),
+			'order_products_qty'   => esc_attr__( 'Order products and quantity', 'uncanny-automator' ),
+			'payment_method'       => esc_attr__( 'Payment method', 'uncanny-automator' ),
+			'order_products_links' => esc_attr__( 'Order products links', 'uncanny-automator' ),
 		);
 
 		add_action( 'uap_wc_trigger_save_meta', [ $this, 'uap_wc_trigger_save_meta_func' ], 20, 4 );
@@ -70,26 +70,26 @@ class Wc_Tokens {
 		//Adding WC tokens
 		add_filter( 'automator_maybe_trigger_wc_woordertotal_tokens', [
 			$this,
-			'wc_ordertotal_possible_tokens'
+			'wc_ordertotal_possible_tokens',
 		], 20, 2 );
 
 		add_filter( 'automator_maybe_trigger_wc_wcorderstatus_tokens', [
 			$this,
-			'wc_ordertotal_possible_tokens'
+			'wc_ordertotal_possible_tokens',
 		], 20, 2 );
 
 		add_filter( 'automator_maybe_trigger_wc_wooproduct_tokens', [
 			$this,
-			'wc_wooproduct_possible_tokens'
+			'wc_wooproduct_possible_tokens',
 		], 20, 2 );
 
 		//Parsing data
 		add_filter( 'automator_maybe_parse_token', [ $this, 'wc_ordertotal_tokens' ], 20, 6 );
-		
+
 		//Adding WC tokens
 		add_filter( 'automator_maybe_trigger_wc_wcshipstationshipped_tokens', [
 			$this,
-			'wc_order_possible_tokens'
+			'wc_order_possible_tokens',
 		], 20, 2 );
 	}
 
@@ -103,8 +103,8 @@ class Wc_Tokens {
 		if ( ! empty( $order_id ) && is_array( $args ) && $recipe_id ) {
 			foreach ( $args as $trigger_result ) {
 				if ( true === $trigger_result['result'] ) {
-					global $uncanny_automator;
-					$recipe = $uncanny_automator->get_recipes_data( true, $recipe_id );
+
+					$recipe = Automator()->get_recipes_data( true, $recipe_id );
 					if ( is_array( $recipe ) ) {
 						$recipe = array_pop( $recipe );
 					}
@@ -131,7 +131,7 @@ class Wc_Tokens {
 									'trigger_log_id' => $trigger_log_id,
 								];
 
-								$uncanny_automator->insert_trigger_meta( $args );
+								Automator()->insert_trigger_meta( $args );
 							}
 						}
 					}
@@ -146,21 +146,21 @@ class Wc_Tokens {
 	 *
 	 * @return array
 	 */
-	public function wc_ordertotal_possible_tokens( $tokens = [], $args = [] ) {
+	public function wc_ordertotal_possible_tokens( $tokens = array(), $args = array() ) {
 
 		return $this->wc_possible_tokens( $tokens, $args, 'order' );
 	}
 
 	/**
-	 * @param array $tokens
-	 * @param array $args
+	 * @param array  $tokens
+	 * @param array  $args
 	 * @param string $type
 	 *
 	 * @return array
 	 */
-	public function wc_possible_tokens( $tokens = [], $args = [], $type = 'order' ) {
+	public function wc_possible_tokens( $tokens = array(), $args = array(), $type = 'order' ) {
 
-		$fields          = [];
+		$fields          = array();
 		$trigger_meta    = $args['meta'];
 		$possible_tokens = apply_filters( 'automator_woocommerce_possible_tokens', $this->possible_order_fields );
 		foreach ( $possible_tokens as $token_id => $input_title ) {
@@ -187,7 +187,7 @@ class Wc_Tokens {
 	 *
 	 * @return array
 	 */
-	public function wc_wooproduct_possible_tokens( $tokens = [], $args = [] ) {
+	public function wc_wooproduct_possible_tokens( $tokens = array(), $args = array() ) {
 
 		return $this->wc_possible_tokens( $tokens, $args, 'product' );
 	}
@@ -254,16 +254,16 @@ class Wc_Tokens {
 	 * @return array|string|null
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		global $uncanny_automator;
+
 		$trigger_meta  = $pieces[1];
 		$parse         = $pieces[2];
-		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : $uncanny_automator->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 		if ( $trigger_data && $recipe_log_id ) {
 			foreach ( $trigger_data as $trigger ) {
 				if ( key_exists( $trigger_meta, $trigger['meta'] ) || ( isset( $trigger['meta']['code'] ) && $trigger_meta === $trigger['meta']['code'] ) ) {
 					$trigger_id     = $trigger['ID'];
 					$trigger_log_id = $replace_args['trigger_log_id'];
-					$order_id       = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'order_id', $trigger_id, $trigger_log_id, $user_id );
+					$order_id       = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'order_id', $trigger_id, $trigger_log_id, $user_id );
 					if ( ! empty( $order_id ) ) {
 						$order = wc_get_order( $order_id );
 						if ( $order && $order instanceof WC_Order ) {
@@ -466,19 +466,19 @@ class Wc_Tokens {
 										}
 										$value .= '</ul>';
 									}
-									
+
 									break;
 								case 'payment_method':
 									$value = $order->get_payment_method_title();
 									break;
 								case 'CARRIER':
-									$value = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_CARRIER', $trigger_id, $trigger_log_id, $user_id );
+									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_CARRIER', $trigger_id, $trigger_log_id, $user_id );
 									break;
 								case 'TRACKING_NUMBER':
-									$value = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_TRACKING_NUMBER', $trigger_id, $trigger_log_id, $user_id );
+									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_TRACKING_NUMBER', $trigger_id, $trigger_log_id, $user_id );
 									break;
 								case 'SHIP_DATE':
-									$value = $uncanny_automator->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
+									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
 									$value = $value ? date( 'Y-m-d H:i:s', $value ) : '';
 									break;
 							}
@@ -493,13 +493,13 @@ class Wc_Tokens {
 
 	/**
 	 * @param WC_Order $order
-	 * @param $value_to_match
+	 * @param          $value_to_match
 	 *
 	 * @return string
 	 */
 	public function get_woo_product_names_from_items( WC_Order $order, $value_to_match ) {
 		$items          = $order->get_items();
-		$product_titles = [];
+		$product_titles = array();
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
@@ -514,13 +514,13 @@ class Wc_Tokens {
 
 	/**
 	 * @param WC_Order $order
-	 * @param $value_to_match
+	 * @param          $value_to_match
 	 *
 	 * @return string
 	 */
 	public function get_woo_product_ids_from_items( WC_Order $order, $value_to_match ) {
 		$items       = $order->get_items();
-		$product_ids = [];
+		$product_ids = array();
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
@@ -535,13 +535,13 @@ class Wc_Tokens {
 
 	/**
 	 * @param WC_Order $order
-	 * @param $value_to_match
+	 * @param          $value_to_match
 	 *
 	 * @return string
 	 */
 	public function get_woo_product_urls_from_items( WC_Order $order, $value_to_match ) {
 		$items       = $order->get_items();
-		$product_ids = [];
+		$product_ids = array();
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
@@ -553,16 +553,16 @@ class Wc_Tokens {
 
 		return join( ', ', $product_ids );
 	}
-	
+
 	/**
 	 * @param array $tokens
 	 * @param array $args
 	 *
 	 * @return array
 	 */
-	public function wc_order_possible_tokens( $tokens = [], $args = [] ) {
+	public function wc_order_possible_tokens( $tokens = array(), $args = array() ) {
 		$args['meta'] = 'WCSHIPSTATIONSHIPPED';
-		$fields       = [];
+		$fields       = array();
 		$fields[]     = [
 			'tokenId'         => 'TRACKING_NUMBER',
 			'tokenName'       => esc_attr__( 'Shipping tracking number', 'uncanny-automator' ),
@@ -582,7 +582,7 @@ class Wc_Tokens {
 			'tokenIdentifier' => 'WCSHIPSTATIONSHIPPED',
 		];
 		$tokens       = array_merge( $tokens, $fields );
-		
+
 		return $this->wc_possible_tokens( $tokens, $args, 'order' );
 	}
 }

@@ -30,8 +30,8 @@ class Event_Tickets_Helpers {
 	 * Event_Tickets_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -56,13 +56,13 @@ class Event_Tickets_Helpers {
 	 */
 	public function all_ec_events( $label = null, $option_code = 'ECEVENTS' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Event', 'uncanny-automator' );
+			$label = esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
 		$args = [
@@ -73,8 +73,8 @@ class Event_Tickets_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		global $uncanny_automator;
-		$all_events = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, __( 'Any event', 'uncanny-automator' ) );
+
+		$all_events = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any event', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,
@@ -84,9 +84,9 @@ class Event_Tickets_Helpers {
 			//'default_value'      => 'Any post',
 			'options'         => $all_events,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Event title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Event ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Event URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Event title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Event ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Event URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -101,13 +101,13 @@ class Event_Tickets_Helpers {
 	 */
 	public function all_ec_rsvp_events( $label = null, $option_code = 'ECEVENTS' ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
-			$label =  esc_attr__( 'Event', 'uncanny-automator' );
+			$label = esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
 		$args    = [
@@ -117,17 +117,17 @@ class Event_Tickets_Helpers {
 			'post_type'      => 'tribe_events',
 			'post_status'    => 'publish',
 		];
-		$options = [];
-		global $uncanny_automator;
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$options = array();
+
+		if ( Automator()->helpers->recipe->load_helpers ) {
 			//$posts          = get_posts( $args );
-			$posts          = $uncanny_automator->helpers->recipe->options->wp_query( $args );
+			$posts          = Automator()->helpers->recipe->options->wp_query( $args );
 			$ticket_handler = new Tribe__Tickets__Tickets_Handler();
 			foreach ( $posts as $post_id => $title ) {
 				//$title = $post->post_title;
 
 				if ( empty( $title ) ) {
-					$title = sprintf(  esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
+					$title = sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 				}
 
 				$rsvp_ticket = $ticket_handler->get_event_rsvp_tickets( get_post( $post_id ) );
@@ -145,9 +145,9 @@ class Event_Tickets_Helpers {
 			//'default_value'      => 'Any post',
 			'options'         => $options,
 			'relevant_tokens' => [
-				$option_code          =>  esc_attr__( 'Event title', 'uncanny-automator' ),
-				$option_code . '_ID'  =>  esc_attr__( 'Event ID', 'uncanny-automator' ),
-				$option_code . '_URL' =>  esc_attr__( 'Event URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Event title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Event ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Event URL', 'uncanny-automator' ),
 			],
 		];
 

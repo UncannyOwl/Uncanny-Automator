@@ -42,11 +42,11 @@ class TWITTER_POSTSTATUS {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/twitter/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			'sentence'           => sprintf( __( 'Post {{a status:%1$s}} to Twitter', 'uncanny-automator' ), $this->action_meta ),
@@ -56,7 +56,7 @@ class TWITTER_POSTSTATUS {
 			'execution_function' => array( $this, 'post_status' ),
 			'options_group'      => array(
 				$this->action_meta => array(
-					$uncanny_automator->helpers->recipe->twitter->textarea_field( 'TWITTERSTATUSCONTENT', esc_attr__( 'Status', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( "Messages posted to Twitter have a 280 character limit.", 'uncanny-automator' ), __( 'Enter the message', 'uncanny-automator' ), 278 ),
+					Automator()->helpers->recipe->twitter->textarea_field( 'TWITTERSTATUSCONTENT', esc_attr__( 'Status', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( "Messages posted to Twitter have a 280 character limit.", 'uncanny-automator' ), __( 'Enter the message', 'uncanny-automator' ), 278 ),
 					//Temporary fix for the UI
 					array(
 						'input_type'  => 'text',
@@ -67,18 +67,18 @@ class TWITTER_POSTSTATUS {
 			),
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
 	 * Action validation function.
 	 *
-	 *  @return mixed
+	 * @return mixed
 	 */
 	public function post_status( $user_id, $action_data, $recipe_id, $args ) {
-		global $uncanny_automator;
 
-		$status = $uncanny_automator->parse->text( $action_data['meta']['TWITTERSTATUSCONTENT'], $recipe_id, $user_id, $args );
+
+		$status = Automator()->parse->text( $action_data['meta']['TWITTERSTATUSCONTENT'], $recipe_id, $user_id, $args );
 
 		try {
 			$response = $this->statuses_update( $status );
@@ -86,7 +86,8 @@ class TWITTER_POSTSTATUS {
 			if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 				$body = json_decode( wp_remote_retrieve_body( $response ) );
 				if ( ! isset( $body->errors ) ) {
-					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+					Automator()->complete_action( $user_id, $action_data, $recipe_id );
+
 					return;
 				} else {
 					foreach ( $body->errors as $error ) {
@@ -94,7 +95,8 @@ class TWITTER_POSTSTATUS {
 					}
 					$action_data['do-nothing']           = true;
 					$action_data['complete_with_errors'] = true;
-					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+					Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+
 					return;
 				}
 			} else {
@@ -104,7 +106,7 @@ class TWITTER_POSTSTATUS {
 			$error_msg                           = $e->getMessage();
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
 			return;
 		}
@@ -115,16 +117,17 @@ class TWITTER_POSTSTATUS {
 	 * Send data to Automator API.
 	 *
 	 * @param string $status
+	 *
 	 * @return mixed
 	 */
 	public function statuses_update( $status ) {
 
-		global $uncanny_automator;
+
 
 		// Get twitter credentials.
-		$request_body = $uncanny_automator->helpers->recipe->twitter->get_client();
+		$request_body = Automator()->helpers->recipe->twitter->get_client();
 
-		$url = $uncanny_automator->helpers->recipe->twitter->automator_api;
+		$url = Automator()->helpers->recipe->twitter->automator_api;
 
 		$request_body['action'] = 'twitter_statuses_update';
 		$request_body['status'] = $status;

@@ -31,11 +31,11 @@ class EM_REGISTER {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/events-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - The Events Manager */
@@ -47,14 +47,14 @@ class EM_REGISTER {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'user_registered_for_event' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->events_manager->options->all_em_events(
+				Automator()->helpers->recipe->events_manager->options->all_em_events(
 					__( 'Event', 'uncanny-automator-pro' ),
 					$this->trigger_meta,
 					[ 'any_option' => true ] ),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -66,7 +66,7 @@ class EM_REGISTER {
 	 * @return mixed
 	 */
 	public function user_registered_for_event( $em_status, $em_booking_obj ) {
-		global $uncanny_automator;
+
 
 		if ( 0 === (int) get_option( 'dbem_bookings_approval', 0 ) || $em_booking_obj->get_status() != 'Approved' ) {
 			return $em_status;
@@ -74,9 +74,9 @@ class EM_REGISTER {
 
 		$em_event_id        = $em_booking_obj->event_id;
 		$user_id            = $em_booking_obj->person_id;
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_event     = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_event     = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -103,12 +103,12 @@ class EM_REGISTER {
 					'ignore_post_id'   => true,
 				];
 
-				$args = $uncanny_automator->maybe_add_trigger_entry( $pass_args, false );
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$uncanny_automator->maybe_trigger_complete( $result['args'] );
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}

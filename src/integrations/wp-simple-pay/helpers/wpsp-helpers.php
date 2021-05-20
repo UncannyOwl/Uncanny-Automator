@@ -29,8 +29,8 @@ class Wpsp_Helpers {
 	 * Wpsp_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -50,19 +50,19 @@ class Wpsp_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
 
-	public function list_wp_simpay_forms( $label = null, $option_code = 'WPSIMPAYFORMS', $args = [] ) {
+	public function list_wp_simpay_forms( $label = null, $option_code = 'WPSIMPAYFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
-		global $uncanny_automator;
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
@@ -81,7 +81,7 @@ class Wpsp_Helpers {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any form', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any form', 'uncanny-automator' ) );
 
 		$option = [
 			'option_code'     => $option_code,

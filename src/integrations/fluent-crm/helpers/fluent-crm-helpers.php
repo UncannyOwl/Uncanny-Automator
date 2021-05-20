@@ -31,8 +31,8 @@ class Fluent_Crm_Helpers {
 	 * Wp_Fluent_Forms_Helpers constructor.
 	 */
 	public function __construct() {
-		global $uncanny_automator;
-		$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -58,9 +58,9 @@ class Fluent_Crm_Helpers {
 	 */
 	public function fluent_crm_lists( $label = null, $option_code = 'FCRMLIST', $args = [] ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -75,11 +75,11 @@ class Fluent_Crm_Helpers {
 
 		$options      = [];
 
-		global $uncanny_automator;
+
 
 		$options['0'] = esc_attr_x( 'Any list', 'FluentCRM', 'uncanny-automator' );
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			$lists = Lists::orderBy( 'title', 'DESC' )->get();
 
@@ -119,9 +119,9 @@ class Fluent_Crm_Helpers {
 	 */
 	public function fluent_crm_tags( $label = null, $option_code = 'FCRMTAG', $args = [] ) {
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
 		if ( ! $label ) {
@@ -136,11 +136,11 @@ class Fluent_Crm_Helpers {
 
 		$options      = [];
 
-		global $uncanny_automator;
+
 
 		$options['0'] = esc_attr_x( 'Any tag', 'FluentCRM', 'uncanny-automator' );
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			$tags = Tag::orderBy( 'title', 'DESC' )->get();
 
@@ -200,8 +200,8 @@ class Fluent_Crm_Helpers {
 			$to_match = [ $to_match ];
 		}
 
-		global $uncanny_automator;
-		$recipes = $uncanny_automator->get->recipes_from_trigger_code( $trigger_code );
+
+		$recipes = Automator()->get->recipes_from_trigger_code( $trigger_code );
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -346,5 +346,38 @@ class Fluent_Crm_Helpers {
 		}
 
 		return $list_ids;
+	}
+
+	/**
+	 * Get all formatted statuses.
+	 *
+	 * @return array The list of subscribers statuses.
+	 */
+	public function get_subscriber_statuses() {
+
+		if ( ! function_exists( 'fluentcrm_subscriber_statuses') ) {
+			return array();
+		}
+
+		$statuses = fluentcrm_subscriber_statuses();
+
+		$formattedStatues = [];
+
+        $transMaps = [
+            'subscribed' => __('Subscribed', 'uncanny-automator'),
+            'pending' => __('Pending', 'uncanny-automator'),
+            'unsubscribed' => __('Unsubscribed', 'uncanny-automator'),
+            'bounced' => __('Bounced', 'uncanny-automator'),
+            'complained' => __('Complained', 'uncanny-automator')
+        ];
+
+		$formattedStatues['-1'] = esc_html__('Any status', 'uncanny-automator');
+
+        foreach ($statuses as $status) {
+            $formattedStatues[$status] = isset($transMaps[$status]) ? $transMaps[$status] :  ucfirst($status);
+        }
+
+		return $formattedStatues;
+
 	}
 }

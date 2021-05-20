@@ -75,11 +75,11 @@ class Add_Groundhogg_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Groundhogg',
-			'icon_svg' => Utilities::get_integration_icon( 'groundhogg-icon-.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/groundhogg-icon-.svg' ),
 		) );
 	}
 }

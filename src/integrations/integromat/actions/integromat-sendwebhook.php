@@ -35,15 +35,15 @@ class INTEGROMAT_SENDWEBHOOK {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/working-with-integromat-actions' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			'sentence'           => sprintf(  esc_attr__( 'Send a webhook to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' =>  esc_attr__( 'Send a webhook to Integromat {{webhook}}', 'uncanny-automator' ),
+			'sentence'           => sprintf(  esc_attr__( 'Send data to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name' =>  esc_attr__( 'Send data to Integromat {{webhook}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'send_webhook' ),
@@ -168,7 +168,7 @@ class INTEGROMAT_SENDWEBHOOK {
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -276,27 +276,27 @@ class INTEGROMAT_SENDWEBHOOK {
 	 */
 	public function send_webhook( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
+
 		$key_values   = [];
 		$headers      = [];
 		$request_type = 'POST';
 		if ( isset( $action_data['meta']['WEBHOOKURL'] ) ) {
-			$webhook_url = $uncanny_automator->parse->text( $action_data['meta']['WEBHOOKURL'], $recipe_id, $user_id, $args );
+			$webhook_url = Automator()->parse->text( $action_data['meta']['WEBHOOKURL'], $recipe_id, $user_id, $args );
 
 			for ( $i = 1; $i <= INTEGROMAT_SENDWEBHOOK::$number_of_keys; $i ++ ) {
-				$key                = $uncanny_automator->parse->text( $action_data['meta'][ 'KEY' . $i ], $recipe_id, $user_id, $args );
-				$value              = $uncanny_automator->parse->text( $action_data['meta'][ 'VALUE' . $i ], $recipe_id, $user_id, $args );
+				$key                = Automator()->parse->text( $action_data['meta'][ 'KEY' . $i ], $recipe_id, $user_id, $args );
+				$value              = Automator()->parse->text( $action_data['meta'][ 'VALUE' . $i ], $recipe_id, $user_id, $args );
 				$key_values[ $key ] = $value;
 			}
 
 		} elseif ( isset( $action_data['meta']['WEBHOOK_URL'] ) ) {
-			$webhook_url = $uncanny_automator->parse->text( $action_data['meta']['WEBHOOK_URL'], $recipe_id, $user_id, $args );
+			$webhook_url = Automator()->parse->text( $action_data['meta']['WEBHOOK_URL'], $recipe_id, $user_id, $args );
 
 			$fields = json_decode( $action_data['meta']['WEBHOOK_FIELDS'], true );
 
 			for ( $i = 0; $i < count( $fields ); $i ++ ) {
-				$key                = $uncanny_automator->parse->text( $fields[ $i ]['KEY'], $recipe_id, $user_id, $args );
-				$value              = $uncanny_automator->parse->text( $fields[ $i ]['VALUE'], $recipe_id, $user_id, $args );
+				$key                = Automator()->parse->text( $fields[ $i ]['KEY'], $recipe_id, $user_id, $args );
+				$value              = Automator()->parse->text( $fields[ $i ]['VALUE'], $recipe_id, $user_id, $args );
 				$key_values[ $key ] = $value;
 			}
 
@@ -304,10 +304,10 @@ class INTEGROMAT_SENDWEBHOOK {
 				$header_meta = json_decode( $action_data['meta']['WEBHOOK_HEADERS'], true );
 				if ( ! empty( $header_meta ) ) {
 					for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
-						$key = isset( $header_meta[ $i ]['NAME'] ) ? $uncanny_automator->parse->text( $header_meta[ $i ]['NAME'], $recipe_id, $user_id, $args ) : null;
+						$key = isset( $header_meta[ $i ]['NAME'] ) ? Automator()->parse->text( $header_meta[ $i ]['NAME'], $recipe_id, $user_id, $args ) : null;
 						// remove colon if user added in NAME
 						$key   = str_replace( ':', '', $key );
-						$value = isset( $header_meta[ $i ]['VALUE'] ) ? $uncanny_automator->parse->text( $header_meta[ $i ]['VALUE'], $recipe_id, $user_id, $args ) : null;
+						$value = isset( $header_meta[ $i ]['VALUE'] ) ? Automator()->parse->text( $header_meta[ $i ]['VALUE'], $recipe_id, $user_id, $args ) : null;
 						if ( ! is_null( $key ) && ! is_null( $value ) ) {
 							$headers[ $key ] = $value;
 						}
@@ -341,12 +341,12 @@ class INTEGROMAT_SENDWEBHOOK {
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
 				$error_message = sprintf(  esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 				return;
 			}
 
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		}
 
 	}

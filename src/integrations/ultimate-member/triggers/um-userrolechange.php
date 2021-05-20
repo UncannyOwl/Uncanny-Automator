@@ -37,27 +37,27 @@ class UM_USERROLECHANGE {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/ultimate-member/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Ultimate Member */
-			'sentence'            => sprintf(  esc_attr__( "A user's role changes to {{a specific role:%1\$s}}", 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( "A user's role changes to {{a specific role:%1\$s}}", 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Ultimate Member */
-			'select_option_name'  =>  esc_attr__( "A user's role changes to {{a specific role}}", 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( "A user's role changes to {{a specific role}}", 'uncanny-automator' ),
 			'action'              => 'set_user_role',
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'set_user_role' ),
 			'options'             => [
-				$uncanny_automator->helpers->recipe->wp->options->wp_user_roles(),
+				Automator()->helpers->recipe->wp->options->wp_user_roles(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -71,7 +71,7 @@ class UM_USERROLECHANGE {
 	 */
 	public function set_user_role( $user_id, $role, $old_roles ) {
 
-		global $uncanny_automator;
+
 		$matched_recipe_ids = $this->match_condition( $role );
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
@@ -84,10 +84,10 @@ class UM_USERROLECHANGE {
 					'ignore_post_id'   => true,
 				];
 
-				if ( isset( $uncanny_automator->process ) && isset( $uncanny_automator->process->user ) && $uncanny_automator->process->user instanceof Automator_Recipe_Process_User ) {
-					$uncanny_automator->process->user->maybe_add_trigger_entry( $args );
+				if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
+					Automator()->process->user->maybe_add_trigger_entry( $args );
 				} else {
-					$uncanny_automator->maybe_add_trigger_entry( $args );
+					Automator()->maybe_add_trigger_entry( $args );
 				}
 			}
 		}
@@ -100,10 +100,10 @@ class UM_USERROLECHANGE {
 	 * @return array
 	 */
 	public function match_condition( $role ) {
-		global $uncanny_automator;
-		$recipes            = $uncanny_automator->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_role      = $uncanny_automator->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_role      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
 		//Add where option is set to Any product
 		foreach ( $recipes as $recipe_id => $recipe ) {

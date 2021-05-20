@@ -33,26 +33,26 @@ class LF_MARKSECTIONDONE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/lifterlms/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LifterLMS */
-			'sentence'           => sprintf(  esc_attr__( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LifterLMS */
-			'select_option_name' =>  esc_attr__( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lf_mark_section_done' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->lifterlms->options->all_lf_sections(  esc_attr__( 'Section', 'uncanny-automator' ), $this->action_meta, false ),
+				Automator()->helpers->recipe->lifterlms->options->all_lf_sections( esc_attr__( 'Section', 'uncanny-automator' ), $this->action_meta, false ),
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 
@@ -65,11 +65,11 @@ class LF_MARKSECTIONDONE {
 	 */
 	public function lf_mark_section_done( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+
 
 		if ( ! function_exists( 'llms_mark_complete' ) ) {
 			$error_message = 'The function llms_mark_complete does not exist';
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
@@ -87,6 +87,6 @@ class LF_MARKSECTIONDONE {
 
 		llms_mark_complete( $user_id, $section_id, 'section' );
 
-		$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

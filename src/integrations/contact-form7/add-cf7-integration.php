@@ -74,11 +74,11 @@ class Add_Cf7_Integration {
 	 * Register the integration by pushing it into the global automator object
 	 */
 	public function add_integration_func() {
-		global $uncanny_automator;
 
-		$uncanny_automator->register->integration( self::$integration, array(
+
+		Automator()->register->integration( self::$integration, array(
 			'name'     => 'Contact Form 7',
-			'icon_svg' => Utilities::get_integration_icon( 'contact-form-7-icon.svg' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/contact-form-7-icon.svg' ),
 		) );
 	}
 }

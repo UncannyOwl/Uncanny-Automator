@@ -3,7 +3,7 @@
  * Contains Quiz Attempt Failed Trigger.
  *
  * @version 2.4.0
- * @since 2.4.0
+ * @since   2.4.0
  */
 
 namespace Uncanny_Automator;
@@ -43,30 +43,30 @@ class TUTORLMS_QUIZFAILED {
 	public function define_trigger() {
 
 		// global automator object.
-		global $uncanny_automator;
+
 
 		// setup trigger configuration.
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name( $this->trigger_code ),
-			'support_link'        => $uncanny_automator->get_author_support_link( $this->trigger_code ),
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/tutor-lms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - TutorLMS */
-			'sentence'            => sprintf(  esc_attr__( 'A user fails {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr__( 'A user fails {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - TutorLMS */
-			'select_option_name'  =>  esc_attr__( 'A user fails {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user fails {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'tutor_quiz/attempt_ended',
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'failed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => [
-				$uncanny_automator->helpers->recipe->tutorlms->options->all_tutorlms_quizzes( null, $this->trigger_meta, true ),
-				$uncanny_automator->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_quizzes( null, $this->trigger_meta, true ),
+				Automator()->helpers->recipe->options->number_of_times(),
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -91,10 +91,10 @@ class TUTORLMS_QUIZFAILED {
 			return;
 		}
 
-		global $uncanny_automator;
+
 
 		// bail if they have passed.
-		if ( $uncanny_automator->helpers->recipe->tutorlms->options->was_quiz_attempt_successful( $attempt ) ) {
+		if ( Automator()->helpers->recipe->tutorlms->options->was_quiz_attempt_successful( $attempt ) ) {
 			return;
 		}
 
@@ -110,7 +110,7 @@ class TUTORLMS_QUIZFAILED {
 		];
 
 		// run trigger.
-		$uncanny_automator->maybe_add_trigger_entry( $args, true );
+		Automator()->maybe_add_trigger_entry( $args, true );
 	}
 
 }

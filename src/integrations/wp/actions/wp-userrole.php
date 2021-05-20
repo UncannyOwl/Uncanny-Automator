@@ -33,26 +33,26 @@ class WP_USERROLE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WordPress */
-			'sentence'           => sprintf(  esc_attr__( "Change the user's role to {{a new role:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( "Change the user's role to {{a new role:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WordPress */
-			'select_option_name' =>  esc_attr__( "Change the user's role to {{a new role}}", 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( "Change the user's role to {{a new role}}", 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'user_role' ),
 			'options'            => [
-				$uncanny_automator->helpers->recipe->wp->options->wp_user_roles(),
+				Automator()->helpers->recipe->wp->options->wp_user_roles(),
 			],
 		);
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class WP_USERROLE {
 	 */
 	public function user_role( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+
 
 		$role = $action_data['meta'][ $this->action_meta ];
 
@@ -72,10 +72,10 @@ class WP_USERROLE {
 		$user_roles = $user_obj->roles;
 		if ( ! in_array( 'administrator', $user_roles ) ) {
 			$user_obj->set_role( $role );
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} else {
-			$error_message =  esc_attr__( 'For security, the change role action cannot be applied to administrators.', 'uncanny-automator' );
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			$error_message = esc_attr__( 'For security, the change role action cannot be applied to administrators.', 'uncanny-automator' );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 		}
 	}
 }

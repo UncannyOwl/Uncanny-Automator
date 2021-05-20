@@ -37,7 +37,7 @@ class LP_MARKSECTIONDONE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
+
 		$args    = [
 			'post_type'      => 'lp_course',
 			'posts_per_page' => 999,
@@ -45,48 +45,48 @@ class LP_MARKSECTIONDONE {
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		];
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, false,  esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$action = [
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learnpress/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnPress */
-			'sentence'           => sprintf(  esc_attr__( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnPress */
-			'select_option_name' =>  esc_attr__( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => [ $this, 'lp_mark_section_done' ],
 			'options_group'      => [
 				$this->action_meta => [
-					$uncanny_automator->helpers->recipe->field->select_field_args([
-						'option_code'  => 'LPCOURSE',
-						'options'      => $options,
-						'label'        => esc_attr__( 'Course', 'uncanny-automator' ),
+					Automator()->helpers->recipe->field->select_field_args( [
+						'option_code' => 'LPCOURSE',
+						'options'     => $options,
+						'label'       => esc_attr__( 'Course', 'uncanny-automator' ),
 
-						'required'     => true,
+						'required'                 => true,
 						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
 
 						'is_ajax'      => true,
 						'target_field' => 'LPSECTION',
 						'endpoint'     => 'select_section_from_course_LPMARKLESSONDONE',
-					]),
+					] ),
 
-					$uncanny_automator->helpers->recipe->field->select_field_args([
+					Automator()->helpers->recipe->field->select_field_args( [
 						'option_code' => $this->action_meta,
-						'options'     => [],
+						'options'     => array(),
 						'label'       => esc_attr__( 'Section', 'uncanny-automator' ),
-						
-						'required'    => true,
-						'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' )
-					]),
+
+						'required'                 => true,
+						'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
+					] ),
 				],
 			],
 		];
 
-		$uncanny_automator->register->action( $action );
+		Automator()->register->action( $action );
 	}
 
 
@@ -99,11 +99,11 @@ class LP_MARKSECTIONDONE {
 	 */
 	public function lp_mark_section_done( $user_id, $action_data, $recipe_id ) {
 
-		global $uncanny_automator;
+
 
 		if ( ! function_exists( 'learn_press_get_current_user' ) ) {
 			$error_message = 'The function learn_press_get_current_user does not exist';
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
@@ -134,10 +134,10 @@ class LP_MARKSECTIONDONE {
 		}
 
 		if ( ! is_wp_error( $result ) ) {
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} else {
 			$error_message = $result->get_error_message();
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}

@@ -31,7 +31,7 @@ class MASTERSTUDY_COURSEENROLLED {
 	 */
 	public function define_trigger() {
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'post_type'      => 'stm-courses',
@@ -41,11 +41,11 @@ class MASTERSTUDY_COURSEENROLLED {
 			'post_status'    => 'publish',
 		];
 
-		$options = $uncanny_automator->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$trigger = array(
-			'author'              => $uncanny_automator->get_author_name(),
-			'support_link'        => $uncanny_automator->get_author_support_link(),
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/masterstudy-lms/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - MasterStudy LMS */
@@ -59,7 +59,7 @@ class MASTERSTUDY_COURSEENROLLED {
 			'options'             => [
 				[
 					'option_code'              => $this->trigger_meta,
-					'label'                    => esc_attr_x( 'Course', 'MasterStudy LMS',  'uncanny-automator' ),
+					'label'                    => esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
 					'input_type'               => 'select',
 					'required'                 => true,
 					'options'                  => $options,
@@ -68,12 +68,12 @@ class MASTERSTUDY_COURSEENROLLED {
 						'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 						'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
 					],
-					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' )
-				]
+					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
+				],
 			],
 		);
 
-		$uncanny_automator->register->trigger( $trigger );
+		Automator()->register->trigger( $trigger );
 
 		return;
 	}
@@ -85,7 +85,7 @@ class MASTERSTUDY_COURSEENROLLED {
 	 */
 	public function course_enrolled( $user_id, $course_id ) {
 
-		global $uncanny_automator;
+
 
 		$args = [
 			'code'    => $this->trigger_code,
@@ -94,7 +94,7 @@ class MASTERSTUDY_COURSEENROLLED {
 			'user_id' => $user_id,
 		];
 
-		$uncanny_automator->maybe_add_trigger_entry( $args );
+		Automator()->maybe_add_trigger_entry( $args );
 
 	}
 }
