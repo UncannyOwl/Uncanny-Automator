@@ -199,8 +199,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Linked "Completed runs" column in the recipe list to recipe log
 * Improved error handling on Edit Recipe page
 * Date and time selector fields
-* Added filter automator_mail_wpautop to disable wpautop
-* Numerous apply_filters and do_actions for code accessibility
+* Added filter `automator_mail_wpautop` to disable wpautop
+* Numerous `apply_filters()` and `do_action()` for code accessibility
 * Added Automator global functions for code accessibility
 
 **Updated:**
@@ -234,10 +234,10 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Added Traits for Closures, Actions, Triggers, Integrations and Tokens
 * Moved list of pro integrations in to a separate file
 * Reduced duplicate code and code complexity
-* Added deprecated notices to apply_filters, do_actions and some functions
+* Added apply_filters_deprecated, do_action_deprecated to some functions
 * Added get_trigger/action_meta function
 * Reorganized folders
-* Changed global $uncanny_automator to Automator()
+* Changed `global $uncanny_automator` to `Automator()`
 * Prefixed most core file types
 * Moved icons in to integrations
 * Support for Scheduled actions
@@ -451,5 +451,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
+
 = 3.0 =
 Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
