@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Uncanny Automator plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.0\n"
+"Project-Id-Version: Uncanny Automator 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-05-20T13:59:40+00:00\n"
+"POT-Creation-Date: 2021-05-20T21:16:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: uncanny-automator\n"
@@ -4230,51 +4230,47 @@ msgctxt "FluentCRM"
 msgid "User was already a member of %1$s"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fcrm-status-helpers.php:167
-msgid "Subscription Status"
-msgstr ""
-
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:67
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:97
 msgctxt "FluentCRM"
 msgid "List"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:80
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:108
 msgctxt "FluentCRM"
 msgid "Any list"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:128
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:155
 msgctxt "FluentCRM"
 msgid "Tag"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:141
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:166
 msgctxt "FluentCRM"
 msgid "Any tag"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:367
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:390
 msgid "Subscribed"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:368
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:391
 msgid "Pending"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:369
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:392
 msgid "Unsubscribed"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:370
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:393
 msgid "Bounced"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:371
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:394
 msgid "Complained"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:374
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:397
 msgid "Any status"
 msgstr ""
 
@@ -4303,21 +4299,25 @@ msgid "{{A tag}} is added to a user"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Forms
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:71
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:66
 msgid "A user is set to a {{specific status:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Forms
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:73
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:68
 msgid "A user is set to a {{specific status}}"
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:84
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:79
 msgid "List of all available status values for Fluent CRM contacts."
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:85
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:80
 msgid "Select from dropdown list of the options above."
+msgstr ""
+
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:129
+msgid "Subscription Status"
 msgstr ""
 
 #. translators: GamiPress achievement type

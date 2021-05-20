@@ -100,7 +100,7 @@ trait Action_Parser {
 		);
 
 		$this->set_not_token_keys( $not_tokens );
-		$this->set_wpautop( true );
+		$this->set_wpautop( $this->is_wpautop() );
 		$this->set_do_shortcode( true );
 	}
 

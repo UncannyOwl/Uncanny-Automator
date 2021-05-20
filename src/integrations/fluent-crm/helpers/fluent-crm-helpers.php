@@ -12,6 +12,9 @@ use Uncanny_Automator_Pro\Fluent_Crm_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Fluent_Crm_Helpers {
+
+	public static $has_run = false;
+
 	/**
 	 * @var Fluent_Crm_Helpers
 	 */
@@ -33,6 +36,19 @@ class Fluent_Crm_Helpers {
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$fluent_crm_targetted_actions = array(
+			'fluentcrm_subscriber_status_to_subscribed',
+			'fluentcrm_subscriber_status_to_pending',
+			'fluentcrm_subscriber_status_to_unsubscribed',
+			'fluentcrm_subscriber_status_to_bounced',
+			'fluentcrm_subscriber_status_to_complained',
+		);
+
+		foreach ( $fluent_crm_targetted_actions as $status_action ) {
+			add_action( $status_action, array( $this, 'do_fluent_crm_actions' ), 2, 99 );
+		}
+
 	}
 
 	/**
@@ -50,15 +66,29 @@ class Fluent_Crm_Helpers {
 	}
 
 	/**
+	 * Our callback function to attach the trigger 'automator_fluentcrm_status_update'.
+	 *
+	 * @param  mixed $subscriber The accepted subscriber object from status_action.
+	 * @param  string $old_status The old status.
+	 * @return void
+	 */
+	public function do_fluent_crm_actions( $subscriber, $old_status ) {
+		// Make sure to only trigger once. For some reason, Fluent CRM is triggering this twice.
+		if ( ! self::$has_run ) {
+			do_action( 'automator_fluentcrm_status_update', $subscriber, $old_status );
+			self::$has_run = true;
+		}
+	}
+
+	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function fluent_crm_lists( $label = null, $option_code = 'FCRMLIST', $args = [] ) {
+	public function fluent_crm_lists( $label = null, $option_code = 'FCRMLIST', $args = array() ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -67,15 +97,13 @@ class Fluent_Crm_Helpers {
 			$label = esc_attr_x( 'List', 'FluentCRM', 'uncanny-automator' );
 		}
 
-		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
-		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
-		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
-		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$supports_multiple_values    = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
+		$token                    = key_exists( 'token', $args ) ? $args['token'] : false;
+		$is_ajax                  = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
+		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$supports_multiple_values = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
 
-		$options      = [];
-
-
+		$options = array();
 
 		$options['0'] = esc_attr_x( 'Any list', 'FluentCRM', 'uncanny-automator' );
 
@@ -93,18 +121,18 @@ class Fluent_Crm_Helpers {
 
 		$type = 'select';
 
-		$option = [
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => $type,
+		$option = array(
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => $type,
 			'supports_multiple_values' => $supports_multiple_values,
-			'required'        => true,
-			'supports_tokens' => $token,
-			'is_ajax'         => $is_ajax,
-			'fill_values_in'  => $target_field,
-			'endpoint'        => $end_point,
-			'options'         => $options,
-		];
+			'required'                 => true,
+			'supports_tokens'          => $token,
+			'is_ajax'                  => $is_ajax,
+			'fill_values_in'           => $target_field,
+			'endpoint'                 => $end_point,
+			'options'                  => $options,
+		);
 
 		return $option;
 
@@ -117,9 +145,8 @@ class Fluent_Crm_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function fluent_crm_tags( $label = null, $option_code = 'FCRMTAG', $args = [] ) {
+	public function fluent_crm_tags( $label = null, $option_code = 'FCRMTAG', $args = array() ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -128,22 +155,19 @@ class Fluent_Crm_Helpers {
 			$label = esc_attr_x( 'Tag', 'FluentCRM', 'uncanny-automator' );
 		}
 
-		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
-		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
-		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
-		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$supports_multiple_values    = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
+		$token                    = key_exists( 'token', $args ) ? $args['token'] : false;
+		$is_ajax                  = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
+		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$supports_multiple_values = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
 
-		$options      = [];
-
-
+		$options = array();
 
 		$options['0'] = esc_attr_x( 'Any tag', 'FluentCRM', 'uncanny-automator' );
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			$tags = Tag::orderBy( 'title', 'DESC' )->get();
-
 
 			if ( ! empty( $tags ) ) {
 				foreach ( $tags as $tag ) {
@@ -154,18 +178,18 @@ class Fluent_Crm_Helpers {
 
 		$type = 'select';
 
-		$option = [
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => $type,
+		$option = array(
+			'option_code'              => $option_code,
+			'label'                    => $label,
+			'input_type'               => $type,
 			'supports_multiple_values' => $supports_multiple_values,
-			'required'        => true,
-			'supports_tokens' => $token,
-			'is_ajax'         => $is_ajax,
-			'fill_values_in'  => $target_field,
-			'endpoint'        => $end_point,
-			'options'         => $options,
-		];
+			'required'                 => true,
+			'supports_tokens'          => $token,
+			'is_ajax'                  => $is_ajax,
+			'fill_values_in'           => $target_field,
+			'endpoint'                 => $end_point,
+			'options'                  => $options,
+		);
 
 		return $option;
 
@@ -182,7 +206,7 @@ class Fluent_Crm_Helpers {
 	 */
 	public function match_single_condition( $to_match = null, $match_type = 'int', $trigger_meta = null, $trigger_code = null ) {
 
-		$recipe_ids = [];
+		$recipe_ids = array();
 
 		if (
 			null === $to_match ||
@@ -193,13 +217,12 @@ class Fluent_Crm_Helpers {
 			return $recipe_ids;
 		}
 
-		$matched_recipe_ids = [];
+		$matched_recipe_ids = array();
 
 		// Normalize $to_match as array
 		if ( ! is_array( $to_match ) ) {
-			$to_match = [ $to_match ];
+			$to_match = array( $to_match );
 		}
-
 
 		$recipes = Automator()->get->recipes_from_trigger_code( $trigger_code );
 
@@ -231,11 +254,11 @@ class Fluent_Crm_Helpers {
 							0 === $trigger_value || // handle "any" selection
 							'0' === $trigger_value // handle "any" selection
 						) {
-							$matched_recipe_ids[] = (object) [
+							$matched_recipe_ids[] = (object) array(
 								'recipe_id'     => $recipe['ID'],
 								'trigger_value' => $trigger_value,
 								'matched_value' => $to_match,
-							];
+							);
 							break;
 						}
 					}
@@ -272,7 +295,7 @@ class Fluent_Crm_Helpers {
 		if ( absint( $subscriber->user_id ) !== 0 ) {
 			// Subscriber already has an ID associated with them
 			$user_id = $subscriber->user_id;
-		} else if ( ! empty( $subscriber->email ) ) {
+		} elseif ( ! empty( $subscriber->email ) ) {
 
 			// Lets see if a WP user has an email associated with them
 			$user = get_user_by_email( $subscriber->email );
@@ -305,7 +328,7 @@ class Fluent_Crm_Helpers {
 		 * This action is triggered by three different processes and returns either list ids
 		 * or pivot ids(table: wp_fc_subscriber_pivot)
 		 */
-		$list_ids = [];
+		$list_ids = array();
 		if ( ! isset( $_POST['type'] ) ) {
 			// the $attachedListIds are actually pivot IDs
 			$pivots = SubscriberPivot::whereIn( 'id', $attachedListIds )->get();
@@ -332,7 +355,7 @@ class Fluent_Crm_Helpers {
 		 * This action is triggered by three different processes and returns either list ids
 		 * or pivot ids(table: wp_fc_subscriber_pivot)
 		 */
-		$list_ids = [];
+		$list_ids = array();
 		if ( ! isset( $_POST['type'] ) ) {
 			// the $attachedListIds are actually pivot IDs
 			$pivots = SubscriberPivot::whereIn( 'id', $attachedTagIds )->get();
@@ -355,29 +378,31 @@ class Fluent_Crm_Helpers {
 	 */
 	public function get_subscriber_statuses() {
 
-		if ( ! function_exists( 'fluentcrm_subscriber_statuses') ) {
+		if ( ! function_exists( 'fluentcrm_subscriber_statuses' ) ) {
 			return array();
 		}
 
 		$statuses = fluentcrm_subscriber_statuses();
 
-		$formattedStatues = [];
+		$formattedStatues = array();
 
-        $transMaps = [
-            'subscribed' => __('Subscribed', 'uncanny-automator'),
-            'pending' => __('Pending', 'uncanny-automator'),
-            'unsubscribed' => __('Unsubscribed', 'uncanny-automator'),
-            'bounced' => __('Bounced', 'uncanny-automator'),
-            'complained' => __('Complained', 'uncanny-automator')
-        ];
+		$transMaps = array(
+			'subscribed'   => __( 'Subscribed', 'uncanny-automator' ),
+			'pending'      => __( 'Pending', 'uncanny-automator' ),
+			'unsubscribed' => __( 'Unsubscribed', 'uncanny-automator' ),
+			'bounced'      => __( 'Bounced', 'uncanny-automator' ),
+			'complained'   => __( 'Complained', 'uncanny-automator' ),
+		);
 
-		$formattedStatues['-1'] = esc_html__('Any status', 'uncanny-automator');
+		$formattedStatues['-1'] = esc_html__( 'Any status', 'uncanny-automator' );
 
-        foreach ($statuses as $status) {
-            $formattedStatues[$status] = isset($transMaps[$status]) ? $transMaps[$status] :  ucfirst($status);
-        }
+		foreach ( $statuses as $status ) {
+			$formattedStatues[ $status ] = isset( $transMaps[ $status ] ) ? $transMaps[ $status ] : ucfirst( $status );
+		}
 
 		return $formattedStatues;
 
 	}
+
+
 }

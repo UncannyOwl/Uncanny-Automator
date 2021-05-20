@@ -23,9 +23,11 @@ class Fcrm_Tokens {
 	 * Wpff_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_fcrm_fcrmlist_tokens', [ $this, 'fcrm_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_fcrm_fcrmtag_tokens', [ $this, 'fcrm_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'fcrm_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_fcrm_fcrmlist_tokens', array( $this, 'fcrm_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_fcrm_fcrmtag_tokens', array( $this, 'fcrm_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'fcrm_token' ), 20, 6 );
+		// Separate status tokens for now.
+		add_filter( 'automator_maybe_parse_token', array( $this, 'fcrm_status_tokens' ), 36, 6 );
 	}
 
 	/**
@@ -40,22 +42,22 @@ class Fcrm_Tokens {
 
 		// All subscriber fields
 		foreach ( Subscriber::mappables() as $key => $label ) {
-			$tokens[] = [
+			$tokens[] = array(
 				'tokenId'         => $key,
 				'tokenName'       => $label,
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
-			];
+			);
 		}
 
 		// All custom subscriber fields
-		foreach ( ( new CustomContactField )->getGlobalFields()['fields'] as $field ) {
-			$tokens[] = [
+		foreach ( ( new CustomContactField() )->getGlobalFields()['fields'] as $field ) {
+			$tokens[] = array(
 				'tokenId'         => $field['slug'],
 				'tokenName'       => $field['label'],
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
-			];
+			);
 		}
 
 		return $tokens;
@@ -76,6 +78,10 @@ class Fcrm_Tokens {
 
 		if ( $pieces ) {
 
+			if ( ! isset( $pieces[2] ) ) {
+				return $value;
+			}
+
 			$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
 			$trigger_id     = $pieces[0];
 			$trigger_meta   = $pieces[2];
@@ -90,12 +96,14 @@ class Fcrm_Tokens {
 				global $wpdb;
 
 				// Get a serialized array of list_ids OR tag_ids added to subscriber
-				$entry = $wpdb->get_var( "SELECT meta_value
+				$entry = $wpdb->get_var(
+					"SELECT meta_value
 													FROM {$wpdb->prefix}uap_trigger_log_meta
 													WHERE meta_key = '$trigger_meta'
 													AND automator_trigger_log_id = $trigger_log_id
 													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1" );
+													LIMIT 0, 1"
+				);
 
 				if ( $entry ) {
 
@@ -156,7 +164,6 @@ class Fcrm_Tokens {
 							return implode( ', ', $tag_names );
 						}
 					}
-
 				}
 
 				return '';
@@ -169,12 +176,14 @@ class Fcrm_Tokens {
 				// value is the contact information of the subscriber
 
 				// Get the subscriber ID
-				$entry = $wpdb->get_var( "SELECT meta_value
+				$entry = $wpdb->get_var(
+					"SELECT meta_value
 													FROM {$wpdb->prefix}uap_trigger_log_meta
 													WHERE meta_key = 'subscriber_id'
 													AND automator_trigger_log_id = $trigger_log_id
 													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1" );
+													LIMIT 0, 1"
+				);
 
 				if ( absint( $entry ) ) {
 					$subscriber = Subscriber::where( 'id', absint( $entry ) )->first();
@@ -201,4 +210,91 @@ class Fcrm_Tokens {
 
 		return $value;
 	}
+
+	/**
+	 * Parses the tokens.
+	 *
+	 * @param string $value         The value.
+	 * @param array  $pieces        The pieces.
+	 * @param int    $recipe_id     The recipe id.
+	 * @param array  $trigger_data  The trigger data.
+	 * @param int    $user_id       The user id.
+	 * @param string $replace_args  The replace args
+	 *
+	 * @return string The token value.
+	 */
+	public function fcrm_status_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+
+		if ( ! function_exists( '\FluentCrmApi' ) ) {
+			return $value;
+		}
+
+		if ( ! isset( $pieces[2] ) ) {
+			return $value;
+		}
+
+		if ( false !== strpos( $pieces[2], 'FLUENTCRM_STATUS_FIELD_' ) ) {
+
+			$property = str_replace( 'FLUENTCRM_STATUS_FIELD_', '', $pieces[2] );
+
+			$contact_api = \FluentCrmApi( 'contacts' );
+
+			$contact = $contact_api->getContactByUserId( $user_id );
+
+			$token_value = '';
+
+			if ( isset( $contact->$property ) ) {
+				$token_value = $contact->$property;
+			} else {
+				// Try custom field.
+				$token_value = $this->get_custom_field_value( $property, $contact->id );
+			}
+
+			return $token_value;
+
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Returns the custom field value.
+	 *
+	 * @param  mixed $key The custom field key.
+	 * @param  mixed $subscriber_id The subscriber id.
+	 *
+	 * @return string The custom field value. Separated by comma if multiple.
+	 */
+	protected function get_custom_field_value( $key = '', $subscriber_id = 0 ) {
+
+		$value = '';
+
+		if ( empty( $key ) ) {
+			return $value;
+		}
+
+		global $wpdb;
+
+		$value = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT `value` 
+                FROM {$wpdb->prefix}fc_subscriber_meta 
+                WHERE subscriber_id = %d AND `key` = %s",
+				$subscriber_id,
+				$key
+			)
+		);
+
+		if ( is_serialized( $value ) ) {
+			$value = maybe_unserialize( $value );
+			if ( is_array( $value ) ) {
+				$value = implode( ', ', $value );
+			}
+		}
+
+		return $value;
+
+	}
+
 }

@@ -363,8 +363,16 @@ class Set_Up_Automator {
 				$class = apply_filters( 'automator_helpers_class_name', $this->get_class_name( $file ), $file );
 				if ( class_exists( $class ) ) {
 					$mod = str_replace( '-', '_', $dir_name );
-					// Todo: Do not initiate helpers class.
-					Utilities::add_helper_instance( $mod, new $class() );
+					try {
+						$reflection = new ReflectionClass( $class );
+						if ( $reflection->hasMethod( 'setOptions' ) ) {
+							// Todo: Do not initiate helpers class.
+							Utilities::add_helper_instance( $mod, new $class() );
+						}
+					} catch ( Automator_Exception $e ) {
+						// is not a helper file.. shouldn't be loaded as helper
+						Utilities::add_class_instance( $class, new $class() );
+					}
 				}
 			}
 		}
