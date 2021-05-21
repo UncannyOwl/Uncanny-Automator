@@ -859,7 +859,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			}
 		}
 
-		return apply_filters( 'automator_do_load_options', true, $class );
+		return apply_filters( 'automator_do_load_options', false, $class );
 	}
 
 	/**
