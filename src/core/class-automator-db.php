@@ -213,7 +213,7 @@ KEY meta_key (meta_key(15))
 	 * @version  2.5
 	 * @author   Saad
 	 */
-	public function activation() {
+	public static function activation() {
 		$db_version = get_option( 'uap_database_version', null );
 		if ( null !== $db_version && (string) AUTOMATOR_DATABASE_VERSION === (string) $db_version ) {
 			// bail. No db upgrade needed!

@@ -225,6 +225,8 @@ class Automator_Registration {
 		// Register integration if it doesn't already exist
 		if ( ! key_exists( $integration_code, Automator()->get_integrations() ) ) {
 			Automator()->set_integrations( $integration_code, $integration );
+		} elseif ( array_key_exists( 'icon_svg', $integration ) ) {
+			Automator()->set_integrations( $integration_code, $integration );
 		}
 
 		// Order integrations alphabetically

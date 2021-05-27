@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
 Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -172,6 +172,19 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.0.3 [2021-05-27] =
+
+**Updated:**
+
+* Added a default fallback icon for integrations
+* Improved compatibility with third-party integrations
+
+**Fixed:**
+
+* Twitter: Restored token support in Status field
+* Modern Events Calendar: Combined helper files
+* Gravity Forms: PHP Notice
 
 = 3.0.2 [2021-05-21] =
 
@@ -456,14 +469,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * LearnDash - Triggers/Actions now load all child objects instead of first 20 only
 * PHP Notice: Undefined index in automator-recipe-helpers.php on line 328
 
-= 2.8.3 [2020-10-15] =
-
-* Fixed: Token QUIZPERCENT for A user achieves a percentage greater than, less than or equal to a value on a quiz
-* Fixed: Incorrect namespace on helper files for some integrations
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
+
+= 3.0.3 =
+Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
 
 = 3.0.2 =
 Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

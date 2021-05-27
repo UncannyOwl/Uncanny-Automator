@@ -206,14 +206,20 @@ class Utilities {
 	 */
 	public static function cleanup_icon_path( $dirname, $icon, $file_name ) {
 		// path relative to plugin
-		return str_replace(
-			array(
-				dirname( $dirname ),
-				$icon,
-			),
-			'',
-			$file_name
-		);
+		if ( file_exists( $file_name ) ) {
+			$val = str_replace(
+				array(
+					dirname( $dirname ),
+					$icon,
+				),
+				'',
+				$file_name
+			);
+		} else {
+			$val = '/src/recipe-ui/dist/media/integrations/';
+		}
+
+		return $val;
 	}
 
 	/**

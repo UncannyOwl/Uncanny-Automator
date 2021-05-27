@@ -43,7 +43,6 @@ class TWITTER_POSTSTATUS {
 	public function define_action() {
 
 
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/twitter/' ),
@@ -77,12 +76,11 @@ class TWITTER_POSTSTATUS {
 	 */
 	public function post_status( $user_id, $action_data, $recipe_id, $args ) {
 
-
 		$status = Automator()->parse->text( $action_data['meta']['TWITTERSTATUSCONTENT'], $recipe_id, $user_id, $args );
 
 		try {
-			$response = $this->statuses_update( $status );
-
+			$response  = $this->statuses_update( $status );
+			$error_msg = '';
 			if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 				$body = json_decode( wp_remote_retrieve_body( $response ) );
 				if ( ! isset( $body->errors ) ) {
@@ -121,7 +119,6 @@ class TWITTER_POSTSTATUS {
 	 * @return mixed
 	 */
 	public function statuses_update( $status ) {
-
 
 
 		// Get twitter credentials.

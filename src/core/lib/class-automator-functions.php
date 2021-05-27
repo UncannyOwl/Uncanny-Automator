@@ -991,7 +991,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 *
 	 * @param array $args
 	 *
-	 * @return null|true
+	 * @return null|bool
 	 * @deprecated 3.0
 	 */
 	public function complete_recipe( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array() ) {
@@ -1187,5 +1187,98 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 		$is_signed_in = array_key_exists( 'is_signed_in', $args ) ? $args['is_signed_in'] : false;
 
 		return true === $is_signed_in ? $is_signed_in : true === $check && is_user_logged_in();
+	}
+
+	/**
+	 * Register a new recipe type and creates a type if defined and the type does not exist
+	 *
+	 * @param null $recipe_type
+	 * @param array $recipe_details
+	 *
+	 * @return null|bool
+	 * @deprecated v2.1 Automator()->register->recipe_type
+	 * @use Automator()->register->recipe_type
+	 */
+	public function register_recipe_type( $recipe_type = null, $recipe_details = array() ) {
+		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
+			_doing_it_wrong( 'register_recipe_type', 'Please use Automator()->register->recipe_type instead.', 3.0 );
+		}
+
+		return $this->register->recipe_type( $recipe_type, $recipe_details );
+	}
+
+	/**
+	 * Register a new trigger and creates a type if defined and the type does not exist
+	 *
+	 * @param $trigger
+	 * @param $integration_code
+	 * @param $integration
+	 *
+	 * @return null|bool
+	 * @deprecated v2.1 Automator()->register->trigger
+	 * @use Automator()->register->trigger
+	 */
+	public function register_trigger( $trigger = null, $integration_code = null, $integration = null ) {
+		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
+			_doing_it_wrong( 'register_trigger', 'Please use Automator()->register->trigger instead.', 3.0 );
+		}
+
+		return $this->register->trigger( $trigger, $integration_code, $integration );
+	}
+
+	/**
+	 * Register a new uap action and creates a type if defined and the type does not exist
+	 *
+	 * @param $uap_action
+	 * @param $integration_code
+	 * @param $integration
+	 *
+	 * @return null|bool
+	 * @deprecated v2.1 use Automator()->register->action()
+	 * @use Automator()->register->action
+	 */
+	public function register_action( $uap_action = null, $integration_code = null, $integration = null ) {
+		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
+			_doing_it_wrong( 'register_action', 'Please use Automator()->register->action instead.', 3.0 );
+		}
+
+		return $this->register->action( $uap_action, $integration_code, $integration );
+	}
+
+	/**
+	 * Registers a new closure and creates a type if defined and the type does not exist
+	 *
+	 * @param $closure
+	 * @param $integration_code
+	 * @param $integration
+	 *
+	 * @return null|bool
+	 * @deprecated v2.1 Automator()->register->closure
+	 * @use Automator()->register->closure
+	 */
+	public function register_closure( $closure = null, $integration_code = null, $integration = null ) {
+		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
+			_doing_it_wrong( 'register_closure', 'Please use Automator()->register->closure instead.', 3.0 );
+		}
+
+		return $this->register->closure( $closure, $integration_code, $integration );
+	}
+
+	/**
+	 * Add a new integration
+	 *
+	 * @param $integration_code
+	 * @param $integration
+	 *
+	 * @return null|bool
+	 * @deprecated v2.1 Automator()->register->integration
+	 * @use Automator()->register->integration
+	 */
+	public function register_integration( $integration_code = null, $integration = null ) {
+		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
+			_doing_it_wrong( 'register_integration', 'Please use Automator()->register->integration instead.', 3.0 );
+		}
+
+		return $this->register->integration( $integration_code, $integration );
 	}
 }

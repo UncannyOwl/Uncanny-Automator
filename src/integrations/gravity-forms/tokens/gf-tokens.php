@@ -155,8 +155,16 @@ class Gf_Tokens {
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
 			if ( in_array( 'GFFORMS', $pieces ) || in_array( 'ANONGFFORMS', $pieces ) ) {
+				if ( isset( $pieces[2] ) && 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) {
+					$t_data   = array_shift( $trigger_data );
+					$form_id  = $t_data['meta'][ $pieces[2] ];
+					$forminfo = RGFormsModel::get_form( $form_id );
+
+					return $forminfo->title;
+				}
+				$token_piece = $pieces[2];
 				global $wpdb;
-				$token_info = explode( '|', $pieces[2] );
+				$token_info = explode( '|', $token_piece );
 				$form_id    = $token_info[0];
 				$meta_key   = $token_info[1];
 

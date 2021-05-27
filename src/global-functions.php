@@ -151,6 +151,15 @@ function automator_add_integration_directory( string $integration_code, string $
 }
 
 /**
+ * @param string $icon_path
+ *
+ * @return string
+ */
+function automator_add_integration_icon( string $icon_path, string $plugin_path = AUTOMATOR_BASE_FILE ) {
+	return Utilities::automator_get_integration_icon( $icon_path, $plugin_path );
+}
+
+/**
  * @param string $type
  * @param null $variable
  * @param string $flags

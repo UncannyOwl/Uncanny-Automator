@@ -186,7 +186,7 @@ class Automator_Load {
 		$db_version = get_option( 'uap_database_version', null );
 
 		if ( null === $db_version || (string) AUTOMATOR_DATABASE_VERSION !== (string) $db_version ) {
-			$config_instance->activation();
+			Automator_DB::activation();
 			$config_instance->mysql_8_auto_increment_fix();
 		}
 

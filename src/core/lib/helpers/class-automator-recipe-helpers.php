@@ -209,6 +209,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $presto;
 	/**
+	 * @var Modern_Events_Calendar_Helpers;
+	 */
+	public $modern_events_calendar;
+	/**
 	 * @var Automator_Helpers_Recipe
 	 */
 	public $options;

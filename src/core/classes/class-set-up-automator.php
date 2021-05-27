@@ -206,6 +206,10 @@ class Set_Up_Automator {
 	 */
 	public function automator_configuration_complete_func() {
 
+		//Let others hook in and add integrations
+		do_action_deprecated( 'uncanny_automator_add_integration', array(), '3.0', 'automator_add_integration' );
+		do_action( 'automator_add_integration' );
+
 		// Loads integrations
 		try {
 			$this->initialize_add_integrations();
@@ -216,10 +220,6 @@ class Set_Up_Automator {
 		//Let others hook in and add integrations
 		do_action_deprecated( 'uncanny_automator_add_recipe_type', array(), '3.0', 'automator_add_recipe_type' );
 		do_action( 'automator_add_recipe_type' );
-
-		//Let others hook in and add integrations
-		do_action_deprecated( 'uncanny_automator_add_integration', array(), '3.0', 'automator_add_integration' );
-		do_action( 'automator_add_integration' );
 
 		//Let others hook in to the directories and add their integration's actions / triggers etc
 		self::$auto_loaded_directories = apply_filters_deprecated( 'uncanny_automator_integration_directory', array( self::$auto_loaded_directories ), '3.0', 'automator_integration_directory' );
@@ -264,7 +264,6 @@ class Set_Up_Automator {
 					foreach ( $files as $file ) {
 						if ( file_exists( $file ) ) {
 							require_once $file;
-
 							$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file ), $file );
 							try {
 								$is_using_trait = ( new ReflectionClass( $class ) )->getTraits();
@@ -309,7 +308,6 @@ class Set_Up_Automator {
 							if ( method_exists( $i, 'add_integration' ) ) {
 								$i->add_integration( $i->get_integration(), array( $i->get_name(), $i->get_icon() ) );
 							}
-
 							Utilities::add_class_instance( $class, $i );
 						}
 					}

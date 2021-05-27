@@ -1,17 +1,17 @@
 # Copyright (C) 2021 Uncanny Owl
-# This file is distributed under the same license as the Uncanny Automator plugin.
+# This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.0.2\n"
+"Project-Id-Version: Uncanny Automator 3.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-05-21T16:11:12+00:00\n"
+"POT-Creation-Date: 2021-05-27T01:17:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.4.0\n"
+"X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
 
 #. Plugin Name of the plugin
@@ -112,7 +112,7 @@ msgstr ""
 #: src/core/admin/class-logs-list-table.php:341
 #: src/core/admin/class-logs-list-table.php:433
 #: src/core/admin/class-logs-list-table.php:522
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:639
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:643
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:130
 #: src/integrations/wp/helpers/wp-helpers.php:129
 #: src/integrations/wp/helpers/wp-helpers.php:505
@@ -1354,7 +1354,7 @@ msgstr ""
 #: src/core/includes/recipe-logs-view.php:124
 #: src/core/includes/recipe-logs-view.php:172
 #: src/core/views/admin-tools-header.php:5
-#: src/integrations/twitter/actions/twitter-poststatus.php:59
+#: src/integrations/twitter/actions/twitter-poststatus.php:58
 #: src/integrations/wp/actions/wp-createpost.php:103
 msgid "Status"
 msgstr ""
@@ -1429,7 +1429,7 @@ msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:26
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:64
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:406
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:410
 msgid "Example: 1"
 msgstr ""
 
@@ -1448,73 +1448,73 @@ msgstr ""
 msgid "Option"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:398
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:402
 msgid "Number of times"
 msgstr ""
 
 #. translators: Noun
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:431
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:435
 msgid "Condition"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:435
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:439
 #: src/integrations/woocommerce/tokens/wc-tokens.php:302
 msgid "equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:436
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:440
 #: src/integrations/woocommerce/tokens/wc-tokens.php:305
 msgid "not equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:437
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:441
 #: src/integrations/woocommerce/tokens/wc-tokens.php:296
 msgid "less than"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:438
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:442
 #: src/integrations/woocommerce/tokens/wc-tokens.php:299
 msgid "greater than"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:439
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:443
 #: src/integrations/woocommerce/tokens/wc-tokens.php:308
 msgid "greater or equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:440
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:444
 #: src/integrations/woocommerce/tokens/wc-tokens.php:311
 msgid "less or equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:458
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:462
 msgid "Redirect URL"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:493
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:686
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:497
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:690
 msgid "Any page"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:684
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:688
 #: src/integrations/wp/helpers/wp-helpers.php:216
 msgid "All pages"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:692
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:696
 msgid "All posts"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:694
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:698
 #: src/integrations/wp/helpers/wp-helpers.php:171
 msgid "Any post"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:700
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:704
 msgid "All courses"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:702
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:706
 #: src/integrations/learndash/actions/ld-marklessondone.php:45
 #: src/integrations/learndash/actions/ld-marktopicdone.php:48
 #: src/integrations/learndash/helpers/learndash-helpers.php:96
@@ -1535,11 +1535,11 @@ msgstr ""
 msgid "Any course"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:708
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:712
 msgid "All lessons"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:710
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:714
 #: src/integrations/learndash/actions/ld-marktopicdone.php:58
 #: src/integrations/learndash/helpers/learndash-helpers.php:142
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:139
@@ -1548,22 +1548,22 @@ msgstr ""
 msgid "Any lesson"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:716
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:720
 msgid "All topics"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:718
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:722
 #: src/integrations/buddypress/helpers/buddypress-helpers.php:180
 #: src/integrations/learndash/helpers/learndash-helpers.php:188
 #: src/integrations/learndash/helpers/learndash-helpers.php:446
 msgid "Any topic"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:724
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:728
 msgid "All quizzes"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:726
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:730
 #: src/integrations/learndash/helpers/learndash-helpers.php:283
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:274
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:179
@@ -1571,11 +1571,11 @@ msgstr ""
 msgid "Any quiz"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:732
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:736
 msgid "All memberships"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:734
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:738
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:225
 #: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:74
 #: src/integrations/paid-memberships-pro/triggers/pmp-membershipcancel.php:45
@@ -1584,39 +1584,39 @@ msgstr ""
 msgid "Any membership"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:740
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:744
 msgid "All downloads"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:742
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:746
 #: src/integrations/edd/helpers/edd-helpers.php:77
 msgid "Any download"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:748
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:752
 msgid "All units"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:750
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:754
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:175
 #: src/integrations/wplms/helpers/wplms-helpers.php:172
 msgid "Any unit"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:756
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:760
 msgid "All popups"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:758
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:762
 #: src/integrations/popup-maker/actions/pm-popupshow.php:51
 msgid "Any popup"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:764
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:768
 msgid "All products"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:766
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:770
 #: src/integrations/formidable/helpers/formidable-helpers.php:73
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:71
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:77
@@ -1625,11 +1625,11 @@ msgstr ""
 msgid "Any product"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:772
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:776
 msgid "All awards"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:774
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:778
 msgid "Any award"
 msgstr ""
 
@@ -4147,12 +4147,14 @@ msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:77
 #: src/integrations/events-manager/helpers/events-manager-helpers.php:60
+#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:73
 msgid "Any event"
 msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:87
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:148
 #: src/integrations/events-manager/helpers/events-manager-helpers.php:88
+#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:63
 msgid "Event title"
 msgstr ""
 
@@ -5255,52 +5257,56 @@ msgstr ""
 msgid "A user purchases {{a recurring subscription product}}"
 msgstr ""
 
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:133
-msgid "List of available Events"
+#: src/integrations/modern-events-calendar/add-mec-integration.php:104
+msgid "A newer version Uncanny Automator Pro is required to use Uncanny Automator with Modern Events Calendar. Please update Uncanny Automator Pro to the latest version."
 msgstr ""
 
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:134
-msgid "Select from the list of available Events. The selected Event must have a Ticket."
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:166
+msgid "List of available events"
 msgstr ""
 
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:161
-msgid "Select a Ticket"
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:167
+msgid "Select from the list of available events. The selected event must have a ticket."
 msgstr ""
 
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:162
-msgid "Use the dropdown to select a Ticket associated from the previously selected Event"
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:194
+msgid "Select a ticket"
 msgstr ""
 
-#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:63
-msgid "Select from the list of available Events. Select `Any Event` if you wish to run this Trigger for all Events."
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:195
+msgid "Use the dropdown to select a ticket associated from the previously selected event"
+msgstr ""
+
+#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:61
+msgid "Select from the list of available Events"
+msgstr ""
+
+#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:64
+msgid "Event date"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:65
-msgid "Event Date"
+msgid "Event time"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:66
-msgid "Event Time"
+msgid "Event location"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:67
-msgid "Event Location"
+msgid "Event organizer"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:68
-msgid "Event Organizer"
+msgid "Event cost"
 msgstr ""
 
-#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:69
-msgid "Event Cost"
+#. translators: The Event or `Any Event`
+#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:83
+msgid "A user's booking of {{an event:%1$s}} is completed"
 msgstr ""
 
-#. translators: &#8216; is an HTML character for single qoute. %1$s The Event or `Any Event`
-#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:84
-msgid "A user&#8216;s booking of {{an event:%1$s}} is completed"
-msgstr ""
-
-#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:87
+#: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:86
 msgid "A user's booking of {{an event}} is completed"
 msgstr ""
 
@@ -5469,23 +5475,23 @@ msgstr ""
 msgid "A user purchases {{a membership level}}"
 msgstr ""
 
-#: src/integrations/twitter/actions/twitter-poststatus.php:52
+#: src/integrations/twitter/actions/twitter-poststatus.php:51
 msgid "Post {{a status:%1$s}} to Twitter"
 msgstr ""
 
-#: src/integrations/twitter/actions/twitter-poststatus.php:53
+#: src/integrations/twitter/actions/twitter-poststatus.php:52
 msgid "Post {{a status}} to Twitter"
 msgstr ""
 
-#: src/integrations/twitter/actions/twitter-poststatus.php:59
+#: src/integrations/twitter/actions/twitter-poststatus.php:58
 msgid "Messages posted to Twitter have a 280 character limit."
 msgstr ""
 
-#: src/integrations/twitter/actions/twitter-poststatus.php:59
+#: src/integrations/twitter/actions/twitter-poststatus.php:58
 msgid "Enter the message"
 msgstr ""
 
-#: src/integrations/twitter/actions/twitter-poststatus.php:103
+#: src/integrations/twitter/actions/twitter-poststatus.php:101
 msgid "WordPress was unable to communicate with the Automator API."
 msgstr ""
 

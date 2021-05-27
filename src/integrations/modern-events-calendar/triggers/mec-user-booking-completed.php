@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
 
@@ -51,8 +51,6 @@ class MEC_USER_BOOKING_COMPLETED {
 	 */
 	public function define_trigger() {
 
-
-
 		$helper = new MEC_HELPERS();
 
 		$events_options = $helper->get_events_select_field(
@@ -60,18 +58,19 @@ class MEC_USER_BOOKING_COMPLETED {
 				'option_code'     => $this->trigger_code,
 				'fill_values_in'  => '',
 				'is_ajax'         => false,
-				'description'     => esc_html__( 'Select from the list of available Events. Select `Any Event` if you wish to run this Trigger for all Events.', 'uncanny-automator' ),
+				'description'     => esc_html__( 'Select from the list of available Events', 'uncanny-automator' ),
 				'relevant_tokens' => array(
-					$this->token . 'EVENT_DATE'      => esc_html__( 'Event Date', 'uncanny-automator' ),
-					$this->token . 'EVENT_TIME'      => esc_html__( 'Event Time', 'uncanny-automator' ),
-					$this->token . 'EVENT_LOCATION'  => esc_html__( 'Event Location', 'uncanny-automator' ),
-					$this->token . 'EVENT_ORGANIZER' => esc_html__( 'Event Organizer', 'uncanny-automator' ),
-					$this->token . 'EVENT_COST'      => esc_html__( 'Event Cost', 'uncanny-automator' ),
+					$this->token . 'EVENT_TITLE'     => esc_html__( 'Event title', 'uncanny-automator' ),
+					$this->token . 'EVENT_DATE'      => esc_html__( 'Event date', 'uncanny-automator' ),
+					$this->token . 'EVENT_TIME'      => esc_html__( 'Event time', 'uncanny-automator' ),
+					$this->token . 'EVENT_LOCATION'  => esc_html__( 'Event location', 'uncanny-automator' ),
+					$this->token . 'EVENT_ORGANIZER' => esc_html__( 'Event organizer', 'uncanny-automator' ),
+					$this->token . 'EVENT_COST'      => esc_html__( 'Event cost', 'uncanny-automator' ),
 				),
 			)
 		);
 
-		$events_options['options'] = array( '-1' => sprintf( 'Any Event', 'uncanny-automator' ) ) + $events_options['options'];
+		$events_options['options'] = array( '-1' => __( 'Any event', 'uncanny-automator' ) ) + $events_options['options'];
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
@@ -80,12 +79,12 @@ class MEC_USER_BOOKING_COMPLETED {
 			'code'                => $this->trigger_code,
 			'is_pro'              => false,
 			'sentence'            => sprintf(
-				/* translators: &#8216; is an HTML character for single qoute. %1$s The Event or `Any Event` */
-				esc_attr__( 'A user&#8216;s booking of {{an event:%1$s}} is completed', 'uncanny-automator' ),
+				/* translators: The Event or `Any Event` */
+				esc_attr__( "A user's booking of {{an event:%1\$s}} is completed", 'uncanny-automator' ),
 				$this->trigger_code
 			),
 			'select_option_name'  => esc_attr__( "A user's booking of {{an event}} is completed", 'uncanny-automator' ),
-			'action'              => 'mec_booking_completed', //mec_booking_completed
+			'action'              => 'mec_booking_completed',
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'mec_booking_completed' ),
@@ -107,8 +106,6 @@ class MEC_USER_BOOKING_COMPLETED {
 	 */
 	public function mec_booking_completed( $booking_id ) {
 
-
-
 		$matched_recipe_ids = array();
 
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
@@ -126,16 +123,18 @@ class MEC_USER_BOOKING_COMPLETED {
 				$trigger_id = $trigger['ID'];
 
 				// Check to see if trigger matches `Any` trigger or a specific Event.
-				if (
-					intval( '-1' ) === intval( $event[ $recipe_id ][ $trigger_id ] )
-					|| intval( $event_id ) === intval( $event[ $recipe_id ][ $trigger_id ] )
-				) {
+				if ( ! empty( $event ) ) {
+					if (
+						intval( '-1' ) === intval( $event[ $recipe_id ][ $trigger_id ] )
+						|| intval( $event_id ) === intval( $event[ $recipe_id ][ $trigger_id ] )
+					) {
 
-					$matched_recipe_ids[] = array(
-						'recipe_id'  => $recipe_id,
-						'trigger_id' => $trigger_id,
-					);
+						$matched_recipe_ids[] = array(
+							'recipe_id'  => $recipe_id,
+							'trigger_id' => $trigger_id,
+						);
 
+					}
 				}
 			}
 		}

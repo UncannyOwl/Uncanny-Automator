@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
 /**
@@ -29,6 +29,8 @@ class Mec_Event_Tokens {
 	 */
 	public function __construct() {
 
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_tokens' ), 36, 6 );
 
 	}
@@ -48,6 +50,7 @@ class Mec_Event_Tokens {
 	public function parse_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		$to_match = array(
+			$this->token . 'EVENT_TITLE',
 			$this->token . 'EVENT_DATE',
 			$this->token . 'EVENT_TIME',
 			$this->token . 'EVENT_LOCATION',
@@ -74,8 +77,6 @@ class Mec_Event_Tokens {
 	 * @return mixed The value.
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-
-
 
 		$trigger_meta = $pieces[1];
 		$parse        = $pieces[2];
@@ -110,27 +111,31 @@ class Mec_Event_Tokens {
 				return;
 			}
 
-			$the_event = new MEC_EVENT_HELPERS();
-			$the_event->setup( $event_id );
+			$helper = Automator()->helpers->recipe->modern_events_calendar->options;
+
+			$the_event = $helper->setup( $event_id );
 
 			$value = '';
 
 			switch ( $parse ) {
 
+				case $this->token . 'EVENT_TITLE':
+					$value = $helper->get_event_title();
+					break;
 				case $this->token . 'EVENT_DATE':
-					$value = $the_event->get_event_date();
+					$value = $helper->get_event_date();
 					break;
 				case $this->token . 'EVENT_TIME':
-					$value = $the_event->get_event_time();
+					$value = $helper->get_event_time();
 					break;
 				case $this->token . 'EVENT_LOCATION':
-					$value = $the_event->get_event_location();
+					$value = $helper->get_event_location();
 					break;
 				case $this->token . 'EVENT_ORGANIZER':
-					$value = $the_event->get_event_organizer();
+					$value = $helper->get_event_organizer();
 					break;
 				case $this->token . 'EVENT_COST':
-					$value = $the_event->get_event_cost();
+					$value = $helper->get_event_cost();
 					break;
 			}
 		}
@@ -159,12 +164,12 @@ class Mec_Event_Tokens {
 
 		$meta_value = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT meta_value
-				FROM {$wpdb->prefix}uap_trigger_log_meta
-				WHERE user_id = %d
-				AND meta_key = %s
-				AND automator_trigger_id = %d
-				AND automator_trigger_log_id = %d
+				"SELECT meta_value 
+				FROM {$wpdb->prefix}uap_trigger_log_meta 
+				WHERE user_id = %d 
+				AND meta_key = %s 
+				AND automator_trigger_id = %d 
+				AND automator_trigger_log_id = %d 
 				ORDER BY ID DESC LIMIT 0,1",
 				$user_id,
 				$meta_key,
