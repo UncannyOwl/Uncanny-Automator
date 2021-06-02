@@ -129,11 +129,11 @@ For the full list of triggers and actions, make sure to check out [this list](ht
 
 Here's what other people are saying about Uncanny Automator:
 
-[Automate Your Workflows Like a Pro](https://www.wpexplorer.com/uncanny-automator-review/)
-[Uncanny Automator - Zapier for WordPress](https://helpiewp.com/uncanny-automator/)
-[It's Like Zapier For Your WordPress Site](https://wplift.com/uncanny-automator-review)
-[Automate WordPress Like Zapier (Or With Zapier!)](https://wpmayor.com/uncanny-automator-review-automate-wordpress-like-zapier-or-with-zapier/)
-[E-Learning Automation with Uncanny Automator](https://www.learndash.com/e-learning-automation-with-uncanny-automator/)
+- [Automate Your Workflows Like a Pro](https://www.wpexplorer.com/uncanny-automator-review/)
+- [Uncanny Automator - Zapier for WordPress](https://helpiewp.com/uncanny-automator/)
+- [It's Like Zapier For Your WordPress Site](https://wplift.com/uncanny-automator-review)
+- [Automate WordPress Like Zapier (Or With Zapier!)](https://wpmayor.com/uncanny-automator-review-automate-wordpress-like-zapier-or-with-zapier/)
+- [E-Learning Automation with Uncanny Automator](https://www.learndash.com/e-learning-automation-with-uncanny-automator/)
 
 ## Frequently Asked Questions ##
 
