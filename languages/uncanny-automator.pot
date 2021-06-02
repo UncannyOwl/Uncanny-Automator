@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.0.3\n"
+"Project-Id-Version: Uncanny Automator 3.0.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-05-27T01:17:57+00:00\n"
+"POT-Creation-Date: 2021-06-02T15:47:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -667,6 +667,7 @@ msgstr ""
 msgid " A user submits {{a form}} with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
+#. translators: Logged-in trigger - Caldera Forms
 #. translators: Logged-in trigger - Contact Form 7
 #. translators: Logged-in trigger - Forminator
 #. translators: Logged-in trigger - Formidable
@@ -675,6 +676,7 @@ msgstr ""
 #. translators: Logged-in trigger - Ninja Forms
 #. translators: Logged-in trigger - WP Forms
 #: src/core/includes/pro-items-list.php:366
+#: src/integrations/caldera-forms/triggers/cf-subform.php:47
 #: src/integrations/contact-form7/triggers/cf7-subform.php:46
 #: src/integrations/elementor/triggers/elem-submitform.php:44
 #: src/integrations/formidable/triggers/fi-submitform.php:44
@@ -1416,9 +1418,14 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-email-helpers.php:109
-#: src/core/lib/helpers/class-automator-email-helpers.php:115
-msgid "To address is empty."
+#: src/core/lib/helpers/class-automator-email-helpers.php:122
+#: src/core/lib/helpers/class-automator-email-helpers.php:130
+msgid "\"To\" address is empty."
+msgstr ""
+
+#: src/core/lib/helpers/class-automator-email-helpers.php:125
+#: src/core/lib/helpers/class-automator-email-helpers.php:133
+msgid "\"To\" address is invalid."
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:24
@@ -2402,7 +2409,7 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:540
 #: src/integrations/give/helpers/give-helpers.php:112
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:74
-#: src/integrations/wp/actions/wp-createuser.php:56
+#: src/integrations/wp/actions/wp-createuser.php:55
 msgid "Email"
 msgstr ""
 
@@ -2412,7 +2419,7 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:518
 #: src/core/lib/utilities/class-automator-translations.php:542
-#: src/integrations/wp/actions/wp-createuser.php:54
+#: src/integrations/wp/actions/wp-createuser.php:53
 msgid "Username"
 msgstr ""
 
@@ -2422,7 +2429,7 @@ msgstr ""
 #: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:107
 #: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:142
 #: src/integrations/wp/actions/wp-createpost.php:141
-#: src/integrations/wp/actions/wp-createuser.php:85
+#: src/integrations/wp/actions/wp-createuser.php:84
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:107
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:142
 msgid "Value"
@@ -2446,7 +2453,7 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:559
 #: src/integrations/learndash/actions/ld-creategroup.php:84
 #: src/integrations/learndash/actions/ld-makeuserleader.php:77
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:93
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:96
 msgid "Do nothing"
 msgstr ""
 
@@ -2457,14 +2464,14 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:536
 #: src/integrations/give/helpers/give-helpers.php:100
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:75
-#: src/integrations/wp/actions/wp-createuser.php:58
+#: src/integrations/wp/actions/wp-createuser.php:57
 msgid "First name"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:538
 #: src/integrations/give/helpers/give-helpers.php:106
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:76
-#: src/integrations/wp/actions/wp-createuser.php:60
+#: src/integrations/wp/actions/wp-createuser.php:59
 msgid "Last name"
 msgstr ""
 
@@ -2473,7 +2480,7 @@ msgid "Display name"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:546
-#: src/integrations/wp/actions/wp-createuser.php:64
+#: src/integrations/wp/actions/wp-createuser.php:63
 msgid "Password"
 msgstr ""
 
@@ -3454,46 +3461,46 @@ msgstr ""
 msgid "Repair Automator tables"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:16
+#: src/core/views/recipe-logs-details.php:17
 msgid "Recipe run details"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:21
+#: src/core/views/recipe-logs-details.php:22
 msgid "Recipe:"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:27
-#: src/core/views/recipe-logs-details.php:79
+#: src/core/views/recipe-logs-details.php:28
+#: src/core/views/recipe-logs-details.php:80
 msgid "Status:"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:33
-#: src/core/views/recipe-logs-details.php:60
-#: src/core/views/recipe-logs-details.php:78
+#: src/core/views/recipe-logs-details.php:34
+#: src/core/views/recipe-logs-details.php:61
+#: src/core/views/recipe-logs-details.php:79
 msgid "Completion date:"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:39
+#: src/core/views/recipe-logs-details.php:40
 msgid "Run #:"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:45
+#: src/core/views/recipe-logs-details.php:46
 msgid "User:"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:59
+#: src/core/views/recipe-logs-details.php:60
 msgid "Trigger activity"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:61
+#: src/core/views/recipe-logs-details.php:62
 msgid "Trigger run #:"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:77
+#: src/core/views/recipe-logs-details.php:78
 msgid "Action activity"
 msgstr ""
 
-#: src/core/views/recipe-logs-details.php:80
+#: src/core/views/recipe-logs-details.php:81
 msgid "Notes:"
 msgstr ""
 
@@ -3577,7 +3584,7 @@ msgstr ""
 #: src/integrations/affiliate-wp/tokens/affwp-tokens.php:144
 #: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:118
 #: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:251
-#: src/integrations/wp/actions/wp-createuser.php:62
+#: src/integrations/wp/actions/wp-createuser.php:61
 msgid "Website"
 msgstr ""
 
@@ -4031,13 +4038,17 @@ msgid "Form"
 msgstr ""
 
 #. translators: Logged-in trigger - Caldera Forms
-#: src/integrations/caldera-forms/triggers/cf-subform.php:49
-msgid "User submits {{a form:%1$s}} {{a number of:%2$s}} time(s)"
-msgstr ""
-
-#. translators: Logged-in trigger - Caldera Forms
-#: src/integrations/caldera-forms/triggers/cf-subform.php:51
-msgid "User submits {{a form}}"
+#. translators: Logged-in trigger - Contact Form 7
+#. translators: Logged-in trigger - Gravity Forms
+#. translators: Logged-in trigger - Ninja Forms
+#. translators: Logged-in trigger - WP Forms
+#: src/integrations/caldera-forms/triggers/cf-subform.php:45
+#: src/integrations/contact-form7/triggers/cf7-subform.php:44
+#: src/integrations/gravity-forms/triggers/gf-subform.php:41
+#: src/integrations/ninja-forms/triggers/nf-subform.php:42
+#: src/integrations/wp-fluent-forms/triggers/wpff-subform.php:48
+#: src/integrations/wpforms/triggers/wpf-subform.php:42
+msgid "A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:96
@@ -4055,18 +4066,6 @@ msgstr ""
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:98
 #: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:99
 msgid "Form URL"
-msgstr ""
-
-#. translators: Logged-in trigger - Contact Form 7
-#. translators: Logged-in trigger - Gravity Forms
-#. translators: Logged-in trigger - Ninja Forms
-#. translators: Logged-in trigger - WP Forms
-#: src/integrations/contact-form7/triggers/cf7-subform.php:44
-#: src/integrations/gravity-forms/triggers/gf-subform.php:41
-#: src/integrations/ninja-forms/triggers/nf-subform.php:42
-#: src/integrations/wp-fluent-forms/triggers/wpff-subform.php:48
-#: src/integrations/wpforms/triggers/wpf-subform.php:42
-msgid "A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #: src/integrations/edd/helpers/edd-helpers.php:65
@@ -4301,24 +4300,24 @@ msgid "{{A tag}} is added to a user"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Forms
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:66
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:67
 msgid "A user is set to a {{specific status:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Forms
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:68
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:69
 msgid "A user is set to a {{specific status}}"
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:79
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:80
 msgid "List of all available status values for Fluent CRM contacts."
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:80
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:81
 msgid "Select from dropdown list of the options above."
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:129
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:130
 msgid "Subscription Status"
 msgstr ""
 
@@ -4472,7 +4471,7 @@ msgstr ""
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:130
 #: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:133
 #: src/integrations/wp/actions/wp-createpost.php:134
-#: src/integrations/wp/actions/wp-createuser.php:78
+#: src/integrations/wp/actions/wp-createuser.php:77
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:133
 msgid "Key"
 msgstr ""
@@ -4481,7 +4480,7 @@ msgstr ""
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:147
 #: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:150
 #: src/integrations/wp/actions/wp-createpost.php:146
-#: src/integrations/wp/actions/wp-createuser.php:90
+#: src/integrations/wp/actions/wp-createuser.php:89
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:150
 msgid "Add pair"
 msgstr ""
@@ -4490,7 +4489,7 @@ msgstr ""
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:149
 #: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:152
 #: src/integrations/wp/actions/wp-createpost.php:147
-#: src/integrations/wp/actions/wp-createuser.php:91
+#: src/integrations/wp/actions/wp-createuser.php:90
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:152
 msgid "Remove pair"
 msgstr ""
@@ -4551,37 +4550,37 @@ msgid "Create {{a group:%1$s}}"
 msgstr ""
 
 #: src/integrations/learndash/actions/ld-creategroup.php:63
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:65
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:68
 msgid "Group name"
 msgstr ""
 
 #: src/integrations/learndash/actions/ld-creategroup.php:69
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:71
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:74
 msgid "Group courses"
 msgstr ""
 
 #. translators: Uncanny Groups
 #: src/integrations/learndash/actions/ld-creategroup.php:79
 #: src/integrations/learndash/actions/ld-makeuserleader.php:72
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:88
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:91
 msgid "If the user does not currently have the Group Leader role"
 msgstr ""
 
 #: src/integrations/learndash/actions/ld-creategroup.php:80
 #: src/integrations/learndash/actions/ld-makeuserleader.php:73
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:89
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:46
 msgid "Only users with the Group Leader role can be made the leader of a group."
 msgstr ""
 
 #: src/integrations/learndash/actions/ld-creategroup.php:85
 #: src/integrations/learndash/actions/ld-makeuserleader.php:78
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:94
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:97
 msgid "Add the role to their existing role(s)"
 msgstr ""
 
 #: src/integrations/learndash/actions/ld-creategroup.php:86
 #: src/integrations/learndash/actions/ld-makeuserleader.php:79
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:95
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:98
 msgid "Replace their existing role(s) with the Group Leader role"
 msgstr ""
 
@@ -5750,17 +5749,21 @@ msgstr ""
 msgid "A user redeems a code with a {{specific}} suffix"
 msgstr ""
 
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:47
+msgid "This action will not alter the roles of Admin users."
+msgstr ""
+
 #. translators: Logged-in trigger - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:53
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:56
 msgid "Create {{an Uncanny group:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:55
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:58
 msgid "Create {{an Uncanny group}}"
 msgstr ""
 
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:79
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:82
 msgid "Number of seats"
 msgstr ""
 
@@ -6370,59 +6373,58 @@ msgid "Content"
 msgstr ""
 
 #: src/integrations/wp/actions/wp-createpost.php:128
-#: src/integrations/wp/actions/wp-createuser.php:72
+#: src/integrations/wp/actions/wp-createuser.php:71
 msgid "Meta"
 msgstr ""
 
 #. translators: Action - WordPress
-#: src/integrations/wp/actions/wp-createuser.php:45
+#: src/integrations/wp/actions/wp-createuser.php:44
 msgid "Create the user {{username:%1$s}}"
 msgstr ""
 
 #. translators: Action - WordPress
-#: src/integrations/wp/actions/wp-createuser.php:47
+#: src/integrations/wp/actions/wp-createuser.php:46
 msgid "Create a {{user}}"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:54
+#: src/integrations/wp/actions/wp-createuser.php:53
 msgid "Only alphanumeric, _, space, ., -, @"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:64
+#: src/integrations/wp/actions/wp-createuser.php:63
 msgid "Leave blank to automatically generate a password"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:68
+#: src/integrations/wp/actions/wp-createuser.php:67
 msgid "Send user notification"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:68
+#: src/integrations/wp/actions/wp-createuser.php:67
 msgid "Send the new user an email about their account."
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:119
+#: src/integrations/wp/actions/wp-createuser.php:115
 msgid "Invalid username: %1$s"
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:125
-#: src/integrations/wp/actions/wp-createuser.php:141
+#: src/integrations/wp/actions/wp-createuser.php:122
+#: src/integrations/wp/actions/wp-createuser.php:139
 msgid "Username was not set"
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:137
+#: src/integrations/wp/actions/wp-createuser.php:133
 msgid "Invalid email: %1$s"
 msgstr ""
 
-#. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:178
+#: src/integrations/wp/actions/wp-createuser.php:187
 msgid "Failed to create a user"
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:205
+#: src/integrations/wp/actions/wp-createuser.php:215
 msgid "Meta keys failed to update: %1$s"
 msgstr ""
 
@@ -6499,17 +6501,17 @@ msgstr ""
 
 #: src/integrations/wp/helpers/wp-helpers.php:180
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:104
-#: src/integrations/wp/triggers/wp-usercreatespost.php:71
+#: src/integrations/wp/triggers/wp-usercreatespost.php:69
 msgid "Post title"
 msgstr ""
 
 #: src/integrations/wp/helpers/wp-helpers.php:181
-#: src/integrations/wp/triggers/wp-usercreatespost.php:72
+#: src/integrations/wp/triggers/wp-usercreatespost.php:70
 msgid "Post ID"
 msgstr ""
 
 #: src/integrations/wp/helpers/wp-helpers.php:182
-#: src/integrations/wp/triggers/wp-usercreatespost.php:73
+#: src/integrations/wp/triggers/wp-usercreatespost.php:71
 msgid "Post URL"
 msgstr ""
 
@@ -6569,7 +6571,7 @@ msgstr ""
 
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:70
 #: src/integrations/wp/triggers/wp-submitcomment.php:55
-#: src/integrations/wp/triggers/wp-usercreatespost.php:60
+#: src/integrations/wp/triggers/wp-usercreatespost.php:58
 msgid "Any post type"
 msgstr ""
 
@@ -6617,25 +6619,25 @@ msgstr ""
 msgid "A user submits a comment on {{a post}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-usercreatespost.php:74
+#: src/integrations/wp/triggers/wp-usercreatespost.php:72
 msgid "Post content"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-usercreatespost.php:84
+#: src/integrations/wp/triggers/wp-usercreatespost.php:82
 msgid "A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-usercreatespost.php:90
+#: src/integrations/wp/triggers/wp-usercreatespost.php:88
 msgid "A user publishes a {{type of}} post with {{a taxonomy term}} in {{a taxonomy}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-usercreatespost.php:102
+#: src/integrations/wp/triggers/wp-usercreatespost.php:100
 msgid "Taxonomy"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-usercreatespost.php:114
+#: src/integrations/wp/triggers/wp-usercreatespost.php:112
 msgid "Taxonomy term"
 msgstr ""
 

@@ -13,74 +13,76 @@ $_GET['orderby'] = 'automator_trigger_id';
 $current_tab = 'trigger-log';
 ?>
 
-<h2><?php esc_html_e( 'Recipe run details', 'uncanny-automator' ); ?></h2>
+<div class="uap-logs-minimal">
+	<h2><?php esc_html_e( 'Recipe run details', 'uncanny-automator' ); ?></h2>
 
-<ul class="recipe-details__list">
-	<li>
-		<div class="recipe-details__label recipe-details__column-1">
-			<?php esc_html_e( 'Recipe:', 'uncanny-automator' ); ?>
-		</div>  
-		<div class="recipe-details__recipe-title recipe-details__column-2"></div>
-	</li>
-	<li>
-		<div class="recipe-details__label recipe-details__column-1">
-			<?php esc_html_e( 'Status:', 'uncanny-automator' ); ?>
-		</div>  
-		<div class="recipe-details__recipe-status recipe-details__column-2"></div>
-	</li>
-	<li>
-		<div class="recipe-details__label recipe-details__column-1">
-			<?php esc_html_e( 'Completion date:', 'uncanny-automator' ); ?>
-		</div>
-		<div class="recipe-details__recipe-date recipe-details__column-2"></div>
-	</li>
-	<li>
-		<div class="recipe-details__label recipe-details__column-1">
-			<?php esc_html_e( 'Run #:', 'uncanny-automator' ); ?>
-		</div>
-		<div class="recipe-details__recipe-run-number recipe-details__column-2"></div>
-	</li>
-	<li>
-		<div class="recipe-details__label recipe-details__column-1">
-			<?php esc_html_e( 'User:', 'uncanny-automator' ); ?>
-		</div>
-		<div class="recipe-details__recipe-user recipe-details__column-2"></div>
-	</li>
-</ul>
+	<ul class="recipe-details__list">
+		<li>
+			<div class="recipe-details__label recipe-details__column-1">
+				<?php esc_html_e( 'Recipe:', 'uncanny-automator' ); ?>
+			</div>  
+			<div class="recipe-details__recipe-title recipe-details__column-2"></div>
+		</li>
+		<li>
+			<div class="recipe-details__label recipe-details__column-1">
+				<?php esc_html_e( 'Status:', 'uncanny-automator' ); ?>
+			</div>  
+			<div class="recipe-details__recipe-status recipe-details__column-2"></div>
+		</li>
+		<li>
+			<div class="recipe-details__label recipe-details__column-1">
+				<?php esc_html_e( 'Completion date:', 'uncanny-automator' ); ?>
+			</div>
+			<div class="recipe-details__recipe-date recipe-details__column-2"></div>
+		</li>
+		<li>
+			<div class="recipe-details__label recipe-details__column-1">
+				<?php esc_html_e( 'Run #:', 'uncanny-automator' ); ?>
+			</div>
+			<div class="recipe-details__recipe-run-number recipe-details__column-2"></div>
+		</li>
+		<li>
+			<div class="recipe-details__label recipe-details__column-1">
+				<?php esc_html_e( 'User:', 'uncanny-automator' ); ?>
+			</div>
+			<div class="recipe-details__recipe-user recipe-details__column-2"></div>
+		</li>
+	</ul>
 
-<?php
+	<?php
 
-	// Remove sorting feature.
-	add_filter( 'automator_setup_trigger_logs_sortables', '__return_empty_array' );
+		// Remove sorting feature.
+		add_filter( 'automator_setup_trigger_logs_sortables', '__return_empty_array' );
 
-	// Display the trigger logs table.
-	automator_setup_trigger_logs( 
-		$current_tab, array( 
-			'trigger_title' => esc_html__( 'Trigger activity', 'uncanny-automator' ),
-			'trigger_date' => esc_html__( 'Completion date:', 'uncanny-automator' ),
-			'trigger_run_number' => esc_attr__( 'Trigger run #:', 'uncanny-automator' ),
-			)
-		);
-?>
+		// Display the trigger logs table.
+		automator_setup_trigger_logs( 
+			$current_tab, array( 
+				'trigger_title' => esc_html__( 'Trigger activity', 'uncanny-automator' ),
+				'trigger_date' => esc_html__( 'Completion date:', 'uncanny-automator' ),
+				'trigger_run_number' => esc_attr__( 'Trigger run #:', 'uncanny-automator' ),
+				)
+			);
+	?>
 
-<?php
-	// Action Activity.
-	$_GET['orderby'] = 'automator_action_id';
-	$current_tab     = 'action-log';
+	<?php
+		// Action Activity.
+		$_GET['orderby'] = 'automator_action_id';
+		$current_tab     = 'action-log';
 
-	// Remove sorting feature.
-	add_filter( 'automator_setup_action_logs_sortables', '__return_empty_array' );
+		// Remove sorting feature.
+		add_filter( 'automator_setup_action_logs_sortables', '__return_empty_array' );
 
-	// Display the action logs table.
-	automator_setup_action_logs( 
-		$current_tab, array( 
-			'action_title' => esc_html__( 'Action activity', 'uncanny-automator' ),
-			'action_date' => esc_html__( 'Completion date:', 'uncanny-automator' ),
-			'action_completed' => esc_html__( 'Status:', 'uncanny-automator' ),
-			'error_message' => esc_html__( 'Notes:', 'uncanny-automator' ),
-			) 
-		);
-?>
+		// Display the action logs table.
+		automator_setup_action_logs( 
+			$current_tab, array( 
+				'action_title' => esc_html__( 'Action activity', 'uncanny-automator' ),
+				'action_date' => esc_html__( 'Completion date:', 'uncanny-automator' ),
+				'action_completed' => esc_html__( 'Status:', 'uncanny-automator' ),
+				'error_message' => esc_html__( 'Notes:', 'uncanny-automator' ),
+				) 
+			);
+	?>
+</div>
 
 <script>
 

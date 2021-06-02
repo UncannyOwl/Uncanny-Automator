@@ -5,9 +5,9 @@
  * Short description
  *
  * @class   Trigger_Conditions
- * @package Uncanny_Automator
- * @version 3.0
  * @since   3.0
+ * @version 3.0
+ * @package Uncanny_Automator
  * @author  Saad S.
  */
 
@@ -48,6 +48,43 @@ trait Trigger_Conditions {
 	 * @var bool
 	 */
 	protected $find_any = false;
+
+	/**
+	 * @var array
+	 */
+	protected $compare_this_numb_cond = array();
+	/**
+	 * @var array
+	 */
+	protected $compare_numb_cond_in = array();
+
+	/**
+	 * @return array
+	 */
+	public function get_compare_this_numb_cond() {
+		return $this->compare_this_numb_cond;
+	}
+
+	/**
+	 * @param string $compare_this_numb_cond
+	 */
+	public function do_compare_this_numb_cond( $compare_this_numb_cond ) {
+		$this->compare_this_numb_cond[] = $compare_this_numb_cond;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_compare_numb_cond_in() {
+		return $this->compare_numb_cond_in;
+	}
+
+	/**
+	 * @param string $compare_numb_cond_in
+	 */
+	public function do_compare_numb_cond_in( $compare_numb_cond_in ) {
+		$this->compare_numb_cond_in[] = $compare_numb_cond_in;
+	}
 
 	/**
 	 * @return mixed
@@ -277,54 +314,48 @@ trait Trigger_Conditions {
 		return $matched;
 	}
 
-
 	/**
-	 * @param string $type
-	 * @param array $args
+	 * @param $value
+	 * @param $match_in
+	 * @param $recipes
 	 *
 	 * @return array
-	 * @throws \Exception
+	 * TODO: Write match condition vs number function here
 	 */
-//	protected function match_options_in( $type = 'post', $args = array() ) {
-//		if ( empty( $type ) ) {
-//			throw new Automator_Exception( 'Option type is missing. Please pass a valid value, i.e., post, page, woo_order_items etc.' );
+	protected function find_value_in_number_cond( $value, $match_in, $recipes ) {
+		$matched = array();
+//		if ( empty( $recipes ) ) {
+//			return $matched;
 //		}
-//		$values = array();
-//		switch ( $type ) {
-//			case 'post':
-//			case 'page':
-//				break;
-//			case 'woo_order_items':
-//				$order = isset( $args['order'] ) ? $args['order'] : array();
-//				if ( ! $order instanceof \WC_Order ) {
-//					throw new Automator_Exception( '$args[\'order\'] is not of WC_Order type.' );
+//		// Add where option is set to Any product.
+//		foreach ( $recipes as $recipe_id => $recipe ) {
+//			foreach ( $recipe['triggers'] as $trigger ) {
+//				// Recipe ID does not exist in $match_in.
+//				if ( ! isset( $match_in[ $recipe_id ] ) ) {
+//					continue;
 //				}
-//				if ( 'woo_order_items' === $type ) {
-//					$values = $this->get_woo_order_items( $order );
+//
+//				$trigger_id = absint( $trigger['ID'] );
+//				// Trigger ID does not exist in $match_in.
+//				if ( ! isset( $match_in[ $recipe_id ][ $trigger_id ] ) ) {
+//					continue;
 //				}
-//				break;
-//			default:
-//				$values = apply_filters( 'automator_match_option_in', $values, $type, $args );
-//				$values = apply_filters( "automator_match_option_in_{$type}", $values, $type, $args );
-//				break;
+//
+//				// $value set is -1 (Any).
+//				if ( true === $this->get_find_any() && intval( '-1' ) === intval( $match_in[ $recipe_id ][ $trigger_id ] ) ) {
+//					$matched[ $recipe_id ] = $trigger_id;
+//				}
+//				// If value is not an array
+//				if ( ! is_array( $value ) && (int) $value === (int) $match_in[ $recipe_id ][ $trigger_id ] ) {
+//					$matched[ $recipe_id ] = $trigger_id;
+//				}
+//				// if value is of type array
+//				if ( is_array( $value ) && in_array( (int) $match_in[ $recipe_id ][ $trigger_id ], array_map( 'absint', $value ), true ) ) {
+//					$matched[ $recipe_id ] = $trigger_id;
+//				}
+//			}
 //		}
-//
-//		return apply_filters( 'automator_match_option_in', $values, $type, $args );
-//	}
-//
-//	/**
-//	 * @param \WC_Order $order
-//	 *
-//	 * @return array
-//	 */
-//	protected function get_woo_order_items( \WC_Order $order ) {
-//		$items       = $order->get_items();
-//		$product_ids = array();
-//		/** @var \WC_Order_Item_Product $item */
-//		foreach ( $items as $item ) {
-//			$product_ids[] = $item->get_product_id();
-//		}
-//
-//		return $product_ids;
-//	}
+
+		return $matched;
+	}
 }

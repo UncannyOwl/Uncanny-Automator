@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
 
@@ -39,7 +39,8 @@ class FCRM_USER_STATUS_UPDATED {
 		$this->trigger_code = 'FCRMUSERSTATUSUPDATED';
 		$this->trigger_meta = 'FCRMUSERUPDATEDSTATUS';
 
-		add_action( 'plugins_loaded', array( $this, 'define_trigger' ), 15 );
+		$this->define_trigger();
+
 	}
 
 	public function get_trigger_code() {

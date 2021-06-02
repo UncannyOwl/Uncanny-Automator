@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
 Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -172,6 +172,27 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.0.4 [2021-06-02] =
+
+**Updated:**
+
+* Administrator users are now excluded from "Create Uncanny Group" action role changes
+* Code quality improvements
+
+**Fixed:**
+
+* PHP Fatal error when Uncanny Automator Pro 2.12.1 or earlier is installed and LearnDash and/or BuddyBoss are active
+* Layout issue with Recipe logs in Safari
+* Send an email: Error message now correctly indicates if an invalid email address was specified in the To: field
+* Conditional number check was incorrect for > condition
+* Caldera Forms: A user submits a form trigger now appears in the trigger list
+* Admin notices no longer appear in Recipe details modal
+* A user publishes a type of post with a taxonomy term in a taxonomy: PHP notices
+* Custom option buttons (e.g. "Get columns" in Google Drive) were not functioning as expected
+* Redirects not working in some situations
+* A user publishes a post in a taxonomy with a taxonomy term now fires as expected when a specific taxonomy/term are selected
+* Double-clicking to copy/paste from a read-only field no long results in CR/LF characters being appended to the string
 
 = 3.0.3 [2021-05-27] =
 
@@ -404,75 +425,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WP Fusion triggers/actions now list tags as expected on all sites
 * WP Job Manager now fires more reliably when a job listing is posted by the user
 
-= 2.9 [2020-11-03] =
-
-**New Integrations:**
-
-* FluentCRM
-* MasterStudy LMS
-* Restrict Content Pro
-* Uncanny Continuing Education Credits
-* WP Job Manager
-
-**New Triggers:**
-
-* Automator Core - A user completes a recipe
-* BuddyBoss - A user creates a topic in a forum
-* BuddyBoss - A user replies to a topic in a forum
-* FluentCRM - A tag is added to a user
-* FluentCRM - A user is added to a list
-* MasterStudy LMS - A user completes a course
-* MasterStudy LMS - A user completes a lesson
-* MasterStudy LMS - A user passes a quiz
-* MasterStudy LMS - A user fails a quiz
-* MasterStudy LMS - A user is enrolled in a course
-* Restrict Content Pro - A user purchases a membership level
-* Uncanny Continuing Education Credits - A user earns a specific number of credits
-* WP Job Manager - A user submits a specific type of job
-* WP Job Manager - A user submits a resume
-* WP Job Manager - A user applies for a job
-
-**New Actions:**
-
-* FluentCRM - Add a tag to the user
-* FluentCRM - Add the user to a list
-* MasterStudyLMS - Mark a course complete for the user
-* Uncanny Continuing Education Credits - Award a number of custom credits to the user
-
-**Updated:**
-
-* WP Fluent Forms integration renamed to Fluent forms
-* Fluent Forms: "Numeric" field type now available as tokens in integer type action fields
-* Default number of times a recipe will run per user is now Unlimited instead of 1
-* New triggers and actions added to a recipe now default to Live status when the recipe is in Draft status
-* Improved compatibility with Events Manager Zoom and Schema & Structured Data for WP & AMP plugins
-* Automator log database tables structure updates
-* Trigger: LearnDash - A verb is recorded from a Tin Canny module - Created separate tokens for lesson and topic
-* Trigger: The Events Calendar - A user registers for an event now includes the option "Any event"
-* Trigger: WordPress Core - A user creates a post changed to A user publishes a type of post with a taxonomy term in a taxonomy
-* Trigger: WordPress Core - A user comments on a post - Added Post Type selector
-
-**Fixed:**
-
-* Fluent forms triggering any form without checking form ID
-* Elementor - Checkbox field tokens now return all selected values
-* WP Courseware - User completes a module - Tokens now resolve values correctly
-* "Use a custom value" no longer appears multiple times in a dropdown while the action UI is fetching values
-* Multi-select fields now show a comma-separated list of values when appearing in a trigger or action sentence
-* First recipe attempt after truncation of recipe log table or purge of recipe logs now completes successfully
-* MySQL 8.x recipe table AUTO INCREMENT issue
-* Triggers/actions moved between integrations are now updated in recipes that are set to draft status
-* Recipes with multiple triggers now resolve tokens properly for all triggers
-* Actions in draft status no longer log an entry in the Action log
-* Action: LearnDash - Mark a lesson complete for the user - No longer includes the option "Any lesson"
-* Trigger: WordPress Core - A user is created - Now fires more reliably
-* LearnDash - Triggers/Actions now load all child objects instead of first 20 only
-* PHP Notice: Undefined index in automator-recipe-helpers.php on line 328
-
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
+
+= 3.0.4 =
+Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
 
 = 3.0.3 =
 Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

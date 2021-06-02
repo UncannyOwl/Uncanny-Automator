@@ -339,7 +339,6 @@ class Automator_Load {
 		do_action( 'automator_before_admin_init' );
 
 		$classes['Admin_Menu']        = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
-		$classes['Automator_Review']  = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
 		$classes['Copy_Recipe_Parts'] = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
 
 		$classes['Add_User_Recipe_Type'] = UA_ABSPATH . 'src/core/classes/class-add-user-recipe-type.php';
@@ -433,6 +432,7 @@ class Automator_Load {
 		 */
 		do_action( 'automator_before_autoloader' );
 
+		$classes['Automator_Review']     = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
 		$classes['Automator_Autoloader'] = UA_ABSPATH . 'src/core/lib/autoload/class-ua-autoloader.php';
 		// $classes['A_Cron_Exceptions']    = UA_ABSPATH . 'src/core/classes/class-a-cron-exceptions.php';
 		$classes['Set_Up_Automator'] = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';

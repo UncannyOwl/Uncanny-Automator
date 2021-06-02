@@ -79,11 +79,7 @@ class Add_Mp_Integration {
 
 		Automator()->register->integration( self::$integration, array(
 			'name'        => 'MemberPress',
-			'icon_16'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-memberpress-icon-16.png' ),
-			'icon_32'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-memberpress-icon-32.png' ),
-			'icon_64'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-memberpress-icon-64.png' ),
-			'logo'        => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-memberpress.png' ),
-			'logo_retina' => Utilities::automator_get_integration_icon( __DIR__ . '/img/integration-memberpress@2x.png' ),
+			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/memberpress-icon.svg' ),
 		) );
 	}
 }

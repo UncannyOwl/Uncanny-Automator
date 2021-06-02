@@ -52,7 +52,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '3.0.3';
+	const PLUGIN_VERSION = '3.0.4';
 
 	/**
 	 * The database version number

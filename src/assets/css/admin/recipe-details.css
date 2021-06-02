@@ -141,8 +141,21 @@ body.uo-recipe_page_uncanny-automator-recipe-activity-details #screen-meta-links
 @media screen and (max-width: 782px) {
 
     .uap-logs table.wp_list_logs_links.wp-list-table tbody tr {
-        display: block;
         padding: 7.5px 0;
+    }
+
+    .uap-logs-minimal table.wp_list_logs_links.wp-list-table tbody tr:not(.is-expanded) td:not(:first-child) {
+        display: none !important;
+    }
+
+    .uap-logs-minimal table.wp_list_logs_links.wp-list-table tbody tr,
+    .uap-logs-minimal table.wp_list_logs_links.wp-list-table tbody tr td:first-child,
+    .uap-logs-minimal table.wp_list_logs_links.wp-list-table tbody tr.is-expanded td:not(.hidden),
+    .uap-logs-minimal table.wp-list-table tr:not(.inline-edit-row):not(.no-items).is-expanded td:not(.check-column):not(.hidden) {
+        width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        min-height: 24px !important;
     }
 
     .uap-logs table.wp_list_logs_links.wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-primary~td:not(.check-column) {
@@ -182,9 +195,4 @@ body.uo-recipe_page_uncanny-automator-recipe-activity-details #screen-meta-links
     body.auto-fold.uo-recipe_page_uncanny-automator-recipe-activity-details  #wpcontent {
         padding-left: 0;
     }
-
-    .uo-recipe_page_uncanny-automator-recipe-activity-details .wp-list-table td.column-primary {
-        display: block;
-    }
-    
 }

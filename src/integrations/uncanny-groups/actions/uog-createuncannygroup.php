@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
 
@@ -31,18 +31,21 @@ class UOG_CREATEUNCANNYGROUP {
 	 */
 	public function define_action() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args );
 
+		$user_warning = sprintf(
+			'%s <em>%s</em>',
+			esc_attr__( 'Only users with the Group Leader role can be made the leader of a group.', 'uncanny-automator' ),
+			esc_attr__( 'This action will not alter the roles of Admin users.', 'uncanny-automator' )
+		);
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -57,36 +60,36 @@ class UOG_CREATEUNCANNYGROUP {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'create_uncanny_group' ),
 			'options_group'      =>
-				[
+				array(
 					$this->action_meta =>
-						[
-							[
+						array(
+							array(
 								'option_code' => 'UOGROUPTITLE',
 								'label'       => esc_attr__( 'Group name', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
-							],
-							[
+							),
+							array(
 								'option_code'              => 'UOGROUPCOURSES',
 								'label'                    => esc_attr__( 'Group courses', 'uncanny-automator' ),
 								'input_type'               => 'select',
 								'required'                 => true,
 								'supports_multiple_values' => true,
 								'options'                  => $options,
-							],
-							[
+							),
+							array(
 								'option_code' => 'UOGROUPNUMSEATS',
 								'label'       => esc_attr__( 'Number of seats', 'uncanny-automator' ),
 								'input_type'  => 'int',
 								'required'    => true,
 
-							],
-							[
+							),
+							array(
 								'input_type'            => 'select',
 								'option_code'           => 'GROUP_LEADER_ROLE_ASSIGNMENT',
 								/* translators: Uncanny Groups */
 								'label'                 => esc_attr__( 'If the user does not currently have the Group Leader role', 'uncanny-automator' ),
-								'description'           => '<div class="user-selector__warning">' . esc_attr__( 'Only users with the Group Leader role can be made the leader of a group.', 'uncanny-automator' ) . '</div>',
+								'description'           => '<div class="user-selector__warning">' . $user_warning . '</div>',
 								'required'              => true,
 								'default_value'         => 'do_nothing',
 								'options'               => array(
@@ -96,9 +99,9 @@ class UOG_CREATEUNCANNYGROUP {
 								),
 								'supports_custom_value' => false,
 								'supports_tokens'       => false,
-							],
-						],
-				],
+							),
+						),
+				),
 		);
 
 		Automator()->register->action( $action );
@@ -113,8 +116,6 @@ class UOG_CREATEUNCANNYGROUP {
 	 */
 	public function create_uncanny_group( $user_id, $action_data, $recipe_id, $args ) {
 
-
-
 		$uo_group_title               = Automator()->parse->text( $action_data['meta']['UOGROUPTITLE'], $recipe_id, $user_id, $args );
 		$uo_group_num_seats           = absint( Automator()->parse->text( $action_data['meta']['UOGROUPNUMSEATS'], $recipe_id, $user_id, $args ) );
 		$uo_group_courses             = Automator()->parse->text( $action_data['meta']['UOGROUPCOURSES'], $recipe_id, $user_id, $args );
@@ -127,19 +128,30 @@ class UOG_CREATEUNCANNYGROUP {
 			return;
 		}
 
+		// Check if user has existing 'group_leader' role.
 		if ( user_can( $user, 'group_leader' ) ) {
+
 			$create_group = true;
+
 		} else {
-			switch ( trim( $group_leader_role_assignment ) ) {
-				case 'add':
-					$user->add_role( 'group_leader' );
-					$create_group = true;
-					break;
-				case 'replace':
-					$user->set_role( 'group_leader' );
-					$create_group = true;
-					break;
+
+			// Only execute role changing or adding if current user is not administrator.
+			if ( ! user_can( $user, 'manage_options' ) ) {
+
+				switch ( trim( $group_leader_role_assignment ) ) {
+					case 'add':
+						$user->add_role( 'group_leader' );
+						$create_group = true;
+						break;
+					case 'replace':
+						$user->set_role( 'group_leader' );
+						$create_group = true;
+						break;
+				}
 			}
+
+			$create_group = true;
+
 		}
 
 		if ( false === $create_group ) {
@@ -176,15 +188,19 @@ class UOG_CREATEUNCANNYGROUP {
 				delete_transient( $transient_key );
 			}
 		}
+
 		update_post_meta( $group_id, '_ulgm_total_seats', $uo_group_num_seats );
-		$order_id      = \uncanny_learndash_groups\Database::get_random_order_number();
-		$attr          = array(
+
+		$order_id = \uncanny_learndash_groups\Database::get_random_order_number();
+
+		$attr = array(
 			'user_id'    => $user_id,
 			'order_id'   => $order_id,
 			'group_id'   => $group_id,
 			'group_name' => $group_title,
 			'qty'        => $uo_group_num_seats,
 		);
+
 		$codes         = \uncanny_learndash_groups\SharedFunctions::generate_random_codes( $uo_group_num_seats );
 		$code_group_id = \uncanny_learndash_groups\Database::add_codes( $attr, $codes );
 
@@ -195,9 +211,7 @@ class UOG_CREATEUNCANNYGROUP {
 			\uncanny_learndash_groups\RestApiEndPoints::add_existing_user( array( 'user_email' => $user->user_email ), true, $group_id, $order_id, 'redeemed', false );
 		}
 
-
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
-		return;
 	}
 }

@@ -72,7 +72,32 @@ class Set_Up_Automator {
 			),
 			AUTOMATOR_CONFIGURATION_COMPLETE_PRIORITY
 		);
+		add_action( 'admin_notices', array( $this, 'automator_pro_configure' ), 999 );
 
+	}
+
+	/**
+	 * @since 3.0.4
+	 */
+	public function automator_pro_configure() {
+		if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+			$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+			if ( version_compare( $version, '2.12.2', '<' ) ) {
+				?>
+				<div class="notice notice-warning">
+					<p><strong>Warning:</strong> The version of Uncanny Automator Pro
+						(<?php echo esc_attr( $version ); ?>) installed on your site is
+						incompatible with
+						Uncanny Automator 3.0 and higher. Uncanny Automator Pro has been temporarily disabled.
+						Upgrade to the latest version of Uncanny Automator Pro to re-enable functionality or
+						downgrade Uncanny Automator to version 2.11.1. <a
+							href="https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_medium=admin_notice&utm_campaign=30upgradewarning"
+							target="_blank">Learn More<span style="font-size:14px; margin-left:-3px"
+															class="dashicons dashicons-external"></span></a></p>
+				</div>
+				<?php
+			}
+		}
 	}
 
 	/**
@@ -141,10 +166,11 @@ class Set_Up_Automator {
 						// Avoid Integromat fatal error if Pro < 3.0 and Free is >= 3.0
 						if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
 							$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
-							if ( version_compare( $version, '3.0', '<' ) ) {
-								if ( 'integromat-pro-helpers.php' === (string) $item || strpos( $item, 'integromat-pro-helpers' ) ) {
-									continue;
-								}
+							if ( version_compare( $version, '2.12.2', '<=' ) ) {
+								/**
+								 * Added to avoid fatal errors from Pro specially for LearnDash and BuddyBoss
+								 */
+								return array();
 							}
 						}
 						$integration_files[] = $directory . DIRECTORY_SEPARATOR . $item;
@@ -224,7 +250,6 @@ class Set_Up_Automator {
 		//Let others hook in to the directories and add their integration's actions / triggers etc
 		self::$auto_loaded_directories = apply_filters_deprecated( 'uncanny_automator_integration_directory', array( self::$auto_loaded_directories ), '3.0', 'automator_integration_directory' );
 		self::$auto_loaded_directories = apply_filters( 'automator_integration_directory', self::$auto_loaded_directories );
-
 		// Loads all options and provide a hook for external options
 		add_action(
 			'plugins_loaded',
@@ -340,6 +365,7 @@ class Set_Up_Automator {
 		return join( '_', $name );
 	}
 
+
 	/**
 	 * Initialize all trigger,action, and closure classes
 	 */
@@ -422,7 +448,7 @@ class Set_Up_Automator {
 		$file_name = basename( $file, '.php' );
 		// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
 		$class_name = self::file_name_to_class( $file_name );
-		$class      = $this->validate_namespace( $class_name, $file_name, $file );
+		$class      = self::validate_namespace( $class_name, $file_name, $file );
 
 		return apply_filters( 'automator_recipes_class_name', $class, $file, $file_name );
 	}
@@ -434,7 +460,7 @@ class Set_Up_Automator {
 	 *
 	 * @return mixed|string
 	 */
-	public function validate_namespace( $class_name, $file_name, $file ) {
+	public static function validate_namespace( $class_name, $file_name, $file ) {
 		$class_name = strtoupper( $class_name );
 		try {
 			$is_free = new \ReflectionClass( 'Uncanny_Automator\\' . $class_name );

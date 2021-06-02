@@ -38,6 +38,36 @@ class Activity_Log {
 		add_action( 'wp_ajax_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
 		add_action( 'wp_ajax_nopriv_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
 		add_action( 'admin_init', array( $this, 'load_minimal_admin' ) );
+		// Remove all admin notices in recipe details log modal.
+		add_action( 'in_admin_header', array( $this, 'recipe_logs_notices_remove' ), 99 );
+	}
+
+	/**
+	 * Remove admin notices in recipe logs details page.
+	 *
+	 * @return boolean True after remove_all_actions. Otherwise, false.
+	 */
+	public function recipe_logs_notices_remove() {
+
+		$current_screen = get_current_screen();
+
+		if ( ! isset( $current_screen->id ) ) {
+			return false;
+		}
+
+		if ( 'uo-recipe_page_uncanny-automator-recipe-activity-details' === $current_screen->id ) {
+
+			// Remove sitewide notices.
+			remove_all_actions( 'network_admin_notices' );
+			// Remove all notices for site admins.
+			remove_all_actions( 'user_admin_notices' );
+			// Remove all user notices.
+			remove_all_actions( 'admin_notices' );
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function load_minimal_admin() {
@@ -116,7 +146,9 @@ class Activity_Log {
 		}
 
 		$triggers = $wpdb->get_results(
-			"select distinct(r.automator_trigger_id) as id,p.post_title as trigger_title from {$wpdb->prefix}uap_trigger_log r join {$wpdb->posts} p on p.ID = r.automator_trigger_id WHERE r.automator_recipe_id = '{$recipe_id}'  order by trigger_title asc", ARRAY_A );
+			"select distinct(r.automator_trigger_id) as id,p.post_title as trigger_title from {$wpdb->prefix}uap_trigger_log r join {$wpdb->posts} p on p.ID = r.automator_trigger_id WHERE r.automator_recipe_id = '{$recipe_id}'  order by trigger_title asc",
+			ARRAY_A
+		);
 
 		if ( $triggers ) {
 			foreach ( $triggers as $trigger ) {
@@ -149,8 +181,9 @@ class Activity_Log {
 			wp_send_json( $return_data );
 		}
 		$actions = $wpdb->get_results(
-			"select distinct(r.automator_action_id) as id,p.post_title as action_title from {$wpdb->prefix}uap_action_log r join {$wpdb->posts} p on p.ID = r.automator_action_id WHERE r.automator_recipe_id = '{$recipe_id}' order by action_title asc"
-			, ARRAY_A );
+			"select distinct(r.automator_action_id) as id,p.post_title as action_title from {$wpdb->prefix}uap_action_log r join {$wpdb->posts} p on p.ID = r.automator_action_id WHERE r.automator_recipe_id = '{$recipe_id}' order by action_title asc",
+			ARRAY_A
+		);
 
 		if ( $actions ) {
 			foreach ( $actions as $action ) {

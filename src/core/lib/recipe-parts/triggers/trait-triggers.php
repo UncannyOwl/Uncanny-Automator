@@ -75,15 +75,16 @@ trait Triggers {
 	 */
 	public function validate( ...$args ) {
 		/**
+		 * Grab user_id using WordPress function.
+		 */
+		$this->set_user_id( $this->get_user_id() );
+
+		/**
 		 * By default, ...$args contains all the arguments in array. If a developer wants to manipulate the arguments
 		 * array to add assign values as key=>value pair, they can do it here.
 		 */
 		$args = $this->do_action_args( $args );
 
-		/**
-		 * Grab user_id using WordPress function.
-		 */
-		$this->set_user_id( wp_get_current_user()->ID );
 		/**
 		 * Set conditional triggers to false. Can be overwritten in prepare to run.
 		 */
@@ -106,7 +107,7 @@ trait Triggers {
 			/**
 			 * If this is an anonymous trigger and user is logged in, should it continue running trigger?
 			 */
-			if ( $this->get_is_anonymous() ) {
+			if ( $this->get_is_anonymous() || 'anonymous' === $this->get_trigger_type() ) {
 				/**
 				 * Allow developers to override and return true to continue running trigger.
 				 */
@@ -132,6 +133,7 @@ trait Triggers {
 		 */
 		$this->prepare_to_run( $args );
 
+		//TODO: Write $this->is_number_conditional_trigger(); to verify >,<,<=,>=,!=,= etc.
 		/**
 		 * In-depth validation of the trigger. Filter recipes based on multiple trigger codes & conditions. By default,
 		 * trigger condition is true. Set it to false if required for the trigger.
@@ -152,8 +154,7 @@ trait Triggers {
 			/**
 			 * Return us filtered recipe ids after validating trigger conditions.
 			 */
-			$matched_recipe_ids = $this->validate_conditions( $args );
-
+			$matched_recipe_ids = apply_filters( 'automator_conditionally_matched_recipes', $this->validate_conditions( $args ), $this );
 			/**
 			 * Trigger failed to satisfy conditions. bailing...
 			 */

@@ -323,6 +323,8 @@
 			}
 
 		.uap-logs-table__item-secondary-sentence {
+			width: 100%;
+
 			opacity: .7;
 			font-size: 11px;
 

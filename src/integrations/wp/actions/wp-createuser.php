@@ -35,7 +35,6 @@ class WP_CREATEUSER {
 	public function define_action() {
 
 
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
@@ -107,23 +106,20 @@ class WP_CREATEUSER {
 	 */
 	public function create_user( $user_id, $action_data, $recipe_id, $args ) {
 
-
-
-
 		// Username is mandatory. Return error its not valid.
 		if ( isset( $action_data['meta']['USERNAME'] ) ) {
 			$username = Automator()->parse->text( $action_data['meta']['USERNAME'], $recipe_id, $user_id, $args );
 			if ( ! validate_username( $username ) ) {
-				Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf(
+				$action_data['complete_with_errors'] = true;
 				/* translators: Create a {{user}} - Error while creating a new user */
-					esc_attr__( 'Invalid username: %1$s', 'uncanny-automator' ),
-					$username ) );
+				Automator()->complete->action( 0, $action_data, $recipe_id, sprintf( esc_attr__( 'Invalid username: %1$s', 'uncanny-automator' ), $username ) );
+
+				return;
 			}
 		} else {
-			Automator()->complete->action( $user_id, $action_data, $recipe_id,
-				/* translators: Create a {{user}} - Error while creating a new user */
-				esc_attr__( 'Username was not set', 'uncanny-automator' )
-			);
+			$action_data['complete_with_errors'] = true;
+			/* translators: Create a {{user}} - Error while creating a new user */
+			Automator()->complete->action( 0, $action_data, $recipe_id, esc_attr__( 'Username was not set', 'uncanny-automator' ) );
 
 			return;
 		}
@@ -132,13 +128,15 @@ class WP_CREATEUSER {
 		if ( isset( $action_data['meta']['EMAIL'] ) ) {
 			$email = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
 			if ( ! is_email( $email ) ) {
-				Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf(
+				$action_data['complete_with_errors'] = true;
 				/* translators: Create a {{user}} - Error while creating a new user */
-					esc_attr__( 'Invalid email: %1$s', 'uncanny-automator' )
-					, $email ) );
+				Automator()->complete->action( 0, $action_data, $recipe_id, sprintf( esc_attr__( 'Invalid email: %1$s', 'uncanny-automator' ), $email ) );
+
+				return;
 			}
 		} else {
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_attr__( 'Username was not set', 'uncanny-automator' ) );
+			$action_data['complete_with_errors'] = true;
+			Automator()->complete->action( 0, $action_data, $recipe_id, esc_attr__( 'Username was not set', 'uncanny-automator' ) );
 
 			return;
 		}
@@ -173,16 +171,29 @@ class WP_CREATEUSER {
 		$user_id = wp_insert_user( $userdata );
 
 		if ( is_wp_error( $user_id ) ) {
-			Automator()->complete->action( $user_id, $action_data, $recipe_id,
-				/* translators: Create a {{user}} - Error while creating a new user */
-				esc_attr__( 'Failed to create a user', 'uncanny-automator' )
-			);
+			$messages = $user_id->get_error_messages();
+			$err      = array();
+			if ( $messages ) {
+				foreach ( $messages as $msg ) {
+					$err[] = $msg;
+				}
+			}
+			if ( $err ) {
+				$err = join( ', ', $err );
+			}
+			if ( ! empty( $err ) ) {
+				$error_message = $err;
+			} else {
+				$error_message = esc_attr__( 'Failed to create a user', 'uncanny-automator' );
+			}
+			$action_data['complete_with_errors'] = true;
+			/* translators: Create a {{user}} - Error while creating a new user */
+			Automator()->complete->action( 0, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
 
 		$failed_meta_updates = array();
-
 
 		if ( isset( $action_data['meta']['USERMETA_PAIRS'] ) && ! empty( $action_data['meta']['USERMETA_PAIRS'] ) ) {
 			$fields = json_decode( $action_data['meta']['USERMETA_PAIRS'], true );
@@ -200,10 +211,8 @@ class WP_CREATEUSER {
 
 		if ( ! empty( $failed_meta_updates ) ) {
 			$failed_keys = "'" . implode( "','", array_keys( $failed_meta_updates ) ) . "'";
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf(
 			/* translators: Create a {{user}} - Error while creating a new user */
-				esc_attr__( 'Meta keys failed to update: %1$s', 'uncanny-automator' ),
-				$failed_keys ) );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf( esc_attr__( 'Meta keys failed to update: %1$s', 'uncanny-automator' ), $failed_keys ) );
 		}
 
 		wp_new_user_notification( $user_id, null, 'both' );

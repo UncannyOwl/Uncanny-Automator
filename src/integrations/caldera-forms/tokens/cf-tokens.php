@@ -100,7 +100,15 @@ class Cf_Tokens {
 	public function parse_cf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
 			if ( in_array( 'CFFORMS', $pieces ) ) {
+				if ( isset( $pieces[2] ) && 'CFFORMS' === $pieces[2] ) {
+					foreach ( $trigger_data as $t_d ) {
+						if ( isset( $t_d['meta']['CFFORMS'] ) ) {
+							$form = Caldera_Forms_Forms::get_form( $t_d['meta']['CFFORMS'] );
 
+							return $form['name'];
+						}
+					}
+				}
 				$token_info = explode( '|', $pieces[2] );
 				$form_id    = (int) sanitize_text_field( $token_info[0] );
 				$meta_key   = sanitize_text_field( $token_info[1] );

@@ -300,10 +300,7 @@ class Automator_Utilities {
 		if ( '<' === (string) $condition && $number_to_match < $number_to_compare ) {
 			return true;
 		}
-		if ( '>' === (string) $condition && $number_to_match < $number_to_compare ) {
-			return true;
-		}
-		if ( '>' === (string) $condition && $number_to_match < $number_to_compare ) {
+		if ( '>' === (string) $condition && $number_to_match > $number_to_compare ) {
 			return true;
 		}
 		if ( '=' === (string) $condition && $number_to_match === $number_to_compare ) {

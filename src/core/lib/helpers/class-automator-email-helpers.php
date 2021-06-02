@@ -101,21 +101,40 @@ class Automator_Email_Helpers {
 		$attachments = $mail['attachment'];
 		$is_html     = $mail['is_html'];
 		$error       = Automator()->error;
-		if ( $to ) {
+		
+		$sanitized_to = "";
+
+		// Sanitize "to" email.
+		if ( is_array( $to ) ) {
+			// Use array map to sanitize each value.
+			$sanitized_to = array_map( function( $email ){
+				return sanitize_email( $email );
+			}, $to);
+		} else {
+			// Sanitize single "to" string value.
+			$sanitized_to = sanitize_email( $to );
+		}
+	
+		if ( ! $error->get_message( 'wp_mail_to' ) ) {
 			if ( is_array( $to ) ) {
-				foreach ( $to as $tt ) {
-					if ( empty( $tt ) || ! is_email( $tt ) ) {
-						if ( ! $error->get_message( 'wp_mail_to' ) ) {
-							$error->add_error( 'wp_mail_to', esc_attr__( 'To address is empty.', 'uncanny-automator' ), $mail );
-						}
+				foreach ( $to as $to_email ) {
+					if ( empty ( $to_email  ) ) {
+						$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
+					}
+					if ( ! is_email( $to_email ) ) {
+						$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is invalid.', 'uncanny-automator' ), $mail );
 					}
 				}
-			} elseif ( empty( $to ) || ! is_email( $to ) ) {
-				if ( ! $error->get_message( 'wp_mail_to' ) ) {
-					$error->add_error( 'wp_mail_to', esc_attr__( 'To address is empty.', 'uncanny-automator' ), $mail );
+			} else {
+				if ( empty ( $to  ) ) {
+					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
+				}
+				if ( ! is_email( $to ) ) {
+					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is invalid.', 'uncanny-automator' ), $mail );
 				}
 			}
 		}
+		
 		if ( empty( $headers ) ) {
 			$headers = array();
 		}
@@ -136,6 +155,6 @@ class Automator_Email_Helpers {
 			return $error;
 		}
 
-		return wp_mail( $to, $subject, $body, $headers, $attachments );
+		return wp_mail( $sanitized_to, $subject, $body, $headers, $attachments );
 	}
 }

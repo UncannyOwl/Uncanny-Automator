@@ -44,6 +44,10 @@ trait Trigger_Setup {
 	 * @var bool
 	 */
 	protected $is_anonymous = false;
+	/**
+	 * @var string
+	 */
+	protected $trigger_type = 'user';
 
 	/**
 	 * @var bool
@@ -380,6 +384,20 @@ trait Trigger_Setup {
 		$this->token_parser = $token_parser;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function get_trigger_type() {
+		return $this->trigger_type;
+	}
+
+	/**
+	 * @param string $trigger_type
+	 */
+	public function set_trigger_type( string $trigger_type ) {
+		$this->trigger_type = $trigger_type;
+	}
+
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
@@ -387,20 +405,21 @@ trait Trigger_Setup {
 	protected function register_trigger() {
 
 		$trigger = array(
-			'author'              => $this->get_author(),
-			'support_link'        => $this->get_support_link(),
-			'is_pro'              => $this->get_is_pro(),
-			'is_deprecated'       => $this->get_is_deprecated(),
-			'integration'         => $this->get_integration(),
-			'code'                => $this->get_code(),
-			'sentence'            => $this->get_sentence(),
-			'select_option_name'  => $this->get_readable_sentence(),
-			'action'              => $this->get_action(),
-			'priority'            => $this->get_action_priority(),
-			'accepted_args'       => $this->get_action_args_count(),
-			'tokens'              => $this->get_trigger_tokens(),
-			'token_parser'        => $this->get_token_parser(),
-			'validation_function' => array( $this, 'validate' ),
+			'author'              => $this->get_author(), // author of the trigger.
+			'support_link'        => $this->get_support_link(), // hyperlink to support page.
+			'type'                => $this->get_trigger_type(), // user|anonymous. user by default.
+			'is_pro'              => $this->get_is_pro(), // free or pro trigger.
+			'is_deprecated'       => $this->get_is_deprecated(), // whether trigger is deprecated.
+			'integration'         => $this->get_integration(), // trigger the integration belongs to.
+			'code'                => $this->get_code(), // unique trigger code.
+			'sentence'            => $this->get_sentence(), // sentence to show in active state.
+			'select_option_name'  => $this->get_readable_sentence(), // sentence to show in non-active state.
+			'action'              => $this->get_action(), //  trigger fire at this do_action().
+			'priority'            => $this->get_action_priority(), // priority of the add_action().
+			'accepted_args'       => $this->get_action_args_count(), // accepted args by the add_action().
+			'tokens'              => $this->get_trigger_tokens(), // all the linked tokens of the trigger.
+			'token_parser'        => $this->get_token_parser(), // v3.0, Pass a function to parse tokens.
+			'validation_function' => array( $this, 'validate' ), // function to call for add_action().
 		);
 
 		if ( ! empty( $this->get_options() ) ) {
