@@ -82,7 +82,7 @@ class Set_Up_Automator {
 	public function automator_pro_configure() {
 		if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
 			$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
-			if ( version_compare( $version, '2.12.2', '<' ) ) {
+			if ( version_compare( $version, '3.0', '<' ) ) {
 				?>
 				<div class="notice notice-warning">
 					<p><strong>Warning:</strong> The version of Uncanny Automator Pro
@@ -166,7 +166,7 @@ class Set_Up_Automator {
 						// Avoid Integromat fatal error if Pro < 3.0 and Free is >= 3.0
 						if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
 							$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
-							if ( version_compare( $version, '2.12.2', '<=' ) ) {
+							if ( version_compare( $version, '3.0', '<' ) ) {
 								/**
 								 * Added to avoid fatal errors from Pro specially for LearnDash and BuddyBoss
 								 */

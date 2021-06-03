@@ -173,6 +173,16 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 3.0.5 [2021-06-03] =
+
+**Added:**
+
+* WP Job Manager: Tokens for job & resume category
+
+**Fixed:**
+
+* Selectively load < 3.0 Automator Pro to avoid unexpected results
+
 = 3.0.4 [2021-06-02] =
 
 **Updated:**
@@ -429,6 +439,9 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
+
+= 3.0.5 =
+Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
 
 = 3.0.4 =
 Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

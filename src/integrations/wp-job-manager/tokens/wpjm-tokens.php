@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Wpjm_Tokens
  * @package Uncanny_Automator
@@ -16,13 +15,18 @@ class Wpjm_Tokens {
 	public static $integration = 'WPJM';
 
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_wpjm_wpjmjobtype_tokens', [ $this, 'wpjm_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_pre_tokens', [ $this, 'wpjm_resume_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_wpjm_wpjmjobapplication_tokens', [
-			$this,
-			'wpjm_jobapplication_possible_tokens',
-		], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'wpjm_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_wpjm_wpjmjobtype_tokens', array( $this, 'wpjm_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_pre_tokens', array( $this, 'wpjm_resume_possible_tokens' ), 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpjm_wpjmjobapplication_tokens',
+			array(
+				$this,
+				'wpjm_jobapplication_possible_tokens',
+			),
+			20,
+			2
+		);
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wpjm_token' ), 20, 6 );
 	}
 
 	/**
@@ -57,93 +61,98 @@ class Wpjm_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$fields = [
-
-			[
+		$fields = array(
+			array(
+				'tokenId'         => 'WPJMJOBCATEGORIES',
+				'tokenName'       => __( 'Job categories', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPJMSUBMITJOB',
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNERNAME',
 				'tokenName'       => __( 'Job owner username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNEREMAIL',
 				'tokenName'       => __( 'Job owner email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNERFIRSTNAME',
 				'tokenName'       => __( 'Job owner first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNERLASTNAME',
 				'tokenName'       => __( 'Job owner last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBTITLE',
 				'tokenName'       => __( 'Job title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBLOCATION',
 				'tokenName'       => __( 'Location', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBDESCRIPTION',
 				'tokenName'       => __( 'Job description', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBAPPURL',
 				'tokenName'       => __( 'Application email/URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBCOMPANYNAME',
 				'tokenName'       => __( 'Company name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBWEBSITE',
 				'tokenName'       => __( 'Website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBTAGLINE',
 				'tokenName'       => __( 'Tagline', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBVIDEO',
 				'tokenName'       => __( 'Video', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBTWITTER',
 				'tokenName'       => __( 'Twitter username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBLOGOURL',
 				'tokenName'       => __( 'Logo URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
-			],
-		];
+			),
+		);
 
 		$tokens = array_merge( $tokens, $fields );
 
@@ -161,122 +170,122 @@ class Wpjm_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'tokenId'         => 'WPJMAPPLICATIONNAME',
 				'tokenName'       => __( 'Candidate name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMAPPLICATIONEMAIL',
 				'tokenName'       => __( 'Candidate email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMAPPLICATIONMESSAGE',
 				'tokenName'       => __( 'Message', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMAPPLICATIONCV',
 				'tokenName'       => __( 'CV', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBTYPE',
 				'tokenName'       => __( 'Job type', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNERNAME',
 				'tokenName'       => __( 'Job owner username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNEREMAIL',
 				'tokenName'       => __( 'Job owner email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNERFIRSTNAME',
 				'tokenName'       => __( 'Job owner first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBOWNERLASTNAME',
 				'tokenName'       => __( 'Job owner last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBTITLE',
 				'tokenName'       => __( 'Job title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBLOCATION',
 				'tokenName'       => __( 'Location', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBDESCRIPTION',
 				'tokenName'       => __( 'Job description', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBAPPURL',
 				'tokenName'       => __( 'Application email/URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBCOMPANYNAME',
 				'tokenName'       => __( 'Company name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBWEBSITE',
 				'tokenName'       => __( 'Website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBTAGLINE',
 				'tokenName'       => __( 'Tagline', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBVIDEO',
 				'tokenName'       => __( 'Video', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBTWITTER',
 				'tokenName'       => __( 'Twitter username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'WPJMJOBLOGOURL',
 				'tokenName'       => __( 'Logo URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			],
-		];
+			),
+		);
 
 		$tokens = array_merge( $tokens, $fields );
 
@@ -294,68 +303,74 @@ class Wpjm_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['code'];
 		if ( 'WPJMSUBMITRESUME' === $trigger_meta ) {
-			$fields = [
-				[
+			$fields = array(
+				array(
+					'tokenId'         => 'WPJMRESUMECATEGORIES',
+					'tokenName'       => __( 'Resume categories', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'WPJMSUBMITRESUME',
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMENAME',
 					'tokenName'       => __( 'Candidate name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMEEMAIL',
 					'tokenName'       => __( 'Candidate email', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMEPROTITLE',
 					'tokenName'       => __( 'Professional title', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMELOCATION',
 					'tokenName'       => __( 'Location', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMEPHOTO',
 					'tokenName'       => __( 'Photo', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMEVIDEO',
 					'tokenName'       => __( 'Video', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMECONTENT',
 					'tokenName'       => __( 'Resume content', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMEURLS',
 					'tokenName'       => __( 'URL(s)', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMEEDUCATION',
 					'tokenName'       => __( 'Education', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-				[
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMEEXPERIENCE',
 					'tokenName'       => __( 'Experience', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
-				],
-			];
+				),
+			);
 
 			$tokens = array_merge( $tokens, $fields );
 		}
@@ -383,12 +398,14 @@ class Wpjm_Tokens {
 				$trigger_meta   = $pieces[1];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value
+				$entry          = $wpdb->get_var(
+					"SELECT meta_value
 													FROM {$wpdb->prefix}uap_trigger_log_meta
 													WHERE meta_key = '{$trigger_meta}'
 													AND automator_trigger_log_id = {$trigger_log_id}
 													AND automator_trigger_id = {$trigger_id}
-													LIMIT 0,1" );
+													LIMIT 0,1"
+				);
 
 				$entry = maybe_unserialize( $entry );
 
@@ -467,18 +484,21 @@ class Wpjm_Tokens {
 		}
 		$piece_resume = 'WPJMSUBMITRESUME';
 		if ( $pieces ) {
+
 			if ( in_array( $piece_resume, $pieces ) || in_array( 'WPJMJOBAPPLICATIONID', $pieces ) ) {
 				global $wpdb;
 				$trigger_id     = $pieces[0];
 				$trigger_meta   = $pieces[1];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value
+				$entry          = $wpdb->get_var(
+					"SELECT meta_value
 													FROM {$wpdb->prefix}uap_trigger_log_meta
 													WHERE meta_key = '{$trigger_meta}'
 													AND automator_trigger_log_id = {$trigger_log_id}
 													AND automator_trigger_id = {$trigger_id}
-													LIMIT 0,1" );
+													LIMIT 0,1"
+				);
 
 				$entry = maybe_unserialize( $entry );
 
@@ -542,7 +562,7 @@ class Wpjm_Tokens {
 						}
 					}
 					$return .= '</ul>';
-					$value  = $return;
+					$value   = $return;
 				} elseif ( $pieces[2] === 'WPJMRESUMEEDUCATION' ) {
 					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {
 						$entry = $_resume_id;
@@ -608,6 +628,15 @@ class Wpjm_Tokens {
 						$return .= '</ul>';
 					}
 					$value = $return;
+				} elseif ( $pieces[2] === 'WPJMRESUMECATEGORIES' ) {
+
+					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {
+						$entry = $_resume_id;
+					}
+
+					$resume_categories = Automator()->helpers->recipe->wp_job_manager->options->get_resume_categories( $entry );
+
+					$value = implode( ', ', $resume_categories );
 				}
 			}
 		}

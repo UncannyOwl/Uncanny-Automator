@@ -3,7 +3,6 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Wpjm_Pro_Helpers;
 
 /**
@@ -59,10 +58,8 @@ class Wpjm_Helpers {
 	public function list_wpjm_job_types( $label = null, $option_code = 'WPJMJOBTYPE', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Job type', 'uncanny-automator' );
@@ -78,7 +75,13 @@ class Wpjm_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			// WP Job Manager is hidding terms on non job template
-			$terms = get_terms( 'job_listing_type', [ 'hide_empty' => false, 'public' => false ] );
+			$terms = get_terms(
+				'job_listing_type',
+				array(
+					'hide_empty' => false,
+					'public'     => false,
+				)
+			);
 			if ( ! is_wp_error( $terms ) ) {
 				if ( ! empty( $terms ) ) {
 					foreach ( $terms as $term ) {
@@ -89,7 +92,7 @@ class Wpjm_Helpers {
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -99,7 +102,7 @@ class Wpjm_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_list_wpjm_job_types', $option );
 	}
@@ -115,10 +118,8 @@ class Wpjm_Helpers {
 	public function list_wpjm_jobs( $label = null, $option_code = 'WPJMJOBS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Job', 'uncanny-automator' );
@@ -134,13 +135,13 @@ class Wpjm_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			// WP Job Manager is hidding terms on non job template
-			$args = [
+			$args = array(
 				'post_type'      => 'job_listing',
 				'posts_per_page' => 9999,
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',
-			];
+			);
 			$jobs = get_posts( $args );
 			if ( ! is_wp_error( $jobs ) ) {
 				if ( ! empty( $jobs ) ) {
@@ -152,7 +153,7 @@ class Wpjm_Helpers {
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -162,8 +163,37 @@ class Wpjm_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_list_wpjm_jobs', $option );
+	}
+
+	/**
+	 * Returns an array collection of categories in Job.
+	 *
+	 * @return array $terms The collection of terms.
+	 */
+	public function get_resume_categories( $resume_id = 0 ) {
+
+		if ( empty( $resume_id ) ) {
+			return array();
+		}
+
+		$categories = array();
+
+		$terms = wp_get_object_terms( $resume_id, 'resume_category' );
+
+		if ( ! is_wp_error( $terms ) ) {
+			if ( ! empty( $terms ) ) {
+				foreach ( $terms as $term ) {
+					$categories[] = $term->name;
+				}
+				// Sort alphabetically.
+				sort( $categories );
+			}
+		}
+
+		return $categories;
+
 	}
 }
