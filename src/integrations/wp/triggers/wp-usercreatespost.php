@@ -37,6 +37,8 @@ class WP_USERCREATESPOST {
 	 */
 	public function define_trigger() {
 
+
+
 		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			null,
 			'WPPOSTTYPES',
@@ -70,6 +72,8 @@ class WP_USERCREATESPOST {
 			'POSTID'      => __( 'Post ID', 'uncanny-automator' ),
 			'POSTURL'     => __( 'Post URL', 'uncanny-automator' ),
 			'POSTCONTENT' => __( 'Post content', 'uncanny-automator' ),
+			'POSTIMAGEURL' => __( 'Post featured image URL', 'uncanny-automator' ),
+			'POSTIMAGEID' => __( 'Post featured image ID', 'uncanny-automator' ),
 		);
 
 		$trigger = array(
@@ -78,7 +82,7 @@ class WP_USERCREATESPOST {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'sentence'            => sprintf(
-			/* translators: Logged-in trigger - WordPress */
+				/* translators: Logged-in trigger - WordPress */
 				__( 'A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}', 'uncanny-automator' ),
 				$this->trigger_meta,
 				'WPTAXONOMYTERM' . ':' . $this->trigger_meta,
@@ -86,9 +90,9 @@ class WP_USERCREATESPOST {
 			),
 			/* translators: Logged-in trigger - WordPress */
 			'select_option_name'  => esc_attr__( 'A user publishes a {{type of}} post with {{a taxonomy term}} in {{a taxonomy}}', 'uncanny-automator' ),
-			'action'              => 'wp_after_insert_post',
+			'action'              => 'transition_post_status',
 			'priority'            => 90,
-			'accepted_args'       => 4,
+			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'post_published' ),
 			'options'             => array(),
 			'options_group'       => array(
@@ -122,13 +126,15 @@ class WP_USERCREATESPOST {
 	/**
 	 * Fires when a post is transitioned from one status to another.
 	 *
-	 * @param string $new_status New post status.
-	 * @param string $old_status Old post status.
-	 * @param \WP_Post $post Post object.
+	 * @param string  $new_status New post status.
+	 * @param string  $old_status Old post status.
+	 * @param \WP_Post $post       Post object.
 	 */
-	public function post_published( $post_id, $post, $update, $post_before ) {
+	public function post_published( $new_status, $old_status, $post  ) {
+
+		$is_draft_to_publish = Automator()->helpers->recipe->wp->is_draft_to_publish( $new_status, $old_status, $post );
+
 		// Bailout if status is not 'draft' to 'publish'.
-		$is_draft_to_publish = Automator()->helpers->recipe->wp->is_draft_to_publish( $post->post_status, $post_before->post_status, $post );
 		if ( ! $is_draft_to_publish ) {
 			return false;
 		}
@@ -138,6 +144,7 @@ class WP_USERCREATESPOST {
 		$required_post_type     = Automator()->get->meta_from_recipes( $recipes, 'WPPOSTTYPES' );
 		$required_post_taxonomy = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMIES' );
 		$required_post_term     = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMYTERM' );
+
 
 		$matched_recipe_ids = array();
 		$terms_list         = array();
@@ -151,71 +158,9 @@ class WP_USERCREATESPOST {
 
 					$trigger_id = $trigger['ID'];
 
-					$is_any_term = false;
-					$is_any_tax  = false;
-
-					if ( ! isset( $required_post_term[ $recipe_id ] ) && ! isset( $required_post_taxonomy[ $recipe_id ] ) && ! isset( $required_post_type[ $recipe_id ] ) ) {
-						continue;
-					}
-					if ( isset( $required_post_term[ $recipe_id ][ $trigger_id ] ) && ! isset( $required_post_taxonomy[ $recipe_id ][ $trigger_id ] ) && ! isset( $required_post_type[ $recipe_id ][ $trigger_id ] ) ) {
-						continue;
-					}
-					if ( '0' == $required_post_term[ $recipe_id ][ $trigger_id ] ) {
-						$is_any_term = true;
-					}
-					if ( '0' == $required_post_taxonomy[ $recipe_id ][ $trigger_id ] ) {
-						$is_any_tax = true;
-					}
-					if ( '0' != (string) $required_post_type[ $recipe_id ][ $trigger_id ] && $post->post_type !== $required_post_type[ $recipe_id ][ $trigger_id ] ) {
-						continue;
-					}
-
-					if ( $is_any_tax && $is_any_term ) {
-						// Any taxonomy and any term
-						$matched_recipe_ids[] = array(
-							'recipe_id'  => $recipe_id,
-							'trigger_id' => $trigger_id,
-						);
-					} elseif ( $is_any_tax && ! $is_any_term ) {
-						// Any taxonomy but specific term
-						if (
-						has_term(
-							$required_post_term[ $recipe_id ][ $trigger_id ],
-							null,
-							$post
-						)
-						) {
-							// Matched the post term
-							$matched_recipe_ids[] = array(
-								'recipe_id'  => $recipe_id,
-								'trigger_id' => $trigger_id,
-							);
-
-							// Specific Term
-							$term         = get_term( $required_post_term[ $recipe_id ][ $trigger_id ] );
-							$terms_list[] = $term->name;
-						}
-					} elseif ( ! $is_any_tax && $is_any_term ) {
-						// Specific taxonomy but any term
-						if (
-						has_term(
-							null,
-							$required_post_taxonomy[ $recipe_id ][ $trigger_id ],
-							$post
-						)
-						) {
-							// Matched the post term
-							$matched_recipe_ids[] = array(
-								'recipe_id'  => $recipe_id,
-								'trigger_id' => $trigger_id,
-							);
-
-							// Specific Term
-							$term         = get_term( $required_post_term[ $recipe_id ][ $trigger_id ] );
-							$terms_list[] = $term->name;
-						}
-					} elseif ( ! $is_any_tax && ! $is_any_term ) {
-						// Specific taxonomy and term
+					if ( '0' !== $required_post_term[ $recipe_id ][ $trigger_id ] ) {
+						// if the term is specific then tax and post type are also specific
+						// check if the post has the required term
 						if (
 						has_term(
 							$required_post_term[ $recipe_id ][ $trigger_id ],
@@ -233,6 +178,32 @@ class WP_USERCREATESPOST {
 							$term         = get_term( $required_post_term[ $recipe_id ][ $trigger_id ] );
 							$terms_list[] = $term->name;
 						}
+						continue;
+					}
+
+					if ( '0' !== $required_post_taxonomy[ $recipe_id ][ $trigger_id ] ) {
+						// let check if the post has any term in the selected taxonomy
+						if (
+						has_term(
+							null,
+							$required_post_taxonomy[ $recipe_id ][ $trigger_id ],
+							$post
+						)
+						) {
+							// Matched the post term
+							$matched_recipe_ids[] = array(
+								'recipe_id'  => $recipe_id,
+								'trigger_id' => $trigger_id,
+							);
+
+							// All Post Terms for specific taxonomy
+							$terms = wp_get_post_terms( $post->ID, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
+
+							foreach ( $terms as $term ) {
+								$terms_list [] = $term->name;
+							}
+						}
+						continue;
 					}
 
 					$taxonomies = get_object_taxonomies( $post->post_type, 'object' );
@@ -247,6 +218,24 @@ class WP_USERCREATESPOST {
 					foreach ( $terms as $term ) {
 						$terms_list [] = $term->name;
 					}
+
+					if ( '0' !== $required_post_type[ $recipe_id ][ $trigger_id ] ) {
+						if ( $post->post_type === $required_post_type[ $recipe_id ][ $trigger_id ] ) {
+							// Matched the post type
+							$matched_recipe_ids[] = array(
+								'recipe_id'  => $recipe_id,
+								'trigger_id' => $trigger_id,
+							);
+						}
+						continue;
+					}
+
+					// All fields are set to "any" by deductive reasoning
+					// Matched the post term
+					$matched_recipe_ids[] = array(
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+					);
 				}
 			}
 		}
@@ -299,6 +288,15 @@ class WP_USERCREATESPOST {
 							$trigger_meta['meta_value'] = maybe_serialize( $post->post_type );
 							Automator()->insert_trigger_meta( $trigger_meta );
 
+							$this->trigger_meta = $trigger_meta;
+							$this->result = $result;
+
+							if ( REST_REQUEST ) {
+								add_action( "rest_after_insert_{$post->post_type}", array( $this, 'store_thumbnail'), 10, 3 );
+							} else {
+								$this->store_thumbnail( $post );
+							}
+
 							// Post terms Token
 							// All Post Terms for specific taxonomy
 							$terms           = wp_get_post_terms( $post->ID, $taxonomy_names );
@@ -318,6 +316,20 @@ class WP_USERCREATESPOST {
 		}
 
 		return;
+	}
+
+	public function store_thumbnail( $post, $request = null, $creating = null ) {
+
+		// Post Featured Image URL
+		$this->trigger_meta['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEURL';
+		$this->trigger_meta['meta_value'] = maybe_serialize( get_the_post_thumbnail_url( $this->post->ID, 'full' ) );
+		Automator()->insert_trigger_meta( $this->trigger_meta );
+
+		// Post Featured Image ID
+		$this->trigger_meta['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEID';
+		$this->trigger_meta['meta_value'] = maybe_serialize( get_post_thumbnail_id( $this->post->ID ) );
+		Automator()->insert_trigger_meta( $this->trigger_meta );
+
 	}
 
 }

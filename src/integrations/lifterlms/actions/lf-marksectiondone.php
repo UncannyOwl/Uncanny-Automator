@@ -63,7 +63,7 @@ class LF_MARKSECTIONDONE {
 	 * @param array $action_data action data.
 	 * @param string $recipe_id recipe id.
 	 */
-	public function lf_mark_section_done( $user_id, $action_data, $recipe_id ) {
+	public function lf_mark_section_done( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

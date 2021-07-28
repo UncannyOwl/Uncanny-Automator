@@ -8,68 +8,34 @@ namespace Uncanny_Automator;
  */
 class Add_Wpsp_Integration {
 
-	/**
-	 * Integration code
-	 * @var string
-	 */
-	public static $integration = 'WPSIMPLEPAY';
+	use Recipe\Integrations;
 
 	/**
-	 * Add_Integration constructor.
+	 * Add_Wpsp_Integration constructor.
 	 */
 	public function __construct() {
-
+		$this->setup();
 	}
 
 	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
 	 *
-	 * @param $status
-	 * @param $plugin
-	 *
+	 */
+	protected function setup() {
+		$this->set_integration( 'WPSIMPLEPAY' );
+		$this->set_name( 'WP Simple Pay' );
+		$this->set_icon( 'wp-simple-pay-icon.svg' );
+		$this->set_icon_path( __DIR__ . '/img/' );
+		$this->set_plugin_file_path( '' );
+	}
+
+	/**
 	 * @return bool
 	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( defined( 'SIMPLE_PAY_VERSION' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
+	public function plugin_active() {
+		if ( defined( 'SIMPLE_PAY_VERSION' ) ) {
+			return true;
 		}
 
-		return $status;
+		return false;
 	}
-
-	/**
-	 * et the directories that the auto loader will run in
-	 *
-	 * @param $directory
-	 *
-	 * @return array
-	 */
-	public function add_integration_directory_func( $directory ) {
-
-		$directory[] = dirname( __FILE__ ) . '/helpers';
-		$directory[] = dirname( __FILE__ ) . '/actions';
-		$directory[] = dirname( __FILE__ ) . '/triggers';
-		$directory[] = dirname( __FILE__ ) . '/tokens';
-
-		return $directory;
-	}
-
-	/**
-	 * Register the integration by pushing it into the global automator object
-	 */
-	public function add_integration_func() {
-
-
-
-		Automator()->register->integration( self::$integration, array(
-			'name'     => 'WP Simple Pay',
-			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/wp-simple-pay-icon.svg' ),
-		) );
-	}
-
 }

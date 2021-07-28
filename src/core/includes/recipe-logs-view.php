@@ -30,10 +30,13 @@ if ( ! automator_filter_has_var( 'order' ) && ! automator_filter_has_var( 'order
 		$_GET['orderby'] = 'action_date';
 	}
 }
+/**
+ * @param $current_tab
+ */
 function automator_setup_recipe_logs( $current_tab ) {
 	$headings = array(
 		/* translators: Log column. */
-		'recipe_type'      => esc_attr__( 'Recipe type', 'uncanny-automator' ),
+		//'recipe_type'      => esc_attr__( 'Recipe type', 'uncanny-automator' ),
 		/* translators: Log column. */
 		'recipe_title'     => esc_attr__( 'Recipe', 'uncanny-automator' ),
 		/* translators: Log column. The recipe status */
@@ -68,6 +71,10 @@ function automator_setup_recipe_logs( $current_tab ) {
 	$wp_list_table->display();
 }
 
+/**
+ * @param $current_tab
+ * @param array $args
+ */
 function automator_setup_trigger_logs( $current_tab, $args = array() ) {
 
 	$headings = array(
@@ -102,7 +109,7 @@ function automator_setup_trigger_logs( $current_tab, $args = array() ) {
 		'display_name'       => array( 'display_name', true ),
 	);
 
-	$sortables = apply_filters('automator_setup_trigger_logs_sortables', $sortables);
+	$sortables = apply_filters( 'automator_setup_trigger_logs_sortables', $sortables );
 
 	//Prepare Table of elements
 	$wp_list_table = new Logs_List_Table();
@@ -113,6 +120,10 @@ function automator_setup_trigger_logs( $current_tab, $args = array() ) {
 	$wp_list_table->display();
 }
 
+/**
+ * @param $current_tab
+ * @param array $args
+ */
 function automator_setup_action_logs( $current_tab, $args = array() ) {
 
 	$headings = array(
@@ -162,10 +173,13 @@ function automator_setup_action_logs( $current_tab, $args = array() ) {
 	$wp_list_table->display();
 }
 
+/**
+ * @param $current_tab
+ */
 function automator_setup_activity_logs( $current_tab ) {
 	$headings = array(
 		/* translators: Log column. */
-		'recipe_type'      => esc_attr__( 'Recipe type', 'uncanny-automator' ),
+		//'recipe_type'      => esc_attr__( 'Recipe type', 'uncanny-automator' ),
 		/* translators: Log column. */
 		'recipe_title'     => esc_attr__( 'Recipe', 'uncanny-automator' ),
 		/* translators: Log column. The recipe status */

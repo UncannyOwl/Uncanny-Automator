@@ -213,6 +213,26 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $modern_events_calendar;
 	/**
+	 * @var Slack_Helpers
+	 */
+	public $slack;
+	/**
+	 * @var Facebook_Helpers;
+	 */
+	public $facebook;
+	/**
+	 * @var Instagram_Helpers;
+	 */
+	public $instagram;
+	/**
+	 * @var Google_Sheet_Helpers
+	 */
+	public $google_sheet;
+	/**
+	 * @var Mailchimp_Helpers;
+	 */
+	public $mailchimp;
+	/**
 	 * @var Automator_Helpers_Recipe
 	 */
 	public $options;
@@ -522,12 +542,11 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		// suffix post type is needed.
 		if ( isset( $args['post_type'] ) ) {
-			$transient_key .= md5( wp_json_encode( $args ) );
+			$transient_key .= md5( wp_json_encode( $args['post_type'] ) );
 		}
 
 		// attempt fetching options from transient.
-		$options = apply_filters( 'automator_modify_transient_options', get_transient( $transient_key ), $args );
-
+		$options = apply_filters( 'automator_modify_transient_options', Automator()->cache->get( $transient_key ), $args );
 		// if meta query is set, its better to re-run query instead of transient
 		if ( isset( $args['meta_query'] ) && ! empty( $args['meta_query'] ) ) {
 			$options = array();
@@ -654,8 +673,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 				 * @author  Saad
 				 * @version 2.6
 				 */
-				$transient_time = apply_filters( 'automator_transient_time', 5 * MINUTE_IN_SECONDS );
-				set_transient( $transient_key, $options, $transient_time );
+				$transient_time = apply_filters( 'automator_transient_time', Automator()->cache->expires );
+				Automator()->cache->set( $transient_key, $options, 'automator', $transient_time );
 			}
 		}
 
@@ -799,7 +818,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		// prepare transient key.
 		$transient_key = 'automator_transient_users';
 		// attempt fetching options from transient.
-		$users = get_transient( 'uap_transient_users' );
+		$users = Automator()->cache->get( 'uap_transient_users' );
 		if ( empty( $users ) ) {
 			$query = apply_filters(
 				'automator_get_users_query',
@@ -811,8 +830,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			$users = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			// save fetched posts in a transient for 3 minutes for performance gains.
-			$expiration_time = apply_filters( 'automator_get_users_expiry_time', 3 * MINUTE_IN_SECONDS, $users );
-			set_transient( $transient_key, $users, $expiration_time );
+			$expiration_time = apply_filters( 'automator_get_users_expiry_time', Automator()->cache->expires, $users );
+			Automator()->cache->set( $transient_key, $users, 'automator', $expiration_time );
 		}
 
 		return apply_filters( 'automator_modify_user_results', $users );

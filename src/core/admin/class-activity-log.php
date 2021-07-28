@@ -38,6 +38,7 @@ class Activity_Log {
 		add_action( 'wp_ajax_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
 		add_action( 'wp_ajax_nopriv_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
 		add_action( 'admin_init', array( $this, 'load_minimal_admin' ) );
+		add_action( 'admin_init', array( $this, 'close_window_on_load' ) );
 		// Remove all admin notices in recipe details log modal.
 		add_action( 'in_admin_header', array( $this, 'recipe_logs_notices_remove' ), 99 );
 	}
@@ -70,13 +71,49 @@ class Activity_Log {
 		return false;
 	}
 
+	public function close_window_on_load(){
+		// Check if we should close the window
+		if ( automator_filter_has_var( 'ua_close_window' ) ){
+			?>
+
+			<script>
+
+			try {
+			    // Close this window
+			    window.close();
+			} catch ( e ){
+				console.log( e );
+			}
+
+			</script>
+
+			<?php
+		}
+	}
+
 	public function load_minimal_admin() {
+		if ( automator_filter_has_var( 'hide_settings_tabs' ) ){
+			ob_start();
+			?>
+			<style>
+				.nav-tab-wrapper {
+					display: none !important;
+				}
+			</style>
+			<?php
+			echo ob_get_clean();
+		}
+
 		if ( ! automator_filter_has_var( 'minimal' ) ) {
 			return;
 		}
 		ob_start();
 		?>
 		<style>
+			html.wp-toolbar {
+				padding-top: 0 !important;
+			}
+
 			.wrap.uap .uap-nav-tab-wrapper,
 			.uap-logs .tablenav.top,
 			#wpadminbar,

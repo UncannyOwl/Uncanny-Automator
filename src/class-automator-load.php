@@ -60,6 +60,9 @@ class Automator_Load {
 			2
 		);
 
+		// Load both admin & non-admin files.
+		add_filter( 'automator_core_files', array( $this, 'global_classes' ) );
+
 		// Load Admin only files.
 		add_filter( 'automator_core_files', array( $this, 'admin_only_classes' ) );
 
@@ -69,11 +72,11 @@ class Automator_Load {
 		// Load non-admin files.
 		add_filter( 'automator_core_files', array( $this, 'front_only_classes' ) );
 
-		// Load both admin & non-admin files.
-		add_filter( 'automator_core_files', array( $this, 'global_classes' ) );
-
 		// Add the pro links utm_r attributes.
 		add_action( 'admin_footer', array( $this, 'global_utm_r_links' ) );
+
+		add_action( 'activated_plugin', array( $this, 'automator_activated' ) );
+
 
 		// Show 'Upgrade to Pro' on plugins page.
 		add_filter(
@@ -86,7 +89,15 @@ class Automator_Load {
 		);
 
 		$this->load_automator();
+	}
 
+	/**
+	 * @param $plugin
+	 */
+	public function automator_activated( $plugin ) {
+		if ( $plugin == plugin_basename( AUTOMATOR_BASE_FILE ) && true === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
+			exit( wp_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ) ) );
+		}
 	}
 
 	/**
@@ -342,7 +353,9 @@ class Automator_Load {
 		$classes['Copy_Recipe_Parts'] = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
 
 		$classes['Add_User_Recipe_Type'] = UA_ABSPATH . 'src/core/classes/class-add-user-recipe-type.php';
-
+		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
+			$classes['Add_Anon_Recipe_Type'] = UA_ABSPATH . 'src/core/anon/class-add-anon-recipe-type.php';
+		}
 		do_action( 'automator_after_admin_init' );
 
 		/**
@@ -412,9 +425,6 @@ class Automator_Load {
 	 * @return array|mixed
 	 */
 	public function front_only_classes( $classes = array() ) {
-//		if ( is_admin() && ! DOING_AJAX ) {
-//			return $classes;
-//		}
 
 		$classes['Actionify_Triggers'] = UA_ABSPATH . 'src/core/classes/class-actionify-triggers.php';
 
@@ -432,10 +442,17 @@ class Automator_Load {
 		 */
 		do_action( 'automator_before_autoloader' );
 
+		// Load Anon part if Pro is not active
+		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
+			$classes['Automator_Handle_Anon'] = UA_ABSPATH . 'src/core/anon/automator-handle-anon.php';
+		}
+
 		$classes['Automator_Review']     = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
 		$classes['Automator_Autoloader'] = UA_ABSPATH . 'src/core/lib/autoload/class-ua-autoloader.php';
-		// $classes['A_Cron_Exceptions']    = UA_ABSPATH . 'src/core/classes/class-a-cron-exceptions.php';
-		$classes['Set_Up_Automator'] = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
+		$classes['Api_Server']           = UA_ABSPATH . 'src/core/classes/class-api-server.php';
+		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
+
+		//$classes['Import_Recipe'] = UA_ABSPATH . 'src/core/classes/class-import-recipe.php';
 
 		do_action( 'automator_after_autoloader' );
 

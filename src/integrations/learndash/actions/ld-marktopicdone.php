@@ -119,7 +119,7 @@ class LD_MARKTOPICDONE {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function mark_completes_a_topic( $user_id, $action_data, $recipe_id ) {
+	public function mark_completes_a_topic( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

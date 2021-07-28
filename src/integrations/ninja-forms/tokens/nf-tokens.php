@@ -11,41 +11,10 @@ use function Ninja_Forms;
  */
 class Nf_Tokens {
 
-	/**
-	 * Integration code
-	 * @var string
-	 */
-	public static $integration = 'NF';
-
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
-
 		add_filter( 'automator_maybe_trigger_nf_nfforms_tokens', [ $this, 'nf_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'nf_token' ], 20, 6 );
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
-	 *
-	 * @param $status
-	 * @param $plugin
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'Ninja_Forms' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
+		add_filter( 'automator_maybe_trigger_nf_anonnfforms_tokens', [ $this, 'nf_possible_tokens' ], 20, 2 );
 	}
 
 	/**
@@ -54,10 +23,9 @@ class Nf_Tokens {
 	 *
 	 * @return array
 	 */
-	function nf_possible_tokens( $tokens = array(), $args = array() ) {
-		$form_id             = $args['value'];
-		$trigger_integration = $args['integration'];
-		$trigger_meta        = $args['meta'];
+	public function nf_possible_tokens( $tokens = array(), $args = array() ) {
+		$form_id      = $args['value'];
+		$trigger_meta = $args['meta'];
 
 		$form_ids = array();
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
@@ -67,11 +35,9 @@ class Nf_Tokens {
 			}
 		}
 
+		// if no form exist then return
 		if ( empty( $form_ids ) ) {
-			$forms = Ninja_Forms()->form()->get_forms();
-			foreach ( $forms as $form ) {
-				$form_ids[] = $form->get_id();
-			}
+			return $tokens;
 		}
 
 		if ( ! empty( $form_ids ) ) {
@@ -109,7 +75,37 @@ class Nf_Tokens {
 	 */
 	public function nf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'NFFORMS', $pieces ) ) {
+			if ( in_array( 'NFFORMS', $pieces ) || in_array( 'ANONNFFORMS', $pieces ) ) {
+
+				// Render Form Name
+				if ( isset( $pieces[2] ) && ( 'NFFORMS' === $pieces[2] || 'ANONNFFORMS' === $pieces[2] ) ) {
+					foreach ( $trigger_data as $t_d ) {
+						if ( empty( $t_d ) ) {
+							continue;
+						}
+						if ( isset( $t_d['meta']['NFFORMS_readable'] ) ) {
+							return $t_d['meta']['NFFORMS_readable'];
+						}
+						if ( isset( $t_d['meta']['ANONNFFORMS_readable'] ) ) {
+							return $t_d['meta']['ANONNFFORMS_readable'];
+						}
+					}
+				}
+				// Render Form ID
+				if ( isset( $pieces[2] ) && ( 'NFFORMS_ID' === $pieces[2] || 'ANONNFFORMS_ID' === $pieces[2] ) ) {
+					foreach ( $trigger_data as $t_d ) {
+						if ( empty( $t_d ) ) {
+							continue;
+						}
+						if ( isset( $t_d['meta']['NFFORMS'] ) ) {
+							return $t_d['meta']['NFFORMS'];
+						}
+						if ( isset( $t_d['meta']['ANONNFFORMS'] ) ) {
+							return $t_d['meta']['ANONNFFORMS'];
+						}
+					}
+				}
+
 				global $wpdb;
 				$trigger_id     = $pieces[0];
 				$trigger_meta   = $pieces[1];

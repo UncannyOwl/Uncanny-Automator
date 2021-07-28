@@ -8,7 +8,7 @@ use WC_Order_Item_Product;
  * Class WC_PURCHPROD
  * @package Uncanny_Automator
  */
-class WC_PURCHPROD {
+class WC_PURCHPROD_DEP {
 
 	/**
 	 * Integration code
@@ -33,8 +33,6 @@ class WC_PURCHPROD {
 	 */
 	public function define_trigger() {
 
-
-
 		$options = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_attr__( 'Product', 'uncanny-automator' ) );
 
 		$options['options'] = array( '-1' => esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
@@ -44,6 +42,7 @@ class WC_PURCHPROD {
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/woocommerce/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
+			'is_deprecated'       => true,
 			/* translators: Logged-in trigger - WooCommerce */
 			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WooCommerce */

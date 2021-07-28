@@ -73,7 +73,7 @@ class WPF_USERGROUP {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function enrol_in_to_group( $user_id, $action_data, $recipe_id ) {
+	public function enrol_in_to_group( $user_id, $action_data, $recipe_id, $args ) {
 
 
 		$group_id = $action_data['meta'][ $this->action_meta ];

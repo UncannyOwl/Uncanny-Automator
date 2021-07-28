@@ -82,7 +82,7 @@ class BO_AWARDACHIEVEMENT_A {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function award_an_achievement( $user_id, $action_data, $recipe_id ) {
+	public function award_an_achievement( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

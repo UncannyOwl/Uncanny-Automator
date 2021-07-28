@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
-Tested up to: 5.7.2
+Tested up to: 5.8
 Requires PHP: 7.2
-Stable tag: 3.0.4
+Stable tag: 3.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -41,6 +41,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/)
 - [Elementor](https://automatorplugin.com/integration/elementor/)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/)
+- [Facebook](https://automatorplugin.com/integration/facebook)
 - [FluentCRM](https://automatorplugin.com/integration/fluentcrm/)
 - [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/)
@@ -50,6 +51,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/)
 - [Groundhogg](https://automatorplugin.com/integration/groundhogg/)
 - [HappyForms](https://automatorplugin.com/integration/happyforms/)
+- [Instagram](https://automatorplugin.com/integration/instagram)
 - [Integromat](https://automatorplugin.com/integration/integromat/)
 - [LearnDash](https://automatorplugin.com/integration/learndash/)
 - [LearnPress](https://automatorplugin.com/integration/learnpress/)
@@ -172,6 +174,63 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.1 [2021-07-28] =
+
+**Integrations Added**
+
+* [Facebook](https://automatorplugin.com/integration/facebook) #407
+* [Instagram](https://automatorplugin.com/integration/instagram) #407
+
+**Moved from Automator Pro**
+
+* Google Sheets integration #374
+* Slack integration #373
+* Mailchimp integration #372 #525
+* Anonymous triggers for WP Forms, Formidable Forms, Gravity Forms, Contact Form 7, Ninja Forms, Happy Forms, Fluent Forms, Elementor Forms and Caldera Forms #477 #527 #528 #529 #530 #531 #532 #533 #534 #535 #536
+
+**Actions Added**
+
+* Facebook: Publish a post to a Facebook page #407
+* Facebook: Share a link with a message to a Facebook page #407
+* Facebook: Share a photo to a Facebook page #407
+* Instagram: Publish a photo to an Instagram Business account #407
+
+**Added:**
+
+* Support for anonymous recipes #477
+* Support for userless recipes #398
+* Dashboard page #401
+* Ability to connect a free Uncanny Automator account for free credits #401 #441
+* Twitter: Added image support #305
+* Object caching to improve performance #273
+* Ability to view info of connected account on settings tab for Twitter, Slack, MailChimp, Google Sheets, Zoom Meetings and Twilio #434
+* API communication #526
+* Trigger tokens for featured image ID and URL in WordPress Core, MemberPress, WooCommerce, LearnDash, Easy Digital Downloads, The Events Calendar, Events Manager, Modern Events Calendar, LifterLMS, MasterStudy LMS, Tutor LMS, Upsell Plugin and WPLMS integrations #343
+
+**Updated:**
+
+* Forminator: Triggers now support for newer versions of Forminator #466
+* Removed recipe type column from recipe logs #588 #589 #590
+* Core integration files upgraded from 2.x to 3.x code #402
+* Improved compatibility with PHP 8+
+* WooCommerce: "A user purchases a product" trigger replaced with "A user completes, pays for or lands on a thank you page for an order with a product" for more granular control of the trigger condition #452
+* WooCommerce: Removed HTML formatting from tokens #460
+* Change filter when recipe items are created to avoid Async conflict in PHP 8.0+ #419
+* Twitter: API updated to v2 #524
+
+**Fixed:**
+
+* MasterStudy: A user completes a course no longer fires when anything in the course is completed. #278
+* FluentCRM: "Any list" option no longer appears in "Add the user to a list" action #307
+* WordPress: A user views a post: "Any post" token now returns post instead of -1 #341
+* WordPress: Missing endpoint for select post type #432
+* Send an email action no longer sends to multiple recipients when the action is run multiple times in the same page load #562 #458 #455
+* Recipe auto-population from Uncanny Codes #471
+* PHP error: Call to a member function add_role() on bool in some rare circumstances #495
+* Create a user: Default role now matches the default new user role in WordPress settings #576
+* "User meta" token evading validation #493
+* Some actions no longer show an error in the logs when set to draft #388
 
 = 3.0.5 [2021-06-03] =
 
@@ -382,63 +441,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WordPress Core: Send an email action no longer generating extraneous password reset links
 * WooCommerce: WC Ajax hook exception
 
-= 2.10 [2021-01-05] =
-
-**New Integrations:**
-
-* AffiliateWP
-* WooCommerce ShipStation
-* WooCommerce Memberships
-* WP Polls
-
-**New Triggers:**
-
-* AffiliateWP - A user becomes an affiliate
-* AffiliateWP - A new affiliate is awaiting approval
-* AffiliateWP - A new affiliate is approved
-* AffiliateWP - An affiliate makes a referral of a specific type
-* WooCommerce ShipStation - An order is shipped
-* WooCommerce Memberships - A user is added to a membership plan
-* WordPress - A user role is added
-* WordPress - A user role is updated
-* WP Polls - A user submits a poll
-
-**New Actions:**
-
-* Restrict Content Pro - Add the user to a membership level
-* WooCommerce Memberships - Add the user to a membership plan
-
-**Added:**
-
-* WP Foro tokens
-* Automator UI will no longer show deprecated triggers
-* BuddyBoss + BuddyPress Activity content and ID as trigger tokens
-
-**Updated:**
-
-* bbPress - A user creates a topic in a forum - Added "Any forum" option
-* Some trigger sentence updates
-* Transient's key name updated from general post_type to md5 post_type to avoid conflicts in trigger options
-
-**Fixed:**
-
-* Automator review banner's X now hides the banner permanently
-* BuddyBoss - Social network profile token now works reliably
-* Event Manager - Fixed notices
-* Fluent Forms no longer shows as an available integration when only Fluent CRM is installed
-* LearnDash - Quiz id is now passed for token parsing
-* MasterStudy LMS tokens now return the proper value when "Any ______" (course, lesson, quiz) is selected
-* PHP Notice: Undefined index: uniqElKey
-* Uncanny Continuing Education Credits - Award a number of custom CEUs to the user now working as expected
-* Uncanny Codes - Prefix/Suffix triggers now fire more reliably when used in multiple recipes
-* WP Foro - PHP Notice: Undefined index: post
-* WP Fusion triggers/actions now list tags as expected on all sites
-* WP Job Manager now fires more reliably when a job listing is posted by the user
-
-
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
+
+= 3.1 =
+Uncanny Automator 3.1 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
 
 = 3.0.5 =
 Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

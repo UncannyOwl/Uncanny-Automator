@@ -63,13 +63,18 @@ class Wp_Post_Tokens {
 			'POSTURL',
 			'POSTID',
 			'POSTTITLE',
+			'POSTIMAGEURL',
+			'POSTIMAGEID',
 			'WPTAXONOMYTERM',
 			'WPPOSTTYPES',
 			'POSTCOMMENTCONTENT',
 			'POSTCOMMENTDATE',
 			'POSTCOMMENTEREMAIL',
 			'POSTCOMMENTERNAME',
-			'POSTCOMMENTSTATUS'
+			'POSTCOMMENTSTATUS',
+			'WPPOST',
+			'WPPOST_ID',
+			'WPPOST_URL'
 		];
 
 		if ( $pieces && isset( $pieces[2] ) ) {
@@ -85,13 +90,10 @@ class Wp_Post_Tokens {
 							case 'SPECIFICTAXONOMY':
 								$value = $trigger['meta']['SPECIFICTAXONOMY_readable'];
 								break;
-							case 'POSTSTATUSUPDATED':
-								$value = $trigger['meta']['POSTSTATUSUPDATED_readable'];
-								break;
 							default:
 								global $wpdb;
 								$trigger_id = $trigger['ID'];
-								$meta_value = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE '%{$meta_field}%' AND automator_trigger_id = {$trigger_id} ORDER BY ID DESC LIMIT 0,1" );
+								$meta_value = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE '%{$meta_field}' AND automator_trigger_id = {$trigger_id} ORDER BY ID DESC LIMIT 0,1" );
 								if ( ! empty( $meta_value ) ) {
 									$value = maybe_unserialize( $meta_value );
 								}

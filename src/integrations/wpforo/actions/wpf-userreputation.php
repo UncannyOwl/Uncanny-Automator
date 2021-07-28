@@ -74,7 +74,7 @@ class WPF_USERREPUTATION {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function set_reputation( $user_id, $action_data, $recipe_id ) {
+	public function set_reputation( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

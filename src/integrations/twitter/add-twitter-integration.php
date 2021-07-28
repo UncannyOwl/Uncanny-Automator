@@ -2,8 +2,8 @@
 /**
  * Contains Integration class.
  *
- * @version 2.4.0
  * @since   2.4.0
+ * @version 2.4.0
  * @package Uncanny_Automator
  */
 
@@ -17,73 +17,51 @@ defined( 'ABSPATH' ) || exit;
  */
 class Add_Twitter_Integration {
 
-	/**
-	 * Integration Identifier
-	 *
-	 * @var   string
-	 * @since 2.4.0
-	 */
-	public static $integration = 'TWITTER';
+	use Recipe\Integrations;
 
 	/**
-	 * Constructs the class.
-	 *
-	 * @since 2.4.0
+	 * Add_Twitter_Integration constructor.
 	 */
 	public function __construct() {
+		$this->setup();
 	}
 
 	/**
-	 * Registers Integration.
 	 *
-	 * @since 2.4.0
 	 */
-	public function add_integration_func() {
-
-		// set up configuration.
-		$integration_config = array(
-			'name'     => 'Twitter',
-			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/twitter-icon.svg' ),
-		);
-
-		// global automator object.
-
-
-		// register integration into automator.
-		Automator()->register->integration( self::$integration, $integration_config );
-
+	protected function setup() {
+		$this->set_integration( 'TWITTER' );
+		$this->set_name( 'Twitter' );
+		$this->set_icon( 'twitter-icon.svg' );
+		$this->set_icon_path( __DIR__ . '/img/' );
+		$this->set_plugin_file_path( '' );
+		$this->set_settings_url( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=twitter_api' );	
+		$this->set_connected( $this->is_connected() );
 	}
 
 	/**
-	 * Set the directories that the auto loader will run in.
-	 *
-	 * @param $directory
-	 *
-	 * @return array
-	 */
-	public function add_integration_directory_func( $directory ) {
-
-		$directory[]    = dirname( __FILE__ ) . '/helpers';
-		$twitter_client = get_option( '_uncannyowl_twitter_settings', array() );
-
-		if ( isset( $twitter_client['oauth_token'] ) && ! empty( $twitter_client['oauth_token_secret'] ) ) {
-			$directory[] = dirname( __FILE__ ) . '/actions';
-		}
-
-		return $directory;
-	}
-
-	/**
-	 * This integration doesn't require any third-party plugins too be active, so the following function will always
-	 * return true.
-	 *
-	 * @param $status
-	 * @param $code
-	 *
 	 * @return bool
 	 */
-	public function plugin_active( $status, $code ) {
+	public function plugin_active() {
 		return true;
 	}
+	
+	/**
+	 * is_connected
+	 *
+	 * @return void
+	 */
+	public function is_connected() {
 
+		$connected = false;
+
+		$tokens = get_option( '_uncannyowl_twitter_settings', array() );
+
+		if ( ! empty( $tokens ) ) {
+			$connected = true;
+		} 
+
+		return $connected;
+
+	}
 }

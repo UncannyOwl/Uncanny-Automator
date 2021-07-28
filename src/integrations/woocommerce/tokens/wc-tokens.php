@@ -152,8 +152,8 @@ class Wc_Tokens {
 	}
 
 	/**
-	 * @param array  $tokens
-	 * @param array  $args
+	 * @param array $tokens
+	 * @param array $args
 	 * @param string $type
 	 *
 	 * @return array
@@ -229,6 +229,8 @@ class Wc_Tokens {
 			'WOOPRODUCT',
 			'WOOPRODUCT_ID',
 			'WOOPRODUCT_URL',
+			'WOOPRODUCT_THUMB_ID',
+			'WOOPRODUCT_THUMB_URL',
 			'WCORDERSTATUS',
 			'WCORDERCOMPLETE',
 			'WCSHIPSTATIONSHIPPED',
@@ -286,8 +288,16 @@ class Wc_Tokens {
 									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
 									$value          = $this->get_woo_product_urls_from_items( $order, $value_to_match );
 									break;
+								case 'WOOPRODUCT_THUMB_ID':
+									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+									$value          = $this->get_woo_product_image_ids_from_items( $order, $value_to_match );
+									break;
+								case 'WOOPRODUCT_THUMB_URL':
+									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+									$value          = $this->get_woo_product_image_urls_from_items( $order, $value_to_match );
+									break;			
 								case 'WOORDERTOTAL':
-									$value = wc_price( $order->get_total() );
+									$value = strip_tags( wc_price( $order->get_total() ) );
 									break;
 								case 'NUMBERCOND':
 									$val = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '';
@@ -395,25 +405,25 @@ class Wc_Tokens {
 									$value = $order->get_status();
 									break;
 								case 'order_total':
-									$value = wc_price( $order->get_total() );
+									$value = strip_tags( wc_price( $order->get_total() ) );
 									break;
 								case 'order_total_raw':
 									$value = $order->get_total();
 									break;
 								case 'order_subtotal':
-									$value = wc_price( $order->get_subtotal() );
+									$value = strip_tags( wc_price( $order->get_subtotal() ) );
 									break;
 								case 'order_subtotal_raw':
 									$value = $order->get_subtotal();
 									break;
 								case 'order_tax':
-									$value = wc_price( $order->get_total_tax() );
+									$value = strip_tags( wc_price( $order->get_total_tax() ) );
 									break;
 								case 'order_tax_raw':
 									$value = $order->get_total_tax();
 									break;
 								case 'order_discounts':
-									$value = wc_price( $order->get_discount_total() * - 1 );
+									$value = strip_tags( wc_price( $order->get_discount_total() * - 1 ) );
 									break;
 								case 'order_discounts_raw':
 									$value = ( $order->get_discount_total() * - 1 );
@@ -552,6 +562,48 @@ class Wc_Tokens {
 		}
 
 		return join( ', ', $product_ids );
+	}
+
+	/**
+	 * @param WC_Order $order
+	 * @param          $value_to_match
+	 *
+	 * @return string
+	 */
+	public function get_woo_product_image_ids_from_items( $order, $value_to_match ) {
+		$items       = $order->get_items();
+		$product_image_ids = array();
+		if ( $items ) {
+			/** @var WC_Order_Item_Product $item */
+			foreach ( $items as $item ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+					$product_image_ids[] = get_post_thumbnail_id( $item->get_product_id() );
+				}
+			}
+		}
+
+		return join( ', ', $product_image_ids );
+	}
+
+	/**
+	 * @param WC_Order $order
+	 * @param          $value_to_match
+	 *
+	 * @return string
+	 */
+	public function get_woo_product_image_urls_from_items( $order, $value_to_match ) {
+		$items       = $order->get_items();
+		$product_image_urls = array();
+		if ( $items ) {
+			/** @var WC_Order_Item_Product $item */
+			foreach ( $items as $item ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+					$product_image_urls[] = get_the_post_thumbnail_url( $item->get_product_id(), 'full' );
+				}
+			}
+		}
+
+		return join( ', ', $product_image_urls );
 	}
 
 	/**

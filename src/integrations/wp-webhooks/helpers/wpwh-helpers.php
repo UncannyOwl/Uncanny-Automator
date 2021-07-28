@@ -69,7 +69,7 @@ class Wpwh_Helpers {
 
 
 		$options       = array();
-		$options['-1'] = __( 'Any trigger', 'uncanny-automator-pro' );
+		$options['-1'] = __( 'Any trigger', 'uncanny-automator' );
 
 		$triggers        = WPWHPRO()->webhook->get_triggers();
 		$active_webhooks = WPWHPRO()->settings->get_active_webhooks( 'all' );

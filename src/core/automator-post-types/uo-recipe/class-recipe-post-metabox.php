@@ -48,7 +48,12 @@ class Recipe_Post_Metabox {
 		if ( empty( $recipe_type ) ) {
 			$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Triggers', 'uncanny-automator' ), $recipe_type );
 		} else {
-			$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Logged-in triggers', 'uncanny-automator' ), $recipe_type );
+			if ( 'anonymous' === (string) $recipe_type ) {
+				$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Trigger', 'uncanny-automator' ), $recipe_type );
+			}
+			else {
+				$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Triggers', 'uncanny-automator' ), $recipe_type );
+			}
 		}
 
 		add_meta_box(

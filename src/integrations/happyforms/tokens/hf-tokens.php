@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Hf_Tokens
  *
@@ -10,45 +9,17 @@ namespace Uncanny_Automator;
  */
 class Hf_Tokens {
 
-	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'HF';
-
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_hf_hfform_tokens', [ $this, 'hf_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'hf_token' ], 20, 6 );
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related
-	 * plugin is active
-	 *
-	 * @param bool   $status status of plugin.
-	 * @param string $plugin plugin code.
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'FrmHooksController' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
+		add_filter( 'automator_maybe_trigger_hf_anonhfform_tokens', [ $this, 'hf_possible_tokens' ], 20, 2 );
 	}
 
 	/**
 	 * Prepare tokens.
 	 *
 	 * @param array $tokens .
-	 * @param array $args   .
+	 * @param array $args .
 	 *
 	 * @return array
 	 */
@@ -86,8 +57,8 @@ class Hf_Tokens {
 	/**
 	 * Parse the token.
 	 *
-	 * @param string $value     .
-	 * @param array  $pieces    .
+	 * @param string $value .
+	 * @param array $pieces .
 	 * @param string $recipe_id .
 	 *
 	 * @param        $trigger_data
@@ -98,22 +69,38 @@ class Hf_Tokens {
 	 */
 	public function hf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'HFFORM', $pieces, true ) ) {
+			if ( in_array( 'HFFORM', $pieces, true ) || in_array( 'ANONHFFORM', $pieces, true ) ) {
 				global $wpdb;
-				$trigger_id     = $pieces[0];
-				$trigger_meta   = $pieces[1];
-				$field          = $pieces[2];
-				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value
+				if ( ! empty( $trigger_data ) ) {
+					foreach ( $trigger_data as $trigger ) {
+						$trigger_id   = $pieces[0];
+						$trigger_meta = $pieces[1];
+						$field        = $pieces[2];
+						if ( $trigger_id == $trigger['ID'] ) {
+							// check if readable meta exist.
+							if ( ! empty( $trigger['meta'] ) ) {
+								if ( isset( $trigger['meta'][ $field . '_readable' ] ) ) {
+									$value = $trigger['meta'][ $field . '_readable' ];
+								} elseif ( isset( $trigger['meta'][ $field ] ) ) {
+									$value = $trigger['meta'][ $field ];
+								}
+							}
+							if ( empty( $value ) ) {
+								$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
+								$entry          = $wpdb->get_var( "SELECT meta_value
 													FROM {$wpdb->prefix}uap_trigger_log_meta
 													WHERE meta_key = '$trigger_meta'
 													AND automator_trigger_log_id = $trigger_log_id
 													AND automator_trigger_id = $trigger_id
 													LIMIT 0, 1" );
-				$entry          = maybe_unserialize( $entry );
-				$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
-				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
-					$value = $entry[ $to_match ];
+								$entry          = maybe_unserialize( $entry );
+								$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
+								if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
+									$value = $entry[ $to_match ];
+								}
+							}
+						}
+					}
 				}
 			}
 		}

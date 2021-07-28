@@ -308,20 +308,22 @@ KEY meta_key (meta_key(15))
 
 		return apply_filters(
 			'automator_recipe_log_view_query',
-			"SELECT r.user_id,
-							r.date_time AS recipe_date_time,
-							r.completed AS recipe_completed,
-							r.run_number,
-							r.completed,
-							r.automator_recipe_id,
-							u.user_email,
-							u.display_name,
-							p.post_title AS recipe_title
-					FROM {$wpdb->prefix}uap_recipe_log r
-					LEFT JOIN {$wpdb->users} u
-					ON u.ID = r.user_id
-					JOIN {$wpdb->posts} p
-					ON p.ID = r.automator_recipe_id"
+			"SELECT
+       r.ID AS recipe_log_id,
+       r.user_id,
+       r.date_time AS recipe_date_time,
+       r.completed AS recipe_completed,
+       r.run_number,
+       r.completed,
+       r.automator_recipe_id,
+       u.user_email,
+       u.display_name,
+       p.post_title AS recipe_title
+FROM {$wpdb->prefix}uap_recipe_log r
+    LEFT JOIN {$wpdb->users} u
+    ON u.ID = r.user_id
+    JOIN {$wpdb->posts} p
+        ON p.ID = r.automator_recipe_id"
 		);
 	}
 
@@ -346,6 +348,7 @@ KEY meta_key (meta_key(15))
                             tm.run_time AS trigger_run_time,
                             pm.meta_value AS trigger_total_times,
                             p.post_title AS recipe_title,
+                            t.automator_recipe_log_id AS recipe_log_id,
                             r.date_time AS recipe_date_time,
                             r.completed AS recipe_completed,
                             r.run_number AS recipe_run_number
@@ -451,7 +454,7 @@ KEY meta_key (meta_key(15))
 	public static function all_views( bool $return_missing = false ) {
 		global $wpdb;
 		$db      = DB_NAME;
-		$results = $wpdb->get_results( "SHOW FULL TABLES IN $db WHERE TABLE_TYPE LIKE '%VIEW%'" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( "SHOW FULL TABLES IN `$db` WHERE TABLE_TYPE LIKE '%VIEW%'" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$return  = array(
 			"{$wpdb->prefix}uap_recipe_logs_view",
 			"{$wpdb->prefix}uap_trigger_logs_view",

@@ -13,9 +13,21 @@ class WP_CREATEUSER {
 	 */
 	public static $integration = 'WP';
 
+	/**
+	 * @var string
+	 */
 	private $action_code;
+	/**
+	 * @var string
+	 */
 	private $action_meta;
+	/**
+	 * @var false
+	 */
 	private $key_generated;
+	/**
+	 * @var null
+	 */
 	private $key;
 
 	/**
@@ -40,6 +52,8 @@ class WP_CREATEUSER {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
+			'is_deprecated'      => true,
 			/* translators: Action - WordPress */
 			'sentence'           => sprintf( esc_attr__( 'Create the user {{username:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - WordPress */
@@ -166,6 +180,8 @@ class WP_CREATEUSER {
 
 		if ( isset( $action_data['meta']['WPROLE'] ) && ! empty( $action_data['meta']['WPROLE'] ) ) {
 			$userdata['role'] = $action_data['meta']['WPROLE'];
+		} else {
+			$userdata['role'] = get_option( 'default_role', 'subscriber' );
 		}
 
 		$user_id = wp_insert_user( $userdata );

@@ -61,7 +61,7 @@ class WF_SETUSERTAG {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function set_user_tag( $user_id, $action_data, $recipe_id ) {
+	public function set_user_tag( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

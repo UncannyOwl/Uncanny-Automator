@@ -17,85 +17,23 @@ defined( '\ABSPATH' ) || exit;
  */
 class Add_Tutorlms_Integration {
 
-	/**
-	 * Integration Identifier.
-	 *
-	 * @var   string
-	 * @since 2.4.0
-	 */
-	public static $integration = 'TUTORLMS';
+	use Recipe\Integrations;
 
 	/**
-	 * Constructs the class.
-	 *
-	 * @since 2.4.0
+	 * Add_Tutorlms_Integration constructor.
 	 */
 	public function __construct() {
-		// Add directories to auto loader
-		// add_filter( 'uncanny_automator_integration_directory', [ $this, 'add_integration_directory_func' ], 11 );
-
-		// Add code, name and icon set to automator
-		// add_action( 'uncanny_automator_add_integration', [ $this, 'add_integration_func' ] );
-
-		// Verify is the plugin is active based on integration code
-		// add_filter( 'uncanny_automator_maybe_add_integration', [ $this, 'plugin_active' ], 30, 2 );
+		$this->setup();
 	}
 
 	/**
-	 * Registers Integration.
 	 *
-	 * @since 2.4.0
 	 */
-	public function add_integration_func() {
-
-		// set up configuration.
-		$integration_config = [
-			'name'     => 'Tutor LMS',
-			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/tutorlms-icon.svg' ),
-		];
-
-		// global automator object.
-
-
-		// register integration into automator.
-		Automator()->register->integration( self::$integration, $integration_config );
-
+	protected function setup() {
+		$this->set_integration( 'TUTORLMS' );
+		$this->set_name( 'Tutor LMS' );
+		$this->set_icon( 'tutorlms-icon.svg' );
+		$this->set_icon_path( __DIR__ . '/img/' );
+		$this->set_plugin_file_path( 'tutor/tutor.php' );
 	}
-
-	/**
-	 * Set the directories that the auto loader will run in
-	 *
-	 * @param $directory
-	 *
-	 * @return array
-	 */
-	public function add_integration_directory_func( $directory ) {
-
-		$directory[] = dirname( __FILE__ ) . '/helpers';
-		$directory[] = dirname( __FILE__ ) . '/actions';
-		$directory[] = dirname( __FILE__ ) . '/triggers';
-		$directory[] = dirname( __FILE__ ) . '/tokens';
-
-		return $directory;
-	}
-
-	/**
-	 * Conditionally Loads Integration.
-	 *
-	 * @param bool   $status Is Integration already active?
-	 * @param string $plugin The integration identifier.
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		// not our code, bail early.
-		if ( self::$integration !== $plugin ) {
-			return $status;
-		}
-
-		// otherwise, return if Tutor LMS is active.
-		return class_exists( '\TUTOR\Tutor' );
-	}
-
 }

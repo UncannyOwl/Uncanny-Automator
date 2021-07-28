@@ -87,6 +87,8 @@ class Event_Tickets_Helpers {
 				$option_code          => esc_attr__( 'Event title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Event ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Event URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Event featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Event featured image URL', 'uncanny-automator' ),
 			],
 		];
 

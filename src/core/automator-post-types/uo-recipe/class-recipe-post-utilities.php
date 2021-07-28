@@ -92,9 +92,9 @@ class Recipe_Post_Utilities {
 		wp_update_post( $args );
 
 		//Save "user" recipe type as the default IF pro is not active
-		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
-			update_post_meta( $post_ID, 'uap_recipe_type', 'user' );
-		}
+//		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
+//			update_post_meta( $post_ID, 'uap_recipe_type', 'user' );
+//		}
 
 		// Save automator version for future use in case
 		// something has to be changed for older recipes
@@ -327,14 +327,15 @@ class Recipe_Post_Utilities {
 			'proVersion'     => defined( 'AUTOMATOR_PRO_FILE' ) ? \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION : '',
 			'proFeatures'    => $this->get_pro_items(),
 			'recipe'         => array(
-				'id'           => $post_id,
-				'author'       => $post->post_author,
-				'status'       => $post->post_status,
-				'type'         => empty( $recipe_type ) ? null : $recipe_type,
-				'isLive'       => 'publish' === $post->post_status,
-				'errorMode'    => false,
-				'isValid'      => false,
-				'userSelector' => array(
+				'id'               => $post_id,
+				'author'           => $post->post_author,
+				'status'           => $post->post_status,
+				'type'             => empty( $recipe_type ) ? null : $recipe_type,
+				'isLive'           => 'publish' === $post->post_status,
+				'requiresUserData' => Automator()->get->get_recipe_requires_user( $post_id ),
+				'errorMode'        => false,
+				'isValid'          => false,
+				'userSelector'     => array(
 					'source'    => $source,
 					'data'      => $fields,
 					'isValid'   => false,
@@ -342,17 +343,17 @@ class Recipe_Post_Utilities {
 						'roles' => $roles,
 					),
 				),
-				'hasLive'      => array(
+				'hasLive'          => array(
 					'trigger' => false,
 					'action'  => false,
 					'closure' => false,
 				),
-				'message'      => array(
+				'message'          => array(
 					'error'   => '',
 					'warning' => '',
 				),
-				'items'        => array(),
-				'publish'      => array(
+				'items'            => array(),
+				'publish'          => array(
 					'timesPerUser'   => empty( $completions_allowed ) ? 1 : $completions_allowed,
 					'timesPerRecipe' => empty( $max_completions_allowed ) ? '-1' : $max_completions_allowed,
 					'createdOn'      => date_i18n( 'M j, Y @ G:i', get_the_time( 'U', $post_id ) ),
@@ -363,6 +364,11 @@ class Recipe_Post_Utilities {
 			'format'         => array(
 				'date' => get_option( 'date_format' ),
 			),
+			'connectApiUrl'       => sprintf('%s%s?redirect_url=%s', AUTOMATOR_FREE_STORE_URL, AUTOMATOR_FREE_STORE_CONNECT_URL, urlencode( site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ) ) ) ,
+			'dashboardUrl'        => site_url('wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ),
+			'hasAccountConnected' => ( ! Admin_Menu::is_automator_connected() ? false : true ),
+			'hasValidProLicense'  => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),
+			'licenseUrl'          => site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-license-activation' ), 
 		);
 
 		$api_setup = apply_filters_deprecated( 'uap_api_setup', array( $api_setup ), '3.0', 'automator_api_setup' ); // deprecate
@@ -645,7 +651,7 @@ class Recipe_Post_Utilities {
 
 			if ( 'author' === $key ) {
 
-				$new_columns['type']     = esc_attr__( 'Recipe type', 'uncanny-automator' );
+				//$new_columns['type']     = esc_attr__( 'Recipe type', 'uncanny-automator' );
 				$new_columns['triggers'] = esc_attr__( 'Triggers', 'uncanny-automator' );
 				$new_columns['actions']  = esc_attr__( 'Actions', 'uncanny-automator' );
 				/* translators: The number of times a recipe was completed */

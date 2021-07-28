@@ -34,7 +34,6 @@ class FCRM_USER_TO_LIST {
 	public function define_action() {
 
 
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/fluentcrm/' ),
@@ -48,7 +47,10 @@ class FCRM_USER_TO_LIST {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'list_to_user' ),
 			'options'            => [
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists( null, $this->action_meta, [ 'supports_multiple_values' => true ] ),
+				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists( esc_attr_x( 'Lists', 'Fluent Forms', 'uncanny-automator' ), $this->action_meta, [
+					'supports_multiple_values' => true,
+					'is_any'                   => false
+				] ),
 			],
 		);
 
@@ -64,7 +66,6 @@ class FCRM_USER_TO_LIST {
 	 * @param $recipe_id
 	 */
 	public function list_to_user( $user_id, $action_data, $recipe_id ) {
-
 
 
 		$lists     = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );

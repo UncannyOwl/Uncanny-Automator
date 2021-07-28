@@ -26,7 +26,7 @@ class Automator_Functions {
 	 * @since    2.0.0
 	 * @access   public
 	 */
-	public $recipe_types = array( 'user' );
+	public $recipe_types = array( 'user', 'anonymous' );
 	/**
 	 * Collection of all integrations
 	 *
@@ -167,9 +167,17 @@ class Automator_Functions {
 	public $db;
 
 	/**
+	 * @var Automator_Cache_Handler
+	 */
+	public $cache;
+
+	/**
 	 * Initializes all development helper classes and variables via class composition
 	 */
 	public function __construct() {
+		// Automator Cache Handler
+		require_once __DIR__ . '/helpers/class-automator-cache-handler.php';
+		$this->cache = Automator_Cache_Handler::get_instance();
 
 		// Automator DB Handler
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-tokens.php';
@@ -195,6 +203,7 @@ class Automator_Functions {
 		// Automator integration, trigger, action and closure process
 		require_once __DIR__ . '/process/class-automator-recipe-process.php';
 		require_once __DIR__ . '/process/class-automator-recipe-process-user.php';
+		//require_once __DIR__ . '/process/class-automator-recipe-process-anon.php';
 		$this->process = Automator_Recipe_Process::get_instance();
 
 		// Automator integration, trigger, action and closure process
@@ -344,7 +353,9 @@ class Automator_Functions {
 	public function get_recipe_types() {
 		$this->recipe_types = apply_filters_deprecated( 'uap_recipe_types', array( $this->recipe_types ), '3.0', 'automator_recipe_types' );
 
-		return apply_filters( 'automator_recipe_types', $this->recipe_types );
+		$this->recipe_types = apply_filters( 'automator_recipe_types', $this->recipe_types );
+
+		return $this->recipe_types;
 	}
 
 	/**
@@ -397,6 +408,11 @@ class Automator_Functions {
 			return $this->recipes_data;
 		}
 
+		$recipes_data = Automator()->cache->get( $this->cache->recipes_data );
+		if ( ! empty( $recipes_data ) ) {
+			return $recipes_data;
+		}
+
 		// Accidentally sent recipe post instead of id?
 		if ( $recipe_id instanceof \WP_Post && 'uo-recipe' === (string) $recipe_id->post_type ) {
 			$recipe_id = $recipe_id->ID;
@@ -408,10 +424,11 @@ class Automator_Functions {
 
 		global $wpdb;
 
-		$recipes = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_type, post_status, post_parent FROM $wpdb->posts WHERE post_type = %s ORDER BY ID DESC LIMIT 0, 99999", 'uo-recipe' ) );
+		$recipes = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_type, post_status, post_parent FROM $wpdb->posts WHERE post_type = %s AND post_status NOT LIKE %s ORDER BY ID DESC LIMIT 0, 99999", 'uo-recipe', 'trash' ) );
 		if ( empty( $recipes ) ) {
 			return array();
 		}
+		$cached = Automator()->cache->get( 'get_recipe_type' );
 		//Extract Recipe IDs
 		$recipe_ids = array_column( (array) $recipes, 'ID' );
 		//Collective array of recipes triggers, actions, closures
@@ -438,7 +455,7 @@ class Automator_Functions {
 
 			$this->recipes_data[ $key ]['ID']          = $recipe_id;
 			$this->recipes_data[ $key ]['post_status'] = $recipe->post_status;
-			$this->recipes_data[ $key ]['recipe_type'] = Automator()->utilities->get_recipe_type( $recipe_id );
+			$this->recipes_data[ $key ]['recipe_type'] = isset( $cached[ $recipe_id ] ) ? $cached[ $recipe_id ] : Automator()->utilities->get_recipe_type( $recipe_id );
 
 			$this->recipes_data[ $key ]['triggers'] = $triggers;
 
@@ -460,6 +477,8 @@ class Automator_Functions {
 			$key ++;
 		}
 
+		Automator()->cache->set( $this->cache->recipes_data, $this->recipes_data );
+
 		return $this->recipes_data;
 	}
 
@@ -472,18 +491,23 @@ class Automator_Functions {
 		if ( null === $recipe_id ) {
 			return array();
 		}
-
+		$key    = 'automator_recipe_data_of_' . $recipe_id;
+		$recipe = Automator()->cache->get( $key );
+		if ( ! empty( $recipe ) ) {
+			return $recipe;
+		}
 		$recipe  = array();
 		$recipes = get_post( $recipe_id );
 		if ( ! $recipes ) {
 			return array();
 		}
+		$cached = Automator()->cache->get( 'get_recipe_type' );
 
 		$is_recipe_completed           = $this->is_recipe_completed( $recipe_id );
 		$key                           = $recipe_id;
 		$recipe[ $key ]['ID']          = $recipe_id;
 		$recipe[ $key ]['post_status'] = $recipes->post_status;
-		$recipe[ $key ]['recipe_type'] = $this->utilities->get_recipe_type( $recipe_id );
+		$recipe[ $key ]['recipe_type'] = isset( $cached[ $recipe_id ] ) ? $cached[ $recipe_id ] : $this->utilities->get_recipe_type( $recipe_id );
 
 		$triggers_array             = array();
 		$triggers                   = $this->get_recipe_data( 'uo-trigger', $recipe_id, $triggers_array );
@@ -499,8 +523,9 @@ class Automator_Functions {
 
 		$recipe[ $key ]['completed_by_current_user'] = $is_recipe_completed;
 
-		return $recipe;
+		Automator()->cache->set( $key, $recipe );
 
+		return $recipe;
 	}
 
 	/**
@@ -1066,7 +1091,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * @param $args
 	 *
 	 * @return bool
-	 * @deprecated 3.0
+	 * @deprecated 3.0 Automator()->process->user->maybe_trigger_complete
 	 */
 	public function maybe_trigger_complete( $args ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
@@ -1101,7 +1126,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * @param bool $mark_trigger_complete
 	 *
 	 * @return array|bool|int|null
-	 * @deprecated 3.0
+	 * @deprecated 3.0 Use Automator()->process->user->
 	 */
 	public function maybe_add_trigger_entry( $args, $mark_trigger_complete = true ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {

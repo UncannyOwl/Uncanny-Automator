@@ -13,18 +13,9 @@ use Forminator_API;
 class Fr_Tokens {
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
+	 * Fr_Tokens constructor.
 	 */
-	public static $integration = 'FR';
-
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
-
 		add_filter( 'automator_maybe_trigger_fr_frform_tokens', [ $this, 'fr_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'fr_token' ], 20, 6 );
 
@@ -33,32 +24,10 @@ class Fr_Tokens {
 	}
 
 	/**
-	 * Only load this integration and its triggers and actions if the related
-	 * plugin is active
-	 *
-	 * @param bool   $status status of plugin.
-	 * @param string $plugin plugin code.
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'Forminator' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
-	}
-
-	/**
 	 * Prepare tokens.
 	 *
 	 * @param array $tokens .
-	 * @param array $args   .
+	 * @param array $args .
 	 *
 	 * @return array
 	 */
@@ -107,28 +76,62 @@ class Fr_Tokens {
 	public function fr_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		$piece = 'FRFORM';
-		if ( $pieces ) {
-			if ( in_array( $piece, $pieces ) ) {
+		if ( ! $pieces ) {
+			return $value;
+		}
+		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+		if ( ! $trigger_data || ! $recipe_log_id ) {
+			return $value;
+		}
 
-				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
-				if ( $trigger_data && $recipe_log_id ) {
-					foreach ( $trigger_data as $trigger ) {
-						if ( key_exists( $piece, $trigger['meta'] ) ) {
-							$trigger_id     = $trigger['ID'];
-							$trigger_log_id = $replace_args['trigger_log_id'];
-							$token_info     = explode( '|', $pieces[2] );
-							$form_id        = $token_info[0];
-							$meta_key       = $token_info[1];
-							$meta_field     = $piece . '_' . $form_id;
-							$entry_id       = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
-							if ( ! empty( $entry_id ) ) {
-								$entry = Forminator_API::get_entry( $form_id, $entry_id );
-								$value = $entry->get_meta( $meta_key );
-							}
-						}
+		foreach ( $trigger_data as $trigger ) {
+			if ( empty( $trigger ) ) {
+				continue;
+			}
+
+			if ( ! is_array( $trigger ) ) {
+				continue;
+			}
+
+			if ( ! array_key_exists( $piece, $trigger['meta'] ) ) {
+				continue;
+			}
+
+			// Render Form Name
+			if ( isset( $pieces[2] ) && $piece === $pieces[2] ) {
+				foreach ( $trigger_data as $t_d ) {
+					if ( empty( $t_d ) ) {
+						continue;
+					}
+					if ( isset( $t_d['meta'][ $piece . '_readable' ] ) ) {
+						return $t_d['meta'][ $piece . '_readable' ];
 					}
 				}
 			}
+			// Render Form ID
+			if ( isset( $pieces[2] ) && $piece . '_ID' === $pieces[2] ) {
+				foreach ( $trigger_data as $t_d ) {
+					if ( empty( $t_d ) ) {
+						continue;
+					}
+					if ( isset( $t_d['meta'][ $piece ] ) ) {
+						return $t_d['meta'][ $piece ];
+					}
+				}
+			}
+
+			$trigger_id     = $trigger['ID'];
+			$trigger_log_id = $replace_args['trigger_log_id'];
+			$token_info     = explode( '|', $pieces[2] );
+			$form_id        = $token_info[0];
+			$meta_key       = $token_info[1];
+			$match          = "{$trigger_id}:{$piece}:{$form_id}|{$meta_key}";
+			$parse_tokens   = array(
+				'trigger_id'     => $trigger_id,
+				'trigger_log_id' => $trigger_log_id,
+				'user_id'        => $user_id,
+			);
+			$value          = Automator()->db->trigger->get_token_meta( $match, $parse_tokens );
 		}
 
 		return $value;
@@ -144,46 +147,48 @@ class Fr_Tokens {
 	 * @return null|string
 	 */
 	public function fr_save_form_entry( $form_id, $recipes, $args ) {
-		if ( is_array( $args ) ) {
-			foreach ( $args as $trigger_result ) {
-				if ( true === $trigger_result['result'] ) {
+		if ( ! is_array( $args ) ) {
+			return;
+		}
+		foreach ( $args as $trigger_result ) {
+			if ( true !== $trigger_result['result'] ) {
+				continue;
+			}
 
-					if ( $recipes && absint( $form_id ) > 0 ) {
-						foreach ( $recipes as $recipe ) {
-							$triggers = $recipe['triggers'];
-							if ( $triggers ) {
-								foreach ( $triggers as $trigger ) {
-									$trigger_id = $trigger['ID'];
-									if ( ! key_exists( 'FRFORM', $trigger['meta'] ) ) {
-										continue;
-									} else {
-										// Only form entry id will be saved.
-										$form_entry        = forminator_get_latest_entry_by_form_id( $form_id );
-										$data              = $form_entry->entry_id;
-										$user_id           = (int) $trigger_result['args']['user_id'];
-										$recipe_log_id_raw = isset( $trigger_result['args']['recipe_log_id'] ) ? (int) $trigger_result['args']['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
-										if ( $recipe_log_id_raw ) {
-											$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
-											$run_number     = (int) $trigger_result['args']['run_number'];
-											$args           = [
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'FRFORM_' . $form_id,
-												'meta_value'     => $data,
-												'run_number'     => $run_number, //get run number
-												'trigger_log_id' => $trigger_log_id,
-											];
+			if ( ! $recipes || 0 === absint( $form_id ) ) {
+				continue;
+			}
+			foreach ( $recipes as $recipe ) {
+				$triggers = $recipe['triggers'];
+				if ( ! $triggers ) {
+					continue;
+				}
+				foreach ( $triggers as $trigger ) {
+					$trigger_id = $trigger['ID'];
+					if ( ! key_exists( 'FRFORM', $trigger['meta'] ) ) {
+						continue;
+					}
+					// Only form entry id will be saved.
+					$form_entry        = forminator_get_latest_entry_by_form_id( $form_id );
+					$data              = $form_entry->entry_id;
+					$user_id           = (int) $trigger_result['args']['user_id'];
+					$recipe_log_id_raw = isset( $trigger_result['args']['recipe_log_id'] ) ? (int) $trigger_result['args']['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe['ID'], $user_id );
+					if ( $recipe_log_id_raw ) {
+						$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
+						$run_number     = (int) $trigger_result['args']['run_number'];
+						$args           = [
+							'user_id'        => $user_id,
+							'trigger_id'     => $trigger_id,
+							'meta_key'       => 'FRFORM_' . $form_id,
+							'meta_value'     => $data,
+							'run_number'     => $run_number, //get run number
+							'trigger_log_id' => $trigger_log_id,
+						];
 
-											Automator()->insert_trigger_meta( $args );
-										}
-									}
-								}
-							}
-						}
+						Automator()->insert_trigger_meta( $args );
 					}
 				}
 			}
 		}
 	}
-
 }

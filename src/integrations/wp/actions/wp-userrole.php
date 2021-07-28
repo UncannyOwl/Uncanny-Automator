@@ -62,7 +62,7 @@ class WP_USERROLE {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function user_role( $user_id, $action_data, $recipe_id ) {
+	public function user_role( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 /**
  * Class MEC_HELPERS
  *
- * @package Uncanny_Automator_Pro
+ * @package Uncanny_Automator
  */
 class MEC_HELPERS {
 
@@ -371,6 +371,32 @@ class MEC_HELPERS {
 
 		// Format the date start time using DateTime format method.
 		return $date_start_obj->format( $format );
+
+	}
+
+	/**
+	 * Returns the featured image id of the Event.
+	 *
+	 * @return string The id of the featured image of the event.
+	 */
+	public function get_event_featured_image_id() {
+
+		$thumbnail_id = get_post_thumbnail_id($this->event_id);
+
+		return $thumbnail_id;
+
+	}
+
+	/**
+	 * Returns the featured image url of the Event.
+	 *
+	 * @return string The url of the featured image of the event.
+	 */
+	public function get_event_featured_image_url() {
+
+		$thumbnail_url = get_the_post_thumbnail_url($this->event_id);
+
+		return $thumbnail_url;
 
 	}
 

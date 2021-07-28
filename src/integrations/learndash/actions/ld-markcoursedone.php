@@ -61,7 +61,7 @@ class LD_MARKCOURSEDONE {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function mark_completes_a_course( $user_id, $action_data, $recipe_id ) {
+	public function mark_completes_a_course( $user_id, $action_data, $recipe_id, $args ) {
 
 		$course_id = $action_data['meta'][ $this->action_meta ];
 		//$courses   = learndash_user_get_enrolled_courses( $user_id, array(), true );

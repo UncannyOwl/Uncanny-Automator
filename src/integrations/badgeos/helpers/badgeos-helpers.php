@@ -54,7 +54,7 @@ class Badgeos_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -71,9 +71,14 @@ class Badgeos_Helpers {
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$is_any       = key_exists( 'is_any', $args ) ? $args['is_any'] : false;
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
+
+		if ( $is_any == true ) {
+			$options['-1'] = __( 'Any achievement', 'uncanny-automator' );
+		}
 
 		global $wpdb;
 		if ( Automator()->helpers->recipe->load_helpers ) {
@@ -111,7 +116,7 @@ class Badgeos_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -174,7 +179,7 @@ class Badgeos_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -247,7 +252,7 @@ class Badgeos_Helpers {
 				'post_status'    => 'publish',
 			];
 
-			$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any awards', 'uncanny-automator' ) );
+			$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = [
@@ -264,7 +269,6 @@ class Badgeos_Helpers {
 	 * Return all the specific fields of a form ID provided in ajax call
 	 */
 	public function select_ranks_from_types_func() {
-
 
 
 		// Nonce and post object validation.

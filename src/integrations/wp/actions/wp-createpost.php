@@ -107,6 +107,7 @@ class WP_CREATEPOST {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
 			/* translators: Action - WordPress Core */
 			'sentence'           => sprintf( esc_attr__( 'Create {{a post:%1$s}}', 'uncanny-automator' ), $this->action_code ),
 			/* translators: Action - WordPress Core */

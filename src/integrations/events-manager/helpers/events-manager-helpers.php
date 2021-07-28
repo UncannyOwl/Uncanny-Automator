@@ -88,6 +88,8 @@ class Events_Manager_Helpers {
 				$option_code          => __( 'Event title', 'uncanny-automator' ),
 				$option_code . '_ID'  => __( 'Event ID', 'uncanny-automator' ),
 				$option_code . '_URL' => __( 'Event URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => __( 'Event featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => __( 'Event featured image URL', 'uncanny-automator' ),
 			],
 		];
 

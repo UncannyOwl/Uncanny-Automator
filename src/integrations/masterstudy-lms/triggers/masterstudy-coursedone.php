@@ -32,7 +32,6 @@ class MASTERSTUDY_COURSEDONE {
 	public function define_trigger() {
 
 
-
 		$args = [
 			'post_type'      => 'stm-courses',
 			'posts_per_page' => 999,
@@ -67,6 +66,8 @@ class MASTERSTUDY_COURSEDONE {
 						'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
 						'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 						'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+						'MSLMSCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+						'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 					],
 					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
 				],
@@ -85,13 +86,13 @@ class MASTERSTUDY_COURSEDONE {
 	 */
 	public function course_done( $course_id, $user_id, $progress ) {
 
-
-
 		if ( empty( $progress ) ) {
 			return;
 		}
 
-		if ( 100 >= absint( $progress ) ) {
+		$total_progress = \STM_LMS_Lesson::get_total_progress( $user_id, $course_id );
+
+		if ( ! empty( $total_progress ) and $total_progress['course_completed'] ) {
 
 			$args = [
 				'code'    => $this->trigger_code,

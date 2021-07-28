@@ -8,9 +8,19 @@ namespace Uncanny_Automator;
  */
 class WP_VIEWPAGE {
 
+	/**
+	 * @var string
+	 */
 	public static $integration = 'WP';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -26,8 +36,6 @@ class WP_VIEWPAGE {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -49,8 +57,6 @@ class WP_VIEWPAGE {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -75,30 +81,23 @@ class WP_VIEWPAGE {
 			return;
 		}
 
-		if ( is_user_logged_in() ) {
-			$user_id = get_current_user_id();
-			$args    = [
-				'code'    => $this->trigger_code,
-				'meta'    => $this->trigger_meta,
-				'post_id' => $post->ID,
-				'user_id' => $user_id,
-			];
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+		$user_id = get_current_user_id();
+		$args    = [
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => $post->ID,
+			'user_id' => $user_id,
+		];
 
-			if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
-				$arr = Automator()->process->user->maybe_add_trigger_entry( $args, false );
-			} else {
-				$arr = Automator()->maybe_add_trigger_entry( $args, false );
-			}
+		$arr = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 
-			if ( $arr ) {
-				foreach ( $arr as $result ) {
-					if ( true === $result['result'] ) {
-						if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
-							Automator()->process->user->maybe_trigger_complete( $result['args'] );
-						} else {
-							Automator()->maybe_trigger_complete( $result['args'] );
-						}
-					}
+		if ( $arr ) {
+			foreach ( $arr as $result ) {
+				if ( true === $result['result'] ) {
+					Automator()->process->user->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

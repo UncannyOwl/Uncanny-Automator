@@ -83,7 +83,7 @@ class GP_AWARDRANK_A {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function award_points( $user_id, $action_data, $recipe_id ) {
+	public function award_points( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

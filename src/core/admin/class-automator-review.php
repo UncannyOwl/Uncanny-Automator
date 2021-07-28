@@ -64,6 +64,30 @@ class Automator_Review {
 				},
 			)
 		);
+
+		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/get-credits/', array(
+			'methods'             => 'POST',
+			'callback'            => array( $this, 'get_credits' ),
+			'permission_callback' => function () {
+				if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+					return true;
+				}
+
+				return false;
+			},
+		) );
+
+		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/get-recipes-using-credits/', array(
+			'methods'             => 'POST',
+			'callback'            => array( $this, 'get_recipes_using_credits' ),
+			'permission_callback' => function () {
+				if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+					return true;
+				}
+
+				return false;
+			},
+		) );
 	}
 
 	/**
@@ -215,5 +239,151 @@ class Automator_Review {
 				die;
 			}
 		}
+	}
+
+	/**
+	 * Callback for getting api credits.
+	 *
+	 * @param object $request
+	 *
+	 * @return object
+	 * @since 3.1
+	 */
+	public function get_credits() {
+
+		// The rest response object
+		$response = (object) [];
+
+		// Default return message
+		$response->message = __( 'Information is missing.', 'automator-plugin' );
+		$response->success = true;
+
+		$have_valid_licence = false;
+		$licence_key        = '';
+		$item_name          = '';
+		$count              = 0;
+
+		/*if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' !== get_option( 'uap_automator_pro_license_status' ) ) {
+			$response->credits_left = 0;
+			$response->total_credits = 0;
+			$response = new \WP_REST_Response( $response, 200 );
+
+			return $response;
+		}*/
+
+		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ) {
+			$licence_key = get_option( 'uap_automator_pro_license_key' );
+			$item_name   = AUTOMATOR_AUTOMATOR_PRO_ITEM_NAME;
+		} elseif ( 'valid' === get_option( 'uap_automator_free_license_status' ) ) {
+			$licence_key = get_option( 'uap_automator_free_license_key' );
+			$item_name   = AUTOMATOR_FREE_ITEM_NAME;
+		}
+
+		if ( empty( $licence_key ) ) {
+			$response->credits_left  = 0;
+			$response->total_credits = 0;
+			$response                = new \WP_REST_Response( $response, 200 );
+
+			return $response;
+		}
+
+		$website = preg_replace( '(^https?://)', '', get_site_url() );
+
+		// data to send in our API request
+		$api_params = [
+			'action'      => 'get_credits',
+			'license_key' => $licence_key,
+			'site_name'   => $website,
+			'item_name'   => $item_name,
+			'api_ver'     => '2.0',
+			'plugins'     => defined( 'AUTOMATOR_PRO_FILE' ) ? \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION : AUTOMATOR_PLUGIN_VERSION,
+		];
+
+		// Call the custom API.
+		$api_response = wp_remote_post( AUTOMATOR_API_URL . 'v2/credits', array(
+			'timeout'   => 15,
+			'sslverify' => false,
+			'body'      => $api_params,
+		) );
+
+		$credit_data = json_decode( wp_remote_retrieve_body( $api_response ) );
+		if ( $credit_data->statusCode == 200 ) {
+			$response->credits_left  = $credit_data->data->usage_limit - $credit_data->data->paid_usage_count;
+			$response->total_credits = $credit_data->data->usage_limit;
+
+		}
+
+		$response = new \WP_REST_Response( $response, 200 );
+
+		return $response;
+	}
+
+	/**
+	 * Callback for getting recipes using api credits.
+	 *
+	 * @param object $request
+	 *
+	 * @return object
+	 * @since 3.1
+	 */
+	public function get_recipes_using_credits() {
+		global $wpdb;
+		$integration_codes = array( 'GOOGLESHEET', 'SLACK', 'MAILCHIMP', 'TWITTER', 'FACEBOOK', 'INSTAGRAM' );
+
+		$where_meta = [];
+		foreach ( $integration_codes as $code ) {
+			$where_meta[] = " `meta_value` LIKE '{$code}' ";
+		}
+
+		$meta          = implode( ' OR ', $where_meta );
+		$check_recipes = $wpdb->get_col( "SELECT rp.ID as ID FROM {$wpdb->posts} cp LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent WHERE cp.ID IN (SELECT post_id  FROM {$wpdb->postmeta} WHERE {$meta} ) AND cp.post_status LIKE 'publish' AND rp.post_status LIKE 'publish' " );
+
+		// The rest response object
+		$response = (object) [];
+
+		$response->success = true;
+
+		$recipes = [];
+		if ( ! empty( $check_recipes ) ) {
+			foreach ( $check_recipes as $recipe_id ) {
+				// Get the title
+				$recipe_title = get_the_title( $recipe_id );
+				$recipe_title = ! empty( $recipe_title ) ? $recipe_title : sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $recipe_id );
+
+				// Get the URL
+				$recipe_edit_url = get_edit_post_link( $recipe_id );
+
+				// Get the recipe type
+				$recipe_type = Automator()->utilities->get_recipe_type( $recipe_id );
+
+				// Get the times per user
+				$recipe_times_per_user = '';
+				if ( $recipe_type == 'user' ) {
+					$recipe_times_per_user = get_post_meta( $recipe_id, 'recipe_completions_allowed', true );
+				}
+
+				// Get the total allowed completions
+				$recipe_allowed_completions_total = get_post_meta( $recipe_id, 'recipe_max_completions_allowed', true );
+
+				// Get the number of runs
+				$recipe_number_of_runs = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $recipe_id, 1 ) );
+
+				$recipes[] = [
+					'id'                        => $recipe_id,
+					'title'                     => $recipe_title,
+					'url'                       => $recipe_edit_url,
+					'type'                      => $recipe_type,
+					'times_per_user'            => $recipe_times_per_user,
+					'allowed_completions_total' => $recipe_allowed_completions_total,
+					'completed_runs'            => $recipe_number_of_runs,
+				];
+			}
+		}
+
+		$response->recipes = $recipes;
+
+		$response = new \WP_REST_Response( $response, 200 );
+
+		return $response;
 	}
 }

@@ -14,50 +14,17 @@ use FrmForm;
  */
 class Fi_Tokens {
 
-	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'FI';
-
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
-
 		add_filter( 'automator_maybe_trigger_fi_fiform_tokens', [ $this, 'fi_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_fi_anonfiform_tokens', [ $this, 'fi_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'fi_token' ], 20, 6 );
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related
-	 * plugin is active
-	 *
-	 * @param bool   $status status of plugin.
-	 * @param string $plugin plugin code.
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'FrmHooksController' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
 	}
 
 	/**
 	 * Prepare tokens.
 	 *
 	 * @param array $tokens .
-	 * @param array $args   .
+	 * @param array $args .
 	 *
 	 * @return array
 	 */
@@ -76,20 +43,7 @@ class Fi_Tokens {
 		}
 
 		if ( empty( $form_ids ) ) {
-			$s_query                = [
-				[
-					'or'               => 1,
-					'parent_form_id'   => null,
-					'parent_form_id <' => 1,
-				],
-			];
-			$s_query['is_template'] = 0;
-			$s_query['status !']    = 'trash';
-
-			$forms = FrmForm::getAll( $s_query, '', ' 0, 999' );
-			foreach ( $forms as $form ) {
-				$form_ids[] = $form->id;
-			}
+			return $tokens;
 		}
 
 		if ( ! empty( $form_ids ) ) {
@@ -119,8 +73,8 @@ class Fi_Tokens {
 	/**
 	 * Parse the token.
 	 *
-	 * @param string $value     .
-	 * @param array  $pieces    .
+	 * @param string $value .
+	 * @param array $pieces .
 	 * @param string $recipe_id .
 	 *
 	 * @return null|string
@@ -128,11 +82,15 @@ class Fi_Tokens {
 	public function fi_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
 
-			if ( in_array( 'FIFORM', $pieces, true ) ) {
+			if ( in_array( 'FIFORM', $pieces, true ) || in_array( 'ANONFIFORM', $pieces, true ) ) {
 
 				if ( 'FIFORM' === $pieces[2] ) {
 					if ( isset( $trigger_data[0]['meta']['FIFORM_readable'] ) ) {
 						$value = $trigger_data[0]['meta']['FIFORM_readable'];
+					}
+				} elseif ( 'ANONFIFORM' === $pieces[2] ) {
+					if ( isset( $trigger_data[0]['meta']['ANONFIFORM_readable'] ) ) {
+						$value = $trigger_data[0]['meta']['ANONFIFORM_readable'];
 					}
 				} else {
 					$token_info = explode( '|', $pieces[2] );

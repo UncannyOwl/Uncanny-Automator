@@ -91,6 +91,8 @@ class Lifterlms_Helpers {
 				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -139,6 +141,8 @@ class Lifterlms_Helpers {
 				$option_code          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Lesson featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
 			],
 			'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 		];

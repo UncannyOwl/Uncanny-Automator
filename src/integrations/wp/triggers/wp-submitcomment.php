@@ -82,15 +82,17 @@ class WP_SUBMITCOMMENT {
 					$all_post_types,
 					Automator()->helpers->recipe->field->select_field(
 						$this->trigger_meta,
-						__( 'Post', 'uncanny-automator-pro' ),
+						__( 'Post', 'uncanny-automator' ),
 						[],
 						null,
 						false,
 						false,
 						[
-							$this->trigger_meta          => esc_attr__( 'Page title', 'uncanny-automator' ),
-							$this->trigger_meta . '_ID'  => esc_attr__( 'Page ID', 'uncanny-automator' ),
-							$this->trigger_meta . '_URL' => esc_attr__( 'Page URL', 'uncanny-automator' ),
+							$this->trigger_meta          => esc_attr__( 'Post title', 'uncanny-automator' ),
+							$this->trigger_meta . '_ID'  => esc_attr__( 'Post ID', 'uncanny-automator' ),
+							$this->trigger_meta . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
+							$this->trigger_meta . '_THUMB_ID' => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
+							$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Post featured image URL', 'uncanny-automator' ),
 						]
 					),
 				],

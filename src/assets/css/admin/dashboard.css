@@ -1,0 +1,568 @@
+:root {
+	--uap-dashboard-section-content-padding: 20px;
+	--uap-dashboard-box-padding: 20px;
+
+	/* Progress bar */
+	--uap-dashboard-progress-height: 5px;
+	--uap-dashboard-progress-background: #f3f3f3;
+	--uap-dashboard-progress-bar: var( --uap-color-primary );
+	--uap-dashboard-progress-bar-warning: #ffb72d;
+	--uap-dashboard-progress-bar-success: var( --uap-color-secondary );
+}
+
+.uap-dashboard {
+	font-size: var( --uap-font-size--body-regular );
+	line-height: var( --uap-line-height--body-regular );
+	padding-top: calc( var( --uap-spacing-between-sections ) / 3 );
+}
+
+	.uap-dashboard-header {
+		padding-bottom: calc( var( --uap-spacing-between-sections ) / 3 );
+
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+		.uap-dashboard-header__title {
+			font-family: var( --uap-font-family--header );
+			font-size: var( --uap-font-size--header-small );
+			line-height: var( --uap-line-height--header-small );
+
+			font-weight: 700;
+		}
+
+		.uap-dashboard-header-user {
+			--uap-user-avatar-size: 26px;
+
+			padding-left: calc( var( --uap-user-avatar-size ) + var( --uap-spacing-between-elements ) );
+
+			position: relative;
+		}
+
+			.uap-dashboard-header-user__avatar {
+				width: var( --uap-user-avatar-size );
+				height: var( --uap-user-avatar-size );
+				margin-left: calc( calc( var( --uap-user-avatar-size ) + var( --uap-spacing-between-elements ) ) * -1 );
+
+				border: 2px solid #b9b9b9;
+				border-radius: 50%;
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				overflow: hidden;
+			}
+
+				.uap-dashboard--has-site-connected .uap-dashboard-header-user__avatar {
+					width: calc( var( --uap-user-avatar-size ) + 2px );
+					height: calc( var( --uap-user-avatar-size ) + 2px );
+
+					border: 0;
+				}
+
+				.uap-dashboard-header-user__avatar .uap-icon {
+					color: #838383;
+					font-size: 20px;
+					position: absolute;
+					top: calc( 50% + 3px );
+					left: 50%;
+					transform: translate(-50%,-50%);
+				}
+
+				.uap-dashboard-header-user__avatar img {
+					width: 100%;
+					height: 100%;
+
+					object-fit: cover;
+					object-position: center;
+				}
+
+			.uap-dashboard-header-user__name {
+				font-weight: 500;
+			}
+
+	.uap-dashboard-connect-site-integration {
+		--illustration-width: 140px;
+
+		margin-bottom: calc( var( --uap-spacing-between-sections ) / 2 );
+	}
+
+		.uap-dashboard-connect-site-integration .uap-notice {
+			padding-left: calc( calc( var( --illustration-width ) + var( --uap-box-padding ) ) + var( --uap-box-padding ) );
+			position: relative;
+		}
+
+			.uap-dashboard-connect-site-integration .uap-notice:before {
+				width: var( --illustration-width );
+				height: calc( var( --illustration-width ) * 0.7235 );
+				top: var( --uap-box-padding );
+				left: var( --uap-box-padding );
+
+				content: '';
+
+				background: url( '../../img/admin/robot-site-not-connected.svg' ) no-repeat center;
+				background-size: contain;
+
+				position: absolute;
+			}
+
+	.uap-dashboard-section {
+		padding: var( --uap-dashboard-section-content-padding );
+		border-radius: var( --uap-border-radius );
+		margin-bottom: calc( var( --uap-spacing-between-sections ) / 2 );
+
+		background: #fff;
+	}
+
+		.uap-dashboard-section__title {
+			font-family: var( --uap-font-family--header );
+			font-size: var( --uap-font-size--header-small );
+			line-height: var( --uap-line-height--header-small );
+			padding-bottom: calc( var( --uap-spacing-between-sections ) / 3 );
+
+			font-weight: 700;
+		}
+
+		.uap-dashboard-section__content {
+			display: grid;
+			grid-template-rows: 1fr;
+			gap: var( --uap-dashboard-section-content-padding );
+			grid-template-areas:
+			". . .";
+		}
+
+			.uap-dashboard-box {
+				border-radius: var( --uap-border-radius );
+				box-shadow: var( --uap-box-shadow );
+
+				background: #fff;
+				display: flex;
+				flex-direction: column;
+			}
+
+				.uap-dashboard-box-header {
+					padding: var( --uap-dashboard-box-padding );
+					padding-bottom: calc( var( --uap-dashboard-box-padding ) / 2 );
+
+					flex: 0 0 auto;
+				}
+
+					.uap-dashboard-box-header--no-padding {
+						padding: 0;
+					}
+
+					.uap-dashboard-box-header__title {
+						font-family: var( --uap-font-family--header );
+						font-size: var( --uap-font-size--body-large );
+
+						font-weight: 800;
+					}
+
+					.uap-dashboard-box-progress {
+						background: var( --uap-dashboard-progress-background );
+						height: var( --uap-dashboard-progress-height );
+						border-top-left-radius: var( --uap-border-radius );
+						border-top-right-radius: var( --uap-border-radius );
+
+						width: 100%;
+						overflow: hidden;
+					}
+
+						.uap-dashboard-box-progress-bar {
+							background: var( --uap-dashboard-progress-bar );
+							transition: var( --uap-dashboard-transition );
+
+							transition-property: width;
+							height: 100%;
+							box-shadow: 0 0 0 3px #fff;
+							border-radius: 150px;
+						}
+
+						.uap-dashboard-box-progress--warning .uap-dashboard-box-progress-bar {
+							background: var( --uap-dashboard-progress-bar-warning );
+						}
+
+						.uap-dashboard-box-progress--success .uap-dashboard-box-progress-bar {
+							background: var( --uap-dashboard-progress-bar-success );
+						}
+
+				.uap-dashboard-box-content {
+					padding: var( --uap-dashboard-box-padding );
+
+					flex: 1 1 auto;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+
+					position: relative;
+				}
+
+					.uap-dashboard-box-content--top {
+						justify-content: flex-start;
+					}
+
+					.uap-dashboard-box-content--has-scroll:after {
+						height: calc( var( --uap-dashboard-box-padding ) * 2 );
+
+						content: '';
+
+						position: absolute;
+						bottom: 0;
+						left: 0;
+						right: 0;
+
+						background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+					}
+
+					.uap-dashboard-box-content-scroll {
+						left:  var( --uap-dashboard-box-padding );
+						right: calc( var( --uap-dashboard-box-padding ) / 2 );
+						padding-right: calc( var( --uap-dashboard-box-padding ) / 2 );
+						padding-bottom: calc( var( --uap-dashboard-box-padding ) * 2 );
+
+						overflow: auto;
+
+						display: flex;
+						flex-direction: column;
+						position: absolute;
+
+						top: 0;
+						bottom: 0;
+					}
+
+						.uap-dashboard-box-content-scroll::-webkit-scrollbar {
+							width: var( --uap-scrollbar-width );
+							background-color: var( --uap-scrollbar-background );
+
+							border-radius: 150px;
+						}
+
+						.uap-dashboard-box-content-scroll::-webkit-scrollbar-thumb:vertical {
+							min-height: var( --uap-scrollbar-width );
+							background: var( --uap-scrollbar-thumb-background );
+
+							border-radius: 150px;
+							background-clip: padding-box;
+							border: 2px solid rgba(0,0,0,0);
+						}
+
+					.uap-dashboard-box-header:not(.uap-dashboard-box-header--no-padding) + .uap-dashboard-box-content {
+						padding-top: calc( var( --uap-dashboard-box-padding ) / 2 );
+					}
+
+						.uap-dashboard-box-header:not(.uap-dashboard-box-header--no-padding) + .uap-dashboard-box-content .uap-dashboard-box-content-scroll {
+							top: calc( var( --uap-dashboard-box-padding ) / 2 );
+						}
+
+					.uap-dashboard-box-content-number {
+						font-size: var( --uap-font-size--header-xlarge );
+						line-height: var( --uap-line-height--header-xlarge );
+						font-family: var( --uap-font-family--header );
+
+						width: 100%;
+						font-weight: 800;
+						text-align: center;
+					}
+
+					.uap-dashboard-box-content-below-number {
+						font-size: var( --uap-font-size--body-large );
+						line-height: var( --uap-line-height--body-large );
+						font-family: var( --uap-font-family--header );
+						color: var( --uap-font-color-secondary );
+
+						width: 100%;
+						font-weight: 600;
+						text-align: center;
+					}
+
+					.uap-dashboard-box-content-label {
+						font-size: var( --uap-font-size--body-large );
+						margin-top: calc( var( --uap-spacing-between-elements ) * 2 );
+
+						width: 100%;
+						font-weight: 500;
+						text-align: center;
+					}
+
+						.uap-dashboard-box-content-label--reduced-margin {
+							margin-top: var( --uap-spacing-between-elements-small );
+						}
+
+					.uap-dashboard-box-content-below-label {
+						margin-top: calc( var( --uap-spacing-between-elements ) * 2 );
+
+						width: 100%;
+						font-weight: 500;
+						text-align: center;
+					}
+
+						.uap-dashboard-box-content-below-label--warning {
+							color: var( --uap-font-color-warning );
+						}
+
+						.uap-dashboard-box-content-below-label--secondary {
+							color: var( --uap-font-color-secondary );
+						}
+
+					ul.uap-dashboard-box-list {
+						width: 100%;
+						padding: 0;
+						margin: 0;
+					}
+
+						ul.uap-dashboard-box-list li {
+							width: 100%;
+							padding: 0;
+							margin: 0;
+						}
+
+							ul.uap-dashboard-box-list li a {
+								display: inline-block;
+								padding: 3px 0;
+							}
+
+							ul.uap-dashboard-box-list.uap-dashboard-box-list--plus-sign li a {
+								width: 100%;
+								padding-right: 25px;
+								position: relative;
+							}
+
+								.uap-dashboard-box-list--plus-sign a:after {
+									content: '\f067';
+
+									position: absolute;
+									top: 9px;
+									right: 0;
+
+									font-size: 13px;
+
+									opacity: .8;
+
+									font-family: 'Uncanny Automator Icons' !important;
+									speak: none;
+									font-style: normal;
+									font-weight: normal;
+									font-variant: normal;
+									text-transform: none;
+									line-height: 1;
+									-webkit-font-smoothing: antialiased;
+									-moz-osx-font-smoothing: grayscale;
+								}
+
+					.uap-dashboard-videos {
+						margin-top: calc( var( --uap-spacing-between-elements-small ) * -1 );
+
+						display: flex;
+						flex-direction: column;
+					}
+
+						.uap-dashboard-video {
+							padding: var( --uap-spacing-between-elements-small ) 0;
+
+							display: flex;
+							align-items: flex-start;
+							transition: opacity 150ms ease-in-out;
+						}
+
+							.uap-dashboard-video:hover {
+								opacity: .8;
+							}
+
+							.uap-dashboard-video__thumbnail {
+								position: relative;
+								flex: 0 0 auto;
+								width: 94px;
+								height: auto;
+								margin-top: 4px;
+							}
+
+								.uap-dashboard-video__thumbnail img {
+									border-radius: var( --uap-border-radius );
+
+									display: block;
+									width: 100%;
+									height: 100%;
+								}
+
+								.uap-dashboard-video__thumbnail:before {
+									content: var( --uap-icon-play );
+
+									font-size: calc( 1em - 2px );
+									font-family: 'Uncanny Automator Icons' !important;
+									speak: none;
+									font-style: normal;
+									font-weight: normal;
+									font-variant: normal;
+									text-transform: none;
+									line-height: 1;
+									-webkit-font-smoothing: antialiased;
+									-moz-osx-font-smoothing: grayscale;
+									color: #fff;
+
+									position: absolute;
+									top: 50%;
+									left: 50%;
+									transform: translate(-50%, -50%);
+									z-index: 10;
+								}
+
+								.uap-dashboard-video__thumbnail:after {
+									border-radius: var( --uap-border-radius );
+
+									content: '';
+									width: 100%;
+									height: 100%;
+									background-color: rgba(0, 0, 0, 0.2);
+
+									position: absolute;
+									top: 0;
+									left: 0;
+									z-index: 5;
+								}
+
+							.uap-dashboard-video__title {
+								font-size: var( --uap-font-size--body-small );
+								line-height: var( --uap-line-height--body-small );
+								color: var( --uap-font-color );
+								padding: 0 0 0 var( --uap-spacing-between-elements );
+
+								flex: 1 1 auto;
+							}
+
+								.uap-dashboard-video__subtitle {
+									font-size: var( --uap-font-size--body-xsmall );
+									line-height: var( --uap-line-height--body-xsmall );
+									color: var( --uap-font-color-secondary );
+
+									padding-top: 2px;
+								}
+
+				.uap-dashboard-box-footer {
+					padding: calc( var( --uap-dashboard-box-padding ) / 2 ) var( --uap-dashboard-box-padding );
+					border-top: 1px solid var( --uap-border-color-gray );
+					font-size: var( --uap-font-size--body-small );
+					line-height: var( --uap-line-height--body-small );
+
+					flex: 0 0 auto;
+				}
+
+		/* "Credits" */
+
+		#uap-dashboard-credits .uap-dashboard-section__content {
+			grid-template-columns: 1fr 1fr 2fr;
+			grid-template-rows: 1fr;
+			grid-template-areas:
+				"Credits-left Credits-faq Credits-recipes";
+		}
+
+			#uap-dashboard-credits-left    { grid-area: Credits-left; }
+			#uap-dashboard-credits-faq     { grid-area: Credits-faq; }
+			#uap-dashboard-credits-recipes { grid-area: Credits-recipes; }
+
+				#uap-dashboard-credits-left .uap-dashboard-box-content {
+					min-height: 220px;
+				}
+
+				#uap-dashboard-credits-faq .uap-dashboard-box-content {
+					min-height: 270px;
+				}
+
+			@media screen and (max-width: 1366px){
+				#uap-dashboard-credits .uap-dashboard-section__content {
+					grid-template-columns: 1fr 1fr;
+					grid-template-rows: 1fr 1fr;
+					grid-template-areas:
+						"Credits-left Credits-faq"
+    					"Credits-recipes Credits-recipes";
+				}
+			}
+
+			@media screen and (max-width: 768px){
+				#uap-dashboard-credits .uap-dashboard-section__content {
+					grid-template-columns: 1fr;
+					grid-template-rows: 1fr 1fr 1fr;
+					grid-template-areas:
+						"Credits-left"
+    					"Credits-faq"
+    					"Credits-recipes";
+				}
+			}
+
+			#uap-dashboard-credits-left-total {
+				font-weight: 800;
+			}
+
+			#uap-dashboard-credits-faq {}
+
+				#uap-dashboard-credits-faq .uap-dashboard-box-list a {
+					color: var( --uap-font-color-secondary );
+				}
+
+			#uap-dashboard-credits-recipes {}
+
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes__no-recipes {
+					height: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes-table-cell--recipe-name {}
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes-table-cell--allowed-completions {}
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes-table-cell--completed-runs {}
+
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes-table-allowed-completions--per-user,
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes-table-allowed-completions--total {
+					font-weight: 500;
+					font-size: 14px;
+				}
+
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes-table-allowed-completions--per-user span,
+				#uap-dashboard-credits-recipes .uap-dashboard-credits-recipes-table-allowed-completions--total span {
+					font-weight: 400;
+				}
+
+		/* Learn */
+
+		#uap-dashboard-learn .uap-dashboard-section__content {
+			grid-template-columns: 3fr 2fr 2fr;
+			grid-template-rows: 1fr;
+			grid-template-areas:
+				"Learn-featured-integrations Learn-knowledge-base Learn-videos";
+		}
+
+			#uap-dashboard-learn-videos    				{ grid-area: Learn-videos; }
+			#uap-dashboard-learn-knowledge-base     	{ grid-area: Learn-knowledge-base; }
+			#uap-dashboard-learn-featured-integrations 	{ grid-area: Learn-featured-integrations; }
+
+			#uap-dashboard-learn-knowledge-base .uap-dashboard-learn-knowledge-base__number-of-articles {
+				font-size: var( --uap-font-size--body-xsmall );
+				line-height: var( --uap-line-height--body-xsmall );
+				color: var( --uap-font-color-secondary );
+			}
+
+				#uap-dashboard-learn-knowledge-base .uap-dashboard-box-content {
+					min-height: 275px;
+				}
+
+			@media screen and (max-width: 1366px){
+				#uap-dashboard-learn .uap-dashboard-section__content {
+					grid-template-columns: 1fr 1fr;
+					grid-template-rows: 1fr 1fr;
+					grid-template-areas:
+						"Learn-featured-integrations Learn-knowledge-base"
+						"Learn-videos .";
+				}
+			}
+
+			@media screen and (max-width: 768px){
+				#uap-dashboard-learn .uap-dashboard-section__content {
+					grid-template-columns: 1fr;
+					grid-template-rows: 1fr 1fr 1fr;
+					grid-template-areas:
+						"Learn-featured-integrations"
+    					"Learn-knowledge-base"
+    					"Learn-videos";
+
+				}
+			}

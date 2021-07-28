@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+
 /**
  * Class Automator_Input_Parser
  * @package Uncanny_Automator
@@ -25,9 +26,7 @@ class Automator_Input_Parser {
 	 * Automator_Input_Parser constructor.
 	 */
 	public function __construct() {
-		$this->defined_tokens = apply_filters(
-			'automator_pre_defined_tokens',
-			array(
+		$this->defined_tokens = apply_filters( 'automator_pre_defined_tokens', array(
 				'site_name',
 				'user_id',
 				'user_username',
@@ -78,14 +77,15 @@ class Automator_Input_Parser {
 			$url = '{{site_url}}' . $url;
 		}
 
+
 		// Replace Tokens
-		$args = array(
+		$args = [
 			'field_text'  => $url,
 			'meta_key'    => null,
 			'user_id'     => null,
 			'action_data' => null,
 			'recipe_id'   => $recipe_id,
-		);
+		];
 
 		$url = $this->parse_vars( $args, $trigger_args );
 
@@ -93,13 +93,13 @@ class Automator_Input_Parser {
 			// if the url is not valid and / isn't the first character then the url is missing the site url
 			$url = '{{site_url}}' . '/' . $url;
 			// Replace Tokens
-			$args = array(
+			$args = [
 				'field_text'  => $url,
 				'meta_key'    => null,
 				'user_id'     => null,
 				'action_data' => null,
 				'recipe_id'   => $recipe_id,
-			);
+			];
 			$url  = $this->parse_vars( $args, $trigger_args );
 
 		}
@@ -133,7 +133,7 @@ class Automator_Input_Parser {
 		$run_number     = key_exists( 'run_number', $args ) ? $args['run_number'] : null;
 
 		// find brackets and replace with real data
-		if ( preg_match_all( '/\{\{\s*(.*?)\s*\}\}/', $field_text, $arr ) ) {
+		if ( preg_match_all( "/\{\{\s*(.*?)\s*\}\}/", $field_text, $arr ) ) {
 			$matches = $arr[1];
 			foreach ( $matches as $match ) {
 
@@ -196,13 +196,13 @@ class Automator_Input_Parser {
 						if ( $run_func ) {
 							$pieces = explode( ':', $match );
 							if ( $pieces ) {
-								$replace_args = array(
+								$replace_args = [
 									'pieces'         => $pieces,
 									'recipe_id'      => $recipe_id,
 									'trigger_log_id' => $trigger_log_id,
 									'run_number'     => $run_number,
 									'user_id'        => $user_id,
-								);
+								];
 
 								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
 							}
@@ -292,7 +292,7 @@ class Automator_Input_Parser {
 			}
 		}
 
-		$field_text = str_replace( array( '{{', '}}' ), '', $field_text );
+		$field_text = str_replace( [ '{{', '}}' ], '', $field_text );
 
 		return $field_text;
 
@@ -305,7 +305,6 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function replace_recipe_variables( $replace_args, $args = array() ) {
-		//
 		$pieces         = $replace_args['pieces'];
 		$recipe_id      = $replace_args['recipe_id'];
 		$trigger_log_id = $replace_args['trigger_log_id'];
@@ -325,7 +324,10 @@ class Automator_Input_Parser {
 
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
-			if ( strpos( $piece, '_ID' ) !== false || strpos( $piece, '_URL' ) !== false ) {
+			if ( strpos( $piece, '_ID' ) !== false ||
+				 strpos( $piece, '_URL' ) !== false ||
+				 strpos( $piece, '_THUMB_URL' ) !== false ||
+				 strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -338,17 +340,28 @@ class Automator_Input_Parser {
 				continue;
 			}
 			if ( is_numeric( $trigger['meta'][ $piece ] ) ) {
+
+				if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
+					$post_id = Automator()->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
+				} else {
+					$post_id = $trigger['meta'][ $piece ];
+				}
+				
 				switch ( $piece ) {
 					case 'WPPOST':
 					case 'WPPAGE':
 						if ( isset( $sub_piece ) && key_exists( 1, $sub_piece ) ) {
 							if ( 'ID' === $sub_piece[1] ) {
-								$return = $trigger['meta'][ $piece ];
+								$return = $post_id;
 							} elseif ( 'URL' === $sub_piece[1] ) {
-								$return = get_permalink( $trigger['meta'][ $piece ] );
+								$return = get_permalink( $post_id );
+							} elseif ( 'THUMB_URL' === $sub_piece[1] ) {
+								$return = get_the_post_thumbnail_url( $post_id, 'full' );
+							} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
+								$return = get_post_thumbnail_id( $post_id );
 							}
 						} else {
-							$return = html_entity_decode( get_the_title( $trigger['meta'][ $piece ] ), ENT_QUOTES, 'UTF-8' );
+							$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
 						}
 						break;
 					case 'NUMTIMES':
@@ -366,13 +379,16 @@ class Automator_Input_Parser {
 					default:
 						if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
 							//Find stored post_id for piece, i.e., LDLESSON, LDTOPIC set to Any
-							$post_id = Automator()->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
 							if ( is_numeric( $post_id ) ) {
 								if ( $is_relevant_token ) {
 									if ( 'ID' === $sub_piece[1] ) {
 										$return = $post_id;
 									} elseif ( 'URL' === $sub_piece[1] ) {
 										$return = get_the_permalink( $post_id );
+									} elseif ( 'THUMB_URL' === $sub_piece[1] ) {
+										$return = get_the_post_thumbnail_url( $post_id, 'full' );
+									} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
+										$return = get_post_thumbnail_id( $post_id );
 									}
 								} else {
 									$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
@@ -387,6 +403,10 @@ class Automator_Input_Parser {
 									$return = $trigger['meta'][ $piece ];
 								} elseif ( 'URL' === $sub_piece[1] ) {
 									$return = get_the_permalink( $trigger['meta'][ $piece ] );
+								} elseif ( 'THUMB_URL' === $sub_piece[1] ) {
+									$return = get_the_post_thumbnail_url( $trigger['meta'][ $piece ], 'full' );
+								} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
+									$return = get_post_thumbnail_id( $trigger['meta'][ $piece ] );
 								}
 							} else {
 								$return = html_entity_decode( get_the_title( $trigger['meta'][ $piece ] ), ENT_QUOTES, 'UTF-8' );
@@ -414,7 +434,7 @@ class Automator_Input_Parser {
 		 * Ticket# 22255
 		 * @since 3.0
 		 */
-
+		
 		return do_shortcode( $return );
 	}
 
@@ -480,7 +500,8 @@ class Automator_Input_Parser {
 	 *
 	 * @return null|string
 	 */
-	public function text( $field_text = null, $recipe_id = null, $user_id = null, $trigger_args = array() ) {
+	public function text( $field_text = null, $recipe_id = null, $user_id = null, $trigger_args = null ) {
+
 		// Sanity check that there was a $field_text passed
 		if ( null === $field_text ) {
 			return null;

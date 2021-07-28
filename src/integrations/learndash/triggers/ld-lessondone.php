@@ -47,11 +47,15 @@ class LD_LESSONDONE {
 			'LDCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
 			'LDCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 			'LDCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+			'LDCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+			'LDCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 		];
 		$relevant_tokens        = [
 			$this->trigger_meta          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
 			$this->trigger_meta . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_ID'  => esc_attr__( 'Lesson featured image ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
 		];
 
 		$trigger = array(

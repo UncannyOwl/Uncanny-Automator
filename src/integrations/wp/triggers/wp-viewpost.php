@@ -33,7 +33,6 @@ class WP_VIEWPOST {
 	public function define_trigger() {
 
 
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
@@ -63,9 +62,6 @@ class WP_VIEWPOST {
 	 * Validation function when the trigger action is hit
 	 */
 	public function view_post() {
-
-
-
 		global $post;
 		$user_id = get_current_user_id();
 
@@ -73,13 +69,39 @@ class WP_VIEWPOST {
 			return;
 		}
 
-		$args = [
+		$pass_args = [
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $post->ID,
 			'user_id' => $user_id,
 		];
 
-		Automator()->maybe_add_trigger_entry( $args );
+		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+		if ( $args ) {
+			foreach ( $args as $result ) {
+				if ( true === $result['result'] ) {
+					$trigger_meta = [
+						'user_id'        => (int) $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					];
+
+					$trigger_meta['meta_key']   = 'WPPOST';
+					$trigger_meta['meta_value'] = maybe_serialize( $post->post_title );
+					Automator()->insert_trigger_meta( $trigger_meta );
+
+					$trigger_meta['meta_key']   = 'WPPOST_ID';
+					$trigger_meta['meta_value'] = maybe_serialize( $post->ID );
+					Automator()->insert_trigger_meta( $trigger_meta );
+
+					$trigger_meta['meta_key']   = 'WPPOST_URL';
+					$trigger_meta['meta_value'] = maybe_serialize( get_post_permalink( $post->ID ) );
+					Automator()->insert_trigger_meta( $trigger_meta );
+
+					Automator()->maybe_trigger_complete( $result['args'] );
+				}
+			}
+		}
 	}
 }

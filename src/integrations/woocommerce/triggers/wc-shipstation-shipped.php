@@ -87,7 +87,7 @@ class WC_SHIPSTATION_SHIPPED {
 			'user_id'        => $user_id,
 			'post_id'        => $order_id,
 			'ignore_post_id' => true,
-			'is_signed_in'   => $user_id,
+			'is_signed_in'   => true,
 		];
 
 		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );

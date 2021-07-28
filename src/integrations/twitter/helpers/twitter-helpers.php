@@ -31,7 +31,7 @@ class Twitter_Helpers {
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		$this->setting_tab   = 'twitter_api';
-		$this->automator_api = 'https://api.automatorplugin.com/twitter/';
+		$this->automator_api = AUTOMATOR_API_URL . 'v2/twitter';
 
 		add_filter( 'automator_settings_tabs', array( $this, 'add_twitter_api_settings' ), 15 );
 		add_action( 'init', array( $this, 'capture_oauth_tokens' ), 100, 3 );
@@ -47,23 +47,75 @@ class Twitter_Helpers {
 	}
 
 	/**
+	 * Checks if the user has valid license in pro or free version.
+	 *
+	 * @return boolean.
+	 */
+	public function has_valid_license() {
+
+		$has_pro_license  = false;
+		$has_free_license = false;
+
+		$free_license_status = get_option( 'uap_automator_free_license_status' );
+		$pro_license_status  = get_option( 'uap_automator_pro_license_status' );
+
+		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === $pro_license_status ) {
+			$has_pro_license = true;
+		}
+
+		if ( 'valid' === $free_license_status ) {
+			$has_free_license = true;
+		}
+
+		return $has_free_license || $has_pro_license;
+
+	}
+
+	/**
+	 * Checks if screen is from the modal action popup or not.
+	 *
+	 * @return boolean.
+	 */
+	public function is_from_modal_action() {
+
+		$minimal = filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT );
+
+		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
+
+		return ! empty( $minimal ) && ! empty( $hide_settings_tabs ) && ! empty( $hide_settings_tabs );
+	}
+
+	/**
+	 * Check if the 3rd-party integration has any connection api stored.
+	 *
+	 * @return boolean.
+	 */
+	public function has_connection_data() {
+		return ! empty( $this->get_client() );
+	}
+
+	/**
 	 * @param $tabs
 	 *
 	 * @return mixed
 	 */
 	public function add_twitter_api_settings( $tabs ) {
 
-		$tab_url                    = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
-		$tabs[ $this->setting_tab ] = array(
-			'name'           => __( 'Twitter', 'uncanny-automator' ),
-			'title'          => __( 'Twitter account settings', 'uncanny-automator' ),
-			'description'    => sprintf( '<p>%s</p>', __( 'Connecting to Twitter requires signing into your account to link it to Automator. To get started, click the "Connect an account" button below or the "Disconnect account" button if you need to disconnect or connect a new account. Uncanny Automator can only connect to a single Twitter account at one time. (It is not possible to set some recipes up under one account and then switch accounts, all recipes are mapped to the account selected on this page and existing recipes may break if they were set up under another account.)', 'uncanny-automator' ) ),
-			'settings_field' => 'uap_automator_twitter_api_settings',
-			'wp_nonce_field' => 'uap_automator_twitter_api_nonce',
-			'save_btn_name'  => 'uap_automator_twitter_api_save',
-			'save_btn_title' => __( 'Save settings', 'uncanny-automator' ),
-			'fields'         => array(),
-		);
+		if ( $this->has_valid_license() || $this->has_connection_data() || $this->is_from_modal_action() ) {
+
+			$tab_url                    = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
+			$tabs[ $this->setting_tab ] = array(
+				'name'           => __( 'Twitter', 'uncanny-automator' ),
+				'title'          => __( 'Twitter account settings', 'uncanny-automator' ),
+				'description'    => sprintf( '<p>%s</p>', __( 'Connecting to Twitter requires signing into your account to link it to Automator. To get started, click the "Connect an account" button below or the "Disconnect account" button if you need to disconnect or connect a new account. Uncanny Automator can only connect to a single Twitter account at one time. (It is not possible to set some recipes up under one account and then switch accounts, all recipes are mapped to the account selected on this page and existing recipes may break if they were set up under another account.)', 'uncanny-automator' ) ) . $this->get_user_name(),
+				'settings_field' => 'uap_automator_twitter_api_settings',
+				'wp_nonce_field' => 'uap_automator_twitter_api_nonce',
+				'save_btn_name'  => 'uap_automator_twitter_api_save',
+				'save_btn_title' => __( 'Save settings', 'uncanny-automator' ),
+				'fields'         => array(),
+			);
+
+		}
 
 		return $tabs;
 	}
@@ -92,9 +144,9 @@ class Twitter_Helpers {
 				$plugin_ver = AUTOMATOR_PLUGIN_VERSION;
 				$api_ver    = '1.0';
 
-				$action       = 'twitter_authorization_request';
+				$action       = 'authorization_request';
 				$redirect_url = urlencode( $tab_url );
-				$button_url   = "https://api.automatorplugin.com/twitter/?action={$action}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
+				$button_url   = $this->automator_api . "?action={$action}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
 				$button_text  = __( 'Connect an account', 'uncanny-automator' );
 				$button_class = 'uo-connect-button';
 			}
@@ -110,6 +162,31 @@ class Twitter_Helpers {
 			</a>
 
 			<style>
+				.uo-twitter-user-info {
+					display: flex;
+					align-items: center;
+					margin: 20px 0 0;
+				}
+
+				.uo-twitter-user-info__avatar {
+					background: #fff;
+					border: 1px solid #eee;
+					border-radius: 32px;
+					height: 32px;
+					width: 32px;
+					text-align: center;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					color: #1d9bf0;
+					margin-right: 5px;
+				}
+				
+				.uo-twitter-user-info__handle {
+					font-weight: 700;
+					color: #212121;
+				}
+
 				button[name="uap_automator_twitter_api_save"] {
 					display: none;
 				}
@@ -212,6 +289,33 @@ class Twitter_Helpers {
 				die;
 			}
 		}
+	}
+
+	/**
+	 * Displays the twitter handle of the user in settings description..
+	 *
+	 * @return string The twitter handle html..
+	 */
+	public function get_user_name() {
+
+		$twitter_client = $this->get_client();
+		ob_start();
+		?>
+		<?php if ( false !== $twitter_client ) : ?>
+			<div class="uo-twitter-user-info">
+				<div class="uo-twitter-user-info__avatar">
+					<span class="dashicons dashicons-twitter"></span>
+				</div>
+				<?php if ( isset( $twitter_client['screen_name'] ) ) : ?>
+				<div class="uo-twitter-user-info__handle">
+					<?php echo esc_html( '@' . $twitter_client['screen_name'] ); ?>
+				</div>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+		<?php
+		return ob_get_clean();
+
 	}
 
 }

@@ -105,21 +105,15 @@ class Set_Up_Automator {
 	 * @throws Exception
 	 */
 	public function get_integrations_autoload_directories() {
-		//$integrations = get_transient( 'automator_get_all_integrations' );
-		$integrations = array();
-		$directory    = UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'integrations';
-		if ( empty( $integrations ) ) {
-			try {
-				$integrations = self::read_directory( $directory );
-			} catch ( Exception $e ) {
-				throw new Automator_Exception( $e->getTraceAsString() );
-			}
-			$integrations           = apply_filters_deprecated( 'uncanny_automator_integrations', array( $integrations ), '3.0', 'automator_integrations_setup' );
-			self::$all_integrations = apply_filters( 'automator_integrations_setup', $integrations );
-			set_transient( 'automator_get_all_integrations', self::$all_integrations, 5 * MINUTE_IN_SECONDS );
-		} else {
-			self::$all_integrations = apply_filters( 'automator_integrations_setup', $integrations );
+		$directory = UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'integrations';
+		try {
+			$integrations = self::read_directory( $directory );
+		} catch ( Exception $e ) {
+			throw new Automator_Exception( $e->getTraceAsString() );
 		}
+		$integrations           = apply_filters_deprecated( 'uncanny_automator_integrations', array( $integrations ), '3.0', 'automator_integrations_setup' );
+		self::$all_integrations = apply_filters( 'automator_integrations_setup', $integrations );
+		Automator()->cache->set( 'automator_get_all_integrations', self::$all_integrations, 'automator', Automator()->cache->long_expires );
 
 		return self::extract_integration_folders( self::$all_integrations, $directory );
 	}
@@ -213,13 +207,12 @@ class Set_Up_Automator {
 		// Add all extensions --- hook here to add your own triggers and actions
 		do_action( 'automator_configure' );
 		// Sets all trigger, actions, and closure classes directories for spl autoloader
-		//$integrations = get_transient( 'automator_integration_directories_loaded' );
-		$integrations = array();
-		if ( empty( $integrations ) ) {
+		self::$auto_loaded_directories = Automator()->cache->get( 'automator_integration_directories_loaded' );
+		self::$all_integrations        = Automator()->cache->get( 'automator_get_all_integrations' );
+
+		if ( empty( self::$auto_loaded_directories ) || empty( self::$all_integrations ) ) {
 			self::$auto_loaded_directories = $this->get_integrations_autoload_directories();
-			set_transient( 'automator_integration_directories_loaded', self::$auto_loaded_directories, 5 * MINUTE_IN_SECONDS );
-		} else {
-			self::$auto_loaded_directories = $integrations;
+			Automator()->cache->set( 'automator_integration_directories_loaded', self::$auto_loaded_directories, 'automator', Automator()->cache->long_expires );
 		}
 		// Loads all internal triggers, actions, and closures then provides hooks for external ones
 		// All extensions are loaded.
@@ -276,67 +269,75 @@ class Set_Up_Automator {
 	 */
 	public function initialize_add_integrations() {
 		// Check each directory
-		if ( self::$auto_loaded_directories ) {
-			foreach ( self::$auto_loaded_directories as $directory ) {
-				$files    = array();
-				$dir_name = basename( $directory );
-				if ( ! isset( self::$all_integrations[ $dir_name ] ) ) {
+		if ( ! self::$auto_loaded_directories ) {
+			return;
+		}
+		foreach ( self::$auto_loaded_directories as $directory ) {
+			$files    = array();
+			$dir_name = basename( $directory );
+			if ( ! isset( self::$all_integrations[ $dir_name ] ) ) {
+				continue;
+			}
+			// Check if integration has main add-integration file
+			if ( ! isset( self::$all_integrations[ $dir_name ]['main'] ) ) {
+				continue;
+			}
+
+			$files[] = self::$all_integrations[ $dir_name ]['main'];
+			if ( ! $files ) {
+				continue;
+			}
+			foreach ( $files as $file ) {
+				if ( ! file_exists( $file ) ) {
 					continue;
 				}
+				require_once $file;
+				$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file ), $file );
+				try {
+					$is_using_trait = ( new ReflectionClass( $class ) )->getTraits();
+				} catch ( ReflectionException $e ) {
+					throw new Automator_Exception( $e->getMessage() );
+				}
+				$i                = new $class();
+				$integration_code = ! empty( $is_using_trait ) ? $i->get_integration() : $class::$integration;
+				$active           = ! empty( $is_using_trait ) ? $i->plugin_active( null, null ) : $i->plugin_active( 0, $integration_code );
+				$active           = apply_filters( 'automator_maybe_integration_active', $active, $integration_code );
+				if ( true !== $active ) {
+					unset( $i );
+					continue;
+				}
+				/**
+				 * Include only active integrations. Legacy method.
+				 * @since 3.0, trait-integrations.php does not contains this function. Not required to define
+				 * for each integration now.
+				 * @see \Uncanny_Automator\Recipe\Integrations::add_integration()
+				 *
+				 */
+				if ( method_exists( $i, 'add_integration_func' ) ) {
+					$i->add_integration_func();
+				}
 
-				$files[] = self::$all_integrations[ $dir_name ]['main'];
-				if ( $files ) {
-					foreach ( $files as $file ) {
-						if ( file_exists( $file ) ) {
-							require_once $file;
-							$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file ), $file );
-							try {
-								$is_using_trait = ( new ReflectionClass( $class ) )->getTraits();
-							} catch ( ReflectionException $e ) {
-								throw new Automator_Exception( $e->getMessage() );
-							}
-							$i                = new $class();
-							$integration_code = ! empty( $is_using_trait ) ? $i->get_integration() : $class::$integration;
-							$active           = ! empty( $is_using_trait ) ? $i->plugin_active( null, null ) : $i->plugin_active( 0, $integration_code );
-							$active           = apply_filters( 'automator_maybe_integration_active', $active, $integration_code );
-							if ( true !== $active ) {
-								unset( $i );
-								continue;
-							}
-							/**
-							 * Include only active integrations. Legacy method.
-							 * @since 3.0, trait-integrations.php does not contains this function. Not required to define
-							 * for each integration now.
-							 * @see \Uncanny_Automator\Recipe\Integrations::add_integration()
-							 *
-							 */
-							if ( method_exists( $i, 'add_integration_func' ) ) {
-								$i->add_integration_func();
-							}
+				if ( ! in_array( $integration_code, self::$active_integrations_code, true ) ) {
+					self::$active_integrations_code[] = $integration_code;
+				}
 
-							if ( ! in_array( $integration_code, self::$active_integrations_code, true ) ) {
-								self::$active_integrations_code[] = $integration_code;
-							}
-
-							$this->active_directories[ $dir_name ] = $i;
-							$this->active_directories              = apply_filters( 'automator_active_integration_directories', $this->active_directories );
-							if ( method_exists( $i, 'add_integration_directory_func' ) ) {
-								$directories_to_include = $i->add_integration_directory_func( array(), $file );
-								if ( $directories_to_include ) {
-									foreach ( $directories_to_include as $dir ) {
-										$this->directories_to_include[ $dir_name ][] = basename( $dir );
-									}
-								}
-							}
-
-							//Now everything is checked, add integration to the system.
-							if ( method_exists( $i, 'add_integration' ) ) {
-								$i->add_integration( $i->get_integration(), array( $i->get_name(), $i->get_icon() ) );
-							}
-							Utilities::add_class_instance( $class, $i );
+				$this->active_directories[ $dir_name ] = $i;
+				$this->active_directories              = apply_filters( 'automator_active_integration_directories', $this->active_directories );
+				if ( method_exists( $i, 'add_integration_directory_func' ) ) {
+					$directories_to_include = $i->add_integration_directory_func( array(), $file );
+					if ( $directories_to_include ) {
+						foreach ( $directories_to_include as $dir ) {
+							$this->directories_to_include[ $dir_name ][] = basename( $dir );
 						}
 					}
 				}
+
+				//Now everything is checked, add integration to the system.
+				if ( method_exists( $i, 'add_integration' ) ) {
+					$i->add_integration( $i->get_integration(), array( $i->get_name(), $i->get_icon() ) );
+				}
+				Automator()->cache->set( 'automator_active_integrations', $this->active_directories );
+				Utilities::add_class_instance( $class, $i );
 			}
 		}
 	}

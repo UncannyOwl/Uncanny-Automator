@@ -86,6 +86,8 @@ class Upsell_Plugin_Helpers {
 				$option_code          => esc_attr__( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Product URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Product featured image URL', 'uncanny-automator' ),
 			],
 		];
 

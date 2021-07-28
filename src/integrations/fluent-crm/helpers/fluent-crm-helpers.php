@@ -70,6 +70,7 @@ class Fluent_Crm_Helpers {
 	 *
 	 * @param  mixed $subscriber The accepted subscriber object from status_action.
 	 * @param  string $old_status The old status.
+	 *
 	 * @return void
 	 */
 	public function do_fluent_crm_actions( $subscriber, $old_status ) {
@@ -83,7 +84,7 @@ class Fluent_Crm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -99,13 +100,16 @@ class Fluent_Crm_Helpers {
 
 		$token                    = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_ajax                  = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$is_any                   = key_exists( 'is_any', $args ) ? $args['is_any'] : false;
 		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$supports_multiple_values = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
 
 		$options = array();
 
-		$options['0'] = esc_attr_x( 'Any list', 'FluentCRM', 'uncanny-automator' );
+		if ( $is_any !== false ) {
+			$options['0'] = esc_attr_x( 'Any list', 'FluentCRM', 'uncanny-automator' );
+		}
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
@@ -141,7 +145,7 @@ class Fluent_Crm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -197,10 +201,10 @@ class Fluent_Crm_Helpers {
 
 	/**
 	 * @param null|array|string $to_match
-	 * @param null              $match_type
-	 * @param null              $recipes
-	 * @param null              $trigger_meta
-	 * @param null              $trigger_code
+	 * @param null $match_type
+	 * @param null $recipes
+	 * @param null $trigger_meta
+	 * @param null $trigger_code
 	 *
 	 * @return array
 	 */

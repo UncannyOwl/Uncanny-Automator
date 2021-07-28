@@ -67,6 +67,8 @@ class MASTERSTUDY_COURSEENROLLED {
 						'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
 						'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 						'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+						'MSLMSCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+						'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 					],
 					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
 				],

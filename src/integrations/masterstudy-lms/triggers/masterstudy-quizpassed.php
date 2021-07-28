@@ -48,13 +48,18 @@ class MASTERSTUDY_QUIZPASSED {
 			'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
 			'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 			'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+			'MSLMSCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+			'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' )
 		];
 
 		$relevant_tokens = [
 			$this->trigger_meta            => esc_attr__( 'Quiz title', 'uncanny-automator' ),
 			$this->trigger_meta . '_ID'    => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_URL'   => esc_attr__( 'Quiz URL', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_ID'    => esc_attr__( 'Quiz featured image ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_URL'   => esc_attr__( 'Quiz featured image URL', 'uncanny-automator' ),
 			$this->trigger_meta . '_SCORE' => esc_attr__( 'Quiz score', 'uncanny-automator' ),
+			
 
 		];
 

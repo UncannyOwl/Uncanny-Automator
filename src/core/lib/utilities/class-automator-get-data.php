@@ -932,7 +932,11 @@ class Automator_Get_Data {
 		if ( null === $check_trigger_code ) {
 			return array();
 		}
-
+		$key    = 'automator_recipes_of_' . $check_trigger_code;
+		$return = Automator()->cache->get( $key );
+		if ( ! empty( $return ) ) {
+			return $return;
+		}
 		$return = array();
 		// Get recipes that are in the memory right now.
 		$recipes = Automator()->get_recipes_data( false, $recipe_id );
@@ -960,6 +964,8 @@ class Automator_Get_Data {
 				$return[ $recipe_id ] = $recipe;
 			}
 		}
+
+		Automator()->cache->set( $key, $return );
 
 		return $return;
 	}
@@ -1135,5 +1141,24 @@ class Automator_Get_Data {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return false|mixed
+	 */
+	public function get_recipe_requires_user( $recipe_id ) {
+		$requires_user  = get_post_meta( $recipe_id, 'recipe_requires_user', true );
+		$recipe_version = get_post_meta( $recipe_id, 'uap_recipe_version', true );
+		if ( empty( $requires_user ) ) {
+			if ( version_compare( $recipe_version, 3.1, '>=' ) ) {
+				return false;
+			}
+
+			return true;
+		}
+
+		return $requires_user;
 	}
 }

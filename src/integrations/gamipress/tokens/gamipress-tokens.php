@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 /**
@@ -46,8 +47,16 @@ class Gamipress_Tokens {
 		if ( ! empty( $token ) && ! empty( $award_type ) ) {
 
 			if ( 'GPAWARDTYPES' === $token ) {
-				$award_type = $trigger_data[0]['meta']['GPAWARDTYPES_readable'] ?? '';
-				return $award_type;
+				if ( $award_type != '-1' ) {
+					$value = $trigger_data[0]['meta']['GPAWARDTYPES_readable'] ?? '';
+				} else {
+					global $wpdb;
+					$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d ORDER BY ID DESC LIMIT 0,1", $token, $trigger_data[0]['ID'], $replace_args['trigger_log_id'] ) );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+
 			}
 		}
 

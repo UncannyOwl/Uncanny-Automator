@@ -61,7 +61,7 @@ class LF_MARKLESSONDONE {
 	 * @param array $action_data action data.
 	 * @param string $recipe_id recipe id.
 	 */
-	public function lf_mark_lesson_done( $user_id, $action_data, $recipe_id ) {
+	public function lf_mark_lesson_done( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

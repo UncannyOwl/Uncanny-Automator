@@ -40,6 +40,7 @@ class WP_SENDEMAIL {
 		$this->set_integration( 'WP' );
 		$this->set_action_code( 'SENDEMAIL' );
 		$this->set_action_meta( 'EMAILTO' );
+		$this->set_requires_user( false );
 
 		/* translators: Action - WordPress */
 		$this->set_sentence( sprintf( esc_attr__( 'Send an email to {{email address:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
@@ -80,7 +81,6 @@ class WP_SENDEMAIL {
 						/* translators: Email field */
 						'label'       => esc_attr__( 'To', 'uncanny-automator' ),
 						'input_type'  => 'email',
-						'default'     => '{{user_email}}',
 					)
 				),
 

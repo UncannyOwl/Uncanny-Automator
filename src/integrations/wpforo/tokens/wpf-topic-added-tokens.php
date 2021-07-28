@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPF_USER_REPLIES_TO_TOPIC_TOKENS
- * @package Uncanny_Automator_Pro
+ * @package Uncanny_Automator
  */
 class WPF_TOPIC_ADDED_TOKENS {
 

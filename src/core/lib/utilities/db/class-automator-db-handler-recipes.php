@@ -125,11 +125,8 @@ class Automator_DB_Handler_Recipes {
 	 * 5 = scheduled
 	 * 9 = completed, do nothing
 	 *
-	 * @param int $recipe_id
 	 * @param int $recipe_log_id
-	 * @param int $user_id
-	 * @param int $complete
-	 * @param int $run_number
+	 * @param int $completed
 	 */
 	public function mark_complete( int $recipe_log_id, int $completed ) {
 		$this->update(

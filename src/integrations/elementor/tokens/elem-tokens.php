@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Elem_Tokens
  *
@@ -10,12 +9,6 @@ namespace Uncanny_Automator;
  */
 class Elem_Tokens {
 
-	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'ELEM';
 
 	public function __construct() {
 
@@ -24,28 +17,6 @@ class Elem_Tokens {
 
 		// Save latest form entry in trigger meta for tokens.
 		add_action( 'automator_save_elementor_form_entry', [ $this, 'elem_save_form_entry' ], 10, 3 );
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related
-	 * plugin is active
-	 *
-	 * @param bool   $status status of plugin.
-	 * @param string $plugin plugin code.
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( defined( 'ELEMENTOR_PRO_PATH' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
 	}
 
 	/**

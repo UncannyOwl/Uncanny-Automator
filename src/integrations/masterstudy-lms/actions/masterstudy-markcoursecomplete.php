@@ -78,7 +78,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function mark_course_complete( $user_id, $action_data, $recipe_id ) {
+	public function mark_course_complete( $user_id, $action_data, $recipe_id, $args ) {
 
 
 		$course_id = $action_data['meta'][ $this->action_meta ];

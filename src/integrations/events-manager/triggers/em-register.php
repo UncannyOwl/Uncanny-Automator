@@ -41,14 +41,14 @@ class EM_REGISTER {
 			/* translators: Logged-in trigger - The Events Manager */
 			'sentence'            => sprintf( __( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Manager */
-			'select_option_name'  => __( 'A user registers for {{an event}}', 'uncanny-automator-pro' ),
+			'select_option_name'  => __( 'A user registers for {{an event}}', 'uncanny-automator' ),
 			'action'              => 'em_booking_set_status',
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'user_registered_for_event' ),
 			'options'             => [
 				Automator()->helpers->recipe->events_manager->options->all_em_events(
-					__( 'Event', 'uncanny-automator-pro' ),
+					__( 'Event', 'uncanny-automator' ),
 					$this->trigger_meta,
 					[ 'any_option' => true ] ),
 			],

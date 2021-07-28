@@ -56,16 +56,22 @@ class LD_TOPICDONE {
 			'LDCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
 			'LDCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 			'LDCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+			'LDCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+			'LDCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 		];
 		$lesson_relevant_tokens = [
 			'LDLESSON'     => esc_attr__( 'Lesson title', 'uncanny-automator' ),
 			'LDLESSON_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 			'LDLESSON_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+			'LDLESSON_THUMB_ID'  => esc_attr__( 'Lesson featured image ID', 'uncanny-automator' ),
+			'LDLESSON_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
 		];
 		$relevant_tokens        = [
 			$this->trigger_meta          => esc_attr__( 'Topic title', 'uncanny-automator' ),
 			$this->trigger_meta . '_ID'  => esc_attr__( 'Topic ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_URL' => esc_attr__( 'Topic URL', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_ID'  => esc_attr__( 'Topic featured image ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Topic featured image URL', 'uncanny-automator' ),
 		];
 		$trigger                = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),

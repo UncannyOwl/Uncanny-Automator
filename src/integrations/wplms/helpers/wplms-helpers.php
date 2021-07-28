@@ -89,6 +89,8 @@ class Wplms_Helpers {
 				$option_code          => esc_attr__( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Quiz URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Quiz featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Quiz featured image URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -137,6 +139,8 @@ class Wplms_Helpers {
 				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 			],
 		];
 
@@ -184,6 +188,8 @@ class Wplms_Helpers {
 				$option_code          => esc_attr__( 'Unit title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Unit ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Unit URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Unit featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Unit featured image URL', 'uncanny-automator' ),
 			],
 		];
 

@@ -2,78 +2,35 @@
 
 namespace Uncanny_Automator;
 
+
 /**
- * Class Add_Wp_Integration
- *
+ * Class Add_Popup_Maker_Integration
  * @package Uncanny_Automator
  */
 class Add_Popup_Maker_Integration {
 
-	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'PM';
+	use Recipe\Integrations;
 
 	/**
-	 * Add_Integration constructor.
+	 * Add_Popup_Maker_Integration constructor.
 	 */
 	public function __construct() {
-
 		// filter Popup Maker triggers.
 		add_filter( 'pum_registered_triggers', array( $this, 'uap_add_new_popup_trigger' ) );
-
 		add_filter( 'pum_popup_is_loadable', array( $this, 'maybe_disable_pop_up' ), 10, 2 );
+
+		$this->setup();
 	}
 
 	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
 	 *
-	 * @param bool $status Plugin's active status.
-	 * @param string $plugin Plugin's code.
-	 *
-	 * @return bool
 	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'Popup_Maker' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
-	}
-
-
-	/**
-	 * Set the directories that the auto loader will run in
-	 *
-	 * @param string $directory Path to include.
-	 *
-	 * @return array
-	 */
-	public function add_integration_directory_func( $directory ) {
-
-		$directory[] = dirname( __FILE__ ) . '/actions';
-		$directory[] = dirname( __FILE__ ) . '/triggers';
-		$directory[] = dirname( __FILE__ ) . '/tokens';
-
-		return $directory;
-	}
-
-	/**
-	 * Register the integration by pushing it into the global automator object
-	 */
-	public function add_integration_func() {
-
-		Automator()->register->integration( self::$integration, array(
-			'name'     => 'Popup Maker',
-			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/popup-maker-icon.svg' ),
-		) );
+	protected function setup() {
+		$this->set_integration( 'PM' );
+		$this->set_name( 'Popup Maker' );
+		$this->set_icon( 'popup-maker-icon.svg' );
+		$this->set_icon_path( __DIR__ . '/img/' );
+		$this->set_plugin_file_path( 'popup-maker/popup-maker.php' );
 	}
 
 	/**

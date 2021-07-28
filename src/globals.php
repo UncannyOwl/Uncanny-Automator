@@ -13,7 +13,7 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VIEWS_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VIEWS_VERSION', '3.0' );
+	define( 'AUTOMATOR_DATABASE_VIEWS_VERSION', '3.1' );
 }
 
 if ( ! defined( 'AUTOMATOR_REST_API_END_POINT' ) ) {
@@ -70,4 +70,22 @@ if ( ! defined( 'UA_DEBUG_LOGS_DIR' ) ) {
 	 * Automator ABSPATH for automator logs directory
 	 */
 	define( 'UA_DEBUG_LOGS_DIR', trailingslashit( WP_CONTENT_DIR ) . 'uploads' . DIRECTORY_SEPARATOR . 'automator-logs' . DIRECTORY_SEPARATOR );
+}
+
+if ( ! defined( 'AUTOMATOR_FREE_STORE_URL' ) ) {
+	// URL of store powering the plugin
+	define( 'AUTOMATOR_FREE_STORE_URL', 'https://www.automatorplugin.com/' );
+}
+
+if ( ! defined( 'AUTOMATOR_API_URL' ) ) {
+	define( 'AUTOMATOR_API_URL', 'https://api.automatorplugin.com/' );
+}
+
+if ( ! defined( 'AUTOMATOR_FREE_ITEM_NAME' ) ) {
+	// Store download name/title
+	define( 'AUTOMATOR_FREE_ITEM_NAME', 'Uncanny Automator Free Account' );
+}
+
+if ( ! defined( 'AUTOMATOR_FREE_STORE_CONNECT_URL' ) ) {
+	define( 'AUTOMATOR_FREE_STORE_CONNECT_URL', 'sign-up/' );
 }

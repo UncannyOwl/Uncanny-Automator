@@ -56,6 +56,8 @@ class Mec_Event_Tokens {
 			$this->token . 'EVENT_LOCATION',
 			$this->token . 'EVENT_ORGANIZER',
 			$this->token . 'EVENT_COST',
+			$this->token . 'EVENT_THUMB_ID',
+			$this->token . 'EVENT_THUMB_URL',
 		);
 
 		if ( $pieces ) {
@@ -137,6 +139,12 @@ class Mec_Event_Tokens {
 				case $this->token . 'EVENT_COST':
 					$value = $helper->get_event_cost();
 					break;
+				case $this->token . 'EVENT_THUMB_ID':
+					$value = $helper->get_event_featured_image_id();
+					break;	
+				case $this->token . 'EVENT_THUMB_URL':
+					$value = $helper->get_event_featured_image_url();
+					break;	
 			}
 		}
 

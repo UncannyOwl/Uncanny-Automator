@@ -63,7 +63,7 @@ class FCRM_TAG_TO_USER {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function tag_to_user( $user_id, $action_data, $recipe_id ) {
+	public function tag_to_user( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

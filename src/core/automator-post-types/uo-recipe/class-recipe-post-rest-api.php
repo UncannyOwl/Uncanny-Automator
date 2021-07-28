@@ -170,6 +170,16 @@ class Recipe_Post_Rest_Api {
 				'permission_callback' => array( $this, 'save_settings_permissions' ),
 			)
 		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/set_recipe_requires_user/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'set_recipe_requires_user' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 	}
 
 	/**
@@ -340,7 +350,7 @@ class Recipe_Post_Rest_Api {
 			 * @since 3.0
 			 * @package Uncanny_Automator
 			 */
-			do_action( 'automator_trigger_created', $post_id, $item_code, $request );
+			do_action( 'automator_recipe_trigger_created', $post_id, $item_code, $request );
 		}
 
 		if ( 'create_action' === $action ) {
@@ -356,7 +366,7 @@ class Recipe_Post_Rest_Api {
 			 * @since 3.0
 			 * @package Uncanny_Automator
 			 */
-			do_action( 'automator_action_created', $post_id, $item_code, $request );
+			do_action( 'automator_recipe_action_created', $post_id, $item_code, $request );
 		}
 
 		if ( 'create_closure' === $action ) {
@@ -372,7 +382,7 @@ class Recipe_Post_Rest_Api {
 			 * @since 3.0
 			 * @package Uncanny_Automator
 			 */
-			do_action( 'automator_closure_created', $post_id, $item_code, $request );
+			do_action( 'automator_recipe_closure_created', $post_id, $item_code, $request );
 		}
 
 		if ( $request->has_param( 'default_meta' ) ) {
@@ -383,6 +393,7 @@ class Recipe_Post_Rest_Api {
 				}
 			}
 		}
+		Automator()->cache->clear_automator_recipe_part_cache( $recipe->ID );
 
 		$return                   = array();
 		$return['success']        = true;
@@ -410,6 +421,7 @@ class Recipe_Post_Rest_Api {
 			$delete_posts = wp_delete_post( absint( $request->get_param( 'ID' ) ), true );
 
 			if ( $delete_posts ) {
+				Automator()->cache->clear_automator_recipe_part_cache( $request->get_param( 'ID' ) );
 
 				$return['message']        = 'Deleted!';
 				$return['success']        = true;
@@ -472,6 +484,7 @@ class Recipe_Post_Rest_Api {
 				} else {
 					update_post_meta( $item_id, $meta_key, $meta_value );
 				}
+				Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
 				$return['message']        = 'Option updated!';
 				$return['success']        = true;
@@ -619,6 +632,7 @@ class Recipe_Post_Rest_Api {
 					$return['message'] = 'Updated!';
 					$return['success'] = true;
 					$return['action']  = 'updated_post';
+					Automator()->cache->clear_automator_recipe_part_cache( $post_id );
 
 					$return['recipes_object'] = Automator()->get_recipes_data( true );
 
@@ -695,6 +709,7 @@ class Recipe_Post_Rest_Api {
 				$updated = wp_update_post( $post );
 
 				if ( $updated ) {
+					Automator()->cache->clear_automator_recipe_part_cache( $post_id );
 					$return['message']        = 'Updated!';
 					$return['success']        = true;
 					$return['action']         = 'updated_post';
@@ -736,6 +751,7 @@ class Recipe_Post_Rest_Api {
 			}
 
 			update_post_meta( $post_id, 'recipe_completions_allowed', $recipe_completions_allowed );
+			Automator()->cache->clear_automator_recipe_part_cache( $post_id );
 
 			$return['message']        = 'Updated!';
 			$return['success']        = true;
@@ -774,6 +790,8 @@ class Recipe_Post_Rest_Api {
 			}
 
 			update_post_meta( $post_id, 'recipe_max_completions_allowed', $recipe_completions_allowed );
+
+			Automator()->cache->clear_automator_recipe_part_cache( $post_id );
 
 			$return['message'] = 'Updated!';
 			$return['success'] = true;
@@ -831,6 +849,7 @@ class Recipe_Post_Rest_Api {
 					wp_update_term_count_now( $term_ids, $taxonomy );
 				}
 			}
+			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
 			$return['message'] = 'Updated!';
 			$return['success'] = true;
@@ -861,6 +880,8 @@ class Recipe_Post_Rest_Api {
 			//get recipe post id or action post id
 			update_post_meta( $recipe_id, 'source', $source );
 			update_post_meta( $recipe_id, 'fields', $fields );
+
+			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
 			$return['message']        = 'Updated!';
 			$return['success']        = true;
@@ -991,4 +1012,35 @@ class Recipe_Post_Rest_Api {
 		return new WP_REST_Response( $return, 200 );
 	}
 
+	/**
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function set_recipe_requires_user( WP_REST_Request $request ) {
+
+		// Make sure we have a post ID and a post status
+		if ( $request->has_param( 'recipePostID' ) && $request->has_param( 'requiresUser' ) ) {
+
+			$recipe_id     = absint( $request->get_param( 'recipePostID' ) );
+			$requires_user = $request->get_param( 'requiresUser' );
+			update_post_meta( $recipe_id, 'recipe_requires_user', $requires_user );
+
+			$return['message'] = 'Updated!';
+			$return['success'] = true;
+			$return['action']  = 'updated_recipe';
+			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
+
+			$return['recipes_object'] = Automator()->get_recipes_data( true );
+
+			return new WP_REST_Response( $return, 200 );
+
+		}
+
+		$return['message'] = 'Failed to update';
+		$return['success'] = false;
+		$return['action']  = 'show_error';
+
+		return new WP_REST_Response( $return, 200 );
+	}
 }

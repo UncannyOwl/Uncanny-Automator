@@ -105,6 +105,8 @@ class Learndash_Helpers {
 				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 			],
 			'custom_value_description' => _x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 		];
@@ -151,6 +153,8 @@ class Learndash_Helpers {
 				$option_code          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Lesson featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
 			],
 			'custom_value_description' => _x( 'Lesson ID', 'LearnDash', 'uncanny-automator' ),
 		];
@@ -197,6 +201,8 @@ class Learndash_Helpers {
 				$option_code          => esc_attr__( 'Topic title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Topic ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Topic URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Topic featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Topic featured image URL', 'uncanny-automator' ),
 			],
 			'custom_value_description' => _x( 'Topic ID', 'LearnDash', 'uncanny-automator' ),
 		];
@@ -246,6 +252,8 @@ class Learndash_Helpers {
 				$option_code          => esc_attr__( 'Group title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Group ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Group URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Group featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Group featured image URL', 'uncanny-automator' ),
 			],
 			'custom_value_description' => _x( 'Group ID', 'LearnDash', 'uncanny-automator' ),
 		];
@@ -292,6 +300,8 @@ class Learndash_Helpers {
 				$option_code          => esc_attr__( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Quiz URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Quiz featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Quiz featured image URL', 'uncanny-automator' ),
 			],
 			'custom_value_description' => _x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
 		];

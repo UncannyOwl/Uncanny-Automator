@@ -183,7 +183,7 @@ class Automator_Recipe_Process_Complete {
 			$action_data['recipe_log_id'] = $recipe_log_id;
 			$action_integration           = Automator()->get->action_integration_from_action_code( $action_code );
 
-			if ( 1 === Automator()->plugin_status->get( $action_integration ) && 'publish' === $action_status ) {
+			if ( 1 === Automator()->plugin_status->get( $action_integration ) && 'publish' === (string) $action_status ) {
 				// The plugin for this action is active .. execute
 				$action_execution_function = Automator()->get->action_execution_function_from_action_code( $action_code );
 
@@ -228,16 +228,12 @@ class Automator_Recipe_Process_Complete {
 
 					call_user_func_array( $action_execution_function, $action );
 				}
+			} elseif ( 'draft' === (string) $action_status ) {
+				continue;
 			} elseif ( 0 === Automator()->plugin_status->get( $action_integration ) ) {
 				$error_message                       = Automator()->error_message->get( 'action-not-active' );
 				$action_data['complete_with_errors'] = true;
 				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
-			} elseif ( 0 === Automator()->plugin_status->get( $action_integration ) ) {
-				$error_message                       = Automator()->error_message->get( 'plugin-not-active' );
-				$action_data['complete_with_errors'] = true;
-				$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
-			} elseif ( 1 === Automator()->plugin_status->get( $action_integration ) && 'draft' === $action_status ) {
-				continue;
 			} else {
 				$error_message                       = esc_attr__( 'Unknown error occurred.', 'uncanny-automator' );
 				$action_data['complete_with_errors'] = true;

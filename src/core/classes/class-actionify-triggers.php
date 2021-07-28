@@ -29,7 +29,13 @@ class Actionify_Triggers {
 	 * @return void
 	 * @since 1.0.0
 	 */
-	public function actionify_triggers() {
+	public function actionify_triggers( $force = false ) {
+		$actionified_triggers = Automator()->cache->get( 'automator_actionified_triggers' );
+		if ( ! empty( $actionified_triggers ) && false === $force ) {
+			$this->cached_actionify_triggers( $actionified_triggers );
+
+			return;
+		}
 		// Get all published recipes
 		$recipes = Automator()->get_recipes_data( true );
 		if ( empty( $recipes ) ) {
@@ -62,7 +68,7 @@ class Actionify_Triggers {
 				$trigger_code = $trigger['meta']['code'];
 
 				// We only want to add one action for each trigger
-				if ( in_array( $trigger_code, $actionified_triggers, true ) ) {
+				if ( array_key_exists( $trigger_code, $actionified_triggers ) ) {
 					continue;
 				}
 
@@ -84,9 +90,39 @@ class Actionify_Triggers {
 				} else {
 					add_action( $trigger_actions, $trigger_validation_function, $trigger_priority, $trigger_accepted_args );
 				}
-
-				$actionified_triggers[] = $trigger_code;
+				$actionified_triggers[ $trigger_code ] = array(
+					'trigger_actions'             => $trigger_actions,
+					'trigger_validation_function' => $trigger_validation_function,
+					'trigger_priority'            => $trigger_priority,
+					'trigger_accepted_args'       => $trigger_accepted_args,
+				);
+				Automator()->cache->set( 'automator_actionified_triggers', $actionified_triggers, 'automator', Automator()->cache->long_expires );
 			}
 		}
+	}
+
+	/**
+	 * @param $actionified_triggers
+	 */
+	public function cached_actionify_triggers( $actionified_triggers ) {
+		if ( empty( $actionified_triggers ) ) {
+			$this->actionify_triggers( true );
+		}
+
+		foreach ( $actionified_triggers as $data ) {
+			$trigger_actions             = $data['trigger_actions'];
+			$trigger_validation_function = $data['trigger_validation_function'];
+			$trigger_priority            = $data['trigger_priority'];
+			$trigger_accepted_args       = $data['trigger_accepted_args'];
+
+			if ( is_array( $trigger_actions ) ) {
+				foreach ( $trigger_actions as $trigger_action ) {
+					add_action( $trigger_action, $trigger_validation_function, $trigger_priority, $trigger_accepted_args );
+				}
+			} else {
+				add_action( $trigger_actions, $trigger_validation_function, $trigger_priority, $trigger_accepted_args );
+			}
+		}
+
 	}
 }

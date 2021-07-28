@@ -5,9 +5,9 @@
  * Short description
  *
  * @class   Integrations
- * @package Uncanny_Automator
- * @version 3.0
  * @since   3.0
+ * @version 3.0
+ * @package Uncanny_Automator
  * @author  Saad S.
  */
 
@@ -46,6 +46,44 @@ trait Integrations {
 	 * @var
 	 */
 	protected $external_integration;
+
+	/**
+	 * @var bool
+	 */
+	protected $connected = null;
+
+	/**
+	 * @var string
+	 */
+	protected $settings_url = '';
+
+	/**
+	 * @return string
+	 */
+	public function get_settings_url() {
+		return $this->settings_url;
+	}
+
+	/**
+	 * @param string $settings_url
+	 */
+	public function set_settings_url( string $settings_url ) {
+		$this->settings_url = $settings_url;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_connected() {
+		return $this->connected;
+	}
+
+	/**
+	 * @param mixed $connected
+	 */
+	public function set_connected( $connected ) {
+		$this->connected = $connected;
+	}
 
 	/**
 	 * @return mixed
@@ -161,8 +199,10 @@ trait Integrations {
 		Automator()->register->integration(
 			$this->integration,
 			array(
-				'name'     => $this->get_name(),
-				'icon_svg' => $this->get_icon_url(),
+				'name'         => $this->get_name(),
+				'icon_svg'     => $this->get_icon_url(),
+				'connected'    => $this->get_connected(),
+				'settings_url' => $this->get_settings_url(),
 			)
 		);
 	}

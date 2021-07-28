@@ -26,13 +26,11 @@ if ( ! empty( $tab ) ) {
 					do_action_deprecated( 'uap_before_automator_settings', array(), '3.0', 'automator_before_settings' );
 					do_action( 'automator_before_settings' );
 					if ( $tab ) {
-						if ( isset( $tab->is_pro ) && $tab->is_pro && ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) ) {
-							if ( isset( $tab->settings_field ) ) {
-								settings_fields( $tab->settings_field );
-							}
-							if ( isset( $tab->wp_nonce_field ) ) {
-								wp_nonce_field( $tab->wp_nonce_field, $tab->wp_nonce_field );
-							}
+						if ( isset( $tab->settings_field ) ) {
+							settings_fields( $tab->settings_field );
+						}
+						if ( isset( $tab->wp_nonce_field ) ) {
+							wp_nonce_field( $tab->wp_nonce_field, $tab->wp_nonce_field );
 						}
 						?>
 						<div class="uo-settings-content-top">

@@ -124,7 +124,7 @@ class UOG_CREATEUNCANNYGROUP {
 		$create_group = false;
 		$user         = get_user_by( 'ID', $user_id );
 
-		if ( is_wp_error( $user ) ) {
+		if ( is_wp_error( $user ) || false === $user ) {
 			return;
 		}
 

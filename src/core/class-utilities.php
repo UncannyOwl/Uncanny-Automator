@@ -269,7 +269,10 @@ class Utilities {
 	 *
 	 */
 	public static function automator_enqueue_global_assets() {
-		wp_enqueue_style( 'uap-admin-global', Utilities::automator_get_css( 'admin/global.css' ), array(), Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-admin-global-fonts', 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap', array(), Utilities::automator_get_version() );
+
+		wp_enqueue_style( 'uap-admin-global', Utilities::automator_get_css( 'admin/global.css' ), array( 'uap-admin-global-fonts' ), Utilities::automator_get_version() );
+		
 		wp_enqueue_script( 'uap-admin-global', Utilities::automator_get_js( 'admin/global.js' ), array( 'jquery' ), Utilities::automator_get_version(), true );
 
 		wp_localize_script( 'uap-admin-global', 'UncannyAutomatorGlobal', [

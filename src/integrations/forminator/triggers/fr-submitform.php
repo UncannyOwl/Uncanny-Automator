@@ -42,7 +42,7 @@ class FR_SUBMITFORM {
 			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Forminator */
 			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
-			'action'              => 'forminator_custom_form_after_save_entry',
+			'action'              => 'forminator_custom_form_submit_before_set_fields',
 			'priority'            => 100,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'fr_submit_form' ),
@@ -63,33 +63,49 @@ class FR_SUBMITFORM {
 	 * @param array $response response array.
 	 * @param       $method
 	 */
-	public function fr_submit_form( $form_id, $response, $method ) {
-		if ( true === $response['success'] ) {
+	public function fr_submit_form( $entry, $form_id, $field_data_array ) {
 
+		$user_id = get_current_user_id();
+		if ( empty( $user_id ) ) {
+			return;
+		}
 
-			$user_id = get_current_user_id();
-			if ( empty( $user_id ) ) {
-				return;
-			}
+		$args = [
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => intval( $form_id ),
+			'user_id' => intval( $user_id ),
+		];
 
-			$args = [
-				'code'    => $this->trigger_code,
-				'meta'    => $this->trigger_meta,
-				'post_id' => intval( $form_id ),
-				'user_id' => intval( $user_id ),
-			];
+		$args = Automator()->maybe_add_trigger_entry( $args, false );
 
-			$args = Automator()->maybe_add_trigger_entry( $args, false );
+		//Adding an action to save contact form submission in trigger meta
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		do_action( 'automator_save_forminator_form_entry', $form_id, $recipes, $args );
 
-			//Adding an action to save contact form submission in trigger meta
-			$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-			do_action( 'automator_save_forminator_form_entry', $form_id, $recipes, $args );
-
-			if ( $args ) {
-				foreach ( $args as $result ) {
-					if ( true === $result['result'] ) {
-						Automator()->maybe_trigger_complete( $result['args'] );
+		if ( $args ) {
+			foreach ( $args as $result ) {
+				if ( true === $result['result'] ) {
+					if( ! empty( $field_data_array ) ) {
+						$trigger_id     = (int) $result['args']['trigger_id'];
+						$user_id        = (int) $user_id;
+						$trigger_log_id = (int) $result['args']['get_trigger_id'];
+						$run_number     = (int) $result['args']['run_number'];
+						$meta_key       = (string) $this->trigger_meta;
+						foreach( $field_data_array as $entry_field ) {
+							$field_meta = "{$trigger_id}:{$meta_key}:{$form_id}|".$entry_field['name'];
+							$insert = [
+								'user_id'        => $user_id,
+								'trigger_id'     => $trigger_id,
+								'trigger_log_id' => $trigger_log_id,
+								'meta_key'       => $field_meta,
+								'meta_value'     => maybe_serialize( $entry_field['value'] ),
+								'run_number'     => $run_number,
+							];
+							Automator()->insert_trigger_meta( $insert );
+						}
 					}
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

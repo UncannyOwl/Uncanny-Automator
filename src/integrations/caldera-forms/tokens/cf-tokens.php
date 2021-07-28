@@ -11,44 +11,11 @@ use Caldera_Forms_Forms;
  */
 class Cf_Tokens {
 
-
-	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'CF';
-
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
 		add_filter( 'automator_maybe_trigger_cf_cfforms_tokens', [ $this, 'cf_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_cf_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_cf_anoncfforms_tokens', [ $this, 'cf_possible_tokens' ], 20, 2 );
 
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related
-	 * plugin is active
-	 *
-	 * @param $status
-	 * @param $code
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $code ) {
-
-		if ( self::$integration === $code ) {
-			if ( class_exists( 'Caldera_Forms' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
 	}
 
 	/**
@@ -59,7 +26,6 @@ class Cf_Tokens {
 	 */
 	public function cf_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id             = $args['value'];
-		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 		$fields              = array();
 		if ( empty( $form_id ) ) {
@@ -94,16 +60,20 @@ class Cf_Tokens {
 	 * @param $pieces
 	 * @param $recipe_id
 	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
 	 *
 	 * @return mixed
 	 */
 	public function parse_cf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'CFFORMS', $pieces ) ) {
-				if ( isset( $pieces[2] ) && 'CFFORMS' === $pieces[2] ) {
+			if ( in_array( 'CFFORMS', $pieces ) || in_array( 'ANONCFFORMS', $pieces ) ) {
+				// Check if Form name token is used
+				if ( isset( $pieces[2] ) && ( 'CFFORMS' === $pieces[2] || 'ANONCFFORMS' === $pieces[2] ) ) {
 					foreach ( $trigger_data as $t_d ) {
-						if ( isset( $t_d['meta']['CFFORMS'] ) ) {
-							$form = Caldera_Forms_Forms::get_form( $t_d['meta']['CFFORMS'] );
+						if ( isset( $t_d['meta']['CFFORMS'] ) || isset( $t_d['meta']['ANONCFFORMS'] ) ) {
+							$form_id = isset( $t_d['meta']['ANONCFFORMS'] ) ? $t_d['meta']['ANONCFFORMS'] : $t_d['meta']['CFFORMS'];
+							$form    = Caldera_Forms_Forms::get_form( $form_id );
 
 							return $form['name'];
 						}

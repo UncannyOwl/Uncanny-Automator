@@ -4,7 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPP_POLLSUBMIT
- * @package Uncanny_Automator_Pro
+ * @package Uncanny_Automator
  */
 class WPP_POLLSUBMIT {
 
@@ -40,13 +40,13 @@ class WPP_POLLSUBMIT {
 
 		$questions_options = array();
 
-		$questions_options[0] = __( 'Any poll', 'uncanny-automator-pro' );
+		$questions_options[0] = __( 'Any poll', 'uncanny-automator' );
 
 		foreach ( $questions as $question ) {
 			$title = $question->pollq_question;
 
 			if ( empty( $title ) ) {
-				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator-pro' ), $question->pollq_id );
+				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $question->pollq_id );
 			}
 
 			$questions_options[ $question->pollq_id ] = $title;

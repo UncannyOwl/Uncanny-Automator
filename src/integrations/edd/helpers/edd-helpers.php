@@ -89,6 +89,8 @@ class Edd_Helpers {
 				$option_code          => esc_attr__( 'Download title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Download ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Download URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Download featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Download featured image URL', 'uncanny-automator' ),
 			],
 		];
 

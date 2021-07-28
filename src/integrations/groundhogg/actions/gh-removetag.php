@@ -75,7 +75,7 @@ class GH_REMOVETAG {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function remove_tag_to_user( $user_id, $action_data, $recipe_id ) {
+	public function remove_tag_to_user( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

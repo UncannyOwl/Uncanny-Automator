@@ -9,6 +9,9 @@ namespace Uncanny_Automator;
  */
 class Automator_Recipe_Process {
 
+	/**
+	 * @var
+	 */
 	public static $instance;
 	/**
 	 * @var Automator_Recipe_Process_User
@@ -26,6 +29,9 @@ class Automator_Recipe_Process {
 		$this->user = new Automator_Recipe_Process_User();
 	}
 
+	/**
+	 * @return Automator_Recipe_Process
+	 */
 	public static function get_instance() {
 
 		if ( null === self::$instance ) {

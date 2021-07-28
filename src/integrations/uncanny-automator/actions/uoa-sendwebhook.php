@@ -37,12 +37,12 @@ class UOA_SENDWEBHOOK {
 	public function define_action() {
 
 
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/send-data-to-a-webhook' ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
 			/* translators: Action - Uncanny Automator */
 			'sentence'           => sprintf( esc_attr__( 'Send data to {{a webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - Uncanny Automator */

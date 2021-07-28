@@ -189,6 +189,7 @@ class Logs_List_Table extends WP_List_Table {
 	private function get_recipe_query() {
 		global $wpdb;
 		$view_exists = Automator_DB::is_view_exists();
+
 		if ( ! $view_exists ) {
 			$search_conditions = ' 1=1 AND r.completed != -1 ';
 		} else {
@@ -209,6 +210,15 @@ class Logs_List_Table extends WP_List_Table {
 				$search_conditions .= " AND automator_recipe_id = '" . absint( automator_filter_input( 'recipe_id' ) ) . "' ";
 			}
 		}
+
+		if ( automator_filter_has_var( 'recipe_log_id' ) && '' !== automator_filter_input( 'recipe_log_id' ) ) {
+			if ( $view_exists ) {
+				$search_conditions .= " AND recipe_log_id = '" . absint( automator_filter_input( 'recipe_log_id' ) ) . "' ";
+			} else {
+				$search_conditions .= " AND r.ID = '" . absint( automator_filter_input( 'recipe_log_id' ) ) . "' ";
+			}
+		}
+
 		if ( $view_exists ) {
 			return "SELECT * FROM {$wpdb->prefix}uap_recipe_logs_view WHERE $search_conditions";
 		} else {
@@ -242,6 +252,14 @@ class Logs_List_Table extends WP_List_Table {
 				$search_conditions .= " AND automator_recipe_id = '" . absint( automator_filter_input( 'recipe_id' ) ) . "' ";
 			} else {
 				$search_conditions .= " AND t.automator_recipe_id = '" . absint( automator_filter_input( 'recipe_id' ) ) . "' ";
+			}
+		}
+
+		if ( automator_filter_has_var( 'recipe_log_id' ) && '' !== automator_filter_input( 'recipe_log_id' ) ) {
+			if ( $view_exists ) {
+				$search_conditions .= " AND recipe_log_id = '" . absint( automator_filter_input( 'recipe_log_id' ) ) . "' ";
+			} else {
+				$search_conditions .= " AND t.automator_recipe_log_id = '" . absint( automator_filter_input( 'recipe_log_id' ) ) . "' ";
 			}
 		}
 
@@ -295,6 +313,14 @@ class Logs_List_Table extends WP_List_Table {
 			}
 		}
 
+		if ( automator_filter_has_var( 'recipe_log_id' ) && '' !== automator_filter_input( 'recipe_log_id' ) ) {
+			if ( $view_exists ) {
+				$search_conditions .= " AND recipe_log_id = '" . absint( automator_filter_input( 'recipe_log_id' ) ) . "' ";
+			} else {
+				$search_conditions .= " AND a.automator_recipe_log_id = '" . absint( automator_filter_input( 'recipe_log_id' ) ) . "' ";
+			}
+		}
+
 		if ( automator_filter_has_var( 'run_number' ) && '' !== automator_filter_input( 'run_number' ) ) {
 			if ( $view_exists ) {
 				$search_conditions .= " AND recipe_run_number = '" . absint( automator_filter_input( 'run_number' ) ) . "' ";
@@ -302,6 +328,7 @@ class Logs_List_Table extends WP_List_Table {
 				$search_conditions .= " AND r.run_number = '" . absint( automator_filter_input( 'run_number' ) ) . "' ";
 			}
 		}
+
 		if ( automator_filter_has_var( 'user_id' ) && '' !== automator_filter_input( 'user_id' ) ) {
 			if ( $view_exists ) {
 				$search_conditions .= " AND user_id = '" . absint( automator_filter_input( 'user_id' ) ) . "' ";
@@ -326,9 +353,9 @@ class Logs_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	private function format_recipe_data( $recipes ) {
-
 		$data = array();
 		foreach ( $recipes as $recipe ) {
+			$recipe_log_id = $recipe->recipe_log_id;
 
 			if ( isset( $recipe->automator_recipe_id ) ) {
 				$recipe_link = get_edit_post_link( absint( $recipe->automator_recipe_id ) );
@@ -345,7 +372,7 @@ class Logs_List_Table extends WP_List_Table {
 			}
 			if ( empty( $recipe->display_name ) ) {
 				/* translators: User type */
-				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
+				$user_name = esc_attr_x( 'N/A', 'User', 'uncanny-automator' );
 			} else {
 				$user_link = get_edit_user_link( absint( $recipe->user_id ) );
 				$user_name = '<a href="' . $user_link . '">' . $recipe->display_name . '</a> <br>' . $recipe->user_email;
@@ -381,14 +408,14 @@ class Logs_List_Table extends WP_List_Table {
 				}
 			}
 			$run_number_log = 'anonymous' === $current_type ? 1 : $run_number;
-			$url = sprintf(
-				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&user_id=%d&minimal=1',
+			$url            = sprintf(
+				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&minimal=1',
 				admin_url( 'edit.php' ),
 				'uo-recipe',
 				'uncanny-automator-recipe-activity-details',
 				$recipe_id,
 				$run_number_log,
-				absint( $recipe->user_id )
+				absint( $recipe_log_id )
 			);
 
 			$actions = array(
@@ -421,6 +448,7 @@ class Logs_List_Table extends WP_List_Table {
 
 		$data = array();
 		foreach ( $recipes as $recipe ) {
+			$recipe_log_id = $recipe->recipe_log_id;
 
 			if ( isset( $recipe->automator_recipe_id ) ) {
 				$recipe_link = get_edit_post_link( absint( $recipe->automator_recipe_id ) );
@@ -437,7 +465,7 @@ class Logs_List_Table extends WP_List_Table {
 			}
 			if ( empty( $recipe->display_name ) ) {
 				/* translators: User type */
-				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
+				$user_name = esc_attr_x( 'N/A', 'User', 'uncanny-automator' );
 			} else {
 				$user_link = get_edit_user_link( absint( $recipe->user_id ) );
 				$user_name = '<a href="' . $user_link . '">' . $recipe->display_name . '</a> <br>' . $recipe->user_email;
@@ -475,7 +503,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 1 : $run_number;
 
-			$url     = sprintf( '%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&user_id=%d&minimal=1', admin_url( 'edit.php' ), 'uo-recipe', 'uncanny-automator-recipe-activity-details', $recipe_id, $run_number_log, absint( $recipe->user_id ) );
+			$url     = sprintf( '%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&minimal=1', admin_url( 'edit.php' ), 'uo-recipe', 'uncanny-automator-recipe-activity-details', $recipe_id, $run_number_log, absint( $recipe_log_id ) );
 			$actions = array(
 				'view'  => sprintf( '<a href="%s" data-lity>%s</a>', $url, esc_attr__( 'Details', 'uncanny-automator' ) ),
 				'rerun' => sprintf( '<a href="%s" onclick="return confirm(\"%s\")">%s</a>', '#', esc_attr__( 'Are you sure you want to re-run this recipe?', 'uncanny-automator' ), esc_attr__( 'Re-run', 'uncanny-automator' ) ),
@@ -542,7 +570,7 @@ class Logs_List_Table extends WP_List_Table {
 			$recipe_date_completed = ( 1 === absint( $trigger->recipe_completed ) || 2 === absint( $trigger->recipe_completed ) || 9 === absint( $trigger->recipe_completed ) ) ? $trigger->recipe_date_time : '';
 			if ( is_null( $trigger->user_id ) ) {
 				/* translators: User type */
-				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
+				$user_name = esc_attr_x( 'N/A', 'User', 'uncanny-automator' );
 			} else {
 				$user_link       = get_edit_user_link( absint( $trigger->user_id ) );
 				$user_email_link = sprintf(
@@ -737,7 +765,7 @@ class Logs_List_Table extends WP_List_Table {
 				$user_name       = '<a href="' . $user_link . '">' . $action->display_name . '</a><br>' . $user_email_link;
 			} else {
 				/* translators: User type */
-				$user_name = esc_attr_x( 'Anonymous', 'User', 'uncanny-automator' );
+				$user_name = esc_attr_x( 'N/A', 'User', 'uncanny-automator' );
 			}
 			$data[] = array(
 				'action_title'      => $action_name,

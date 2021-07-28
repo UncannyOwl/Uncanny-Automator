@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 use GFCommon;
 use GFFormsModel;
 use RGFormsModel;
@@ -14,40 +13,12 @@ use RGFormsModel;
 class Gf_Tokens {
 
 	/**
-	 * Integration code
-	 * @var string
+	 * Gf_Tokens constructor.
 	 */
-	public static $integration = 'GF';
-
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
-		//add_filter( 'automator_maybe_trigger_gf_tokens', [ $this, 'gf_general_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_trigger_gf_gfforms_tokens', [ $this, 'gf_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'gf_token' ], 20, 6 );
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
-	 *
-	 * @param $status
-	 * @param $plugin
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'GFFormsModel' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
+		add_filter( 'automator_maybe_trigger_gf_anongfforms_tokens', [ $this, 'gf_possible_tokens' ], 20, 2 );
 	}
 
 	/**
@@ -56,7 +27,7 @@ class Gf_Tokens {
 	 *
 	 * @return array
 	 */
-	function gf_possible_tokens( $tokens = array(), $args = array() ) {
+	public function gf_possible_tokens( $tokens = array(), $args = array() ) {
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 
@@ -69,36 +40,23 @@ class Gf_Tokens {
 		}
 
 		if ( empty( $form_ids ) ) {
-			$forms = GFFormsModel::get_forms();
-			foreach ( $forms as $form ) {
-				$form_ids[] = $form->id;
-			}
+			return $tokens;
 		}
 
-		if ( ! empty( $form_ids ) ) {
-			foreach ( $form_ids as $form_id ) {
-				$fields = array();
-				$meta   = RGFormsModel::get_form_meta( $form_id );
-				if ( is_array( $meta['fields'] ) ) {
-					foreach ( $meta['fields'] as $field ) {
-						if ( isset( $field['inputs'] ) && is_array( $field['inputs'] ) ) {
-							foreach ( $field['inputs'] as $input ) {
-								$input_id    = $input['id'];
-								$input_title = GFCommon::get_label( $field, $input['id'] );
-								$input_type  = $this->get_field_type( $input );
-								$token_id    = "$form_id|$input_id";
-								$fields[]    = [
-									'tokenId'         => $token_id,
-									'tokenName'       => $input_title,
-									'tokenType'       => $input_type,
-									'tokenIdentifier' => $trigger_meta,
-								];
-							}
-						} elseif ( ! rgar( $field, 'displayOnly' ) ) {
-							$input_id    = $field['id'];
-							$input_title = GFCommon::get_label( $field );
+		if ( empty( $form_ids ) ) {
+			return array();
+		}
+		foreach ( $form_ids as $form_id ) {
+			$fields = array();
+			$meta   = RGFormsModel::get_form_meta( $form_id );
+			if ( is_array( $meta['fields'] ) ) {
+				foreach ( $meta['fields'] as $field ) {
+					if ( isset( $field['inputs'] ) && is_array( $field['inputs'] ) ) {
+						foreach ( $field['inputs'] as $input ) {
+							$input_id    = $input['id'];
+							$input_title = GFCommon::get_label( $field, $input['id'] );
+							$input_type  = $this->get_field_type( $input );
 							$token_id    = "$form_id|$input_id";
-							$input_type  = $this->get_field_type( $field );
 							$fields[]    = [
 								'tokenId'         => $token_id,
 								'tokenName'       => $input_title,
@@ -106,11 +64,23 @@ class Gf_Tokens {
 								'tokenIdentifier' => $trigger_meta,
 							];
 						}
+					} elseif ( ! rgar( $field, 'displayOnly' ) ) {
+						$input_id    = $field['id'];
+						$input_title = GFCommon::get_label( $field );
+						$token_id    = "$form_id|$input_id";
+						$input_type  = $this->get_field_type( $field );
+						$fields[]    = [
+							'tokenId'         => $token_id,
+							'tokenName'       => $input_title,
+							'tokenType'       => $input_type,
+							'tokenIdentifier' => $trigger_meta,
+						];
 					}
 				}
-				$tokens = array_merge( $tokens, $fields );
 			}
+			$tokens = array_merge( $tokens, $fields );
 		}
+
 
 		return $tokens;
 	}

@@ -3,6 +3,7 @@
 namespace Uncanny_Automator;
 
 use Uncanny_Automator\Recipe_Post_Rest_Api as Recipe;
+use WP_REST_Request;
 
 /**
  * Class Populate_From_Query.
@@ -35,33 +36,28 @@ class Populate_From_Query {
 	/**
 	 * Figure out if this post needs to be populated from the query params.
 	 *
-	 * @param $post_ID
-	 * @param \WP_Post
+	 * @param $post_id
+	 * @param \WP_Post $post
 	 * @param $update
+	 *
+	 * @return bool
 	 */
-	public static function maybe_populate( $post_ID, $post, $update ) {
+	public static function maybe_populate( $post_id, $post, $update ) {
 
 		self::init( $post );
 
 		try {
-
 			if ( self::is_new_recipe() ) {
-
 				if ( self::query_args_exist( array( 'action', 'nonce' ) ) ) {
-
 					if ( self::is_authorized() ) {
-
 						return self::populate();
-
 					}
 				}
 
 				return false;
 			}
 		} catch ( \Throwable $e ) {
-
-			error_log( 'Uncanny_Automator\Populate_From_Query: ' . $e->getMessage() );
-
+			Automator()->error->add_error( 555, 'Uncanny_Automator\Populate_From_Query: ' . $e->getMessage() );
 		}
 
 	}
@@ -69,13 +65,12 @@ class Populate_From_Query {
 	/**
 	 * Initialize class, populate the variables from the hook call.
 	 *
-	 * @param \WP_Post
+	 * @param \WP_Post $post
 	 */
 	public static function init( $post ) {
 
 		self::$recipe = new Recipe();
 		self::$post   = $post;
-
 	}
 
 	/**
@@ -88,13 +83,11 @@ class Populate_From_Query {
 		if ( 'uo-recipe' !== self::$post->post_type ) {
 
 			return false;
-
 		}
 
 		if ( 'auto-draft' !== self::$post->post_status ) {
 
 			return false;
-
 		}
 
 		return true;
@@ -114,7 +107,6 @@ class Populate_From_Query {
 			if ( ! isset( $_GET[ $arg ] ) ) {
 
 				return false;
-
 			}
 		}
 
@@ -125,24 +117,27 @@ class Populate_From_Query {
 	 * Checks the nonce and capabilities.
 	 *
 	 * @return bool
+	 * @throws Automator_Exception
 	 */
 	private static function is_authorized() {
 
 		if ( ! wp_verify_nonce( $_GET['nonce'], self::$nonce ) ) {
 
-			throw new \Exception( 'Invalid nonce.' );
+			throw new Automator_Exception( 'Invalid nonce.' );
 
 		}
+		// To validate nonce
+		$_SERVER['HTTP_X_WP_NONCE'] = wp_create_nonce( 'wp_rest' );
 
 		// Use the save_setting_permissings function from the recipe class to check required capabilities.
 		return self::$recipe->save_settings_permissions();
-
 	}
 
 	/**
 	 * Populates the recipe.
 	 *
 	 * @return bool
+	 * @throws Automator_Exception
 	 */
 	protected static function populate() {
 
@@ -155,26 +150,24 @@ class Populate_From_Query {
 
 				} else {
 
-					throw new \Exception( 'Missing item code.' );
+					throw new Automator_Exception( 'Missing item code.' );
 
 				}
 
 				break;
 
 			default:
-				throw new \Exception( 'Unknown action.' );
+				throw new Automator_Exception( 'Unknown action.' );
 
 				break;
 		}
-
-		return true;
-
 	}
 
 	/**
 	 * Creates a trigger.
 	 *
 	 * @return bool
+	 * @throws Automator_Exception
 	 */
 	public static function add_new_trigger() {
 
@@ -199,60 +192,65 @@ class Populate_From_Query {
 		do_action( 'automator_trigger_populated_from_query', self::$post, $trigger_id, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		return true;
-
 	}
 
 	/**
 	 * Changes recipe type to logged-in.
 	 *
 	 * @return bool
+	 * @throws Automator_Exception
 	 */
 	public static function change_recipe_type() {
+		$request = new WP_REST_Request( 'POST', '', '' );
+		$request->set_body_params(
+			array(
+				'post_ID'     => self::$post->ID,
+				'recipe_type' => 'user',
+			)
+		);
 
-		$_POST['post_ID']     = self::$post->ID;
-		$_POST['recipe_type'] = 'user';
-
-		$recipe_type_changed = self::$recipe->change_post_recipe_type( '' );
+		$recipe_type_changed = self::$recipe->change_post_recipe_type( $request );
 
 		if ( ! $recipe_type_changed->data['success'] ) {
-
-			throw new \Exception( "Recipe type couldn't be changed." );
-
+			throw new Automator_Exception( "Recipe type couldn't be changed." );
 		}
 
 		return true;
-
 	}
 
 	/**
 	 * Populates the POST array with the data and adds a trigger.
 	 *
 	 * @return string trigger ID
+	 * @throws Automator_Exception
 	 */
 	public static function add_trigger() {
+		$request = new WP_REST_Request( 'POST', '', '' );
+		$request->set_body_params(
+			array(
+				'recipePostID' => self::$post->ID,
+				'action'       => $_GET['action'],
+				'item_code'    => $_GET['item_code'],
+			)
+		);
 
-		$_POST['recipePostID'] = self::$post->ID;
-		$_POST['action']       = $_GET['action'];
-		$_POST['item_code']    = $_GET['item_code'];
-
-		$trigger_added = self::$recipe->add( '' );
+		$trigger_added = self::$recipe->add( $request );
 
 		if ( ! $trigger_added->data['success'] ) {
-
-			throw new \Exception( "Trigger couldn't be added." );
-
+			throw new Automator_Exception( "Trigger couldn't be added." );
 		} else {
 
 			return $trigger_added->data['post_ID'];
-
 		}
-
 	}
 
 	/**
 	 * Decides if trigger needs a value.
 	 *
+	 * @param $trigger_id
+	 *
 	 * @return bool
+	 * @throws Automator_Exception
 	 */
 	public static function maybe_update_trigger( $trigger_id ) {
 
@@ -267,55 +265,62 @@ class Populate_From_Query {
 		}
 
 		return true;
-
 	}
 
 	/**
 	 * Populates the POST array with the data and adds trigger value.
 	 *
+	 * @param $trigger_id
+	 *
 	 * @return bool
+	 * @throws Automator_Exception
 	 */
 	public static function add_trigger_value( $trigger_id ) {
-
-		$_POST['itemId']      = $trigger_id;
-		$_POST['optionCode']  = $_GET['optionCode'];
-		$_POST['optionValue'] = array(
-			$_POST['optionCode']               => $_GET['optionValue'],
-			$_POST['optionCode'] . '_readable' => urldecode( $_GET['optionValue_readable'] ),
+		$option_code = $_GET['optionCode'];
+		$request     = new WP_REST_Request( 'POST', '', '' );
+		$request->set_body_params(
+			array(
+				'itemId'      => $trigger_id,
+				'optionCode'  => $option_code,
+				'optionValue' => array(
+					$option_code               => $_GET['optionValue'],
+					$option_code . '_readable' => urldecode( $_GET['optionValue_readable'] ),
+				),
+			)
 		);
 
-		$trigger_value_added = self::$recipe->update( '' );
+		$trigger_value_added = self::$recipe->update( $request );
 
 		if ( ! $trigger_value_added->data['success'] ) {
-
-			throw new \Exception( "Trigger value couldn't be set." );
-
+			throw new Automator_Exception( "Trigger value couldn't be set." );
 		}
 
 		return true;
-
 	}
 
 	/**
 	 * Populates the POST array and publishes the trigger.
 	 *
+	 * @param $trigger_id
+	 *
 	 * @return bool
+	 * @throws Automator_Exception
 	 */
 	public static function publish_trigger( $trigger_id ) {
+		$request = new WP_REST_Request( 'POST', '', '' );
+		$request->set_body_params(
+			array(
+				'post_ID'     => $trigger_id,
+				'post_status' => 'publish',
+			)
+		);
 
-		$_POST['post_ID']     = $trigger_id;
-		$_POST['post_status'] = 'publish';
-
-		$trigger_status_changed = self::$recipe->change_post_status( '' );
+		$trigger_status_changed = self::$recipe->change_post_status( $request );
 
 		if ( ! $trigger_status_changed->data['success'] ) {
-
-			throw new \Exception( "Trigger couldn't be published." );
-
+			throw new Automator_Exception( "Trigger couldn't be published." );
 		}
 
 		return true;
-
 	}
-
 }

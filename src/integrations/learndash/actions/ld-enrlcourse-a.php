@@ -61,7 +61,7 @@ class LD_ENRLCOURSE_A {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function enroll_in_course( $user_id, $action_data, $recipe_id ) {
+	public function enroll_in_course( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

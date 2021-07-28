@@ -42,6 +42,7 @@ class INTEGROMAT_SENDWEBHOOK {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/working-with-integromat-actions' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
 			'sentence'           => sprintf(  esc_attr__( 'Send data to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name' =>  esc_attr__( 'Send data to Integromat {{webhook}}', 'uncanny-automator' ),
 			'priority'           => 10,

@@ -65,6 +65,7 @@ class PM_POPUPSHOW {
 			'support_link'       => Automator()->get_author_support_link($this->action_code,'knowledge-base/working-with-popup-maker-actions'),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
 			/* translators: Logged-in trigger - Popup Maker */
 			'sentence'           => sprintf( esc_attr__( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Logged-in trigger - Popup Maker */
@@ -87,7 +88,7 @@ class PM_POPUPSHOW {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function display_pop_up( $user_id, $action_data, $recipe_id ) {
+	public function display_pop_up( $user_id, $action_data, $recipe_id, $args ) {
 
 
 

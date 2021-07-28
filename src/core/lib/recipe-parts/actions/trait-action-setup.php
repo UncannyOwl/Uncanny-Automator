@@ -74,6 +74,11 @@ trait Action_Setup {
 	protected $options_group;
 
 	/**
+	 * @var
+	 */
+	protected $requires_user = true;
+
+	/**
 	 * @return mixed
 	 */
 	public function get_integration() {
@@ -228,6 +233,21 @@ trait Action_Setup {
 	}
 
 	/**
+	 * @return mixed
+	 */
+	public function get_requires_user() {
+		return $this->requires_user;
+	}
+
+	/**
+	 * @param mixed $requires_user
+	 */
+	public function set_requires_user( $requires_user ) {
+		$this->requires_user = $requires_user;
+	}
+
+
+	/**
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	protected function register_action() {
@@ -238,6 +258,7 @@ trait Action_Setup {
 			'integration'        => $this->get_integration(),
 			'is_pro'             => $this->is_is_pro(),
 			'is_deprecated'      => $this->is_is_deprecated(),
+			'requires_user'      => $this->get_requires_user(),
 			'code'               => $this->get_action_code(),
 			'sentence'           => $this->get_sentence(),
 			'select_option_name' => $this->get_readable_sentence(),

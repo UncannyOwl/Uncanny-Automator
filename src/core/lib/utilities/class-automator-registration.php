@@ -278,7 +278,15 @@ class Automator_Registration {
 			'automator_register_action'
 		);
 		$uap_action = apply_filters( 'automator_register_action', $uap_action, $integration_code, $integration );
-
+		/**
+		 * Add default requires_user to all actions
+		 *
+		 * @since 3.1
+		 * @version 3.1
+		 */
+		if ( ! isset( $uap_action['requires_user'] ) ) {
+			$uap_action['requires_user'] = true;
+		}
 		/**
 		 * Use this hook to modify the integration_code before it is error checked and registered
 		 */

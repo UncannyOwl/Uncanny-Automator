@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 use WPForms_Form_Handler;
 
 /**
@@ -12,41 +11,15 @@ use WPForms_Form_Handler;
 class Wpf_Tokens {
 
 	/**
-	 * Integration code
-	 * @var string
+	 * Wpf_Tokens constructor.
 	 */
-	public static $integration = 'WPF';
-
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
 
+		add_filter( 'automator_maybe_trigger_wpf_anonwpfforms_tokens', [ $this, 'wpf_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_trigger_wpf_wpfforms_tokens', [ $this, 'wpf_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'wpf_token' ], 20, 6 );
 		add_filter( 'automator_save_wp_form', [ $this, 'wpf_form_save_entry' ], 20, 4 );
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
-	 *
-	 * @param $status
-	 * @param $plugin
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'WPForms' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
+		add_action( 'automator_save_anon_wp_form', [ $this, 'wpf_form_save_entry' ], 20, 4 );
 	}
 
 	/**
@@ -56,12 +29,10 @@ class Wpf_Tokens {
 	 * @return array
 	 */
 	function wpf_possible_tokens( $tokens = array(), $args = array() ) {
-		$form_id             = $args['value'];
-		$trigger_integration = $args['integration'];
-		$trigger_meta        = $args['meta'];
-
-		$form_ids = array();
-		$wpforms  = new WPForms_Form_Handler();
+		$form_id      = $args['value'];
+		$trigger_meta = $args['meta'];
+		$form_ids     = array();
+		$wpforms      = new WPForms_Form_Handler();
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 			$form = $wpforms->get( $form_id );
 			if ( $form ) {
@@ -70,12 +41,7 @@ class Wpf_Tokens {
 		}
 
 		if ( empty( $form_ids ) ) {
-			$forms = $wpforms->get( '', array( 'orderby' => 'title' ) );
-			if ( ! empty( $forms ) ) {
-				foreach ( $forms as $form ) {
-					$form_ids[] = $form->ID;
-				}
-			}
+			return $tokens;
 		}
 
 		if ( ! empty( $form_ids ) ) {
@@ -116,11 +82,20 @@ class Wpf_Tokens {
 	public function wpf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		$piece = 'WPFFORMS';
 		if ( $pieces ) {
-			if ( in_array( $piece, $pieces ) ) {
+			if ( in_array( $piece, $pieces ) || in_array( 'ANONWPFFORMS', $pieces ) ) {
 				global $wpdb;
-				$trigger_id     = $pieces[0];
-				$trigger_meta   = $pieces[1];
-				$field          = $pieces[2];
+				$trigger_id   = $pieces[0];
+				$trigger_meta = $pieces[1];
+				$field        = $pieces[2];
+				if ( $piece === $field || 'ANONWPFFORMS' === $field ) {
+					if ( $trigger_data ) {
+						foreach ( $trigger_data as $trigger ) {
+							if ( array_key_exists( $field . '_readable', $trigger['meta'] ) ) {
+								return $trigger['meta'][ $field . '_readable' ];
+							}
+						}
+					}
+				}
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
 				$entry          = $wpdb->get_var( "SELECT meta_value
 													FROM {$wpdb->prefix}uap_trigger_log_meta
@@ -154,54 +129,56 @@ class Wpf_Tokens {
 	 * @param $recipes
 	 * @param $args
 	 *
-	 * @return null|string
+	 * @return void
 	 */
 	public function wpf_form_save_entry( $fields, $form_data, $recipes, $args ) {
-		if ( is_array( $args ) ) {
-			foreach ( $args as $trigger_result ) {
-				//$trigger_result = array_pop( $args );
-				if ( true === $trigger_result['result'] ) {
+		if ( ! is_array( $args ) ) {
+			return;
+		}
+		foreach ( $args as $trigger_result ) {
+			if ( true !== $trigger_result['result'] ) {
+				continue;
+			}
 
-					if ( $recipes ) {
-						foreach ( $recipes as $recipe ) {
-							$triggers = $recipe['triggers'];
-							if ( $triggers ) {
-								foreach ( $triggers as $trigger ) {
-									$trigger_id = $trigger['ID'];
-									if ( ! key_exists( 'WPFFORMS', $trigger['meta'] ) ) {
-										continue;
-									} else {
-										$trigger_args = $trigger_result['args'];
-										$meta_key     = $trigger_args['meta'];
-										$form_id      = $form_data['id'];
-										$data         = array();
-										if ( $fields ) {
-											foreach ( $fields as $field ) {
-												$field_id     = $field['id'];
-												$key          = "{$trigger_id}:{$meta_key}:{$form_id}|{$field_id}";
-												$data[ $key ] = $field['value'];
-											}
-										}
-
-										$user_id        = (int) $trigger_result['args']['user_id'];
-										$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
-										$run_number     = (int) $trigger_result['args']['run_number'];
-
-										$args = [
-											'user_id'        => $user_id,
-											'trigger_id'     => $trigger_id,
-											'meta_key'       => $meta_key,
-											'meta_value'     => maybe_serialize( $data ),
-											'run_number'     => $run_number, //get run number
-											'trigger_log_id' => $trigger_log_id,
-										];
-
-										Automator()->insert_trigger_meta( $args );
-									}
-								}
-							}
+			if ( ! $recipes ) {
+				continue;
+			}
+			foreach ( $recipes as $recipe ) {
+				$triggers = $recipe['triggers'];
+				if ( ! $triggers ) {
+					continue;
+				}
+				foreach ( $triggers as $trigger ) {
+					$trigger_id = $trigger['ID'];
+					if ( ! array_key_exists( 'WPFFORMS', $trigger['meta'] ) && ! array_key_exists( 'ANONWPFFORMS', $trigger['meta'] ) ) {
+						continue;
+					}
+					$trigger_args = $trigger_result['args'];
+					$meta_key     = $trigger_args['meta'];
+					$form_id      = $form_data['id'];
+					$data         = array();
+					if ( $fields ) {
+						foreach ( $fields as $field ) {
+							$field_id     = $field['id'];
+							$key          = "{$trigger_id}:{$meta_key}:{$form_id}|{$field_id}";
+							$data[ $key ] = $field['value'];
 						}
 					}
+
+					$user_id        = (int) $trigger_result['args']['user_id'];
+					$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
+					$run_number     = (int) $trigger_result['args']['run_number'];
+
+					$args = [
+						'user_id'        => $user_id,
+						'trigger_id'     => $trigger_id,
+						'meta_key'       => $meta_key,
+						'meta_value'     => maybe_serialize( $data ),
+						'run_number'     => $run_number, //get run number
+						'trigger_log_id' => $trigger_log_id,
+					];
+
+					Automator()->insert_trigger_meta( $args );
 				}
 			}
 		}

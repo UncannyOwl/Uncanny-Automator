@@ -83,6 +83,8 @@ class Woocommerce_Helpers {
 				$option_code          => esc_attr__( 'Product title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Product ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Product URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID' => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Product featured image URL', 'uncanny-automator' )
 			],
 		];
 
@@ -118,4 +120,44 @@ class Woocommerce_Helpers {
 		return apply_filters( 'uap_option_woocommerce_statuses', $option );
 	}
 
+	/**
+	 * @param string $code
+	 *
+	 * @return mixed|void
+	 */
+	public function get_woocommerce_trigger_conditions( $code = 'TRIGGERCOND' ) {
+		$options = array(
+			'option_code' => $code,
+			/* translators: Noun */
+			'label'       => esc_attr__( 'Trigger condition', 'uncanny-automator' ),
+			'input_type'  => 'select',
+			'required'    => true,
+			'options'     => $this->get_trigger_condition_labels(),
+		);
+
+		return apply_filters( 'uap_option_woocommerce_trigger_conditions', $options );
+	}
+
+	/**
+	 * Fetch labels for trigger conditions.
+	 *
+	 * @return array
+	 * @since 2.10
+	 *
+	 */
+	public function get_trigger_condition_labels() {
+		/**
+		 * Filters WooCommerce Integrations' trigger conditions.
+		 *
+		 * @param array $trigger_conditions An array of key-value pairs of action hook handle and human readable label.
+		 */
+		return apply_filters(
+			'uap_wc_trigger_conditions',
+			array(
+				'woocommerce_payment_complete'       => _x( 'pays for', 'WooCommerce', 'uncanny-automator' ),
+				'woocommerce_order_status_completed' => _x( 'completes', 'WooCommerce', 'uncanny-automator' ),
+				'woocommerce_thankyou'               => _x( 'lands on a thank you page for', 'WooCommerce', 'uncanny-automator' ),
+			)
+		);
+	}
 }

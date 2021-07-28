@@ -97,6 +97,8 @@ trait Action_Helpers_Email {
 		$charset    = sanitize_text_field( $data['charset'] );
 		$subject    = sanitize_text_field( stripslashes( $data['subject'] ) );
 		$body       = wp_filter_post_kses( stripslashes( $data['body'] ) );
+		// Resetting to array
+		$this->to = array();
 
 		$this->set_to( $to_email );
 		$this->set_from( $from_email );
