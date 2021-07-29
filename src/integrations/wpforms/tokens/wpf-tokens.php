@@ -41,7 +41,12 @@ class Wpf_Tokens {
 		}
 
 		if ( empty( $form_ids ) ) {
-			return $tokens;
+			$forms = $wpforms->get( '', array( 'orderby' => 'title' ) );
+			if ( ! empty( $forms ) ) {
+				foreach ( $forms as $form ) {
+					$form_ids[] = $form->ID;
+				}
+			}
 		}
 
 		if ( ! empty( $form_ids ) ) {

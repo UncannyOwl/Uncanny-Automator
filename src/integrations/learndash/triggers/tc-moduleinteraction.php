@@ -169,8 +169,8 @@ class TC_MODULEINTERACTION {
 						'user_id'          => $user_id,
 						'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 						'trigger_to_match' => $matched_recipe_id['trigger_id'],
-						'ignore_post_id'   => true,
-						'is_signed_in'     => true,
+						'ignore_post_id'   => TRUE,
+						'is_signed_in'     => TRUE,
 						'post_id'          => $module_id,
 					];
 

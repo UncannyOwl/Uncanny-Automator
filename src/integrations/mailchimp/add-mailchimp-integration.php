@@ -101,12 +101,6 @@ class Add_Mailchimp_Integration {
 	public function add_integration_func() {
 
 		global $uncanny_automator;
-		// check if Consumer Key and Consumer Secret available
-		$gtw_options = get_option( '_uncannyowl_mailchimp_settings', array() );
-		$connected   = false;
-		if ( isset( $gtw_options['access_token'] ) && ! empty( $gtw_options['access_token'] ) ) {
-			$connected = true;
-		}
 
 		// check if Consumer Key and Consumer Secret available
 		$gtw_options = get_option( '_uncannyowl_mailchimp_settings', array() );

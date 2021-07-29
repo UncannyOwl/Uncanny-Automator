@@ -294,7 +294,7 @@ class Twitter_Helpers {
 	/**
 	 * Displays the twitter handle of the user in settings description..
 	 *
-	 * @return string The twitter handle html..
+	 * @return string The twitter handle html.
 	 */
 	public function get_user_name() {
 

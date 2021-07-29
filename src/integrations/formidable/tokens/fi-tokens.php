@@ -43,7 +43,20 @@ class Fi_Tokens {
 		}
 
 		if ( empty( $form_ids ) ) {
-			return $tokens;
+			$s_query                = [
+				[
+					'or'               => 1,
+					'parent_form_id'   => null,
+					'parent_form_id <' => 1,
+				],
+			];
+			$s_query['is_template'] = 0;
+			$s_query['status !']    = 'trash';
+
+			$forms = FrmForm::getAll( $s_query, '', ' 0, 999' );
+			foreach ( $forms as $form ) {
+				$form_ids[] = $form->id;
+			}
 		}
 
 		if ( ! empty( $form_ids ) ) {

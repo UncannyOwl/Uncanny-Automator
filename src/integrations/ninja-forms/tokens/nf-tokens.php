@@ -35,9 +35,11 @@ class Nf_Tokens {
 			}
 		}
 
-		// if no form exist then return
 		if ( empty( $form_ids ) ) {
-			return $tokens;
+			$forms = Ninja_Forms()->form()->get_forms();
+			foreach ( $forms as $form ) {
+				$form_ids[] = $form->get_id();
+			}
 		}
 
 		if ( ! empty( $form_ids ) ) {

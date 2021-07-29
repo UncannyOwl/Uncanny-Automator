@@ -39,7 +39,7 @@ class UOA_SENDWEBHOOK {
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/send-data-to-a-webhook' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			'requires_user'      => false,
