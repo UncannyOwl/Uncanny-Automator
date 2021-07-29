@@ -124,16 +124,15 @@ trait Integrations {
 	 * Pass plugin path, i.e., uncanny-automator/uncanny-automator.php to check if plugin is active. By default it
 	 * returns true for an integration.
 	 *
-	 * @param      $plugin
-	 * @param null $fake_argument
-	 *
 	 * @return mixed|bool
 	 */
-	public function plugin_active( $plugin = '', $fake_argument = null ) {
-		$plugin = apply_filters( 'automator_modify_plugin_path', $plugin );
-		include_once ABSPATH . 'wp-admin/includes/plugin.php';
+	public function plugin_active() {
+		$plugin = apply_filters( 'automator_modify_plugin_path', $this->get_plugin_file_path() );
 
-		return ! empty( $this->get_plugin_file_path() ) ? is_plugin_active( $this->get_plugin_file_path() ) : $plugin;
+		include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		$active = ! empty( $plugin ) ? is_plugin_active( $plugin ) : false;
+
+		return apply_filters( 'automator_is_integration_plugin_active', $active, $plugin, $this->get_plugin_file_path() );
 	}
 
 	/**

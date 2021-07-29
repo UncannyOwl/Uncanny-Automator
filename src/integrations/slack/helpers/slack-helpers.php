@@ -108,7 +108,7 @@ class Slack_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function get_slack_channels( $label = null, $option_code, $args = array() ) {
+	public function get_slack_channels( $label = null, $option_code = 'SLACKCHANNEL', $args = array() ) {
 
 		global $uncanny_automator;
 

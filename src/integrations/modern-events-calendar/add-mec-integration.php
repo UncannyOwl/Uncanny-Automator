@@ -30,17 +30,25 @@ class Add_Mec_Integration {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return defined( 'MEC_ABSPATH' );
+	}
+
+
+	/**
 	 * Display some admin notices.
 	 *
 	 * @return void.
 	 */
 	public function display_admin_notices() {
 		?>
-        <div class="notice notice-warning is-dismissible">
-            <p>
+		<div class="notice notice-warning is-dismissible">
+			<p>
 				<?php esc_html_e( 'A newer version Uncanny Automator Pro is required to use Uncanny Automator with Modern Events Calendar. Please update Uncanny Automator Pro to the latest version.', 'uncanny-automator' ); ?>
-            </p>
-        </div>
+			</p>
+		</div>
 		<?php
 	}
 

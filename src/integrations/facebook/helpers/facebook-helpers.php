@@ -206,6 +206,12 @@ class Facebook_Helpers {
 			return $message;
 		}
 
+		$error_status = filter_input( INPUT_GET, 'status', FILTER_DEFAULT );
+
+		if ( 'error' === $error_status ) {
+			$message .= '<div class="error error-message">' . __( 'An error was encountered while authenticating. Permission is denied.', 'uncanny-automator' ) . '</div>';
+		}
+
 		if ( $this->is_user_connected() ) : ?>
 
 			<?php $user = $this->get_user_connected(); ?>
@@ -269,11 +275,20 @@ class Facebook_Helpers {
 			),
 		);
 
-		// Updates the option value to settings.
-		update_option( self::OPTION_KEY, $settings );
+		$error_status = filter_input( INPUT_GET, 'status', FILTER_DEFAULT );
 
-		// Delete any settings left.
-		delete_option( '_uncannyowl_facebook_pages_settings' );
+		if ( 'error' === $error_status ) {
+			wp_safe_redirect( $this->get_settings_page_uri() . '&status=error' );
+			exit;
+		}
+
+		// Only update the record when there is a valid user.
+		if ( isset( $settings['user']['id'] ) && isset( $settings['user']['token'] ) ) {
+			// Updates the option value to settings.
+			update_option( self::OPTION_KEY, $settings );
+			// Delete any settings left.
+			delete_option( '_uncannyowl_facebook_pages_settings' );
+		}
 
 		wp_safe_redirect( $this->get_settings_page_uri() );
 

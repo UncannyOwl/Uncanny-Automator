@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
 Tested up to: 5.8
 Requires PHP: 7.2
-Stable tag: 3.1
+Stable tag: 3.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -175,6 +175,25 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 3.1.1 [2021-07-29] =
+
+**Added:**
+
+* Filter `automator_is_integration_plugin_active` to override the active/inactive status of a plugin
+
+**Updated:**
+
+* Filter `automator_modify_plugin_path` to override the installed path of a plugin
+* Improved PHP 8.x compatibility
+* Improved UX when the process of authorizing Uncanny Automator for Facebook is cancelled before completion
+* Automator icon now appears on admin bar on front end
+
+**Fixed:**
+
+* PHP error on some sites when Modern Events Calendar Lite is activated
+* PHP error when Wishlist Member LTD version is installed
+* Automator dropdown menu no longer appears in the admin bar for non-logged in users when BuddyBoss Platform is installed
+
 = 3.1 [2021-07-28] =
 
 **Integrations Added**
@@ -204,6 +223,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Ability to connect a free Uncanny Automator account for free credits #401 #441
 * Twitter: Added image support #305
 * Object caching to improve performance #273
+* `automator_disable_object_cache` filter to disable object cache #273
 * Ability to view info of connected account on settings tab for Twitter, Slack, MailChimp, Google Sheets, Zoom Meetings and Twilio #434
 * API communication #526
 * Trigger tokens for featured image ID and URL in WordPress Core, MemberPress, WooCommerce, LearnDash, Easy Digital Downloads, The Events Calendar, Events Manager, Modern Events Calendar, LifterLMS, MasterStudy LMS, Tutor LMS, Upsell Plugin and WPLMS integrations #343
@@ -445,23 +465,11 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Upgrade Notice ==
 
-= 3.1 =
+= 3.1.1 =
 Uncanny Automator 3.1 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
 
-= 3.0.5 =
-Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
-
-= 3.0.4 =
-Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
-
-= 3.0.3 =
-Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
-
-= 3.0.2 =
-Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
-
-= 3.0.1 =
-Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
+= 3.1 =
+Uncanny Automator 3.1 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
 
 = 3.0 =
 Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

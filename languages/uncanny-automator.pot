@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.1\n"
+"Project-Id-Version: Uncanny Automator 3.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-07-28T16:10:52+00:00\n"
+"POT-Creation-Date: 2021-07-29T16:08:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -104,7 +104,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:207
 #: src/core/admin/class-admin-menu.php:378
 #: src/core/includes/recipe-logs-view.php:13
-#: src/core/lib/helpers/class-automator-cache-handler.php:321
+#: src/core/lib/helpers/class-automator-cache-handler.php:332
 msgid "Recipe log"
 msgstr ""
 
@@ -388,7 +388,7 @@ msgid "%1$s recipe"
 msgstr ""
 
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:35
-#: src/core/lib/helpers/class-automator-cache-handler.php:303
+#: src/core/lib/helpers/class-automator-cache-handler.php:314
 #: src/core/views/filters.php:28
 #: src/core/views/filters.php:63
 #: src/core/views/filters.php:110
@@ -397,7 +397,7 @@ msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:37
-#: src/core/lib/helpers/class-automator-cache-handler.php:312
+#: src/core/lib/helpers/class-automator-cache-handler.php:323
 msgid "Add new recipe"
 msgstr ""
 
@@ -1495,12 +1495,12 @@ msgstr ""
 msgid "Automator cache flushed!"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:290
-#: src/core/lib/helpers/class-automator-cache-handler.php:294
+#: src/core/lib/helpers/class-automator-cache-handler.php:301
+#: src/core/lib/helpers/class-automator-cache-handler.php:305
 msgid "Automator"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:332
+#: src/core/lib/helpers/class-automator-cache-handler.php:343
 msgid "Flush cache"
 msgstr ""
 
@@ -5021,25 +5021,29 @@ msgstr ""
 msgid "Click the 'Connect Facebook Pages' to get started and click on the 'Disconnect Facebook Pages' to disconnect your Facebook account."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:233
-msgid "Linked pages"
+#: src/integrations/facebook/helpers/facebook-helpers.php:212
+msgid "An error was encountered while authenticating. Permission is denied."
 msgstr ""
 
 #: src/integrations/facebook/helpers/facebook-helpers.php:239
+msgid "Linked pages"
+msgstr ""
+
+#: src/integrations/facebook/helpers/facebook-helpers.php:245
 #: src/integrations/instagram/helpers/instagram-helpers.php:224
 msgid "Please wait while we fetch the Facebook Pages that you have linked to Automator App..."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:245
+#: src/integrations/facebook/helpers/facebook-helpers.php:251
 msgid "Click on the Change Account Settings button to re-connect your Facebook Account and Facebook Pages."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:247
-#: src/integrations/facebook/helpers/facebook-helpers.php:248
+#: src/integrations/facebook/helpers/facebook-helpers.php:253
+#: src/integrations/facebook/helpers/facebook-helpers.php:254
 msgid "Change Account Settings"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:300
+#: src/integrations/facebook/helpers/facebook-helpers.php:315
 msgid "Nonce Verification Failed"
 msgstr ""
 
@@ -6714,7 +6718,7 @@ msgstr ""
 msgid "A user purchases {{a recurring subscription product}}"
 msgstr ""
 
-#: src/integrations/modern-events-calendar/add-mec-integration.php:41
+#: src/integrations/modern-events-calendar/add-mec-integration.php:49
 msgid "A newer version Uncanny Automator Pro is required to use Uncanny Automator with Modern Events Calendar. Please update Uncanny Automator Pro to the latest version."
 msgstr ""
 
@@ -8151,7 +8155,7 @@ msgstr ""
 msgid "Any taxonomy term"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-tokens.php:41
+#: src/integrations/wp/tokens/wp-tokens.php:47
 msgid "Post's Author Name"
 msgstr ""
 

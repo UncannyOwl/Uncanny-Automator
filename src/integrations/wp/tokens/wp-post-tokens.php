@@ -50,7 +50,7 @@ class Wp_Post_Tokens {
 	 *
 	 * @return mixed
 	 */
-	public function parse_wp_post_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args ) {
+	public function parse_wp_post_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args = array() ) {
 		$tokens = [
 			'WPTAXONOMIES',
 			'SPECIFICTAXONOMY',

@@ -300,7 +300,7 @@ class Set_Up_Automator {
 				}
 				$i                = new $class();
 				$integration_code = ! empty( $is_using_trait ) ? $i->get_integration() : $class::$integration;
-				$active           = ! empty( $is_using_trait ) ? $i->plugin_active( null, null ) : $i->plugin_active( 0, $integration_code );
+				$active           = ! empty( $is_using_trait ) ? $i->plugin_active() : $i->plugin_active( 0, $integration_code );
 				$active           = apply_filters( 'automator_maybe_integration_active', $active, $integration_code );
 				if ( true !== $active ) {
 					unset( $i );

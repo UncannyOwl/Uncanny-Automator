@@ -8,7 +8,6 @@ namespace Uncanny_Automator;
  */
 class Wp_Tokens {
 
-
 	/**
 	 * Integration code
 	 * @var string
@@ -19,6 +18,13 @@ class Wp_Tokens {
 	 * Wp_Tokens constructor.
 	 */
 	public function __construct() {
+		// Hide error for Automator Pro until Pro 3.1 is released.
+		if ( PHP_MAJOR_VERSION >= 7 ) {
+			set_error_handler( function ( $errno, $errstr, $file ) {
+				return strpos( $file, '/tokens/wp-anon-tokens.php' ) !== false &&
+				       strpos( $errstr, 'Declaration of' ) === 0;
+			}, E_WARNING );
+		}
 
 		add_filter( 'automator_maybe_trigger_wp_wppostcomments_tokens', [ $this, 'wp_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_anonusercreated_token' ], 20, 6 );
@@ -66,7 +72,7 @@ class Wp_Tokens {
 	 *
 	 * @return mixed
 	 */
-	public function parse_anonusercreated_token( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args ) {
+	public function parse_anonusercreated_token( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args = array() ) {
 		$piece = 'WPPOSTCOMMENTS';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {
@@ -115,7 +121,7 @@ class Wp_Tokens {
 	 *
 	 * @return mixed
 	 */
-	public function parse_wproles_token( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args ) {
+	public function parse_wproles_token( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args = array() ) {
 		$piece = 'WPROLE';
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) ) {

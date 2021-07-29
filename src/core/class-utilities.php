@@ -63,6 +63,13 @@ class Utilities {
 	}
 
 	/**
+	 * Utilities constructor.
+	 */
+	public function __construct() {
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'automator_enqueue_frontend_assets' ) );
+	}
+
+	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
 	 * @param string $class_name The name of the class instance
@@ -71,9 +78,7 @@ class Utilities {
 	 * @since    1.0.0
 	 */
 	public static function automator_add_class_instance( string $class_name, $class_instance ) {
-
 		self::$class_instances[ $class_name ] = $class_instance;
-
 	}
 
 	/**
@@ -86,9 +91,7 @@ class Utilities {
 	 *
 	 */
 	public static function automator_add_helper_instance( $integration, $class_instance ) {
-
 		self::$helper_instances[ $integration ] = $class_instance;
-
 	}
 
 	/**
@@ -272,7 +275,8 @@ class Utilities {
 		wp_enqueue_style( 'uap-admin-global-fonts', 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap', array(), Utilities::automator_get_version() );
 
 		wp_enqueue_style( 'uap-admin-global', Utilities::automator_get_css( 'admin/global.css' ), array( 'uap-admin-global-fonts' ), Utilities::automator_get_version() );
-		
+		self::automator_enqueue_frontend_assets();
+
 		wp_enqueue_script( 'uap-admin-global', Utilities::automator_get_js( 'admin/global.js' ), array( 'jquery' ), Utilities::automator_get_version(), true );
 
 		wp_localize_script( 'uap-admin-global', 'UncannyAutomatorGlobal', [
@@ -281,6 +285,17 @@ class Utilities {
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			],
 		] );
+	}
+
+	/**
+	 * Enqueues frontend JS and CSS files
+	 *
+	 * @return string $asset_url
+	 * @since    3.1.1
+	 *
+	 */
+	public static function automator_enqueue_frontend_assets() {
+		wp_enqueue_style( 'uap-automator-css', Utilities::automator_get_css( 'automator.css' ), null, Utilities::automator_get_version() );
 	}
 
 	/**
