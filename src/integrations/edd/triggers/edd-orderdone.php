@@ -31,8 +31,6 @@ class EDD_ORDERDONE {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/easy-digital-downloads/' ),
@@ -54,8 +52,6 @@ class EDD_ORDERDONE {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -66,8 +62,6 @@ class EDD_ORDERDONE {
 	public function edd_complete_purchase( $payment_id ) {
 
 		//TODO:: Complete this function
-
-
 		$post_id = 0;
 		$user_id = get_current_user_id();
 		$args    = [

@@ -52,7 +52,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const PLUGIN_VERSION = '3.0.4';
+	const PLUGIN_VERSION = AUTOMATOR_PLUGIN_VERSION;
 
 	/**
 	 * The database version number
@@ -61,7 +61,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const DATABASE_VERSION = '3.0';
+	const DATABASE_VERSION = AUTOMATOR_DATABASE_VERSION;
 
 	/**
 	 * The database views version number
@@ -70,7 +70,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const DATABASE_VIEWS_VERSION = '3.0';
+	const DATABASE_VIEWS_VERSION = AUTOMATOR_DATABASE_VIEWS_VERSION;
 
 	/**
 	 * The full path and filename

@@ -27,4 +27,11 @@ class Add_Et_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'event-tickets/event-tickets.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'Tribe__Tickets__Main' );
+	}
 }

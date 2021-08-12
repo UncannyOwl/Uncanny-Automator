@@ -27,4 +27,11 @@ class Add_Uncannyceus_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'uncanny-continuing-education-credits/uncanny-continuing-education-credits.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return defined( 'CEU_PLUGIN_NAME' );
+	}
 }

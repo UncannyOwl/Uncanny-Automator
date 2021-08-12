@@ -26,4 +26,11 @@ class Add_Ld_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'sfwd-lms/sfwd_lms.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return defined( 'LEARNDASH_VERSION' );
+	}
 }

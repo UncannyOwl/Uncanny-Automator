@@ -124,7 +124,7 @@ class TC_MODULEINTERACTION {
 
 				$trigger_id = $trigger['ID'];
 
-				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && $verbs[ $recipe_id ][ $trigger_id ] === $verb ) {
+				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === (int) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && $verbs[ $recipe_id ][ $trigger_id ] === $verb ) {
 
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,

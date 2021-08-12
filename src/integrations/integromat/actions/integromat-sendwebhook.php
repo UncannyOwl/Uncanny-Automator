@@ -192,9 +192,9 @@ class INTEGROMAT_SENDWEBHOOK {
         <script>
 
             // Do when the user clicks on send test
-            function ($button, data, modules) {
+            function( $button, data, modules ){
                 // Add loading animation to the button
-                $button.addClass('uap-btn--loading uap-btn--disabled');
+                $button.addClass( 'uap-btn--loading uap-btn--disabled' );
 
                 // Get the data we're going to send to the AJAX request
                 let dataToBeSent = {
@@ -207,7 +207,7 @@ class INTEGROMAT_SENDWEBHOOK {
                 }
 
                 // Do AJAX
-                $.ajax({
+                jQuery.ajax({
                     method: 'POST',
                     dataType: 'json',
                     url: ajaxurl,
@@ -227,7 +227,7 @@ class INTEGROMAT_SENDWEBHOOK {
                             let markdown = new modules.Markdown(response.message);
 
                             // Create notice
-                            let $notice = $('<div/>', {
+                            let $notice = jQuery('<div/>', {
                                 'class': 'item-options__notice item-options__notice--' + noticeType
                             });
 
@@ -238,7 +238,7 @@ class INTEGROMAT_SENDWEBHOOK {
                             $notice.html($message);
 
                             // Get the notices container
-                            let $noticesContainer = $('.item[data-id="' + data.item.id + '"] .item-options__notices');
+                            let $noticesContainer = jQuery('.item[data-id="' + data.item.id + '"] .item-options__notices');
 
                             // Add notice
                             $noticesContainer.html($notice);

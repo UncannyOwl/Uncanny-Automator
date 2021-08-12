@@ -94,6 +94,7 @@ class Automator_Email_Helpers {
 		 * @param array $attachments
 		 * @param array $is_html
 		 */
+
 		$to          = $mail['to'];
 		$subject     = $mail['subject'];
 		$body        = $mail['body'];
@@ -116,8 +117,8 @@ class Automator_Email_Helpers {
 		}
 	
 		if ( ! $error->get_message( 'wp_mail_to' ) ) {
-			if ( is_array( $to ) ) {
-				foreach ( $to as $to_email ) {
+			if ( is_array( $sanitized_to ) ) {
+				foreach ( $sanitized_to as $to_email ) {
 					if ( empty ( $to_email  ) ) {
 						$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
 					}
@@ -126,10 +127,10 @@ class Automator_Email_Helpers {
 					}
 				}
 			} else {
-				if ( empty ( $to  ) ) {
+				if ( empty ( $sanitized_to  ) ) {
 					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
 				}
-				if ( ! is_email( $to ) ) {
+				if ( ! is_email( $sanitized_to ) ) {
 					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is invalid.', 'uncanny-automator' ), $mail );
 				}
 			}

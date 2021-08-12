@@ -8,7 +8,7 @@ namespace Uncanny_Automator;
  */
 class Add_Bo_Integration {
 
-	Use Recipe\Integrations;
+	use Recipe\Integrations;
 
 	/**
 	 * Add_Bo_Integration constructor.
@@ -28,4 +28,10 @@ class Add_Bo_Integration {
 		$this->set_plugin_file_path( 'badgeos/badgeos.php' );
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'BadgeOS' );
+	}
 }

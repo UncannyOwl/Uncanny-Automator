@@ -208,7 +208,7 @@ trait Action_Helpers_Email {
 	 * @param mixed $to
 	 */
 	public function set_to( $to ) {
-		$this->to[] = $to;
+		$this->to = explode( ',', $to );
 	}
 
 	/**

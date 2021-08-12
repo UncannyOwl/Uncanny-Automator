@@ -27,4 +27,11 @@ class Add_Nf_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'ninja-forms/ninja-forms.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'Ninja_Forms' );
+	}
 }

@@ -28,4 +28,10 @@ class Add_Affwp_Integration {
 		$this->set_plugin_file_path( 'affiliate-wp/affiliate-wp.php' );
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'Affiliate_WP' );
+	}
 }

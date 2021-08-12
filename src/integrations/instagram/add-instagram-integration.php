@@ -48,22 +48,21 @@ class Add_Instagram_Integration {
 	 */
 	public function add_integration_func() {
 
-		$facebook_options_user = get_option( '_uncannyowl_facebook_settings', array() );
-		$facebook_options_pages = get_option( '_uncannyowl_facebook_pages_settings', array() );
+		$ig_account_connected_count = $this->get_total_ig_accounts_connected();
 
-		if ( ! empty( $facebook_options_user ) && ! empty( $facebook_options_pages ) ) {
+		if ( $ig_account_connected_count >= 1 ) {
 			$this->connected = true;
 		}
 
-		// set up configuration.
+		// Set up integration configuration.
 		$integration_config = array(
-			'name'     => 'Instagram',
-			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/instagram-icon.svg' ),
-			'connected' => $this->connected, // 
+			'name'         => 'Instagram',
+			'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/instagram-icon.svg' ),
+			'connected'    => $this->connected,
 			'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=instagram_api',
 		);
 
-		// register integration into automator.
+		// Register the integration into Automator.
 		Automator()->register->integration( self::$integration, $integration_config );
 
 	}
@@ -77,7 +76,7 @@ class Add_Instagram_Integration {
 	 */
 	public function add_integration_directory_func( $directory ) {
 
-		$directory[]    = dirname( __FILE__ ) . '/helpers';
+		$directory[] = dirname( __FILE__ ) . '/helpers';
 		$directory[] = dirname( __FILE__ ) . '/actions';
 
 		return $directory;
@@ -94,6 +93,30 @@ class Add_Instagram_Integration {
 	 */
 	public function plugin_active( $status, $code ) {
 		return true;
+	}
+
+	/**
+	 * Check if there pages contains an instagram account.
+	 *
+	 * @return integer The total number of instagram account connected.
+	 */
+	public function get_total_ig_accounts_connected() {
+
+		$options_facebook_pages = get_option( '_uncannyowl_facebook_pages_settings', array() );
+
+		$total = 0;
+
+		foreach ( $options_facebook_pages as $page ) {
+
+			$ig_account = $page['ig_account']->data ?? '';
+
+			if ( ! empty( $ig_account ) ) {
+				$total ++;
+			}
+		}
+
+		return $total;
+
 	}
 
 }

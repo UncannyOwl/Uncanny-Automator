@@ -265,8 +265,8 @@ class Mailchimp_Helpers {
 
 				if ( $interests_response->statusCode === 200 ) {
 
-					if ( ! empty( $interests_response->interests ) ) {
-						foreach ( $interests_response->interests as $interest ) {
+					if ( ! empty( $interests_response->data->interests ) ) {
+						foreach ( $interests_response->data->interests as $interest ) {
 							$fields[] = array(
 								'value' => $interest->id,
 								'text'  => $category->title . ' > ' . $interest->name,

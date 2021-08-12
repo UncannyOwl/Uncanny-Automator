@@ -27,4 +27,11 @@ class Add_Wp_Foro_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'wpforo/wpforo.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return defined( 'WPFORO_VERSION' );
+	}
 }

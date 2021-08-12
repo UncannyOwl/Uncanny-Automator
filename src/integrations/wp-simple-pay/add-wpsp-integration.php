@@ -32,10 +32,6 @@ class Add_Wpsp_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		if ( defined( 'SIMPLE_PAY_VERSION' ) ) {
-			return true;
-		}
-
-		return false;
+		return defined( 'SIMPLE_PAY_VERSION' );
 	}
 }

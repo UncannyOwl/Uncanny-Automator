@@ -27,4 +27,11 @@ class Add_Wpjm_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'wp-job-manager/wp-job-manager.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'WP_Job_Manager' );
+	}
 }

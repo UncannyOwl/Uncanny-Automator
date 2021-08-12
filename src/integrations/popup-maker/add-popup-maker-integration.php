@@ -34,6 +34,13 @@ class Add_Popup_Maker_Integration {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'Popup_Maker' );
+	}
+
+	/**
 	 * Add a Automator trigger type to Popup Maker
 	 *
 	 * @param array $triggers Existing triggers.

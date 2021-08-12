@@ -31,10 +31,6 @@ class Add_Wpf_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		if ( class_exists( 'WPForms' ) ) {
-			return true;
-		}
-
-		return false;
+		return class_exists( 'WPForms' );
 	}
 }

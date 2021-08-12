@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
 Tested up to: 5.8
 Requires PHP: 7.2
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -174,6 +174,29 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.1.2 [2021-08-12] =
+
+**Added:**
+
+* WordPress Core - A user's post is set to a specific status - Added post type dropdown #687
+* Easy Digital Downloads - Trigger: A user's Stripe payment for an order is refunded #668
+* LearnDash Achievements - Action: Award an achievement #653
+
+**Fixed:**
+
+* Forminator - Token no longer shows "Array" instead of the value #655
+* Instagram - No longer automatically shows as connected after Facebook connected #627
+* Instagram - Removed account thumbnail to reduce API usage #494
+* Mailchimp - Groups now load consistently #683
+* LearnDash/Tin Canny Reporting for LearnDash - A Tin Can verb is recorded from a Tin Can module - Trigger not firing on some configurations #680
+* WordPress Core - Send an email - When multiple email addresses are entered in the To field the action fires as expected #666
+* WordPress Core - Send an email - Line breaks disappearing in Send an email action after action is reloaded #587
+* Integromat - Send data to Integromat webhook - Uncaught TypeError: Cannot read property 'ajax' of undefined #657
+* Plugin activation now works more consistently on subfolder sites #678
+* Add `plugin_active` override to all Free integrations for backwards compatibility with older Pro versions #662
+* Pro logged-in integrations no longer appear in anonymous recipes #586
+* PHP Notice: Undefined property: stdClass::$license_check on some sites #626
 
 = 3.1.1 [2021-07-29] =
 

@@ -127,7 +127,7 @@ trait Action_Parser {
 		foreach ( $metas as $meta_key => $meta_value ) {
 			if ( ! $this->is_valid_token( $meta_key, $meta_value ) ) {
 				$parsed = Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args );
-				$this->set_parsed( $meta_key, $this->should_wpautop( $parsed ) );
+				$this->set_parsed( $meta_key, $this->should_wpautop( $parsed, $meta_key ) );
 				continue;
 			}
 
@@ -145,8 +145,7 @@ trait Action_Parser {
 				$parsed = do_shortcode( $parsed );
 			}
 
-			$parsed = apply_filters( 'automator_post_token_parsed', $this->should_wpautop( $parsed ), $meta_key, $token_args );
-
+			$parsed = apply_filters( 'automator_post_token_parsed', $this->should_wpautop( $parsed, $meta_key ), $meta_key, $token_args );
 			$this->set_parsed( $meta_key, $parsed );
 		}
 
@@ -155,16 +154,60 @@ trait Action_Parser {
 
 	/**
 	 * @param $parsed
+	 * @param $meta_key
 	 *
 	 * @return mixed|string
 	 */
-	private function should_wpautop( $parsed ) {
+	private function should_wpautop( $parsed, $meta_key ) {
 		$is_wpautop = apply_filters( 'automator_mail_wpautop', $this->is_wpautop(), $this );
-		if ( $is_wpautop && ! is_email( $parsed ) ) {
+		if ( $is_wpautop && ! is_email( $parsed ) && false === $this->validate_if_email( $parsed, $meta_key ) ) {
 			$parsed = wpautop( $parsed );
 		}
 
 		return $parsed;
+	}
+
+	/**
+	 * @param $content
+	 * @param $meta_key
+	 *
+	 * @return false|string|void
+	 */
+	private function validate_if_email( $content, $meta_key ) {
+		if ( 0 === preg_match( '/EMAIL/', $meta_key ) ) {
+			return false;
+		}
+
+		$list = array(
+			'EMAILFROM',
+			'EMAILFROMNAME',
+			'EMAILTO',
+			'EMAILCC',
+			'EMAILBCC',
+			'AFFILIATEWPACCEMAIL',
+			'AFFILIATEWPPAYMENTEMAIL',
+			'EDDCUSTOMER_EMAIL',
+			'MCFROMEMAILADDRESS',
+			'POSTCOMMENTEREMAIL',
+			'POSTAUTHOREMAIL',
+			'SENDREGEMAIL',
+			'WPJMAPPLICATIONEMAIL',
+			'WPJMRESUMEEMAIL',
+			'WPJMJOBOWNEREMAIL',
+			'MCFROMEMAILADDRESS',
+		);
+
+		$list = apply_filters( 'automator_ignore_wpautop_list', $list, $content, $meta_key );
+
+		if ( in_array( $meta_key, $list, true ) ) {
+			return true;
+		}
+
+		if ( is_array( $content ) ) {
+			foreach ( $content as $email ) {
+				return is_email( $email );
+			}
+		}
 	}
 
 	/**

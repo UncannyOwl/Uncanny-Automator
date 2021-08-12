@@ -27,4 +27,11 @@ class Add_Pmp_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'paid-memberships-pro/paid-memberships-pro.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return defined( 'PMPRO_BASE_FILE' );
+	}
 }

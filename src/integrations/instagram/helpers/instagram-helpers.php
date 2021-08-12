@@ -307,8 +307,6 @@ class Instagram_Helpers {
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), self::OPTION_KEY ) ) {
 
-			header( 'Content-Type: application/json' );
-
 			$options_fb_pages_key = '_uncannyowl_facebook_pages_settings';
 
 			$page_id = filter_input( INPUT_GET, 'page_id', FILTER_DEFAULT );
@@ -533,7 +531,7 @@ class Instagram_Helpers {
 				var uo_get_ig_account_card = function( user_id, picture, username ) {
 
 					var ig_account_html = '<div data-user-id="'+user_id+'" class="uo-ig-account-connected-item">';
-							ig_account_html += '<img width="32" src="'+picture+'" />';
+							ig_account_html += '<img onerror="jQuery(this).hide();" width="32" src="'+picture+'" />';
 							ig_account_html += '<span>'+username+'</span>';
 						ig_account_html += '</div>';
 
@@ -592,7 +590,7 @@ class Instagram_Helpers {
 
 				uo_load_facebook_pages();
 
-				$('#uo-user-ig-pages').on('click', 'a.uo-ig-pages-item-btn', function(e){
+				$('#uo-user-ig-pages').on('click', 'a.uo-ig-pages-item-btn', function(e) {
 					e.preventDefault();
 					$(this).find('span.dashicons-image-rotate').addClass('uo-preloader-rotate');
 					var target=  $(this);
@@ -606,26 +604,31 @@ class Instagram_Helpers {
 						},
 						success: function( igResponse ) {
 
-							console.log( igResponse );
-
 							var ig_account_html = '';
 
-							var igResponseData = igResponse.data.data;
+							if ( 200 === igResponse.statusCode ) {
 
-							if ( igResponseData.length >= 1 ) {
+								var igResponseData = igResponse.data.data;
 
-								$.each( igResponseData, function( index, ig_account ){
-									ig_account_html += '<div class="uo-ig-account-connected-item">';
-										ig_account_html += '<img width="32" src="'+ig_account.profile_pic+'" />';
-										ig_account_html += '<span>'+ig_account.username+'</span>';
-									ig_account_html += '</div>';
-								});
+								if ( igResponseData.length >= 1 ) {
 
-								target.parent().html( ig_account_html );
+									$.each( igResponseData, function( index, ig_account ){
+										ig_account_html += '<div class="uo-ig-account-connected-item">';
+											ig_account_html += '<img width="32" src="'+ig_account.profile_pic+'" />';
+											ig_account_html += '<span>'+ig_account.username+'</span>';
+										ig_account_html += '</div>';
+									});
+
+									target.parent().html( ig_account_html );
+
+								} else {
+									target.parent().css('color', '#ff7c00');
+									target.parent().html('<?php esc_html_e( 'No Instagram Business or Professional account connected.', 'uncanny-automator' ); ?>');
+								}
 
 							} else {
-								target.parent().css('color', '#ff7c00');
-								target.parent().html('<?php esc_html_e( 'No Instagram Business or Professional Account connected', 'uncanny-automator' ); ?>');
+								target.parent().css('color', '#ff3b00');
+								target.parent().html('<?php esc_html_e( 'Could not find any Business/Professional Instagram account connected to the page.', 'uncanny-automator' ); ?>');
 							}
 						},
 						error: function( xhr, status, error ) {

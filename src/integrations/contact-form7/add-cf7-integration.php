@@ -27,4 +27,11 @@ class Add_Cf7_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'contact-form-7/wp-contact-form-7.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'WPCF7' );
+	}
 }

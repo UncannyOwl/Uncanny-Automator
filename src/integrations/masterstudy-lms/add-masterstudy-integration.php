@@ -27,4 +27,11 @@ class Add_Masterstudy_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'masterstudy-lms-learning-management-system/masterstudy-lms-learning-management-system.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return defined( 'STM_LMS_FILE' );
+	}
 }

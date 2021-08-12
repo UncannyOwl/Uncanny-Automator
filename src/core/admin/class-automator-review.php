@@ -287,7 +287,7 @@ class Automator_Review {
 			return $response;
 		}
 
-		$website = preg_replace( '(^https?://)', '', get_site_url() );
+		$website = preg_replace( '(^https?://)', '', get_home_url() );
 
 		// data to send in our API request
 		$api_params = [

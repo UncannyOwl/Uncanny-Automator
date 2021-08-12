@@ -30,9 +30,6 @@ class EDD_PRODUCTPURCHASE {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/easy-digital-downloads/' ),
@@ -52,8 +49,6 @@ class EDD_PRODUCTPURCHASE {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -62,9 +57,6 @@ class EDD_PRODUCTPURCHASE {
 	 * @param $payment_id
 	 */
 	public function edd_product_purchase( $payment_id ) {
-
-
-
 		$cart_items = edd_get_payment_meta_cart_details( $payment_id );
 		if ( empty( $cart_items ) ) {
 			return;

@@ -27,4 +27,11 @@ class Add_Restrict_Content_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'restrict-content-pro/restrict-content-pro.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return function_exists( 'rcp_get_membership_levels' );
+	}
 }

@@ -27,4 +27,11 @@ class Add_Groundhogg_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'groundhogg/groundhogg.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return defined( 'GROUNDHOGG_VERSION' );
+	}
 }

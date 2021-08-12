@@ -8,7 +8,7 @@ namespace Uncanny_Automator;
  */
 class Add_Bb_Integration {
 
-	Use Recipe\Integrations;
+	use Recipe\Integrations;
 
 	/**
 	 * Add_Bb_Integration constructor.
@@ -26,5 +26,12 @@ class Add_Bb_Integration {
 		$this->set_icon( 'bbpress-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'bbpress/bbpress.php' );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'bbPress' );
 	}
 }

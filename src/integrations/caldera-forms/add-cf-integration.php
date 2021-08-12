@@ -27,4 +27,11 @@ class Add_Cf_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'caldera-forms/caldera-core.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'Caldera_Forms' );
+	}
 }

@@ -525,20 +525,19 @@ class Wp_Helpers {
 				'suppress_filters' => true,
 				'fields'           => array( 'ids', 'titles' ),
 			);
-			$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any Post', 'uncanny-automator-pro' ) );
+			$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any post', 'uncanny-automator' ) );
 
 			if ( ! empty( $posts_list ) ) {
 
-				$post_type_obj = get_post_type_object( $post_type );
-				$label         = $post_type_obj->labels->singular_name;
+				$post_type_label = get_post_type_object( $post_type )->labels->name;
 
 				$fields[] = array(
 					'value' => '-1',
-					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator-pro' ), $label ),
+					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
 				);
 				foreach ( $posts_list as $post_id => $post_title ) {
 					// Check if the post title is defined
-					$post_title = ! empty( $post_title ) ? $post_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator-pro' ), $post_id );
+					$post_title = ! empty( $post_title ) ? $post_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 
 					$fields[] = array(
 						'value' => $post_id,
@@ -546,9 +545,15 @@ class Wp_Helpers {
 					);
 				}
 			} else {
+				$post_type_label = 'post';
+
+				if ( $post_type != - 1 ) {
+					$post_type_label = get_post_type_object( $post_type )->labels->name;
+				}
+
 				$fields[] = array(
 					'value' => '-1',
-					'text'  => __( 'Any post', 'uncanny-automator' ),
+					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
 				);
 			}
 		}

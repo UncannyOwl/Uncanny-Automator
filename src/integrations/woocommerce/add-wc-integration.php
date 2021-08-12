@@ -23,4 +23,11 @@ class Add_Wc_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'woocommerce/woocommerce.php' );
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function plugin_active() {
+		return class_exists( 'WooCommerce' );
+	}
 }
