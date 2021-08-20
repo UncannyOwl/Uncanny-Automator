@@ -93,6 +93,7 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
+					'is_signed_in'     => true
 				];
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );

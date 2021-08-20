@@ -40,10 +40,7 @@ class Gf_Tokens {
 		}
 
 		if ( empty( $form_ids ) ) {
-			$forms = GFFormsModel::get_forms();
-			foreach ( $forms as $form ) {
-				$form_ids[] = $form->id;
-			}
+			return $tokens;
 		}
 
 		if ( empty( $form_ids ) ) {

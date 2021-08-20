@@ -377,6 +377,10 @@ class Automator_Translations {
 				/* translators: Verb conjugated in present-tense second-person singular */
 				'discoverMore' => esc_attr__( 'Discover more awesome integrations.', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.integration.discoverMore
+
+				/* translators: Verb conjugated in present-tense second-person singular */
+				'dontSeeTrigger' => esc_attr__( "Don't see your trigger? Try a recipe that runs for logged-in users only.", 'uncanny-automator' ),
+				// UncannyAutomator.i18n.integration.dontSeeTrigger
 			),
 			'publish'             => array(
 				/* translators: Number of times the recipe can be triggered per user */
@@ -478,6 +482,8 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.step2
 					'connectAccount' => esc_attr__( 'Connect account', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.connectAccount
+					'completePrevious' => esc_attr__( 'Please, complete the previous step first.', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.completePrevious
 					/* translators: 1. Trademarked term */
 					'step3' => esc_attr__( 'Refresh this page and add your %1$s action.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.step3

@@ -71,8 +71,6 @@ class WC_PURCHASESPRODUCT {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -119,6 +117,12 @@ class WC_PURCHASESPRODUCT {
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
+				if ( ! isset( $trigger_condition[ $recipe_id ] ) ) {
+					continue;
+				}
+				if ( ! isset( $trigger_condition[ $recipe_id ][ $trigger_id ] ) ) {
+					continue;
+				}
 				if ( (string) current_action() === (string) $trigger_condition[ $recipe_id ][ $trigger_id ] ) {
 					$trigger_cond_ids[] = $recipe_id;
 				}
@@ -144,14 +148,21 @@ class WC_PURCHASESPRODUCT {
 		//Add where Product ID is set for trigger
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
+				if ( ! in_array( $recipe_id, $trigger_cond_ids, false ) ) {
+					continue;
+				}
 				$trigger_id = $trigger['ID'];//return early for all products
-				if ( isset( $required_product[ $recipe_id ] ) && isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
-					if ( intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) || in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
-						$matched_recipe_ids[] = [
-							'recipe_id'  => $recipe_id,
-							'trigger_id' => $trigger_id,
-						];
-					}
+				if ( ! isset( $required_product[ $recipe_id ] ) ) {
+					continue;
+				}
+				if ( ! isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
+					continue;
+				}
+				if ( intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) || in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
+					$matched_recipe_ids[] = [
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+					];
 				}
 			}
 		}

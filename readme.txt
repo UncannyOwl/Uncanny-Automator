@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
 Tested up to: 5.8
 Requires PHP: 7.2
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -174,6 +174,25 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.1.3 [2021-08-20] =
+
+**Updated:**
+
+* Trigger messaging in "Everyone" recipes to reduce confusion #700
+* wpForo - Sentence "Add the user to a group" changed to "Set the user's primary group" for clarity #689
+
+**Fixed:**
+
+* AffiliateWP - "An affiliate makes a referral of a specific type" now fires more reliably #713
+* FluentCRM - "A tag is added to a user" now fires more reliably #712
+* Image no longer rotated 90 degrees on the dashboard in Safari #705
+* WooCommerce - A user completes, pays for, lands on a thank you page for an order with a product no longer fires multiple times with a single order #702
+* Duplicate recipe not duplicating all items when recipe contains more than 5 triggers or actions #701
+* WordPress Core - Send an email - BCC and CC now work as expected #697
+* LearnDash - Quiz score token now renders more reliably #695
+* When connecting third-party integrations, the second step action button is now disabled if the first step is not yet completed #614
+* Form field tokens no longer appear in token dropdown if the source form was deleted #205
 
 = 3.1.2 [2021-08-12] =
 

@@ -309,6 +309,11 @@ class Fluent_Crm_Helpers {
 				$user_id = $user->ID;
 			}
 		}
+		
+		// Just return the user id if the user is not logged in.
+		if ( ! is_user_logged_in() ) {
+			return $user_id;
+		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			if ( $user_id !== get_current_user_id() ) {
@@ -360,6 +365,12 @@ class Fluent_Crm_Helpers {
 		 * or pivot ids(table: wp_fc_subscriber_pivot)
 		 */
 		$list_ids = array();
+		
+		// Just check to see if the user is logged in or not.
+		if ( ! is_user_logged_in() ) {
+			$list_ids = $attachedTagIds;
+		}
+
 		if ( ! isset( $_POST['type'] ) ) {
 			// the $attachedListIds are actually pivot IDs
 			$pivots = SubscriberPivot::whereIn( 'id', $attachedTagIds )->get();
@@ -371,7 +382,8 @@ class Fluent_Crm_Helpers {
 		} else {
 			$list_ids = $attachedTagIds;
 		}
-
+		
+	
 		return $list_ids;
 	}
 

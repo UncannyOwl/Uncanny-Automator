@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.1.2\n"
+"Project-Id-Version: Uncanny Automator 3.1.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-08-12T19:24:43+00:00\n"
+"POT-Creation-Date: 2021-08-20T14:51:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Copy creation failed, could not find original recipe:"
 msgstr ""
 
-#: src/core/admin/class-copy-recipe-parts.php:175
+#: src/core/admin/class-copy-recipe-parts.php:176
 msgid "(Copy)"
 msgstr ""
 
@@ -914,11 +914,9 @@ msgstr ""
 
 #. translators: Action - BuddyBoss
 #. translators: Action - BuddyPress
-#. translators: Action - wpForo
 #: src/core/includes/pro-items-list.php:816
 #: src/integrations/buddyboss/actions/bdb-addtogroup.php:49
 #: src/integrations/buddypress/actions/bp-addtogroup.php:49
-#: src/integrations/wpforo/actions/wpf-usergroup.php:59
 msgid "Add the user to {{a group}}"
 msgstr ""
 
@@ -1505,13 +1503,13 @@ msgstr ""
 msgid "Flush cache"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-email-helpers.php:123
-#: src/core/lib/helpers/class-automator-email-helpers.php:131
+#: src/core/lib/helpers/class-automator-email-helpers.php:110
+#: src/core/lib/helpers/class-automator-email-helpers.php:118
 msgid "\"To\" address is empty."
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-email-helpers.php:126
-#: src/core/lib/helpers/class-automator-email-helpers.php:134
+#: src/core/lib/helpers/class-automator-email-helpers.php:113
+#: src/core/lib/helpers/class-automator-email-helpers.php:121
 msgid "\"To\" address is invalid."
 msgstr ""
 
@@ -2325,280 +2323,289 @@ msgstr ""
 msgid "Discover more awesome integrations."
 msgstr ""
 
+#. translators: Verb conjugated in present-tense second-person singular
+#: src/core/lib/utilities/class-automator-translations.php:382
+msgid "Don't see your trigger? Try a recipe that runs for logged-in users only."
+msgstr ""
+
 #. translators: Number of times the recipe can be triggered per user
-#: src/core/lib/utilities/class-automator-translations.php:383
+#: src/core/lib/utilities/class-automator-translations.php:387
 msgid "Times per user:"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/lib/utilities/class-automator-translations.php:386
+#: src/core/lib/utilities/class-automator-translations.php:390
 msgid "Leave empty for unlimited times"
 msgstr ""
 
 #. translators: Unlimited times
-#: src/core/lib/utilities/class-automator-translations.php:389
+#: src/core/lib/utilities/class-automator-translations.php:393
 msgctxt "Publish"
 msgid "Unlimited"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:391
+#: src/core/lib/utilities/class-automator-translations.php:395
 msgid "This number has to be 1 or bigger"
 msgstr ""
 
 #. translators: Recipe creation date
-#: src/core/lib/utilities/class-automator-translations.php:394
+#: src/core/lib/utilities/class-automator-translations.php:398
 msgctxt "Recipe"
 msgid "Created on:"
 msgstr ""
 
 #. translators: Recipe type
-#: src/core/lib/utilities/class-automator-translations.php:397
+#: src/core/lib/utilities/class-automator-translations.php:401
 msgctxt "Recipe"
 msgid "User type:"
 msgstr ""
 
 #. translators: Duplicate recipe
-#: src/core/lib/utilities/class-automator-translations.php:400
+#: src/core/lib/utilities/class-automator-translations.php:404
 msgctxt "Recipe"
 msgid "Duplicate this recipe"
 msgstr ""
 
 #. translators: Copy recipe
-#: src/core/lib/utilities/class-automator-translations.php:403
+#: src/core/lib/utilities/class-automator-translations.php:407
 msgctxt "Recipe"
 msgid "Total times:"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:407
+#: src/core/lib/utilities/class-automator-translations.php:411
 msgid "Are you sure?"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:409
+#: src/core/lib/utilities/class-automator-translations.php:413
 msgid "Deleting items in a {{live}} recipe can lead to unexpected behaviors."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:411
+#: src/core/lib/utilities/class-automator-translations.php:415
 msgid "Setting items to draft in a {{live}} recipe can lead to unexpected behaviors."
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:419
+#: src/core/lib/utilities/class-automator-translations.php:423
 msgid "This is a %1$s feature."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:424
+#: src/core/lib/utilities/class-automator-translations.php:428
 msgid "Please ensure the plugin is installed and activated."
 msgstr ""
 
 #. translators: 1. Plugin name
-#: src/core/lib/utilities/class-automator-translations.php:427
+#: src/core/lib/utilities/class-automator-translations.php:431
 msgid "Please install %1$s to activate this recipe."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:430
+#: src/core/lib/utilities/class-automator-translations.php:434
 msgid "Move to trash"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:437
+#: src/core/lib/utilities/class-automator-translations.php:441
 msgid "Requires %1$s"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:442
+#: src/core/lib/utilities/class-automator-translations.php:446
 msgid "Send feedback"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:454
+#: src/core/lib/utilities/class-automator-translations.php:458
 msgid "%1$s account not connected. Click to connect."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:456
+#: src/core/lib/utilities/class-automator-translations.php:460
 msgid "All actions need user data"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:458
+#: src/core/lib/utilities/class-automator-translations.php:462
 msgid "Not connected"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:461
+#: src/core/lib/utilities/class-automator-translations.php:465
 msgid "Connect integration"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:464
+#: src/core/lib/utilities/class-automator-translations.php:468
 msgid "Sign up for a free %1$s account!"
 msgstr ""
 
 #. translators: 2. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:467
+#: src/core/lib/utilities/class-automator-translations.php:471
 msgid "Activate your %1$s license key!"
 msgstr ""
 
 #. translators: 1. Number, 2. Number
-#: src/core/lib/utilities/class-automator-translations.php:470
+#: src/core/lib/utilities/class-automator-translations.php:474
 msgid "%1$s of %2$s steps completed"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:472
+#: src/core/lib/utilities/class-automator-translations.php:476
 msgid "Sign up"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:474
+#: src/core/lib/utilities/class-automator-translations.php:478
 msgid "Activate"
 msgstr ""
 
 #. translators: 1. Trademarked term, 2. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:477
+#: src/core/lib/utilities/class-automator-translations.php:481
 msgid "Connect your %1$s account to %2$s."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:479
+#: src/core/lib/utilities/class-automator-translations.php:483
 msgid "Connect account"
 msgstr ""
 
+#: src/core/lib/utilities/class-automator-translations.php:485
+msgid "Please, complete the previous step first."
+msgstr ""
+
 #. translators: 1. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:482
+#: src/core/lib/utilities/class-automator-translations.php:488
 msgid "Refresh this page and add your %1$s action."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:484
+#: src/core/lib/utilities/class-automator-translations.php:490
 msgid "Refresh"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/lib/utilities/class-automator-translations.php:490
+#: src/core/lib/utilities/class-automator-translations.php:496
 msgid "Select a recipe type"
 msgstr ""
 
 #. translators: Recipe type. Logged-in recipes are triggered only by logged-in users
-#: src/core/lib/utilities/class-automator-translations.php:493
+#: src/core/lib/utilities/class-automator-translations.php:499
 msgctxt "Recipe"
 msgid "Logged-in users"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:495
+#: src/core/lib/utilities/class-automator-translations.php:501
 msgid "Recipe will be triggered by logged-in WordPress users."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:497
+#: src/core/lib/utilities/class-automator-translations.php:503
 msgid "Note: Recipe type cannot be changed later."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:499
+#: src/core/lib/utilities/class-automator-translations.php:505
 msgid "Please select an option."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:501
+#: src/core/lib/utilities/class-automator-translations.php:507
 msgid "Error when saving value."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:503
+#: src/core/lib/utilities/class-automator-translations.php:509
 msgid "Sorry, something went wrong. Please try again."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:505
+#: src/core/lib/utilities/class-automator-translations.php:511
 msgctxt "Recipe type"
 msgid "Everyone"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:507
+#: src/core/lib/utilities/class-automator-translations.php:513
 msgid "Recipe will be triggered by logged-in WordPress users or logged out visitors."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:509
+#: src/core/lib/utilities/class-automator-translations.php:515
 msgid "This recipe type supports one trigger per recipe."
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/lib/utilities/class-automator-translations.php:514
+#: src/core/lib/utilities/class-automator-translations.php:520
 msgid "Choose who will do the actions"
 msgstr ""
 
 #. translators: Verb conjugated in present-tense second-person singular
-#: src/core/lib/utilities/class-automator-translations.php:517
-#: src/core/lib/utilities/class-automator-translations.php:624
-#: src/core/lib/utilities/class-automator-translations.php:658
+#: src/core/lib/utilities/class-automator-translations.php:523
+#: src/core/lib/utilities/class-automator-translations.php:630
+#: src/core/lib/utilities/class-automator-translations.php:664
 msgid "Set user data"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:519
+#: src/core/lib/utilities/class-automator-translations.php:525
 msgid "Actions will be run on..."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:521
+#: src/core/lib/utilities/class-automator-translations.php:527
 msgid "Log the new user in?"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:524
+#: src/core/lib/utilities/class-automator-translations.php:530
 msgid "Existing user"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:526
+#: src/core/lib/utilities/class-automator-translations.php:532
 msgid "New user"
 msgstr ""
 
 #. translators: 1. Field name, 2. Field value
-#: src/core/lib/utilities/class-automator-translations.php:531
+#: src/core/lib/utilities/class-automator-translations.php:537
 msgctxt "User selector"
 msgid "%1$s matches %2$s"
 msgstr ""
 
 #. translators: 1. An email address
-#: src/core/lib/utilities/class-automator-translations.php:540
+#: src/core/lib/utilities/class-automator-translations.php:546
 msgctxt "User selector"
 msgid "With the email %1$s"
 msgstr ""
 
 #. translators: 1. An action
-#: src/core/lib/utilities/class-automator-translations.php:543
+#: src/core/lib/utilities/class-automator-translations.php:549
 msgctxt "User selector"
 msgid "Otherwise, %1$s"
 msgstr ""
 
 #. translators: Non-personal infinitive verb. It's used after "Otherwise, %1$s"
-#: src/core/lib/utilities/class-automator-translations.php:546
+#: src/core/lib/utilities/class-automator-translations.php:552
 msgctxt "User selector"
 msgid "do nothing"
 msgstr ""
 
 #. translators: Non-personal infinitive verb. It's used after "Otherwise, %1$s"
-#: src/core/lib/utilities/class-automator-translations.php:549
+#: src/core/lib/utilities/class-automator-translations.php:555
 msgctxt "User selector"
 msgid "create a new user"
 msgstr ""
 
 #. translators: Non-personal infinitive verb. It's used after "Otherwise, %1$s"
-#: src/core/lib/utilities/class-automator-translations.php:552
+#: src/core/lib/utilities/class-automator-translations.php:558
 msgctxt "User selector"
 msgid "select an existing user"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:556
+#: src/core/lib/utilities/class-automator-translations.php:562
 msgid "Unique field"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:558
-#: src/core/lib/utilities/class-automator-translations.php:584
+#: src/core/lib/utilities/class-automator-translations.php:564
+#: src/core/lib/utilities/class-automator-translations.php:590
 #: src/integrations/give/helpers/give-helpers.php:112
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:74
 #: src/integrations/wp/actions/wp-createuser.php:69
 msgid "Email"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:560
+#: src/core/lib/utilities/class-automator-translations.php:566
 msgid "ID"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:562
-#: src/core/lib/utilities/class-automator-translations.php:586
+#: src/core/lib/utilities/class-automator-translations.php:568
+#: src/core/lib/utilities/class-automator-translations.php:592
 #: src/integrations/wp/actions/wp-createuser.php:67
 msgid "Username"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:564
+#: src/core/lib/utilities/class-automator-translations.php:570
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:96
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:105
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:140
@@ -2612,22 +2619,22 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:566
+#: src/core/lib/utilities/class-automator-translations.php:572
 msgid "Value of the unique field"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:568
+#: src/core/lib/utilities/class-automator-translations.php:574
 msgid "What to do if the user doesn't exist"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:571
+#: src/core/lib/utilities/class-automator-translations.php:577
 msgid "Create new user"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:574
-#: src/core/lib/utilities/class-automator-translations.php:603
+#: src/core/lib/utilities/class-automator-translations.php:580
+#: src/core/lib/utilities/class-automator-translations.php:609
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:159
 #: src/integrations/learndash/actions/ld-creategroup.php:84
 #: src/integrations/learndash/actions/ld-makeuserleader.php:77
@@ -2636,538 +2643,538 @@ msgstr ""
 msgid "Do nothing"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:576
+#: src/core/lib/utilities/class-automator-translations.php:582
 msgid "If no user matches the unique field and value then the actions are not going to be executed."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:580
+#: src/core/lib/utilities/class-automator-translations.php:586
 #: src/integrations/give/helpers/give-helpers.php:100
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:75
 #: src/integrations/wp/actions/wp-createuser.php:71
 msgid "First name"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:582
+#: src/core/lib/utilities/class-automator-translations.php:588
 #: src/integrations/give/helpers/give-helpers.php:106
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:76
 #: src/integrations/wp/actions/wp-createuser.php:73
 msgid "Last name"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:588
+#: src/core/lib/utilities/class-automator-translations.php:594
 msgid "Display name"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:590
+#: src/core/lib/utilities/class-automator-translations.php:596
 #: src/integrations/wp/actions/wp-createuser.php:77
 msgid "Password"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:592
+#: src/core/lib/utilities/class-automator-translations.php:598
 msgid "If left empty, the user will need to reset their password to log in. Send an email containing the %1$s token to simplify the process."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:592
+#: src/core/lib/utilities/class-automator-translations.php:598
 msgid "User reset password URL"
 msgstr ""
 
 #. translators: WordPress roles
-#: src/core/lib/utilities/class-automator-translations.php:595
+#: src/core/lib/utilities/class-automator-translations.php:601
 msgid "Roles"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:597
+#: src/core/lib/utilities/class-automator-translations.php:603
 msgid "What to do if the user already exists"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:600
+#: src/core/lib/utilities/class-automator-translations.php:606
 msgid "Select existing user"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:605
+#: src/core/lib/utilities/class-automator-translations.php:611
 msgid "If there is already a user with the defined email address or username, the actions are not going to be executed."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:607
+#: src/core/lib/utilities/class-automator-translations.php:613
 msgid "Prioritized field"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:609
+#: src/core/lib/utilities/class-automator-translations.php:615
 msgid "Select the field that should be prioritized if, during creation of the user, two different users are found (one that matches the email field and another one that matches the username field)."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:616
-#: src/core/lib/utilities/class-automator-translations.php:629
-#: src/core/lib/utilities/class-automator-translations.php:647
-#: src/core/lib/utilities/class-automator-translations.php:663
+#: src/core/lib/utilities/class-automator-translations.php:622
+#: src/core/lib/utilities/class-automator-translations.php:635
+#: src/core/lib/utilities/class-automator-translations.php:653
+#: src/core/lib/utilities/class-automator-translations.php:669
 msgid "We need some user data"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:619
-#: src/core/lib/utilities/class-automator-translations.php:632
+#: src/core/lib/utilities/class-automator-translations.php:625
+#: src/core/lib/utilities/class-automator-translations.php:638
 msgid "This action must be run on a WordPress user."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:621
+#: src/core/lib/utilities/class-automator-translations.php:627
 msgid "Since this is a recipe that runs for everyone, including logged-out users, you'll need to select a new or existing user that this action will run on."
 msgstr ""
 
 #. translators: 1. Trademarked term.
-#: src/core/lib/utilities/class-automator-translations.php:635
+#: src/core/lib/utilities/class-automator-translations.php:641
 msgid "Because the action is associated with user data, it must be mapped to a new or existing user. This requires %1$s."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:637
+#: src/core/lib/utilities/class-automator-translations.php:643
 msgid "If you don't want to upgrade now, you can add this action to a recipe that runs only for logged-in users."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:640
-#: src/core/lib/utilities/class-automator-translations.php:677
+#: src/core/lib/utilities/class-automator-translations.php:646
+#: src/core/lib/utilities/class-automator-translations.php:683
 msgid "Upgrade to Pro"
 msgstr ""
 
 #. translators: 1. Token ID
-#: src/core/lib/utilities/class-automator-translations.php:651
-#: src/core/lib/utilities/class-automator-translations.php:667
+#: src/core/lib/utilities/class-automator-translations.php:657
+#: src/core/lib/utilities/class-automator-translations.php:673
 msgid "The token %1$s outputs the data of a WordPress user."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:653
+#: src/core/lib/utilities/class-automator-translations.php:659
 msgid "Since this is a recipe that runs for everyone, including logged-out users, you'll need to select a new or existing user that this data will come from."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:656
-#: src/core/lib/utilities/class-automator-translations.php:675
+#: src/core/lib/utilities/class-automator-translations.php:662
+#: src/core/lib/utilities/class-automator-translations.php:681
 msgid "Remove token"
 msgstr ""
 
 #. translators: 1. Trademarked term.
-#: src/core/lib/utilities/class-automator-translations.php:670
+#: src/core/lib/utilities/class-automator-translations.php:676
 msgid "Because the token is associated with user data, it must be mapped to a new or existing user. This requires %1$s."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:672
+#: src/core/lib/utilities/class-automator-translations.php:678
 msgid "If you don't want to upgrade now, you can add this token to a recipe that runs only for logged-in users."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:684
+#: src/core/lib/utilities/class-automator-translations.php:690
 msgid "Saving title"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:686
+#: src/core/lib/utilities/class-automator-translations.php:692
 msgctxt "Title"
 msgid "Saved"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:691
+#: src/core/lib/utilities/class-automator-translations.php:697
 msgid "Sorry, something went wrong"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:693
+#: src/core/lib/utilities/class-automator-translations.php:699
 msgid "Click Learn more for steps you can take to resolve this issue."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:697
+#: src/core/lib/utilities/class-automator-translations.php:703
 msgid "The recipe creator could not be loaded"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:699
+#: src/core/lib/utilities/class-automator-translations.php:705
 msgid "Sorry, something went wrong when loading the recipe interface. Technical details are listed below."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:701
+#: src/core/lib/utilities/class-automator-translations.php:707
 msgid "Click Learn More for steps you can take to resolve this issue."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:704
+#: src/core/lib/utilities/class-automator-translations.php:710
 msgid "Go to all recipes"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:706
-#: src/core/lib/utilities/class-automator-translations.php:845
+#: src/core/lib/utilities/class-automator-translations.php:712
+#: src/core/lib/utilities/class-automator-translations.php:851
 msgid "Learn more"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:728
+#: src/core/lib/utilities/class-automator-translations.php:734
 msgid "Select date"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:729
+#: src/core/lib/utilities/class-automator-translations.php:735
 msgid "Select time"
 msgstr ""
 
 #. translators: Abbreviation - Monday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:733
+#: src/core/lib/utilities/class-automator-translations.php:739
 msgctxt "Date format"
 msgid "Mon"
 msgstr ""
 
 #. translators: Abbreviation - Tuesday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:735
+#: src/core/lib/utilities/class-automator-translations.php:741
 msgctxt "Date format"
 msgid "Tue"
 msgstr ""
 
 #. translators: Abbreviation - Wednesday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:737
+#: src/core/lib/utilities/class-automator-translations.php:743
 msgctxt "Date format"
 msgid "Wed"
 msgstr ""
 
 #. translators: Abbreviation - Thursday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:739
+#: src/core/lib/utilities/class-automator-translations.php:745
 msgctxt "Date format"
 msgid "Thu"
 msgstr ""
 
 #. translators: Abbreviation - Friday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:741
+#: src/core/lib/utilities/class-automator-translations.php:747
 msgctxt "Date format"
 msgid "Fri"
 msgstr ""
 
 #. translators: Abbreviation - Saturday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:743
+#: src/core/lib/utilities/class-automator-translations.php:749
 msgctxt "Date format"
 msgid "Sat"
 msgstr ""
 
 #. translators: Abbreviation - Sunday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:745
+#: src/core/lib/utilities/class-automator-translations.php:751
 msgctxt "Date format"
 msgid "Sun"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:748
+#: src/core/lib/utilities/class-automator-translations.php:754
 msgctxt "Date format"
 msgid "Monday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:749
+#: src/core/lib/utilities/class-automator-translations.php:755
 msgctxt "Date format"
 msgid "Tuesday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:750
+#: src/core/lib/utilities/class-automator-translations.php:756
 msgctxt "Date format"
 msgid "Wednesday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:751
+#: src/core/lib/utilities/class-automator-translations.php:757
 msgctxt "Date format"
 msgid "Thursday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:752
+#: src/core/lib/utilities/class-automator-translations.php:758
 msgctxt "Date format"
 msgid "Friday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:753
+#: src/core/lib/utilities/class-automator-translations.php:759
 msgctxt "Date format"
 msgid "Saturday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:754
+#: src/core/lib/utilities/class-automator-translations.php:760
 msgctxt "Date format"
 msgid "Sunday"
 msgstr ""
 
 #. translators: Abbreviation - January (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:760
+#: src/core/lib/utilities/class-automator-translations.php:766
 msgctxt "Date format"
 msgid "Jan"
 msgstr ""
 
 #. translators: Abbreviation - February (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:762
+#: src/core/lib/utilities/class-automator-translations.php:768
 msgctxt "Date format"
 msgid "Feb"
 msgstr ""
 
 #. translators: Abbreviation - March (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:764
+#: src/core/lib/utilities/class-automator-translations.php:770
 msgctxt "Date format"
 msgid "Mar"
 msgstr ""
 
 #. translators: Abbreviation - April (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:766
+#: src/core/lib/utilities/class-automator-translations.php:772
 msgctxt "Date format"
 msgid "Apr"
 msgstr ""
 
 #. translators: Abbreviation - May (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:768
-#: src/core/lib/utilities/class-automator-translations.php:789
+#: src/core/lib/utilities/class-automator-translations.php:774
+#: src/core/lib/utilities/class-automator-translations.php:795
 msgctxt "Date format"
 msgid "May"
 msgstr ""
 
 #. translators: Abbreviation - June (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:770
+#: src/core/lib/utilities/class-automator-translations.php:776
 msgctxt "Date format"
 msgid "Jun"
 msgstr ""
 
 #. translators: Abbreviation - July (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:772
+#: src/core/lib/utilities/class-automator-translations.php:778
 msgctxt "Date format"
 msgid "Jul"
 msgstr ""
 
 #. translators: Abbreviation - August (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:774
+#: src/core/lib/utilities/class-automator-translations.php:780
 msgctxt "Date format"
 msgid "Aug"
 msgstr ""
 
 #. translators: Abbreviation - September (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:776
+#: src/core/lib/utilities/class-automator-translations.php:782
 msgctxt "Date format"
 msgid "Sep"
 msgstr ""
 
 #. translators: Abbreviation - October (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:778
+#: src/core/lib/utilities/class-automator-translations.php:784
 msgctxt "Date format"
 msgid "Oct"
 msgstr ""
 
 #. translators: Abbreviation - November (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:780
+#: src/core/lib/utilities/class-automator-translations.php:786
 msgctxt "Date format"
 msgid "Nov"
 msgstr ""
 
 #. translators: Abbreviation - December (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:782
+#: src/core/lib/utilities/class-automator-translations.php:788
 msgctxt "Date format"
 msgid "Dec"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:785
+#: src/core/lib/utilities/class-automator-translations.php:791
 msgctxt "Date format"
 msgid "January"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:786
+#: src/core/lib/utilities/class-automator-translations.php:792
 msgctxt "Date format"
 msgid "February"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:787
+#: src/core/lib/utilities/class-automator-translations.php:793
 msgctxt "Date format"
 msgid "March"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:788
+#: src/core/lib/utilities/class-automator-translations.php:794
 msgctxt "Date format"
 msgid "April"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:790
+#: src/core/lib/utilities/class-automator-translations.php:796
 msgctxt "Date format"
 msgid "June"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:791
+#: src/core/lib/utilities/class-automator-translations.php:797
 msgctxt "Date format"
 msgid "July"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:792
+#: src/core/lib/utilities/class-automator-translations.php:798
 msgctxt "Date format"
 msgid "August"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:793
+#: src/core/lib/utilities/class-automator-translations.php:799
 msgctxt "Date format"
 msgid "September"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:794
+#: src/core/lib/utilities/class-automator-translations.php:800
 msgctxt "Date format"
 msgid "October"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:795
+#: src/core/lib/utilities/class-automator-translations.php:801
 msgctxt "Date format"
 msgid "November"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:796
+#: src/core/lib/utilities/class-automator-translations.php:802
 msgctxt "Date format"
 msgid "December"
 msgstr ""
 
 #. translators: Range separator
-#: src/core/lib/utilities/class-automator-translations.php:800
+#: src/core/lib/utilities/class-automator-translations.php:806
 msgctxt "Date format"
 msgid "to"
 msgstr ""
 
 #. translators: Numeric representation of the day of the week. 1 (for Sunday) through 7 (for Saturday)
-#: src/core/lib/utilities/class-automator-translations.php:802
+#: src/core/lib/utilities/class-automator-translations.php:808
 msgctxt "Date format"
 msgid "1"
 msgstr ""
 
 #. translators: Abbreviation - Week
-#: src/core/lib/utilities/class-automator-translations.php:804
+#: src/core/lib/utilities/class-automator-translations.php:810
 msgctxt "Date format"
 msgid "Wk"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:805
+#: src/core/lib/utilities/class-automator-translations.php:811
 msgctxt "Date format"
 msgid "AM"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:806
+#: src/core/lib/utilities/class-automator-translations.php:812
 msgctxt "Date format"
 msgid "PM"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:807
+#: src/core/lib/utilities/class-automator-translations.php:813
 msgctxt "Date format"
 msgid "Year"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:808
+#: src/core/lib/utilities/class-automator-translations.php:814
 msgctxt "Date format"
 msgid "Month"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:809
+#: src/core/lib/utilities/class-automator-translations.php:815
 msgctxt "Date format"
 msgid "Hour"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:810
+#: src/core/lib/utilities/class-automator-translations.php:816
 msgctxt "Date format"
 msgid "Minute"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:813
+#: src/core/lib/utilities/class-automator-translations.php:819
 msgid "No results found"
 msgstr ""
 
 #. translators: Character to separate items
-#: src/core/lib/utilities/class-automator-translations.php:816
+#: src/core/lib/utilities/class-automator-translations.php:822
 #: src/integrations/fluent-crm/actions/fcrm-tag-to-user.php:102
 #: src/integrations/fluent-crm/actions/fcrm-user-to-list.php:105
 msgid ","
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:819
+#: src/core/lib/utilities/class-automator-translations.php:825
 msgid "Save"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:822
+#: src/core/lib/utilities/class-automator-translations.php:828
 #: src/core/views/filters.php:172
 msgid "Search"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:824
+#: src/core/lib/utilities/class-automator-translations.php:830
 msgid "Searching"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:827
+#: src/core/lib/utilities/class-automator-translations.php:833
 msgid "Confirm"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:830
+#: src/core/lib/utilities/class-automator-translations.php:836
 msgid "Cancel"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:833
+#: src/core/lib/utilities/class-automator-translations.php:839
 msgid "Delete"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:836
+#: src/core/lib/utilities/class-automator-translations.php:842
 msgid "Clear"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:839
+#: src/core/lib/utilities/class-automator-translations.php:845
 msgid "Edit"
 msgstr ""
 
 #. translators: Noun
-#: src/core/lib/utilities/class-automator-translations.php:842
+#: src/core/lib/utilities/class-automator-translations.php:848
 msgctxt "Item options"
 msgid "Support"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:847
+#: src/core/lib/utilities/class-automator-translations.php:853
 msgid "True"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:849
+#: src/core/lib/utilities/class-automator-translations.php:855
 msgid "False"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:851
+#: src/core/lib/utilities/class-automator-translations.php:857
 msgid "Loading more results..."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:856
+#: src/core/lib/utilities/class-automator-translations.php:862
 msgid "This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:859
+#: src/core/lib/utilities/class-automator-translations.php:865
 msgid "Upgrade now"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:862
+#: src/core/lib/utilities/class-automator-translations.php:868
 msgid "Add row"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:865
+#: src/core/lib/utilities/class-automator-translations.php:871
 msgid "Remove row"
 msgstr ""
 
 #. translators: 1. Row number
-#: src/core/lib/utilities/class-automator-translations.php:868
+#: src/core/lib/utilities/class-automator-translations.php:874
 msgid "Row %1$s"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:870
+#: src/core/lib/utilities/class-automator-translations.php:876
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:465
 msgid "Yes"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:872
+#: src/core/lib/utilities/class-automator-translations.php:878
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:466
 msgid "No"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:874
+#: src/core/lib/utilities/class-automator-translations.php:880
 msgctxt "Verb"
 msgid "Close"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:876
+#: src/core/lib/utilities/class-automator-translations.php:882
 msgid "Needs user data"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:878
+#: src/core/lib/utilities/class-automator-translations.php:884
 msgid "Scroll to increment"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:880
+#: src/core/lib/utilities/class-automator-translations.php:886
 msgid "Click to toggle"
 msgstr ""
 
@@ -4518,10 +4525,8 @@ msgstr ""
 
 #. translators: Action - BuddyBoss
 #. translators: Action - BuddyPress
-#. translators: Action - wpForo
 #: src/integrations/buddyboss/actions/bdb-addtogroup.php:47
 #: src/integrations/buddypress/actions/bp-addtogroup.php:47
-#: src/integrations/wpforo/actions/wpf-usergroup.php:57
 msgid "Add the user to {{a group:%1$s}}"
 msgstr ""
 
@@ -5156,27 +5161,27 @@ msgctxt "FluentCRM"
 msgid "Any tag"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:394
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:406
 msgid "Subscribed"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:395
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:407
 msgid "Pending"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:396
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:408
 msgid "Unsubscribed"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:397
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:409
 msgid "Bounced"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:398
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:410
 msgid "Complained"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:401
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:413
 msgid "Any status"
 msgstr ""
 
@@ -6230,17 +6235,17 @@ msgid "Percentage"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
-#: src/integrations/learndash/triggers/ld-quizscore.php:42
+#: src/integrations/learndash/triggers/ld-quizscore.php:40
 msgid "A user achieves a score {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
-#: src/integrations/learndash/triggers/ld-quizscore.php:44
+#: src/integrations/learndash/triggers/ld-quizscore.php:42
 msgid "A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{a quiz}}"
 msgstr ""
 
 #. translators: Noun
-#: src/integrations/learndash/triggers/ld-quizscore.php:53
+#: src/integrations/learndash/triggers/ld-quizscore.php:51
 msgid "Score"
 msgstr ""
 
@@ -8340,8 +8345,13 @@ msgstr ""
 msgid "A user views {{a post}}"
 msgstr ""
 
-#: src/integrations/wpforo/actions/wpf-usergroup.php:45
+#: src/integrations/wpforo/actions/wpf-usergroup.php:44
 msgid "User groups"
+msgstr ""
+
+#. translators: Action - wpForo
+#: src/integrations/wpforo/actions/wpf-usergroup.php:58
+msgid "Set the user's primary group to {{a specific group}}"
 msgstr ""
 
 #: src/integrations/wpforo/actions/wpf-userreputation.php:46

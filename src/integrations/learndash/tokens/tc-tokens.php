@@ -160,6 +160,7 @@ class Tc_Tokens {
 				|| in_array( 'TCMODULEINTERACTION_maybe_topic_url', $pieces, true )
 				|| in_array( 'TCVERB', $pieces, true )
 				|| in_array( 'QUIZPERCENT', $pieces, true )
+				|| in_array( 'QUIZSCORE', $pieces, true )
 				|| in_array( 'LDQUIZ', $pieces, true )
 				|| in_array( 'LDQUIZ_ID', $pieces, true )
 				|| in_array( 'TCMODULEINTERACTION', $pieces, true )
@@ -187,9 +188,16 @@ class Tc_Tokens {
 					return $value;
 				}
 
-				// Verb can be found from trigger meta
+				// QUIZPERCENT token
 				if ( in_array( 'QUIZPERCENT', $pieces ) ) {
 					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( 'QUIZPERCENT', $trigger_id, $trigger_log_id, $run_number, $user_id );
+
+					return $value;
+				}
+
+				// QUIZSCORE token
+				if ( in_array( 'QUIZSCORE', $pieces ) ) {
+					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( 'QUIZSCORE', $trigger_id, $trigger_log_id, $run_number, $user_id );
 
 					return $value;
 				}

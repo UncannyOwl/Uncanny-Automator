@@ -131,6 +131,7 @@ class Copy_Recipe_Parts {
 				'post_status' => array( 'draft', 'publish' ),
 				'order_by'    => 'ID',
 				'order'       => 'ASC',
+				'posts_per_page' => '999'
 			)
 		);
 

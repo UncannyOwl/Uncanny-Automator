@@ -31,8 +31,6 @@ class LD_QUIZSCORE {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
@@ -57,8 +55,6 @@ class LD_QUIZSCORE {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -68,52 +64,79 @@ class LD_QUIZSCORE {
 	 * @param $current_user
 	 */
 	public function learndash_quiz_completed( $data, $current_user ) {
-
 		if ( empty( $data ) ) {
 			return;
 		}
 
-
-
 		$quiz                = $data['quiz'];
 		$quiz_id             = is_object( $quiz ) ? $quiz->ID : $quiz;
-		$percentage          = $data['score'];
+		$score               = $data['score'];
 		$recipes             = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_score      = Automator()->get->meta_from_recipes( $recipes, 'QUIZSCORE' );
 		$required_quiz       = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$required_conditions = Automator()->get->meta_from_recipes( $recipes, 'NUMBERCOND' );
 		$matched_recipe_ids  = array();
 
+		if ( empty( $recipes ) ) {
+			return;
+		}
+
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
-				if ( Automator()->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_score[ $recipe_id ][ $trigger_id ], $percentage ) ) {
-					$matched_recipe_ids[] = [
+				if ( Automator()->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_score[ $recipe_id ][ $trigger_id ], $score ) ) {
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
-		if ( ! empty( $matched_recipe_ids ) ) {
-			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				//Any Quiz OR a specific quiz
-				$r_quiz = (int) $required_quiz[ $matched_recipe_id['recipe_id'] ][ $matched_recipe_id['trigger_id'] ];
-				if ( - 1 === $r_quiz || $r_quiz === (int) $quiz_id ) {
-					$args = [
-						'code'             => $this->trigger_code,
-						'meta'             => $this->trigger_meta,
-						'user_id'          => $current_user->ID,
-						'recipe_to_match'  => $matched_recipe_id['recipe_id'],
-						'trigger_to_match' => $matched_recipe_id['trigger_id'],
-						'ignore_post_id'   => true,
-						'post_id'          => $quiz_id,
-					];
+		if ( empty( $matched_recipe_ids ) ) {
+			return;
+		}
 
-					Automator()->maybe_add_trigger_entry( $args );
+		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+			//Any Quiz OR a specific quiz
+			$r_quiz = (int) $required_quiz[ $matched_recipe_id['recipe_id'] ][ $matched_recipe_id['trigger_id'] ];
+			if ( intval( '-1' ) === intval( $r_quiz ) || $r_quiz === (int) $quiz_id ) {
+				$args = array(
+					'code'             => $this->trigger_code,
+					'meta'             => $this->trigger_meta,
+					'user_id'          => $current_user->ID,
+					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+					'trigger_to_match' => $matched_recipe_id['trigger_id'],
+					'ignore_post_id'   => true,
+					'post_id'          => $quiz_id,
+				);
+
+				$result = Automator()->maybe_add_trigger_entry( $args, false );
+
+				if ( $result ) {
+					foreach ( $result as $r ) {
+						if ( true === $r['result'] && isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
+							$trigger_id     = (int) $r['args']['trigger_id'];
+							$user_id        = (int) $r['args']['user_id'];
+							$trigger_log_id = (int) $r['args']['get_trigger_id'];
+							$run_number     = (int) $r['args']['run_number'];
+
+							$insert = array(
+								'user_id'        => $user_id,
+								'trigger_id'     => $trigger_id,
+								'trigger_log_id' => $trigger_log_id,
+								'meta_key'       => 'QUIZSCORE',
+								'meta_value'     => $score,
+								'run_number'     => $run_number,
+							);
+
+							Automator()->insert_trigger_meta( $insert );
+							Automator()->maybe_trigger_complete( $r['args'] );
+						}
+					}
 				}
 			}
 		}
+
 	}
 }

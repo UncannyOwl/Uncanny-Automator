@@ -54,13 +54,13 @@ class Automator_Email_Helpers {
 		// Add CC in headers.
 		if ( ! empty( $cc ) ) {
 			$cced      = join( ', ', $cc );
-			$headers[] = "CC: $cced";
+			$headers[] = "Cc: $cced";
 		}
 
 		// Add BCC in headers.
 		if ( ! empty( $bcc ) ) {
 			$bcced     = join( ', ', $bcc );
-			$headers[] = "BCC: $bcced";
+			$headers[] = "Bcc: $bcced";
 		}
 
 		// Add Reply-to in headers.
@@ -102,23 +102,10 @@ class Automator_Email_Helpers {
 		$attachments = $mail['attachment'];
 		$is_html     = $mail['is_html'];
 		$error       = Automator()->error;
-		
-		$sanitized_to = "";
-
-		// Sanitize "to" email.
-		if ( is_array( $to ) ) {
-			// Use array map to sanitize each value.
-			$sanitized_to = array_map( function( $email ){
-				return sanitize_email( $email );
-			}, $to);
-		} else {
-			// Sanitize single "to" string value.
-			$sanitized_to = sanitize_email( $to );
-		}
 	
 		if ( ! $error->get_message( 'wp_mail_to' ) ) {
-			if ( is_array( $sanitized_to ) ) {
-				foreach ( $sanitized_to as $to_email ) {
+			if ( is_array( $to ) ) {
+				foreach ( $to as $to_email ) {
 					if ( empty ( $to_email  ) ) {
 						$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
 					}
@@ -127,10 +114,10 @@ class Automator_Email_Helpers {
 					}
 				}
 			} else {
-				if ( empty ( $sanitized_to  ) ) {
+				if ( empty ( $to  ) ) {
 					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
 				}
-				if ( ! is_email( $sanitized_to ) ) {
+				if ( ! is_email( $to ) ) {
 					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is invalid.', 'uncanny-automator' ), $mail );
 				}
 			}
@@ -156,6 +143,6 @@ class Automator_Email_Helpers {
 			return $error;
 		}
 
-		return wp_mail( $sanitized_to, $subject, $body, $headers, $attachments );
+		return wp_mail( $to, $subject, $body, $headers, $attachments );
 	}
 }

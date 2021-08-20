@@ -90,8 +90,8 @@ trait Action_Helpers_Email {
 		$from_email = sanitize_email( $data['from'] );
 		$from_name  = sanitize_text_field( $data['from_name'] );
 		$to_email   = $data['to']; // The sanitize_email is added to Automator Email Helpers sent method.
-		$cc_email   = sanitize_email( $data['cc'] );
-		$bcc_email  = sanitize_email( $data['bcc'] );
+		$cc_email   = $data['cc'];
+		$bcc_email  = $data['bcc'];
 		$reply_to   = sanitize_email( $data['reply_to'] );
 		$content    = sanitize_text_field( $data['content'] );
 		$charset    = sanitize_text_field( $data['charset'] );
@@ -166,7 +166,7 @@ trait Action_Helpers_Email {
 	 * @param mixed $cc
 	 */
 	public function set_cc( $cc ) {
-		$this->cc[] = $cc;
+		$this->cc = $this->santize_emails( explode( ',', $cc ) );
 	}
 
 	/**
@@ -180,7 +180,7 @@ trait Action_Helpers_Email {
 	 * @param mixed $bcc
 	 */
 	public function set_bcc( $bcc ) {
-		$this->bcc[] = $bcc;
+		$this->bcc = $this->santize_emails( explode( ',', $bcc ) );
 	}
 
 	/**
@@ -208,7 +208,7 @@ trait Action_Helpers_Email {
 	 * @param mixed $to
 	 */
 	public function set_to( $to ) {
-		$this->to = explode( ',', $to );
+		$this->to = $this->santize_emails( explode( ',', $to ) );
 	}
 
 	/**
@@ -293,6 +293,23 @@ trait Action_Helpers_Email {
 	 */
 	public function set_attachments( $attachments ) {
 		$this->attachments[] = $attachments;
+	}
+	
+	/**
+	 * maybe_santize_email
+	 *
+	 * @param  mixed $emails
+	 * @return void
+	 */
+	public function santize_emails( $emails ) {
+
+		$sanitized_emails = array();
+
+		foreach ( $emails as $key => $email ) {
+			$sanitized_emails[$key] = sanitize_email( $email );
+		}
+		
+		return $sanitized_emails;
 	}
 
 	/**
