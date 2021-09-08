@@ -70,6 +70,8 @@ class Automator_Cache_Handler {
 		add_action( 'admin_init', array( $this, 'remove_all_cache' ) );
 
 		add_action( 'admin_bar_menu', array( $this, 'add_cache_clear' ), 999 );
+
+		add_action( 'upgrader_process_complete', array( $this, 'upgrader_process_completed', 10, 2 ) );
 	}
 
 	/**
@@ -358,5 +360,13 @@ class Automator_Cache_Handler {
 				)
 			);
 		}
+	}
+
+	/**
+	 * @param $upgrader_object
+	 * @param $options
+	 */
+	public function upgrader_process_completed( $upgrader_object, $options ) {
+		$this->reset_integrations_directory( $upgrader_object, $options );
 	}
 }

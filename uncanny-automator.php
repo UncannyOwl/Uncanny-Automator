@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             3.1.4
+ * Version:             3.1.4.1
  * Requires at least:   5.0
  * Requires PHP:        7.2
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '3.1.4' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '3.1.4.1' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -52,6 +52,11 @@ function Automator() { // phpcs:ignore WordPress.NamingConventions.ValidFunction
 // fallback for < 3.0 Automator plugin (Pro).
 global $uncanny_automator;
 $uncanny_automator = Automator();
+
+if ( AUTOMATOR_PLUGIN_VERSION !== get_option( 'AUTOMATOR_PLUGIN_VERSION', 0 ) ) {
+	update_option( 'AUTOMATOR_PLUGIN_VERSION', AUTOMATOR_PLUGIN_VERSION );
+	Automator()->cache->reset_integrations_directory( null, null );
+}
 
 // Include the Automator_Load class and kickstart Automator.
 if ( ! class_exists( 'Automator_Load', false ) ) {

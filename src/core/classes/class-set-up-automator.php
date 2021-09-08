@@ -384,6 +384,9 @@ class Set_Up_Automator {
 			}
 			// Loop through all files in directory to create class names from file name
 			foreach ( $files as $file ) {
+				if ( ! file_exists( $file ) ) {
+					continue;
+				}
 				require_once $file;
 				$class = apply_filters( 'automator_helpers_class_name', $this->get_class_name( $file ), $file );
 				if ( class_exists( $class ) ) {
@@ -430,6 +433,9 @@ class Set_Up_Automator {
 			}
 			// Loop through all files in directory to create class names from file name
 			foreach ( $files as $file ) {
+				if ( ! file_exists( $file ) ) {
+					continue;
+				}
 				require_once $file;
 				$class = apply_filters( 'automator_recipe_parts_class_name', $this->get_class_name( $file ), $file );
 				if ( class_exists( $class ) ) {

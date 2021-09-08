@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
 Tested up to: 5.8
 Requires PHP: 7.2
-Stable tag: 3.1.4
+Stable tag: 3.1.4.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -174,6 +174,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.1.4.1 [2021-09-08] =
+
+**Fixed:**
+
+* File name change causing fatal error on sites when LearnDash and object caching are enabled #824
 
 = 3.1.4 [2021-09-08] =
 
