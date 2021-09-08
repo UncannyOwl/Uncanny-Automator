@@ -31,19 +31,17 @@ class AFFWP_NEWAFFILIATE {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code,'integration/affiliatewp/' ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/affiliatewp/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Affiliate WP */
 			'sentence'            => sprintf( __( 'A user becomes an affiliate', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Affiliate WP */
 			'select_option_name'  => __( 'A user becomes an affiliate', 'uncanny-automator' ),
-			'action'              => 'affwp_register_user',
-			'priority'            => 99,
+			'action'              => 'affwp_set_affiliate_status',
+			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'affwp_user_becomes_affiliate' ),
 			'options'             => array(),
@@ -51,7 +49,6 @@ class AFFWP_NEWAFFILIATE {
 
 		Automator()->register->trigger( $trigger );
 
-		return;
 	}
 
 	/**
@@ -61,18 +58,18 @@ class AFFWP_NEWAFFILIATE {
 	 *
 	 * @return mixed
 	 */
-	public function affwp_user_becomes_affiliate( $affiliate_id, $status, $data ) {
+	public function affwp_user_becomes_affiliate( $affiliate_id, $status, $old_status ) {
 
-
-		$affwp_settings = maybe_unserialize( get_option( 'affwp_settings', 0 ) );
-
-		if ( 1 === (int) $affwp_settings['require_approval'] || $status != 'active' ) {
+		// Only fire this trigger if status is set to 'active'.
+		if ( 'active' !== $status ) {
 			return $status;
 		}
 
 		$affiliate = affwp_get_affiliate( $affiliate_id );
-		$user      = get_user_by( 'login', $data['user_login'] );
-		$user_id   = $user->ID;
+
+		$user_id = affwp_get_affiliate_user_id( $affiliate_id );
+
+		$user = get_user_by( 'ID', $user_id );
 
 		if ( 0 === absint( $user_id ) ) {
 			// Its a logged in recipe and
@@ -80,13 +77,13 @@ class AFFWP_NEWAFFILIATE {
 			return;
 		}
 
-		$pass_args = [
+		$pass_args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $user_id,
 			'ignore_post_id' => true,
 			'is_signed_in'   => true,
-		];
+		);
 
 		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -94,12 +91,12 @@ class AFFWP_NEWAFFILIATE {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
 
-					$trigger_meta = [
+					$trigger_meta = array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $result['args']['trigger_id'],
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],
-					];
+					);
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPID';
 					$trigger_meta['meta_value'] = maybe_serialize( $affiliate_id );
@@ -118,7 +115,7 @@ class AFFWP_NEWAFFILIATE {
 					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPACCEMAIL';
-					$trigger_meta['meta_value'] = maybe_serialize( $data['user_email'] );
+					$trigger_meta['meta_value'] = maybe_serialize( $user->data->user_email );
 					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'AFFILIATEWPWEBSITE';
@@ -162,8 +159,5 @@ class AFFWP_NEWAFFILIATE {
 				}
 			}
 		}
-
-		return;
 	}
-
 }

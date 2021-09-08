@@ -168,9 +168,9 @@ class Slack_Helpers {
 				} else {
 					$options['-1'] = __( 'Slack returned an error: ', 'uncanny-automator' ) . $data->error;
 				}
-			}
 
-			set_transient( 'automator_get_slack_channels', $options, 60 );
+				set_transient( 'automator_get_slack_channels', $options, 60 );
+			}
 
 		}
 

@@ -61,6 +61,7 @@ class Wc_Tokens {
 			'order_coupons'        => esc_attr__( 'Order coupons', 'uncanny-automator' ),
 			'order_products'       => esc_attr__( 'Order products', 'uncanny-automator' ),
 			'order_products_qty'   => esc_attr__( 'Order products and quantity', 'uncanny-automator' ),
+			'order_qty'            => esc_attr__( 'Order quantity', 'uncanny-automator' ),
 			'payment_method'       => esc_attr__( 'Payment method', 'uncanny-automator' ),
 			'order_products_links' => esc_attr__( 'Order products links', 'uncanny-automator' ),
 		);
@@ -100,41 +101,35 @@ class Wc_Tokens {
 	 * @param $type
 	 */
 	public function uap_wc_trigger_save_meta_func( $order_id, $recipe_id, $args, $type ) {
+
 		if ( ! empty( $order_id ) && is_array( $args ) && $recipe_id ) {
+
 			foreach ( $args as $trigger_result ) {
-				if ( true === $trigger_result['result'] ) {
 
-					$recipe = Automator()->get_recipes_data( true, $recipe_id );
-					if ( is_array( $recipe ) ) {
-						$recipe = array_pop( $recipe );
-					}
-					$triggers = $recipe['triggers'];
-					if ( $triggers ) {
-						foreach ( $triggers as $trigger ) {
-							$trigger_id = $trigger['ID'];
-							if ( ! key_exists( 'WOOPRODUCT', $trigger['meta'] )
-							     && ! key_exists( 'WOORDERTOTAL', $trigger['meta'] )
-							     && ! key_exists( 'WCORDERSTATUS', $trigger['meta'] )
-							) {
-								continue;
-							} else {
-								$user_id        = (int) $trigger_result['args']['user_id'];
-								$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
-								$run_number     = (int) $trigger_result['args']['run_number'];
+				if ( true === $trigger_result['result'] && $trigger_result['args']['trigger_id'] && $trigger_result['args']['get_trigger_id'] ) {
 
-								$args = [
-									'user_id'        => $user_id,
-									'trigger_id'     => $trigger_id,
-									'meta_key'       => 'order_id',
-									'meta_value'     => $order_id,
-									'run_number'     => $run_number, //get run number
-									'trigger_log_id' => $trigger_log_id,
-								];
+					$run_number = Automator()->get->trigger_run_number(
+						$trigger_result['args']['trigger_id'],
+						$trigger_result['args']['get_trigger_id'],
+						$trigger_result['args']['user_id']
+					);
 
-								Automator()->insert_trigger_meta( $args );
-							}
-						}
-					}
+					$trigger_id     = (int) $trigger_result['args']['trigger_id'];
+					$user_id        = (int) $trigger_result['args']['user_id'];
+					$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
+					$run_number     = (int) $trigger_result['args']['run_number'];
+
+					$args = [
+						'user_id'        => $user_id,
+						'trigger_id'     => $trigger_id,
+						'meta_key'       => 'order_id',
+						'meta_value'     => $order_id,
+						'run_number'     => $run_number, //get run number
+						'trigger_log_id' => $trigger_log_id,
+					];
+
+					Automator()->insert_trigger_meta( $args );
+
 				}
 			}
 		}
@@ -166,6 +161,8 @@ class Wc_Tokens {
 		foreach ( $possible_tokens as $token_id => $input_title ) {
 			if ( 'billing_email' === (string) $token_id || 'shipping_email' === (string) $token_id ) {
 				$input_type = 'email';
+			} elseif ( 'order_qty' === (string) $token_id ) {
+				$input_type = 'int';
 			} else {
 				$input_type = 'text';
 			}
@@ -257,9 +254,10 @@ class Wc_Tokens {
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
-		$trigger_meta  = $pieces[1];
-		$parse         = $pieces[2];
-		$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
+		$trigger_meta         = $pieces[1];
+		$parse                = $pieces[2];
+		$multi_line_separator = apply_filters( 'automator_woo_multi_item_separator', ' | ', $pieces );
+		$recipe_log_id        = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 		if ( $trigger_data && $recipe_log_id ) {
 			foreach ( $trigger_data as $trigger ) {
 				if ( key_exists( $trigger_meta, $trigger['meta'] ) || ( isset( $trigger['meta']['code'] ) && $trigger_meta === $trigger['meta']['code'] ) ) {
@@ -295,7 +293,7 @@ class Wc_Tokens {
 								case 'WOOPRODUCT_THUMB_URL':
 									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
 									$value          = $this->get_woo_product_image_urls_from_items( $order, $value_to_match );
-									break;			
+									break;
 								case 'WOORDERTOTAL':
 									$value = strip_tags( wc_price( $order->get_total() ) );
 									break;
@@ -393,13 +391,10 @@ class Wc_Tokens {
 									break;
 								case 'order_comments':
 									$comments = $order->get_customer_note();
-									if ( is_array( $comments ) && ! empty( $comments ) ) {
-										$value = '<ul>';
-										$value .= '<li>' . implode( '</li><li>', $comments ) . '</li>';
-										$value .= '</ul>';
-									} else {
-										$value = ! empty( $comments ) ? $comments : '';
+									if ( is_array( $comments ) ) {
+										$comments = join( $multi_line_separator, $comments );
 									}
+									$value = ! empty( $comments ) ? $comments : '';
 									break;
 								case 'order_status':
 									$value = $order->get_status();
@@ -430,53 +425,55 @@ class Wc_Tokens {
 									break;
 								case 'order_coupons':
 									$coupons = $order->get_coupon_codes();
-									if ( is_array( $coupons ) ) {
-										$value = '<ul>';
-										$value .= '<li>' . implode( '</li><li>', $coupons ) . '</li>';
-										$value .= '</ul>';
-									} else {
-										$value = $coupons;
-									}
-
+									$value   = join( ', ', $coupons );
 									break;
 								case 'order_products':
 									$items = $order->get_items();
+									$prods = array();
 									if ( $items ) {
-										$value = '<ul>';
 										/** @var WC_Order_Item_Product $item */
 										foreach ( $items as $item ) {
 											$product = $item->get_product();
-											$value   .= '<li>' . $product->get_title() . '</li>';
+											$prods[] = $product->get_title();
 										}
-										$value .= '</ul>';
 									}
+									$value = join( $multi_line_separator, $prods );
 
 									break;
 								case 'order_products_qty':
 									$items = $order->get_items();
+									$prods = array();
 									if ( $items ) {
-										$value = '<ul>';
 										/** @var WC_Order_Item_Product $item */
 										foreach ( $items as $item ) {
 											$product = $item->get_product();
-											$value   .= '<li>' . $product->get_title() . ' x ' . $item->get_quantity() . '</li>';
+											$prods[] = $product->get_title() . ' x ' . $item->get_quantity();
 										}
-										$value .= '</ul>';
 									}
+									$value = join( $multi_line_separator, $prods );
 
+									break;
+								case 'order_qty':
+									$qty = 0;
+									/** @var WC_Order_Item_Product $item */
+									$items = $order->get_items();
+									foreach ( $items as $item ) {
+										$qty = $qty + $item->get_quantity();
+									}
+									$value = $qty;
 									break;
 								case 'order_products_links':
 									$items = $order->get_items();
+									$prods = array();
 									if ( $items ) {
-										$value = '<ul>';
 										/** @var WC_Order_Item_Product $item */
 										foreach ( $items as $item ) {
 											$product = $item->get_product();
-											$value   .= '<li><a href="' . $product->get_permalink() . '">' . $product->get_title() . '</a></li>';
+											$prods[] = '<a href="' . $product->get_permalink() . '">' . $product->get_title() . '</a>';
 										}
-										$value .= '</ul>';
 									}
 
+									$value = join( $multi_line_separator, $prods );
 									break;
 								case 'payment_method':
 									$value = $order->get_payment_method_title();
@@ -489,7 +486,7 @@ class Wc_Tokens {
 									break;
 								case 'SHIP_DATE':
 									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
-									$value = $value ? date( 'Y-m-d H:i:s', $value ) : '';
+									$value = $value ? date( 'Y-m-d H:i:s', $value ) : ''; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 									break;
 							}
 						}
@@ -571,7 +568,7 @@ class Wc_Tokens {
 	 * @return string
 	 */
 	public function get_woo_product_image_ids_from_items( $order, $value_to_match ) {
-		$items       = $order->get_items();
+		$items             = $order->get_items();
 		$product_image_ids = array();
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
@@ -592,7 +589,7 @@ class Wc_Tokens {
 	 * @return string
 	 */
 	public function get_woo_product_image_urls_from_items( $order, $value_to_match ) {
-		$items       = $order->get_items();
+		$items              = $order->get_items();
 		$product_image_urls = array();
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */

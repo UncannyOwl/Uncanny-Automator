@@ -126,12 +126,12 @@ class Copy_Recipe_Parts {
 	public function copy_recipe_part( $recipe_id, $new_recipe_id, $type ) {
 		$recipe_parts = get_posts(
 			array(
-				'post_parent' => $recipe_id,
-				'post_type'   => $type,
-				'post_status' => array( 'draft', 'publish' ),
-				'order_by'    => 'ID',
-				'order'       => 'ASC',
-				'posts_per_page' => '999'
+				'post_parent'    => $recipe_id,
+				'post_type'      => $type,
+				'post_status'    => array( 'draft', 'publish' ),
+				'order_by'       => 'ID',
+				'order'          => 'ASC',
+				'posts_per_page' => '999',
 			)
 		);
 
@@ -187,8 +187,7 @@ class Copy_Recipe_Parts {
 			'post_status'    => empty( $status ) ? $post->post_status : $status,
 			'post_title'     => $post_title,
 			'post_type'      => $post->post_type,
-			'post_date'      => $post->post_date,
-			'post_date_gmt'  => get_gmt_from_date( $post->post_date ),
+			'post_date'      => current_time( 'mysql' ),
 		);
 
 		$new_post_id = wp_insert_post( $new_post );

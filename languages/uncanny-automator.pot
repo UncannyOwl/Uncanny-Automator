@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.1.3\n"
+"Project-Id-Version: Uncanny Automator 3.1.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-08-20T14:51:26+00:00\n"
+"POT-Creation-Date: 2021-09-08T14:55:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -61,7 +61,7 @@ msgstr ""
 #: src/core/includes/recipe-logs-view.php:139
 #: src/core/includes/recipe-logs-view.php:184
 #: src/integrations/popup-maker/add-popup-maker-integration.php:60
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:180
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:178
 msgid "Recipe"
 msgstr ""
 
@@ -104,7 +104,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:211
 #: src/core/admin/class-admin-menu.php:381
 #: src/core/includes/recipe-logs-view.php:13
-#: src/core/lib/helpers/class-automator-cache-handler.php:332
+#: src/core/lib/helpers/class-automator-cache-handler.php:344
 msgid "Recipe log"
 msgstr ""
 
@@ -389,7 +389,7 @@ msgid "%1$s recipe"
 msgstr ""
 
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:35
-#: src/core/lib/helpers/class-automator-cache-handler.php:314
+#: src/core/lib/helpers/class-automator-cache-handler.php:326
 #: src/core/views/filters.php:28
 #: src/core/views/filters.php:63
 #: src/core/views/filters.php:110
@@ -398,7 +398,7 @@ msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:37
-#: src/core/lib/helpers/class-automator-cache-handler.php:323
+#: src/core/lib/helpers/class-automator-cache-handler.php:335
 msgid "Add new recipe"
 msgstr ""
 
@@ -471,6 +471,7 @@ msgstr ""
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:659
 #: src/core/includes/recipe-logs-view.php:88
 #: src/core/includes/recipe-logs-view.php:141
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:66
 msgid "Recipe status"
 msgstr ""
 
@@ -493,7 +494,7 @@ msgstr ""
 #: src/integrations/groundhogg/actions/gh-removetag.php:47
 #: src/integrations/mailchimp/actions/audience-addusertag.php:60
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:60
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:302
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:304
 msgid "Tags"
 msgstr ""
 
@@ -1001,7 +1002,7 @@ msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
 #: src/core/includes/pro-items-list.php:935
-#: src/integrations/learndash/triggers/ld-quizpercent.php:44
+#: src/integrations/learndash/triggers/ld-quizpercent.php:41
 msgid "A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on {{a quiz}}"
 msgstr ""
 
@@ -1429,12 +1430,14 @@ msgstr ""
 
 #. translators: Log column. The recipe status
 #. translators: Log column. The action status
+#. translators: Noun
 #: src/core/includes/recipe-logs-view.php:43
 #: src/core/includes/recipe-logs-view.php:135
 #: src/core/includes/recipe-logs-view.php:186
 #: src/core/views/admin-tools-header.php:5
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:60
 #: src/integrations/twitter/actions/twitter-poststatus.php:61
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:55
 #: src/integrations/wp/actions/wp-createpost.php:103
 msgid "Status"
 msgstr ""
@@ -1490,16 +1493,16 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:276
+#: src/core/lib/helpers/class-automator-cache-handler.php:288
 msgid "Automator cache flushed!"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:301
-#: src/core/lib/helpers/class-automator-cache-handler.php:305
+#: src/core/lib/helpers/class-automator-cache-handler.php:313
+#: src/core/lib/helpers/class-automator-cache-handler.php:317
 msgid "Automator"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:343
+#: src/core/lib/helpers/class-automator-cache-handler.php:355
 msgid "Flush cache"
 msgstr ""
 
@@ -1522,6 +1525,11 @@ msgstr ""
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:26
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:64
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:430
+#: src/integrations/learndash/triggers/ld-quizscore.php:55
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:64
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:58
+#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:64
+#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:56
 msgid "Example: 1"
 msgstr ""
 
@@ -1542,6 +1550,10 @@ msgid "Option"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:422
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:63
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:57
+#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:63
+#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:55
 msgid "Number of times"
 msgstr ""
 
@@ -1551,32 +1563,32 @@ msgid "Condition"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:459
-#: src/integrations/woocommerce/tokens/wc-tokens.php:312
+#: src/integrations/woocommerce/tokens/wc-tokens.php:310
 msgid "equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:460
-#: src/integrations/woocommerce/tokens/wc-tokens.php:315
+#: src/integrations/woocommerce/tokens/wc-tokens.php:313
 msgid "not equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:461
-#: src/integrations/woocommerce/tokens/wc-tokens.php:306
+#: src/integrations/woocommerce/tokens/wc-tokens.php:304
 msgid "less than"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:462
-#: src/integrations/woocommerce/tokens/wc-tokens.php:309
+#: src/integrations/woocommerce/tokens/wc-tokens.php:307
 msgid "greater than"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:463
-#: src/integrations/woocommerce/tokens/wc-tokens.php:318
+#: src/integrations/woocommerce/tokens/wc-tokens.php:316
 msgid "greater or equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:464
-#: src/integrations/woocommerce/tokens/wc-tokens.php:321
+#: src/integrations/woocommerce/tokens/wc-tokens.php:319
 msgid "less or equal to"
 msgstr ""
 
@@ -1784,11 +1796,11 @@ msgid "No action happened."
 msgstr ""
 
 #. translators: Article. Fallback. Any type of content (post, page, media, etc)
-#: src/core/lib/utilities/class-automator-input-parser.php:398
+#: src/core/lib/utilities/class-automator-input-parser.php:430
 msgid "Any"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:484
+#: src/core/lib/utilities/class-automator-input-parser.php:516
 msgid "Click here to reset your password."
 msgstr ""
 
@@ -3152,12 +3164,12 @@ msgid "Row %1$s"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:876
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:465
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:472
 msgid "Yes"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:878
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:466
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:473
 msgid "No"
 msgstr ""
 
@@ -3420,7 +3432,7 @@ msgid "Google Sheets"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:386
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:743
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:750
 msgid "Mailchimp"
 msgstr ""
 
@@ -4320,14 +4332,14 @@ msgid "A new affiliate is awaiting approval"
 msgstr ""
 
 #. translators: Logged-in trigger - Affiliate WP
+#: src/integrations/affiliate-wp/triggers/affwp-newaffiliate.php:40
 #: src/integrations/affiliate-wp/triggers/affwp-newaffiliate.php:42
-#: src/integrations/affiliate-wp/triggers/affwp-newaffiliate.php:44
 msgid "A user becomes an affiliate"
 msgstr ""
 
 #. translators: Logged-in trigger - Affiliate WP
+#: src/integrations/affiliate-wp/triggers/affwp-newaffiliateapproved.php:40
 #: src/integrations/affiliate-wp/triggers/affwp-newaffiliateapproved.php:42
-#: src/integrations/affiliate-wp/triggers/affwp-newaffiliateapproved.php:44
 msgid "A new affiliate is approved"
 msgstr ""
 
@@ -4582,7 +4594,7 @@ msgstr ""
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:53
 #: src/integrations/learndash/actions/ld-marktopicdone.php:106
 #: src/integrations/learndash/helpers/learndash-helpers.php:202
-#: src/integrations/learndash/tokens/tc-tokens.php:121
+#: src/integrations/learndash/tokens/ld-tokens.php:148
 #: src/integrations/learndash/triggers/ld-topicdone.php:71
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:49
 msgid "Topic ID"
@@ -4591,7 +4603,7 @@ msgstr ""
 #: src/integrations/buddyboss/tokens/bdb-tokens.php:298
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:52
 #: src/integrations/learndash/helpers/learndash-helpers.php:201
-#: src/integrations/learndash/tokens/tc-tokens.php:114
+#: src/integrations/learndash/tokens/ld-tokens.php:142
 #: src/integrations/learndash/triggers/ld-topicdone.php:70
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:48
 msgid "Topic title"
@@ -4600,7 +4612,7 @@ msgstr ""
 #: src/integrations/buddyboss/tokens/bdb-tokens.php:304
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:54
 #: src/integrations/learndash/helpers/learndash-helpers.php:203
-#: src/integrations/learndash/tokens/tc-tokens.php:128
+#: src/integrations/learndash/tokens/ld-tokens.php:154
 #: src/integrations/learndash/triggers/ld-topicdone.php:72
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:50
 msgid "Topic URL"
@@ -5421,7 +5433,7 @@ msgid "My google drive"
 msgstr ""
 
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:204
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:188
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:190
 msgid "Any spreadsheet"
 msgstr ""
 
@@ -5451,19 +5463,19 @@ msgid ""
 msgstr ""
 
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:527
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:779
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:786
 #: src/integrations/slack/helpers/slack-helpers.php:497
 #: src/integrations/twitter/helpers/twitter-helpers.php:150
 msgid "Connect an account"
 msgstr ""
 
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:530
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:783
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:790
 msgid "Change account"
 msgstr ""
 
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:554
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:808
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:815
 msgid "Disconnect"
 msgstr ""
 
@@ -5693,7 +5705,7 @@ msgstr ""
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:344
 #: src/integrations/integromat/helpers/integromat-helpers.php:162
 #: src/integrations/uncanny-automator/actions/uoa-sendwebhook.php:386
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:149
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:144
 #: src/integrations/wp/helpers/wp-helpers.php:402
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:386
 #: src/integrations/zapier/helpers/zapier-helpers.php:162
@@ -5702,8 +5714,8 @@ msgstr ""
 
 #: src/integrations/integromat/helpers/integromat-helpers.php:87
 #: src/integrations/integromat/helpers/integromat-helpers.php:105
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:71
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:87
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:66
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:82
 #: src/integrations/wp/helpers/wp-helpers.php:337
 #: src/integrations/wp/helpers/wp-helpers.php:354
 #: src/integrations/zapier/helpers/zapier-helpers.php:87
@@ -5712,7 +5724,7 @@ msgid "Please enter a valid webhook URL."
 msgstr ""
 
 #: src/integrations/integromat/helpers/integromat-helpers.php:112
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:94
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:89
 #: src/integrations/wp/helpers/wp-helpers.php:363
 #: src/integrations/zapier/helpers/zapier-helpers.php:112
 msgid "Please enter valid fields."
@@ -5720,7 +5732,7 @@ msgstr ""
 
 #. translators: 1. Webhook URL
 #: src/integrations/integromat/helpers/integromat-helpers.php:170
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:157
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:154
 #: src/integrations/wp/helpers/wp-helpers.php:412
 #: src/integrations/zapier/helpers/zapier-helpers.php:170
 msgid "Successfully sent data on %1$s."
@@ -5849,7 +5861,7 @@ msgstr ""
 #: src/integrations/learndash/actions/ld-marklessondone.php:67
 #: src/integrations/learndash/actions/ld-marktopicdone.php:80
 #: src/integrations/learndash/helpers/learndash-helpers.php:106
-#: src/integrations/learndash/tokens/tc-tokens.php:80
+#: src/integrations/learndash/tokens/ld-tokens.php:112
 #: src/integrations/learndash/triggers/ld-lessondone.php:48
 #: src/integrations/learndash/triggers/ld-topicdone.php:57
 #: src/integrations/learnpress/actions/lp-marklessondone.php:64
@@ -5883,7 +5895,7 @@ msgstr ""
 #: src/integrations/learndash/actions/ld-marklessondone.php:79
 #: src/integrations/learndash/actions/ld-marktopicdone.php:93
 #: src/integrations/learndash/helpers/learndash-helpers.php:154
-#: src/integrations/learndash/tokens/tc-tokens.php:100
+#: src/integrations/learndash/tokens/ld-tokens.php:130
 #: src/integrations/learndash/triggers/ld-lessondone.php:55
 #: src/integrations/learndash/triggers/ld-topicdone.php:64
 #: src/integrations/learnpress/actions/lp-marklessondone.php:90
@@ -5906,7 +5918,7 @@ msgid "Mark {{a topic}} complete for the user"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:105
-#: src/integrations/learndash/tokens/tc-tokens.php:74
+#: src/integrations/learndash/tokens/ld-tokens.php:106
 #: src/integrations/learndash/triggers/ld-lessondone.php:47
 #: src/integrations/learndash/triggers/ld-topicdone.php:56
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:103
@@ -5923,7 +5935,7 @@ msgid "Course title"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:107
-#: src/integrations/learndash/tokens/tc-tokens.php:86
+#: src/integrations/learndash/tokens/ld-tokens.php:118
 #: src/integrations/learndash/triggers/ld-lessondone.php:49
 #: src/integrations/learndash/triggers/ld-topicdone.php:58
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:105
@@ -5973,7 +5985,7 @@ msgid "Course ID"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:153
-#: src/integrations/learndash/tokens/tc-tokens.php:93
+#: src/integrations/learndash/tokens/ld-tokens.php:124
 #: src/integrations/learndash/triggers/ld-lessondone.php:54
 #: src/integrations/learndash/triggers/ld-topicdone.php:63
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:151
@@ -5984,7 +5996,7 @@ msgid "Lesson title"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:155
-#: src/integrations/learndash/tokens/tc-tokens.php:107
+#: src/integrations/learndash/tokens/ld-tokens.php:136
 #: src/integrations/learndash/triggers/ld-lessondone.php:56
 #: src/integrations/learndash/triggers/ld-topicdone.php:65
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:153
@@ -6113,6 +6125,14 @@ msgctxt "LearnDash"
 msgid "Quiz ID"
 msgstr ""
 
+#: src/integrations/learndash/tokens/ld-tokens.php:62
+msgid "User's quiz percentage"
+msgstr ""
+
+#: src/integrations/learndash/tokens/ld-tokens.php:72
+msgid "User's quiz score"
+msgstr ""
+
 #. translators: Logged-in trigger - LearnDash
 #. translators: Logged-in trigger - LearnPress
 #. translators: Logged-in trigger - LifterLMS
@@ -6226,12 +6246,16 @@ msgid "A user attempts (passes or fails) {{a quiz}}"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
-#: src/integrations/learndash/triggers/ld-quizpercent.php:42
+#: src/integrations/learndash/triggers/ld-quizpercent.php:39
 msgid "A user achieves a percentage {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)"
 msgstr ""
 
 #: src/integrations/learndash/triggers/ld-quizpercent.php:52
-msgid "Percentage"
+msgid "Required percentage"
+msgstr ""
+
+#: src/integrations/learndash/triggers/ld-quizpercent.php:53
+msgid "Example: 80"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
@@ -6244,9 +6268,8 @@ msgstr ""
 msgid "A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{a quiz}}"
 msgstr ""
 
-#. translators: Noun
-#: src/integrations/learndash/triggers/ld-quizscore.php:51
-msgid "Score"
+#: src/integrations/learndash/triggers/ld-quizscore.php:54
+msgid "Required score"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
@@ -6385,12 +6408,12 @@ msgstr ""
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:51
 #: src/integrations/mailchimp/actions/audience-unsubscribeauser.php:51
 #: src/integrations/mailchimp/actions/campaign-createandsend.php:54
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:100
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:102
 msgid "Audience"
 msgstr ""
 
 #: src/integrations/mailchimp/actions/audience-addauser.php:61
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:453
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:460
 msgid "Double opt-in"
 msgstr ""
 
@@ -6427,7 +6450,7 @@ msgid "Add only: The group(s) specified below will be added to the subscriber's 
 msgstr ""
 
 #: src/integrations/mailchimp/actions/audience-addauser.php:87
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:181
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:183
 msgid "Groups"
 msgstr ""
 
@@ -6544,7 +6567,7 @@ msgid "Supports merge tags such as *|FNAME|*, *|LNAME|*, *|FNAME|* *|LNAME|*, et
 msgstr ""
 
 #: src/integrations/mailchimp/actions/campaign-createandsend.php:77
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:616
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:623
 msgid "Template"
 msgstr ""
 
@@ -6556,41 +6579,41 @@ msgstr ""
 msgid "Email content"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:107
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:623
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:109
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:630
 msgid "All"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:309
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:460
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:311
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:467
 msgid "Any tag"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:401
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:406
 msgid "Select a Segment or Tag"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:639
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:646
 msgid "Select a template"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:744
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:751
 msgid "Mailchimp account settings"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:745
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:752
 msgid "<p>Connecting to Mailchimp requires signing into your account to link it to Automator. To get started, click the \"Connect an account\" button below or the \"Change account\" button if you need to connect a new account. Uncanny Automator can only connect to a single Mailchimp account at one time. (It is not possible to set some recipes up under one account and then switch accounts, all recipes are mapped to the account selected on this page and existing recipes may break if they were set up under another account.)</p>"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:751
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:758
 msgid "Connect mailchimp Sheets"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:986
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:993
 msgid "Mailchimp account not found."
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:1027
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:1034
 msgid "API error: "
 msgstr ""
 
@@ -7202,53 +7225,122 @@ msgstr ""
 msgid "Send data to {{a webhook}}"
 msgstr ""
 
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:194
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:190
 msgid "Any recipe"
 msgstr ""
 
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:202
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:198
 msgid "Recipe slug"
 msgstr ""
 
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:39
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:130
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:198
 msgid "Recipe ID"
 msgstr ""
 
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:45
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:136
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:46
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:205
 msgid "Recipe title"
 msgstr ""
 
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:51
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:142
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:53
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:212
 msgid "Recipe edit link"
 msgstr ""
 
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:58
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:149
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:60
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:219
 msgid "Recipe log URL"
 msgstr ""
 
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:65
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:156
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:67
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:226
 msgid "Action log URL"
 msgstr ""
 
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:74
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:233
+msgid "Trigger log URL"
+msgstr ""
+
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:139
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:59
+msgid "In progress"
+msgstr ""
+
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:142
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:60
+msgid "Completed"
+msgstr ""
+
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:145
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:61
+msgid "Completed with errors"
+msgstr ""
+
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:148
+msgid "Scheduled"
+msgstr ""
+
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:151
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:63
+msgid "Completed - do nothing"
+msgstr ""
+
 #. translators: Logged-in trigger - Uncanny Automator
-#: src/integrations/uncanny-automator/triggers/uoa-errors.php:45
-#: src/integrations/uncanny-automator/triggers/uoa-errors.php:47
+#: src/integrations/uncanny-automator/triggers/uoa-errors.php:46
+#: src/integrations/uncanny-automator/triggers/uoa-errors.php:48
 msgid "An Automator recipe completes with errors"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Automator
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:45
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:43
+msgid "{{A recipe:%1$s}} completes with a {{specific:%2$s}} status"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:45
+msgid "{{A recipe}} completes with a {{specific}} status"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:51
 msgid "A user completes {{a recipe:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Automator
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:47
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:53
 msgid "A user completes {{a recipe}} {{a number of}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:45
+msgid "{{A recipe:%1$s}} runs {{a number of:%2$s}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:47
+msgid "{{A recipe}} runs {{a number of}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:51
+msgid "{{A recipe:%1$s}} completes with errors  {{a number of:%2$s}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:53
+msgid "{{A recipe}} completes with errors  {{a number of}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:43
+msgid "{{A recipe:%1$s}} completes {{a number of:%2$s}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - Uncanny Automator
+#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:45
+msgid "{{A recipe}} completes {{a number of}} time(s)"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny CEUs. 2. Credit designation label (plural)
@@ -7558,12 +7650,12 @@ msgid "Order products and quantity"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:90
-#: src/integrations/woocommerce/tokens/wc-tokens.php:64
+#: src/integrations/woocommerce/tokens/wc-tokens.php:65
 msgid "Payment method"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:91
-#: src/integrations/woocommerce/tokens/wc-tokens.php:65
+#: src/integrations/woocommerce/tokens/wc-tokens.php:66
 msgid "Order products links"
 msgstr ""
 
@@ -7649,15 +7741,19 @@ msgstr ""
 msgid "Order discounts (unformatted)"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:620
+#: src/integrations/woocommerce/tokens/wc-tokens.php:64
+msgid "Order quantity"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:617
 msgid "Shipping tracking number"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:626
+#: src/integrations/woocommerce/tokens/wc-tokens.php:623
 msgid "Shipping carrier"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:632
+#: src/integrations/woocommerce/tokens/wc-tokens.php:629
 msgid "Ship date"
 msgstr ""
 
@@ -8347,6 +8443,11 @@ msgstr ""
 
 #: src/integrations/wpforo/actions/wpf-usergroup.php:44
 msgid "User groups"
+msgstr ""
+
+#. translators: Action - wpForo
+#: src/integrations/wpforo/actions/wpf-usergroup.php:56
+msgid "Set the user's primary group to {{a specific group:%1$s}}"
 msgstr ""
 
 #. translators: Action - wpForo

@@ -753,6 +753,18 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 			$user_id = get_current_user_id();
 		}
 
+		$results = $this->user_completed_recipe_number_times( $recipe_id, $user_id );
+
+		return $this->utilities->recipe_number_times_completed( $recipe_id, $results );
+	}
+
+	/**
+	 * @param $recipe_id
+	 * @param $user_id
+	 *
+	 * @return false|int|string
+	 */
+	public function user_completed_recipe_number_times( $recipe_id, $user_id ) {
 		global $wpdb;
 		$results = $wpdb->get_var(
 			$wpdb->prepare(
@@ -771,9 +783,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 			return false;
 		}
 
-		$results = empty( $results ) ? 0 : $results;
-
-		return $this->utilities->recipe_number_times_completed( $recipe_id, $results );
+		return empty( $results ) ? 0 : $results;
 	}
 
 	/**

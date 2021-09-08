@@ -3,10 +3,9 @@
 namespace Uncanny_Automator;
 
 /**
- * Class UOA_RECIPECOMPLETED
- * @package Uncanny_Automator
+ *
  */
-class UOA_RECIPECOMPLETED {
+class UOA_RECIPECOMPLETEDTIMES {
 
 	/**
 	 * Integration code
@@ -18,20 +17,14 @@ class UOA_RECIPECOMPLETED {
 	 * @var string
 	 */
 	private $trigger_code;
-	/**
-	 * @var string
-	 */
 	private $trigger_meta;
-	/**
-	 * @var string
-	 */
 	private $num_times;
 
 	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code = 'UOARECIPES';
+		$this->trigger_code = 'UOARECIPERUNS';
 		$this->trigger_meta = 'UOARECIPE';
 		$this->num_times    = 'RECIPENUMTIMES';
 		$this->define_trigger();
@@ -47,12 +40,13 @@ class UOA_RECIPECOMPLETED {
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/automator-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
+			'type'                => 'anonymous',
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'sentence'            => sprintf( esc_attr__( 'A user completes {{a recipe:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, $this->num_times ),
+			'sentence'            => sprintf( esc_attr__( '{{A recipe:%1$s}} runs {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, $this->num_times ),
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'select_option_name'  => esc_attr__( 'A user completes {{a recipe}} {{a number of}} time(s)', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( '{{A recipe}} runs {{a number of}} time(s)', 'uncanny-automator' ),
 			'action'              => 'automator_recipe_completed',
-			'priority'            => 99,
+			'priority'            => 299,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'on_completion' ),
 			'options'             => array(
@@ -80,24 +74,10 @@ class UOA_RECIPECOMPLETED {
 	 * @param $args
 	 */
 	public function on_completion( $recipe_id, $user_id, $recipe_log_id, $args ) {
-		// It's a logged in recipe, User ID is required.
-		if ( empty( $user_id ) ) {
-			return;
-		}
-		global $wpdb;
-		// get recipe actions
-		$table_name = $wpdb->prefix . Automator()->db->tables->action;
-		$errors     = $wpdb->get_results( $wpdb->prepare( "SELECT automator_action_id FROM $table_name WHERE automator_recipe_log_id = %d AND error_message != %s", $recipe_log_id, '' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-
-		if ( ! empty( $errors ) ) {
-			// bail early
-			return;
-		}
 
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_recipe    = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$num_times          = Automator()->get->meta_from_recipes( $recipes, $this->num_times );
-		$user_completions   = Automator()->user_completed_recipe_number_times( $recipe_id, $user_id );
 		$matched_recipe_ids = array();
 
 		if ( empty( $recipes ) ) {
@@ -109,10 +89,13 @@ class UOA_RECIPECOMPLETED {
 		if ( empty( $num_times ) ) {
 			return;
 		}
-		if ( 0 === $user_completions ) {
+
+		global $wpdb;
+		$table_name      = $wpdb->prefix . Automator()->db->tables->recipe;
+		$completed_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(ID) FROM $table_name WHERE automator_recipe_id = %d", $recipe_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( 0 === $completed_count ) {
 			return;
 		}
-
 		//Add where option is set to Any product
 		foreach ( $recipes as $_recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -124,7 +107,7 @@ class UOA_RECIPECOMPLETED {
 					if ( ! isset( $num_times[ $_recipe_id ][ $trigger_id ] ) ) {
 						continue;
 					}
-					if ( absint( $user_completions ) === absint( $num_times[ $_recipe_id ][ $trigger_id ] ) ) {
+					if ( 0 === absint( $completed_count ) % absint( $num_times[ $_recipe_id ][ $trigger_id ] ) ) {
 						$matched_recipe_ids[ $_recipe_id ] = array(
 							'recipe_id'  => $_recipe_id,
 							'trigger_id' => $trigger_id,
@@ -142,7 +125,7 @@ class UOA_RECIPECOMPLETED {
 			$pass_args = array(
 				'code'             => $this->trigger_code,
 				'meta'             => $this->trigger_meta,
-				'user_id'          => $user_id,
+				'user_id'          => 0,
 				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 				'trigger_to_match' => $matched_recipe_id['trigger_id'],
 				'ignore_post_id'   => true,

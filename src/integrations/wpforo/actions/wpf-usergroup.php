@@ -53,7 +53,7 @@ class WPF_USERGROUP {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - wpForo */
-			'sentence'           => sprintf( esc_attr__( "Set the user's primary group to {{a specific group:%1$s}}", 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( "Set the user's primary group to {{a specific group:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - wpForo */
 			'select_option_name' => esc_attr__( "Set the user's primary group to {{a specific group}}", 'uncanny-automator' ),
 			'priority'           => 10,

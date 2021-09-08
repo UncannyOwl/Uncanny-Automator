@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Automator_Input_Parser
  * @package Uncanny_Automator
@@ -26,7 +25,9 @@ class Automator_Input_Parser {
 	 * Automator_Input_Parser constructor.
 	 */
 	public function __construct() {
-		$this->defined_tokens = apply_filters( 'automator_pre_defined_tokens', array(
+		$this->defined_tokens = apply_filters(
+			'automator_pre_defined_tokens',
+			array(
 				'site_name',
 				'user_id',
 				'user_username',
@@ -86,6 +87,18 @@ class Automator_Input_Parser {
 			'action_data' => null,
 			'recipe_id'   => $recipe_id,
 		];
+		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
+			$args['trigger_log_id'] = $trigger_args['trigger_log_id'];
+		}
+		if ( ! empty( $trigger_args['run_number'] ) ) {
+			$args['run_number'] = $trigger_args['run_number'];
+		}
+		if ( ! empty( $trigger_args['recipe_log_id'] ) ) {
+			$args['recipe_log_id'] = $trigger_args['recipe_log_id'];
+		}
+		if ( ! empty( $trigger_args['trigger_id'] ) ) {
+			$args['trigger_id'] = $trigger_args['trigger_id'];
+		}
 
 		$url = $this->parse_vars( $args, $trigger_args );
 
@@ -100,7 +113,21 @@ class Automator_Input_Parser {
 				'action_data' => null,
 				'recipe_id'   => $recipe_id,
 			];
-			$url  = $this->parse_vars( $args, $trigger_args );
+
+			if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
+				$args['trigger_log_id'] = $trigger_args['trigger_log_id'];
+			}
+			if ( ! empty( $trigger_args['run_number'] ) ) {
+				$args['run_number'] = $trigger_args['run_number'];
+			}
+			if ( ! empty( $trigger_args['recipe_log_id'] ) ) {
+				$args['recipe_log_id'] = $trigger_args['recipe_log_id'];
+			}
+			if ( ! empty( $trigger_args['trigger_id'] ) ) {
+				$args['trigger_id'] = $trigger_args['trigger_id'];
+			}
+
+			$url = $this->parse_vars( $args, $trigger_args );
 
 		}
 
@@ -129,173 +156,178 @@ class Automator_Input_Parser {
 		$user_id        = $args['user_id'];
 		$action_data    = $args['action_data'];
 		$recipe_id      = $args['recipe_id'];
-		$trigger_log_id = key_exists( 'trigger_log_id', $args ) ? $args['trigger_log_id'] : null;
-		$run_number     = key_exists( 'run_number', $args ) ? $args['run_number'] : null;
+		$trigger_log_id = array_key_exists( 'trigger_log_id', $args ) ? absint( $args['trigger_log_id'] ) : null;
+		$run_number     = array_key_exists( 'run_number', $args ) ? absint( $args['run_number'] ) : null;
+		$recipe_log_id  = array_key_exists( 'recipe_log_id', $args ) ? absint( $args['recipe_log_id'] ) : null;
+		$trigger_id     = array_key_exists( 'trigger_id', $args ) ? absint( $args['trigger_id'] ) : null;
 
 		// find brackets and replace with real data
-		if ( preg_match_all( "/\{\{\s*(.*?)\s*\}\}/", $field_text, $arr ) ) {
-			$matches = $arr[1];
-			foreach ( $matches as $match ) {
+		preg_match_all( '/{{\s*(.*?)\s*}}/', $field_text, $arr );
+		if ( empty( $arr ) ) {
+			return str_replace( array( '{{', '}}' ), '', $field_text );
+		}
 
-				$replaceable = '';
+		$matches = $arr[1];
+		foreach ( $matches as $match ) {
 
-				if ( false !== strpos( $match, ':' ) ) {
-					if ( preg_match( '/(USERMETA)/', $match ) ) {
-						//Usermeta found!!
-						if ( is_null( $user_id ) && 0 !== absint( $user_id ) ) {
-							$user_id = wp_get_current_user()->ID;
+			$replaceable = '';
+
+			if ( false !== strpos( $match, ':' ) ) {
+				if ( preg_match( '/(USERMETA)/', $match ) ) {
+					//Usermeta found!!
+					if ( is_null( $user_id ) && 0 !== absint( $user_id ) ) {
+						$user_id = wp_get_current_user()->ID;
+					}
+					if ( 0 !== $user_id ) {
+						$pieces = explode( ':', $match );
+						switch ( $pieces[0] ) {
+							case 'USERMETAEMAIL':
+								$user_meta = get_user_meta( $user_id, $pieces[1], true );
+
+								$replaceable = is_email( $user_meta ) ? $user_meta : '';
+								break;
+							case 'USERMETA':
+								$user_data = get_userdata( $user_id );
+								$user_data = (array) $user_data->data;
+								if ( isset( $user_data[ $pieces[1] ] ) ) {
+									$replaceable = $user_data[ $pieces[1] ];
+								} else {
+									$user_meta   = get_user_meta( $user_id, $pieces[1], true );
+									$replaceable = $user_meta;
+								}
+								break;
 						}
-						if ( 0 !== $user_id ) {
-							$pieces = explode( ':', $match );
-							switch ( $pieces[0] ) {
-								case 'USERMETAEMAIL':
-									$user_meta = get_user_meta( $user_id, $pieces[1], true );
-
-									$replaceable = is_email( $user_meta ) ? $user_meta : '';
-									break;
-								case 'USERMETA':
-									$user_data = get_userdata( $user_id );
-									$user_data = (array) $user_data->data;
-									if ( isset( $user_data[ $pieces[1] ] ) ) {
-										$replaceable = $user_data[ $pieces[1] ];
-									} else {
-										$user_meta   = get_user_meta( $user_id, $pieces[1], true );
-										$replaceable = $user_meta;
-									}
-									break;
-							}
-						}
-						$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
-						$field_text = str_replace( $match, $replaceable, $field_text );
-					} else {
-						//Non usermeta
-						global $wpdb;
-						$qq          = "SELECT meta_value
+					}
+					$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
+					$field_text = str_replace( $match, $replaceable, $field_text );
+				} else {
+					//Non usermeta
+					global $wpdb;
+					$qq          = "SELECT meta_value
 										FROM {$wpdb->prefix}uap_trigger_log_meta
 										WHERE 1=1
 										  AND meta_key = %s
 										  AND automator_trigger_log_id = %d
 										  AND user_id = %d
 										  AND run_number = %d";
-						$qq          = $wpdb->prepare( $qq, 'parsed_data', $trigger_log_id, $user_id, $run_number );
-						$parsed_data = $wpdb->get_var( $qq );
-						$run_func    = true;
+					$qq          = $wpdb->prepare( $qq, 'parsed_data', $trigger_log_id, $user_id, $run_number );
+					$parsed_data = $wpdb->get_var( $qq );
+					$run_func    = true;
 
-						if ( ! empty( $parsed_data ) ) {
-							$parsed_data = maybe_unserialize( $parsed_data );
-							if ( key_exists( '{{' . $match . '}}', $parsed_data ) && ! empty( $parsed_data[ '{{' . $match . '}}' ] ) ) {
-								$replaceable = $parsed_data[ '{{' . $match . '}}' ];
-								$run_func    = false;
-							} else {
-								$run_func = true;
-							}
-						}
-						if ( empty( $replaceable ) ) {
+					if ( ! empty( $parsed_data ) ) {
+						$parsed_data = maybe_unserialize( $parsed_data );
+						if ( key_exists( '{{' . $match . '}}', $parsed_data ) && ! empty( $parsed_data[ '{{' . $match . '}}' ] ) ) {
+							$replaceable = $parsed_data[ '{{' . $match . '}}' ];
+							$run_func    = false;
+						} else {
 							$run_func = true;
 						}
-						if ( $run_func ) {
-							$pieces = explode( ':', $match );
-							if ( $pieces ) {
-								$replace_args = [
-									'pieces'         => $pieces,
-									'recipe_id'      => $recipe_id,
-									'trigger_log_id' => $trigger_log_id,
-									'run_number'     => $run_number,
-									'user_id'        => $user_id,
-								];
+					}
+					if ( empty( $replaceable ) ) {
+						$run_func = true;
+					}
+					if ( $run_func ) {
+						$pieces = explode( ':', $match );
+						if ( $pieces ) {
+							$replace_args = array(
+								'pieces'         => $pieces,
+								'recipe_id'      => $recipe_id,
+								'recipe_log_id'  => $recipe_log_id,
+								'trigger_id'     => $trigger_id,
+								'trigger_log_id' => $trigger_log_id,
+								'run_number'     => $run_number,
+								'user_id'        => $user_id,
+							);
 
-								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
-							}
+							$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
 						}
 					}
-				} elseif ( in_array( $match, $this->defined_tokens, true ) ) {
-					if ( null === $user_id ) {
-						$current_user = wp_get_current_user();
-					} else {
-						$current_user = get_user_by( 'ID', $user_id );
-					}
-
-					switch ( $match ) {
-						case 'site_name':
-							$replaceable = get_bloginfo( 'name' );
-							break;
-
-						case 'user_username':
-							$replaceable = isset( $current_user->user_login ) ? $current_user->user_login : '';
-							break;
-
-						case 'user_id':
-							$replaceable = isset( $current_user->ID ) ? $current_user->ID : 0;
-							break;
-
-						case 'user_firstname':
-							$replaceable = isset( $current_user->first_name ) ? $current_user->first_name : '';
-							break;
-
-						case 'user_lastname':
-							$replaceable = isset( $current_user->last_name ) ? $current_user->last_name : '';
-							break;
-
-						case 'user_email':
-							$replaceable = isset( $current_user->user_email ) ? $current_user->user_email : '';
-							break;
-
-						case 'user_displayname':
-							$replaceable = isset( $current_user->display_name ) ? $current_user->display_name : '';
-							break;
-
-						case 'reset_pass_link':
-							$replaceable = $this->generate_reset_token( $user_id );
-							break;
-
-						case 'admin_email':
-							$replaceable = get_bloginfo( 'admin_email' );
-							break;
-
-						case 'site_url':
-							$replaceable = get_site_url();
-							break;
-
-						case 'current_date':
-							if ( function_exists( 'wp_date' ) ) {
-								$replaceable = wp_date( get_option( 'date_format' ) );
-							} else {
-								$replaceable = date_i18n( get_option( 'date_format' ) );
-							}
-
-							break;
-
-						case 'current_time':
-							if ( function_exists( 'wp_date' ) ) {
-								$replaceable = wp_date( get_option( 'time_format' ) );
-							} else {
-								$replaceable = date_i18n( get_option( 'time_format' ) );
-							}
-
-							break;
-
-						case 'recipe_name':
-							$recipe = get_post( $recipe_id );
-							if ( null !== $recipe ) {
-								$replaceable = $recipe->post_title;
-							}
-							break;
-						default:
-							$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $current_user );
-							break;
-					}
+				}
+			} elseif ( in_array( $match, $this->defined_tokens, true ) ) {
+				if ( null === $user_id ) {
+					$current_user = wp_get_current_user();
+				} else {
+					$current_user = get_user_by( 'ID', $user_id );
 				}
 
-				$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $user_id );
-				$field_text  = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
-				$field_text  = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
+				switch ( $match ) {
+					case 'site_name':
+						$replaceable = get_bloginfo( 'name' );
+						break;
+
+					case 'user_username':
+						$replaceable = isset( $current_user->user_login ) ? $current_user->user_login : '';
+						break;
+
+					case 'user_id':
+						$replaceable = isset( $current_user->ID ) ? $current_user->ID : 0;
+						break;
+
+					case 'user_firstname':
+						$replaceable = isset( $current_user->first_name ) ? $current_user->first_name : '';
+						break;
+
+					case 'user_lastname':
+						$replaceable = isset( $current_user->last_name ) ? $current_user->last_name : '';
+						break;
+
+					case 'user_email':
+						$replaceable = isset( $current_user->user_email ) ? $current_user->user_email : '';
+						break;
+
+					case 'user_displayname':
+						$replaceable = isset( $current_user->display_name ) ? $current_user->display_name : '';
+						break;
+
+					case 'reset_pass_link':
+						$replaceable = $this->generate_reset_token( $user_id );
+						break;
+
+					case 'admin_email':
+						$replaceable = get_bloginfo( 'admin_email' );
+						break;
+
+					case 'site_url':
+						$replaceable = get_site_url();
+						break;
+
+					case 'current_date':
+						if ( function_exists( 'wp_date' ) ) {
+							$replaceable = wp_date( get_option( 'date_format' ) );
+						} else {
+							$replaceable = date_i18n( get_option( 'date_format' ) );
+						}
+
+						break;
+
+					case 'current_time':
+						if ( function_exists( 'wp_date' ) ) {
+							$replaceable = wp_date( get_option( 'time_format' ) );
+						} else {
+							$replaceable = date_i18n( get_option( 'time_format' ) );
+						}
+
+						break;
+
+					case 'recipe_name':
+						$recipe = get_post( $recipe_id );
+						if ( null !== $recipe ) {
+							$replaceable = $recipe->post_title;
+						}
+						break;
+					default:
+						$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $current_user );
+						break;
+				}
 			}
+
+			$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $user_id );
+			$field_text  = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
+			$field_text  = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 		}
 
-		$field_text = str_replace( [ '{{', '}}' ], '', $field_text );
 
-		return $field_text;
-
+		return str_replace( [ '{{', '}}' ], '', $field_text );
 	}
 
 	/**
@@ -325,9 +357,9 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false ||
-				 strpos( $piece, '_URL' ) !== false ||
-				 strpos( $piece, '_THUMB_URL' ) !== false ||
-				 strpos( $piece, '_THUMB_ID' ) !== false ) {
+			     strpos( $piece, '_URL' ) !== false ||
+			     strpos( $piece, '_THUMB_URL' ) !== false ||
+			     strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -346,7 +378,7 @@ class Automator_Input_Parser {
 				} else {
 					$post_id = $trigger['meta'][ $piece ];
 				}
-				
+
 				switch ( $piece ) {
 					case 'WPPOST':
 					case 'WPPAGE':
@@ -434,7 +466,7 @@ class Automator_Input_Parser {
 		 * Ticket# 22255
 		 * @since 3.0
 		 */
-		
+
 		return do_shortcode( $return );
 	}
 
@@ -501,7 +533,6 @@ class Automator_Input_Parser {
 	 * @return null|string
 	 */
 	public function text( $field_text = null, $recipe_id = null, $user_id = null, $trigger_args = null ) {
-
 		// Sanity check that there was a $field_text passed
 		if ( null === $field_text ) {
 			return null;
@@ -517,8 +548,14 @@ class Automator_Input_Parser {
 		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
 			$args['trigger_log_id'] = $trigger_args['trigger_log_id'];
 		}
-		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
+		if ( ! empty( $trigger_args['run_number'] ) ) {
 			$args['run_number'] = $trigger_args['run_number'];
+		}
+		if ( ! empty( $trigger_args['recipe_log_id'] ) ) {
+			$args['recipe_log_id'] = $trigger_args['recipe_log_id'];
+		}
+		if ( ! empty( $trigger_args['trigger_id'] ) ) {
+			$args['trigger_id'] = $trigger_args['trigger_id'];
 		}
 
 		$return = apply_filters( 'automator_text_field_parsed', $this->parse_vars( $args, $trigger_args ), $args );

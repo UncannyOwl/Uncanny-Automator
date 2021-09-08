@@ -43,7 +43,7 @@ class Wpf_Tokens {
 		if ( empty( $form_ids ) ) {
 			return $tokens;
 		}
-
+		$allowed_token_types = array( 'url', 'email', 'float', 'int', 'text');
 		if ( ! empty( $form_ids ) ) {
 			foreach ( $form_ids as $form_id ) {
 				$fields = array();
@@ -52,12 +52,12 @@ class Wpf_Tokens {
 				if ( is_array( $meta['fields'] ) ) {
 					foreach ( $meta['fields'] as $field ) {
 						$input_id    = $field['id'];
-						$input_title = $field['label'];
+						$input_title = isset($field['label'])? $field['label'] :$field['name'];
 						$token_id    = "$form_id|$input_id";
 						$fields[]    = [
 							'tokenId'         => $token_id,
 							'tokenName'       => $input_title,
-							'tokenType'       => $field['type'],
+							'tokenType'       => in_array( $field['type'], $allowed_token_types) ? $field['type'] : 'text',
 							'tokenIdentifier' => $trigger_meta,
 						];
 					}

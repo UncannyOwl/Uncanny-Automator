@@ -183,7 +183,7 @@ class Automator_Recipe_Process_User {
 					if ( 1 === + $mark_trigger_complete ) {
 						$this->maybe_trigger_complete( $args );
 					} else {
-						$result[] = array( 'result' => true, 'args' => $args );
+						$result[] = array( 'result' => true, 'args' => $args ); //phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 					}
 				}
 			}
@@ -913,10 +913,10 @@ class Automator_Recipe_Process_User {
 	/**
 	 * Get the trigger for the user
 	 *
-	 * @param $user_id       null
-	 * @param $trigger_id    null
-	 * @param $meta_key      null
-	 * @param $recipe_log_id null
+	 * @param null $user_id
+	 * @param null $trigger_id
+	 * @param null $meta_key
+	 * @param null $recipe_log_id
 	 *
 	 * @return null|int
 	 */

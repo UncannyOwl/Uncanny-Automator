@@ -45,13 +45,20 @@ class LD_QUIZSCORE {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'learndash_quiz_completed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->field->less_or_greater_than(),
 				/* translators: Noun */
-				Automator()->helpers->recipe->field->integer_field( 'QUIZSCORE', esc_attr__( 'Score', 'uncanny-automator' ), '' ),
+				Automator()->helpers->recipe->field->int(
+					array(
+						'option_code' => 'QUIZSCORE',
+						'label'       => esc_attr__( 'Required score', 'uncanny-automator' ),
+						'placeholder' => esc_attr__( 'Example: 1', 'uncanny-automator' ),
+						'default'     => '1',
+					)
+				),
 				Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -85,7 +92,7 @@ class LD_QUIZSCORE {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( Automator()->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_score[ $recipe_id ][ $trigger_id ], $score ) ) {
-					$matched_recipe_ids[] = array(
+					$matched_recipe_ids[ $recipe_id ] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
 					);
@@ -100,43 +107,54 @@ class LD_QUIZSCORE {
 		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 			//Any Quiz OR a specific quiz
 			$r_quiz = (int) $required_quiz[ $matched_recipe_id['recipe_id'] ][ $matched_recipe_id['trigger_id'] ];
-			if ( intval( '-1' ) === intval( $r_quiz ) || $r_quiz === (int) $quiz_id ) {
-				$args = array(
-					'code'             => $this->trigger_code,
-					'meta'             => $this->trigger_meta,
-					'user_id'          => $current_user->ID,
-					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
-					'trigger_to_match' => $matched_recipe_id['trigger_id'],
-					'ignore_post_id'   => true,
-					'post_id'          => $quiz_id,
+			if ( intval( '-1' ) !== intval( $r_quiz ) && (int) $r_quiz !== (int) $quiz_id ) {
+				continue;
+			}
+			$args = array(
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'user_id'          => $current_user->ID,
+				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+				'trigger_to_match' => $matched_recipe_id['trigger_id'],
+				'ignore_post_id'   => true,
+				'post_id'          => $quiz_id,
+			);
+
+			$result = Automator()->maybe_add_trigger_entry( $args, false );
+			if ( empty( $result ) ) {
+				continue;
+			}
+			foreach ( $result as $r ) {
+				if ( false === $r['result'] ) {
+					continue;
+				}
+				$trigger_id     = (int) $r['args']['trigger_id'];
+				$user_id        = (int) $r['args']['user_id'];
+				$trigger_log_id = (int) $r['args']['get_trigger_id'];
+				$run_number     = (int) $r['args']['run_number'];
+
+				$insert = array(
+					'user_id'        => $user_id,
+					'trigger_id'     => $trigger_id,
+					'trigger_log_id' => $trigger_log_id,
+					'meta_key'       => 'LDQUIZ_achieved_score',
+					'meta_value'     => $score,
+					'run_number'     => $run_number,
+				);
+				Automator()->insert_trigger_meta( $insert );
+
+				$insert = array(
+					'user_id'        => $user_id,
+					'trigger_id'     => $trigger_id,
+					'trigger_log_id' => $trigger_log_id,
+					'meta_key'       => 'quiz_id',
+					'meta_value'     => $quiz_id,
+					'run_number'     => $run_number,
 				);
 
-				$result = Automator()->maybe_add_trigger_entry( $args, false );
-
-				if ( $result ) {
-					foreach ( $result as $r ) {
-						if ( true === $r['result'] && isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-							$trigger_id     = (int) $r['args']['trigger_id'];
-							$user_id        = (int) $r['args']['user_id'];
-							$trigger_log_id = (int) $r['args']['get_trigger_id'];
-							$run_number     = (int) $r['args']['run_number'];
-
-							$insert = array(
-								'user_id'        => $user_id,
-								'trigger_id'     => $trigger_id,
-								'trigger_log_id' => $trigger_log_id,
-								'meta_key'       => 'QUIZSCORE',
-								'meta_value'     => $score,
-								'run_number'     => $run_number,
-							);
-
-							Automator()->insert_trigger_meta( $insert );
-							Automator()->maybe_trigger_complete( $r['args'] );
-						}
-					}
-				}
+				Automator()->insert_trigger_meta( $insert );
+				Automator()->maybe_trigger_complete( $r['args'] );
 			}
 		}
-
 	}
 }

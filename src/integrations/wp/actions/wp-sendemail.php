@@ -179,6 +179,7 @@ class WP_SENDEMAIL {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
+			return;
 		}
 
 		Automator()->complete->action( $user_id, $action_data, $recipe_id );

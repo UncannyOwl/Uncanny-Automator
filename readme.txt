@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.0
 Tested up to: 5.8
 Requires PHP: 7.2
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -174,6 +174,38 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.1.4 [2021-09-08] =
+
+**New Triggers:**
+
+* Automator Core - A recipe completes with errors a number of times #754
+* Automator Core - A recipe completes a number of times #752
+* Automator Core - A recipe runs a number of times #751
+* Automator Core - A recipe completes with a specific status #726
+
+**Added:**
+
+* LearnDash - A user achieves a percentage greater than, less than or equal to a value on a quiz: "User's quiz percentage" token #809
+* LearnDash - A user achieves a score greater than, less than or equal to a value on a quiz: "User's quiz score" token #808
+* WooCommerce - "Order quantity" token for triggers that support order tokens #733
+* WooCommerce - `automator_woo_multi_item_separator` filter to specify separator for multiple items in a token #790
+
+**Fixed:**
+
+* WooCommerce - Order coupon token no longer includes HTML #784
+* WooCommerce ⁃ Token no longer returns "Any" instead of value #741
+* Woocommerce Memberships - A user is added to a membership trigger now fires more consistently #736
+* WordPress Core - Fixed argument count for delete_post action #783
+* wpForo - Fixed unescaped sprintf token #817 
+* Uncanny Continuing Education Credits - Invalid field types #781
+* AffiliateWP - "A new affiliate is approved" now fires reliably for automatic approvals #773
+* AffiliateWP - "An affiliate makes a referral of a specific type" now fires more consistently #713
+* Slack - Channel limit increased from 100 to 1000 #772
+* MailChimp - Segments now displayed more consistently in the "Create and send a campaign" action #738
+* Google Sheets - Fixed notice and allowed token types #708
+* Added missing space to log sentence #277
+* Cloning a recipe - The clone no longer has the same creation date as the original #811
 
 = 3.1.3 [2021-08-20] =
 
@@ -472,37 +504,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * MasterStudy LMS integration no longer appears when MasterStudy is not installed
 * Removed escaping from some strings containing single quotes
 
-= 2.10.2 [2021-02-24] =
-
-**Updated:**
-
-* WooCommerce triggers: Tokens now include unformatted variants for currency amounts
-* WooCommerce Memberships: Name changed to Woo Memberships
-* Internal code updates
-
-**Fixed:**
-
-* MailPoet: Add a subscriber to a list action now works when the user already exists on a default list
-* MailPoet: Issue with multi-select fields updated via AJAX
-* MemberPress: A user purchases a recurring subscription now fires consistently
-* PHP notices/warnings when using an invalid trigger ID in tokens
-* WooCommerce Memberships: A user is added to a membership plan now also fires when a user is manually added to a membership by an admin
-* WP Job Manager: A user submits a specific type of job now also fires when when jobs are submitted via the admin dashboard
-
-= 2.10.1 [2021-01-27] =
-
-**Updated:**
-
-* Core: Updates to repeater field UI to support Google Sheets integration in Automator Pro
-* Core: Minor sentence updates
-* Tutor LMS: Enroll a user in a course now has an "All courses" option
-
-**Fixed:**
-
-* Core: "Any option" trigger token saving values twice
-* WordPress Core: Send an email action no longer generating extraneous password reset links
-* WooCommerce: WC Ajax hook exception
-
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
@@ -512,6 +513,3 @@ Uncanny Automator 3.1 is a major release. We recommend taking a backup and testi
 
 = 3.1 =
 Uncanny Automator 3.1 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
-
-= 3.0 =
-Uncanny Automator 3.0 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

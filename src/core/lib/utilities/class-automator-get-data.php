@@ -1161,4 +1161,68 @@ class Automator_Get_Data {
 
 		return $requires_user;
 	}
+
+	/**
+	 * @param $trigger_id
+	 * @param $run_number
+	 * @param $recipe_id
+	 * @param $meta_key
+	 * @param $user_id
+	 * @param $recipe_log_id
+	 *
+	 * @return string|null
+	 */
+	public function mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, $meta_key, $user_id, $recipe_log_id ) {
+		global $wpdb;
+		$tm_table = $wpdb->prefix . Automator()->db->tables->trigger_meta;
+		$t_table  = $wpdb->prefix . Automator()->db->tables->trigger;
+
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT tm.meta_value
+FROM $tm_table tm
+LEFT JOIN $t_table t
+ON tm.automator_trigger_log_id = t.ID AND t.automator_trigger_id = %d AND t.automator_recipe_log_id = %d AND t.automator_recipe_id = %d AND t.user_id = %d
+WHERE tm.run_number = %d
+AND tm.meta_key = %s",
+				$trigger_id,
+				$recipe_log_id,
+				$recipe_id,
+				$user_id,
+				$run_number,
+				$meta_key
+			)
+		);
+	}
+
+	/**
+	 * @param $trigger_id
+	 * @param $run_number
+	 * @param $recipe_id
+	 * @param $meta_key
+	 * @param $user_id
+	 * @param $recipe_log_id
+	 *
+	 * @return string|null
+	 */
+	public function mayabe_get_real_trigger_log_id( $trigger_id, $run_number, $recipe_id, $user_id, $recipe_log_id ) {
+		global $wpdb;
+		$tm_table = $wpdb->prefix . Automator()->db->tables->trigger_meta;
+		$t_table  = $wpdb->prefix . Automator()->db->tables->trigger;
+
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT tm.automator_trigger_log_id
+FROM $tm_table tm
+LEFT JOIN $t_table t
+ON tm.automator_trigger_log_id = t.ID AND t.automator_trigger_id = %d AND t.automator_recipe_log_id = %d AND t.automator_recipe_id = %d AND t.user_id = %d
+WHERE tm.run_number = %d",
+				$trigger_id,
+				$recipe_log_id,
+				$recipe_id,
+				$user_id,
+				$run_number
+			)
+		);
+	}
 }

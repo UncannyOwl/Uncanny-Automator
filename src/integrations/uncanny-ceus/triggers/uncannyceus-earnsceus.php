@@ -27,7 +27,7 @@ class UNCANNYCEUS_EARNSCEUS {
 
 			// Ths trigger is running through a crob job .. We need to let is pass through cron checks
 			add_filter( 'uap_run_automator_actions', [ $this, 'maybe_allow_triggers_to_actionify', 10, 2 ] );
-
+			add_filter( 'automator_maybe_parse_token', [ $this, 'tokens' ], 20, 6 );
 			$this->trigger_code = 'EARNSCEUS';
 			$this->trigger_meta = 'AMOUNTSCEUS';
 			$this->define_trigger();
@@ -61,7 +61,7 @@ class UNCANNYCEUS_EARNSCEUS {
 					'option_code'     => $this->trigger_meta,
 					/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
 					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
-					'input_type'      => 'int',
+					'input_type'      => 'float',
 					'validation_type' => 'integer',
 					'required'        => true,
 				],
@@ -106,8 +106,8 @@ class UNCANNYCEUS_EARNSCEUS {
 		$ceu_shortcodes = \uncanny_ceu\Utilities::get_class_instance( 'CeuShortcodes' );
 
 		$atts       = [ 'user-id' => $current_user->ID ];
-		$total_ceus = absint( $ceu_shortcodes->uo_ceu_total( $atts ) );
-		$ceu_value  = absint( $ceu_value );
+		$total_ceus = (float) $ceu_shortcodes->uo_ceu_total( $atts );
+		$ceu_value  = (float) $ceu_value;
 
 		if ( ! $total_ceus || ! $ceu_value ) {
 			return;
@@ -126,7 +126,7 @@ class UNCANNYCEUS_EARNSCEUS {
 				$trigger_id = $trigger['ID'];
 				$ceu_amount = $require_ceu_amount[ $recipe_id ][ $trigger_id ];
 
-				if ( $total_ceus >= absint( $ceu_amount ) ) {
+				if ( $total_ceus >= (float) $ceu_amount ) {
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
@@ -152,6 +152,26 @@ class UNCANNYCEUS_EARNSCEUS {
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
+
+							$trigger_meta = [
+								'user_id'        => $current_user->ID,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							];
+
+							$trigger_meta['meta_key']   = $this->trigger_meta;
+							$trigger_meta['meta_value'] = maybe_serialize( $ceu_value );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							$trigger_meta['meta_key']   = $this->trigger_meta . '_title';
+							$trigger_meta['meta_value'] = maybe_serialize( $current_course_title );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							$trigger_meta['meta_key']   = $this->trigger_meta . '_date';
+							$trigger_meta['meta_value'] = maybe_serialize( $completion_date );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
 							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
@@ -159,5 +179,61 @@ class UNCANNYCEUS_EARNSCEUS {
 			}
 
 		}
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 *
+	 * @return string|null
+	 */
+	public function tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = [] ) {
+
+		if ( $pieces ) {
+			if (
+			in_array( $this->trigger_code, $pieces, true )
+			) {
+
+				if ( ! absint( $user_id ) ) {
+					return $value;
+				}
+
+				if ( ! absint( $recipe_id ) ) {
+					return $value;
+				}
+
+				$replace_pieces = $replace_args['pieces'];
+				$trigger_log_id = $replace_args['trigger_log_id'];
+				$run_number     = $replace_args['run_number'];
+				$user_id        = $replace_args['user_id'];
+				$trigger_id     = absint( $replace_pieces[0] );
+
+				// Verb can be found from trigger meta
+				if ( in_array( $this->trigger_meta, $pieces ) ) {
+					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( $this->trigger_meta, $trigger_id, $trigger_log_id, $run_number, $user_id );
+
+					return $value;
+				}
+
+				// Verb can be found from trigger meta
+				if ( in_array( $this->trigger_meta . '_title', $pieces ) ) {
+					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( $this->trigger_meta . '_title', $trigger_id, $trigger_log_id, $run_number, $user_id );
+
+					return $value;
+				}
+
+				// Verb can be found from trigger meta
+				if ( in_array( $this->trigger_meta . '_date', $pieces ) ) {
+					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( $this->trigger_meta . '_date', $trigger_id, $trigger_log_id, $run_number, $user_id );
+
+					return date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), absint( $value ) );
+				}
+			}
+		}
+
+		return $value;
 	}
 }

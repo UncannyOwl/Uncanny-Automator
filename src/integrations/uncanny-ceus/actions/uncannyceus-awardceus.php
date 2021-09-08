@@ -67,7 +67,7 @@ class UNCANNYCEUS_AWARDCEUS {
 								'option_code' => 'AWARDCEUS',
 								/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
 								'label'       => sprintf( esc_attr__( 'Number of %1$s to award', 'uncanny-automator' ), $credit_designation_label_plural ),
-								'input_type'  => 'int',
+								'input_type'  => 'float',
 								'required'    => true,
 
 							],

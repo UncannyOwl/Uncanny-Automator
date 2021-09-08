@@ -57,7 +57,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 					'option_code'     => $this->trigger_meta,
 					/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
 					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
-					'input_type'      => 'int',
+					'input_type'      => 'float',
 					'validation_type' => 'integer',
 					'required'        => true,
 					'relevant_tokens' => [
@@ -85,7 +85,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 	 */
 	public function updated_user_ceu_record( $current_user, $is_manual_creation, $completion_date, $current_course_id, $current_course_title, $course_slug, $ceu_value ) {
 
-		$ceu_value = absint( $ceu_value );
+		$ceu_value = (float) $ceu_value;
 
 		if ( ! $ceu_value ) {
 			return;
@@ -104,7 +104,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 				$trigger_id = $trigger['ID'];
 				$ceu_amount = $require_ceu_amount[ $recipe_id ][ $trigger_id ];
 
-				if ( $ceu_value === absint( $ceu_amount ) ) {
+				if ( $ceu_value === (float) $ceu_amount ) {
 					$matched_recipe_ids[] = [
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,

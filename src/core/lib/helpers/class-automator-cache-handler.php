@@ -190,10 +190,22 @@ class Automator_Cache_Handler {
 	}
 
 	/**
-	 * @param $post_id
-	 * @param $post
+	 * @param mixed ...$args
 	 */
-	public function recipe_post_deleted( $post_id, $post ) {
+	public function recipe_post_deleted( ...$args ) {
+
+		if ( empty( $args ) ) {
+			return;
+		}
+		$post_id = isset( $args[0] ) ? absint( $args[0] ) : 0;
+		if ( 0 === $post_id ) {
+			return;
+		}
+		$post = isset( $args[1] ) ? $args[1] : get_post( $post_id );
+
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
 		// prepare transient key.
 		$transient_key = apply_filters( 'automator_transient_name', 'automator_transient', array() );
 

@@ -56,7 +56,7 @@ class CAMPAIGN_CREATEANDSEND {
 						array(
 							'is_ajax'      => true,
 							'target_field' => 'MCLISTTAGS',
-							'endpoint'     => 'select_mctagsidslist_from_mclist',
+							'endpoint'     => 'select_segments_from_list',
 						)
 					),
 					$uncanny_automator->helpers->recipe->mailchimp->options->get_list_tags(

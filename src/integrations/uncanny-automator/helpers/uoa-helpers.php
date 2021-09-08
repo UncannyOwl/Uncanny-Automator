@@ -1,8 +1,6 @@
-<?php
-
+<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
-
 
 use Uncanny_Automator_Pro\Uoa_Pro_Helpers;
 use WP_Error;
@@ -53,9 +51,6 @@ class Uoa_Helpers {
 	 * @param $_POST
 	 */
 	public function sendtest_webhook() {
-
-
-
 		Automator()->utilities->ajax_auth_check( $_POST );
 
 		$key_values   = array();
@@ -147,19 +142,23 @@ class Uoa_Helpers {
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
 				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => $error_message,
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => $error_message,
+					)
+				);
 			}
 
 			/* translators: 1. Webhook URL */
 			$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
-			wp_send_json( array(
-				'type'    => 'success',
-				'message' => $success_message,
-			) );
+			wp_send_json(
+				array(
+					'type'    => 'success',
+					'message' => $success_message,
+				)
+			);
 		}
 	}
 
@@ -172,7 +171,6 @@ class Uoa_Helpers {
 	public function get_recipes( $label = null, $option_code = 'UOARECIPE', $any_option = false ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -181,26 +179,24 @@ class Uoa_Helpers {
 		}
 
 		// post query arguments.
-		$args = [
+		$args = array(
 			'post_type'      => 'uo-recipe',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any recipe', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $options,
 			'custom_value_description' => esc_attr__( 'Recipe slug', 'uncanny-automator' ),
-		];
+		);
 
 		return apply_filters( 'uap_option_get_recipes', $option );
 	}

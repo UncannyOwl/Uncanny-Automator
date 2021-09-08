@@ -61,10 +61,15 @@ class WCM_ADDUSER {
 	 */
 	public function wc_user_added_to_membership_plan( $membership_plan, $data ) {
 
-
 		if ( 0 === $data['user_id'] ) {
 			// Its a logged in recipe and
 			// user ID is 0. Skip process
+			return;
+		}
+
+		// If membership is active only.
+		$user_membership = wc_memberships_get_user_membership( $data['user_membership_id'] );
+		if( ! $user_membership->is_active() ) {
 			return;
 		}
 

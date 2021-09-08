@@ -2,49 +2,81 @@
 
 namespace Uncanny_Automator;
 
-
 use UCTINCAN\Database;
 
 /**
- * Class Tc_Tokens
- * @package Uncanny_Automator
+ *
  */
-class Tc_Tokens {
+class Ld_Tokens {
 
 	/**
-	 * Integration code
-	 * @var string
+	 *
 	 */
-	public static $integration = 'LD';
-
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
-		add_filter( 'automator_maybe_trigger_ld_tcmoduleinteraction_tokens', [ $this, 'possible_tokens' ], 9999, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'tc_token' ], 20, 6 );
+		add_filter(
+			'automator_maybe_trigger_ld_ldquiz_tokens',
+			array(
+				$this,
+				'possible_tokens_quiz_score_percent',
+			),
+			9999,
+			2
+		);
+
+		add_filter(
+			'automator_maybe_trigger_ld_tcmoduleinteraction_tokens',
+			array(
+				$this,
+				'possible_tokens',
+			),
+			9999,
+			2
+		);
+		add_filter( 'automator_maybe_parse_token', array( $this, 'ld_tokens' ), 20, 6 );
 	}
 
 	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
+	 * @param array $tokens
+	 * @param array $args
 	 *
-	 * @param $status
-	 * @param $plugin
-	 *
-	 * @return bool
+	 * @return array
 	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( defined( 'UNCANNY_REPORTING_VERSION' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
+	public function possible_tokens_quiz_score_percent( $tokens = array(), $args = array() ) {
+		if ( ! isset( $args['value'] ) || ! isset( $args['meta'] ) ) {
+			return $tokens;
 		}
 
-		return $status;
+		if ( empty( $args['value'] ) || empty( $args['meta'] ) ) {
+			return $tokens;
+		}
+		if ( ! isset( $args['triggers_meta'] ) ) {
+			return $tokens;
+		}
+
+		$trigger_meta = $args['meta'];
+		$trigger_code = $args['triggers_meta']['code'];
+
+		if ( 'LD_QUIZPERCENT' === $trigger_code ) {
+			$new_tokens[] = array(
+				'tokenId'         => $trigger_meta . '_achieved_percent',
+				'tokenName'       => __( "User's quiz percentage", 'uncanny-automator' ),
+				'tokenType'       => 'float',
+				'tokenIdentifier' => $trigger_meta,
+			);
+			$tokens       = array_merge( $tokens, $new_tokens );
+		}
+
+		if ( 'LD_QUIZSCORE' === $trigger_code ) {
+			$new_tokens[] = array(
+				'tokenId'         => $trigger_meta . '_achieved_score',
+				'tokenName'       => __( "User's quiz score", 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_meta,
+			);
+			$tokens       = array_merge( $tokens, $new_tokens );
+		}
+
+		return $tokens;
 	}
 
 	/**
@@ -69,66 +101,60 @@ class Tc_Tokens {
 		$new_tokens = array();
 		if ( ! empty( $tc_module_id ) && absint( $tc_module_id ) ) {
 
-			$new_tokens[] = [
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Course title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course',
-			];
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Course ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_id',
-			];
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Course URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_url',
-			];
-
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Lesson title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
-			];
-
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Lesson ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_id',
-			];
-
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Lesson URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_url',
-			];
-
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic',
-			];
-
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_id',
-			];
-
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
 				'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_url',
-			];
+			);
 
 			$tokens = array_merge( $tokens, $new_tokens );
 		}
@@ -142,10 +168,11 @@ class Tc_Tokens {
 	 * @param $recipe_id
 	 * @param $trigger_data
 	 * @param $user_id
+	 * @param array $replace_args
 	 *
 	 * @return string|null
 	 */
-	public function tc_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
+	public function ld_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
 
 		if ( $pieces ) {
 			if (
@@ -164,6 +191,8 @@ class Tc_Tokens {
 				|| in_array( 'LDQUIZ', $pieces, true )
 				|| in_array( 'LDQUIZ_ID', $pieces, true )
 				|| in_array( 'TCMODULEINTERACTION', $pieces, true )
+				|| in_array( 'LDQUIZ_achieved_percent', $pieces, true )
+				|| in_array( 'LDQUIZ_achieved_score', $pieces, true )
 			) {
 				if ( ! absint( $user_id ) ) {
 					return $value;
@@ -176,10 +205,11 @@ class Tc_Tokens {
 
 				$replace_pieces = $replace_args['pieces'];
 				$recipe_id      = $replace_args['recipe_id'];
-				$trigger_log_id = $replace_args['trigger_log_id'];
 				$run_number     = $replace_args['run_number'];
 				$user_id        = $replace_args['user_id'];
-				$trigger_id     = absint( $replace_pieces[0] );
+				$recipe_log_id  = $replace_args['recipe_log_id'];
+				$trigger_id     = $replace_args['trigger_id'];
+				$trigger_log_id = Automator()->get->mayabe_get_real_trigger_log_id( $trigger_id, $run_number, $recipe_id, $user_id, $recipe_log_id );
 
 				// Verb can be found from trigger meta
 				if ( in_array( 'TCVERB', $pieces ) ) {
@@ -188,18 +218,69 @@ class Tc_Tokens {
 					return $value;
 				}
 
-				// QUIZPERCENT token
-				if ( in_array( 'QUIZPERCENT', $pieces ) ) {
-					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( 'QUIZPERCENT', $trigger_id, $trigger_log_id, $run_number, $user_id );
+				// Required QUIZPERCENT token
+				if ( in_array( 'QUIZPERCENT', $pieces, true ) ) {
+					$t_data = array_shift( $trigger_data );
+					if ( isset( $t_data['meta']['QUIZPERCENT'] ) ) {
+						return $t_data['meta']['QUIZPERCENT'];
+					}
 
 					return $value;
 				}
 
-				// QUIZSCORE token
-				if ( in_array( 'QUIZSCORE', $pieces ) ) {
-					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( 'QUIZSCORE', $trigger_id, $trigger_log_id, $run_number, $user_id );
+				// LDQUIZ token
+				if ( is_array( $pieces ) && isset( $pieces[2] ) && 'LDQUIZ' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+					if ( isset( $t_data['meta']['LDQUIZ'] ) && intval( '-1' ) !== intval( $t_data['meta']['LDQUIZ'] ) ) {
+						return get_the_title( $t_data['meta']['LDQUIZ'] );
+					}
+
+					$quiz_id = Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'quiz_id', $user_id, $recipe_log_id );
+					if ( ! empty( $quiz_id ) ) {
+						$value = get_the_title( $quiz_id );
+					}
 
 					return $value;
+				}
+
+				// LDQUIZ_ID token
+				if ( is_array( $pieces ) && isset( $pieces[2] ) && 'LDQUIZ_ID' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+					if ( isset( $t_data['meta']['LDQUIZ'] ) && intval( '-1' ) !== intval( $t_data['meta']['LDQUIZ'] ) ) {
+						return $t_data['meta']['LDQUIZ'];
+					}
+
+					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'quiz_id', $user_id, $recipe_log_id );
+				}
+
+				// LDQUIZ_URL token
+				if ( is_array( $pieces ) && isset( $pieces[2] ) && 'LDQUIZ_URL' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+					if ( isset( $t_data['meta']['LDQUIZ'] ) && intval( '-1' ) !== intval( $t_data['meta']['LDQUIZ'] ) ) {
+						return get_permalink( $t_data['meta']['LDQUIZ'] );
+					}
+
+					return get_permalink( Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'quiz_id', $user_id, $recipe_log_id ) );
+				}
+
+				// Required QUIZSCORE token
+				if ( in_array( 'QUIZSCORE', $pieces, true ) ) {
+					$t_data = array_shift( $trigger_data );
+					if ( isset( $t_data['meta']['QUIZSCORE'] ) ) {
+						return $t_data['meta']['QUIZSCORE'];
+					}
+
+					return $value;
+				}
+
+				// User's QUIZPERCENT token
+				if ( in_array( 'LDQUIZ_achieved_percent', $pieces, true ) ) {
+					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ_achieved_percent', $user_id, $recipe_log_id );
+				}
+
+				// User's QUIZSCORE token
+				if ( in_array( 'LDQUIZ_achieved_score', $pieces, true ) ) {
+					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ_achieved_score', $user_id, $recipe_log_id );
 				}
 
 				// Otherwise get TC module id from trigger meta
@@ -273,8 +354,13 @@ class Tc_Tokens {
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
 						$quiz_id = 0;
-						if ( isset( $trigger['meta']['LDQUIZ'] ) ) {
+						if ( isset( $trigger['meta']['LDQUIZ'] ) && intval( '-1' ) !== intval( $trigger['meta']['LDQUIZ'] ) ) {
 							$quiz_id = $trigger['meta']['LDQUIZ'];
+						} else {
+							$r_quiz_id = Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'quiz_id', $user_id, $recipe_log_id );
+							if ( ! empty( $r_quiz_id ) ) {
+								$quiz_id = $r_quiz_id;
+							}
 						}
 
 						if ( intval( '-1' ) === intval( $quiz_id ) ) {

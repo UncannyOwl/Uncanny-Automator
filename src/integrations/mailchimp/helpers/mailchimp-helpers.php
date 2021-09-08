@@ -59,7 +59,9 @@ class Mailchimp_Helpers {
 		add_filter( 'automator_after_settings_extra_content', array( $this, 'mailchimp_connect_html' ), 10, 3 );
 		add_action( 'wp_ajax_select_mcgroupslist_from_mclist', array( $this, 'select_mcgroupslist_from_mclist' ) );
 		add_action( 'wp_ajax_select_mctagslist_from_mclist', array( $this, 'select_mctagslist_from_mclist' ) );
-		add_action( 'wp_ajax_select_mctagsidslist_from_mclist', array( $this, 'select_mctagsidslist_from_mclist' ) );
+
+		add_action( 'wp_ajax_select_segments_from_list', array( $this, 'select_segments_from_list' ) );
+
 		add_action( 'wp_ajax_get_mailchimp_audience_fields', array( $this, 'get_mailchimp_audience_fields' ) );
 		add_action( 'wp_ajax_uo_mailchimp_disconnect', array( $this, 'uo_mailchimp_disconnect' ) );
 
@@ -360,8 +362,11 @@ class Mailchimp_Helpers {
 		$list_id = sanitize_text_field( $_POST['values']['MCLIST'] );
 
 		$request_params = array(
-			'action'  => 'get_list_segments',
+			'action'  => 'get_segments',
 			'list_id' => $list_id,
+			'type' 	  => 'static',
+			'fields'  => 'segments.name,segments.id',
+			'count'   => 1000
 		);
 
 		try {
@@ -386,9 +391,9 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * Ajax callback for loading tags IDS list.
+	 * Ajax callback for loading segment IDS list.
 	 */
-	public function select_mctagsidslist_from_mclist() {
+	public function select_segments_from_list() {
 		global $uncanny_automator;
 
 		// Nonce and post object validation
@@ -409,8 +414,10 @@ class Mailchimp_Helpers {
 		$list_id = sanitize_text_field( $_POST['values']['MCLIST'] );
 
 		$request_params = array(
-			'action'  => 'get_list_segments',
+			'action'  => 'get_segments',
 			'list_id' => $list_id,
+			'fields'  => 'segments.name,segments.id',
+			'count'   => 1000
 		);
 		try {
 			$response = $this->api_request( $request_params );
