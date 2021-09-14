@@ -1,8 +1,8 @@
 === Uncanny Automator - Automate everything with the no-code Automation tool for WordPress ===
 Contributors: uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
-Requires at least: 5.0
-Tested up to: 5.8
+Requires at least: 5.3
+Tested up to: 5.8.1
 Requires PHP: 7.2
 Stable tag: 3.1.4.1
 License: GPLv3

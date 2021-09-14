@@ -10,7 +10,7 @@
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
  * Version:             3.1.4.1
- * Requires at least:   5.0
+ * Requires at least:   5.3
  * Requires PHP:        7.2
  */
 
