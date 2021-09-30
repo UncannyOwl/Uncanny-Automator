@@ -26,24 +26,24 @@ class Automator_DB_Handler_Tokens {
 	}
 
 	/**
-	 * @param string $meta_key
-	 * @param string $meta_value
-	 * @param array $args
+	 * @param $meta_key
+	 * @param $meta_value
+	 * @param $args
 	 *
 	 * @return bool|int|null
 	 */
-	public function save( string $meta_key, string $meta_value, array $args ) {
+	public function save( $meta_key, $meta_value, $args ) {
 
 		return Automator()->db->trigger->add_token_meta( $meta_key, $meta_value, $args );
 	}
 
 	/**
-	 * @param string $meta_key
-	 * @param array $args
+	 * @param $meta_key
+	 * @param $args
 	 *
 	 * @return mixed|string
 	 */
-	public function get( string $meta_key, array $args = array() ) {
+	public function get( $meta_key, $args = array() ) {
 
 		return Automator()->db->trigger->get_token_meta( $meta_key, $args );
 	}

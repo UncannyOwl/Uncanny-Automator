@@ -359,7 +359,7 @@ class Automator_Functions {
 	}
 
 	/**
-	 * @param string $code
+	 * @param $code
 	 *
 	 * @return mixed
 	 */
@@ -375,8 +375,8 @@ class Automator_Functions {
 	}
 
 	/**
-	 * @param string $code
-	 * @param string $link
+	 * @param $code
+	 * @param $link
 	 *
 	 * @return mixed
 	 */
@@ -398,7 +398,7 @@ class Automator_Functions {
 	/**
 	 * Get data for all recipe objects
 	 *
-	 * @param bool $force_new_data_load
+	 * @param $force_new_data_load
 	 * @param null $recipe_id
 	 *
 	 * @return array
@@ -409,7 +409,7 @@ class Automator_Functions {
 		}
 
 		$recipes_data = Automator()->cache->get( $this->cache->recipes_data );
-		if ( ! empty( $recipes_data ) ) {
+		if ( ! empty( $recipes_data ) && false === $force_new_data_load && null === $recipe_id ) {
 			return $recipes_data;
 		}
 
@@ -529,7 +529,7 @@ class Automator_Functions {
 	}
 
 	/**
-	 * @param array $recipes
+	 * @param $recipes
 	 *
 	 * @return array
 	 */
@@ -654,7 +654,7 @@ class Automator_Functions {
 	 * Check if the recipe was completed
 	 *
 	 * @param null $user_id
-	 * @param array $recipe_ids
+	 * @param $recipe_ids
 	 *
 	 * @return array
 	 */
@@ -824,7 +824,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 *
 	 * @param null $type
 	 * @param null $recipe_id
-	 * @param array $recipe_children
+	 * @param $recipe_children
 	 * @param null $matched_trigger
 	 *
 	 * @return null
@@ -972,8 +972,8 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * recipe and it's triggers for parsing. Specially needed for multi-trigger
 	 * parsing
 	 *
-	 * @param int $recipe_id
-	 * @param int $trigger_id
+	 * @param $recipe_id
+	 * @param $trigger_id
 	 *
 	 * @return array|mixed
 	 * @since  2.9
@@ -1001,10 +1001,10 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * @param null $user_id
 	 * @param null $action_data
 	 * @param null $recipe_id
-	 * @param string $error_message
+	 * @param $error_message
 	 * @param null $recipe_log_id
 	 *
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return null
 	 * @deprecated 3.0
@@ -1024,7 +1024,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * @param $user_id       null||int
 	 * @param $recipe_log_id null||int
 	 *
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return null|bool
 	 * @deprecated 3.0
@@ -1044,7 +1044,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * @param null $user_id
 	 * @param null $recipe_log_id
 	 *
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return bool
 	 * @deprecated 3.0
@@ -1063,7 +1063,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * @param null $recipe_id
 	 * @param null $user_id
 	 * @param null $recipe_log_id
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return bool
 	 * @deprecated 3.0
@@ -1114,7 +1114,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	/**
 	 * Complete the trigger for the user
 	 *
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return null
 	 * @deprecated 3.0
@@ -1133,7 +1133,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * add a trigger entry in to the DB and matches number of times.
 	 *
 	 * @param      $args
-	 * @param bool $mark_trigger_complete
+	 * @param $mark_trigger_complete
 	 *
 	 * @return array|bool|int|null
 	 * @deprecated 3.0 Use Automator()->process->user->
@@ -1148,11 +1148,11 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 
 
 	/**
-	 * @param int $recipe_id
-	 * @param int $user_id
-	 * @param bool $create_recipe
-	 * @param array $args
-	 * @param bool $maybe_simulate
+	 * @param $recipe_id
+	 * @param $user_id
+	 * @param $create_recipe
+	 * @param $args
+	 * @param $maybe_simulate
 	 * @param null $maybe_add_log_id
 	 *
 	 * @return array
@@ -1199,7 +1199,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 
 	/**
 	 * @param        $data
-	 * @param string $type
+	 * @param $type
 	 *
 	 * @return string
 	 * @deprecated 3.0
@@ -1214,11 +1214,11 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 
 	/**
 	 * @param $args
-	 * @param bool $check
+	 * @param $check
 	 *
 	 * @return bool
 	 */
-	public function is_user_signed_in( $args, bool $check = true ) {
+	public function is_user_signed_in( $args, $check = true ) {
 		$is_signed_in = array_key_exists( 'is_signed_in', $args ) ? $args['is_signed_in'] : false;
 
 		return true === $is_signed_in ? $is_signed_in : true === $check && is_user_logged_in();
@@ -1228,7 +1228,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	 * Register a new recipe type and creates a type if defined and the type does not exist
 	 *
 	 * @param null $recipe_type
-	 * @param array $recipe_details
+	 * @param $recipe_details
 	 *
 	 * @return null|bool
 	 * @deprecated v2.1 Automator()->register->recipe_type

@@ -73,7 +73,6 @@ class Set_Up_Automator {
 			AUTOMATOR_CONFIGURATION_COMPLETE_PRIORITY
 		);
 		add_action( 'admin_notices', array( $this, 'automator_pro_configure' ), 999 );
-
 	}
 
 	/**
@@ -84,16 +83,21 @@ class Set_Up_Automator {
 			$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
 			if ( version_compare( $version, '3.0', '<' ) ) {
 				?>
-				<div class="notice notice-warning">
-					<p><strong>Warning:</strong> The version of Uncanny Automator Pro
-						(<?php echo esc_attr( $version ); ?>) installed on your site is
-						incompatible with
-						Uncanny Automator 3.0 and higher. Uncanny Automator Pro has been temporarily disabled.
-						Upgrade to the latest version of Uncanny Automator Pro to re-enable functionality or
-						downgrade Uncanny Automator to version 2.11.1. <a
-							href="https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_medium=admin_notice&utm_campaign=30upgradewarning"
-							target="_blank">Learn More<span style="font-size:14px; margin-left:-3px"
-															class="dashicons dashicons-external"></span></a></p>
+				<div class="notice notice-error">
+					<?php
+					echo sprintf(
+						'<p><strong>%s:</strong> %s</p>',
+						esc_html__( 'Warning', 'uncanny-automator' ),
+						sprintf(
+							'%s (%s) %s <a href="%s" target="_blank">%s<span style="font-size:14px; margin-left:-3px" class="dashicons dashicons-external"></span></a>',
+							esc_html__( 'The version of Uncanny Automator Pro', 'uncanny-automator' ),
+							esc_attr( $version ),
+							esc_html__( 'installed on your site is incompatible with Uncanny Automator 3.0 and higher. Uncanny Automator Pro has been temporarily disabled. Upgrade to the latest version of Uncanny Automator Pro to re-enable functionality or downgrade Uncanny Automator to version 2.11.1.', 'uncanny-automator' ),
+							'https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_medium=admin_notice&utm_campaign=30upgradewarning',
+							esc_html__( 'Learn More', 'uncanny-automator' )
+						)  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
 				</div>
 				<?php
 			}
@@ -188,8 +192,7 @@ class Set_Up_Automator {
 		$folders = array();
 		if ( $integrations ) {
 			foreach ( $integrations as $f => $integration ) {
-				$path = isset( $integration['main'] ) ? dirname( $integration['main'] ) : $directory . DIRECTORY_SEPARATOR . $f;
-				//$path      = $directory . DIRECTORY_SEPARATOR . $f;
+				$path      = isset( $integration['main'] ) ? dirname( $integration['main'] ) : $directory . DIRECTORY_SEPARATOR . $f;
 				$path      = apply_filters( 'automator_integration_folder_paths', $path, $integration, $directory, $f );
 				$folders[] = $path;
 			}
@@ -288,6 +291,11 @@ class Set_Up_Automator {
 				continue;
 			}
 			foreach ( $files as $file ) {
+				// bail early if the $file is not a string
+				if ( is_array( $file ) ) {
+					continue;
+				}
+
 				if ( ! file_exists( $file ) ) {
 					continue;
 				}
@@ -384,6 +392,10 @@ class Set_Up_Automator {
 			}
 			// Loop through all files in directory to create class names from file name
 			foreach ( $files as $file ) {
+				// bail early if the $file is not a string
+				if ( is_array( $file ) ) {
+					continue;
+				}
 				if ( ! file_exists( $file ) ) {
 					continue;
 				}
@@ -427,12 +439,16 @@ class Set_Up_Automator {
 			$closures = isset( self::$all_integrations[ $mod ]['closures'] ) && in_array( 'closures', $this->directories_to_include[ $dir_name ], true ) ? self::$all_integrations[ $mod ]['closures'] : array();
 
 			$files = array_merge( $tokens, $triggers, $actions, $closures );
-
+			$files = apply_filters( 'automator_integration_files', $files, $dir_name );
 			if ( empty( $files ) ) {
 				continue;
 			}
 			// Loop through all files in directory to create class names from file name
 			foreach ( $files as $file ) {
+				// bail early if the $file is not a string
+				if ( is_array( $file ) ) {
+					continue;
+				}
 				if ( ! file_exists( $file ) ) {
 					continue;
 				}

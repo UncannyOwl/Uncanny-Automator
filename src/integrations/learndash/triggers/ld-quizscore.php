@@ -92,7 +92,7 @@ class LD_QUIZSCORE {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( Automator()->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_score[ $recipe_id ][ $trigger_id ], $score ) ) {
-					$matched_recipe_ids[ $recipe_id ] = array(
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
 					);
@@ -110,7 +110,7 @@ class LD_QUIZSCORE {
 			if ( intval( '-1' ) !== intval( $r_quiz ) && (int) $r_quiz !== (int) $quiz_id ) {
 				continue;
 			}
-			$args = array(
+			$args   = array(
 				'code'             => $this->trigger_code,
 				'meta'             => $this->trigger_meta,
 				'user_id'          => $current_user->ID,
@@ -119,7 +119,6 @@ class LD_QUIZSCORE {
 				'ignore_post_id'   => true,
 				'post_id'          => $quiz_id,
 			);
-
 			$result = Automator()->maybe_add_trigger_entry( $args, false );
 			if ( empty( $result ) ) {
 				continue;
@@ -130,7 +129,7 @@ class LD_QUIZSCORE {
 				}
 				$trigger_id     = (int) $r['args']['trigger_id'];
 				$user_id        = (int) $r['args']['user_id'];
-				$trigger_log_id = (int) $r['args']['get_trigger_id'];
+				$trigger_log_id = (int) $r['args']['trigger_log_id'];
 				$run_number     = (int) $r['args']['run_number'];
 
 				$insert = array(
@@ -143,16 +142,10 @@ class LD_QUIZSCORE {
 				);
 				Automator()->insert_trigger_meta( $insert );
 
-				$insert = array(
-					'user_id'        => $user_id,
-					'trigger_id'     => $trigger_id,
-					'trigger_log_id' => $trigger_log_id,
-					'meta_key'       => 'quiz_id',
-					'meta_value'     => $quiz_id,
-					'run_number'     => $run_number,
-				);
-
+				$insert['meta_key']   = 'quiz_id';
+				$insert['meta_value'] = $quiz_id;
 				Automator()->insert_trigger_meta( $insert );
+
 				Automator()->maybe_trigger_complete( $r['args'] );
 			}
 		}

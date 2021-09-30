@@ -114,9 +114,9 @@ trait Trigger_Setup {
 	abstract protected function setup_trigger();
 
 	/**
-	 * @param bool $is_anonymous
+	 * @param $is_anonymous
 	 */
-	public function set_is_anonymous( bool $is_anonymous ) {
+	public function set_is_anonymous( $is_anonymous ) {
 		$this->is_anonymous = $is_anonymous;
 	}
 
@@ -130,7 +130,7 @@ trait Trigger_Setup {
 	/**
 	 * @param mixed $integration
 	 */
-	public function set_integration( string $integration ) {
+	public function set_integration( $integration ) {
 		$this->integration = $integration;
 	}
 
@@ -192,28 +192,28 @@ trait Trigger_Setup {
 	}
 
 	/**
-	 * @param bool $is_pro
+	 * @param $is_pro
 	 */
-	public function set_is_pro( bool $is_pro ) {
+	public function set_is_pro( $is_pro ) {
 		$this->is_pro = $is_pro;
 	}
 
 	/**
-	 * @param bool $is_deprecated
+	 * @param $is_deprecated
 	 */
-	public function set_is_deprecated( bool $is_deprecated ) {
+	public function set_is_deprecated( $is_deprecated ) {
 		$this->is_deprecated = $is_deprecated;
 	}
 
 	/**
-	 * @param int $action_priority
+	 * @param $action_priority
 	 */
-	public function set_action_priority( int $action_priority = 10 ) {
+	public function set_action_priority( $action_priority = 10 ) {
 		$this->action_priority = $action_priority;
 	}
 
 	/**
-	 * @param int $arg_count
+	 * @param $arg_count
 	 */
 	protected function set_action_args_count( $arg_count = 1 ) {
 		$this->action_args_count = $arg_count;
@@ -222,16 +222,16 @@ trait Trigger_Setup {
 	/**
 	 * @param mixed $options
 	 */
-	public function set_options( array $options ) {
+	public function set_options( $options ) {
 		$this->options = $options;
 	}
 
 	/**
 	 * @param $action
-	 * @param int $priority
-	 * @param int $args
+	 * @param $priority
+	 * @param $args
 	 */
-	protected function add_action( $action, int $priority = 10, int $args = 1 ) {
+	protected function add_action( $action, $priority = 10, $args = 1 ) {
 		$this->set_action_hook( $action );
 		$this->set_action_priority( $priority );
 		$this->set_action_args_count( $args );
@@ -366,7 +366,7 @@ trait Trigger_Setup {
 	/**
 	 * @param mixed $trigger_tokens
 	 */
-	public function set_trigger_tokens( array $trigger_tokens ) {
+	public function set_trigger_tokens( $trigger_tokens ) {
 		$this->trigger_tokens = $trigger_tokens;
 	}
 
@@ -392,9 +392,9 @@ trait Trigger_Setup {
 	}
 
 	/**
-	 * @param string $trigger_type
+	 * @param $trigger_type
 	 */
-	public function set_trigger_type( string $trigger_type ) {
+	public function set_trigger_type( $trigger_type ) {
 		$this->trigger_type = $trigger_type;
 	}
 

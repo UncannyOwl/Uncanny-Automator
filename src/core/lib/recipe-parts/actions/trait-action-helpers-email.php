@@ -247,9 +247,9 @@ trait Action_Helpers_Email {
 	}
 
 	/**
-	 * @param bool $is_html
+	 * @param $is_html
 	 */
-	public function set_is_html( bool $is_html ) {
+	public function set_is_html( $is_html ) {
 		$this->is_html = $is_html;
 	}
 
@@ -261,9 +261,9 @@ trait Action_Helpers_Email {
 	}
 
 	/**
-	 * @param string $content_type
+	 * @param $content_type
 	 */
-	public function set_content_type( string $content_type ) {
+	public function set_content_type( $content_type ) {
 		$this->content_type = $content_type;
 	}
 
@@ -275,9 +275,9 @@ trait Action_Helpers_Email {
 	}
 
 	/**
-	 * @param string $charset
+	 * @param $charset
 	 */
-	public function set_charset( string $charset ) {
+	public function set_charset( $charset ) {
 		$this->charset = $charset;
 	}
 

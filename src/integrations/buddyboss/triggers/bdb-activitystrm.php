@@ -32,7 +32,6 @@ class BDB_ACTIVITYSTRM {
 	public function define_trigger() {
 
 
-
 		$bp_users_args = array(
 			'uo_include_any' => true,
 		);
@@ -68,13 +67,9 @@ class BDB_ACTIVITYSTRM {
 	 * @param $activity_id
 	 */
 	public function bp_activity_posted_update( $content, $user_id, $activity_id ) {
-
-
-
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_users     = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$matched_recipe_ids = array();
-
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -115,6 +110,16 @@ class BDB_ACTIVITYSTRM {
 							// ACTIVITY_ID Token
 							$trigger_meta['meta_key']   = 'ACTIVITY_ID';
 							$trigger_meta['meta_value'] = $activity_id;
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							// ACTIVITY_URL Token
+							$trigger_meta['meta_key']   = 'ACTIVITY_URL';
+							$trigger_meta['meta_value'] = bp_core_get_user_domain( $user_id ) . 'activity';
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							// ACTIVITY_STREAM_URL Token
+							$trigger_meta['meta_key']   = 'ACTIVITY_STREAM_URL';
+							$trigger_meta['meta_value'] = bp_core_get_user_domain( $user_id ) . 'activity/' . $activity_id;
 							Automator()->insert_trigger_meta( $trigger_meta );
 
 							// ACTIVITY_CONTENT Token

@@ -211,6 +211,8 @@ class UOG_CREATEUNCANNYGROUP {
 			\uncanny_learndash_groups\RestApiEndPoints::add_existing_user( array( 'user_email' => $user->user_email ), true, $group_id, $order_id, 'redeemed', false );
 		}
 
+		do_action( 'uo_new_group_created', $group_id, $user_id );
+		
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 	}

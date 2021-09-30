@@ -71,7 +71,7 @@ class Automator_Cache_Handler {
 
 		add_action( 'admin_bar_menu', array( $this, 'add_cache_clear' ), 999 );
 
-		add_action( 'upgrader_process_complete', array( $this, 'upgrader_process_completed', 10, 2 ) );
+		add_action( 'upgrader_process_complete', array( $this, 'upgrader_process_completed' ), 999, 0 );
 	}
 
 	/**
@@ -313,7 +313,7 @@ class Automator_Cache_Handler {
 		$args      = array(
 			'id'    => $parent_id,
 			'title' => '<div class="ab-item automator-menu-icon svg" style="background-image: url(\'' . $icon_url . '\');"></div><span class="ab-label">' . esc_html__( 'Automator', 'uncanny-automator' ) . '</span>',
-			'href'  => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ),
+			'href'  => admin_url( 'admin.php?page=uncanny-automator-dashboard' ),
 			'meta'  => array(
 				'class' => 'automator',
 				'title' => __( 'Automator', 'uncanny-automator' ),
@@ -356,7 +356,7 @@ class Automator_Cache_Handler {
 					'parent' => $parent_id,
 					'title'  => esc_html__( 'Flush cache', 'uncanny-automator' ),
 					'group'  => false,
-					'href'   => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard&automator_flush_all=true&_wpnonce=' ) . wp_create_nonce( AUTOMATOR_BASE_FILE ),
+					'href'   => admin_url( 'admin.php?page=uncanny-automator-dashboard&automator_flush_all=true&_wpnonce=' ) . wp_create_nonce( AUTOMATOR_BASE_FILE ),
 				)
 			);
 		}
@@ -366,7 +366,7 @@ class Automator_Cache_Handler {
 	 * @param $upgrader_object
 	 * @param $options
 	 */
-	public function upgrader_process_completed( $upgrader_object, $options ) {
-		$this->reset_integrations_directory( $upgrader_object, $options );
+	public function upgrader_process_completed() {
+		$this->reset_integrations_directory( null, null );
 	}
 }

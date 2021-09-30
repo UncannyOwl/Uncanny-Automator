@@ -127,7 +127,7 @@ class FCRM_USER_STATUS_UPDATED {
 		// Regular contact profile fields.
 		$mappable_fields = (array) \FluentCrm\App\Models\Subscriber::mappables();
 
-		$tokens['FLUENTCRM_STATUS_FIELD_status'] = esc_attr__( 'Subscription Status', 'uncanny-automator' );
+		$tokens['FLUENTCRM_STATUS_FIELD_status'] = esc_attr__( 'Subscription status', 'uncanny-automator' );
 
 		foreach ( $mappable_fields as $field_id => $field_label ) {
 			$tokens[ $token_id . $field_id ] = $field_label;

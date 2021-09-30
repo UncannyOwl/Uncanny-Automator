@@ -16,12 +16,12 @@ class Instagram_Helpers {
 	public $pro;
 
 	/**
-	 * @var string $options
+	 * @var $options
 	 */
 	public $options = '';
 
 	/**
-	 * @var string $settings_tab
+	 * @var $settings_tab
 	 */
 	public $setting_tab;
 
@@ -53,10 +53,16 @@ class Instagram_Helpers {
 		add_filter( 'automator_settings_tabs', array( $this, 'add_instagram_api_settings' ), 15 );
 
 		// Add a fetch user pages action.
-		add_action( "wp_ajax_{$this->wp_ajax_action}_fetch_user_pages", array( $this, sprintf( '%s_fetch_user_pages', $this->wp_ajax_action ) ) );
+		add_action( "wp_ajax_{$this->wp_ajax_action}_fetch_user_pages", array(
+			$this,
+			sprintf( '%s_fetch_user_pages', $this->wp_ajax_action ),
+		) );
 
 		// Add get instagram action.
-		add_action( "wp_ajax_{$this->wp_ajax_action}_fetch_instagram_accounts", array( $this, sprintf( '%s_fetch_instagram_accounts', $this->wp_ajax_action ) ) );
+		add_action( "wp_ajax_{$this->wp_ajax_action}_fetch_instagram_accounts", array(
+			$this,
+			sprintf( '%s_fetch_instagram_accounts', $this->wp_ajax_action ),
+		) );
 
 	}
 
@@ -108,43 +114,23 @@ class Instagram_Helpers {
 		return '';
 
 	}
+
 	/**
-	 * Checks if the user has valid license in pro or free version.
+	 * Check if the settings tab should display.
 	 *
 	 * @return boolean.
 	 */
-	public function has_valid_license() {
+	public function display_settings_tab() {
 
-		$has_pro_license  = false;
-		$has_free_license = false;
-
-		$free_license_status = get_option( 'uap_automator_free_license_status' );
-		$pro_license_status  = get_option( 'uap_automator_pro_license_status' );
-
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === $pro_license_status ) {
-			$has_pro_license = true;
+		if ( Automator()->utilities->has_valid_license() ) {
+			return true;
 		}
 
-		if ( 'valid' === $free_license_status ) {
-			$has_free_license = true;
+		if ( Automator()->utilities->is_from_modal_action() ) {
+			return true;
 		}
 
-		return $has_free_license || $has_pro_license;
-
-	}
-
-	/**
-	 * Checks if screen is from the modal action popup or not.
-	 *
-	 * @return boolean.
-	 */
-	public function is_from_modal_action() {
-
-		$minimal = filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT );
-
-		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
-
-		return ! empty( $minimal ) && ! empty( $hide_settings_tabs ) && ! empty( $hide_settings_tabs );
+		return $this->has_connection_data();
 	}
 
 	/**
@@ -167,11 +153,11 @@ class Instagram_Helpers {
 	/**
 	 * Callback method to `automator_settings_tabs` that displays our Facebook Settings.
 	 *
-	 * @return array $tabs All existing tabs.
+	 * @return $tabs All existing tabs.
 	 */
 	public function add_instagram_api_settings( $tabs ) {
 
-		if ( $this->has_valid_license() || $this->has_connection_data() || $this->is_from_modal_action() ) {
+		if ( $this->display_settings_tab() ) {
 
 			$tabs[ $this->setting_tab ] = array(
 				'name'           => __( 'Instagram', 'uncanny-automator' ),
@@ -205,25 +191,25 @@ class Instagram_Helpers {
 		if ( $this->is_user_connected() ) : ?>
 
 			<?php
-				$message .= sprintf(
-					'<p class="uo-ig-alert">%s</p><p>%s</p>',
-					__( 'You have successfully linked your Facebook Pages with Automator App.', 'uncanny-automator' ),
-					__(
-						'Click on the refresh icon on each corresponding Facebook Page that you have previously linked 
+			$message .= sprintf(
+				'<p class="uo-ig-alert">%s</p><p>%s</p>',
+				__( 'You have successfully linked your Facebook Pages with Automator App.', 'uncanny-automator' ),
+				__(
+					'Click on the refresh icon on each corresponding Facebook Page that you have previously linked 
 						to the Automator app to get the associated Instagram business account.',
-						'uncanny-automator'
-					)
-				);
+					'uncanny-automator'
+				)
+			);
 			?>
 
-			<h4><?php esc_html_e( 'Facebook pages', 'uncanny-automator' ); ?></h4>
+            <h4><?php esc_html_e( 'Facebook pages', 'uncanny-automator' ); ?></h4>
 
-			<div id="uo-user-ig-pages">
-				<p>
-					<span class="dashicons dashicons-image-rotate uo-preloader-rotate"></span>
+            <div id="uo-user-ig-pages">
+                <p>
+                    <span class="dashicons dashicons-image-rotate uo-preloader-rotate"></span>
 					<?php esc_html_e( 'Please wait while we fetch the Facebook Pages that you have linked to Automator App...', 'uncanny-automator' ); ?>
-				</p>
-			</div>
+                </p>
+            </div>
 
 			<?php
 			$this->get_inline_js();
@@ -242,26 +228,26 @@ class Instagram_Helpers {
 
 			?>
 			<?php
-				$fb_settings_uri = add_query_arg(
-					array(
-						'post_type'          => 'uo-recipe',
-						'page'               => 'uncanny-automator-settings',
-						'tab'                => 'facebook_api',
-						'minimal'            => filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT ),
-						'hide_settings_tabs' => filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT ),
-					),
-					admin_url( 'edit.php' )
-				);
+			$fb_settings_uri = add_query_arg(
+				array(
+					'post_type'          => 'uo-recipe',
+					'page'               => 'uncanny-automator-settings',
+					'tab'                => 'facebook_api',
+					'minimal'            => filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT ),
+					'hide_settings_tabs' => filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT ),
+				),
+				admin_url( 'edit.php' )
+			);
 			?>
-			<p>
-				<a 
-					href="<?php echo esc_url( $fb_settings_uri ); ?>" 
-					title="<?php esc_attr_e( 'Go to Facebook settings tab', 'uncanny-automator' ); ?>"
-					class="uo-settings-btn uo-settings-btn--primary">
+            <p>
+                <a
+                        href="<?php echo esc_url( $fb_settings_uri ); ?>"
+                        title="<?php esc_attr_e( 'Go to Facebook settings tab', 'uncanny-automator' ); ?>"
+                        class="uo-settings-btn uo-settings-btn--primary">
 					<?php esc_html_e( 'Go to Facebook settings tab', 'uncanny-automator' ); ?>
-				</a>
-			</p>
-			<?php
+                </a>
+            </p>
+		<?php
 
 		endif;
 
@@ -375,9 +361,9 @@ class Instagram_Helpers {
 
 			$response = json_decode( $response );
 
-			$status = $response->response ?? '';
+			$status = isset( $response->response ) ? $response->response : '';
 
-			$message = $response->message ?? '';
+			$message = isset( $response->message ) ? $response->message : '';
 
 			if ( 200 === $status ) {
 
@@ -424,221 +410,225 @@ class Instagram_Helpers {
 	private function get_inline_style() {
 		ob_start();
 		?>
-		<style>
+        <style>
 
-			.uo-ig-alert,
-			.uo-ig-alert--error {
-				padding: 10px 20px;
-				background: #f9f9f9;
-				border-left: 2px solid #0790e8;
-			}
-			.uo-ig-alert--error {
-				border-left-color: #e94b35;
-			}
-			@keyframes uo-preloader-rotate{
-				to{ transform: rotate(-360deg); }
-			}
+            .uo-ig-alert,
+            .uo-ig-alert--error {
+                padding: 10px 20px;
+                background: #f9f9f9;
+                border-left: 2px solid #0790e8;
+            }
 
-			.uo-preloader-rotate{
-				animation: uo-preloader-rotate 0.75s linear infinite; 
-			}
+            .uo-ig-alert--error {
+                border-left-color: #e94b35;
+            }
 
-			.uo-ig-account-connected-item {
-				display: flex;
-				align-items: center;
-				font-weight: 600;
-				background: #fffce2;
-			}
+            @keyframes uo-preloader-rotate {
+                to {
+                    transform: rotate(-360deg);
+                }
+            }
 
-			.uo-ig-account-connected-item span {
-				padding: 0 7.5px;
-			}
+            .uo-preloader-rotate {
+                animation: uo-preloader-rotate 0.75s linear infinite;
+            }
 
-			.uo-settings-content-footer,
-			button[name="uap_automator_instagram_api_save"] {
-				display: none;
-			}
+            .uo-ig-account-connected-item {
+                display: flex;
+                align-items: center;
+                font-weight: 600;
+                background: #fffce2;
+            }
 
-			#uo-user-ig-pages > p.error {
-				color: #e94b35;
-			}
+            .uo-ig-account-connected-item span {
+                padding: 0 7.5px;
+            }
 
-			span.uo-ig-pages-item-id {
-				border-radius: 3px;
-				font-size: 12px;
-				padding: 2px;
-				text-align: center;
-				width: 115px;
-				display: inline-block;
-				border: 2px dashed #fff27d;
-				margin-right: 10px;
-				background: #fffce2;
-			}
+            .uo-settings-content-footer,
+            button[name="uap_automator_instagram_api_save"] {
+                display: none;
+            }
 
-			span.uo-ig-pages-item-task {
-				color: #20831c;
-				position: relative;
-				top: 2.5px;
-			}
+            #uo-user-ig-pages > p.error {
+                color: #e94b35;
+            }
 
-			#uo-user-ig-pages > ul > li > a {
-				margin-right: 15px;
-			}
+            span.uo-ig-pages-item-id {
+                border-radius: 3px;
+                font-size: 12px;
+                padding: 2px;
+                text-align: center;
+                width: 115px;
+                display: inline-block;
+                border: 2px dashed #fff27d;
+                margin-right: 10px;
+                background: #fffce2;
+            }
 
-			#uo-user-ig-pages > ul > li {
-				display: flex;
-				align-items: center;
-			}
+            span.uo-ig-pages-item-task {
+                color: #20831c;
+                position: relative;
+                top: 2.5px;
+            }
 
-			#uo-user-ig-pages > ul > li > a.uo-ig-pages-item-title {
-				display: block;
-				width: 200px;
-			}
+            #uo-user-ig-pages > ul > li > a {
+                margin-right: 15px;
+            }
 
-			.uo-ig-account-connected {
-				width: 265px;
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-			}
+            #uo-user-ig-pages > ul > li {
+                display: flex;
+                align-items: center;
+            }
 
-			.uo-ig-account-connected a:active,
-			.uo-ig-account-connected a:focus {
-				outline: none;
-				box-shadow: none;
-			}
+            #uo-user-ig-pages > ul > li > a.uo-ig-pages-item-title {
+                display: block;
+                width: 200px;
+            }
 
-			span.dashicons-image-rotate {
-				color: #757575;
-				font-size: 14px;
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-			}
-		</style>
+            .uo-ig-account-connected {
+                width: 265px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .uo-ig-account-connected a:active,
+            .uo-ig-account-connected a:focus {
+                outline: none;
+                box-shadow: none;
+            }
+
+            span.dashicons-image-rotate {
+                color: #757575;
+                font-size: 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
 		<?php
 		return ob_get_clean();
 	}
 
 	private function get_inline_js() {
 		?>
-		<script>
-			jQuery(document).ready(function($){
-				'use strict';
+        <script>
+            jQuery(document).ready(function ($) {
+                'use strict';
 
-				var url = "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>";
+                var url = "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>";
 
-				var uo_get_ig_account_card = function( user_id, picture, username ) {
+                var uo_get_ig_account_card = function (user_id, picture, username) {
 
-					var ig_account_html = '<div data-user-id="'+user_id+'" class="uo-ig-account-connected-item">';
-							ig_account_html += '<img onerror="jQuery(this).hide();" width="32" src="'+picture+'" />';
-							ig_account_html += '<span>'+username+'</span>';
-						ig_account_html += '</div>';
+                    var ig_account_html = '<div data-user-id="' + user_id + '" class="uo-ig-account-connected-item">';
+                    ig_account_html += '<img onerror="jQuery(this).hide();" width="32" src="' + picture + '" />';
+                    ig_account_html += '<span>' + username + '</span>';
+                    ig_account_html += '</div>';
 
-					return ig_account_html;
+                    return ig_account_html;
 
-				}
+                }
 
-				var uo_load_facebook_pages = function() {
+                var uo_load_facebook_pages = function () {
 
-					$.ajax({
-						dataType: 'json',
-						url: url,
-						data: {
-							action: '<?php echo esc_html( "{$this->wp_ajax_action}_fetch_user_pages" ); ?>',
-							nonce: '<?php echo esc_html( wp_create_nonce( self::OPTION_KEY ) ); ?>'
-						},
-						success: function( response ) {
+                    $.ajax({
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            action: '<?php echo esc_html( "{$this->wp_ajax_action}_fetch_user_pages" ); ?>',
+                            nonce: '<?php echo esc_html( wp_create_nonce( self::OPTION_KEY ) ); ?>'
+                        },
+                        success: function (response) {
 
-							if ( 200 === response.status ) {
+                            if (200 === response.status) {
 
-								var $li = "";
+                                var $li = "";
 
-								$.each( response.pages, function( i, page ){
-									console.log( page );
-									$li += '<li>';
-									$li += '<span class="uo-ig-pages-item-id">'+page.value+'</span>';
-									$li += '<a class="uo-ig-pages-item-title" href="https://facebook.com/'+page.value+'" target="_blank">' + page.text + '</a>';
-									$li += '<div class="uo-ig-account-connected">';
-										if ( page.ig_account ) {
-											$.each( page.ig_account.data, function( i, ig_account ){
-												if ( ig_account  ) {
-													$li += uo_get_ig_account_card( ig_account.id, ig_account.profile_pic, ig_account.username );
-												} 
-											});
-										} else {
-											$li += '<?php esc_html_e( 'No Instagram accounts connected', 'uncanny-automator' ); ?>';
-										}
-										$li += '&nbsp; <a data-page-id='+page.value+' class="uo-ig-pages-item-btn uo-ig-pages-item-get-instagram-accounts-btn" href="#">'+'<span class="dashicons dashicons-image-rotate"></span>'+'</a>';	
-									$li += '</div>';
-									$li += '</li>';
+                                $.each(response.pages, function (i, page) {
+                                    console.log(page);
+                                    $li += '<li>';
+                                    $li += '<span class="uo-ig-pages-item-id">' + page.value + '</span>';
+                                    $li += '<a class="uo-ig-pages-item-title" href="https://facebook.com/' + page.value + '" target="_blank">' + page.text + '</a>';
+                                    $li += '<div class="uo-ig-account-connected">';
+                                    if (page.ig_account) {
+                                        $.each(page.ig_account.data, function (i, ig_account) {
+                                            if (ig_account) {
+                                                $li += uo_get_ig_account_card(ig_account.id, ig_account.profile_pic, ig_account.username);
+                                            }
+                                        });
+                                    } else {
+                                        $li += '<?php esc_html_e( 'No Instagram accounts connected', 'uncanny-automator' ); ?>';
+                                    }
+                                    $li += '&nbsp; <a data-page-id=' + page.value + ' class="uo-ig-pages-item-btn uo-ig-pages-item-get-instagram-accounts-btn" href="#">' + '<span class="dashicons dashicons-image-rotate"></span>' + '</a>';
+                                    $li += '</div>';
+                                    $li += '</li>';
 
-								} );
+                                });
 
-								$('#uo-user-ig-pages').html('<ul>'+$li+'</ul>');
+                                $('#uo-user-ig-pages').html('<ul>' + $li + '</ul>');
 
-							} else {
-								$('#uo-user-ig-pages > p').html( response.message ).addClass('error');
-							}
+                            } else {
+                                $('#uo-user-ig-pages > p').html(response.message).addClass('error');
+                            }
 
-						},
-						error: function( xhr, status, error ) {
-							$('#uo-user-ig-pages > p').html( status + ': ' + error ).addClass('error');
-						}
-					});
-				}
+                        },
+                        error: function (xhr, status, error) {
+                            $('#uo-user-ig-pages > p').html(status + ': ' + error).addClass('error');
+                        }
+                    });
+                }
 
-				uo_load_facebook_pages();
+                uo_load_facebook_pages();
 
-				$('#uo-user-ig-pages').on('click', 'a.uo-ig-pages-item-btn', function(e) {
-					e.preventDefault();
-					$(this).find('span.dashicons-image-rotate').addClass('uo-preloader-rotate');
-					var target=  $(this);
-					$.ajax({
-						dataType: 'json',
-						url: url,
-						data: {
-							action: '<?php echo esc_html( "{$this->wp_ajax_action}_fetch_instagram_accounts" ); ?>',
-							page_id: target.attr('data-page-id'),
-							nonce: '<?php echo esc_html( wp_create_nonce( self::OPTION_KEY ) ); ?>'
-						},
-						success: function( igResponse ) {
+                $('#uo-user-ig-pages').on('click', 'a.uo-ig-pages-item-btn', function (e) {
+                    e.preventDefault();
+                    $(this).find('span.dashicons-image-rotate').addClass('uo-preloader-rotate');
+                    var target = $(this);
+                    $.ajax({
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            action: '<?php echo esc_html( "{$this->wp_ajax_action}_fetch_instagram_accounts" ); ?>',
+                            page_id: target.attr('data-page-id'),
+                            nonce: '<?php echo esc_html( wp_create_nonce( self::OPTION_KEY ) ); ?>'
+                        },
+                        success: function (igResponse) {
 
-							var ig_account_html = '';
+                            var ig_account_html = '';
 
-							if ( 200 === igResponse.statusCode ) {
+                            if (200 === igResponse.statusCode) {
 
-								var igResponseData = igResponse.data.data;
+                                var igResponseData = igResponse.data.data;
 
-								if ( igResponseData.length >= 1 ) {
+                                if (igResponseData.length >= 1) {
 
-									$.each( igResponseData, function( index, ig_account ){
-										ig_account_html += '<div class="uo-ig-account-connected-item">';
-											ig_account_html += '<img width="32" src="'+ig_account.profile_pic+'" />';
-											ig_account_html += '<span>'+ig_account.username+'</span>';
-										ig_account_html += '</div>';
-									});
+                                    $.each(igResponseData, function (index, ig_account) {
+                                        ig_account_html += '<div class="uo-ig-account-connected-item">';
+                                        ig_account_html += '<img width="32" src="' + ig_account.profile_pic + '" />';
+                                        ig_account_html += '<span>' + ig_account.username + '</span>';
+                                        ig_account_html += '</div>';
+                                    });
 
-									target.parent().html( ig_account_html );
+                                    target.parent().html(ig_account_html);
 
-								} else {
-									target.parent().css('color', '#ff7c00');
-									target.parent().html('<?php esc_html_e( 'No Instagram Business or Professional account connected.', 'uncanny-automator' ); ?>');
-								}
+                                } else {
+                                    target.parent().css('color', '#ff7c00');
+                                    target.parent().html('<?php esc_html_e( 'No Instagram Business or Professional account connected.', 'uncanny-automator' ); ?>');
+                                }
 
-							} else {
-								target.parent().css('color', '#ff3b00');
-								target.parent().html('<?php esc_html_e( 'Could not find any Business/Professional Instagram account connected to the page.', 'uncanny-automator' ); ?>');
-							}
-						},
-						error: function( xhr, status, error ) {
-							target.html( status + ': ' + error ).removeClass('uo-settings-btn--primary').addClass('uo-settings-btn--error');
-						}
-					});
-				});
+                            } else {
+                                target.parent().css('color', '#ff3b00');
+                                target.parent().html('<?php esc_html_e( 'Could not find any Business/Professional Instagram account connected to the page.', 'uncanny-automator' ); ?>');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            target.html(status + ': ' + error).removeClass('uo-settings-btn--primary').addClass('uo-settings-btn--error');
+                        }
+                    });
+                });
 
-			});
-		</script>
+            });
+        </script>
 		<?php
 	}
 }

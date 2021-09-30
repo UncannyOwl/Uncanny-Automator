@@ -183,6 +183,7 @@ CREATE TABLE {$tbl_closure_log} (
 `user_id` bigint unsigned NOT NULL,
 `automator_closure_id` bigint unsigned NOT NULL,
 `automator_recipe_id` bigint unsigned NOT NULL,
+`automator_recipe_log_id` bigint unsigned NOT NULL,
 `completed` tinyint(1) unsigned NOT NULL,
 PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
@@ -194,6 +195,7 @@ CREATE TABLE {$tbl_closure_log_meta} (
 `ID` bigint unsigned NOT NULL auto_increment,
 `user_id` bigint unsigned NOT NULL,
 `automator_closure_id` bigint unsigned NOT NULL,
+`automator_closure_log_id` bigint unsigned NOT NULL,
 `meta_key` varchar(255) DEFAULT '' NOT NULL,
 `meta_value` longtext NULL,
 PRIMARY KEY  (`ID`),
@@ -369,7 +371,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	}
 
 	/**
-	 * @param bool $group_by
+	 * @param $group_by
 	 *
 	 * @return string
 	 */
@@ -415,11 +417,11 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	/**
 	 * Check if specific VIEW is missing.
 	 *
-	 * @param string $type
+	 * @param $type
 	 *
 	 * @return bool
 	 */
-	public static function is_view_exists( string $type = 'recipe' ) {
+	public static function is_view_exists( $type = 'recipe' ) {
 		global $wpdb;
 		$recipe_view = '';
 		if ( 'recipe' === $type ) {
@@ -446,12 +448,12 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	/**
 	 * Check if all Automator VIEWS exists. Return empty if all VIEWS exists else only the ones that are missing.
 	 *
-	 * @param bool $return_missing
+	 * @param $return_missing
 	 *
 	 * @return array
 	 * @version 3.0
 	 */
-	public static function all_views( bool $return_missing = false ) {
+	public static function all_views( $return_missing = false ) {
 		global $wpdb;
 		$db      = DB_NAME;
 		$results = $wpdb->get_results( "SHOW FULL TABLES IN `$db` WHERE TABLE_TYPE LIKE '%VIEW%'" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

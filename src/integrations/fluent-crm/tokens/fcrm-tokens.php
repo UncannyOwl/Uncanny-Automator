@@ -88,7 +88,9 @@ class Fcrm_Tokens {
 
 			if (
 				( 'FCRMUSERLIST' === $pieces['1'] && 'FCRMLIST' === $trigger_meta ) ||
-				( 'FCRMUSERTAG' === $pieces['1'] && 'FCRMTAG' === $trigger_meta )
+				( 'FCRMUSERTAG' === $pieces['1'] && 'FCRMTAG' === $trigger_meta ) ||
+				( 'ANONFCRMUSERLIST' === $pieces['1'] && 'FCRMLIST' === $trigger_meta ) ||
+				( 'ANONFCRMUSERTAG' === $pieces['1'] && 'FCRMTAG' === $trigger_meta )
 			) {
 
 				// value is the list or lists(if any list was selected) that the subscriber was added too

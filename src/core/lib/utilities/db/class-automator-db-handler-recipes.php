@@ -28,16 +28,16 @@ class Automator_DB_Handler_Recipes {
 	/**
 	 * Inserts a new recipe run in to Recipe logs table.
 	 *
-	 * @param int $user_id
-	 * @param int $recipe_id
-	 * @param int $completed
-	 * @param int $run_number
+	 * @param $user_id
+	 * @param $recipe_id
+	 * @param $completed
+	 * @param $run_number
 	 *
 	 * @return int
 	 *
 	 * @since 3.0
 	 */
-	public function add( int $user_id, int $recipe_id, int $completed, int $run_number ) {
+	public function add( $user_id, $recipe_id, $completed, $run_number ) {
 		global $wpdb;
 
 		$table_name = isset( Automator()->db->tables->recipe ) ? Automator()->db->tables->recipe : 'uap_recipe_log';
@@ -65,15 +65,15 @@ class Automator_DB_Handler_Recipes {
 	/**
 	 * Update recipe log table. Check $wpdb->update() to see how to pass values.
 	 *
-	 * @param array $to_update
-	 * @param array $where
-	 * @param array $update_format
-	 * @param array $where_format
+	 * @param $to_update
+	 * @param $where
+	 * @param $update_format
+	 * @param $where_format
 	 *
 	 * @return bool|int
 	 * @since 3.0
 	 */
-	public function update( array $to_update, array $where, array $update_format, array $where_format ) {
+	public function update( $to_update, $where, $update_format, $where_format ) {
 		global $wpdb;
 		$table_name = isset( Automator()->db->tables->recipe ) ? Automator()->db->tables->recipe : 'uap_recipe_log';
 
@@ -94,10 +94,10 @@ class Automator_DB_Handler_Recipes {
 	}
 
 	/**
-	 * @param int $recipe_id
-	 * @param int $recipe_log_id
+	 * @param $recipe_id
+	 * @param $recipe_log_id
 	 */
-	public function mark_incomplete( int $recipe_id, int $recipe_log_id ) {
+	public function mark_incomplete( $recipe_id, $recipe_log_id ) {
 		$this->update(
 			array(
 				'completed' => 0,
@@ -125,10 +125,10 @@ class Automator_DB_Handler_Recipes {
 	 * 5 = scheduled
 	 * 9 = completed, do nothing
 	 *
-	 * @param int $recipe_log_id
-	 * @param int $completed
+	 * @param $recipe_log_id
+	 * @param $completed
 	 */
-	public function mark_complete( int $recipe_log_id, int $completed ) {
+	public function mark_complete( $recipe_log_id, $completed ) {
 		$this->update(
 			array(
 				'date_time' => current_time( 'mysql' ),
@@ -158,11 +158,11 @@ class Automator_DB_Handler_Recipes {
 	 * 2 = completed with errors, error message is provided
 	 * 9 = completed, do nothing
 	 *
-	 * @param int $recipe_id
-	 * @param int $recipe_log_id
-	 * @param int $complete
+	 * @param $recipe_id
+	 * @param $recipe_log_id
+	 * @param $complete
 	 */
-	public function mark_complete_with_error( int $recipe_id, int $recipe_log_id, int $complete ) {
+	public function mark_complete_with_error( $recipe_id, $recipe_log_id, $complete ) {
 		$this->update(
 			array(
 				'completed' => $complete,
@@ -182,12 +182,12 @@ class Automator_DB_Handler_Recipes {
 	}
 
 	/**
-	 * @param int $recipe_id
-	 * @param int $user_id
+	 * @param $recipe_id
+	 * @param $user_id
 	 *
 	 * @return string|null
 	 */
-	public function log_run_pre_exists( int $recipe_id, int $user_id ) {
+	public function log_run_pre_exists( $recipe_id, $user_id ) {
 		global $wpdb;
 		$tbl = Automator()->db->tables->recipe;
 
@@ -214,15 +214,32 @@ class Automator_DB_Handler_Recipes {
 	}
 
 	/**
-	 * @param int $recipe_id
+	 * @param $recipe_id
 	 */
-	public function delete( int $recipe_id ) {
+	public function delete( $recipe_id ) {
 		global $wpdb;
 
 		// delete from uap_recipe_log
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->recipe,
 			array( 'automator_recipe_id' => $recipe_id )
+		);
+	}
+
+	/**
+	 * @param $recipe_id
+	 * @param $automator_recipe_log_id
+	 */
+	public function delete_logs( $recipe_id, $automator_recipe_log_id ) {
+		global $wpdb;
+
+		// delete from uap_recipe_log
+		$wpdb->delete(
+			$wpdb->prefix . Automator()->db->tables->recipe,
+			array(
+				'automator_recipe_id' => $recipe_id,
+				'ID'                  => $automator_recipe_log_id,
+			)
 		);
 	}
 }

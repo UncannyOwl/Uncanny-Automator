@@ -65,9 +65,9 @@ trait Integrations {
 	}
 
 	/**
-	 * @param string $settings_url
+	 * @param $settings_url
 	 */
-	public function set_settings_url( string $settings_url ) {
+	public function set_settings_url( $settings_url ) {
 		$this->settings_url = $settings_url;
 	}
 
@@ -250,8 +250,8 @@ trait Integrations {
 	}
 
 	/**
-	 * @param array $directory
-	 * @param string $path
+	 * @param $directory
+	 * @param $path
 	 *
 	 * @return mixed
 	 */

@@ -48,9 +48,9 @@ class UOA_RECIPEERRORSTIMES {
 			'code'                => $this->trigger_code,
 			'type'                => 'anonymous',
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'sentence'            => sprintf( esc_attr__( '{{A recipe:%1$s}} completes with errors  {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, $this->num_times ),
+			'sentence'            => sprintf( esc_attr__( '{{A recipe:%1$s}} completes with errors {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, $this->num_times ),
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'select_option_name'  => esc_attr__( '{{A recipe}} completes with errors  {{a number of}} time(s)', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( '{{A recipe}} completes with errors {{a number of}} time(s)', 'uncanny-automator' ),
 			'action'              => 'automator_recipe_completed_with_errors',
 			'priority'            => 299,
 			'accepted_args'       => 4,

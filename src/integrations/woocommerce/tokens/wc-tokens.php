@@ -228,6 +228,7 @@ class Wc_Tokens {
 			'WOOPRODUCT_URL',
 			'WOOPRODUCT_THUMB_ID',
 			'WOOPRODUCT_THUMB_URL',
+			'WOOPRODUCT_ORDER_QTY',
 			'WCORDERSTATUS',
 			'WCORDERCOMPLETE',
 			'WCSHIPSTATIONSHIPPED',
@@ -260,6 +261,9 @@ class Wc_Tokens {
 		$recipe_log_id        = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 		if ( $trigger_data && $recipe_log_id ) {
 			foreach ( $trigger_data as $trigger ) {
+				if ( ! is_array( $trigger ) || empty( $trigger ) ) {
+					continue;
+				}
 				if ( key_exists( $trigger_meta, $trigger['meta'] ) || ( isset( $trigger['meta']['code'] ) && $trigger_meta === $trigger['meta']['code'] ) ) {
 					$trigger_id     = $trigger['ID'];
 					$trigger_log_id = $replace_args['trigger_log_id'];
@@ -294,8 +298,28 @@ class Wc_Tokens {
 									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
 									$value          = $this->get_woo_product_image_urls_from_items( $order, $value_to_match );
 									break;
+								case 'WOOPRODUCT_ORDER_QTY':
+									$product_id   = isset( $trigger['meta']['WOOPRODUCT'] ) ? intval( $trigger['meta']['WOOPRODUCT'] ) : - 1;
+									$items        = $order->get_items();
+									$product_qtys = array();
+									if ( $items ) {
+										/** @var WC_Order_Item_Product $item */
+										foreach ( $items as $item ) {
+											$product = $item->get_product();
+											if ( $product_id === $product->get_id() || ( intval( '-1' ) === intval( $product_id ) && 1 === count( $items ) ) ) {
+												$value = $item->get_quantity();
+												break;
+											} elseif ( intval( '-1' ) === intval( $product_id ) ) {
+												$product_qtys[] = $item->get_name() . ' x ' . $item->get_quantity();
+											}
+										}
+									}
+									if ( ! empty( $product_qtys ) ) {
+										$value = join( $multi_line_separator, $product_qtys );
+									}
+									break;
 								case 'WOORDERTOTAL':
-									$value = strip_tags( wc_price( $order->get_total() ) );
+									$value = wp_strip_all_tags( wc_price( $order->get_total() ) );
 									break;
 								case 'NUMBERCOND':
 									$val = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '';
@@ -488,7 +512,44 @@ class Wc_Tokens {
 									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
 									$value = $value ? date( 'Y-m-d H:i:s', $value ) : ''; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 									break;
+								default:
+									if ( preg_match( '/custom_order_meta/', $parse ) ) {
+										$custom_meta = explode( '|', $parse );
+										if ( ! empty( $custom_meta ) && count( $custom_meta ) > 1 && 'custom_order_meta' === $custom_meta[0] ) {
+											$meta_key = $custom_meta[1];
+											if ( $order->meta_exists( $meta_key ) ) {
+												$value = $order->get_meta( $meta_key );
+												if ( is_array( $value ) ) {
+													$value = join( $multi_line_separator, $value );
+												}
+											}
+											$value = apply_filters( 'automator_woocommerce_custom_order_meta_token_parser', $value, $meta_key, $pieces, $order );
+										}
+									}
+									if ( preg_match( '/custom_item_meta/', $parse ) ) {
+										$custom_meta = explode( '|', $parse );
+										if ( ! empty( $custom_meta ) && count( $custom_meta ) > 1 && 'custom_item_meta' === $custom_meta[0] ) {
+											$meta_key = $custom_meta[1];
+											$items    = $order->get_items();
+											if ( $items ) {
+												/** @var WC_Order_Item_Product $item */
+												foreach ( $items as $item ) {
+													if ( $item->meta_exists( $meta_key ) ) {
+														$value = $item->get_meta( $meta_key );
+													}
+													$value = apply_filters( 'automator_woocommerce_custom_item_meta_token_parser', $value, $meta_key, $pieces, $order, $item );
+												}
+											}
+										}
+									}
+									break;
 							}
+							$token        = $parse;
+							$token_pieces = $pieces;
+							/**
+							 * @since 3.2
+							 */
+							$value = apply_filters( 'automator_woocommerce_token_parser', $value, $token, $token_pieces, $order );
 						}
 					}
 				}
@@ -612,24 +673,24 @@ class Wc_Tokens {
 	public function wc_order_possible_tokens( $tokens = array(), $args = array() ) {
 		$args['meta'] = 'WCSHIPSTATIONSHIPPED';
 		$fields       = array();
-		$fields[]     = [
+		$fields[]     = array(
 			'tokenId'         => 'TRACKING_NUMBER',
 			'tokenName'       => esc_attr__( 'Shipping tracking number', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'WCSHIPSTATIONSHIPPED',
-		];
-		$fields[]     = [
+		);
+		$fields[]     = array(
 			'tokenId'         => 'CARRIER',
 			'tokenName'       => esc_attr__( 'Shipping carrier', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'WCSHIPSTATIONSHIPPED',
-		];
-		$fields[]     = [
+		);
+		$fields[]     = array(
 			'tokenId'         => 'SHIP_DATE',
 			'tokenName'       => esc_attr__( 'Ship date', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'WCSHIPSTATIONSHIPPED',
-		];
+		);
 		$tokens       = array_merge( $tokens, $fields );
 
 		return $this->wc_possible_tokens( $tokens, $args, 'order' );

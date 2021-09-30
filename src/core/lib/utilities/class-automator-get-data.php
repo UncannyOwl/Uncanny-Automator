@@ -199,11 +199,11 @@ class Automator_Get_Data {
 
 	/**
 	 * @param        $id
-	 * @param string $type
+	 * @param $type
 	 *
 	 * @return array|mixed|string
 	 */
-	public function action_sentence( $id, string $type = 'all' ) {
+	public function action_sentence( $id, $type = 'all' ) {
 
 		global $wpdb;
 
@@ -697,7 +697,7 @@ class Automator_Get_Data {
 	 * @param null $user_id
 	 * @param null $trigger_id
 	 * @param null $meta_key
-	 * @param int $trigger_log_id
+	 * @param $trigger_log_id
 	 *
 	 * @return null|string
 	 */
@@ -736,7 +736,7 @@ class Automator_Get_Data {
 	/**
 	 * @param      $recipe_id
 	 * @param      $user_id
-	 * @param bool $fetch_current
+	 * @param $fetch_current
 	 *
 	 * @return int|null|string
 	 */
@@ -770,7 +770,7 @@ class Automator_Get_Data {
 
 	/**
 	 * @param        $id
-	 * @param string $type
+	 * @param $type
 	 *
 	 * @return array|mixed|string
 	 */
@@ -1176,23 +1176,26 @@ class Automator_Get_Data {
 		global $wpdb;
 		$tm_table = $wpdb->prefix . Automator()->db->tables->trigger_meta;
 		$t_table  = $wpdb->prefix . Automator()->db->tables->trigger;
-
-		return $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT tm.meta_value
+		$qry      = $wpdb->prepare(
+			"SELECT tm.meta_value
 FROM $tm_table tm
 LEFT JOIN $t_table t
-ON tm.automator_trigger_log_id = t.ID AND t.automator_trigger_id = %d AND t.automator_recipe_log_id = %d AND t.automator_recipe_id = %d AND t.user_id = %d
-WHERE tm.run_number = %d
-AND tm.meta_key = %s",
-				$trigger_id,
-				$recipe_log_id,
-				$recipe_id,
-				$user_id,
-				$run_number,
-				$meta_key
-			)
+ON tm.automator_trigger_log_id = t.ID
+WHERE t.automator_trigger_id = %d
+  AND t.automator_recipe_log_id = %d
+  AND t.automator_recipe_id = %d
+  AND t.user_id = %d
+  AND tm.run_number = %d
+  AND tm.meta_key = %s",
+			$trigger_id,
+			$recipe_log_id,
+			$recipe_id,
+			$user_id,
+			$run_number,
+			$meta_key
 		);
+
+		return $wpdb->get_var( $qry );
 	}
 
 	/**
@@ -1215,8 +1218,12 @@ AND tm.meta_key = %s",
 				"SELECT tm.automator_trigger_log_id
 FROM $tm_table tm
 LEFT JOIN $t_table t
-ON tm.automator_trigger_log_id = t.ID AND t.automator_trigger_id = %d AND t.automator_recipe_log_id = %d AND t.automator_recipe_id = %d AND t.user_id = %d
-WHERE tm.run_number = %d",
+ON tm.automator_trigger_log_id = t.ID
+WHERE t.automator_trigger_id = %d
+  AND t.automator_recipe_log_id = %d
+  AND t.automator_recipe_id = %d
+  AND t.user_id = %d
+  AND tm.run_number = %d",
 				$trigger_id,
 				$recipe_log_id,
 				$recipe_id,
@@ -1224,5 +1231,20 @@ WHERE tm.run_number = %d",
 				$run_number
 			)
 		);
+	}
+
+	/**
+	 * total_completed_runs
+	 *
+	 * @return void
+	 */
+	public function total_completed_runs() {
+		global $wpdb;
+
+		$tbl = Automator()->db->tables->recipe;
+
+		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed=1" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return apply_filters( 'automator_total_completed_runs', absint( $results ) );
 	}
 }

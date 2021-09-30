@@ -137,17 +137,17 @@ class WP_SENDEMAIL {
 
 
 	/**
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 * @param $args
 	 * @param $parsed
 	 *
 	 * @return void.
 	 */
-	protected function process_action( int $user_id, array $action_data, int $recipe_id, array $args, $parsed ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$body_text = $parsed['EMAILBODY'] ?? '';
+		$body_text = isset( $parsed['EMAILBODY'] ) ? $parsed['EMAILBODY'] : '';
 
 		if ( false !== strpos( $body_text, '{{reset_pass_link}}' ) ) {
 			$reset_pass = ! is_null( $this->key ) ? $this->key : Automator()->parse->generate_reset_token( $user_id );
@@ -157,12 +157,12 @@ class WP_SENDEMAIL {
 		}
 
 		$data = array(
-			'to'        => $parsed['EMAILTO'] ?? '',
-			'from'      => $parsed['EMAILFROM'] ?? '',
-			'from_name' => $parsed['EMAILFROMNAME'] ?? '',
-			'cc'        => $parsed['EMAILCC'] ?? '',
-			'bcc'       => $parsed['EMAILBCC'] ?? '',
-			'subject'   => $parsed['EMAILSUBJECT'] ?? '',
+			'to'        => isset( $parsed['EMAILTO'] ) ? $parsed['EMAILTO'] : '',
+			'from'      => isset( $parsed['EMAILFROM'] ) ? $parsed['EMAILFROM'] : '',
+			'from_name' => isset( $parsed['EMAILFROMNAME'] ) ? $parsed['EMAILFROMNAME'] : '',
+			'cc'        => isset( $parsed['EMAILCC'] ) ? $parsed['EMAILCC'] : '',
+			'bcc'       => isset( $parsed['EMAILBCC'] ) ? $parsed['EMAILBCC'] : '',
+			'subject'   => isset( $parsed['EMAILSUBJECT'] ) ? $parsed['EMAILSUBJECT'] : '',
 			'body'      => $body,
 			'content'   => $this->get_content_type(),
 			'charset'   => $this->get_charset(),

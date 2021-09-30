@@ -308,25 +308,25 @@ class Recipe_Post_Utilities {
 		}
 
 		$api_setup = array(
-			'wp'             => false,
-			'restURL'        => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
-			'siteURL'        => get_site_url(),
-			'nonce'          => \wp_create_nonce( 'wp_rest' ),
-			'dev'            => array(
+			'wp'                  => false,
+			'restURL'             => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
+			'siteURL'             => get_site_url(),
+			'nonce'               => \wp_create_nonce( 'wp_rest' ),
+			'dev'                 => array(
 				'debugMode'    => (bool) AUTOMATOR_DEBUG_MODE,
 				'recipesUrl'   => admin_url( 'edit.php?post_type=uo-recipe' ),
 				'debuggingURL' => 'https://automatorplugin.com/knowledge-base/troubleshooting-plugin-errors/?utm_source=uncanny_automator&utm_medium=recipe-wizard-error-modal&utm_content=learn-more-debugging',
 			),
-			'integrations'   => Automator()->get_integrations(),
-			'triggers'       => Automator()->get_triggers(),
-			'actions'        => Automator()->get_actions(),
-			'closures'       => Automator()->get_closures(),
-			'i18n'           => Automator()->i18n->get_all(),
-			'recipes_object' => Automator()->get_recipes_data( true, $post_id ),
-			'version'        => Utilities::automator_get_version(),
-			'proVersion'     => defined( 'AUTOMATOR_PRO_FILE' ) ? \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION : '',
-			'proFeatures'    => $this->get_pro_items(),
-			'recipe'         => array(
+			'integrations'        => Automator()->get_integrations(),
+			'triggers'            => Automator()->get_triggers(),
+			'actions'             => Automator()->get_actions(),
+			'closures'            => Automator()->get_closures(),
+			'i18n'                => Automator()->i18n->get_all(),
+			'recipes_object'      => Automator()->get_recipes_data( true, $post_id ),
+			'version'             => Utilities::automator_get_version(),
+			'proVersion'          => defined( 'AUTOMATOR_PRO_FILE' ) ? \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION : '',
+			'proFeatures'         => $this->get_pro_items(),
+			'recipe'              => array(
 				'id'               => $post_id,
 				'author'           => $post->post_author,
 				'status'           => $post->post_status,
@@ -361,14 +361,14 @@ class Recipe_Post_Utilities {
 					'copyToDraft'    => sprintf( '%s?action=%s&post=%d&return_to_recipe=yes&_wpnonce=%s', admin_url( 'edit.php' ), 'copy_recipe_parts', $post_id, wp_create_nonce( 'Aut0Mat0R' ) ),
 				),
 			),
-			'format'         => array(
+			'format'              => array(
 				'date' => get_option( 'date_format' ),
 			),
-			'connectApiUrl'       => sprintf('%s%s?redirect_url=%s', AUTOMATOR_FREE_STORE_URL, AUTOMATOR_FREE_STORE_CONNECT_URL, urlencode( site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ) ) ) ,
-			'dashboardUrl'        => site_url('wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ),
+			'connectApiUrl'       => sprintf( '%s%s?redirect_url=%s', AUTOMATOR_FREE_STORE_URL, AUTOMATOR_FREE_STORE_CONNECT_URL, urlencode( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ),
+			'dashboardUrl'        => admin_url( 'admin.php?page=uncanny-automator-dashboard' ),
 			'hasAccountConnected' => ( ! Admin_Menu::is_automator_connected() ? false : true ),
 			'hasValidProLicense'  => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),
-			'licenseUrl'          => site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-license-activation' ), 
+			'licenseUrl'          => site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-license-activation' ),
 		);
 
 		$api_setup = apply_filters_deprecated( 'uap_api_setup', array( $api_setup ), '3.0', 'automator_api_setup' ); // deprecate
@@ -404,15 +404,15 @@ class Recipe_Post_Utilities {
 			self::delete_recipe_logs( $post_ID );
 		}
 
-		if ( $post && 'uo-action' === (string) $post->post_type ) {
+		if ( 'uo-action' === (string) $post->post_type ) {
 			Automator()->db->action->delete( $post_ID );
 		}
 
-		if ( $post && 'uo-trigger' === (string) $post->post_type ) {
+		if ( 'uo-trigger' === (string) $post->post_type ) {
 			Automator()->db->trigger->delete( $post_ID );
 		}
 
-		if ( $post && 'uo-closure' === (string) $post->post_type ) {
+		if ( 'uo-closure' === (string) $post->post_type ) {
 			Automator()->db->closure->delete( $post_ID );
 		}
 	}

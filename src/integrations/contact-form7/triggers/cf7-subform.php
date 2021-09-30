@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
 
@@ -21,10 +21,17 @@ class CF7_SUBFORM {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+
 		$this->trigger_code = 'CF7SUBFORM';
 		$this->trigger_meta = 'CF7FORMS';
-		//add_filter( 'wpcf7_verify_nonce', '__return_true' );
+
+		if ( is_user_logged_in() ) {
+			// Add filter if the user is logged in to fetch the ID.
+			add_filter( 'wpcf7_verify_nonce', '__return_true' );
+		}
+
 		$this->define_trigger();
+
 	}
 
 
@@ -32,8 +39,6 @@ class CF7_SUBFORM {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -48,10 +53,10 @@ class CF7_SUBFORM {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wpcf7_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->contact_form7->options->list_contact_form7_forms(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -64,16 +69,17 @@ class CF7_SUBFORM {
 	 * @param $result
 	 */
 	public function wpcf7_submit( $form, $result ) {
+
 		if ( 'validation_failed' !== $result['status'] ) {
 
 			$user_id = wp_get_current_user()->ID;
 
-			$args = [
+			$args = array(
 				'code'    => $this->trigger_code,
 				'meta'    => $this->trigger_meta,
 				'post_id' => $form->id(),
 				'user_id' => $user_id,
-			];
+			);
 
 			$args = Automator()->maybe_add_trigger_entry( $args, false );
 
@@ -89,5 +95,6 @@ class CF7_SUBFORM {
 				}
 			}
 		}
+
 	}
 }

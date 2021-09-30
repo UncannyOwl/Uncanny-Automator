@@ -22,7 +22,7 @@ class Add_Wpf_Integration {
 	 */
 	protected function setup() {
 		$this->set_integration( 'WPF' );
-		$this->set_name( 'WP Forms' );
+		$this->set_name( 'WPForms' );
 		$this->set_icon( 'wpforms-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 	}

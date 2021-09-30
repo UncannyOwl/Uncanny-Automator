@@ -44,7 +44,7 @@ class Import_Recipe {
 		$json_array = json_decode( $string, true );
 
 		return $json_array;
-	}	
+	}
 
 	public function import_from_array( $recipe ) {
 
@@ -56,7 +56,7 @@ class Import_Recipe {
 				if ( $trigger['ID'] ) {
 					$this->set_values( $trigger );
 					$this->set_status( $trigger );
-				}	
+				}
 			}
 		}
 
@@ -72,17 +72,17 @@ class Import_Recipe {
 
 
 		$this->set_status( $recipe );
-		
+
 		return $recipe['ID'];
 
 	}
 
 	public function create_recipe_post( $recipe ) {
 
-		$recipe_title = $recipe['title'] ?? 'Imported recipe';
+		$recipe_title = $recipe['title'] ? $recipe['title'] : 'Imported recipe';
 
 		$recipe_post = array(
-			'post_type' => 'uo-recipe',
+			'post_type'   => 'uo-recipe',
 			'post_title'  => wp_strip_all_tags( $recipe_title ),
 			'post_author' => get_current_user_id(),
 		);
@@ -136,7 +136,7 @@ class Import_Recipe {
 		}
 
 		return;
-	}	
+	}
 
 	public function set_values( $item, $recipe = null ) {
 
@@ -158,9 +158,9 @@ class Import_Recipe {
 			$request->set_param( 'optionCode', $option['meta'] );
 			$option_value = array();
 			if ( is_array( $option['value'] ) ) {
-				$option_value = json_encode( $option['value'] ); 
+				$option_value = json_encode( $option['value'] );
 			} else {
-				$option_value = $option['value']; 
+				$option_value = $option['value'];
 			}
 
 			$request->set_param( 'optionValue', $this->parse_tokens( $option_value, $recipe ) );
@@ -168,12 +168,12 @@ class Import_Recipe {
 			$trigger_value_added = $this->recipe_api->update( $request );
 
 			if ( ! $trigger_value_added->data['success'] ) {
-	
+
 				throw new \Exception( "Trigger value couldn't be set." );
-	
+
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -201,10 +201,10 @@ class Import_Recipe {
 
 		foreach ( $recipe['triggers'] as $trigger ) {
 			if ( ! empty( $trigger['name'] ) ) {
-				$text = str_replace('%' . $trigger['name'] . '%', $trigger['ID'], $text );
+				$text = str_replace( '%' . $trigger['name'] . '%', $trigger['ID'], $text );
 			}
 		}
-		
+
 		return $text;
 	}
 

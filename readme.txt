@@ -3,8 +3,8 @@ Contributors: uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.8.1
-Requires PHP: 7.2
-Stable tag: 3.1.4.1
+Requires PHP: 5.6
+Stable tag: 3.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,6 +30,7 @@ If you've used Zapier or Integromat before, setting things up will be intuitive.
 
 The free version of Automator is incredibly powerful and comes with built-in automation support for all of these popular WordPress plugins and apps:
 
+- [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/)
 - [Automator Core](https://automatorplugin.com/integration/automator-core/)
 - [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/)
@@ -90,6 +91,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WP User Manager](https://automatorplugin.com/integration/wp-user-manager/)
 - [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/)
 - [Zapier](https://automatorplugin.com/integration/zapier/)
+- [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/)
+- [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/)
 
 Over 100 automation triggers and actions are available for the plugins listed above in the free version. There's simple documentation to follow in our [Knowledge Base](https://automatorplugin.com/knowledge-base/), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
 
@@ -174,6 +177,74 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.2 [2021-09-30] =
+
+**New integrations:**
+
+* [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/) - Add contacts and update contact tags and lists with Uncanny Automator #755
+* [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/)/[Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/) - Add and remove users from Zoom meetings and webinars with free credits! #436
+
+**New actions:**
+
+* ActiveCampaign - Add the user to ActiveCampaign #756
+* ActiveCampaign - Add the user to a list #763
+* ActiveCampaign - Remove the user from a list #764
+* ActiveCampaign - Add a tag to the user #761
+* ActiveCampaign - Remove a tag from the user #758
+* ActiveCampaign - Add a contact to ActiveCampaign #760
+* ActiveCampaign - Add a contact to a list #765
+* ActiveCampaign - Remove a contact from a list #766
+* ActiveCampaign - Add a tag to a contact #761
+* ActiveCampaign - Remove a tag from a contact #762
+* Zoom meetings/webinars - Add an attendee to a meeting #874
+* Zoom meetings/webinars - Add an attendee to a webinar #873
+* Zoom meetings/webinars - Remove an attendee from a webinar #894
+* Zoom meetings/webinars - Remove an attendee from a meeting #893
+
+**New logged-in recipe triggers:**
+
+* LearnDash - A user achieves greater than, less than or equal to a number of points on a quiz #834
+
+**New everyone recipe triggers:**
+
+* WordPress Core - A specific type of post is viewed #834
+* BBPress - A guest creates a topic in a forum #834
+* FluentCRM - A tag is added to a contact #834
+* FluentCRM - A contact is added to a list #834
+* FluentCRM - A contact is set to a specific status #834
+* GiveWP - A donation is made via a form #834
+
+**Added:**
+
+* Usage tracking - Help us improve Uncanny Automator! To opt-in, visit the Settings page. #870
+* Ability to manually prune recipe logs older than a specified number of days #892
+* BuddyBoss/BuddyPress - Added Activity Stream URL and Activity URL tokens to relevant triggers #693
+* WooCommerce - Product quantity token #852
+
+**Updated:**
+
+* Reduced minimum required PHP version to 5.6 #223
+* Settings page #433
+* Code quality improved #876
+
+**Fixed:**
+
+* Contact Form 7 - Trigger now returns a user_id for actions that require a user object #819
+* LearnDash - Quiz score and quiz percentage triggers parsed incorrectly in some recipes #833
+* LearnPress - A user is enrolled in a course now fires reliably #822
+* Overlapping icons in recipe editor in RTL languages #814
+* WordPress - A user publishes a type of post with a taxonomy term in a taxonomy now fires reliably #911
+* WordPress - Create a post numeric username fix #900
+* BuddyBoss/BuddyPress - User token now renders reliably #869
+* Scheduled action value now reflects in UI without refreshing the page #788
+* PHP warning: call_user_func_array() expects parameter 1 to be a valid callback on plugin upload #838
+
+**Developers:**
+
+* WooCommerce - Filter `automator_woocommerce_custom_item_meta_token_parser` to parse custom item meta #921
+* WooCommerce - Filter `automator_woocommerce_custom_order_meta_token_parser` to parse custom order meta #920
+* WooCommerce - filter `automator_woocommerce_token_parser` to allow custom order meta parsing #918
 
 = 3.1.4.1 [2021-09-08] =
 
@@ -474,48 +545,9 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Gravity Forms tokens in anonymous recipes now populate correctly when a dummy user is selected
 * GiveWP: Form Field Manager dependency check to avoid an error
 
-= 2.11 [2021-03-09] =
-
-**New Integrations:**
-
-* Presto Player
-* Twitter
-* WP Simple Pay
-* WP User Manager
-
-**New Triggers:**
-
-* Presto Player: A user completes a video
-* WP User Manager: A user registers with a form
-* WP User Manager: A user updates their profile photo
-* WP User Manager: A user removes their profile photo
-* WP User Manager: A user updates their profile cover image
-* WP User Manager: A user removes their profile cover image
-* WP User Manager: A user updates their profile description
-* WP Simple Pay: A user completes a purchase with a form
-
-**New Actions:**
-
-* Twitter: Post a tweet
-
-**Updated:**
-
-* GiveWP: Trigger tokens now include custom fields added via Form Field Manager addon
-* Core: Review notification changes
-
-**Fixed:**
-
-* LearnDash: Tokens related to quizzes now work more reliably
-* Uncanny CEUs: The total number of CEUs earned by a user is greater than or equal to a specific number now fires only when the specified number is reached
-* MasterStudy LMS integration no longer appears when MasterStudy is not installed
-* Removed escaping from some strings containing single quotes
-
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
 
-= 3.1.1 =
-Uncanny Automator 3.1 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
-
-= 3.1 =
-Uncanny Automator 3.1 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
+= 3.2 =
+Uncanny Automator 3.2 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

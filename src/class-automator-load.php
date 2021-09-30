@@ -95,8 +95,8 @@ class Automator_Load {
 	 * @param $plugin
 	 */
 	public function automator_activated( $plugin ) {
-		if ( $plugin == plugin_basename( AUTOMATOR_BASE_FILE ) && true === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
-			exit( wp_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ) ) );
+		if ( $plugin === plugin_basename( AUTOMATOR_BASE_FILE ) && true === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
+			exit( wp_redirect( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) );
 		}
 	}
 
@@ -151,6 +151,38 @@ class Automator_Load {
 		$this->initialize_core_automator();
 
 		do_action( 'automator_configuration_complete' );
+
+		add_action( 'wpforms_loaded', array( $this, 'wpforms_integration' ) );
+	}
+
+	/**
+	 *
+	 */
+	public function wpforms_integration() {
+		if ( ! class_exists( 'WPForms' ) ) {
+			return;
+		}
+		if ( version_compare( WPFORMS_VERSION, '1.7.0', '<' ) ) {
+			return;
+		}
+		add_filter(
+			'wpforms_load_providers',
+			function ( $providers ) {
+				$providers[] = 'uncanny-automator';
+
+				return $providers;
+			},
+			99,
+			1
+		);
+
+		add_action(
+			'wpforms_load_uncanny-automator_provider',
+			function () {
+				require_once UA_ABSPATH . 'src/core/admin/class-wpforms-provider.php';
+			},
+			99
+		);
 	}
 
 	/**
@@ -351,6 +383,7 @@ class Automator_Load {
 
 		$classes['Admin_Menu']        = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
 		$classes['Copy_Recipe_Parts'] = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
+		$classes['Prune_Logs']        = UA_ABSPATH . 'src/core/admin/class-prune-logs.php';
 
 		$classes['Add_User_Recipe_Type'] = UA_ABSPATH . 'src/core/classes/class-add-user-recipe-type.php';
 		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
@@ -450,6 +483,7 @@ class Automator_Load {
 		$classes['Automator_Review']     = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
 		$classes['Automator_Autoloader'] = UA_ABSPATH . 'src/core/lib/autoload/class-ua-autoloader.php';
 		$classes['Api_Server']           = UA_ABSPATH . 'src/core/classes/class-api-server.php';
+		$classes['Usage_Reports']           = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
 
 		//$classes['Import_Recipe'] = UA_ABSPATH . 'src/core/classes/class-import-recipe.php';

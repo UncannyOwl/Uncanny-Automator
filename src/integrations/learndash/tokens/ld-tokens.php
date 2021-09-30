@@ -76,6 +76,16 @@ class Ld_Tokens {
 			$tokens       = array_merge( $tokens, $new_tokens );
 		}
 
+		if ( 'LD_QUIZPOINT' === $trigger_code ) {
+			$new_tokens[] = array(
+				'tokenId'         => $trigger_meta . '_achieved_points',
+				'tokenName'       => __( "User's quiz points", 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_meta,
+			);
+			$tokens       = array_merge( $tokens, $new_tokens );
+		}
+
 		return $tokens;
 	}
 
@@ -188,11 +198,14 @@ class Ld_Tokens {
 				|| in_array( 'TCVERB', $pieces, true )
 				|| in_array( 'QUIZPERCENT', $pieces, true )
 				|| in_array( 'QUIZSCORE', $pieces, true )
+				|| in_array( 'QUIZPOINT', $pieces, true )
 				|| in_array( 'LDQUIZ', $pieces, true )
 				|| in_array( 'LDQUIZ_ID', $pieces, true )
+				|| in_array( 'LDQUIZ_URL', $pieces, true )
 				|| in_array( 'TCMODULEINTERACTION', $pieces, true )
 				|| in_array( 'LDQUIZ_achieved_percent', $pieces, true )
 				|| in_array( 'LDQUIZ_achieved_score', $pieces, true )
+				|| in_array( 'LDQUIZ_achieved_points', $pieces, true )
 			) {
 				if ( ! absint( $user_id ) ) {
 					return $value;
@@ -203,13 +216,14 @@ class Ld_Tokens {
 				}
 
 
-				$replace_pieces = $replace_args['pieces'];
-				$recipe_id      = $replace_args['recipe_id'];
-				$run_number     = $replace_args['run_number'];
-				$user_id        = $replace_args['user_id'];
-				$recipe_log_id  = $replace_args['recipe_log_id'];
-				$trigger_id     = $replace_args['trigger_id'];
-				$trigger_log_id = Automator()->get->mayabe_get_real_trigger_log_id( $trigger_id, $run_number, $recipe_id, $user_id, $recipe_log_id );
+				$replace_pieces       = $replace_args['pieces'];
+				$recipe_id            = $replace_args['recipe_id'];
+				$run_number           = $replace_args['run_number'];
+				$user_id              = $replace_args['user_id'];
+				$recipe_log_id        = $replace_args['recipe_log_id'];
+				$trigger_id           = $replace_args['trigger_id'];
+				$trigger_log_id       = $replace_args['trigger_log_id'];
+				$maybe_trigger_log_id = Automator()->get->mayabe_get_real_trigger_log_id( $trigger_id, $run_number, $recipe_id, $user_id, $recipe_log_id );
 
 				// Verb can be found from trigger meta
 				if ( in_array( 'TCVERB', $pieces ) ) {
@@ -273,6 +287,16 @@ class Ld_Tokens {
 					return $value;
 				}
 
+				// Required QUIZPOINT token
+				if ( in_array( 'QUIZPOINT', $pieces, true ) ) {
+					$t_data = array_shift( $trigger_data );
+					if ( isset( $t_data['meta']['QUIZPOINT'] ) ) {
+						return $t_data['meta']['QUIZPOINT'];
+					}
+
+					return $value;
+				}
+
 				// User's QUIZPERCENT token
 				if ( in_array( 'LDQUIZ_achieved_percent', $pieces, true ) ) {
 					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ_achieved_percent', $user_id, $recipe_log_id );
@@ -281,6 +305,11 @@ class Ld_Tokens {
 				// User's QUIZSCORE token
 				if ( in_array( 'LDQUIZ_achieved_score', $pieces, true ) ) {
 					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ_achieved_score', $user_id, $recipe_log_id );
+				}
+
+				// User's QUIZPOINTS token
+				if ( in_array( 'LDQUIZ_achieved_points', $pieces, true ) ) {
+					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ_achieved_points', $user_id, $recipe_log_id );
 				}
 
 				// Otherwise get TC module id from trigger meta

@@ -25,7 +25,7 @@ class WP_CREATEPOST {
 		$this->action_code = 'CREATEPOST';
 		$this->action_meta = 'WPPOSTFIELDS';
 		if ( is_admin() ) {
-			add_action( 'wp_loaded', [ $this, 'plugins_loaded' ], 99 );
+			add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 99 );
 		} else {
 			$this->define_action();
 		}
@@ -36,16 +36,19 @@ class WP_CREATEPOST {
 	 */
 	public function define_action() {
 
-
-		$custom_post_types = Automator()->helpers->recipe->wp->options->all_post_types( esc_attr__( 'Type', 'uncanny-automator' ), $this->action_code, [
-			'token'   => false,
-			'is_ajax' => false,
-		] );
+		$custom_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
+			esc_attr__( 'Type', 'uncanny-automator' ),
+			$this->action_code,
+			array(
+				'token'   => false,
+				'is_ajax' => false,
+			)
+		);
 		// now get regular post types.
-		$args = [
+		$args = array(
 			'public'   => true,
 			'_builtin' => true,
-		];
+		);
 
 		$output     = 'object';
 		$operator   = 'and';
@@ -102,7 +105,7 @@ class WP_CREATEPOST {
 
 		$post_status_field = Automator()->helpers->recipe->field->select_field( 'WPCPOSTSTATUS', esc_attr__( 'Status', 'uncanny-automator' ), $status_options );
 
-		$action = [
+		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
 			'integration'        => self::$integration,
@@ -114,42 +117,42 @@ class WP_CREATEPOST {
 			'select_option_name' => esc_attr__( 'Create {{a post}}', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
-			'execution_function' => [ $this, 'create_post' ],
-			'options_group'      => [
-				$this->action_code => [
+			'execution_function' => array( $this, 'create_post' ),
+			'options_group'      => array(
+				$this->action_code => array(
 					$custom_post_types,
 					$post_status_field,
 					Automator()->helpers->recipe->field->text_field( 'WPCPOSTAUTHOR', esc_attr__( 'Author', 'uncanny-automator' ), true, 'text', '{{admin_email}}', true, esc_attr__( 'Accepts user ID, email or username', 'uncanny-automator' ) ),
 					Automator()->helpers->recipe->field->text_field( 'WPCPOSTTITLE', esc_attr__( 'Title', 'uncanny-automator' ), true, 'text', '', true ),
 					Automator()->helpers->recipe->field->text_field( 'WPCPOSTSLUG', esc_attr__( 'Slug', 'uncanny-automator' ), true, 'text', '', false ),
 					Automator()->helpers->recipe->field->text_field( 'WPCPOSTCONTENT', esc_attr__( 'Content', 'uncanny-automator' ), true, 'textarea', '', false ),
-					[
+					array(
 						'input_type'        => 'repeater',
 						'option_code'       => 'CPMETA_PAIRS',
 						'label'             => esc_attr__( 'Meta', 'uncanny-automator' ),
 						'required'          => false,
-						'fields'            => [
-							[
+						'fields'            => array(
+							array(
 								'input_type'      => 'text',
 								'option_code'     => 'KEY',
 								'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
 								'supports_tokens' => true,
 								'required'        => true,
-							],
-							[
+							),
+							array(
 								'input_type'      => 'text',
 								'option_code'     => 'VALUE',
 								'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
 								'supports_tokens' => true,
 								'required'        => true,
-							],
-						],
+							),
+						),
 						'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
 						'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
-					],
-				],
-			],
-		];
+					),
+				),
+			),
+		);
 
 		Automator()->register->action( $action );
 	}
@@ -167,8 +170,6 @@ class WP_CREATEPOST {
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 
-
-
 		$post_title   = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
 		$post_slug    = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
 		$post_content = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
@@ -183,19 +184,15 @@ class WP_CREATEPOST {
 		$post_args['post_type']    = $post_type;
 		$post_args['post_status']  = $post_status;
 		$post_args['post_author']  = 0;
-		if ( is_numeric( $post_author ) ) {
-			$post_args['post_author'] = absint( $post_author );
-		} else {
-			// get author by username or email
-			$user = get_user_by( 'login', $post_author );
-			if ( ! $user ) {
-				$user = get_user_by( 'email', $post_author );
-			}
-			if ( ! $user ) {
-				$user = get_user_by( 'slug', $post_author );
-			}
+
+		$fields_to_check = array( 'ID', 'login', 'email', 'slug' );
+
+		foreach ( $fields_to_check as $field ) {
+			$user = get_user_by( $field, $post_author );
+
 			if ( ! empty( $user ) ) {
 				$post_args['post_author'] = absint( $user->ID );
+				break;
 			}
 		}
 

@@ -35,7 +35,7 @@ class Automator_Utilities {
 	 *
 	 * @param $item
 	 *
-	 * @return array $item;
+	 * @return $item;
 	 */
 	public function keep_order_of_options( $item ) {
 		// Check if it has options
@@ -135,7 +135,7 @@ class Automator_Utilities {
 
 	/**
 	 * @param null $recipe_id
-	 * @param int $completed_times
+	 * @param $completed_times
 	 *
 	 * @return bool
 	 */
@@ -166,7 +166,7 @@ class Automator_Utilities {
 
 	/**
 	 * @param null $recipe_id
-	 * @param int $completed_times
+	 * @param $completed_times
 	 *
 	 * @return bool
 	 */
@@ -197,7 +197,7 @@ class Automator_Utilities {
 
 	/**
 	 * @param null $recipe_ids
-	 * @param int $recipes_completed_times
+	 * @param $recipes_completed_times
 	 *
 	 * @return array
 	 */
@@ -283,8 +283,8 @@ class Automator_Utilities {
 
 	/**
 	 * @param null $condition
-	 * @param int $number_to_match
-	 * @param int $number_to_compare
+	 * @param $number_to_match
+	 * @param $number_to_compare
 	 *
 	 * @return bool
 	 */
@@ -321,7 +321,7 @@ class Automator_Utilities {
 	/**
 	 * Get the recipe type
 	 *
-	 * @param int $recipe_id
+	 * @param $recipe_id
 	 *
 	 * @return bool|mixed|string
 	 */
@@ -358,12 +358,12 @@ class Automator_Utilities {
 	/**
 	 * Set the recipe type
 	 *
-	 * @param int $recipe_id
+	 * @param $recipe_id
 	 * @param null $recipe_type
 	 *
 	 * @return bool|int
 	 */
-	public function set_recipe_type( int $recipe_id = 0, $recipe_type = null ) {
+	public function set_recipe_type( $recipe_id = 0, $recipe_type = null ) {
 
 		if ( ! absint( $recipe_id ) ) {
 			return false;
@@ -379,11 +379,11 @@ class Automator_Utilities {
 
 	/**
 	 * @param $data
-	 * @param string $type
+	 * @param $type
 	 *
 	 * @return mixed|string
 	 */
-	public function automator_sanitize( $data, string $type = 'text' ) {
+	public function automator_sanitize( $data, $type = 'text' ) {
 		switch ( $type ) {
 			case 'mixed':
 			case 'array':
@@ -439,5 +439,44 @@ class Automator_Utilities {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Checks if the user has valid license in pro or free version.
+	 *
+	 * @return boolean.
+	 */
+	public function has_valid_license() {
+
+		$has_pro_license  = false;
+		$has_free_license = false;
+
+		$free_license_status = get_option( 'uap_automator_free_license_status' );
+		$pro_license_status  = get_option( 'uap_automator_pro_license_status' );
+
+		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === $pro_license_status ) {
+			$has_pro_license = true;
+		}
+
+		if ( 'valid' === $free_license_status ) {
+			$has_free_license = true;
+		}
+
+		return $has_free_license || $has_pro_license;
+
+	}
+
+	/**
+	 * Checks if screen is from the modal action popup or not.
+	 *
+	 * @return boolean.
+	 */
+	public function is_from_modal_action() {
+
+		$minimal = filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT );
+
+		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
+
+		return ! empty( $minimal ) && ! empty( $hide_settings_tabs ) && ! empty( $hide_settings_tabs );
 	}
 }

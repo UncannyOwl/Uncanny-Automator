@@ -14,11 +14,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return mixed|void
 	 */
-	public function create_field( array $args = array() ) {
+	public function create_field( $args = array() ) {
 		$defaults    = array(
 			'option_code' => 'INT',
 			'label'       => esc_attr__( 'Number', 'uncanny-automator' ),
@@ -51,11 +51,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return mixed|void
 	 */
-	public function int( array $args = array() ) {
+	public function int( $args = array() ) {
 
 		$defaults = array(
 			'option_code' => 'INT',
@@ -72,10 +72,10 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param string $option_code
-	 * @param string $label
-	 * @param string $description
-	 * @param string $placeholder
+	 * @param $option_code
+	 * @param $label
+	 * @param $description
+	 * @param $placeholder
 	 *
 	 * @return mixed
 	 * @deprecated 3.0 Use Automator()->helpers->recipe->field->int()
@@ -100,11 +100,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return mixed|void
 	 */
-	public function float( array $args = array() ) {
+	public function float( $args = array() ) {
 		$defaults = array(
 			'option_code' => 'FLOAT',
 			'label'       => esc_attr__( 'Number', 'uncanny-automator' ),
@@ -120,10 +120,10 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param string $option_code
-	 * @param string $label
-	 * @param string $description
-	 * @param string $placeholder
+	 * @param $option_code
+	 * @param $label
+	 * @param $description
+	 * @param $placeholder
 	 *
 	 * @return mixed
 	 * @deprecated 3.0 Use Automator()->helpers->recipe->field->float() instead
@@ -148,11 +148,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return mixed|void
 	 */
-	public function text( array $args = array() ) {
+	public function text( $args = array() ) {
 		$defaults    = array(
 			'option_code' => 'TEXT',
 			'input_type'  => 'text',
@@ -192,21 +192,21 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param string $option_code
-	 * @param string $label
-	 * @param bool $tokens
-	 * @param string $type
-	 * @param string $default
+	 * @param $option_code
+	 * @param $label
+	 * @param $tokens
+	 * @param $type
+	 * @param $default
 	 * @param bool
-	 * @param string $description
-	 * @param string $placeholder
+	 * @param $description
+	 * @param $placeholder
 	 *
 	 * @return mixed
-	 * @deprecated 3.0 Use Automator()->helpers->recipe->field->text( array $args ) instead.
+	 * @deprecated 3.0 Use Automator()->helpers->recipe->field->text( $args ) instead.
 	 */
 	public function text_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default = null, $required = true, $description = '', $placeholder = null ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
-			_doing_it_wrong( 'Automator()->helpers->recipe->field->text_field()', 'Use Automator()->helpers->recipe->field->text( array $args ) instead.', '3.0' );
+			_doing_it_wrong( 'Automator()->helpers->recipe->field->text_field()', 'Use Automator()->helpers->recipe->field->text( $args ) instead.', '3.0' );
 		}
 		$option = array(
 			'option_code'     => $option_code,
@@ -332,11 +332,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return mixed|void
 	 */
-	public function select( array $args = array() ) {
+	public function select( $args = array() ) {
 
 		$defaults                 = array(
 			'option_code'              => 'SELECT',
@@ -387,12 +387,12 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param string $option_code
-	 * @param string $label
-	 * @param array $options
-	 * @param string $default
-	 * @param bool $is_ajax
-	 * @param string $fill_values_in
+	 * @param $option_code
+	 * @param $label
+	 * @param $options
+	 * @param $default
+	 * @param $is_ajax
+	 * @param $fill_values_in
 	 *
 	 * @return mixed
 	 * @deprecated 3.0 Use Automator()->helpers->recipe->field->select() instead
@@ -461,11 +461,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param string $option_code
-	 * @param string $label
-	 * @param array $options
-	 * @param string $default
-	 * @param bool $is_ajax
+	 * @param $option_code
+	 * @param $label
+	 * @param $options
+	 * @param $default
+	 * @param $is_ajax
 	 *
 	 * @return mixed
 	 */

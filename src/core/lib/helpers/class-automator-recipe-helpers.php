@@ -233,6 +233,14 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $mailchimp;
 	/**
+	 * @var Zoom_Helpers;
+	 */
+	public $zoom;
+	/**
+	 * @var Zoom_Webinar_Helpers;
+	 */
+	public $zoom_webinar;
+	/**
 	 * @var Automator_Helpers_Recipe
 	 */
 	public $options;

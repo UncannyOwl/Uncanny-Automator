@@ -12,7 +12,12 @@ class Add_Slack_Integration {
 	 * @var string
 	 */
 	public static $integration = 'SLACK';
-
+	
+	/**
+	 * connected
+	 *
+	 * @var bool
+	 */
 	public $connected = false;
 
 	/**
@@ -47,7 +52,7 @@ class Add_Slack_Integration {
 		$pro_integration_helpers_path = ABSPATH . implode( DIRECTORY_SEPARATOR, $directories ) . '/slack-pro-helpers.php';
 
 		// If the helper file exists in pro it means, the pro version still contains the old helper file.
-		if ( file_exists( $pro_integration_helpers_path ) && $this->is_automator_pro_active() ) {
+		if ( file_exists( $pro_integration_helpers_path ) && is_automator_pro_active() ) {
 
 			$is_enabled = false;
 
@@ -56,24 +61,6 @@ class Add_Slack_Integration {
 		return $is_enabled;
 
 	}
-
-	/**
-	 * Check if automator pro is active or not.
-	 *
-	 * @return boolean True if automator pro is active. Otherwise false.
-	 */
-	public function is_automator_pro_active() {
-
-		$is_active = false;
-
-		// Check if automator pro is in list of active plugins.
-		if ( in_array( 'uncanny-automator-pro/uncanny-automator-pro.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-			return true;
-		}
-
-		return $is_active;
-	}
-
 
 	/**
 	 * Set the directories that the auto loader will run in

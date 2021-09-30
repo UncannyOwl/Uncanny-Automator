@@ -9,9 +9,9 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             3.1.4.1
+ * Version:             3.2
  * Requires at least:   5.3
- * Requires PHP:        7.2
+ * Requires PHP:        5.6
  */
 
 use Uncanny_Automator\Automator_Functions;
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '3.1.4.1' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '3.2' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -31,6 +31,9 @@ if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
 	define( 'AUTOMATOR_BASE_FILE', __FILE__ );
 }
 
+
+// Autoload files
+require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 // Add global functions.
 require __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'global-functions.php';
 // Add other global variables for plugin.

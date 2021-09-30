@@ -130,6 +130,9 @@ class Admin_Menu {
 			Utilities::automator_enqueue_global_assets();
 			// Automator assets.
 			wp_enqueue_style( 'uap-admin-settings', Utilities::automator_get_css( 'admin/performance.css' ), array(), Utilities::automator_get_version() );
+			if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+				wp_enqueue_style( 'uapro-admin-license', \Uncanny_Automator_Pro\Utilities::get_css( 'admin/license.css' ), array(), AUTOMATOR_PRO_PLUGIN_VERSION );
+			}
 		}
 
 		if ( 'uo-recipe_page_uncanny-automator-dashboard' === (string) $hook ) {
@@ -284,7 +287,7 @@ class Admin_Menu {
 		$is_connected = $this->automator_connect;
 
 		$website      = preg_replace( '(^https?://)', '', get_home_url() );
-		$redirect_url = site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' );
+		$redirect_url = admin_url( 'admin.php?page=uncanny-automator-dashboard' );
 		$connect_url  = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . urlencode( $redirect_url );
 
 		$license_data = false;
@@ -396,6 +399,56 @@ class Admin_Menu {
 	 *
 	 */
 	public function options_menu_settings_page_output() {
+		// Loading license and data tracking info
+		$active = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'settings';
+		if ( 'settings' === $active ) {
+			// Check connect and credits
+			$is_connected = self::is_automator_connected();
+
+			$website            = preg_replace( '(^https?://)', '', get_home_url() );
+			$redirect_url       = site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-settings' );
+			$connect_url        = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . urlencode( $redirect_url );
+			$disconnect_account = add_query_arg( [ 'action' => 'discount_automator_connect' ] );
+
+			$license_data = false;
+			if ( $is_connected ) {
+				$license_data = get_option( 'uap_automator_free_license_data' );
+			}
+
+			$is_pro_active = false;
+
+			//if ( isset( $is_connected['item_name'] ) ) {
+			if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) {
+				$is_pro_active = true;
+			}
+			//}
+
+			$uap_automator_allow_tracking = get_option( 'automator_reporting', false );
+
+			if ( $is_pro_active ) {
+				$license_data = $this->check_pro_license( true );
+
+				$license = get_option( 'uap_automator_pro_license_key' );
+				$status  = get_option( 'uap_automator_pro_license_status' ); // $license_data->license will be either "valid", "invalid", "expired", "disabled"
+
+				// Check license status
+				$license_is_active = ( 'valid' === $status ) ? true : false;
+
+				// CSS Classes
+				$license_css_classes = [];
+
+				if ( $license_is_active ) {
+					$license_css_classes[] = 'uo-license--active';
+				}
+
+				// Set links. Add UTM parameters at the end of each URL
+				$where_to_get_my_license = 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=where_to_get_my_license';
+				$buy_new_license         = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=buy_new_license';
+				$knowledge_base          = 'https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=knowledge_base';
+
+
+			}
+		}
 		$this->settings_tabs();
 		include Utilities::automator_get_include( 'automator-settings.php' );
 	}
@@ -547,5 +600,78 @@ class Admin_Menu {
 			wp_safe_redirect( remove_query_arg( [ 'action' ] ) );
 			die;
 		}
+	}
+
+	/**
+	 * API call to check if License key is valid
+	 *
+	 * The updater class does this for you. This function can be used to do something custom.
+	 *
+	 * @return null|object|bool
+	 * @since    1.0.0
+	 * @throws \Exception
+	 */
+	public function check_pro_license( $force_check = false ) {
+		$last_checked = get_option( 'uap_automator_pro_license_last_checked' );
+		if ( ! empty( $last_checked ) && false === $force_check ) {
+			$datediff = time() - $last_checked;
+			if ( $datediff < DAY_IN_SECONDS ) {
+				return null;
+			}
+		}
+		if ( true === $force_check ) {
+			delete_option( 'uap_automator_pro_license_last_checked' );
+		}
+		$license = trim( get_option( 'uap_automator_pro_license_key' ) );
+		if ( empty( $license ) ) {
+			return new \stdClass();
+		}
+		$api_params = array(
+			'edd_action' => 'check_license',
+			'license'    => $license,
+			'item_name'  => urlencode( AUTOMATOR_PRO_ITEM_NAME ),
+			'url'        => home_url(),
+		);
+
+		// Call the custom API.
+		$response = wp_remote_post( AUTOMATOR_PRO_STORE_URL, array(
+			'timeout'   => 15,
+			'sslverify' => false,
+			'body'      => $api_params,
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+		// this license is still valid
+		if ( $license_data->license == 'valid' ) {
+			update_option( 'uap_automator_pro_license_status', $license_data->license );
+			if ( 'lifetime' !== $license_data->expires ) {
+				update_option( 'uap_automator_pro_license_expiry', $license_data->expires );
+			} else {
+				update_option( 'uap_automator_pro_license_expiry', date( 'Y-m-d H:i:s', mktime( 12, 59, 59, 12, 31, 2099 ) ) );
+			}
+
+			if ( 'lifetime' !== $license_data->expires ) {
+				$expire_notification = new \DateTime( $license_data->expires, wp_timezone() );
+				update_option( 'uap_automator_pro_license_expiry_notice', $expire_notification );
+				if ( wp_get_scheduled_event( 'uapro_notify_admin_of_license_expiry' ) ) {
+					wp_unschedule_hook( 'uapro_notify_admin_of_license_expiry' );
+				}
+				// 1 hour after the license is schedule to expire.
+				wp_schedule_single_event( $expire_notification->getTimestamp() + 3600, 'uapro_notify_admin_of_license_expiry' );
+
+			}
+		} else {
+			update_option( 'uap_automator_pro_license_status', 'invalid' );
+			update_option( 'uap_automator_pro_license_expiry', '' );
+			// this license is no longer valid
+		}
+		update_option( 'uap_automator_pro_license_last_checked', time() );
+
+		return $license_data;
 	}
 }

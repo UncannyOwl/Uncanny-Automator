@@ -77,15 +77,15 @@ class Automator_DB_Handler {
 	}
 
 	/**
-	 * @param string $table
-	 * @param array $update
-	 * @param array $where
-	 * @param array $where_format
-	 * @param array $update_format
+	 * @param $table
+	 * @param $update
+	 * @param $where
+	 * @param $where_format
+	 * @param $update_format
 	 *
 	 * @return bool|int
 	 */
-	public function update( string $table, array $update, array $where, array $where_format, array $update_format ) {
+	public function update( $table, $update, $where, $where_format, $update_format ) {
 		global $wpdb;
 
 		return $wpdb->update(

@@ -46,13 +46,13 @@ trait Actions {
 	use Action_Process;
 
 	/**
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 * @param $args
 	 *
 	 */
-	public function do_action( int $user_id, array $action_data, int $recipe_id, array $args ) {
+	public function do_action( $user_id, $action_data, $recipe_id, $args ) {
 
 		$maybe_parsed                = $this->maybe_parse_tokens( $user_id, $action_data, $recipe_id, $args );
 		$action_data['maybe_parsed'] = $maybe_parsed;
@@ -61,13 +61,13 @@ trait Actions {
 	}
 
 	/**
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 * @param $args
 	 * @param $parsed
 	 *
 	 * @return mixed
 	 */
-	abstract protected function process_action( int $user_id, array $action_data, int $recipe_id, array $args, $parsed );
+	abstract protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed );
 }

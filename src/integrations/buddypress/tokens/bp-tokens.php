@@ -58,7 +58,7 @@ class Bp_Tokens {
 		$fields = [
 			[
 				'tokenId'         => 'BPUSER',
-				'tokenName'       => 'AVATAR URL',
+				'tokenName'       => 'Avatar URL',
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BPUSERAVATAR',
 			],
@@ -109,6 +109,18 @@ class Bp_Tokens {
 				'tokenIdentifier' => 'BPUSERACTIVITY',
 			];
 			$fields[] = [
+				'tokenId'         => 'ACTIVITY_URL',
+				'tokenName'       => __( 'Activity URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BPUSERACTIVITY',
+			];
+			$fields[] = [
+				'tokenId'         => 'ACTIVITY_STREAM_URL',
+				'tokenName'       => __( 'Activity stream URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BPUSERACTIVITY',
+			];
+			$fields[] = [
 				'tokenId'         => 'ACTIVITY_CONTENT',
 				'tokenName'       => __( 'Activity content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
@@ -131,7 +143,15 @@ class Bp_Tokens {
 	 */
 	public function parse_bp_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'BPUSERAVATAR', $pieces ) ) {
+			if ( in_array( 'BPUSERS', $pieces ) ) {
+				// Get user id from meta log
+				if ( $trigger_data ) {
+					foreach ( $trigger_data as $trigger ) {
+						$token_value = $trigger['meta']['BPUSERS'];
+						$value       = ( intval( $token_value ) == - 1 ) ? $user_id : $token_value;
+					}
+				}
+			} elseif ( in_array( 'BPUSERAVATAR', $pieces ) ) {
 				// Get Group id from meta log
 				if ( function_exists( 'get_avatar_url' ) ) {
 					$value = get_avatar_url( $user_id );

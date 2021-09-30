@@ -68,7 +68,7 @@ trait Closure_Setup {
 	/**
 	 * @param mixed $integration
 	 */
-	public function set_integration( string $integration ) {
+	public function set_integration( $integration ) {
 		$this->integration = $integration;
 	}
 
@@ -130,23 +130,23 @@ trait Closure_Setup {
 	}
 
 	/**
-	 * @param bool $is_pro
+	 * @param $is_pro
 	 */
-	public function set_is_pro( bool $is_pro ) {
+	public function set_is_pro( $is_pro ) {
 		$this->is_pro = $is_pro;
 	}
 
 	/**
-	 * @param bool $is_deprecated
+	 * @param $is_deprecated
 	 */
-	public function set_is_deprecated( bool $is_deprecated ) {
+	public function set_is_deprecated( $is_deprecated ) {
 		$this->is_deprecated = $is_deprecated;
 	}
 
 	/**
 	 * @param mixed $options
 	 */
-	public function set_options( array $options ) {
+	public function set_options( $options ) {
 		$this->options = $options;
 	}
 

@@ -23,6 +23,7 @@ class Automator_Review {
 	 */
 	public function __construct() {
 		add_action( 'admin_init', [ $this, 'maybe_ask_review' ] );
+		add_action( 'admin_init', [ $this, 'maybe_ask_tracking' ] );
 		add_action( 'init', [ $this, 'save_review_settings_action' ] );
 		add_action( 'rest_api_init', [ $this, 'uo_register_api_for_reviews' ] );
 	}
@@ -80,6 +81,18 @@ class Automator_Review {
 		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/get-recipes-using-credits/', array(
 			'methods'             => 'POST',
 			'callback'            => array( $this, 'get_recipes_using_credits' ),
+			'permission_callback' => function () {
+				if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+					return true;
+				}
+
+				return false;
+			},
+		) );
+
+		register_rest_route( AUTOMATOR_REST_API_END_POINT, '/allow-tracking-switch/', array(
+			'methods'             => 'POST',
+			'callback'            => array( $this, 'save_tracking_settings' ),
 			'permission_callback' => function () {
 				if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
 					return true;
@@ -239,6 +252,27 @@ class Automator_Review {
 				die;
 			}
 		}
+		if ( isset( $_GET['action'] ) && 'uo-allow-tracking' === $_GET['action'] ) {
+			if ( function_exists( 'is_admin' ) && is_admin() ) {
+				update_option( 'automator_reporting', true );
+				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
+
+				$back_url = remove_query_arg( 'action' );
+				wp_safe_redirect( $back_url );
+				die;
+			}
+		}
+		if ( isset( $_GET['action'] ) && 'uo-hide-track' === $_GET['action'] ) {
+			if ( function_exists( 'is_admin' ) && is_admin() ) {
+
+				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
+
+				$back_url = remove_query_arg( 'action' );
+				wp_safe_redirect( $back_url );
+				die;
+			}
+		}
+
 	}
 
 	/**
@@ -385,5 +419,90 @@ class Automator_Review {
 		$response = new \WP_REST_Response( $response, 200 );
 
 		return $response;
+	}
+
+	/**
+	 * Rest API callback for saving user selection for review.
+	 *
+	 * @param object $request
+	 *
+	 * @return object
+	 * @since 2.1.4
+	 */
+	public function save_tracking_settings( $request ) {
+		// check if its a valid request.
+		$data = $request->get_params();
+		if ( isset( $data['action'] ) && 'tracking-settings' === $data['action'] ) {
+			if( 'true' === $data['swtich'] ) {
+				update_option( 'automator_reporting', true );
+			} else {
+				delete_option( 'automator_reporting' );
+			}
+
+			if( isset( $data['hide'] ) ) {
+				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
+			}
+
+			return new WP_REST_Response( [ 'success' => true ], 200 );
+		}
+
+		return new WP_REST_Response( [ 'success' => false ], 200 );
+	}
+
+	/**
+	 * Admin notice for review this plugin.
+	 *
+	 * @since 2.1.4
+	 */
+	public function maybe_ask_tracking() {
+		$_is_reminder   = get_option( '_uncanny_automator_tracking_reminder', '' );
+		$_reminder_date = get_option( '_uncanny_automator_tracking_reminder_date', current_time( 'timestamp' ) );
+
+		if ( ! empty( $_is_reminder ) && 'hide-forever' === $_is_reminder ) {
+			return;
+		}
+
+		$automator_reporting = get_option( 'automator_reporting', false );
+
+		if( $automator_reporting ) {
+			return;
+		}
+		add_action( 'admin_notices', function () {
+
+			// Check only Automator related pages.
+			global $typenow;
+
+			if ( empty( $typenow ) || 'uo-recipe' !== $typenow ) {
+				return;
+			}
+
+			$screen = get_current_screen();
+
+			if ( $screen->base === 'post' ) {
+				return;
+			}
+
+			// Get data about Automator's version
+			$is_pro  = false;
+			$version = AUTOMATOR_PLUGIN_VERSION;
+			if ( defined( 'AUTOMATOR_PRO_FILE' ) || class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+				$is_pro  = true;
+				$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+			}
+
+			if( $is_pro ) {
+				return;
+			}
+
+			// Send review URL
+			$url_send_review = add_query_arg( [ 'action' => 'uo-allow-tracking' ] );
+
+			// Send feedback URL
+			$url_send_feedback_version = $is_pro ? 'Uncanny%20Automator%20Pro%20' . $version : 'Uncanny%20Automator%20' . $version;
+			$url_send_feedback_source  = $is_pro ? 'uncanny_automator_pro' : 'uncanny_automator';
+			$url_remind_later          = add_query_arg( [ 'action' => 'uo-hide-track' ] );
+			include Utilities::automator_get_view( 'tracking-banner.php' );
+		} );
+
 	}
 }

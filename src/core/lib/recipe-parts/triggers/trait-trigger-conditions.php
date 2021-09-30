@@ -66,7 +66,7 @@ trait Trigger_Conditions {
 	}
 
 	/**
-	 * @param string $compare_this_numb_cond
+	 * @param $compare_this_numb_cond
 	 */
 	public function do_compare_this_numb_cond( $compare_this_numb_cond ) {
 		$this->compare_this_numb_cond[] = $compare_this_numb_cond;
@@ -80,7 +80,7 @@ trait Trigger_Conditions {
 	}
 
 	/**
-	 * @param string $compare_numb_cond_in
+	 * @param $compare_numb_cond_in
 	 */
 	public function do_compare_numb_cond_in( $compare_numb_cond_in ) {
 		$this->compare_numb_cond_in[] = $compare_numb_cond_in;
@@ -176,10 +176,10 @@ trait Trigger_Conditions {
 	}
 
 	/**
-	 * @param bool $conditional_trigger
+	 * @param $conditional_trigger
 	 *
 	 */
-	protected function set_conditional_trigger( bool $conditional_trigger ) {
+	protected function set_conditional_trigger( $conditional_trigger ) {
 		$this->conditional_trigger = $conditional_trigger;
 	}
 
@@ -258,7 +258,7 @@ trait Trigger_Conditions {
 	 * Further drill down recipes that has the required meta in them.
 	 *
 	 * @param        $recipes
-	 * @param string $required_condition
+	 * @param $required_condition
 	 *
 	 * @return array
 	 */

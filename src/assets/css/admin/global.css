@@ -751,7 +751,7 @@
 	margin-bottom: -10px;
 }
 
-.uap .uap-review-banner__action {
+.uap .uap-review-banner__action, .uap .uap-track-banner__action {
 	display: inline-block;
 
 	padding: 5px 15px;
@@ -776,7 +776,7 @@
 	border     150ms ease-in-out;
 }
 
-.uap .uap-review-banner__action:before {
+.uap .uap-review-banner__action:before, .uap .uap-track-banner__action:before {
 	content: '';
 
 	width: 10px;
@@ -798,11 +798,11 @@
 	transition: opacity 150ms ease-in-out;
 }
 
-.uap .uap-review-banner__action:not(:last-child) {
+.uap .uap-review-banner__action:not(:last-child), .uap .uap-track-banner__action:not(:last-child) {
 	margin-right: 10px;
 }
 
-.uap .uap-review-banner__action:hover {
+.uap .uap-review-banner__action:hover, .uap .uap-track-banner__action:hover {
 	color: #fff;
 	background: #9e9e9e;
 	border-color: #9e9e9e;
@@ -886,6 +886,20 @@
 }
 
 .uap #uap-review-banner__close {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	z-index: 10;
+
+	padding: 5px;
+
+	cursor: pointer;
+
+	border-radius: 50%;
+
+	transition: background 150ms ease-in-out;
+}
+.uap #uap-tracking-banner__close {
 	position: absolute;
 	top: 15px;
 	right: 15px;

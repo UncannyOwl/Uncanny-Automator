@@ -69,9 +69,9 @@ trait Trigger_Process {
 	}
 
 	/**
-	 * @param array $trigger_args
+	 * @param $trigger_args
 	 */
-	public function set_trigger_args( array $trigger_args ) {
+	public function set_trigger_args( $trigger_args ) {
 		$this->trigger_args = $trigger_args;
 	}
 
@@ -101,9 +101,9 @@ trait Trigger_Process {
 	}
 
 	/**
-	 * @param bool $trigger_autocomplete
+	 * @param $trigger_autocomplete
 	 */
-	public function set_trigger_autocomplete( bool $trigger_autocomplete = true ) {
+	public function set_trigger_autocomplete( $trigger_autocomplete = true ) {
 		$this->trigger_autocomplete = $trigger_autocomplete;
 	}
 
@@ -143,9 +143,9 @@ trait Trigger_Process {
 	}
 
 	/**
-	 * @param bool $ignore_post_id
+	 * @param $ignore_post_id
 	 */
-	public function set_ignore_post_id( bool $ignore_post_id ) {
+	public function set_ignore_post_id( $ignore_post_id ) {
 		$this->ignore_post_id = $ignore_post_id;
 	}
 

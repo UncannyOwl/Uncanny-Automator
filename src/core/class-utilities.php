@@ -72,19 +72,19 @@ class Utilities {
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param string $class_name The name of the class instance
+	 * @param $class_name The name of the class instance
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    1.0.0
 	 */
-	public static function automator_add_class_instance( string $class_name, $class_instance ) {
+	public static function automator_add_class_instance( $class_name, $class_instance ) {
 		self::$class_instances[ $class_name ] = $class_instance;
 	}
 
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param string $integration The name of the class instance
+	 * @param $integration The name of the class instance
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    2.1.0
@@ -119,13 +119,13 @@ class Utilities {
 	/**
 	 * Get a specific class instance
 	 *
-	 * @param string $class_name The name of the class instance
+	 * @param $class_name The name of the class instance
 	 *
 	 * @return object | bool
 	 * @since    1.0.0
 	 */
-	public static function automator_get_class_instance( string $class_name ) {
-		return self::$class_instances[ $class_name ] ?? false;
+	public static function automator_get_class_instance( $class_name ) {
+		return isset( self::$class_instances[ $class_name ] ) ? self::$class_instances[ $class_name ] : false;
 	}
 
 	/**
@@ -153,12 +153,12 @@ class Utilities {
 	/**
 	 * Returns the full url for the recipe UI dist directory
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
-	 * @return string $asset_url
+	 * @return $asset_url
 	 * @since    1.0.0
 	 */
-	public static function automator_get_recipe_dist( string $file_name ) {
+	public static function automator_get_recipe_dist( $file_name ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
 			$asset_url = plugins_url( 'src/recipe-ui/dist/' . $file_name, AUTOMATOR_BASE_FILE );
 		} else {
@@ -172,9 +172,9 @@ class Utilities {
 	/**
 	 * Returns the full url for the passed Icon within recipe UI
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
-	 * @return string $asset_url
+	 * @return $asset_url
 	 * @since    1.0.0
 	 *
 	 */
@@ -183,12 +183,16 @@ class Utilities {
 		 * Integration icons are now moved in to integrations itself
 		 * @since 3.0
 		 */
-		if ( ! empty( $file_name ) && is_dir( dirname( $file_name, 1 ) ) ) {
-			$icon            = basename( $file_name ); // icon with extension.
-			$integration_dir = basename( dirname( $file_name, 2 ) ); // integration folder path.
-			$path            = self::cleanup_icon_path( AUTOMATOR_BASE_FILE, $icon, $file_name ); // path relative to plugin.
-			$path            = apply_filters( 'automator_integration_icon_path', $path . $icon, $icon, $integration_dir, $plugin_path );
-			$base_path       = apply_filters( 'automator_integration_icon_base_path', $plugin_path, $path, $icon, $integration_dir );
+		if ( ! empty( $file_name ) && is_dir( dirname( $file_name ) ) ) {
+			$icon = basename( $file_name ); // icon with extension.
+			if ( version_compare( PHP_VERSION, '7.0', '>=' ) ) {
+				$integration_dir = basename( dirname( $file_name, 2 ) ); // integration folder path.
+			} else {
+				$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
+			}
+			$path      = self::cleanup_icon_path( AUTOMATOR_BASE_FILE, $icon, $file_name ); // path relative to plugin.
+			$path      = apply_filters( 'automator_integration_icon_path', $path . $icon, $icon, $integration_dir, $plugin_path );
+			$base_path = apply_filters( 'automator_integration_icon_base_path', $plugin_path, $path, $icon, $integration_dir );
 
 			return plugins_url( $path, $base_path );
 		}
@@ -242,9 +246,9 @@ class Utilities {
 	/**
 	 * Returns the full url for the passed media file
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
-	 * @return string $asset_url
+	 * @return $asset_url
 	 * @since    1.0.0
 	 *
 	 */
@@ -265,9 +269,9 @@ class Utilities {
 	/**
 	 * Enqueues global JS and CSS files
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
-	 * @return string $asset_url
+	 * @return $asset_url
 	 * @since    1.0.0
 	 *
 	 */
@@ -290,7 +294,7 @@ class Utilities {
 	/**
 	 * Enqueues frontend JS and CSS files
 	 *
-	 * @return string $asset_url
+	 * @return $asset_url
 	 * @since    3.1.1
 	 *
 	 */
@@ -301,9 +305,9 @@ class Utilities {
 	/**
 	 * Returns the full url for the passed CSS file
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
-	 * @return string $asset_url
+	 * @return $asset_url
 	 * @since    1.0.0
 	 *
 	 */
@@ -325,9 +329,9 @@ class Utilities {
 	/**
 	 * Returns the full url for the passed JS file
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
-	 * @return string $asset_url
+	 * @return $asset_url
 	 * @since    1.0.0
 	 *
 	 */
@@ -338,7 +342,7 @@ class Utilities {
 	/**
 	 * Returns the full server path for the passed view file
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
 	 * @return string
 	 */
@@ -351,8 +355,8 @@ class Utilities {
 		 *
 		 * This can be used for view overrides by modifying the path to go to a directory in the theme or another plugin.
 		 *
-		 * @param string $views_directory Path to the plugins view folder
-		 * @param string $file_name The file name of the view file
+		 * @param $views_directory Path to the plugins view folder
+		 * @param $file_name The file name of the view file
 		 *
 		 * @since 1.0.0
 		 *
@@ -365,7 +369,7 @@ class Utilities {
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param string $class_name The name of the class instance
+	 * @param $class_name The name of the class instance
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    1.0.0
@@ -380,7 +384,7 @@ class Utilities {
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param string $integration The name of the class instance
+	 * @param $integration The name of the class instance
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    2.1.0
@@ -417,20 +421,20 @@ class Utilities {
 	/**
 	 * Get a specific class instance
 	 *
-	 * @param string $class_name The name of the class instance
+	 * @param $class_name The name of the class instance
 	 *
 	 * @return object | bool
 	 * @since    1.0.0
 	 *
 	 */
 	public static function get_class_instance( $class_name ) {
-		return self::$class_instances[ $class_name ] ?? false;
+		return isset( self::$class_instances[ $class_name ] ) ? self::$class_instances[ $class_name ] : false;
 	}
 
 	/**
 	 * Get a specific class instance
 	 *
-	 * @param string $class_name The name of the class instance
+	 * @param $class_name The name of the class instance
 	 *
 	 * @return array
 	 * @since    1.0.0
@@ -445,7 +449,7 @@ class Utilities {
 	/**
 	 * Returns the full server path for the passed include file
 	 *
-	 * @param string $file_name
+	 * @param $file_name
 	 *
 	 * @return string
 	 */
@@ -458,8 +462,8 @@ class Utilities {
 		 *
 		 * This can be used for include overrides by modifying the path to go to a directory in the theme or another plugin.
 		 *
-		 * @param string $includes_directory Path to the plugins include folder
-		 * @param string $file_name The file name of the include file
+		 * @param $includes_directory Path to the plugins include folder
+		 * @param $file_name The file name of the include file
 		 *
 		 * @since 1.0.0
 		 *
@@ -472,16 +476,16 @@ class Utilities {
 	/**
 	 * Create and store logs @ wp-content/uo-{$file_name}.log
 	 *
-	 * @param string $trace_message The message logged
-	 * @param string $trace_heading The heading of the current trace
-	 * @param bool $backtrace Create log even if debug mode is off
-	 * @param string $file_name The file name of the log file
+	 * @param $trace_message The message logged
+	 * @param $trace_heading The heading of the current trace
+	 * @param $backtrace Create log even if debug mode is off
+	 * @param $file_name The file name of the log file
 	 *
-	 * @return bool $error_log Was the log successfully created
+	 * @return $error_log Was the log successfully created
 	 * @since    1.0.0
 	 *
 	 */
-	public static function log( $trace_message = '', $trace_heading = '', $force_log = false, $file_name = 'logs', bool $backtrace = false ) {
+	public static function log( $trace_message = '', $trace_heading = '', $force_log = false, $file_name = 'logs', $backtrace = false ) {
 
 		// Only return log if debug mode is on OR if log is forced
 		if ( ! self::automator_get_debug_mode() && false === $force_log ) {

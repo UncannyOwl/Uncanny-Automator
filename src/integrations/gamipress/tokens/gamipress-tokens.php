@@ -20,7 +20,7 @@ class Gamipress_Tokens {
 	/**
 	 * Check if GP is active or not.
 	 *
-	 * @return bool $status True if GP is active. Otherwise, false.
+	 * @return $status True if GP is active. Otherwise, false.
 	 */
 	public function plugin_active( $status, $code ) {
 
@@ -40,15 +40,15 @@ class Gamipress_Tokens {
 	 */
 	public function parse_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
-		$award_type = $trigger_data[0]['meta']['GPAWARDTYPES'] ?? '';
+		$award_type = isset( $trigger_data[0]['meta']['GPAWARDTYPES'] ) ? $trigger_data[0]['meta']['GPAWARDTYPES'] : '';
 
-		$token = $pieces[2] ?? '';
+		$token = isset( $pieces[2] ) ? $pieces[2] : '';
 
 		if ( ! empty( $token ) && ! empty( $award_type ) ) {
 
 			if ( 'GPAWARDTYPES' === $token ) {
 				if ( $award_type != '-1' ) {
-					$value = $trigger_data[0]['meta']['GPAWARDTYPES_readable'] ?? '';
+					$value = isset( $trigger_data[0]['meta']['GPAWARDTYPES_readable'] ) ? $trigger_data[0]['meta']['GPAWARDTYPES_readable'] : '';
 				} else {
 					global $wpdb;
 					$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d ORDER BY ID DESC LIMIT 0,1", $token, $trigger_data[0]['ID'], $replace_args['trigger_log_id'] ) );

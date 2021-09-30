@@ -3,8 +3,8 @@
 /**
  * Contains Integration class.
  *
- * @version 2.4.0
  * @since   2.4.0
+ * @version 2.4.0
  * @package Uncanny_Automator
  */
 
@@ -21,8 +21,8 @@ class Add_Instagram_Integration {
 	/**
 	 * Integration Identifier
 	 *
-	 * @var   string
 	 * @since 2.4.0
+	 * @var   string
 	 */
 	public static $integration = 'INSTAGRAM';
 
@@ -108,7 +108,7 @@ class Add_Instagram_Integration {
 
 		foreach ( $options_facebook_pages as $page ) {
 
-			$ig_account = $page['ig_account']->data ?? '';
+			$ig_account = isset( $page['ig_account']->data ) ? $page['ig_account']->data : '';
 
 			if ( ! empty( $ig_account ) ) {
 				$total ++;

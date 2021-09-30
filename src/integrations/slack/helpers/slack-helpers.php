@@ -374,53 +374,23 @@ class Slack_Helpers {
 		);
 
 		return apply_filters( 'uap_option_text_field', $option );
+	
 	}
 
 	/**
-	 * Checks if the user has valid license in pro or free version.
+	 * Check if the settings tab should display.
 	 *
 	 * @return boolean.
 	 */
-	public function has_valid_license() {
+	public function display_settings_tab() {
 
-		$has_pro_license  = false;
-		$has_free_license = false;
-
-		$free_license_status = get_option( 'uap_automator_free_license_status' );
-		$pro_license_status  = get_option( 'uap_automator_pro_license_status' );
-
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === $pro_license_status ) {
-			$has_pro_license = true;
+		if ( Automator()->utilities->has_valid_license() ) {
+			return true;
 		}
 
-		if ( 'valid' === $free_license_status ) {
-			$has_free_license = true;
+		if ( Automator()->utilities->is_from_modal_action() ) {
+			return true;
 		}
-
-		return $has_free_license || $has_pro_license;
-
-	}
-
-	/**
-	 * Checks if screen is from the modal action popup or not.
-	 *
-	 * @return boolean.
-	 */
-	public function is_from_modal_action() {
-
-		$minimal = filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT );
-
-		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
-
-		return ! empty( $minimal ) && ! empty( $hide_settings_tabs ) && ! empty( $hide_settings_tabs );
-	}
-
-	/**
-	 * Check if the 3rd-party integration has any connection api stored.
-	 *
-	 * @return boolean.
-	 */
-	public function has_connection_data() {
 
 		return ! empty( $this->get_slack_client() );
 	}
@@ -432,7 +402,7 @@ class Slack_Helpers {
 	 */
 	public function add_slack_api_settings( $tabs ) {
 
-		if ( $this->has_valid_license() || $this->has_connection_data() || $this->is_from_modal_action() ) {
+		if ( $this->display_settings_tab() ) {
 			$tab_url                    = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
 			$tabs[ $this->setting_tab ] = array(
 				'name'           => __( 'Slack', 'uncanny-automator' ),

@@ -6,7 +6,7 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VERSION', '3.0' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '3.2' );
 }
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VIEWS_VERSION' ) ) {

@@ -100,9 +100,9 @@ trait Action_Setup {
 	}
 
 	/**
-	 * @param string $author
+	 * @param $author
 	 */
-	public function set_author( string $author ) {
+	public function set_author( $author ) {
 		$this->author = $author;
 	}
 
@@ -114,9 +114,9 @@ trait Action_Setup {
 	}
 
 	/**
-	 * @param string $support_link
+	 * @param $support_link
 	 */
-	public function set_support_link( string $support_link ) {
+	public function set_support_link( $support_link ) {
 		$this->support_link = $support_link;
 	}
 
@@ -128,9 +128,9 @@ trait Action_Setup {
 	}
 
 	/**
-	 * @param bool $is_pro
+	 * @param $is_pro
 	 */
-	public function set_is_pro( bool $is_pro ) {
+	public function set_is_pro( $is_pro ) {
 		$this->is_pro = $is_pro;
 	}
 
@@ -142,9 +142,9 @@ trait Action_Setup {
 	}
 
 	/**
-	 * @param bool $is_deprecated
+	 * @param $is_deprecated
 	 */
-	public function set_is_deprecated( bool $is_deprecated ) {
+	public function set_is_deprecated( $is_deprecated ) {
 		$this->is_deprecated = $is_deprecated;
 	}
 

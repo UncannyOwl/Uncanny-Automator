@@ -34,9 +34,9 @@ trait Action_Parser {
 	}
 
 	/**
-	 * @param array $not_token_keys
+	 * @param $not_token_keys
 	 */
-	public function set_not_token_keys( array $not_token_keys ) {
+	public function set_not_token_keys( $not_token_keys ) {
 		$this->not_token_keys = $not_token_keys;
 	}
 
@@ -48,9 +48,9 @@ trait Action_Parser {
 	}
 
 	/**
-	 * @param bool $do_shortcode
+	 * @param $do_shortcode
 	 */
-	public function set_do_shortcode( bool $do_shortcode ) {
+	public function set_do_shortcode( $do_shortcode ) {
 		$this->do_shortcode = $do_shortcode;
 	}
 
@@ -62,9 +62,9 @@ trait Action_Parser {
 	}
 
 	/**
-	 * @param bool $wpautop
+	 * @param $wpautop
 	 */
-	public function set_wpautop( bool $wpautop ) {
+	public function set_wpautop( $wpautop ) {
 		$this->wpautop = $wpautop;
 	}
 

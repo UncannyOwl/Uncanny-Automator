@@ -24,10 +24,6 @@
 	text-decoration: none;
 }
 
-.uo-settings input {
-	border: 0;
-}
-
 .uo-settings-status {
 	width: 140px;
 	flex: 0 0 auto;
@@ -54,6 +50,15 @@
 	transform: translate(-50%,-50%);
 
 	border-radius: 50%;
+}
+
+.uo-settings-account-connected {
+	background: #ecf7ed;
+	color: #000;
+	border-radius: 8px;
+	display: inline-block;
+	padding: 8px 15px;
+	margin-bottom: 20px;
 }
 
 .uo-settings--active .uo-settings-status__icon {
@@ -89,9 +94,22 @@
 }
 
 .uo-settings-content-title {
+	width: 100%;
+	display: block;
 	font-size: 16px;
 	color: #343434;
 	margin-bottom: 10px;
+}
+
+.uo-settings-content-description ul,
+.uo-settings-content-description li {
+	list-style: disc !important;
+	list-style-position: outside !important;
+	margin-left: 10px;
+}
+
+.uo-settings-content-description p {
+	font-size: inherit;
 }
 
 .uo-settings-content-description {
@@ -194,10 +212,26 @@
 	padding: 15px 20px;
 }
 
+.uo-settings-content-header {
+	background: #fafafa;
+	border-top: 1px solid #e1e1e1;
+	padding: 15px 20px;
+}
+
+.uo-settings-content-header.uo-setting--active{
+	background: #f3fff3;
+	color: #008000;
+}
+
+.uo-settings-content-header.uo-setting--inactive{
+	background: #fff7f6;
+	color: #e94b36;
+}
+
 .uo-settings-btn {
 	outline: none;
 	display: inline-block;
-	font-weight: 400;
+	font-weight: 500;
 	text-align: center;
 	white-space: nowrap;
 	vertical-align: middle;
@@ -206,7 +240,7 @@
 	padding: 5px 15px;
 	font-size: 15px;
 	line-height: 1.5;
-	border-radius: 3px;
+	border-radius: 8px;
 	background-color: transparent;
 	transition: color 150ms ease-in-out, background-color 150ms ease-in-out,border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
 	cursor: pointer;

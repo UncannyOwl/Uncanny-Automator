@@ -9,11 +9,11 @@ use Uncanny_Automator\Utilities;
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'helper-functions' . DIRECTORY_SEPARATOR . 'automator-helper-functions.php';
 
 /**
- * @param int $item_id
+ * @param $item_id
  *
  * @return int
  */
-function automator_get_recipe_id( int $item_id ) {
+function automator_get_recipe_id( $item_id ) {
 	return Automator()->get->maybe_get_recipe_id( $item_id );
 }
 
@@ -32,7 +32,7 @@ function automator_add_integration( $directory ) {
 }
 
 /**
- * @param string $integration
+ * @param $integration
  *
  * @return bool
  *
@@ -40,7 +40,7 @@ function automator_add_integration( $directory ) {
  * @package Uncanny_Automator
  * @version 3.0
  */
-function automator_integration_exists( string $integration ) {
+function automator_integration_exists( $integration ) {
 	$integration = strtolower( $integration );
 	if ( ! isset( Set_Up_Automator::$all_integrations[ $integration ] ) ) {
 		return false;
@@ -50,7 +50,7 @@ function automator_integration_exists( string $integration ) {
 }
 
 /**
- * @param string $name
+ * @param $name
  *
  * @return string
  *
@@ -58,7 +58,7 @@ function automator_integration_exists( string $integration ) {
  * @package Uncanny_Automator
  * @version 3.0
  */
-function automator_get_integration_by_name( string $name ) {
+function automator_get_integration_by_name( $name ) {
 	$integration      = strtolower(
 		str_replace(
 			array( ' ', '_' ),
@@ -87,8 +87,8 @@ function automator_get_integration_by_name( string $name ) {
 }
 
 /**
- * @param string $path
- * @param string $integration
+ * @param $path
+ * @param $integration
  *
  * @return bool
  *
@@ -96,7 +96,7 @@ function automator_get_integration_by_name( string $name ) {
  * @package Uncanny_Automator
  * @version 3.0
  */
-function automator_add_trigger( string $path, string $integration ) {
+function automator_add_trigger( $path, $integration ) {
 	$integration = strtolower( $integration );
 	if ( ! automator_integration_exists( $integration ) ) {
 		return false;
@@ -108,8 +108,8 @@ function automator_add_trigger( string $path, string $integration ) {
 }
 
 /**
- * @param string $path
- * @param string $integration
+ * @param $path
+ * @param $integration
  *
  * @return bool
  *
@@ -117,7 +117,7 @@ function automator_add_trigger( string $path, string $integration ) {
  * @package Uncanny_Automator
  * @version 3.0
  */
-function automator_add_action( string $path, string $integration ) {
+function automator_add_action( $path, $integration ) {
 	$integration = strtolower( $integration );
 	if ( ! automator_integration_exists( $integration ) ) {
 		return false;
@@ -129,8 +129,8 @@ function automator_add_action( string $path, string $integration ) {
 }
 
 /**
- * @param string $integration_code
- * @param string $directory
+ * @param $integration_code
+ * @param $directory
  *
  * @return bool
  *
@@ -139,7 +139,7 @@ function automator_add_action( string $path, string $integration ) {
  * @version 3.0
  * @package Uncanny_Automator
  */
-function automator_add_integration_directory( string $integration_code, string $directory ) {
+function automator_add_integration_directory( $integration_code, $directory ) {
 	$int_directory = automator_add_integration( $directory );
 	if ( ! isset( $int_directory['main'] ) ) {
 		return false;
@@ -151,18 +151,18 @@ function automator_add_integration_directory( string $integration_code, string $
 }
 
 /**
- * @param string $icon_path
+ * @param $icon_path
  *
  * @return string
  */
-function automator_add_integration_icon( string $icon_path, string $plugin_path = AUTOMATOR_BASE_FILE ) {
+function automator_add_integration_icon( $icon_path, $plugin_path = AUTOMATOR_BASE_FILE ) {
 	return Utilities::automator_get_integration_icon( $icon_path, $plugin_path );
 }
 
 /**
- * @param string $type
+ * @param $type
  * @param null $variable
- * @param string $flags
+ * @param $flags
  *
  * @return mixed
  *
@@ -180,9 +180,9 @@ function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = F
 
 
 /**
- * @param string $type
+ * @param $type
  * @param null $variable
- * @param string $flags
+ * @param $flags
  *
  * @return mixed
  *
@@ -195,9 +195,9 @@ function automator_filter_has_var( $variable = null, $type = INPUT_GET ) {
 }
 
 /**
- * @param string $type
+ * @param $type
  * @param null $variable
- * @param string $flags
+ * @param $flags
  *
  * @return mixed
  *
@@ -224,7 +224,7 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
 
 /**
  * @param mixed $message
- * @param int $code
+ * @param $code
  *
  * @since 3.0
  * @throws Automator_Exception
@@ -232,7 +232,7 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
  * @package Uncanny_Automator
  * @version 3.0
  */
-function automator_exception( $message, int $code = 999 ) {
+function automator_exception( $message, $code = 999 ) {
 	throw new Automator_Exception( $message, $code );
 }
 
@@ -251,7 +251,7 @@ function automator_wp_error( $message, $error_code = 'something_wrong', $data = 
 
 
 /**
- * @param string $error_code
+ * @param $error_code
  *
  * @since 3.0
  * @package Uncanny_Automator
@@ -287,7 +287,7 @@ function is_automator_error( $thing ) {
 }
 
 /**
- * @param string $type
+ * @param $type
  *
  * @return bool
  */
@@ -300,9 +300,9 @@ function automator_db_view_exists( $type = 'recipe' ) {
  *
  * @param mixed $message
  * @param mixed $subject
- * @param false bool $force_log
+ * @param false $force_log
  * @param mixed $log_file
- * @param false bool $backtrace
+ * @param false $backtrace
  *
  * @since 3.0
  * @package Uncanny_Automator
@@ -310,4 +310,114 @@ function automator_db_view_exists( $type = 'recipe' ) {
  */
 function automator_log( $message = '', $subject = '', $force_log = false, $log_file = 'debug', $backtrace = false ) {
 	Utilities::log( $message, $subject, $force_log, $log_file, $backtrace );
+}
+
+/**
+ * @param $recipe_id
+ * @param $automator_recipe_log_id
+ */
+function automator_purge_recipe_logs( $recipe_id, $automator_recipe_log_id ) {
+	Automator()->db->recipe->delete_logs( $recipe_id, $automator_recipe_log_id );
+}
+
+/**
+ * @param $recipe_id
+ * @param $automator_recipe_log_id
+ */
+function automator_purge_trigger_logs( $recipe_id, $automator_recipe_log_id ) {
+	Automator()->db->trigger->delete_logs( $recipe_id, $automator_recipe_log_id );
+}
+
+/**
+ * @param $recipe_id
+ * @param $automator_recipe_log_id
+ */
+function automator_purge_action_logs( $recipe_id, $automator_recipe_log_id ) {
+	Automator()->db->action->delete_logs( $recipe_id, $automator_recipe_log_id );
+}
+
+/**
+ * @param $recipe_id
+ * @param $automator_recipe_log_id
+ */
+function automator_purge_closure_logs( $recipe_id, $automator_recipe_log_id ) {
+	Automator()->db->closure->delete_logs( $recipe_id, $automator_recipe_log_id );
+}
+
+/**
+ * Add UTM parameters to a given URL
+ *
+ * @param String $url URL
+ * @param array $medium The value for utm_medium
+ * @param array $content The value for utm_content
+ *
+ * @return String           URL with the UTM parameters
+ */
+function automator_utm_parameters( $url, $medium = '', $content = '' ) {
+	// utm_source=plugin-id
+	// utm_medium=section-id
+	// utm_content=element-id+unique-id
+
+	$default_utm_parameters = array(
+		'source' => 'uncanny_automator_pro',
+	);
+
+	try {
+		// Parse the URL
+		$url_parts = wp_parse_url( $url );
+
+		// If URL doesn't have a query string.
+		if ( isset( $url_parts['query'] ) ) {
+			// Avoid 'Undefined index: query'
+			parse_str( $url_parts['query'], $params );
+		} else {
+			$params = array();
+		}
+
+		// Add default parameters
+		foreach ( $default_utm_parameters as $default_utm_parameter_key => $default_utm_parameter_value ) {
+			$params[ 'utm_' . $default_utm_parameter_key ] = $default_utm_parameter_value;
+		}
+
+		// Add custom parameters
+		if ( ! empty( $medium ) ) {
+			$params['utm_medium'] = $medium;
+		}
+
+		if ( ! empty( $content ) ) {
+			$params['utm_content'] = $content;
+		}
+
+		// Encode parameters
+		$url_parts['query'] = http_build_query( $params );
+
+		if ( function_exists( 'http_build_url' ) ) {
+			// If the user has pecl_http
+			$url = http_build_url( $url_parts );
+		} else {
+			$url_parts['path'] = ! empty( $url_parts['path'] ) ? $url_parts['path'] : '';
+
+			$url = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'] . '?' . $url_parts['query'];
+		}
+	} catch ( \Exception $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+	}
+
+	return $url;
+}
+
+/**
+ * Check if automator pro is active or not.
+ *
+ * @return boolean True if automator pro is active. Otherwise false.
+ */
+function is_automator_pro_active() {
+
+	$is_active = false;
+
+	// Check if automator pro is in list of active plugins.
+	if ( in_array( 'uncanny-automator-pro/uncanny-automator-pro.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+		return true;
+	}
+
+	return $is_active;
 }

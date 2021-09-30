@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 global $mailchimp_meeting_token_renew;
@@ -83,8 +84,8 @@ class Mailchimp_Helpers {
 
 	/**
 	 * @param null $label
-	 * @param string $option_code
-	 * @param array $args
+	 * @param $option_code
+	 * @param $args
 	 *
 	 * @return array|mixed|void
 	 */
@@ -166,9 +167,9 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * @param string $label
-	 * @param string $option_code
-	 * @param array $args
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
 	 *
 	 * @return mixed
 	 */
@@ -287,9 +288,9 @@ class Mailchimp_Helpers {
 
 
 	/**
-	 * @param string $label
-	 * @param string $option_code
-	 * @param array $args
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
 	 *
 	 * @return mixed
 	 */
@@ -364,9 +365,9 @@ class Mailchimp_Helpers {
 		$request_params = array(
 			'action'  => 'get_segments',
 			'list_id' => $list_id,
-			'type' 	  => 'static',
+			'type'    => 'static',
 			'fields'  => 'segments.name,segments.id',
-			'count'   => 1000
+			'count'   => 1000,
 		);
 
 		try {
@@ -417,7 +418,7 @@ class Mailchimp_Helpers {
 			'action'  => 'get_segments',
 			'list_id' => $list_id,
 			'fields'  => 'segments.name,segments.id',
-			'count'   => 1000
+			'count'   => 1000,
 		);
 		try {
 			$response = $this->api_request( $request_params );
@@ -443,9 +444,9 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * @param string $label
-	 * @param string $option_code
-	 * @param array $args
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
 	 *
 	 * @return mixed
 	 */
@@ -542,37 +543,37 @@ class Mailchimp_Helpers {
 					foreach ( $response->data->merge_fields as $field ) {
 						$merge_order = $field->display_order * 10;
 						if ( $field->type == 'address' ) {
-							$merge_order           += 1;
+							$merge_order            += 1;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_addr1',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							$merge_order           += 1;
+							$merge_order            += 1;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_addr2',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							$merge_order           += 1;
+							$merge_order            += 1;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_city',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							$merge_order           += 1;
+							$merge_order            += 1;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_state',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							$merge_order           += 1;
+							$merge_order            += 1;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_zip',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							$merge_order           += 1;
+							$merge_order            += 1;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_country',
 								'type' => 'text',
@@ -606,8 +607,8 @@ class Mailchimp_Helpers {
 
 	/**
 	 * @param null $label
-	 * @param string $option_code
-	 * @param array $args
+	 * @param $option_code
+	 * @param $args
 	 *
 	 * @return array|mixed|void
 	 */
@@ -688,50 +689,20 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * Checks if the user has valid license in pro or free version.
+	 * Check if the settings tab should display.
 	 *
 	 * @return boolean.
 	 */
-	public function has_valid_license() {
+	public function display_settings_tab() {
 
-		$has_pro_license  = false;
-		$has_free_license = false;
-
-		$free_license_status = get_option( 'uap_automator_free_license_status' );
-		$pro_license_status  = get_option( 'uap_automator_pro_license_status' );
-
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === $pro_license_status ) {
-			$has_pro_license = true;
+		if ( Automator()->utilities->has_valid_license() ) {
+			return true;
 		}
 
-		if ( 'valid' === $free_license_status ) {
-			$has_free_license = true;
+		if ( Automator()->utilities->is_from_modal_action() ) {
+			return true;
 		}
 
-		return $has_free_license || $has_pro_license;
-
-	}
-
-	/**
-	 * Checks if screen is from the modal action popup or not.
-	 *
-	 * @return boolean.
-	 */
-	public function is_from_modal_action() {
-
-		$minimal = filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT );
-
-		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
-
-		return ! empty( $minimal ) && ! empty( $hide_settings_tabs ) && ! empty( $hide_settings_tabs );
-	}
-
-	/**
-	 * Check if the 3rd-party integration has any connection api stored.
-	 *
-	 * @return boolean.
-	 */
-	public function has_connection_data() {
 		return ! empty( $this->get_mailchimp_client() );
 	}
 
@@ -742,7 +713,7 @@ class Mailchimp_Helpers {
 	 */
 	public function add_mailchimp_api_settings( $tabs ) {
 
-		if ( $this->has_valid_license() || $this->has_connection_data() || $this->is_from_modal_action() ) {
+		if ( $this->display_settings_tab() ) {
 
 			$is_uncannyowl_mailchimp_settings_expired = get_option( '_uncannyowl_mailchimp_settings_expired', false );
 			$tab_url                                  = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
@@ -792,14 +763,14 @@ class Mailchimp_Helpers {
 			}
 			ob_start();
 			?>
-			<div class="uo-settings-content-form">
+            <div class="uo-settings-content-form">
 
-				<a href="<?php echo $auth_url; ?>"
-				   class="uo-settings-btn uo-settings-btn--primary <?php echo $button_class; ?>">
+                <a href="<?php echo $auth_url; ?>"
+                   class="uo-settings-btn uo-settings-btn--primary <?php echo $button_class; ?>">
 					<?php
 					echo $button_text;
 					?>
-				</a>
+                </a>
 
 				<?php if ( $gs_client ) : ?>
 					<?php
@@ -811,39 +782,41 @@ class Mailchimp_Helpers {
 						admin_url( 'admin-ajax.php' )
 					);
 					?>
-					<a href="<?php echo esc_url( $disconnect_uri ); ?>" class="uo-settings-btn uo-settings-btn--error">
+                    <a href="<?php echo esc_url( $disconnect_uri ); ?>" class="uo-settings-btn uo-settings-btn--error">
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
-					</a>
+                    </a>
 				<?php endif; ?>
 
-			</div>
-			<style>
-				.uo-mailchimp-user-info {
-					display: flex;
-					align-items: center;
-					margin: 20px 0;
-				}
-				.uo-mailchimp-user-info__avatar {
-					display: inline-flex;
-					align-items: center;
-					overflow: hidden;
-					border-radius: 32px;
-					margin-right: 10px;
-				}
-				.uo-mailchimp-user-info__name {
-					margin-left: 5px;
-					opacity: 0.75;
-				}
+            </div>
+            <style>
+                .uo-mailchimp-user-info {
+                    display: flex;
+                    align-items: center;
+                    margin: 20px 0;
+                }
 
-				.uo-connected-button {
-					color: #fff;
-					background-color: #0790e8;
-				}
+                .uo-mailchimp-user-info__avatar {
+                    display: inline-flex;
+                    align-items: center;
+                    overflow: hidden;
+                    border-radius: 32px;
+                    margin-right: 10px;
+                }
 
-				.uo-settings-content-footer {
-					display: none !important;
-				}
-			</style>
+                .uo-mailchimp-user-info__name {
+                    margin-left: 5px;
+                    opacity: 0.75;
+                }
+
+                .uo-connected-button {
+                    color: #fff;
+                    background-color: #0790e8;
+                }
+
+                .uo-settings-content-footer {
+                    display: none !important;
+                }
+            </style>
 			<?php
 		}
 
@@ -887,9 +860,9 @@ class Mailchimp_Helpers {
 						);
 
 						if ( isset( $tokens['login'] ) ) {
-							$user_info['email']      = $tokens['login']->email ?? '';
-							$user_info['avatar']     = $tokens['login']->avatar ?? '';
-							$user_info['login_name'] = $tokens['login']->login_name ?? '';
+							$user_info['email']      = isset( $tokens['login']->email ) ? $tokens['login']->email : '';
+							$user_info['avatar']     = isset( $tokens['login']->avatar ) ? $tokens['login']->avatar : '';
+							$user_info['login_name'] = isset( $tokens['login']->login_name ) ? $tokens['login']->login_name : '';
 						}
 
 						// Update user info settings.
@@ -929,19 +902,20 @@ class Mailchimp_Helpers {
 		ob_start();
 		?>
 		<?php if ( false !== $user_info && ! empty( $mc_client ) ) : ?>
-			<div class="uo-mailchimp-user-info">
+            <div class="uo-mailchimp-user-info">
 				<?php if ( ! empty( $user_info['avatar'] ) ) : ?>
-					<div class="uo-mailchimp-user-info__avatar">
-						<img width="32" src="<?php echo esc_url( $user_info['avatar'] ); ?>" alt="<?php echo esc_html( $user_info['login_name'] ); ?>" />
-					</div>
+                    <div class="uo-mailchimp-user-info__avatar">
+                        <img width="32" src="<?php echo esc_url( $user_info['avatar'] ); ?>"
+                             alt="<?php echo esc_html( $user_info['login_name'] ); ?>"/>
+                    </div>
 				<?php endif; ?>
-				<div class="uo-mailchimp-user-info__email">
+                <div class="uo-mailchimp-user-info__email">
 					<?php echo esc_html( $user_info['email'] ); ?>
-				</div>
-				<div class="uo-mailchimp-user-info__name">
-					(<?php echo esc_html( $user_info['login_name'] ); ?>)
-				</div>
-			</div>
+                </div>
+                <div class="uo-mailchimp-user-info__name">
+                    (<?php echo esc_html( $user_info['login_name'] ); ?>)
+                </div>
+            </div>
 		<?php endif; ?>
 		<?php
 		return ob_get_clean();

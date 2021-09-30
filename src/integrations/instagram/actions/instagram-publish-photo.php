@@ -96,15 +96,15 @@ class INSTAGRAM_PUBLISH_PHOTO {
 
 
 	/**
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 * @param $args
 	 * @param $parsed
 	 *
 	 * @return void.
 	 */
-	protected function process_action( int $user_id, array $action_data, int $recipe_id, array $args, $parsed ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		$instagram = Automator()->helpers->recipe->instagram->options;
 

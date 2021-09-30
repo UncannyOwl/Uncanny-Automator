@@ -114,6 +114,18 @@ class Bdb_Tokens {
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
 			];
 			$fields[] = [
+				'tokenId'         => 'ACTIVITY_URL',
+				'tokenName'       => __( 'Activity URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBUSERACTIVITY',
+			];
+			$fields[] = [
+				'tokenId'         => 'ACTIVITY_STREAM_URL',
+				'tokenName'       => __( 'Activity stream URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'BDBUSERACTIVITY',
+			];
+			$fields[] = [
 				'tokenId'         => 'ACTIVITY_CONTENT',
 				'tokenName'       => __( 'Activity content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
@@ -159,7 +171,15 @@ class Bdb_Tokens {
 	 */
 	public function parse_bp_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'BDBUSERAVATAR', $pieces ) ) {
+			if ( in_array( 'BDBUSERS', $pieces ) ) {
+				// Get user id from meta log
+				if ( $trigger_data ) {
+					foreach ( $trigger_data as $trigger ) {
+						$token_value = $trigger['meta']['BDBUSERS'];
+						$value       = ( intval( $token_value ) == - 1 ) ? $user_id : $token_value;
+					}
+				}
+			} elseif ( in_array( 'BDBUSERAVATAR', $pieces ) ) {
 				// Get Group id from meta log
 				if ( function_exists( 'get_avatar_url' ) ) {
 					$value = get_avatar_url( $user_id );

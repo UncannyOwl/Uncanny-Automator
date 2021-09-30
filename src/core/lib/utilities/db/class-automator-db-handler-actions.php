@@ -26,11 +26,11 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
-	 * @param array $args
+	 * @param $args
 	 *
 	 * @return bool|int
 	 */
-	public function add( array $args ) {
+	public function add( $args ) {
 		$user_id       = absint( $args['user_id'] );
 		$action_id     = absint( $args['action_id'] );
 		$recipe_id     = absint( $args['recipe_id'] );
@@ -83,15 +83,15 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
-	 * @param int $user_id
-	 * @param int $action_log_id
-	 * @param int $action_id
-	 * @param string $meta_key
+	 * @param $user_id
+	 * @param $action_log_id
+	 * @param $action_id
+	 * @param $meta_key
 	 * @param string|mixed $meta_value
 	 *
 	 * @return bool|int
 	 */
-	public function add_meta( int $user_id, int $action_log_id, int $action_id, string $meta_key, $meta_value ) {
+	public function add_meta( $user_id, $action_log_id, $action_id, $meta_key, $meta_value ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
 
@@ -115,12 +115,12 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
-	 * @param int $action_log_id
-	 * @param string $meta_key
+	 * @param $action_log_id
+	 * @param $meta_key
 	 *
 	 * @return string
 	 */
-	public function get_meta( int $action_log_id, string $meta_key ) {
+	public function get_meta( $action_log_id, $meta_key ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
 		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $table_name WHERE meta_key =%s AND automator_action_log_id =%d", $meta_key, $action_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -135,10 +135,10 @@ class Automator_DB_Handler_Actions {
 	/**
 	 * @param $action_id
 	 * @param $recipe_log_id
-	 * @param int $completed
-	 * @param string $error_message
+	 * @param $completed
+	 * @param $error_message
 	 */
-	public function mark_complete( $action_id, $recipe_log_id, int $completed = 1, string $error_message = '' ) {
+	public function mark_complete( $action_id, $recipe_log_id, $completed = 1, $error_message = '' ) {
 		$data = array(
 			'completed'     => $completed,
 			'date_time'     => current_time( 'mysql' ),
@@ -167,9 +167,9 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
-	 * @param int $action_id
+	 * @param $action_id
 	 */
-	public function delete( int $action_id ) {
+	public function delete( $action_id ) {
 		global $wpdb;
 
 		// delete from uap_action_log
@@ -182,6 +182,35 @@ class Automator_DB_Handler_Actions {
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->action_meta,
 			array( 'automator_action_id' => $action_id )
+		);
+	}
+
+	/**
+	 * @param $recipe_id
+	 * @param $automator_recipe_log_id
+	 */
+	public function delete_logs( $recipe_id, $automator_recipe_log_id ) {
+		global $wpdb;
+		$action_tbl      = $wpdb->prefix . Automator()->db->tables->action;
+		$action_meta_tbl = $wpdb->prefix . Automator()->db->tables->action_meta;
+		$actions         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( $actions ) {
+			foreach ( $actions as $automator_action_log_id ) {
+				// delete from uap_action_log_meta
+				$wpdb->delete(
+					$action_meta_tbl,
+					array( 'automator_action_log_id' => $automator_action_log_id )
+				);
+			}
+		}
+
+		// delete from uap_action_log
+		$wpdb->delete(
+			$action_tbl,
+			array(
+				'automator_recipe_id'     => $recipe_id,
+				'automator_recipe_log_id' => $automator_recipe_log_id,
+			)
 		);
 	}
 }

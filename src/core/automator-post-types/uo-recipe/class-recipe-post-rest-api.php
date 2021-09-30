@@ -922,9 +922,7 @@ class Recipe_Post_Rest_Api {
 	public function schedule_action( WP_REST_Request $request ) {
 
 		// Make sure we have all the data
-		if ( $request->get_param( 'recipeId' )
-		     && $request->has_param( 'actionId' )
-		     && $request->has_param( 'asyncMode' ) ) {
+		if ( $request->get_param( 'recipeId' ) && $request->has_param( 'actionId' ) && $request->has_param( 'asyncMode' ) ) {
 
 			$post_id   = (int) $request->get_param( 'actionId' );
 			$recipe_id = (int) $request->get_param( 'recipeId' );
@@ -956,6 +954,7 @@ class Recipe_Post_Rest_Api {
 			}
 
 			if ( $return['success'] ) {
+				Automator()->cache->remove( Automator()->cache->recipes_data );
 
 				$return['post_ID']        = $post_id;
 				$return['action']         = 'schedule_action';

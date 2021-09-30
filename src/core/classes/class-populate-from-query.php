@@ -205,7 +205,7 @@ class Populate_From_Query {
 		$request->set_body_params(
 			array(
 				'post_ID'     => self::$post->ID,
-				'recipe_type' => 'user',
+				'recipe_type' => automator_filter_has_var( 'is_anon' ) ? 'anonymous' : 'user',
 			)
 		);
 

@@ -60,12 +60,12 @@ trait Tokens {
 //	}
 
 	/**
-	 * @param string $trigger_code
-	 * @param string $token_id
+	 * @param $trigger_code
+	 * @param $token_id
 	 *
 	 * @return mixed|null
 	 */
-	public static function get_parser_object_from_trigger( string $trigger_code, string $token_id = '' ) {
+	public static function get_parser_object_from_trigger( $trigger_code, $token_id = '' ) {
 		if ( empty( $trigger_code ) || empty( $token_id ) ) {
 			return null;
 		}
@@ -92,14 +92,14 @@ trait Tokens {
 	/**
 	 * Build token sentence, {{trigger_code:token}}
 	 *
-	 * @param string $trigger_code
-	 * @param string $token_id
-	 * @param string $type
-	 * @param string $prefix
+	 * @param $trigger_code
+	 * @param $token_id
+	 * @param $type
+	 * @param $prefix
 	 *
 	 * @return array
 	 */
-	public static function build( array $args ) {
+	public static function build( $args ) {
 		$trigger_code = isset( $args['trigger_code'] ) ? esc_attr( $args['trigger_code'] ) : null;
 		if ( null === $trigger_code || empty( $trigger_code ) ) {
 			return array();
@@ -121,12 +121,12 @@ trait Tokens {
 	}
 
 	/**
-	 * @param string $token_id
-	 * @param string $prefix
+	 * @param $token_id
+	 * @param $prefix
 	 *
 	 * @return string
 	 */
-	public static function generate_token_name( string $token_id, string $prefix = '' ) {
+	public static function generate_token_name( $token_id, $prefix = '' ) {
 		if ( empty( $prefix ) ) {
 			return ucfirst( str_replace( array( '_', '-' ), ' ', $token_id ) );
 		}
@@ -204,11 +204,11 @@ trait Tokens {
 	public static function is_valid( $meta, $token ) {
 		/**
 		 * @var mixed $value
-		 * @var array $pieces
-		 * @var int $recip_id
-		 * @var array $trigger_data
-		 * @var int $user_id
-		 * @var array $replace_args
+		 * @var $pieces
+		 * @var $recip_id
+		 * @var $trigger_data
+		 * @var $user_id
+		 * @var $replace_args
 		 */
 		extract( $token ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 
@@ -249,11 +249,11 @@ trait Tokens {
 	public static function is_valid_user_token( $token ) {
 		/**
 		 * @var mixed $value
-		 * @var array $pieces
-		 * @var int $recip_id
-		 * @var array $trigger_data
-		 * @var int $user_id
-		 * @var array $replace_args
+		 * @var $pieces
+		 * @var $recip_id
+		 * @var $trigger_data
+		 * @var $user_id
+		 * @var $replace_args
 		 */
 		extract( $token ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 
@@ -281,11 +281,11 @@ trait Tokens {
 	public static function parse_from_trigger_meta( $meta, $token, $readable = false ) {
 		/**
 		 * @var mixed $value
-		 * @var array $pieces
-		 * @var int $recip_id
-		 * @var array $trigger_data
-		 * @var int $user_id
-		 * @var array $replace_args
+		 * @var $pieces
+		 * @var $recip_id
+		 * @var $trigger_data
+		 * @var $user_id
+		 * @var $replace_args
 		 */
 		extract( $token ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 
@@ -311,11 +311,11 @@ trait Tokens {
 	public static function parse_user_tokens( $meta, $token ) {
 		/**
 		 * @var mixed $value
-		 * @var array $pieces
-		 * @var int $recip_id
-		 * @var array $trigger_data
-		 * @var int $user_id
-		 * @var array $replace_args
+		 * @var $pieces
+		 * @var $recip_id
+		 * @var $trigger_data
+		 * @var $user_id
+		 * @var $replace_args
 		 */
 		extract( $token ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 

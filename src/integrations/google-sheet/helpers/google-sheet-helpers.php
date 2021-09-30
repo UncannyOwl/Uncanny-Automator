@@ -116,8 +116,8 @@ class Google_Sheet_Helpers {
 
 	/**
 	 * @param null $label
-	 * @param string $option_code
-	 * @param array $args
+	 * @param $option_code
+	 * @param $args
 	 *
 	 * @return array|mixed|void
 	 */
@@ -180,9 +180,9 @@ class Google_Sheet_Helpers {
 	}
 
 	/**
-	 * @param string $label
-	 * @param string $option_code
-	 * @param array $args
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
 	 *
 	 * @return mixed
 	 */
@@ -380,50 +380,20 @@ class Google_Sheet_Helpers {
 	}
 
 	/**
-	 * Checks if the user has valid license in pro or free version.
+	 * Check if the settings tab should display.
 	 *
 	 * @return boolean.
 	 */
-	public function has_valid_license() {
+	public function display_settings_tab() {
 
-		$has_pro_license  = false;
-		$has_free_license = false;
-
-		$free_license_status = get_option( 'uap_automator_free_license_status' );
-		$pro_license_status  = get_option( 'uap_automator_pro_license_status' );
-
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === $pro_license_status ) {
-			$has_pro_license = true;
+		if ( Automator()->utilities->has_valid_license() ) {
+			return true;
 		}
 
-		if ( 'valid' === $free_license_status ) {
-			$has_free_license = true;
+		if ( Automator()->utilities->is_from_modal_action() ) {
+			return true;
 		}
 
-		return $has_free_license || $has_pro_license;
-
-	}
-
-	/**
-	 * Checks if screen is from the modal action popup or not.
-	 *
-	 * @return boolean.
-	 */
-	public function is_from_modal_action() {
-
-		$minimal = filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT );
-
-		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
-
-		return ! empty( $minimal ) && ! empty( $hide_settings_tabs ) && ! empty( $hide_settings_tabs );
-	}
-
-	/**
-	 * Check if the 3rd-party integration has any connection api stored.
-	 *
-	 * @return boolean.
-	 */
-	public function has_connection_data() {
 		return ! empty( $this->get_google_client() );
 	}
 
@@ -434,7 +404,7 @@ class Google_Sheet_Helpers {
 	 */
 	public function add_google_api_settings( $tabs ) {
 
-		if ( $this->has_valid_license() || $this->has_connection_data() || $this->is_from_modal_action() ) {
+		if ( $this->display_settings_tab() ) {
 
 			$is_uncannyowl_google_sheet_settings_expired = get_option( '_uncannyowl_google_sheet_settings_expired', false );
 
@@ -475,32 +445,32 @@ class Google_Sheet_Helpers {
 		);
 		ob_start();
 		?>
-		<p>
+        <p>
 			<?php echo esc_html( $description ); ?>
-		</p>
+        </p>
 
 		<?php $user = $this->get_user_info(); ?>
 		<?php if ( ! empty( $user['name'] ) ) : ?>
-			<div class="uo-google-user-info">
+            <div class="uo-google-user-info">
 				<?php if ( ! empty( $user['avatar_uri'] ) ) : ?>
-					<div class="uo-google-user-info__avatar">
-						<img width="32" src="<?php echo esc_url( $user['avatar_uri'] ); ?>"
-							 alt="<?php esc_attr_e( $user['name'] ); ?>"/>
-					</div>
+                    <div class="uo-google-user-info__avatar">
+                        <img width="32" src="<?php echo esc_url( $user['avatar_uri'] ); ?>"
+                             alt="<?php esc_attr_e( $user['name'] ); ?>"/>
+                    </div>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $user['email'] ) ) : ?>
-					<div class="uo-google-user-info__email">
+                    <div class="uo-google-user-info__email">
 						<?php echo esc_html( $user['email'] ); ?>
-					</div>
+                    </div>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $user['name'] ) ) : ?>
-					<div class="uo-google-user-info__name">
-						(<?php echo esc_html( $user['name'] ); ?>)
-					</div>
+                    <div class="uo-google-user-info__name">
+                        (<?php echo esc_html( $user['name'] ); ?>)
+                    </div>
 				<?php endif; ?>
-			</div>
+            </div>
 		<?php endif; ?>
 		<?php
 		return ob_get_clean();
@@ -532,14 +502,14 @@ class Google_Sheet_Helpers {
 			}
 			ob_start();
 			?>
-			<div class="uo-settings-content-form">
+            <div class="uo-settings-content-form">
 
-				<a href="<?php echo $auth_url; ?>"
-				   class="uo-settings-btn uo-settings-btn--primary <?php echo $button_class; ?>">
+                <a href="<?php echo $auth_url; ?>"
+                   class="uo-settings-btn uo-settings-btn--primary <?php echo $button_class; ?>">
 					<?php
 					echo $button_text;
 					?>
-				</a>
+                </a>
 				<?php if ( $gs_client ) : ?>
 					<?php
 					$disconnect_uri = add_query_arg(
@@ -550,41 +520,41 @@ class Google_Sheet_Helpers {
 						admin_url( 'admin-ajax.php' )
 					);
 					?>
-					<a href="<?php echo esc_url( $disconnect_uri ); ?>" class="uo-settings-btn uo-settings-btn--error ">
+                    <a href="<?php echo esc_url( $disconnect_uri ); ?>" class="uo-settings-btn uo-settings-btn--error ">
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
-					</a>
+                    </a>
 				<?php endif; ?>
 
-			</div>
-			<style>
-				.uo-google-user-info {
-					display: flex;
-					align-items: center;
-					margin: 20px 0;
-				}
+            </div>
+            <style>
+                .uo-google-user-info {
+                    display: flex;
+                    align-items: center;
+                    margin: 20px 0;
+                }
 
-				.uo-google-user-info__avatar {
-					display: inline-flex;
-					align-items: center;
-					overflow: hidden;
-					border-radius: 32px;
-					margin-right: 10px;
-				}
+                .uo-google-user-info__avatar {
+                    display: inline-flex;
+                    align-items: center;
+                    overflow: hidden;
+                    border-radius: 32px;
+                    margin-right: 10px;
+                }
 
-				.uo-google-user-info__name {
-					margin-left: 5px;
-					opacity: 0.75;
-				}
+                .uo-google-user-info__name {
+                    margin-left: 5px;
+                    opacity: 0.75;
+                }
 
-				.uo-connected-button {
-					color: #fff;
-					background-color: #0790e8;
-				}
+                .uo-connected-button {
+                    color: #fff;
+                    background-color: #0790e8;
+                }
 
-				.uo-settings-content-footer {
-					display: none !important;
-				}
-			</style>
+                .uo-settings-content-footer {
+                    display: none !important;
+                }
+            </style>
 			<?php
 		}
 
@@ -955,7 +925,7 @@ class Google_Sheet_Helpers {
 				return $saved_user_info;
 			}
 
-			$access_token = $google_sheet_options['access_token'] ?? "";
+			$access_token = isset( $google_sheet_options['access_token'] ) ? $google_sheet_options['access_token'] : '';
 
 			$headers = array(
 				'Authorization'  => 'Bearer ' . $access_token,
