@@ -55,7 +55,7 @@ class Zoom_Helpers {
 	/**
 	 * @param Zoom_Pro_Helpers $pro
 	 */
-	public function setPro( Zoom_Pro_Helpers $pro ) {
+	public function setPro( \Uncanny_Automator_Pro\Zoom_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -94,7 +94,7 @@ class Zoom_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			$client = $this->get_client();
-			
+
 			if ( ! $client || empty( $client['access_token'] ) ) {
 				return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 			}

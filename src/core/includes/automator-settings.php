@@ -104,8 +104,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 								);
 								$extra_content = apply_filters( 'automator_after_settings_extra_content', $extra_content, $active, $tab );
 								ob_start();
-								echo wp_kses_post( $extra_content );
-								echo wp_kses_post( ob_get_clean() );
+								echo $extra_content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</div>
 						</div>
@@ -133,8 +133,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 							);
 							$extra_buttons = apply_filters( 'automator_after_settings_extra_buttons', $extra_buttons, $active, $tab );
 							ob_start();
-							echo wp_kses_post( $extra_buttons );
-							echo wp_kses_post( ob_get_clean() );
+							echo $extra_buttons; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
 						</div>
 						<?php
@@ -285,8 +285,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 
 						$header_content = apply_filters( 'automator_settings_header', '', $active, $tab );
 						ob_start();
-						echo wp_kses_post( $header_content );
-						$header_content = wp_kses_post( ob_get_clean() );
+						echo $header_content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$header_content = ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 						?>
 
@@ -294,7 +294,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 
 							<div
 								class="uo-settings-content-header<?php echo esc_attr( apply_filters( 'automator_content_header_css_class', '', $active, $tab ) ); ?>">
-								<?php echo wp_kses_post( $header_content ); ?>
+								<?php echo $header_content;  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							</div>
 
 						<?php } ?>
@@ -367,8 +367,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 								);
 								$extra_content = apply_filters( 'automator_after_settings_extra_content', $extra_content, $active, $tab );
 								ob_start();
-								echo wp_kses_post( $extra_content );
-								echo wp_kses_post( ob_get_clean() );
+								echo $extra_content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</div>
 						</div>
@@ -396,8 +396,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 							);
 							$extra_buttons = apply_filters( 'automator_after_settings_extra_buttons', $extra_buttons, $active, $tab );
 							ob_start();
-							echo wp_kses_post( $extra_buttons );
-							echo wp_kses_post( ob_get_clean() );
+							echo $extra_buttons; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
 						</div>
 						<?php

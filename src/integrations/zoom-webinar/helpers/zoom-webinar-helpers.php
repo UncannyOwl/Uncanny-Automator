@@ -62,7 +62,7 @@ class Zoom_Webinar_Helpers {
 	/**
 	 * @param Zoom_Webinar_Pro_Helpers $pro
 	 */
-	public function setPro( Zoom_Webinar_Pro_Helpers $pro ) {
+	public function setPro( \Uncanny_Automator_Pro\Zoom_Webinar_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -419,12 +419,12 @@ class Zoom_Webinar_Helpers {
 			'name'           => __( 'Zoom Webinar', 'uncanny-automator' ),
 			'title'          => __( 'Zoom Webinar API settings', 'uncanny-automator' ),
 			'description'    => sprintf(
-				'<p>%1$s</p>',
-				sprintf(
-					__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit %1\$s for simple instructions.", 'uncanny-automator' ),
-					'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_webinar-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/zoom/</a>'
-				)
-			) . $this->get_user_info(),
+									'<p>%1$s</p>',
+									sprintf(
+										__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit %1\$s for simple instructions.", 'uncanny-automator' ),
+										'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_webinar-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/zoom/</a>'
+									)
+								) . $this->get_user_info(),
 			'is_pro'         => false,
 			'settings_field' => 'uap_automator_zoom_webinar_api_settings',
 			'wp_nonce_field' => 'uap_automator_zoom_webinar_api_nonce',
@@ -529,27 +529,28 @@ class Zoom_Webinar_Helpers {
 		<?php $this->get_inline_style(); ?>
 
 		<p>
-			<div class="uo-zoom-user-info">
+		<div class="uo-zoom-user-info">
 
-				<div class="uo-zoom-user-info__avatar">
-					<?php if ( ! isset( $zoom_user->pic_url ) ) : ?>
-						<div class="uo-zoom-user-info-placeholder-avatar">
-							<span class="dashicons dashicons-admin-users"></span>
-						</div>
-					<?php else : ?>
-						<img width="32" src="<?php echo esc_url( $zoom_user->pic_url ); ?>" alt="<?php esc_attr_e( 'Profile Pic', 'uncanny-automator' ); ?>" />
-					<?php endif; ?>
-				</div>
+			<div class="uo-zoom-user-info__avatar">
+				<?php if ( ! isset( $zoom_user->pic_url ) ) : ?>
+					<div class="uo-zoom-user-info-placeholder-avatar">
+						<span class="dashicons dashicons-admin-users"></span>
+					</div>
+				<?php else : ?>
+					<img width="32" src="<?php echo esc_url( $zoom_user->pic_url ); ?>"
+						 alt="<?php esc_attr_e( 'Profile Pic', 'uncanny-automator' ); ?>"/>
+				<?php endif; ?>
+			</div>
 
-				<div class="uo-zoom-user-info__email">
-					<?php echo esc_html( $zoom_user->email ); ?>
-				</div>
+			<div class="uo-zoom-user-info__email">
+				<?php echo esc_html( $zoom_user->email ); ?>
+			</div>
 
-				<div class="uo-zoom-user-info__name">
-					<?php echo esc_html( sprintf( '(%s %s)', ! empty( $zoom_user->first_name ) ? $zoom_user->first_name : '', $zoom_user->last_name ? $zoom_user->first_name : '' ) ); ?>
-				</div>
+			<div class="uo-zoom-user-info__name">
+				<?php echo esc_html( sprintf( '(%s %s)', ! empty( $zoom_user->first_name ) ? $zoom_user->first_name : '', $zoom_user->last_name ? $zoom_user->first_name : '' ) ); ?>
+			</div>
 
-			</div><!--.uo-zoom-user-info-->
+		</div><!--.uo-zoom-user-info-->
 		</p>
 		<p>
 			<?php
@@ -561,7 +562,8 @@ class Zoom_Webinar_Helpers {
 				admin_url( 'admin-ajax.php' )
 			);
 			?>
-			<a class="uo-settings-btn uo-settings-btn--error" href="<?php echo esc_url( $disconnect_uri ); ?>" title="<?php esc_attr_e( 'Disconnect', 'uncanny-automator' ); ?>">
+			<a class="uo-settings-btn uo-settings-btn--error" href="<?php echo esc_url( $disconnect_uri ); ?>"
+			   title="<?php esc_attr_e( 'Disconnect', 'uncanny-automator' ); ?>">
 				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 			</a>
 			<br/>
@@ -608,6 +610,7 @@ class Zoom_Webinar_Helpers {
 		if ( 200 === $status_code ) {
 			$response_body = json_decode( wp_remote_retrieve_body( $response ) );
 			set_transient( $transient_key, $response_body->data, WEEK_IN_SECONDS );
+
 			return $response_body->data;
 		}
 
@@ -623,40 +626,45 @@ class Zoom_Webinar_Helpers {
 	public function get_inline_style() {
 		?>
 		<style>
-		.uo-settings-content-description a.uo-settings-btn--error {
-			color: #e94b35;
-		}
-		.uo-settings-content-description a.uo-settings-btn--error:focus,
-		.uo-settings-content-description a.uo-settings-btn--error:active,
-		.uo-settings-content-description a.uo-settings-btn--error:hover {
-			color: #fff;
-		}
-		.uo-zoom-user-info {
-			display: flex;
-			align-items: center;
-			margin: 20px 0 0;
-		}
-		.uo-zoom-user-info__avatar {
-			background: #fff;
-			box-shadow: 0 2px 5px 0 rgb(0 0 0 / 10%);
-			border-radius: 32px;
-			height: 32px;
-			overflow: hidden;
-			width: 32px;
-			text-align: center;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			color: #2D8CFF;
-			margin-right: 5px;
-		}
-		.uo-zoom-user-info__avatar img {
-			border-radius:32px;
-		}
-		.uo-zoom-user-info__name {
-			opacity: 0.75;
-			margin-left: 5px;
-		}
+			.uo-settings-content-description a.uo-settings-btn--error {
+				color: #e94b35;
+			}
+
+			.uo-settings-content-description a.uo-settings-btn--error:focus,
+			.uo-settings-content-description a.uo-settings-btn--error:active,
+			.uo-settings-content-description a.uo-settings-btn--error:hover {
+				color: #fff;
+			}
+
+			.uo-zoom-user-info {
+				display: flex;
+				align-items: center;
+				margin: 20px 0 0;
+			}
+
+			.uo-zoom-user-info__avatar {
+				background: #fff;
+				box-shadow: 0 2px 5px 0 rgb(0 0 0 / 10%);
+				border-radius: 32px;
+				height: 32px;
+				overflow: hidden;
+				width: 32px;
+				text-align: center;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				color: #2D8CFF;
+				margin-right: 5px;
+			}
+
+			.uo-zoom-user-info__avatar img {
+				border-radius: 32px;
+			}
+
+			.uo-zoom-user-info__name {
+				opacity: 0.75;
+				margin-left: 5px;
+			}
 		</style>
 		<?php
 	}
@@ -685,7 +693,8 @@ class Zoom_Webinar_Helpers {
 	/**
 	 * refresh_token
 	 *
-	 * @param  array $client
+	 * @param array $client
+	 *
 	 * @return void
 	 */
 	public function refresh_token() {
@@ -711,7 +720,7 @@ class Zoom_Webinar_Helpers {
 		// Generate the access token using the JWT library
 		$token = JWT::encode( $payload, $consumer_secret );
 
-		$client['access_token'] = $token;
+		$client['access_token']  = $token;
 		$client['refresh_token'] = $token;
 
 		// Cache it in settings

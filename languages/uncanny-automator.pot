@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.2\n"
+"Project-Id-Version: Uncanny Automator 3.2.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-09-30T12:57:44+00:00\n"
+"POT-Creation-Date: 2021-10-01T01:34:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -4720,8 +4720,8 @@ msgstr ""
 #: src/integrations/active-campaign/helpers/active-campaign-helpers.php:400
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:524
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:786
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:564
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:565
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:566
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:567
 #: src/integrations/zoom/helpers/zoom-helpers.php:559
 #: src/integrations/zoom/helpers/zoom-helpers.php:560
 msgid "Disconnect"
@@ -9202,7 +9202,7 @@ msgstr ""
 msgid "API secret:"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:540
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:541
 #: src/integrations/zoom/helpers/zoom-helpers.php:534
 msgid "Profile Pic"
 msgstr ""
