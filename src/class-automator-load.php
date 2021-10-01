@@ -48,6 +48,12 @@ class Automator_Load {
 	 * class constructor
 	 */
 	public function __construct() {
+
+		// Bailout if not php8 compatible.
+		if ( ! $this->is_php8_compat() ) {
+			return;
+		}
+
 		if ( strpos( $_SERVER['REQUEST_URI'], 'favicon' ) ) {
 			// bail out if it's favicon.ico
 			return;
@@ -77,7 +83,6 @@ class Automator_Load {
 
 		add_action( 'activated_plugin', array( $this, 'automator_activated' ) );
 
-
 		// Show 'Upgrade to Pro' on plugins page.
 		add_filter(
 			'plugin_action_links_' . plugin_basename( AUTOMATOR_BASE_FILE ),
@@ -89,6 +94,61 @@ class Automator_Load {
 		);
 
 		$this->load_automator();
+	}
+
+	/**
+	 * is_php8_compat
+	 *
+	 * Checks and displays an admin notices if php is version 8
+	 * or above and both automator free and pro is version 3.2 or above.
+	 *
+	 * @return boolean True if version is 8 and both free or pro is less than 3.2. Otherwise, false.
+	 */
+	public function is_php8_compat() {
+
+		// if Pro is not active, bail
+		if ( ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+			return true;
+		}
+
+		// Check if the php version is 8.0 and above.
+		if ( ! version_compare( PHP_VERSION, '8.0.0', '>=' ) ) {
+			return true;
+		}
+
+		$automator_pro_version_is_less_than_3_2 = version_compare( AUTOMATOR_PRO_PLUGIN_VERSION, '3.2', '<' );
+
+		// If > php8.
+		// If either of free and pro is < 3.2.
+		if ( $automator_pro_version_is_less_than_3_2 ) {
+			add_action( 'admin_notices', array( $this, 'check_automator32_php8_compat_message' ) );
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * check_automator32_php8_compat_message
+	 *
+	 * Callback function from check_automator32_php8_compat. Shows an admin notice.
+	 *
+	 * @return void
+	 */
+	public function check_automator32_php8_compat_message() {
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script( 'thickbox' );
+		$class   = 'notice notice-error';
+		$version = '3.2';
+		// An old version of Uncanny Automator is running
+		$url = admin_url( 'plugin-install.php?tab=plugin-information&plugin=uncanny-automator-pro&section=changelog&TB_iframe=true&width=850&height=946' );
+
+		/* translators: 1. Trademarked term. 2. Trademarked term */
+		$message        = sprintf( __( "%2\$s recipes have been disabled because your version of PHP (%3\$s) is not fully compatible with the version of %1\$s that's installed.", 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator', PHP_VERSION );
+		$message_update = sprintf( __( 'Please update %1$s to version %2$s or later.', 'uncanny-automator' ), 'Uncanny Automator Pro', $version );
+
+		printf( '<div class="%1$s"><h3 style="font-weight: bold; color: red"><span class="dashicons dashicons-warning"></span>%2$s <a href="%3$s" class="thickbox open-plugin-details-modal">' . $message_update . '</a></h3></div>', esc_attr( $class ), esc_html( $message ), $url );
 	}
 
 	/**
@@ -483,7 +543,7 @@ class Automator_Load {
 		$classes['Automator_Review']     = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
 		$classes['Automator_Autoloader'] = UA_ABSPATH . 'src/core/lib/autoload/class-ua-autoloader.php';
 		$classes['Api_Server']           = UA_ABSPATH . 'src/core/classes/class-api-server.php';
-		$classes['Usage_Reports']           = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
+		$classes['Usage_Reports']        = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
 
 		//$classes['Import_Recipe'] = UA_ABSPATH . 'src/core/classes/class-import-recipe.php';

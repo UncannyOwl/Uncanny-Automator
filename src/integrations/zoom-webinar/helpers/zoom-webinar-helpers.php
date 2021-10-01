@@ -120,22 +120,26 @@ class Zoom_Webinar_Helpers {
 				)
 			);
 
-			$response_code = wp_remote_retrieve_response_code( $response );
+			if ( ! is_wp_error( $response ) ) {
 
-			if ( $response_code === 200 ) {
+				$response_code = wp_remote_retrieve_response_code( $response );
 
-				$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+				if ( $response_code === 200 ) {
 
-				if ( count( $response_body['data']['webinars'] ) > 0 ) {
+					$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-					foreach ( $response_body['data']['webinars'] as $key => $webinar ) {
+					if ( count( $response_body['data']['webinars'] ) > 0 ) {
 
-						$webinar_key                            = (string) $webinar['id'];
-						$options[ $webinar_key . '-objectkey' ] = $webinar['topic'];
+						foreach ( $response_body['data']['webinars'] as $key => $webinar ) {
 
+							$webinar_key                            = (string) $webinar['id'];
+							$options[ $webinar_key . '-objectkey' ] = $webinar['topic'];
+
+						}
 					}
 				}
 			}
+
 		}
 
 		$option = array(
@@ -485,23 +489,29 @@ class Zoom_Webinar_Helpers {
 					)
 				);
 
-				$status_code = wp_remote_retrieve_response_code( $response );
-
-				// Check for a meeting API call if not 200 then its wrong pair.
-				if ( $status_code !== 200 ) {
-
-					$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-					delete_option( '_uncannyowl_zoom_webinar_settings' );
-
-					$error_status = ! empty( $body['data']['message'] ) ? $body['data']['message'] : '2';
-
-					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_status ) );
-
+				if ( is_wp_error( $response ) ) {
+					$error_msg = implode( ', ', $response->get_error_messages() );
+					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
 				} else {
 
-					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
+					$status_code = wp_remote_retrieve_response_code( $response );
 
+					// Check for a meeting API call if not 200 then its wrong pair.
+					if ( $status_code !== 200 ) {
+
+						$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+						delete_option( '_uncannyowl_zoom_webinar_settings' );
+
+						$error_msg = ! empty( $body['data']['message'] ) ? $body['data']['message'] : '2';
+
+						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
+
+					} else {
+
+						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
+
+					}
 				}
 
 				die;
@@ -605,13 +615,15 @@ class Zoom_Webinar_Helpers {
 			)
 		);
 
-		$status_code = wp_remote_retrieve_response_code( $response );
+		if ( ! is_wp_error( $response ) ) {
+			$status_code = wp_remote_retrieve_response_code( $response );
 
-		if ( 200 === $status_code ) {
-			$response_body = json_decode( wp_remote_retrieve_body( $response ) );
-			set_transient( $transient_key, $response_body->data, WEEK_IN_SECONDS );
-
-			return $response_body->data;
+			if ( 200 === $status_code ) {
+				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
+				set_transient( $transient_key, $response_body->data, WEEK_IN_SECONDS );
+	
+				return $response_body->data;
+			}
 		}
 
 		return false;
