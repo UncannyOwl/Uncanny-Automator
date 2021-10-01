@@ -137,18 +137,16 @@ class Automator_Load {
 	 * @return void
 	 */
 	public function check_automator32_php8_compat_message() {
-		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_script( 'thickbox' );
 		$class   = 'notice notice-error';
 		$version = '3.2';
 		// An old version of Uncanny Automator is running
-		$url = admin_url( 'plugin-install.php?tab=plugin-information&plugin=uncanny-automator-pro&section=changelog&TB_iframe=true&width=850&height=946' );
+		$url = admin_url( 'plugins.php#uncanny-automator-pro-update' );
 
 		/* translators: 1. Trademarked term. 2. Trademarked term */
 		$message        = sprintf( __( "%2\$s recipes have been disabled because your version of PHP (%3\$s) is not fully compatible with the version of %1\$s that's installed.", 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator', PHP_VERSION );
 		$message_update = sprintf( __( 'Please update %1$s to version %2$s or later.', 'uncanny-automator' ), 'Uncanny Automator Pro', $version );
 
-		printf( '<div class="%1$s"><h3 style="font-weight: bold; color: red"><span class="dashicons dashicons-warning"></span>%2$s <a href="%3$s" class="thickbox open-plugin-details-modal">' . $message_update . '</a></h3></div>', esc_attr( $class ), esc_html( $message ), $url );
+		printf( '<div class="%1$s"><h3 style="font-weight: bold; color: red"><span class="dashicons dashicons-warning"></span>%2$s <a href="%3$s">' . $message_update . '</a></h3></div>', esc_attr( $class ), esc_html( $message ), $url );
 	}
 
 	/**
