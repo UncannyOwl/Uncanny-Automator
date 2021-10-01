@@ -94,7 +94,11 @@ class Api_Server {
 		}
 
 		if ( 'PRO' === $license_type ) {
-			return constant( 'AUTOMATOR_AUTOMATOR_' . $license_type . '_ITEM_NAME' );
+			if ( defined( 'AUTOMATOR_' . $license_type . '_ITEM_NAME' ) ) {
+				return constant( 'AUTOMATOR_' . $license_type . '_ITEM_NAME' );
+			} elseif ( defined( 'AUTOMATOR_AUTOMATOR_' . $license_type . '_ITEM_NAME' ) ) {
+				return constant( 'AUTOMATOR_AUTOMATOR_' . $license_type . '_ITEM_NAME' );
+			}
 		}
 
 		return constant( 'AUTOMATOR_' . $license_type . '_ITEM_NAME' );

@@ -307,7 +307,7 @@ class Automator_Review {
 
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ) {
 			$licence_key = get_option( 'uap_automator_pro_license_key' );
-			$item_name   = AUTOMATOR_AUTOMATOR_PRO_ITEM_NAME;
+			$item_name   = defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ? AUTOMATOR_PRO_ITEM_NAME : AUTOMATOR_AUTOMATOR_PRO_ITEM_NAME;
 		} elseif ( 'valid' === get_option( 'uap_automator_free_license_status' ) ) {
 			$licence_key = get_option( 'uap_automator_free_license_key' );
 			$item_name   = AUTOMATOR_FREE_ITEM_NAME;
@@ -433,13 +433,13 @@ class Automator_Review {
 		// check if its a valid request.
 		$data = $request->get_params();
 		if ( isset( $data['action'] ) && 'tracking-settings' === $data['action'] ) {
-			if( 'true' === $data['swtich'] ) {
+			if ( 'true' === $data['swtich'] ) {
 				update_option( 'automator_reporting', true );
 			} else {
 				delete_option( 'automator_reporting' );
 			}
 
-			if( isset( $data['hide'] ) ) {
+			if ( isset( $data['hide'] ) ) {
 				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
 			}
 
@@ -464,7 +464,7 @@ class Automator_Review {
 
 		$automator_reporting = get_option( 'automator_reporting', false );
 
-		if( $automator_reporting ) {
+		if ( $automator_reporting ) {
 			return;
 		}
 		add_action( 'admin_notices', function () {
@@ -490,7 +490,7 @@ class Automator_Review {
 				$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
 			}
 
-			if( $is_pro ) {
+			if ( $is_pro ) {
 				return;
 			}
 
