@@ -178,7 +178,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 3.2.0.1 [2021-09-30] =
+= 3.2.0.1 [2021-10-01] =
 
 **Added:**
 
@@ -186,12 +186,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Updated:**
 
-* Code quality updates #938
+* Code quality #938
 
 **Fixed:**
 
 * Slack - PHP notices on some sites #939
-* Zoom integration causing fatal error for some sites configuration #931
+* Zoom - Fatal error on some site configurations #931
 
 = 3.2 [2021-09-30] =
 
