@@ -180,9 +180,18 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 = 3.2.0.1 [2021-09-30] =
 
+**Added:**
+
+* PHP 8 compatibility updates #940
+
+**Updated:**
+
+* Code quality updates #938
+
 **Fixed:**
 
-* Zoom integration causing fatal error on some sites configuration #931
+* Slack - PHP notices on some sites #939
+* Zoom integration causing fatal error for some sites configuration #931
 
 = 3.2 [2021-09-30] =
 
@@ -554,6 +563,9 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
+
+= 3.2.0.1 =
+Uncanny Automator 3.2 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
 
 = 3.2 =
 Uncanny Automator 3.2 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

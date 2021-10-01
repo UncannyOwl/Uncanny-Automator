@@ -151,6 +151,7 @@ class Slack_Helpers {
 
 				$body = null;
 
+				$data = false;
 				if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 					$body = json_decode( wp_remote_retrieve_body( $response ) );
 					$data = $body->data;
@@ -166,7 +167,11 @@ class Slack_Helpers {
 						}
 					}
 				} else {
-					$options['-1'] = __( 'Slack returned an error: ', 'uncanny-automator' ) . $data->error;
+					if ( $data ) {
+						$options['-1'] = __( 'Slack returned an error: ', 'uncanny-automator' ) . $data->error;
+					} else {
+						$options['-1'] = __( 'Slack returned an error.', 'uncanny-automator' );
+					}
 				}
 
 				set_transient( 'automator_get_slack_channels', $options, 60 );

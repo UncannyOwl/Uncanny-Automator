@@ -62,8 +62,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 										<div
 											class='error-message'><?php esc_attr_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator' ); ?></div>
 									<?php } elseif ( ! empty ( $connected ) ) { ?>
-										<div
-											class='error-message'><?php echo $connected; ?></div>
+										<div class='error-message'><?php echo $connected; ?></div>
 									<?php } ?>
 									<?php if ( isset( $tab->fields ) && $tab->fields ) { ?>
 										<?php foreach ( $tab->fields as $field_id => $field_settings ) {
