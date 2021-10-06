@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.8.1
 Requires PHP: 5.6
-Stable tag: 3.2.0.1
+Stable tag: 3.2.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -177,6 +177,20 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.2.0.2 [2021-10-06] =
+
+**Updated:**
+
+* WPForms - Automator integration enhancements #946
+* WPForms - Cleaned up token parsing #946
+* WPForms - Excluded some sensitive fields from token parsing (e.g. password, Stripe, Authorize.net)  #946
+* www removed from some references to automatorplugin.com #948
+
+**Fixed:**
+
+* WordPress - A user publishes a type of post with a taxonomy term in a taxonomy no longer fires when any category is assigned to a post #964
+* WPForms - PHP notices on some sites #945
 
 = 3.2.0.1 [2021-10-01] =
 
@@ -564,8 +578,5 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Upgrade Notice ==
 
-= 3.2.0.1 =
-Uncanny Automator 3.2 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
-
-= 3.2 =
+= 3.2.0.2 =
 Uncanny Automator 3.2 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

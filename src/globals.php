@@ -74,7 +74,7 @@ if ( ! defined( 'UA_DEBUG_LOGS_DIR' ) ) {
 
 if ( ! defined( 'AUTOMATOR_FREE_STORE_URL' ) ) {
 	// URL of store powering the plugin
-	define( 'AUTOMATOR_FREE_STORE_URL', 'https://www.automatorplugin.com/' );
+	define( 'AUTOMATOR_FREE_STORE_URL', 'https://automatorplugin.com/' );
 }
 
 if ( ! defined( 'AUTOMATOR_API_URL' ) ) {

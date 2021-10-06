@@ -126,7 +126,7 @@ class Automator_System_Report {
 
 			if ( false === $post_response_code || is_wp_error( $post_response_code ) ) {
 				$response = wp_safe_remote_post(
-					'https://www.automatorplugin.com/',
+					'https://automatorplugin.com/',
 					array(
 						'timeout'     => 10,
 						'user-agent'  => 'Automator/' . AUTOMATOR_PLUGIN_VERSION,
@@ -152,7 +152,7 @@ class Automator_System_Report {
 			$get_response_code = get_transient( 'automator_test_remote_get' );
 
 			if ( false === $get_response_code || is_wp_error( $get_response_code ) ) {
-				$response = wp_safe_remote_get( 'https://www.automatorplugin.com/' );
+				$response = wp_safe_remote_get( 'https://automatorplugin.com/' );
 				if ( ! is_wp_error( $response ) ) {
 					$get_response_code = $response['response']['code'];
 				}

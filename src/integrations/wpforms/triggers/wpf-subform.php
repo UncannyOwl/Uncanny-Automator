@@ -1,6 +1,8 @@
-<?php
+<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
+
+use Exception;
 
 /**
  * Class WPF_SUBFORM
@@ -14,11 +16,18 @@ class WPF_SUBFORM {
 	 */
 	public static $integration = 'WPF';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
 	 * Set up Automator trigger constructor.
+	 * @throws Exception
 	 */
 	public function __construct() {
 		$this->trigger_code = 'WPFSUBFORM';
@@ -27,11 +36,9 @@ class WPF_SUBFORM {
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * @throws Exception
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -46,10 +53,10 @@ class WPF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'wpform_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wpforms->options->list_wp_forms(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -63,21 +70,19 @@ class WPF_SUBFORM {
 	 */
 	public function wpform_submit( $fields, $entry, $form_data, $entry_id ) {
 
-
-
 		if ( empty( $form_data ) ) {
 			return;
 		}
 
 		$user_id = get_current_user_id();
-		$args    = [
+		$args    = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $form_data['id'] ),
 			'user_id' => $user_id,
-		];
+		);
 
-		$args = Automator()->maybe_add_trigger_entry( $args, false );
+		$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 
 		//Adding an action to save form submission in trigger meta
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
@@ -86,7 +91,7 @@ class WPF_SUBFORM {
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
-					Automator()->maybe_trigger_complete( $result['args'] );
+					Automator()->process->user->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

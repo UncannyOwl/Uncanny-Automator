@@ -1,4 +1,4 @@
-<?php
+<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
 
@@ -53,9 +53,9 @@ class ANON_WPF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'wpform_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wpforms->options->list_wp_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -74,12 +74,12 @@ class ANON_WPF_SUBFORM {
 		}
 
 		$user_id = get_current_user_id();
-		$args    = [
+		$args    = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $form_data['id'] ),
 			'user_id' => $user_id,
-		];
+		);
 
 		$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 

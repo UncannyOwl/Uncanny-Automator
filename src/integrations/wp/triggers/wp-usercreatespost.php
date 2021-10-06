@@ -203,47 +203,28 @@ class WP_USERCREATESPOST {
 		}
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				$trigger_matched = 1;
+				$trigger_matched = true;
 				$trigger_id      = absint( $trigger['ID'] );
 				// required post type
 				if ( '0' !== $required_post_type[ $recipe_id ][ $trigger_id ] ) {
 					if ( (string) $post->post_type !== (string) $required_post_type[ $recipe_id ][ $trigger_id ] ) {
-						$trigger_matched = 0;
+						$trigger_matched = false;
 					}
 				}
-
-				// Check for a specific term in a taxonomy
-				if ( '0' !== $required_post_term[ $recipe_id ][ $trigger_id ] ) {
-					// if the term is specific then tax and post type are also specific
-					// check if the post has the required term
-					$post_terms = wp_get_post_terms( $post_id, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
-					if ( empty( $post_terms ) ) {
-						$trigger_matched = 0;
-					} else {
-						$post_term_ids = array_map( 'absint', array_column( $post_terms, 'term_id' ) );
-						if ( ! in_array( intval( $required_post_term[ $recipe_id ][ $trigger_id ] ), $post_term_ids, true ) ) {
-							$trigger_matched = 0;
-							//continue;
-						} else {
-							$trigger_matched = 1;
-							// Specific Term
-							$term = get_term( $required_post_term[ $recipe_id ][ $trigger_id ] );
-							if ( ! array_key_exists( $term->term_id, $terms_list[ $recipe_id ][ $trigger_id ] ) ) {
-								$terms_list[ $recipe_id ][ $trigger_id ][ $term->term_id ] = $term->name;
-							}
-						}
-					}
+				// Post type not matched, bail.
+				if ( ! $trigger_matched ) {
+					continue;
 				}
 
-				// if any term but a specific taxonomy
+				// if a specific taxonomy
 				if ( '0' !== $required_post_taxonomy[ $recipe_id ][ $trigger_id ] ) {
 					// let check if the post has any term in the selected taxonomy
 					$post_terms = wp_get_post_terms( $post_id, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
 					if ( empty( $post_terms ) ) {
-						$trigger_matched = 0;
+						$trigger_matched = false;
 						//continue;
 					} else {
-						$trigger_matched = 1;
+						$trigger_matched = true;
 						// All Post Terms for specific taxonomy
 						$terms = wp_get_post_terms( $post->ID, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
 
@@ -255,6 +236,38 @@ class WP_USERCREATESPOST {
 					}
 				}
 
+				if ( ! $trigger_matched ) {
+					continue;
+				}
+
+				// Check for a specific term in a taxonomy
+				if ( '0' !== $required_post_term[ $recipe_id ][ $trigger_id ] ) {
+					// if the term is specific then tax and post type are also specific
+					// check if the post has the required term
+					$post_terms = wp_get_post_terms( $post_id, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
+					if ( empty( $post_terms ) ) {
+						$trigger_matched = false;
+					} else {
+						$post_term_ids = array_map( 'absint', array_column( $post_terms, 'term_id' ) );
+						if ( ! in_array( intval( $required_post_term[ $recipe_id ][ $trigger_id ] ), $post_term_ids, true ) ) {
+							$trigger_matched = false;
+							//continue;
+						} else {
+							$trigger_matched = true;
+							// Specific Term
+							$term = get_term( $required_post_term[ $recipe_id ][ $trigger_id ] );
+							if ( ! array_key_exists( $term->term_id, $terms_list[ $recipe_id ][ $trigger_id ] ) ) {
+								$terms_list[ $recipe_id ][ $trigger_id ][ $term->term_id ] = $term->name;
+							}
+						}
+					}
+				}
+
+				if ( ! $trigger_matched ) {
+					continue;
+				}
+
+				// If any term / taxonomny
 				if ( '0' === $required_post_taxonomy[ $recipe_id ][ $trigger_id ] && '0' === $required_post_term[ $recipe_id ][ $trigger_id ] ) {
 					$taxonomies = get_object_taxonomies( $post->post_type, 'object' );
 
@@ -285,7 +298,7 @@ class WP_USERCREATESPOST {
 					}
 				}
 
-				if ( 1 === $trigger_matched ) {
+				if ( $trigger_matched ) {
 					// All fields are set to "any" by deductive reasoning
 					// Matched the post term
 					$matched_recipe_ids[] = array(

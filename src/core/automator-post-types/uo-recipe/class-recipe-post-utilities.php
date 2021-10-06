@@ -364,11 +364,14 @@ class Recipe_Post_Utilities {
 			'format'              => array(
 				'date' => get_option( 'date_format' ),
 			),
-			'connectApiUrl'       => sprintf( '%s%s?redirect_url=%s', AUTOMATOR_FREE_STORE_URL, AUTOMATOR_FREE_STORE_CONNECT_URL, urlencode( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ),
+			'connectApiUrl'       => sprintf( '%s%s?redirect_url=%s', AUTOMATOR_FREE_STORE_URL, AUTOMATOR_FREE_STORE_CONNECT_URL, rawurlencode( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ),
 			'dashboardUrl'        => admin_url( 'admin.php?page=uncanny-automator-dashboard' ),
 			'hasAccountConnected' => ( ! Admin_Menu::is_automator_connected() ? false : true ),
 			'hasValidProLicense'  => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),
 			'licenseUrl'          => site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-license-activation' ),
+			'marketing'           => array(
+				'utmR' => get_option( 'uncannyautomator_source', '' )
+			)
 		);
 
 		$api_setup = apply_filters_deprecated( 'uap_api_setup', array( $api_setup ), '3.0', 'automator_api_setup' ); // deprecate

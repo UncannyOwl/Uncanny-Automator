@@ -1,8 +1,6 @@
-<?php
-
+<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
-
 
 use Uncanny_Automator_Pro\Wpforms_Pro_Helpers;
 use WPForms_Form_Handler;
@@ -38,32 +36,29 @@ class Wpforms_Helpers {
 	/**
 	 * @param Wpforms_Helpers $options
 	 */
-	public function setOptions( Wpforms_Helpers $options ) {
+	public function setOptions( Wpforms_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Wpforms_Pro_Helpers $pro
 	 */
-	public function setPro( Wpforms_Pro_Helpers $pro ) {
+	public function setPro( Wpforms_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
 
 	public function list_wp_forms( $label = null, $option_code = 'WPFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
-
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
@@ -78,9 +73,7 @@ class Wpforms_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			$wpforms = new WPForms_Form_Handler();
 
-			$forms = $wpforms->get( '', [
-				'orderby' => 'title',
-			] );
+			$forms = $wpforms->get( '', array( 'orderby' => 'title' ) );
 
 			if ( ! empty( $forms ) ) {
 				foreach ( $forms as $form ) {
@@ -90,7 +83,7 @@ class Wpforms_Helpers {
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -100,7 +93,7 @@ class Wpforms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_list_wp_forms', $option );
 	}

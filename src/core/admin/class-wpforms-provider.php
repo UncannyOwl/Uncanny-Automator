@@ -333,11 +333,11 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 					</div>
 
 					<div class="uap-wpf-integration-flow-step__content">
-						<a data-id="ANONWPFSUBFORM" href="<?php echo esc_url_raw( $new_recipe_url ) ?>"
+						<a data-id="ANONWPFSUBFORM" href="<?php echo esc_url_raw( $new_recipe_url ) ?>" target="_blank"
 						   class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
 							<?php esc_attr_e( 'Create automation', 'uncanny-automator' ); ?>
 						</a>
-						<a data-id="ANONWPFSUBMITFIELD" href="<?php echo esc_url_raw( $new_anon_recipe_url ) ?>"
+						<a data-id="ANONWPFSUBMITFIELD" href="<?php echo esc_url_raw( $new_anon_recipe_url ) ?>" target="_blank"
 						   class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
 							<?php esc_attr_e( 'Create automation', 'uncanny-automator' ); ?>
 						</a>
