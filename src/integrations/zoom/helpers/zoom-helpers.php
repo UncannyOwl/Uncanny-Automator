@@ -69,10 +69,6 @@ class Zoom_Helpers {
 	 */
 	public function get_meetings( $label = null, $option_code = 'ZOOMMEETINGS', $args = array() ) {
 
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			$label = __( 'Meeting', 'uncanny-automator' );
 		}
@@ -91,48 +87,47 @@ class Zoom_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		if ( Automator()->helpers->recipe->load_helpers ) {
+		$client = $this->get_client();
 
-			$client = $this->get_client();
+		if ( ! $client || empty( $client['access_token'] ) ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
-			if ( ! $client || empty( $client['access_token'] ) ) {
-				return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-			}
+		// API register call
+		$response = wp_remote_post(
+			$this->automator_api,
+			array(
+				'body' =>
+					array(
+						'action'       => 'get_meetings',
+						'access_token' => $client['access_token'],
+						'page_number'  => 1,
+						'page_size'    => 1000,
+						'type'         => 'upcoming',
+					),
+			)
+		);
 
-			// API register call
-			$response = wp_remote_post(
-				$this->automator_api,
-				array(
-					'body' =>
-						array(
-							'action'       => 'get_meetings',
-							'access_token' => $client['access_token'],
-							'page_number'  => 1,
-							'page_size'    => 1000,
-							'type'         => 'upcoming',
-						),
-				)
-			);
+		if ( ! is_wp_error( $response ) ) {
+			$response_code = wp_remote_retrieve_response_code( $response );
 
-			if ( ! is_wp_error( $response ) ) {
-				$response_code = wp_remote_retrieve_response_code( $response );
+			// prepare meeting lists
+			if ( $response_code === 200 ) {
 
-				// prepare meeting lists
-				if ( $response_code === 200 ) {
-	
-					$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
-	
-					if ( count( $response_body['data']['meetings'] ) > 0 ) {
-	
-						foreach ( $response_body['data']['meetings'] as $meeting ) {
-							$meeting_key                            = (string) $meeting['id'];
-							$options[ $meeting_key . '-objectkey' ] = $meeting['topic'];
-						}
+				$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+				if ( count( $response_body['data']['meetings'] ) > 0 ) {
+
+					foreach ( $response_body['data']['meetings'] as $meeting ) {
+						$options[] = array(
+							'value' => $meeting['id'],
+							'text' => $meeting['topic']
+						);
 					}
 				}
-			} 	
+			}
+		} 	
 
-		}
 
 		$option = array(
 			'option_code'     => $option_code,

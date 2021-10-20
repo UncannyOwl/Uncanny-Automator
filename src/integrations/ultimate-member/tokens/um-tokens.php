@@ -95,7 +95,12 @@ class Um_Tokens {
 	 * @return string|null
 	 */
 	public function um_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		
 		$to_match = [ 'WPROLE', 'UMFORM' ];
+		
+		// Initialize the return value to empty string.
+		$value = '';
+
 		if ( $pieces ) {
 			if ( array_intersect( $to_match, $pieces ) ) {
 				$piece = $pieces[1];

@@ -39,7 +39,7 @@ class WPForms_Uncanny_Automator extends \WPForms_Provider {
 		$this->name     = 'Uncanny Automator';
 		$this->slug     = 'uncanny-automator';
 		$this->priority = 19;
-		$this->icon     = Utilities::automator_get_media( 'admin/wpforms-automator-icon.png' );
+		$this->icon     = Utilities::automator_get_media( 'wpforms-automator-icon.png' );
 
 		if ( is_admin() ) {
 			add_action( 'wpforms_admin_page', array( $this, 'learn_more_page' ) );

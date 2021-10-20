@@ -244,11 +244,15 @@ class Wp_Helpers {
 			$label = esc_attr__( 'Role', 'uncanny-automator' );
 		}
 
-		$roles = array();
+		$roles                  = array();
+		$default_role           = get_option( 'default_role', 'subscriber' );
+		$roles[ $default_role ] = wp_roles()->roles[ $default_role ]['name'];
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			foreach ( wp_roles()->roles as $role_name => $role_info ) {
-				$roles[ $role_name ] = $role_info['name'];
+				if ( $role_name != $default_role ) {
+					$roles[ $role_name ] = $role_info['name'];
+				}
 			}
 		}
 		$option = array(
@@ -257,7 +261,6 @@ class Wp_Helpers {
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $roles,
-			'default_value'            => get_option( 'default_role', 'subscriber' ),
 			'custom_value_description' => esc_attr__( 'Role slug', 'uncanny-automator' ),
 		);
 
@@ -529,7 +532,7 @@ class Wp_Helpers {
 
 			if ( ! empty( $posts_list ) ) {
 
-				$post_type_label = get_post_type_object( $post_type )->labels->name;
+				$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
 
 				$fields[] = array(
 					'value' => '-1',
@@ -547,8 +550,8 @@ class Wp_Helpers {
 			} else {
 				$post_type_label = 'post';
 
-				if ( $post_type != - 1 ) {
-					$post_type_label = get_post_type_object( $post_type )->labels->name;
+				if ( $post_type != '- 1' ) {
+					$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
 				}
 
 				$fields[] = array(

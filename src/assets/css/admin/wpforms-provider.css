@@ -1,5 +1,7 @@
 :root {
+
 	/* Padding of the main container */
+
 	/* Same padding as .wpforms-builder-provider-connections-default */
 	--uap-wpf-integration-container-padding: 30px 50px 50px 50px;
 
@@ -22,7 +24,7 @@
 	/**
 	 * Steps
 	 */
-	
+
 	/* Width */
 	--uap-wpf-integration-step-width: 420px;
 
@@ -43,7 +45,7 @@
 }
 
 .uap-wpf-integration {
-	padding: var( --uap-wpf-integration-container-padding );
+	padding: var(--uap-wpf-integration-container-padding);
 
 	display: flex;
 	flex-direction: column;
@@ -52,201 +54,202 @@
 	text-align: center;
 }
 
-	img.uap-wpf-integration__logo {
-		/**
+img.uap-wpf-integration__logo {
+
+	/**
 		 * Similar style as .wpforms-builder-provider-connections-default img
 		 * but without border
 		 */
-		width: var( --uap-wpf-integration-icon-width );
-		height: var( --uap-wpf-integration-icon-width );
-		
-		margin-bottom: 30px;
-		border: 1px solid #cccccc;
-		border-radius: 4px;
-	}
+	width: var(--uap-wpf-integration-icon-width);
+	height: var(--uap-wpf-integration-icon-width);
 
-	h2.uap-wpf-integration__title {
-		margin-top: 0;
-		font-weight: 600;
-	}
+	margin-bottom: 30px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
 
-	p.uap-wpf-integration__description {
-		font-size: 16px;
-		line-height: 24px;
-		max-width: 615px;
-		margin: 0 auto 20px;
-	}
+h2.uap-wpf-integration__title {
+	margin-top: 0;
+	font-weight: 600;
+}
 
-	.uap-wpf-integration-steps {
-		background: var( --uap-wpf-integration-steps-bg-color );
+p.uap-wpf-integration__description {
+	font-size: 16px;
+	line-height: 24px;
+	max-width: 615px;
+	margin: 0 auto 20px;
+}
 
-		text-align: left;
-	}
+.uap-wpf-integration-steps {
+	background: var(--uap-wpf-integration-steps-bg-color);
 
-		.uap-wpf-integration-flow-step {
-			max-width: var( --uap-wpf-integration-step-width );
+	text-align: left;
+}
 
-			position: relative;
-			width: 100%;
+.uap-wpf-integration-flow-step {
+	max-width: var(--uap-wpf-integration-step-width);
 
-			display: flex;
-		}
+	position: relative;
+	width: 100%;
 
-			.uap-wpf-integration-flow-step__left {
-				width: var( --uap-wpf-integration-steps-circle-diameter );
+	display: flex;
+}
 
-				position: relative;
-			}
+.uap-wpf-integration-flow-step__left {
+	width: var(--uap-wpf-integration-steps-circle-diameter);
 
-				.uap-wpf-integration-flow-step:not(:last-child) .uap-wpf-integration-flow-step__left:before {
-					background: var( --uap-wpf-integration-steps-circle-border-color );
-					color: var( --uap-wpf-integration-steps-circle-font-color );
+	position: relative;
+}
 
-					content: '';
+.uap-wpf-integration-flow-step:not(:last-child) .uap-wpf-integration-flow-step__left::before {
+	background: var(--uap-wpf-integration-steps-circle-border-color);
+	color: var(--uap-wpf-integration-steps-circle-font-color);
 
-					width: 1px;
-					height: 100%;
+	content: "";
 
-					position: absolute;
-					top: 0;
-					left: 50%;
-					transform: translateX(-50%);
+	width: 1px;
+	height: 100%;
 
-					z-index: 1;
-				}
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
 
-				.uap-wpf-integration-flow-step__number {
-					width: var( --uap-wpf-integration-steps-circle-diameter );
-					height: var( --uap-wpf-integration-steps-circle-diameter );
-					border: 1px solid var( --uap-wpf-integration-steps-circle-border-color );
-					background: var( --uap-wpf-integration-steps-bg-color );
+	z-index: 1;
+}
 
-					display: flex;
-					align-items: center;
-					justify-content: center;
+.uap-wpf-integration-flow-step__number {
+	width: var(--uap-wpf-integration-steps-circle-diameter);
+	height: var(--uap-wpf-integration-steps-circle-diameter);
+	border: 1px solid var(--uap-wpf-integration-steps-circle-border-color);
+	background: var(--uap-wpf-integration-steps-bg-color);
 
-					position: relative;
-					border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-					z-index: 2;
+	position: relative;
+	border-radius: 50%;
 
-					font-weight: 600;
-					font-size: 16px;
-				}
+	z-index: 2;
 
-			.uap-wpf-integration-flow-step__content {
-				padding-left: var( --uap-wpf-integration-separation-between-sections );
-			}
+	font-weight: 600;
+	font-size: 16px;
+}
 
-				.uap-wpf-integration-flow-step:not(:last-child) .uap-wpf-integration-flow-step__content {
-					padding-bottom: var( --uap-wpf-integration-separation-between-sections );
-				}
+.uap-wpf-integration-flow-step__content {
+	padding-left: var(--uap-wpf-integration-separation-between-sections);
+}
 
-				.uap-wpf-integration-flow-step__title {
-					font-size: 15px;
-					font-weight: 600;
-				}
+.uap-wpf-integration-flow-step:not(:last-child) .uap-wpf-integration-flow-step__content {
+	padding-bottom: var(--uap-wpf-integration-separation-between-sections);
+}
 
-				.uap-wpf-integration-triggers {
-					border: 1px solid var( --uap-wpf-integration-steps-border-color );
-					border-radius: var( --uap-wpf-integration-border-radius );
-					margin-top: calc( var( --uap-wpf-integration-separation-between-sections ) / 2 );
+.uap-wpf-integration-flow-step__title {
+	font-size: 15px;
+	font-weight: 600;
+}
 
-					background: #fff;
-				}
+.uap-wpf-integration-triggers {
+	border: 1px solid var(--uap-wpf-integration-steps-border-color);
+	border-radius: var(--uap-wpf-integration-border-radius);
+	margin-top: calc(var(--uap-wpf-integration-separation-between-sections) / 2);
 
-					.uap-wpf-integration-recipe-trigger {
-						display: block;
-						position: relative;
-						padding: 10px;
+	background: #fff;
+}
 
-						cursor: pointer;
+.uap-wpf-integration-recipe-trigger {
+	display: block;
+	position: relative;
+	padding: 10px;
 
-						font-size: 15px;
-						line-height: 22px;
+	cursor: pointer;
 
-						padding-left: 35px;
-					}
+	font-size: 15px;
+	line-height: 22px;
 
-						.uap-wpf-integration-recipe-trigger:first-child {
-							border-top-left-radius: var( --uap-wpf-integration-border-radius );
-							border-top-right-radius: var( --uap-wpf-integration-border-radius );
-						}
+	padding-left: 35px;
+}
 
-						.uap-wpf-integration-recipe-trigger:last-child {
-							border-bottom-left-radius: var( --uap-wpf-integration-border-radius );
-							border-bottom-right-radius: var( --uap-wpf-integration-border-radius );
-						}
+.uap-wpf-integration-recipe-trigger:first-child {
+	border-top-left-radius: var(--uap-wpf-integration-border-radius);
+	border-top-right-radius: var(--uap-wpf-integration-border-radius);
+}
 
-						.uap-wpf-integration-recipe-trigger:not(:last-child) {
-							border-bottom: 1px solid var( --uap-wpf-integration-steps-border-color );
-						}
+.uap-wpf-integration-recipe-trigger:last-child {
+	border-bottom-left-radius: var(--uap-wpf-integration-border-radius);
+	border-bottom-right-radius: var(--uap-wpf-integration-border-radius);
+}
 
-						.uap-wpf-integration-recipe-trigger > input {
-							margin-bottom: 0px;
+.uap-wpf-integration-recipe-trigger:not(:last-child) {
+	border-bottom: 1px solid var(--uap-wpf-integration-steps-border-color);
+}
 
-							position: absolute;
-							top: 14px;
-							left: 10px;
+.uap-wpf-integration-recipe-trigger > input {
+	margin-bottom: 0;
 
-							margin-top: 0 !important;
-							margin-left: 0 !important;
-							line-height: 1 !important;
-						}
+	position: absolute;
+	top: 14px;
+	left: 10px;
 
-						.uap-wpf-integration-trigger__field {
-							color: var( --uap-wpf-integration-main-color );
+	margin-top: 0 !important;
+	margin-left: 0 !important;
+	line-height: 1 !important;
+}
 
-							font-weight: 500;
-						}
+.uap-wpf-integration-trigger__field {
+	color: var(--uap-wpf-integration-main-color);
 
-						.uap-wpf-integration-recipe-trigger.uap-wpf-automator-pro-not-active {
-							background: #f8f8f8;
-							color: #777;
-							cursor: default;
-						}
+	font-weight: 500;
+}
 
-						.uap-wpf-integration-recipe-trigger-pro {
-							display: block;
-							font-size: 14px;
-							color: #444;
+.uap-wpf-integration-recipe-trigger.uap-wpf-automator-pro-not-active {
+	background: #f8f8f8;
+	color: #777;
+	cursor: default;
+}
 
-							padding: 10px 15px;
+.uap-wpf-integration-recipe-trigger-pro {
+	display: block;
+	font-size: 14px;
+	color: #444;
 
-							background: #fcf9e8;
-							margin-left: -35px;
-							margin-right: -10px;
-							margin-bottom: -10px;
-							margin-top: 8px;
+	padding: 10px 15px;
 
-							border-bottom-left-radius: var( --uap-wpf-integration-border-radius );
-							border-bottom-right-radius: var( --uap-wpf-integration-border-radius );
-						}
+	background: #fcf9e8;
+	margin-left: -35px;
+	margin-right: -10px;
+	margin-bottom: -10px;
+	margin-top: 8px;
 
-							.uap-wpf-integration-recipe-trigger-pro strong {
-								font-weight: 500;
-							}
+	border-bottom-left-radius: var(--uap-wpf-integration-border-radius);
+	border-bottom-right-radius: var(--uap-wpf-integration-border-radius);
+}
 
-							.uap-wpf-integration-recipe-trigger.uap-wpf-automator-pro-not-active input {
-								pointer-events: none;
-								opacity: .6;
-							}
+.uap-wpf-integration-recipe-trigger-pro strong {
+	font-weight: 500;
+}
 
-							.uap-wpf-integration-recipe-trigger.uap-wpf-automator-pro-not-active .uap-wpf-integration-trigger__field {
-								color: inherit;
-							}
+.uap-wpf-integration-recipe-trigger.uap-wpf-automator-pro-not-active input {
+	pointer-events: none;
+	opacity: 0.6;
+}
 
-							.uap-wpf-integration-trigger__pro-badge {
-								background: #6bc45a;
-								border-radius: 150px;
-								color: #fff;
-								font-size: 13px;
-								font-weight: 600;
-								line-height: 1;
-								padding: 1px 6px;
-								margin-left: 2px;
-							}
+.uap-wpf-integration-recipe-trigger.uap-wpf-automator-pro-not-active .uap-wpf-integration-trigger__field {
+	color: inherit;
+}
 
-		a.uap-wpf-integration-create-recipe-btn.wpforms-btn.wpforms-btn-md.wpforms-btn-orange {
-			display: none;
-		}
+.uap-wpf-integration-trigger__pro-badge {
+	background: #6bc45a;
+	border-radius: 150px;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+	padding: 1px 6px;
+	margin-left: 2px;
+}
+
+a.uap-wpf-integration-create-recipe-btn.wpforms-btn.wpforms-btn-md.wpforms-btn-orange {
+	display: none;
+}

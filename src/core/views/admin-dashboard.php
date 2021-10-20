@@ -24,7 +24,7 @@ if ( $dashboard->has_site_connected ) {
 
 </style>
 
-<div class="uap-dashboard <?php echo implode( ' ', $dashboard_css_classes ); ?>">
+<div id="uap-dashboard" class="uap-dashboard <?php echo implode( ' ', $dashboard_css_classes ); ?>">
 
 	<div class="uap-dashboard-header">
 		<div class="uap-dashboard-header__title">
@@ -118,11 +118,11 @@ if ( $dashboard->has_site_connected ) {
 								'<strong>' . __( 'third-party integrations', 'uncanny-automator' ) . '</strong>',
 								implode( ', ', [
 									// Integration names are not translatable
-									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'admin/integrations/slack-icon.svg' ) . '"> Slack</span></strong>',
+									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'integrations/slack-icon.svg' ) . '"> Slack</span></strong>',
 									// Integration names are not translatable
-									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'admin/integrations/google-sheet-icon.svg' ) . '"> Google Sheets</span></strong>',
+									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'integrations/google-sheet-icon.svg' ) . '"> Google Sheets</span></strong>',
 									// Integration names are not translatable
-									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'admin/integrations/facebook-icon.svg' ) . '"> Facebook</span></strong>',
+									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'integrations/facebook-icon.svg' ) . '"> Facebook</span></strong>',
 								] ),
 								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . __( 'integrations that use credits', 'uncanny-automator' ) . ' <span class="uap-icon uap-icon--external-link-alt"></span></a>',
 							]
@@ -138,11 +138,11 @@ if ( $dashboard->has_site_connected ) {
 								'<strong>' . __( 'third-party integrations', 'uncanny-automator' ) . '</strong>',
 								implode( ', ', [
 									// Integration names are not translatable
-									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'admin/integrations/slack-icon.svg' ) . '"> Slack</span></strong>',
+									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'integrations/slack-icon.svg' ) . '"> Slack</span></strong>',
 									// Integration names are not translatable
-									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'admin/integrations/google-sheet-icon.svg' ) . '"> Google Sheets</span></strong>',
+									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'integrations/google-sheet-icon.svg' ) . '"> Google Sheets</span></strong>',
 									// Integration names are not translatable
-									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'admin/integrations/facebook-icon.svg' ) . '"> Facebook</span></strong>',
+									'<strong><span class="uap-integration-inline"><img src="' . \Uncanny_Automator\Utilities::automator_get_media( 'integrations/facebook-icon.svg' ) . '"> Facebook</span></strong>',
 								] ),
 								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . __( 'integrations that use credits', 'uncanny-automator' ) . ' <span class="uap-icon uap-icon--external-link-alt"></span></a>',
 							]
@@ -172,12 +172,12 @@ if ( $dashboard->has_site_connected ) {
 	?>
 
 	<!-- Learn section -->
-	<div id="uap-dashboard-learn" class="uap-dashboard-section">
+	<div id="uap-dashboard-learn" class="uap-dashboard-section uap-dashboard-learn">
 		<div class="uap-dashboard-section__title">
 			<?php _e( 'Learn', 'uncanny-automator' ); ?>
 		</div>
 		<div class="uap-dashboard-section__content">
-			<div id="uap-dashboard-learn-featured-integrations" class="uap-dashboard-box">
+			<div id="uap-dashboard-learn-featured-integrations" class="uap-dashboard-box uap-dashboard-learn-featured-integrations">
 				<div class="uap-dashboard-box-header">
 					<div class="uap-dashboard-box-header__title">
 						<?php _e( 'Start here', 'uncanny-automator' ); ?>
@@ -193,7 +193,7 @@ if ( $dashboard->has_site_connected ) {
 				</div>
 
 			</div>
-			<div id="uap-dashboard-learn-knowledge-base" class="uap-dashboard-box">
+			<div id="uap-dashboard-learn-knowledge-base" class="uap-dashboard-box uap-dashboard-learn-knowledge-base">
 				<div class="uap-dashboard-box-header">
 					<div class="uap-dashboard-box-header__title">
 						<?php _e( 'Knowledge base', 'uncanny-automator' ); ?>
@@ -535,7 +535,7 @@ if ( $dashboard->has_site_connected ) {
 					</a>
 				</div>
 			</div>
-			<div id="uap-dashboard-learn-videos" class="uap-dashboard-box">
+			<div id="uap-dashboard-learn-videos" class="uap-dashboard-box uap-dashboard-learn-videos">
 				<div class="uap-dashboard-box-header">
 					<div class="uap-dashboard-box-header__title">
 						<?php _e( 'Videos', 'uncanny-automator' ); ?>
@@ -549,7 +549,7 @@ if ( $dashboard->has_site_connected ) {
 						   target="_blank" class="uap-dashboard-video">
 							<div class="uap-dashboard-video__thumbnail">
 								<img
-									src="<?php echo \Uncanny_Automator\Utilities::automator_get_media( 'admin/dashboard/multiple-triggers-landscape@2x.png' ); ?>">
+									src="<?php echo \Uncanny_Automator\Utilities::automator_get_media( 'dashboard/multiple-triggers-landscape@2x.png' ); ?>">
 							</div>
 							<div class="uap-dashboard-video__title">
 								<?php _e( 'Create an Uncanny Automator recipe with multiple triggers', 'uncanny-automator' ); ?>
@@ -565,7 +565,7 @@ if ( $dashboard->has_site_connected ) {
 						   target="_blank" class="uap-dashboard-video">
 							<div class="uap-dashboard-video__thumbnail">
 								<img
-									src="<?php echo \Uncanny_Automator\Utilities::automator_get_media( 'admin/dashboard/multiple-actions-landscape@2x.png' ); ?>">
+									src="<?php echo \Uncanny_Automator\Utilities::automator_get_media( 'dashboard/multiple-actions-landscape@2x.png' ); ?>">
 							</div>
 							<div class="uap-dashboard-video__title">
 								<?php _e( 'Create an Uncanny Automator recipe with multiple actions', 'uncanny-automator' ); ?>
@@ -581,7 +581,7 @@ if ( $dashboard->has_site_connected ) {
 						   target="_blank" class="uap-dashboard-video">
 							<div class="uap-dashboard-video__thumbnail">
 								<img
-									src="<?php echo \Uncanny_Automator\Utilities::automator_get_media( 'admin/dashboard/delay-or-schedule-actions-landscape@2x.png' ); ?>">
+									src="<?php echo \Uncanny_Automator\Utilities::automator_get_media( 'dashboard/delay-or-schedule-actions-landscape@2x.png' ); ?>">
 							</div>
 							<div class="uap-dashboard-video__title">
 								<?php _e( 'Delay and schedule actions for your WordPress automations', 'uncanny-automator' ); ?>
@@ -606,7 +606,7 @@ if ( $dashboard->has_site_connected ) {
 	</div>
 
 	<!-- Credits section -->
-	<div id="uap-dashboard-credits" class="uap-dashboard-section">
+	<div id="uap-dashboard-credits" class="uap-dashboard-section uap-dashboard-credits">
 		<div class="uap-dashboard-section__title">
 			<?php _e( 'Credits', 'uncanny-automator' ); ?>
 		</div>

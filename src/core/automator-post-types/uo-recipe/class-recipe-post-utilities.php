@@ -120,9 +120,6 @@ class Recipe_Post_Utilities {
 			return;
 		}
 
-		// Add Select2
-		$this->assets_vendor_select2();
-
 		// Add CodeMirror
 		$this->assets_vendor_codemirror();
 
@@ -135,7 +132,6 @@ class Recipe_Post_Utilities {
 			Utilities::automator_get_recipe_dist( 'bundle.min.js' ),
 			array(
 				'jquery',
-				'uap-select2',
 				'uap-codemirror',
 				'uap-codemirror-autorefresh',
 				'uap-codemirror-no-newlines',
@@ -162,29 +158,6 @@ class Recipe_Post_Utilities {
 				'uap-codemirror',
 			),
 			Utilities::automator_get_version()
-		);
-	}
-
-	/**
-	 *
-	 */
-	private function assets_vendor_select2() {
-		// Add select2
-		wp_enqueue_style(
-			'uap-select2',
-			Utilities::automator_get_vendor_asset( 'select2/css/select2.min.css' ),
-			array(),
-			Utilities::automator_get_version()
-		);
-
-		wp_enqueue_script(
-			'uap-select2',
-			Utilities::automator_get_vendor_asset( 'select2/js/select2.min.js' ),
-			array(
-				'jquery',
-			),
-			Utilities::automator_get_version(),
-			true
 		);
 	}
 
@@ -307,15 +280,27 @@ class Recipe_Post_Utilities {
 			$roles[ $role_key ] = $role_data['name'];
 		}
 
+		// Remove any cached extra options
+		delete_post_meta( $post_id, 'extra_options' );
+		global $wpdb;
+		$count     = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $post_id, 1 ) );
+		$url       = add_query_arg(
+			array(
+				'post_type' => 'uo-recipe',
+				'page'      => 'uncanny-automator-recipe-log',
+				'recipe_id' => $post_id,
+			),
+			admin_url( 'edit.php' )
+		);
 		$api_setup = array(
 			'wp'                  => false,
 			'restURL'             => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
 			'siteURL'             => get_site_url(),
 			'nonce'               => \wp_create_nonce( 'wp_rest' ),
 			'dev'                 => array(
-				'debugMode'    => (bool) AUTOMATOR_DEBUG_MODE,
-				'recipesUrl'   => admin_url( 'edit.php?post_type=uo-recipe' ),
-				'debuggingURL' => 'https://automatorplugin.com/knowledge-base/troubleshooting-plugin-errors/?utm_source=uncanny_automator&utm_medium=recipe-wizard-error-modal&utm_content=learn-more-debugging',
+				'developerMode' => (bool) AUTOMATOR_DEBUG_MODE,
+				'recipesUrl'    => admin_url( 'edit.php?post_type=uo-recipe' ),
+				'debuggingURL'  => 'https://automatorplugin.com/knowledge-base/troubleshooting-plugin-errors/?utm_source=uncanny_automator&utm_medium=recipe-wizard-error-modal&utm_content=learn-more-debugging',
 			),
 			'integrations'        => Automator()->get_integrations(),
 			'triggers'            => Automator()->get_triggers(),
@@ -354,11 +339,14 @@ class Recipe_Post_Utilities {
 				),
 				'items'            => array(),
 				'publish'          => array(
-					'timesPerUser'   => empty( $completions_allowed ) ? 1 : $completions_allowed,
-					'timesPerRecipe' => empty( $max_completions_allowed ) ? '-1' : $max_completions_allowed,
-					'createdOn'      => date_i18n( 'M j, Y @ G:i', get_the_time( 'U', $post_id ) ),
-					'moveToTrash'    => get_delete_post_link( $post_id ),
-					'copyToDraft'    => sprintf( '%s?action=%s&post=%d&return_to_recipe=yes&_wpnonce=%s', admin_url( 'edit.php' ), 'copy_recipe_parts', $post_id, wp_create_nonce( 'Aut0Mat0R' ) ),
+					'timesPerUser'           => empty( $completions_allowed ) ? 1 : $completions_allowed,
+					'timesPerRecipe'         => empty( $max_completions_allowed ) ? '-1' : $max_completions_allowed,
+					'recipeRunTimes'         => $count,
+					'recipeRunTimesUrl'      => $url,
+					'recipeRunTimesViewLogs' => __( 'View logs', 'uncanny-automator' ),
+					'createdOn'              => date_i18n( 'M j, Y @ G:i', get_the_time( 'U', $post_id ) ),
+					'moveToTrash'            => get_delete_post_link( $post_id ),
+					'copyToDraft'            => sprintf( '%s?action=%s&post=%d&return_to_recipe=yes&_wpnonce=%s', admin_url( 'edit.php' ), 'copy_recipe_parts', $post_id, wp_create_nonce( 'Aut0Mat0R' ) ),
 				),
 			),
 			'format'              => array(
@@ -370,8 +358,8 @@ class Recipe_Post_Utilities {
 			'hasValidProLicense'  => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),
 			'licenseUrl'          => site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-license-activation' ),
 			'marketing'           => array(
-				'utmR' => get_option( 'uncannyautomator_source', '' )
-			)
+				'utmR' => get_option( 'uncannyautomator_source', '' ),
+			),
 		);
 
 		$api_setup = apply_filters_deprecated( 'uap_api_setup', array( $api_setup ), '3.0', 'automator_api_setup' ); // deprecate

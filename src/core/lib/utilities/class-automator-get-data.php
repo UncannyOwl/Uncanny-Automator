@@ -487,12 +487,12 @@ class Automator_Get_Data {
 	 */
 	public function value_from_trigger_meta( $trigger_code = null, $meta = null ) {
 		if ( null === $trigger_code || ! is_string( $trigger_code ) ) {
-			Automator()->error->add_error( 'trigger_priority_from_trigger_code', 'ERROR: You are trying to get a trigger priority from a trigger code without providing a $trigger_code', $this );
+			Automator()->error->add_error( 'value_from_trigger_meta', 'ERROR: You are trying to get a meta value from a trigger code without providing a $trigger_code', $this );
 
 			return null;
 		}
 		if ( null === $meta || ! is_string( $meta ) ) {
-			Automator()->error->add_error( 'trigger_priority_from_trigger_code', 'ERROR: You are trying to get a trigger priority from a trigger code without providing a $meta', $this );
+			Automator()->error->add_error( 'value_from_trigger_meta', 'ERROR: You are trying to get a meta value from a trigger code without providing a $meta', $this );
 
 			return null;
 		}
@@ -508,6 +508,43 @@ class Automator_Get_Data {
 
 			if ( $system_trigger['code'] === $trigger_code ) {
 				return isset( $system_trigger[ $meta ] ) ? $system_trigger[ $meta ] : $meta_value;
+			}
+		}
+
+		return $meta_value;
+	}
+
+	/**
+	 * @param null $action_code
+	 * @param null $meta
+	 *
+	 * @return mixed|string|null
+	 */
+	public function value_from_action_meta( $action_code = null, $meta = null ) {
+		
+		if ( null === $action_code || ! is_string( $action_code ) ) {
+			Automator()->error->add_error( 'value_from_action_meta', 'ERROR: You are trying to get a action meta from an action code without providing an $action_code', $this );
+
+			return null;
+		}
+		if ( null === $meta || ! is_string( $meta ) ) {
+			Automator()->error->add_error( 'value_from_action_meta', 'ERROR: You are trying to get an action meta from an action code without providing a $meta', $this );
+
+			return null;
+		}
+
+		// Load all default trigger settings
+		$meta_value      = null;
+		$system_actions = Automator()->get_actions();
+
+		if ( empty( $system_actions ) ) {
+			return $meta_value;
+		}
+
+		foreach ( $system_actions as $system_action ) {
+
+			if ( $system_action['code'] === $action_code ) {
+				return isset( $system_action[ $meta ] ) ? $system_action[ $meta ] : $meta_value;
 			}
 		}
 

@@ -233,6 +233,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $mailchimp;
 	/**
+	 * @var Hubspot_Helpers
+	 */
+	public $hubspot;
+	/**
 	 * @var Zoom_Helpers;
 	 */
 	public $zoom;
@@ -911,5 +915,4 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			)
 		);
 	}
-
 }

@@ -89,9 +89,8 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 	 * Callback function to define trigger.
 	 */
 	public function contact_status_updated( $subscriber, $old_value ) {
-		global $uncanny_automator;
-		$matched_recipe_ids = $this->get_matched_recipes_ids( $uncanny_automator, $this, $subscriber );
-		$this->process_trigger( $matched_recipe_ids, $uncanny_automator, $this, $subscriber );
+		$matched_recipe_ids = $this->get_matched_recipes_ids( $subscriber );
+		$this->process_trigger( $matched_recipe_ids, $subscriber );
 	}
 
 	/**
@@ -132,12 +131,12 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 	 *
 	 * @return void
 	 */
-	public function process_trigger( $matched_recipe_ids = array(), $uncanny_automator, FCRM_USER_STATUS_UPDATED $trigger, $subscriber = null ) {
+	public function process_trigger( $matched_recipe_ids = array(), $subscriber = null ) {
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 				$args = array(
-					'code'             => $trigger->get_trigger_code(),
-					'meta'             => $trigger->get_trigger_meta(),
+					'code'             => $this->get_trigger_code(),
+					'meta'             => $this->get_trigger_meta(),
 					'user_id'          => $subscriber->user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
@@ -159,14 +158,14 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 	 * Get the matching recipe ids.
 	 *
 	 * @param mixed $uncanny_automator The uncanny_automator global object.
-	 * @param mixed $trigger The trigger. Must be an instance of Uncanny_Automator\FCRM_USER_STATUS_UPDATED.
+	 * @param mixed $trigger The trigger. Must be an instance of Uncanny_Automator\ANON_FCRM_CONTACT_STATUS_UPDATED.
 	 * @param mixed $subscriber The subscriber object.
 	 *
 	 * @return array The matching recipe ids.
 	 */
-	public function get_matched_recipes_ids( $uncanny_automator, FCRM_USER_STATUS_UPDATED $trigger, $subscriber = null ) {
-		$recipes            = Automator()->get->recipes_from_trigger_code( $trigger->get_trigger_code() );
-		$status             = Automator()->get->meta_from_recipes( $recipes, $trigger->get_trigger_code() );
+	public function get_matched_recipes_ids( $subscriber = null ) {
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->get_trigger_code() );
+		$status             = Automator()->get->meta_from_recipes( $recipes, $this->get_trigger_code() );
 		$matched_recipe_ids = array();
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {

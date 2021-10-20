@@ -82,9 +82,9 @@ class WP_POSTRECEIVESCOMMENT {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf( esc_attr__( "A user's {{post:%1\$s}} receives a comment", 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( "{{A user's post:%1\$s}} receives a comment", 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => esc_attr__( "A user's {{post}} receives a comment", 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( "{{A user's post}} receives a comment", 'uncanny-automator' ),
 			'action'              => 'comment_post',
 			'priority'            => 90,
 			'accepted_args'       => 3,

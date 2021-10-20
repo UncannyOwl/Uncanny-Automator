@@ -32,22 +32,34 @@ class AUDIENCE_REMOVEUSERTAG {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
-
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name( $this->action_code ),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
 			'is_pro'             => false,
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			// translators: Mailchimp tag
 			'sentence'           => sprintf( __( 'Remove {{a tag:%1$s}} from the user', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
+			'options_callback'   => array( $this, 'load_options' ),
 			'execution_function' => array( $this, 'remove_tag_audience_member' ),
-			'options_group'      => array(
+		);
+
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		return array(
+			'options_group' => array(
 				$this->action_meta => array(
-					$uncanny_automator->helpers->recipe->mailchimp->options->get_all_lists(
+					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
 						__( 'Audience', 'uncanny-automator' ),
 						'MCLIST',
 						array(
@@ -56,7 +68,7 @@ class AUDIENCE_REMOVEUSERTAG {
 							'endpoint'     => 'select_mctagslist_from_mclist',
 						)
 					),
-					$uncanny_automator->helpers->recipe->mailchimp->options->get_list_tags(
+					Automator()->helpers->recipe->mailchimp->options->get_list_tags(
 						__( 'Tags', 'uncanny-automator' ),
 						'MCLISTTAGS',
 						array(
@@ -67,8 +79,6 @@ class AUDIENCE_REMOVEUSERTAG {
 				),
 			),
 		);
-
-		$uncanny_automator->register->action( $action );
 	}
 
 	/**
@@ -80,8 +90,6 @@ class AUDIENCE_REMOVEUSERTAG {
 	 */
 	public function remove_tag_audience_member( $user_id, $action_data, $recipe_id, $args ) {
 
-		global $uncanny_automator;
-
 		try {
 			// Here add note
 			$list_id = $action_data['meta']['MCLIST'];
@@ -92,7 +100,7 @@ class AUDIENCE_REMOVEUSERTAG {
 				$error_msg                           = __( 'No tag selected.', 'uncanny-automator' );
 				$action_data['do-nothing']           = true;
 				$action_data['complete_with_errors'] = true;
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
 				return;
 			}
@@ -101,7 +109,7 @@ class AUDIENCE_REMOVEUSERTAG {
 			$user      = get_userdata( $user_id );
 			$user_hash = md5( strtolower( trim( $user->user_email ) ) );
 
-			$mc_client = $uncanny_automator->helpers->recipe->mailchimp->options->get_mailchimp_client();
+			$mc_client = Automator()->helpers->recipe->mailchimp->options->get_mailchimp_client();
 			if ( $mc_client ) {
 
 				$tags_body = array(
@@ -117,19 +125,19 @@ class AUDIENCE_REMOVEUSERTAG {
 					'action'    => 'update_subscriber_tags',
 					'list_id'   => $list_id,
 					'user_hash' => $user_hash,
-					'tags'      => json_encode( $tags_body ),
+					'tags'      => wp_json_encode( $tags_body ),
 				);
 
-				$response = $uncanny_automator->helpers->recipe->mailchimp->options->api_request( $request_params );
+				$response = Automator()->helpers->recipe->mailchimp->options->api_request( $request_params );
 
 				// prepare meeting lists
-				if ( $response === null ) {
+				if ( null === $response ) {
 
-					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
+					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
 				} else {
-					$uncanny_automator->helpers->recipe->mailchimp->options->log_action_error( $response, $user_id, $action_data, $recipe_id );
+					Automator()->helpers->recipe->mailchimp->options->log_action_error( $response, $user_id, $action_data, $recipe_id );
 
 					return;
 				}
@@ -138,20 +146,21 @@ class AUDIENCE_REMOVEUSERTAG {
 				$error_msg                           = __( 'Mailchimp account is not connected.', 'uncanny-automator' );
 				$action_data['do-nothing']           = true;
 				$action_data['complete_with_errors'] = true;
-				$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
 				return;
 			}
 		} catch ( \Exception $e ) {
 			$error_msg = $e->getMessage();
-			if ( $json = json_decode( $error_msg ) ) {
-				if ( isset( $json->error ) && isset( $json->error->message ) ) {
-					$error_msg = $json->error->message;
-				}
+			$json      = json_decode( $error_msg );
+
+			if ( isset( $json->error ) && isset( $json->error->message ) ) {
+				$error_msg = $json->error->message;
 			}
+
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
 			return;
 		}

@@ -436,7 +436,7 @@ class Automator_Functions {
 		//Collective array of users recipes completed status
 		$recipes_completed = $this->are_recipes_completed( null, $recipe_ids );
 		$recipes_completed = empty( $recipes_completed ) ? array() : $recipes_completed;
-		$key               = 0;
+
 		foreach ( $recipes as $recipe ) {
 			$recipe_id = $recipe->ID;
 			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'triggers', $recipe_data[ $recipe_id ] ) ) {
@@ -453,28 +453,27 @@ class Automator_Functions {
 				$triggers = array();
 			}
 
-			$this->recipes_data[ $key ]['ID']          = $recipe_id;
-			$this->recipes_data[ $key ]['post_status'] = $recipe->post_status;
-			$this->recipes_data[ $key ]['recipe_type'] = isset( $cached[ $recipe_id ] ) ? $cached[ $recipe_id ] : Automator()->utilities->get_recipe_type( $recipe_id );
+			$this->recipes_data[ $recipe_id ]['ID']          = $recipe_id;
+			$this->recipes_data[ $recipe_id ]['post_status'] = $recipe->post_status;
+			$this->recipes_data[ $recipe_id ]['recipe_type'] = isset( $cached[ $recipe_id ] ) ? $cached[ $recipe_id ] : Automator()->utilities->get_recipe_type( $recipe_id );
 
-			$this->recipes_data[ $key ]['triggers'] = $triggers;
+			$this->recipes_data[ $recipe_id ]['triggers'] = $triggers;
 
 			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'actions', $recipe_data[ $recipe_id ] ) ) {
 				$actions = $recipe_data[ $recipe_id ]['actions'];
 			} else {
 				$actions = array();
 			}
-			$this->recipes_data[ $key ]['actions'] = $actions;
+			$this->recipes_data[ $recipe_id ]['actions'] = $actions;
 
 			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'closures', $recipe_data[ $recipe_id ] ) ) {
 				$closures = $recipe_data[ $recipe_id ]['closures'];
 			} else {
 				$closures = array();
 			}
-			$this->recipes_data[ $key ]['closures'] = $closures;
+			$this->recipes_data[ $recipe_id ]['closures'] = $closures;
 
-			$this->recipes_data[ $key ]['completed_by_current_user'] = array_key_exists( $recipe_id, $recipes_completed ) ? $recipes_completed[ $recipe_id ] : false;
-			$key ++;
+			$this->recipes_data[ $recipe_id ]['completed_by_current_user'] = array_key_exists( $recipe_id, $recipes_completed ) ? $recipes_completed[ $recipe_id ] : false;
 		}
 
 		Automator()->cache->set( $this->cache->recipes_data, $this->recipes_data );
@@ -523,13 +522,68 @@ class Automator_Functions {
 
 		$recipe[ $key ]['completed_by_current_user'] = $is_recipe_completed;
 
+		$recipe[ $key ]['extra_options'] = $this->load_extra_options( $recipe[ $key ] );
+
 		Automator()->cache->set( $key, $recipe );
 
 		return $recipe;
 	}
 
 	/**
-	 * @param $recipes
+	 * load_extra_options
+	 *
+	 * @param mixed $type
+	 * @param mixed $item_code
+	 *
+	 * @return void
+	 */
+	public function load_extra_options( $recipe ) {
+
+		// Get the extra options meta. This one should only exists during REST calls. In all other cases, this meta should nor exist
+		$extra_options_meta = get_post_meta( $recipe['ID'], 'extra_options', true );
+
+		// If the meta doesn't exist (initial recipe page load), replace it with an empty array
+		$extra_options = empty( $extra_options_meta ) ? array() : $extra_options_meta;
+
+		// We will loop through triggers and actions to see if any of them have extra optiosn to load
+		$types_to_process = array( 'actions', 'triggers' );
+
+		foreach ( $types_to_process as $type ) {
+			foreach ( $recipe[ $type ] as $item ) {
+
+				$item_code   = $item['meta']['code'];
+				$integration = $item['meta']['integration'];
+
+				// If extra options were already loaded for this item, bail
+				if ( isset( $extra_options[ $integration ][ $item_code ] ) ) {
+					continue;
+				}
+
+				// Otherwise, get the options callback from the integration definition
+				if ( 'actions' === $type ) {
+					$callback = Automator()->get->value_from_action_meta( $item_code, 'options_callback' );
+				} elseif ( 'triggers' === $type ) {
+					$callback = Automator()->get->value_from_trigger_meta( $item_code, 'options_callback' );
+				}
+
+				// If there is no callback found, bail
+				if ( ! $callback ) {
+					continue;
+				}
+
+				// If the callback is found, execute it
+				$extra_options[ $integration ][ $item_code ] = call_user_func( $callback );
+			}
+		}
+
+		// Store all the extra options in the post meta so that subsequent REST API calls won't need to load the options again
+		update_post_meta( $recipe['ID'], 'extra_options', $extra_options );
+
+		return $extra_options;
+	}
+
+	/**
+	 * @param array $recipes
 	 *
 	 * @return array
 	 */
@@ -954,6 +1008,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 			if ( 'uo-trigger' === $type ) {
 				$recipe_children_data[ $key ]['tokens'] = $this->tokens->trigger_tokens( $child_meta_single, $recipe_id );
 			}
+
 		}
 
 		return apply_filters(

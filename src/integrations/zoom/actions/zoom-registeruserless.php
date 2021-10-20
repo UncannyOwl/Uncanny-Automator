@@ -32,6 +32,31 @@ class ZOOM_REGISTERUSERLESS {
 	 */
 	public function define_action() {
 
+		$action = array(
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
+			'is_pro'             => false,
+			'requires_user'      => false,
+			'integration'        => self::$integration,
+			'code'               => $this->action_code,
+			'sentence'           => sprintf( __( 'Add an attendee to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name' => __( 'Add an attendee to {{a meeting}}', 'uncanny-automator' ),
+			'priority'           => 10,
+			'accepted_args'      => 1,
+			'execution_function' => array( $this, 'zoom_register_user' ),
+			'options_callback'   => array( $this, 'load_options' )
+		);
+
+		Automator()->register->action( $action );
+	}
+	
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		
 		$email_field_options = array(
 			'option_code' => 'EMAIL',
 			'input_type'  => 'text',
@@ -71,29 +96,16 @@ class ZOOM_REGISTERUSERLESS {
 
 		$last_name_field = Automator()->helpers->recipe->field->text( $last_name_field_options );
 
-		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
-			'is_pro'             => false,
-			'requires_user'      => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf( __( 'Add an attendee to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add an attendee to {{a meeting}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'zoom_register_user' ),
+		return array(
 			'options_group'      => array(
 				$this->action_meta => array(
 					$email_field,
 					$first_name_field,
 					$last_name_field,
-					Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
-				),
-			),
+					Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta )
+				)
+			)
 		);
-
-		Automator()->register->action( $action );
 	}
 
 	/**

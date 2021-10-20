@@ -643,7 +643,7 @@ class Google_Sheet_Helpers {
 		$options = array();
 
 		$options['-1'] = __( 'My google drive', 'uncanny-automator' );
-
+		
 		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 			$body = json_decode( wp_remote_retrieve_body( $response ) );
 
@@ -655,7 +655,18 @@ class Google_Sheet_Helpers {
 				$options['-1'] = __( 'API returned an error: ', 'uncanny-automator' ) . $body->error->description;
 			}
 		} else {
-			$options['-1'] = __( 'Could not connect to the API. Please try again in a few minutes.', 'uncanny-automator' );
+
+			$error_response = __('The API returned an invalid format.', 'uncanny-automator');
+
+			if ( is_wp_error( $response ) ) {
+				$error_response = $response->get_error_message();
+			}
+
+			$options['-1'] = sprintf(
+				__( 'Could not connect to the API with error: [%s].', 'uncanny-automator' ),
+				$error_response
+			);
+
 		}
 
 		set_transient( 'automator_api_get_google_drives', $options, 60 );

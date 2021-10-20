@@ -61,10 +61,12 @@ class ANON_WP_VIEWPOSTTYPE {
 				Automator()->helpers->recipe->wp->options->all_wp_post_types( null, $this->trigger_meta,
 					array(
 						'relevant_tokens' => array(
-							'WPPOST'      => __( 'Post title', 'uncanny-automator' ),
-							'WPPOST_ID'   => __( 'Post ID', 'uncanny-automator' ),
-							'WPPOST_URL'  => __( 'Post URL', 'uncanny-automator' ),
-							'WPPOSTTYPES' => __( 'Post type', 'uncanny-automator' ),
+							'WPPOST'       => __( 'Post title', 'uncanny-automator' ),
+							'WPPOST_ID'    => __( 'Post ID', 'uncanny-automator' ),
+							'WPPOST_URL'   => __( 'Post URL', 'uncanny-automator' ),
+							'POSTIMAGEID'  => __( 'Post featured image ID', 'uncanny-automator' ),
+							'POSTIMAGEURL' => __( 'Post featured image URL', 'uncanny-automator' ),
+							'WPPOSTTYPES'  => __( 'Post type', 'uncanny-automator' ),
 						)
 					) ),
 			],
@@ -144,6 +146,16 @@ class ANON_WP_VIEWPOSTTYPE {
 
 							$trigger_meta['meta_key']   = 'WPPOST_URL';
 							$trigger_meta['meta_value'] = maybe_serialize( get_post_permalink( $post->ID ) );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							// Post Featured Image URL
+							$trigger_meta['meta_key']   = 'POSTIMAGEURL';
+							$trigger_meta['meta_value'] = maybe_serialize( get_the_post_thumbnail_url( $post->ID, 'full' ) );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							// Post Featured Image ID
+							$trigger_meta['meta_key']   = 'POSTIMAGEID';
+							$trigger_meta['meta_value'] = maybe_serialize( get_post_thumbnail_id( $post->ID ) );
 							Automator()->insert_trigger_meta( $trigger_meta );
 
 							Automator()->process->user->maybe_trigger_complete( $result['args'] );

@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.8.1
 Requires PHP: 5.6
-Stable tag: 3.2.0.2
+Stable tag: 3.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -52,6 +52,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/)
 - [Groundhogg](https://automatorplugin.com/integration/groundhogg/)
 - [HappyForms](https://automatorplugin.com/integration/happyforms/)
+- [HubSpot](https://automatorplugin.com/integration/hubspot/)
 - [Instagram](https://automatorplugin.com/integration/instagram)
 - [Integromat](https://automatorplugin.com/integration/integromat/)
 - [LearnDash](https://automatorplugin.com/integration/learndash/)
@@ -177,6 +178,45 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.3 [2021-10-20] =
+
+**New integrations:**
+
+* [HubSpot](https://automatorplugin.com/integration/hubspot/) - Add contacts and update lists with Uncanny Automator #868
+
+**New actions:**
+
+* HubSpot: Add the user to HubSpot #860
+* HubSpot: Add the user's HubSpot contact to a list #863
+* HubSpot: Remove a user's Hubspot contact from a static list #864
+* Hubspot: Add a contact to HubSpot #993
+* HubSpot: Add a HubSpot contact to a static list #862
+* HubSpot: Remove a HubSpot contact from a static list #865
+
+**Added:**
+
+* Recipe UI: View completed runs and link to associated logs from edit recipe page
+
+**Updated:**
+
+* Facebook - Share a photo to a Facebook page - Added text support #768
+* Automator Core - Send data to a webhook now supports DELETE and HEAD HTTP methods #982
+* Added `automator_wp_admin_header_menu` filter to hide wp admin header menu entry #969
+* JS standards #1016
+* Modern Events Calendar logo #1001
+* Removed integration icons from /dist folder
+
+**Fixed bugs:**
+
+* MemberPress - Tokens now parsed more reliably #1004
+* Ultimate Member - Form name no longer rendered if token does not contain a value #1003
+* FluentCRM - PHP errors on some site configurations #986, #975
+* WordPress Core - Standardized grammar in some trigger options #846
+* WordPress Core - Added Post featured image ID and Post featured image URL tokens to "A specific type of post is viewed" #957
+* WordPress Core - Role triggers #956
+* Switching between Visual/Text tabs in the rich text editor no longer breaks HTML content when tokens used inside HTML element attributes #942
+* Recipe UI performance improved by deferring unnecessary API calls #649
 
 = 3.2.0.2 [2021-10-06] =
 
@@ -558,25 +598,9 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Moved icons in to integrations
 * Support for Scheduled actions
 
-= 2.11.1 [2021-03-15] =
-
-**New Triggers:**
-
-* Uncanny Codes: A user redeems a code from {a batch}
-
-**Added:**
-
-* Ability to pre-populate a recipe from querystring parameters
-
-**Fixed:**
-
-* Google Sheets: Some special characters no longer being encoded when sent to a Google Sheet
-* Gravity Forms tokens in anonymous recipes now populate correctly when a dummy user is selected
-* GiveWP: Form Field Manager dependency check to avoid an error
-
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/)
 
 == Upgrade Notice ==
 
-= 3.2.0.2 =
-Uncanny Automator 3.2 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.
+= 3.3 =
+Uncanny Automator 3.3 is a major release. We recommend taking a backup and testing in a Staging environment before updating your Live site.

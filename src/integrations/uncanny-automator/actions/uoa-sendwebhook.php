@@ -75,9 +75,11 @@ class UOA_SENDWEBHOOK {
 
 						'default_value' => 'POST',
 						'options'       => [
-							'GET'  => 'GET',
-							'PUT'  => 'PUT',
-							'POST' => 'POST',
+							'GET'    => 'GET',
+							'PUT'    => 'PUT',
+							'POST'   => 'POST',
+							'DELETE' => 'DELETE',
+							'HEAD'   => 'HEAD',
 						],
 					],
 					// Header
@@ -364,6 +366,12 @@ class UOA_SENDWEBHOOK {
 				$request_type = 'GET';
 			} elseif ( 'PUT' === (string) $action_data['meta']['ACTION_EVENT'] ) {
 				$request_type = 'PUT';
+			} elseif ( 'DELETE' === (string) $action_data['meta']['ACTION_EVENT'] ) {
+				$request_type = 'DELETE';
+			} elseif ( 'HEAD' === (string) $action_data['meta']['ACTION_EVENT'] ) {
+				$request_type = 'HEAD';
+			} elseif ( 'automator_custom_value' === (string) $action_data['meta']['ACTION_EVENT'] && isset( $action_data['meta']['ACTION_EVENT_custom'] ) ) {
+				$request_type = $action_data['meta']['ACTION_EVENT_custom'];
 			}
 		}
 

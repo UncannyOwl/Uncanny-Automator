@@ -32,13 +32,6 @@ class Slack_Helpers {
 	 * Slack_Helpers constructor.
 	 */
 	public function __construct() {
-		// Selectively load options
-		if ( method_exists( '\Uncanny_Auatomator\Automator_Helpers_Recipe', 'maybe_load_trigger_options' ) ) {
-			global $uncanny_automator;
-			$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-		} else {
-			$this->load_options = true;
-		}
 
 		$this->setting_tab   = 'slack_api';
 		$this->automator_api = AUTOMATOR_API_URL . 'v2/slack';
@@ -110,12 +103,6 @@ class Slack_Helpers {
 	 */
 	public function get_slack_channels( $label = null, $option_code = 'SLACKCHANNEL', $args = array() ) {
 
-		global $uncanny_automator;
-
-		if ( ! $this->load_options || ! $this->get_slack_client() ) {
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			$label = __( 'Slack channel', 'uncanny-automator' );
 		}
@@ -138,45 +125,29 @@ class Slack_Helpers {
 		$placeholder              = key_exists( 'placeholder', $args ) ? $args['placeholder'] : null;
 		$options                  = array();
 
-		$options['-1'] = __( 'Select a channel', 'uncanny-automator' );
+		$options[] = array( 'value' => '-1', 'text' => __( 'Select a channel', 'uncanny-automator' ) );
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		$client = $this->get_slack_client();
 
-			$options = get_transient( 'automator_get_slack_channels' );
+		$response = wp_remote_get( $this->automator_api . '?action=get_conversations&types=public_channel,private_channel&token=' . $client->access_token, $args );
 
-			if ( false === $options ) {
-				$client = $this->get_slack_client();
+		$body = null;
 
-				$response = wp_remote_get( $this->automator_api . '?action=get_conversations&types=public_channel,private_channel&token=' . $client->access_token, $args );
+		$data = false;
+		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
+			$body = json_decode( wp_remote_retrieve_body( $response ) );
+			$data = $body->data;
+		}
 
-				$body = null;
+		if ( $data && $data->ok ) {
 
-				$data = false;
-				if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-					$body = json_decode( wp_remote_retrieve_body( $response ) );
-					$data = $body->data;
-				}
-
-				if ( $data && $data->ok ) {
-
-					foreach ( $data->channels as $channel ) {
-						if ( $channel->is_private ) {
-							$options[ $channel->id ] = 'Private: ' . $channel->name;
-						} else {
-							$options[ $channel->id ] = $channel->name;
-						}
-					}
+			foreach ( $data->channels as $channel ) {
+				if ( $channel->is_private ) {
+					$options[] = array( 'value' => $channel->id, 'text' => 'Private: ' . $channel->name );
 				} else {
-					if ( $data ) {
-						$options['-1'] = __( 'Slack returned an error: ', 'uncanny-automator' ) . $data->error;
-					} else {
-						$options['-1'] = __( 'Slack returned an error.', 'uncanny-automator' );
-					}
+					$options[] = array( 'value' => $channel->id, 'text' => $channel->name );
 				}
-
-				set_transient( 'automator_get_slack_channels', $options, 60 );
 			}
-
 		}
 
 		$option = array(
@@ -209,12 +180,6 @@ class Slack_Helpers {
 	 */
 	public function get_slack_users( $label = null, $option_code = 'SLACKUSERS', $args = array() ) {
 
-		global $uncanny_automator;
-
-		if ( ! $this->load_options || ! $this->get_slack_client() ) {
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			$label = __( 'Slack user', 'uncanny-automator' );
 		}
@@ -237,9 +202,9 @@ class Slack_Helpers {
 		$placeholder              = key_exists( 'placeholder', $args ) ? $args['placeholder'] : null;
 		$options                  = array();
 
-		$options['-1'] = __( 'Select a user', 'uncanny-automator' );
+		$options[] = array( 'value' => '-1', 'text' => __( 'Select a channel', 'uncanny-automator' ) );
 
-		if ( $uncanny_automator->helpers->recipe->load_helpers ) {
+		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			$options = get_transient( 'automator_get_slack_users' );
 
@@ -257,13 +222,9 @@ class Slack_Helpers {
 
 					if ( $data && $data->ok ) {
 						foreach ( $data->members as $member ) {
-							$options[ $member->id ] = $member->name;
+							$options[] = array( 'value' => $member->id, 'text' => $member->name );
 						}
-					} else {
-						$options['-1'] = __( 'Slack returned an error: ', 'uncanny-automator' ) . $data->error;
 					}
-				} else {
-					$options['-1'] = __( 'Slack returned an error. Please try again in a few minutes or check Slack status at https://status.slack.com/', 'uncanny-automator' );
 				}
 
 				set_transient( 'automator_get_slack_users', $options, 60 );

@@ -44,12 +44,23 @@ class ZOOM_WEBINAR_REGISTERUSER {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'zoom_webinar_register_user' ),
-			'options'            => array(
-				Automator()->helpers->recipe->zoom_webinar->get_webinars( null, $this->action_meta ),
-			),
+			'options_callback'   => array( $this, 'load_options' )
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		return array(
+			'options'            => array(
+				Automator()->helpers->recipe->zoom_webinar->get_webinars( null, $this->action_meta )
+			)
+		);
 	}
 
 	/**

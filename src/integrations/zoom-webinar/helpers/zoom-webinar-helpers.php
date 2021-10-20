@@ -76,10 +76,6 @@ class Zoom_Webinar_Helpers {
 	 */
 	public function get_webinars( $label = null, $option_code = 'ZOOMWEBINARS', $args = array() ) {
 
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			$label = __( 'Webinar', 'uncanny-automator' );
 		}
@@ -98,49 +94,50 @@ class Zoom_Webinar_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		if ( Automator()->helpers->recipe->load_helpers ) {
-			$client = $this->get_client();
+		$client = $this->get_client();
 
-			if ( ! $client || empty( $client['access_token'] ) ) {
-				return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-			}
+		if ( ! $client || empty( $client['access_token'] ) ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
-			// API register call
-			$response = wp_remote_post(
-				$this->automator_api,
-				array(
-					'body' =>
-						array(
-							'action'       => 'get_webinars',
-							'access_token' => $client['access_token'],
-							'page_number'  => 1,
-							'page_size'    => 1000,
-							'type'         => 'upcoming',
-						),
-				)
-			);
+		// API register call
+		$response = wp_remote_post(
+			$this->automator_api,
+			array(
+				'body' =>
+					array(
+						'action'       => 'get_webinars',
+						'access_token' => $client['access_token'],
+						'page_number'  => 1,
+						'page_size'    => 1000,
+						'type'         => 'upcoming',
+					),
+			)
+		);
 
-			if ( ! is_wp_error( $response ) ) {
+		if ( ! is_wp_error( $response ) ) {
 
-				$response_code = wp_remote_retrieve_response_code( $response );
+			$response_code = wp_remote_retrieve_response_code( $response );
 
-				if ( $response_code === 200 ) {
+			if ( $response_code === 200 ) {
 
-					$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+				$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-					if ( count( $response_body['data']['webinars'] ) > 0 ) {
+				if ( count( $response_body['data']['webinars'] ) > 0 ) {
 
-						foreach ( $response_body['data']['webinars'] as $key => $webinar ) {
+					foreach ( $response_body['data']['webinars'] as $key => $webinar ) {
 
-							$webinar_key                            = (string) $webinar['id'];
-							$options[ $webinar_key . '-objectkey' ] = $webinar['topic'];
+						$options[] = array(
+							'value' => $webinar['id'],
+							'text' => $webinar['topic']
+						);
 
-						}
 					}
 				}
 			}
-
 		}
+
+		
 
 		$option = array(
 			'option_code'     => $option_code,

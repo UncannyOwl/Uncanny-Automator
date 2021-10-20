@@ -5,7 +5,7 @@
 			<div class="uap-review-banner-left">
 				<div class="uap-review-banner__robot">
 					<img
-						src="<?php echo \uncanny_automator\Utilities::automator_get_media( 'admin/robot-feedback.svg' ); ?>">
+						src="<?php echo \uncanny_automator\Utilities::automator_get_media( 'robot-feedback.svg' ); ?>">
 				</div>
 			</div>
 			<div class="uap-review-banner-right">

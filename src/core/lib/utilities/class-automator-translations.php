@@ -26,29 +26,29 @@ class Automator_Translations {
 		// Localized strings
 		$this->ls = array(
 			'trigger'             => array(
-				'name'             => esc_attr__( 'Triggers', 'uncanny-automator' ),
+				'name'            => esc_attr__( 'Triggers', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.name
-				'singularName'     => esc_attr__( 'Trigger', 'uncanny-automator' ),
+				'singularName'    => esc_attr__( 'Trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.singularName
 				/* translators: Trigger type. Logged-in triggers are triggered only by logged-in users */
-				'userTriggers'     => esc_attr__( 'Logged-in triggers', 'uncanny-automator' ),
+				'userTriggers'    => esc_attr__( 'Logged-in triggers', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.userTriggers
-				'everyoneTrigger'  => esc_attr__( 'Trigger', 'uncanny-automator' ),
+				'everyoneTrigger' => esc_attr__( 'Trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.everyoneTrigger
 				/* translators: Non-personal infinitive verb */
-				'add'              => esc_attr__( 'Add trigger', 'uncanny-automator' ),
+				'add'             => esc_attr__( 'Add trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.add
 				/* translators: Non-personal infinitive verb */
-				'addAnother'       => esc_attr__( 'Add another trigger', 'uncanny-automator' ),
+				'addAnother'      => esc_attr__( 'Add another trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.addAnother
 				/* translators: Verb conjugated in present-tense second-person singular */
-				'select'           => esc_attr__( 'Select a trigger', 'uncanny-automator' ),
+				'select'          => esc_attr__( 'Select a trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.select
 				/* translators: Non-personal infinitive verb */
-				'search'           => esc_attr__( 'Search for triggers', 'uncanny-automator' ),
+				'search'          => esc_attr__( 'Search for triggers', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.search
 				/* translators: Non-personal infinitive verb */
-				'save'             => esc_attr__( 'Save trigger', 'uncanny-automator' ),
+				'save'            => esc_attr__( 'Save trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.save
 			),
 			'action'              => array(
@@ -90,7 +90,7 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.action.asyncActions.closuresLabelInstant
 					'closuresLabelAsyncOnly' => esc_attr__( 'Redirect when all triggers are completed', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.action.asyncActions.closuresLabelAsyncOnly
-					'pleaseSave' => esc_attr__( 'Please, save the action first', 'uncanny-automator' ),
+					'pleaseSave'             => esc_attr__( 'Please, save the action first', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.action.asyncActions.pleaseSave
 					'modal'                  => array(
 						'title'           => esc_attr__( 'Delay or schedule this action', 'uncanny-automator' ),
@@ -129,13 +129,13 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezone
 						'timezoneString'  => wp_timezone_string(),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneString
-						'timezoneLink'  => admin_url('options-general.php#timezone_string'),
+						'timezoneLink'    => admin_url( 'options-general.php#timezone_string' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneLink
 						'dateFormat'      => get_option( 'date_format' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.dateFormat
-						'today' => date( get_option('date_format') ),
+						'today'           => date( get_option( 'date_format' ) ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.today
-						'timeFormat' => get_option('time_format'),
+						'timeFormat'      => get_option( 'time_format' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timeFormat
 						'confirm'         => esc_attr__( 'Set delay', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.confirm
@@ -372,12 +372,11 @@ class Automator_Translations {
 			),
 			'integration'         => array(
 				/* translators: Verb conjugated in present-tense second-person singular */
-				'select'       => esc_attr__( 'Select an integration', 'uncanny-automator' ),
+				'select'         => esc_attr__( 'Select an integration', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.integration.select
 				/* translators: Verb conjugated in present-tense second-person singular */
-				'discoverMore' => esc_attr__( 'Discover more awesome integrations.', 'uncanny-automator' ),
+				'discoverMore'   => esc_attr__( 'Discover more awesome integrations.', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.integration.discoverMore
-
 				/* translators: Verb conjugated in present-tense second-person singular */
 				'dontSeeTrigger' => esc_attr__( "Don't see your trigger? Try a recipe that runs for logged-in users only.", 'uncanny-automator' ),
 				// UncannyAutomator.i18n.integration.dontSeeTrigger
@@ -406,6 +405,8 @@ class Automator_Translations {
 				/* translators: Copy recipe */
 				'timesPerRecipe' => esc_attr_x( 'Total times:', 'Recipe', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.publish.timesPerRecipe
+				'recipeRunTimes' => esc_attr_x( 'Completed runs:', 'Recipe', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.publish.recipeRunTimes
 			),
 			'confirmationModal'   => array(
 				'title'         => esc_attr__( 'Are you sure?', 'uncanny-automator' ),
@@ -455,41 +456,41 @@ class Automator_Translations {
 			),
 			'apiIntegrations'     => array(
 				/* translators: 1. Trademarked term */
-				'integrationNotConnected'  => esc_attr__( '%1$s account not connected. Click to connect.', 'uncanny-automator' ),
+				'integrationNotConnected'   => esc_attr__( '%1$s account not connected. Click to connect.', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.apiIntegrations.integrationNotConnected
 				'allActionsRequireUserData' => esc_attr__( 'All actions need user data', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.apiIntegrations.allActionsRequireUserData
-				'notConnected' => esc_attr__( 'Not connected', 'uncanny-automator' ),
+				'notConnected'              => esc_attr__( 'Not connected', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.apiIntegrations.notConnected
-				'instructionsToConnect' => array(
+				'instructionsToConnect'     => array(
 					'connectIntegration' => esc_attr__( 'Connect integration', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.connectIntegration
 					/* translators: 1. Trademarked term */
-					'step1' => esc_attr__( 'Sign up for a free %1$s account!', 'uncanny-automator' ),
+					'step1'              => esc_attr__( 'Sign up for a free %1$s account!', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.step1
 					/* translators: 2. Trademarked term */
-					'step1Pro' => esc_attr__( 'Activate your %1$s license key!', 'uncanny-automator' ),
+					'step1Pro'           => esc_attr__( 'Activate your %1$s license key!', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.step1Pro
 					/* translators: 1. Number, 2. Number */
-					'stepCounter' => esc_attr__( '%1$s of %2$s steps completed', 'uncanny-automator' ),
+					'stepCounter'        => esc_attr__( '%1$s of %2$s steps completed', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.stepCounter
-					'signUp' => esc_attr__( 'Sign up', 'uncanny-automator' ),
+					'signUp'             => esc_attr__( 'Sign up', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.signUp
-					'activate' => esc_attr__( 'Activate', 'uncanny-automator' ),
+					'activate'           => esc_attr__( 'Activate', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.activate
 					/* translators: 1. Trademarked term, 2. Trademarked term */
-					'step2' => esc_attr__( 'Connect your %1$s account to %2$s.', 'uncanny-automator' ),
+					'step2'              => esc_attr__( 'Connect your %1$s account to %2$s.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.step2
-					'connectAccount' => esc_attr__( 'Connect account', 'uncanny-automator' ),
+					'connectAccount'     => esc_attr__( 'Connect account', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.connectAccount
-					'completePrevious' => esc_attr__( 'Please, complete the previous step first.', 'uncanny-automator' ),
+					'completePrevious'   => esc_attr__( 'Please, complete the previous step first.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.completePrevious
 					/* translators: 1. Trademarked term */
-					'step3' => esc_attr__( 'Refresh this page and add your %1$s action.', 'uncanny-automator' ),
+					'step3'              => esc_attr__( 'Refresh this page and add your %1$s action.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.step3
-					'refresh' => esc_attr__( 'Refresh', 'uncanny-automator' ),
+					'refresh'            => esc_attr__( 'Refresh', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.apiIntegrations.instructionsToConnect.refresh
-				)
+				),
 			),
 			'recipeType'          => array(
 				/* translators: Verb conjugated in present-tense second-person singular */
@@ -618,10 +619,10 @@ class Automator_Translations {
 				'userDataModal'  => array(
 					'action' => array(
 						// User can add the action, but needs to confirm
-						'allowed' => array(
-							'title'   => esc_attr__( 'We need some user data', 'uncanny-automator' ),
+						'allowed'   => array(
+							'title'         => esc_attr__( 'We need some user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.action.allowed.title
-							'content' => array(
+							'content'       => array(
 								'mustRunOnUser' => esc_attr__( "This action must be run on a WordPress user.", 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.action.allowed.content.mustRunOnUser
 								'description'   => esc_attr__( "Since this is a recipe that runs for everyone, including logged-out users, you'll need to select a new or existing user that this action will run on.", 'uncanny-automator' ),
@@ -632,59 +633,59 @@ class Automator_Translations {
 						),
 						// User can't add the action
 						'forbidden' => array(
-							'title'   => esc_attr__( 'We need some user data', 'uncanny-automator' ),
+							'title'         => esc_attr__( 'We need some user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.action.forbidden.title
-							'content' => array(
+							'content'       => array(
 								'mustRunOnUser' => esc_attr__( "This action must be run on a WordPress user.", 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.action.forbidden.content.mustRunOnUser
 								/* translators: 1. Trademarked term. */
 								'description'   => esc_attr__( 'Because the action is associated with user data, it must be mapped to a new or existing user. This requires %1$s.', 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.action.forbidden.content.description
-								'upgradeLater'           => esc_attr__( "If you don't want to upgrade now, you can add this action to a recipe that runs only for logged-in users.", 'uncanny-automator' ),
+								'upgradeLater'  => esc_attr__( "If you don't want to upgrade now, you can add this action to a recipe that runs only for logged-in users.", 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.action.forbidden.content.upgradeLater
 							),
 							'confirmButton' => esc_attr__( 'Upgrade to Pro', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.action.disabled.confirmButton
 						),
 					),
-					'token'      => array(
+					'token'  => array(
 						// User can add the token, but needs to confirm
-						'allowed' => array(
-							'title'   => esc_attr__( 'We need some user data', 'uncanny-automator' ),
+						'allowed'   => array(
+							'title'         => esc_attr__( 'We need some user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.allowed.title
-							'content' => array(
+							'content'       => array(
 								/* translators: 1. Token ID */
 								'mustRunOnUser' => esc_attr__( 'The token %1$s outputs the data of a WordPress user.', 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.token.allowed.content.mustRunOnUser
 								'description'   => esc_attr__( "Since this is a recipe that runs for everyone, including logged-out users, you'll need to select a new or existing user that this data will come from.", 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.token.allowed.content.description
 							),
-							'cancelButton' => esc_attr__( 'Remove token', 'uncanny-automator' ),
+							'cancelButton'  => esc_attr__( 'Remove token', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.allowed.cancelButton
 							'confirmButton' => esc_attr__( "Set user data", 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.allowed.confirmButton
 						),
 						// User can't add the token
 						'forbidden' => array(
-							'title'   => esc_attr__( 'We need some user data', 'uncanny-automator' ),
+							'title'         => esc_attr__( 'We need some user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.forbidden.title
-							'content' => array(
+							'content'       => array(
 								/* translators: 1. Token ID */
 								'mustRunOnUser' => esc_attr__( 'The token %1$s outputs the data of a WordPress user.', 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.token.forbidden.content.mustRunOnUser
 								/* translators: 1. Trademarked term. */
 								'description'   => esc_attr__( 'Because the token is associated with user data, it must be mapped to a new or existing user. This requires %1$s.', 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.token.forbidden.content.description
-								'upgradeLater'           => esc_attr__( "If you don't want to upgrade now, you can add this token to a recipe that runs only for logged-in users.", 'uncanny-automator' ),
+								'upgradeLater'  => esc_attr__( "If you don't want to upgrade now, you can add this token to a recipe that runs only for logged-in users.", 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.token.forbidden.content.upgradeLater
 							),
-							'cancelButton' => esc_attr__( 'Remove token', 'uncanny-automator' ),
+							'cancelButton'  => esc_attr__( 'Remove token', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.forbidden.cancelButton
 							'confirmButton' => esc_attr__( 'Upgrade to Pro', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.forbidden.confirmButton
 						),
-					)
-				)
+					),
+				),
 			),
 			'title'               => array(
 				'saving' => esc_attr__( 'Saving title', 'uncanny-automator' ),
@@ -731,9 +732,9 @@ class Automator_Translations {
 			),
 			'format'              => array(
 				'date' => array(
-					'selectDate' => __( 'Select date', 'uncanny-automator' ),
-					'selectTime' => __( 'Select time', 'uncanny-automator' ),
-					'weekdays' => array(
+					'selectDate'       => __( 'Select date', 'uncanny-automator' ),
+					'selectTime'       => __( 'Select time', 'uncanny-automator' ),
+					'weekdays'         => array(
 						'shorthand' => array(
 							/* translators: Abbreviation - Monday (3 letters) */
 							'monday'    => esc_attr_x( 'Mon', 'Date format', 'uncanny-automator' ),

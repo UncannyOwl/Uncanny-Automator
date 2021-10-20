@@ -121,6 +121,12 @@ class Uoa_Helpers {
 				$request_type = 'GET';
 			} elseif ( 'PUT' === (string) $values['ACTION_EVENT'] ) {
 				$request_type = 'PUT';
+			} elseif ( 'DELETE' === (string) $values['ACTION_EVENT'] ) {
+				$request_type = 'DELETE';
+			} elseif ( 'HEAD' === (string) $values['ACTION_EVENT'] ) {
+				$request_type = 'HEAD';
+			} elseif ( 'automator_custom_value' === (string) $values['ACTION_EVENT'] && isset( $values['ACTION_EVENT_custom'] ) ) {
+				$request_type = $values['ACTION_EVENT_custom'];
 			}
 		}
 

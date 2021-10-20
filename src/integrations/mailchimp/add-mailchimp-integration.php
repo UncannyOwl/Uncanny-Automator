@@ -13,7 +13,7 @@ class Add_Mailchimp_Integration {
 	 * @var string
 	 */
 	public static $integration = 'MAILCHIMP';
-	
+
 	/**
 	 * connected
 	 *
@@ -73,7 +73,7 @@ class Add_Mailchimp_Integration {
 
 		$directory[] = dirname( __FILE__ ) . '/helpers';
 		$directory[] = dirname( __FILE__ ) . '/actions';
-		
+
 		return $directory;
 
 	}
@@ -95,10 +95,10 @@ class Add_Mailchimp_Integration {
 		$uncanny_automator->register->integration(
 			self::$integration,
 			array(
-				'name'          => 'Mailchimp',
-				'connected'     => $this->connected,
-				'icon_svg'      => Utilities::automator_get_integration_icon( __DIR__ . '/img/mailchimp-icon.svg' ),
-				'settings_url'  => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=mailchimp_api'
+				'name'         => 'Mailchimp',
+				'connected'    => $this->connected,
+				'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/mailchimp-icon.svg' ),
+				'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=mailchimp_api',
 			)
 		);
 

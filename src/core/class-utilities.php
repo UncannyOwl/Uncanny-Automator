@@ -253,7 +253,7 @@ class Utilities {
 	 *
 	 */
 	public static function automator_get_media( $file_name ) {
-		return plugins_url( 'src/assets/img/' . $file_name, AUTOMATOR_BASE_FILE );
+		return plugins_url( 'src/assets/backend/dist/img/' . $file_name, AUTOMATOR_BASE_FILE );
 	}
 
 	/**
@@ -283,12 +283,37 @@ class Utilities {
 
 		wp_enqueue_script( 'uap-admin-global', Utilities::automator_get_js( 'admin/global.js' ), array( 'jquery' ), Utilities::automator_get_version(), true );
 
-		wp_localize_script( 'uap-admin-global', 'UncannyAutomatorGlobal', [
-			'rest' => [
+
+
+
+
+		// Enqueue main JS
+		wp_enqueue_script(
+			'uap-admin',
+			Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
+			array(),
+			Utilities::automator_get_version(),
+			true
+		);
+
+		// Get data for the main script
+		$automator_backend_js = apply_filters( 'automator_assets_backend_js_data', array(
+			'rest' => array(
 				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
-			],
-		] );
+			),
+			'i18n' => array()
+		) );
+
+		wp_localize_script( 'uap-admin', 'UncannyAutomatorBackend', $automator_backend_js );
+
+		// Enqueue main CSS
+		wp_enqueue_style(
+			'uap-admin',
+			Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
+			array(),
+			Utilities::automator_get_version()
+		);
 	}
 
 	/**
@@ -313,6 +338,19 @@ class Utilities {
 	 */
 	public static function automator_get_css( $file_name ) {
 		return plugins_url( 'src/assets/css/' . $file_name, AUTOMATOR_BASE_FILE );
+	}
+
+	/**
+	 * Returns the full url for the passed asset
+	 *
+	 * @param $file_name
+	 *
+	 * @return $asset_url
+	 * @since    3.2.0.2
+	 *
+	 */
+	public static function automator_get_asset( $file_name ) {
+		return plugins_url( 'src/assets/' . $file_name, AUTOMATOR_BASE_FILE );
 	}
 
 	/**
@@ -349,6 +387,9 @@ class Utilities {
 	public static function automator_get_view( $file_name ) {
 
 		$views_directory = UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+
+		// Replace separator in the file name
+		$file_name = str_replace( '/', DIRECTORY_SEPARATOR, $file_name );
 
 		/**
 		 * Filters the directory path to the view file

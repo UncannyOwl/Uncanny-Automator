@@ -227,12 +227,12 @@ jQuery(function($){
 			// Do AJAX
 			$.ajax({
 				method: method,
-				url:    UncannyAutomatorGlobal.rest.url + '/' + endPoint + '/',
+				url:    UncannyAutomatorBackend.rest.url + '/' + endPoint + '/',
 				data:   $.param( data ) + '&' + $.param({ doing_rest: 1 }),
 
 				// Attach Nonce the the header of the request
 				beforeSend: function( xhr ){
-					xhr.setRequestHeader( 'X-WP-Nonce', UncannyAutomatorGlobal.rest.nonce );
+					xhr.setRequestHeader( 'X-WP-Nonce', UncannyAutomatorBackend.rest.nonce );
 				},
 
 				success: function( response ){
@@ -480,13 +480,13 @@ class UAP_Utility {
 		// Do AJAX
 		jQuery.ajax({
 			method:   'POST',
-			url:      `${ UncannyAutomatorGlobal.rest.url }/${ endPoint }/`,
+			url:      `${ UncannyAutomatorBackend.rest.url }/${ endPoint }/`,
 			data:     jQuery.param( data ) + '&' + jQuery.param({ doing_rest: 1 }),
 			dataType: 'json',
 
 			// Attach Nonce the the header of the request
 			beforeSend: ( xhr ) => {
-				xhr.setRequestHeader( 'X-WP-Nonce', UncannyAutomatorGlobal.rest.nonce );
+				xhr.setRequestHeader( 'X-WP-Nonce', UncannyAutomatorBackend.rest.nonce );
 			},
 
 			success: ( response ) => {

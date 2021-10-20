@@ -37,11 +37,9 @@ class SLACK_SENDMESSAGE {
 	 */
 	public function define_action() {
 
-		global $uncanny_automator;
-
 		$action = array(
-			'author'             => $uncanny_automator->get_author_name(),
-			'support_link'       => $uncanny_automator->get_author_support_link( $this->action_code, 'knowledge-base/slack/' ),
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/slack/' ),
 			'is_pro'             => false,
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
@@ -51,15 +49,26 @@ class SLACK_SENDMESSAGE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'send_message' ),
+			'options_callback'	 => array( $this, 'load_options' )
+		);
+
+		Automator()->register->action( $action );
+	}
+		
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		return array(
 			'options_group'      => array(
 				$this->action_meta => array(
-					$uncanny_automator->helpers->recipe->slack->options->get_slack_channels( esc_attr__( 'Slack Channel', 'uncanny-automator' ), 'SLACKCHANNEL' ),
-					$uncanny_automator->helpers->recipe->slack->textarea_field( 'SLACKMESSAGE', esc_attr__( 'Message', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( '* Markdown is supported', 'uncanny-automator' ), __( 'Enter the message', 'uncanny-automator' ) ),
+					Automator()->helpers->recipe->slack->options->get_slack_channels( esc_attr__( 'Slack Channel', 'uncanny-automator' ), 'SLACKCHANNEL' ),
+					Automator()->helpers->recipe->slack->textarea_field( 'SLACKMESSAGE', esc_attr__( 'Message', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( '* Markdown is supported', 'uncanny-automator' ), __( 'Enter the message', 'uncanny-automator' ) ),
 				),
 			),
 		);
-
-		$uncanny_automator->register->action( $action );
 	}
 
 	/**
