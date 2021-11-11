@@ -48,14 +48,14 @@ class Zoom_Helpers {
 	/**
 	 * @param Zoom_Helpers $options
 	 */
-	public function setOptions( Zoom_Helpers $options ) {
+	public function setOptions( Zoom_Helpers $options ) { //phpcs:ignore
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Zoom_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Zoom_Pro_Helpers $pro ) {
+	public function setPro( \Uncanny_Automator_Pro\Zoom_Pro_Helpers $pro ) { // phpcs:ignore
 		$this->pro = $pro;
 	}
 
@@ -121,12 +121,12 @@ class Zoom_Helpers {
 					foreach ( $response_body['data']['meetings'] as $meeting ) {
 						$options[] = array(
 							'value' => $meeting['id'],
-							'text' => $meeting['topic']
+							'text'  => $meeting['topic'],
 						);
 					}
 				}
 			}
-		} 	
+		}
 
 
 		$option = array(
@@ -235,8 +235,8 @@ class Zoom_Helpers {
 	/**
 	 * For registering a user to meeting action method.
 	 *
-	 * @param string $user
-	 * @param string $meeting_key
+	 * @param $user
+	 * @param $meeting_key
 	 *
 	 * @return array
 	 */
@@ -409,12 +409,12 @@ class Zoom_Helpers {
 			'name'           => __( 'Zoom Meeting', 'uncanny-automator' ),
 			'title'          => __( 'Zoom Meeting API settings', 'uncanny-automator' ),
 			'description'    => sprintf(
-				'<p>%1$s</p>',
-				sprintf(
-					__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit %1\$s for simple instructions.", 'uncanny-automator' ),
-					'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/zoom/</a>'
-				)
-			) . $this->get_user_info(),
+									'<p>%1$s</p>',
+									sprintf(
+										__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit %1\$s for simple instructions.", 'uncanny-automator' ),
+										'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/zoom/</a>'
+									)
+								) . $this->get_user_info(),
 			'is_pro'         => false,
 			'is_expired'     => false,
 			'settings_field' => 'uap_automator_zoom_api_settings',
@@ -451,62 +451,68 @@ class Zoom_Helpers {
 	 */
 	public function zoom_oauth_save() {
 
-		if ( isset( $_POST['uap_automator_zoom_api_nonce'] ) && wp_verify_nonce( $_POST['uap_automator_zoom_api_nonce'], 'uap_automator_zoom_api_nonce' ) ) {
-
-			if ( isset( $_POST['uap_automator_zoom_api_consumer_key'] ) && ! empty( $_POST['uap_automator_zoom_api_consumer_key'] ) && isset( $_POST['uap_automator_zoom_api_consumer_secret'] ) && ! empty( $_POST['uap_automator_zoom_api_consumer_secret'] ) ) {
-
-				update_option( 'uap_automator_zoom_api_consumer_key', $_POST['uap_automator_zoom_api_consumer_key'] );
-				update_option( 'uap_automator_zoom_api_consumer_secret', $_POST['uap_automator_zoom_api_consumer_secret'] );
-				delete_transient( 'uap_automator_zoom_api_user_info' );
-
-				$client = $this->refresh_token();
-
-				// Check if token is working fine or not.
-				$response = wp_remote_post(
-					$this->automator_api,
-					array(
-						'body' =>
-							array(
-								'action'       => 'get_meetings',
-								'access_token' => $client['access_token'],
-								'page_number'  => 1,
-								'page_size'    => 300,
-								'type'         => 'upcoming',
-								
-							),
-					)
-				);
-
-				if ( is_wp_error( $response ) ) {
-					$error_msg = implode( ', ', $response->get_error_messages() );
-					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
-				} else {
-					$status_code = wp_remote_retrieve_response_code( $response );
-
-					// Check for a meeting API call if not 200 then its wrong pair.
-					if ( $status_code !== 200 ) {
-	
-						$body = json_decode( wp_remote_retrieve_body( $response ), true );
-	
-						delete_option( '_uncannyowl_zoom_settings' );
-	
-						$error_msg = $body['data']['message'] ? $body['data']['message'] : '2';
-	
-						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
-	
-					} else {
-	
-						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
-	
-					}
-				}
-
-				
-
-				die;
-
-			}
+		if ( ! isset( $_POST['uap_automator_zoom_api_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['uap_automator_zoom_api_nonce'] ) ), 'uap_automator_zoom_api_nonce' ) ) {
+			return;
 		}
+
+		if ( ! isset( $_POST['uap_automator_zoom_api_consumer_key'] ) ) {
+			return;
+		}
+		if ( empty( $_POST['uap_automator_zoom_api_consumer_key'] ) ) {
+			return;
+		}
+		if ( ! isset( $_POST['uap_automator_zoom_api_consumer_secret'] ) ) {
+			return;
+		}
+		if ( empty( $_POST['uap_automator_zoom_api_consumer_secret'] ) ) {
+			return;
+		}
+
+		update_option( 'uap_automator_zoom_api_consumer_key', sanitize_text_field( wp_unslash( $_POST['uap_automator_zoom_api_consumer_key'] ) ) );
+		update_option( 'uap_automator_zoom_api_consumer_secret', sanitize_text_field( wp_unslash( $_POST['uap_automator_zoom_api_consumer_secret'] ) ) );
+		delete_transient( 'uap_automator_zoom_api_user_info' );
+
+		$client = $this->refresh_token();
+
+		// Check if token is working fine or not.
+		$response = wp_remote_post(
+			$this->automator_api,
+			array(
+				'body' =>
+					array(
+						'action'       => 'get_meetings',
+						'access_token' => $client['access_token'],
+						'page_number'  => 1,
+						'page_size'    => 300,
+						'type'         => 'upcoming',
+
+					),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$error_msg = implode( ', ', $response->get_error_messages() );
+			wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
+			die();
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+
+		// Check for a meeting API call if not 200 then its wrong pair.
+		if ( 200 !== absint( $status_code ) ) {
+
+			$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			delete_option( '_uncannyowl_zoom_settings' );
+
+			$error_msg = $body['data']['message'] ? $body['data']['message'] : '2';
+
+			wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
+			die();
+		}
+
+		wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
+		die;
 	}
 
 	/**
@@ -529,28 +535,29 @@ class Zoom_Helpers {
 		<?php $this->get_inline_style(); ?>
 
 		<p>
-			<div class="uo-zoom-user-info">
+		<div class="uo-zoom-user-info">
 
-				<div class="uo-zoom-user-info__avatar">
-					<?php if ( ! isset( $zoom_user->pic_url ) ) : ?>
-						<div class="uo-zoom-user-info-placeholder-avatar">
-							<span class="dashicons dashicons-admin-users"></span>
-						</div>
-					<?php else : ?>
-						<img width="32" src="<?php echo esc_url( $zoom_user->pic_url ); ?>" alt="<?php esc_attr_e( 'Profile Pic', 'uncanny-automator' ); ?>" />
-					<?php endif; ?>
-				</div>
+			<div class="uo-zoom-user-info__avatar">
+				<?php if ( ! isset( $zoom_user->pic_url ) ) : ?>
+					<div class="uo-zoom-user-info-placeholder-avatar">
+						<span class="dashicons dashicons-admin-users"></span>
+					</div>
+				<?php else : ?>
+					<img width="32" src="<?php echo esc_url( $zoom_user->pic_url ); ?>"
+						 alt="<?php esc_attr_e( 'Profile Pic', 'uncanny-automator' ); ?>"/>
+				<?php endif; ?>
+			</div>
 
-				<div class="uo-zoom-user-info__email">
-					<?php echo esc_html( $zoom_user->email ); ?>
-				</div>
+			<div class="uo-zoom-user-info__email">
+				<?php echo esc_html( $zoom_user->email ); ?>
+			</div>
 
-				<div class="uo-zoom-user-info__name">
+			<div class="uo-zoom-user-info__name">
 
-					<?php echo esc_html( sprintf( '(%s %s)', ! empty( $zoom_user->first_name ) ? $zoom_user->first_name : '', ! empty( $zoom_user->last_name ) ? $zoom_user->last_name : '' ) ); ?>
-				</div>
+				<?php echo esc_html( sprintf( '(%s %s)', ! empty( $zoom_user->first_name ) ? $zoom_user->first_name : '', ! empty( $zoom_user->last_name ) ? $zoom_user->last_name : '' ) ); ?>
+			</div>
 
-			</div><!--.uo-zoom-user-info-->
+		</div><!--.uo-zoom-user-info-->
 		</p>
 		<p>
 			<?php
@@ -562,7 +569,8 @@ class Zoom_Helpers {
 				admin_url( 'admin-ajax.php' )
 			);
 			?>
-			<a class="uo-settings-btn uo-settings-btn--error" href="<?php echo esc_url( $disconnect_uri ); ?>" title="<?php esc_attr_e( 'Disconnect', 'uncanny-automator' ); ?>">
+			<a class="uo-settings-btn uo-settings-btn--error" href="<?php echo esc_url( $disconnect_uri ); ?>"
+			   title="<?php esc_attr_e( 'Disconnect', 'uncanny-automator' ); ?>">
 				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 			</a>
 			<br/>
@@ -611,6 +619,7 @@ class Zoom_Helpers {
 			if ( 200 === $status_code ) {
 				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
 				set_transient( $transient_key, $response_body->data, WEEK_IN_SECONDS );
+
 				return $response_body->data;
 			}
 		}
@@ -627,40 +636,45 @@ class Zoom_Helpers {
 	public function get_inline_style() {
 		?>
 		<style>
-		.uo-settings-content-description a.uo-settings-btn--error {
-			color: #e94b35;
-		}
-		.uo-settings-content-description a.uo-settings-btn--error:focus,
-		.uo-settings-content-description a.uo-settings-btn--error:active,
-		.uo-settings-content-description a.uo-settings-btn--error:hover {
-			color: #fff;
-		}
-		.uo-zoom-user-info {
-			display: flex;
-			align-items: center;
-			margin: 20px 0 0;
-		}
-		.uo-zoom-user-info__avatar {
-			background: #fff;
-			box-shadow: 0 2px 5px 0 rgb(0 0 0 / 10%);
-			border-radius: 32px;
-			height: 32px;
-			overflow: hidden;
-			width: 32px;
-			text-align: center;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			color: #2D8CFF;
-			margin-right: 5px;
-		}
-		.uo-zoom-user-info__avatar img {
-			border-radius:32px;
-		}
-		.uo-zoom-user-info__name {
-			opacity: 0.75;
-			margin-left: 5px;
-		}
+			.uo-settings-content-description a.uo-settings-btn--error {
+				color: #e94b35;
+			}
+
+			.uo-settings-content-description a.uo-settings-btn--error:focus,
+			.uo-settings-content-description a.uo-settings-btn--error:active,
+			.uo-settings-content-description a.uo-settings-btn--error:hover {
+				color: #fff;
+			}
+
+			.uo-zoom-user-info {
+				display: flex;
+				align-items: center;
+				margin: 20px 0 0;
+			}
+
+			.uo-zoom-user-info__avatar {
+				background: #fff;
+				box-shadow: 0 2px 5px 0 rgb(0 0 0 / 10%);
+				border-radius: 32px;
+				height: 32px;
+				overflow: hidden;
+				width: 32px;
+				text-align: center;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				color: #2D8CFF;
+				margin-right: 5px;
+			}
+
+			.uo-zoom-user-info__avatar img {
+				border-radius: 32px;
+			}
+
+			.uo-zoom-user-info__name {
+				opacity: 0.75;
+				margin-left: 5px;
+			}
 		</style>
 		<?php
 	}
@@ -668,7 +682,7 @@ class Zoom_Helpers {
 	/**
 	 * get_client
 	 *
-	 * @return void
+	 * @return void|bool
 	 */
 	public function get_client() {
 
@@ -689,7 +703,8 @@ class Zoom_Helpers {
 	/**
 	 * refresh_token
 	 *
-	 * @param  array $client
+	 * @param array $client
+	 *
 	 * @return void
 	 */
 	public function refresh_token() {
@@ -715,7 +730,7 @@ class Zoom_Helpers {
 		// Generate the access token using the JWT library
 		$token = JWT::encode( $payload, $consumer_secret );
 
-		$client['access_token'] = $token;
+		$client['access_token']  = $token;
 		$client['refresh_token'] = $token;
 
 		// Cache it in settings

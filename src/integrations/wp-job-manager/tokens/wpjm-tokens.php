@@ -608,26 +608,42 @@ class Wpjm_Tokens {
 						$value = trim( $resume_experience_str, PHP_EOL );
 					}
 				} elseif ( $pieces[2] === 'WPJMAPPLICATIONCV' ) {
+
 					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {
 						$entry = $_resume_id;
 					}
 
-					$return = '';
-					if ( $attachments = get_job_application_attachments( $entry ) ) {
-						$return = '<ul class="resume-links">';
-						foreach ( $attachments as $attachment ) {
-							$return .= '<li class="resume-link resume-link-www"><a href="' . esc_url( $attachment ) . '">' . get_job_application_attachment_name( $attachment, 20 ) . '</a></li>';
-						}
-						$return .= '</ul>';
+					$attachments_list = array();
+
+					// Get the job application attachments.
+					if ( ! function_exists( 'get_job_application_attachments' ) ) {
+						return esc_html__('The addon WP Job Manager - Applications must be activated to use this token.', 'uncanny-automator');
 					}
-					if ( $attachments = get_resume_files( $entry ) ) {
-						$return = '<ul class="resume-links">';
+					
+					$attachments = get_job_application_attachments( $entry );
+
+					if ( ! empty( $attachments ) ) {
 						foreach ( $attachments as $attachment ) {
-							$return .= '<li class="resume-link resume-link-www"><a href="' . esc_url( $attachment ) . '">' . get_job_application_attachment_name( $attachment, 20 ) . '</a></li>';
+							$attachments_list[] = esc_url( $attachment );
 						}
-						$return .= '</ul>';
 					}
-					$value = $return;
+
+					// Get the resume files.
+					if ( ! function_exists( 'get_resume_files' ) ) {
+						return esc_html__('The addon WP Job Manager - Resume Manager must be activated to use this token.', 'uncanny-automator');
+					} 
+
+					$attachments = get_resume_files( $entry );
+
+					if ( ! empty( $attachments ) ) {
+						foreach ( $attachments as $attachment ) {
+							$attachments_list[] = esc_url( $attachment );
+						}
+					}
+
+					// Separate the attachment urls by a comma.
+					$value = implode( ', ', $attachments_list );
+
 				} elseif ( $pieces[2] === 'WPJMRESUMECATEGORIES' ) {
 
 					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {

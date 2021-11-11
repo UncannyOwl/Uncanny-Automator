@@ -12,9 +12,9 @@ use Caldera_Forms_Forms;
 class Cf_Tokens {
 
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_cf_cfforms_tokens', [ $this, 'cf_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_cf_token' ], 20, 6 );
-		add_filter( 'automator_maybe_trigger_cf_anoncfforms_tokens', [ $this, 'cf_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_cf_cfforms_tokens', array( $this, 'cf_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_cf_token' ), 20, 6 );
+		add_filter( 'automator_maybe_trigger_cf_anoncfforms_tokens', array( $this, 'cf_possible_tokens' ), 20, 2 );
 
 	}
 
@@ -25,9 +25,9 @@ class Cf_Tokens {
 	 * @return array
 	 */
 	public function cf_possible_tokens( $tokens = array(), $args = array() ) {
-		$form_id             = $args['value'];
-		$trigger_meta        = $args['meta'];
-		$fields              = array();
+		$form_id      = $args['value'];
+		$trigger_meta = $args['meta'];
+		$fields       = array();
 		if ( empty( $form_id ) ) {
 			return $tokens;
 		}
@@ -41,12 +41,12 @@ class Cf_Tokens {
 					$input_title = $field['label'];
 					$token_id    = "$form_id|$input_id";
 					$token_type  = $field['type'];
-					$fields[]    = [
+					$fields[]    = array(
 						'tokenId'         => $token_id,
 						'tokenName'       => $input_title,
 						'tokenType'       => $token_type,
 						'tokenIdentifier' => $trigger_meta,
-					];
+					);
 				}
 			}
 			$tokens = array_merge( $tokens, $fields );
@@ -82,15 +82,19 @@ class Cf_Tokens {
 				$token_info = explode( '|', $pieces[2] );
 				$form_id    = (int) sanitize_text_field( $token_info[0] );
 				$meta_key   = sanitize_text_field( $token_info[1] );
-				if ( isset( $_POST['formId'] ) && absint( $_POST['formId'] ) === $form_id && isset( $_POST[ $meta_key ] ) ) {
-					if ( is_array( $_POST[ $meta_key ] ) ) {
-						$value = sanitize_text_field( implode( ', ', $_POST[ $meta_key ] ) );
+
+				$request_form_id  = automator_filter_input( 'formId', INPUT_POST );
+				$request_meta_key = automator_filter_input( $meta_key, INPUT_POST );
+
+				if ( isset( $request_form_id ) && absint( $request_form_id ) === $form_id && isset( $request_meta_key ) ) {
+					if ( is_array( $request_meta_key ) ) {
+						$value = sanitize_text_field( implode( ', ', $request_meta_key ) );
 					} else {
-						$value = sanitize_text_field( $_POST[ $meta_key ] );
+						$value = sanitize_text_field( $request_meta_key );
 					}
 				}
-			}
-		}
+			}//end if
+		}//end if
 
 		return $value;
 	}

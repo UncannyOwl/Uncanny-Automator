@@ -98,7 +98,7 @@ class Wp_Helpers {
 	 * Return all the specific fields of post type in ajax call
 	 */
 	public function select_custom_post_func() {
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 		$fields = array();
 		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
 			$post_type = sanitize_text_field( $_POST['value'] );
@@ -325,7 +325,7 @@ class Wp_Helpers {
 	 * @param $_POST
 	 */
 	public function sendtest_webhook() {
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$key_values   = array();
 		$values       = (array) Automator()->uap_sanitize( $_POST['values'], 'mixed' );
@@ -427,7 +427,7 @@ class Wp_Helpers {
 	 * Return all the specific taxonomies of selected post type in ajax call
 	 */
 	public function select_post_type_taxonomies() {
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 		$fields = array();
 
 		$fields[] = array(
@@ -464,7 +464,7 @@ class Wp_Helpers {
 	 * Return all the specific terms of the selected taxonomy in ajax call
 	 */
 	public function select_terms_for_selected_taxonomy() {
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 		$fields = array();
 
 		$fields[] = array(
@@ -514,7 +514,7 @@ class Wp_Helpers {
 	public function select_posts_by_post_type() {
 		global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		$uncanny_automator->utilities->ajax_auth_check();
 		$fields = [];
 		if ( isset( $_POST ) && key_exists( 'value', $_POST ) && ! empty( $_POST['value'] ) ) {
 			$post_type = sanitize_text_field( $_POST['value'] );

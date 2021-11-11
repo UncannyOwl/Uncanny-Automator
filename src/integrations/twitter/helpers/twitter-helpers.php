@@ -42,7 +42,7 @@ class Twitter_Helpers {
 	/**
 	 * @param Twitter_Helpers $options
 	 */
-	public function setOptions( Twitter_Helpers $options ) {
+	public function setOptions( Twitter_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
 	}
 
@@ -115,7 +115,7 @@ class Twitter_Helpers {
 				$api_ver    = '1.0';
 
 				$action       = 'authorization_request';
-				$redirect_url = urlencode( $tab_url );
+				$redirect_url = rawurlencode( $tab_url );
 				$button_url   = $this->automator_api . "?action={$action}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
 				$button_text  = __( 'Connect an account', 'uncanny-automator' );
 				$button_class = 'uo-connect-button';
@@ -124,11 +124,8 @@ class Twitter_Helpers {
 			ob_start();
 			?>
 
-			<a href="<?php echo $button_url; ?>"
-			   class="uo-settings-btn uo-settings-btn--secondary <?php echo $button_class; ?>">
-				<?php
-				echo $button_text;
-				?>
+			<a href="<?php echo esc_url( $button_url ); ?>" class="uo-settings-btn uo-settings-btn--secondary <?php echo esc_attr( $button_class ); ?>">
+				<?php echo esc_attr( $button_text ); ?>
 			</a>
 
 			<style>
@@ -151,7 +148,7 @@ class Twitter_Helpers {
 					color: #1d9bf0;
 					margin-right: 5px;
 				}
-				
+
 				.uo-twitter-user-info__handle {
 					font-weight: 700;
 					color: #212121;
@@ -241,10 +238,11 @@ class Twitter_Helpers {
 	 * @return mixed
 	 */
 	public function capture_oauth_tokens() {
-		if ( isset( $_REQUEST['tab'] ) && $this->setting_tab == $_REQUEST['tab'] ) {
+		$tab = automator_filter_input( 'tab' );
+		if ( ! empty( $tab ) && $tab === $this->setting_tab ) {
 
-			if ( ! empty( $_GET['automator_api_message'] ) ) {
-				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $_GET['automator_api_message'], wp_create_nonce( 'automator_twitter_api_authentication' ) );
+			if ( ! empty( automator_filter_input( 'automator_api_message' ) ) ) {
+				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( automator_filter_input( 'automator_api_message' ), wp_create_nonce( 'automator_twitter_api_authentication' ) );
 				if ( $tokens ) {
 					update_option( '_uncannyowl_twitter_settings', $tokens );
 					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
@@ -253,7 +251,7 @@ class Twitter_Helpers {
 					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=2' ) );
 					die;
 				}
-			} elseif ( ! empty( $_GET['disconnect'] ) ) {
+			} elseif ( ! empty( automator_filter_input( 'disconnect' ) ) ) {
 				delete_option( '_uncannyowl_twitter_settings' );
 				wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab ) );
 				die;

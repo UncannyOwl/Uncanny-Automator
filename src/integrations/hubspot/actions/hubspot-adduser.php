@@ -49,8 +49,8 @@ class HUBSPOT_ADDUSER {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			// translators: The user
-			'sentence'           => sprintf( __( 'Add {{the user:%1$s}} to HubSpot', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add {{the user}} to HubSpot', 'uncanny-automator' ),
+			'sentence'           => sprintf( __( 'Add/Update {{the user:%1$s}} in HubSpot', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name' => __( 'Add/Update {{the user}} in HubSpot', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'requires_user'      => true,
@@ -93,6 +93,14 @@ class HUBSPOT_ADDUSER {
 						'remove_row_button' => __( 'Remove field', 'uncanny-automator' ),
 						'hide_actions'      => false,
 					),
+					array(
+						'option_code'   => 'UPDATE',
+						'input_type'    => 'checkbox',
+						'label'         => __( 'If the contact already exists, update their info', 'uncanny-automator' ),
+						'description'   => '',
+						'required'      => false,
+						'default_value' => true,
+					),
 				),
 			),
 
@@ -133,6 +141,12 @@ class HUBSPOT_ADDUSER {
 			);
 		}
 
+		$update = true;
+
+		if ( ! empty( $action_data['meta']['UPDATE'] ) ) {
+			$update = filter_var( $action_data['meta']['UPDATE'], FILTER_VALIDATE_BOOLEAN );
+		}
+
 		if ( ! empty( $action_data['meta']['CUSTOM_FIELDS'] ) ) {
 
 			$custom_fields = json_decode( Automator()->parse->text( $action_data['meta']['CUSTOM_FIELDS'], $recipe_id, $user_id, $args ), true );
@@ -164,7 +178,7 @@ class HUBSPOT_ADDUSER {
 			)
 		);
 
-		$response = Automator()->helpers->recipe->hubspot->options->create_contact( $properties );
+		$response = Automator()->helpers->recipe->hubspot->options->create_contact( $properties, $update );
 
 		if ( is_wp_error( $response ) ) {
 			$error_message                       = $response->get_error_message();

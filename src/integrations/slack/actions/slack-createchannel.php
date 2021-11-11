@@ -97,7 +97,7 @@ class SLACK_CREATECHANNEL {
 					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
-				} else if ( isset( $body->error ) ) {
+				} elseif ( isset( $body->error ) ) {
 					$error_msg                           = $body->error->description;
 					$action_data['do-nothing']           = true;
 					$action_data['complete_with_errors'] = true;

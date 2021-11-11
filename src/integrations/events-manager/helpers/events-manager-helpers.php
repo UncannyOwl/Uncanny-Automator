@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Events_Manager_Pro_Helpers;
 
 /**
  * Class Events_Manager_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Events_Manager_Helpers {
@@ -61,10 +62,13 @@ class Events_Manager_Helpers {
 		}
 
 		global $wpdb;
-		$table = $wpdb->prefix . 'em_events';
-		$query = "SELECT event_id,event_name FROM  $table WHERE event_status = 1 ORDER BY event_name";
 
-		$all_events = $wpdb->get_results( $query );
+		$all_events = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT event_id,event_name FROM {$wpdb->prefix}em_events WHERE event_status = %d ORDER BY event_name",
+				1
+			)
+		);
 
 		foreach ( $all_events as $event ) {
 			$title = $event->event_name;
@@ -74,7 +78,7 @@ class Events_Manager_Helpers {
 			$options[ $event->event_id ] = $title;
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -84,14 +88,14 @@ class Events_Manager_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'relevant_tokens' => [
-				$option_code          => __( 'Event title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Event ID', 'uncanny-automator' ),
-				$option_code . '_URL' => __( 'Event URL', 'uncanny-automator' ),
+			'relevant_tokens' => array(
+				$option_code                => __( 'Event title', 'uncanny-automator' ),
+				$option_code . '_ID'        => __( 'Event ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => __( 'Event URL', 'uncanny-automator' ),
 				$option_code . '_THUMB_ID'  => __( 'Event featured image ID', 'uncanny-automator' ),
 				$option_code . '_THUMB_URL' => __( 'Event featured image URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_em_events', $option );
 	}

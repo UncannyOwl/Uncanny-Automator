@@ -104,11 +104,11 @@ $theme              = $report['theme'];
 				// Focus TextArea.
 				$("#debug-report > textarea").select();
 				// Copy the TextArea contents.
-    			document.execCommand('copy');
+				document.execCommand('copy');
 				// Toggle to status.
 				$('span#copy-for-support-status').toggle();
 				// Automatically fades out after 750ms.
-				setTimeout(function(){
+				setTimeout(function () {
 					$('span#copy-for-support-status').fadeOut();
 				}, 750);
 			},
@@ -214,67 +214,48 @@ $theme              = $report['theme'];
 			?>
 		</td>
 	</tr>
-	<!--	<tr>-->
-	<!--		<td data-export-label="WC Blocks Version">--><?php //esc_html_e( 'Automator Blocks package', 'uncanny-automator' ); ?>
-	<!--			:-->
-	<!--		</td>-->
-	<!--		<td class="help">-->
-	<?php //echo esc_html__( 'The Automator Blocks package running on your site.', 'uncanny-automator' ); ?><!--</td>-->
-	<!--		<td>-->
-	<!--			--><?php
-	//			if ( class_exists( '\Automattic\Automator\Blocks\Package' ) ) {
-	//				$version = \Automattic\Automator\Blocks\Package::get_version();
-	//				$path    = \Automattic\Automator\Blocks\Package::get_path(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-	//			} else {
-	//				$version = null;
-	//			}
-	//
-	//			if ( ! is_null( $version ) ) {
-	//				echo '<mark class="yes"><span class="dashicons dashicons-yes"></span> ' . esc_html( $version ) . ' <code class="private">' . esc_html( $path ) . '</code></mark> ';
-	//			} else {
-	//				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Unable to detect the Blocks package.', 'uncanny-automator' ) . '</mark>';
-	//			}
-	//			?>
-	<!--		</td>-->
-	<!--	</tr>-->
-	<tr>
-		<td data-export-label="Action Scheduler Version"><?php esc_html_e( 'Action Scheduler package', 'uncanny-automator' ); ?>
-			:
-		</td>
-		<td class="help"><?php echo esc_html__( 'Action Scheduler package running on your site.', 'uncanny-automator' ); ?></td>
-		<td>
-			<?php
-			if ( class_exists( 'ActionScheduler_Versions' ) && class_exists( 'ActionScheduler' ) ) {
-				$version = ActionScheduler_Versions::instance()->latest_version();
-				$path    = ActionScheduler::plugin_path( '' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-			} else {
-				$version = null;
-			}
+	<?php if ( is_automator_pro_active() ) { ?>
+		<tr>
+			<td data-export-label="Action Scheduler Version"><?php esc_html_e( 'Action Scheduler package', 'uncanny-automator' ); ?>
+				:
+			</td>
+			<td class="help"><?php echo esc_html__( 'Action Scheduler package running on your site.', 'uncanny-automator' ); ?></td>
+			<td>
+				<?php
+				if ( class_exists( 'ActionScheduler_Versions' ) && class_exists( 'ActionScheduler' ) ) {
+					$version = ActionScheduler_Versions::instance()->latest_version();
+					$path    = ActionScheduler::plugin_path( '' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				} else {
+					$version = null;
+				}
 
-			if ( ! is_null( $version ) ) {
-				echo '<mark class="yes"><span class="dashicons dashicons-yes"></span> ' . esc_html( $version ) . ' <code class="private">' . esc_html( $path ) . '</code></mark> ';
-			} else {
-				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Unable to detect the Action Scheduler package.', 'uncanny-automator' ) . '</mark>';
-			}
-			?>
-		</td>
-	</tr>
-	<tr>
-		<td data-export-label="Log Directory Writable"><?php esc_html_e( 'Log directory writable', 'uncanny-automator' ); ?>
-			:
-		</td>
-		<td class="help"><?php echo esc_html__( 'Several Automator extensions can write logs which makes debugging problems easier. The directory must be writable for this to happen.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
-		<td>
-			<?php
-			if ( $environment['log_directory_writable'] ) {
-				echo '<mark class="yes"><span class="dashicons dashicons-yes"></span> <code class="private">' . esc_html( $environment['log_directory'] ) . '</code></mark> ';
-			} else {
-				/* Translators: %1$s: Log directory, %2$s: Log directory constant */
-				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( 'To allow logging, make %1$s writable or define a custom %2$s.', 'uncanny-automator' ), '<code>' . esc_html( $environment['log_directory'] ) . '</code>', '<code>UA_DEBUG_LOGS_DIR</code>' ) . '</mark>';
-			}
-			?>
-		</td>
-	</tr>
+				if ( ! is_null( $version ) ) {
+					echo '<mark class="yes"><span class="dashicons dashicons-yes"></span> ' . esc_html( $version ) . ' <code class="private">' . esc_html( $path ) . '</code></mark> ';
+				} else {
+					echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Unable to detect the Action Scheduler package.', 'uncanny-automator' ) . '</mark>';
+				}
+				?>
+			</td>
+		</tr>
+	<?php } ?>
+	<?php if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) { ?>
+		<tr>
+			<td data-export-label="Log Directory Writable"><?php esc_html_e( 'Log directory writable', 'uncanny-automator' ); ?>
+				:
+			</td>
+			<td class="help"><?php echo esc_html__( 'Several Automator extensions can write logs which makes debugging problems easier. The directory must be writable for this to happen.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+			<td>
+				<?php
+				if ( $environment['log_directory_writable'] ) {
+					echo '<mark class="yes"><span class="dashicons dashicons-yes"></span> <code class="private">' . esc_html( $environment['log_directory'] ) . '</code></mark> ';
+				} else {
+					/* Translators: %1$s: Log directory, %2$s: Log directory constant */
+					echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( 'To allow logging, make %1$s writable or define a custom %2$s.', 'uncanny-automator' ), '<code>' . esc_html( $environment['log_directory'] ) . '</code>', '<code>UA_DEBUG_LOGS_DIR</code>' ) . '</mark>';
+				}
+				?>
+			</td>
+		</tr>
+	<?php } ?>
 	<tr>
 		<td data-export-label="WP Version"><?php esc_html_e( 'WordPress version', 'uncanny-automator' ); ?>:</td>
 		<td class="help"><?php echo esc_html__( 'The version of WordPress installed on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
@@ -367,13 +348,11 @@ $theme              = $report['theme'];
 			if ( version_compare( $environment['php_version'], '7.2', '>=' ) ) {
 				echo '<mark class="yes">' . esc_html( $environment['php_version'] ) . '</mark>';
 			} else {
-				$update_link = ' <a href="#" target="_blank">' . esc_html__( 'How to update your PHP version', 'uncanny-automator' ) . '</a>';
+				$update_link = ' <a href="https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny_automator&utm_medium=tools_status&utm_content=update_php_version" target="_blank">' . esc_html__( 'How to update your PHP version', 'uncanny-automator' ) . '</a>';
 				$class       = 'error';
 
-				if ( version_compare( $environment['php_version'], '5.4', '<' ) ) {
-					$notice = '<span class="dashicons dashicons-warning"></span> ' . __( 'Automator will run under this version of PHP, however, some features such as geolocation are not compatible. Support for this version will be dropped in the next major release. We recommend using PHP version 7.2 or above for greater performance and security.', 'uncanny-automator' ) . $update_link;
-				} elseif ( version_compare( $environment['php_version'], '5.6', '<' ) ) {
-					$notice = '<span class="dashicons dashicons-warning"></span> ' . __( 'Automator will run under this version of PHP, however, it has reached end of life. We recommend using PHP version 7.2 or above for greater performance and security.', 'uncanny-automator' ) . $update_link;
+				if ( version_compare( $environment['php_version'], '5.6', '<' ) ) {
+					$notice = '<span class="dashicons dashicons-warning"></span> ' . __( 'Automator will not run under this version of PHP, however, it has reached end of life. We recommend using PHP version 5.6 or above for greater performance and security.', 'uncanny-automator' ) . $update_link;
 				} elseif ( version_compare( $environment['php_version'], '7.2', '<' ) ) {
 					$notice = __( 'We recommend using PHP version 7.2 or above for greater performance and security.', 'uncanny-automator' ) . $update_link;
 					$class  = 'recommendation';
@@ -701,17 +680,17 @@ if ( 0 < count( $dropins_mu_plugins['mu_plugins'] ) ) :
 		<td class="help"><?php echo esc_html__( 'The theme developers URL.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 		<td><?php echo esc_html( $theme['author_url'] ); ?></td>
 	</tr>
-	<tr>
-		<td data-export-label="Child Theme"><?php esc_html_e( 'Child theme', 'uncanny-automator' ); ?>:</td>
-		<td class="help"><?php echo esc_html__( 'Displays whether or not the current theme is a child theme.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
-		<td>
-			<?php
-			if ( $theme['is_child_theme'] ) {
-				echo '<mark class="yes"><span class="dashicons dashicons-yes"></span></mark>';
-			}
-			?>
-		</td>
-	</tr>
+	<?php
+	if ( $theme['is_child_theme'] ) {
+		?>
+		<tr>
+			<td data-export-label="Child Theme"><?php esc_html_e( 'Child theme', 'uncanny-automator' ); ?>:</td>
+			<td class="help"><?php echo esc_html__( 'Displays whether or not the current theme is a child theme.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+			<td>
+				<mark class="yes"><span class="dashicons dashicons-yes"></span></mark>
+			</td>
+		</tr>
+	<?php } ?>
 	<?php if ( $theme['is_child_theme'] ) : ?>
 		<tr>
 			<td data-export-label="Parent Theme Name"><?php esc_html_e( 'Parent theme name', 'uncanny-automator' ); ?>
@@ -765,26 +744,26 @@ if ( 0 < count( $dropins_mu_plugins['mu_plugins'] ) ) :
 	/**
 	 * Wrapping tables data to display tooltip.
 	 */
-	var wrapInner = function(parent, wrapper) {
+	var wrapInner = function (parent, wrapper) {
 		if (typeof wrapper === "string")
 			wrapper = document.createElement(wrapper);
 
 		var div = parent.appendChild(wrapper);
 
-		while(parent.firstChild !== wrapper)
+		while (parent.firstChild !== wrapper)
 			wrapper.appendChild(parent.firstChild);
 	}
 
 	let td_help = document.querySelectorAll('table.automator_status_table td.help');
 
-	if ( td_help.length >= 1 ) {
-		td_help.forEach(function( item ){
-			if ( '&nbsp;' === item.innerHTML.trim() || 0 === item.innerHTML.trim().length ) {
+	if (td_help.length >= 1) {
+		td_help.forEach(function (item) {
+			if ('&nbsp;' === item.innerHTML.trim() || 0 === item.innerHTML.trim().length) {
 				// Remove the '?' icon.
 				item.classList.add('no-tooltip-text');
 				return;
 			}
-			wrapInner( item, 'span' );
+			wrapInner(item, 'span');
 		});
 	}
 </script>

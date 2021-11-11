@@ -49,12 +49,12 @@ class SLACK_SENDMESSAGE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'send_message' ),
-			'options_callback'	 => array( $this, 'load_options' )
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
-		
+
 	/**
 	 * load_options
 	 *
@@ -62,7 +62,7 @@ class SLACK_SENDMESSAGE {
 	 */
 	public function load_options() {
 		return array(
-			'options_group'      => array(
+			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->slack->options->get_slack_channels( esc_attr__( 'Slack Channel', 'uncanny-automator' ), 'SLACKCHANNEL' ),
 					Automator()->helpers->recipe->slack->textarea_field( 'SLACKMESSAGE', esc_attr__( 'Message', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( '* Markdown is supported', 'uncanny-automator' ), __( 'Enter the message', 'uncanny-automator' ) ),
@@ -95,7 +95,7 @@ class SLACK_SENDMESSAGE {
 					$uncanny_automator->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
-				} else if ( isset( $body->error ) ) {
+				} elseif ( isset( $body->error ) ) {
 					$error_msg                           = $body->error->description;
 					$action_data['do-nothing']           = true;
 					$action_data['complete_with_errors'] = true;

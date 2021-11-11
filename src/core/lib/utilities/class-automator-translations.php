@@ -697,8 +697,69 @@ class Automator_Translations {
 				'fatalErrorHandler'   => array(
 					'title'   => __( 'Sorry, something went wrong', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.fatalErrorHandler.title
-					'content' => __( 'Click Learn more for steps you can take to resolve this issue.', 'uncanny-automator' ),
+					'content' => __( 'Click "Learn more" for steps you can take to resolve this issue.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.fatalErrorHandler.content
+
+					'accessDenied' => array(
+						'title'   => __( 'Access denied', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.accessDenied.title
+						/* translators: 1. The endpoint */
+						'content' => __( 'Automator experienced a permissions (403) error. This might be caused by an expired WordPress session or a REST endpoint access issue. Automator specifically failed to do a REST call to %1$s. Reloading the page may fix the issue, otherwise have your host investigate why requests to %1$s are returning a 403 error.', 'uncanny-automator' )
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.accessDenied.content
+					),
+
+					'notFound' => array(
+						'title'   => __( 'Not found', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.title
+						/* translators: 1. Link to "Site permalinks". 2. Link to "Uncanny Automator support" */
+						'content' => __( 'A endpoint that Automator requires is missing. If your %1$s are set to Plain, please change them to something else. Otherwise, removing and reinstalling Automator plugins to rule out an upload issue is recommended, otherwise please contact %2$s.', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.content
+						'sitePermalinks' => __( 'site permalinks', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.sitePermalinks=
+					),
+
+					'timeout' => array(
+						'title'   => __( 'Request timeout', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.timeout.title
+						'content' => __( 'The Automator request timed out, likely due to insufficient server resources. Please contact your host.', 'uncanny-automator' )
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.timeout.content
+					),
+
+					'serverError' => array(
+						'title'   => __( 'Internal error', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.serverError.title
+						/* translators: 1. Link to "Uncanny Automator support" */
+						'content' => __( 'Automator experienced a fatal error on your site. Please check your PHP and debug error log for more details, then sent the associated error details to %1$s.', 'uncanny-automator' )
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.serverError.content
+					),
+
+					'parserError' => array(
+						'title'   => __( 'Parser error', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.parserError.title
+						'content' => __( "We have detected a conflict with another plugin. Try testing in a Staging environment with only Automator plugins active, then gradually reactivate plugins until things break again to trace what's causing it.", 'uncanny-automator' )
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.parserError.content
+					),
+
+					'dataMissing' => array(
+						'title'   => __( 'Data missing', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.title
+						/* translators: 1. Link to contact support. 2. Link to the "Automator Tools" page */
+						'content' => __( 'Automator has detected that expected data is missing. Please %1$s with details of the issue and a copy of the System Report on the %2$s page.', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.content
+						'contactSupport' => __( 'contact support', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.contactSupport
+						'automatorTools' => __( 'Automator Tools', 'uncanny-automator' )
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.automatorTools
+					),
+
+					'generic' => array(
+						'title'   => __( 'Unknown error', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.generic.title
+						/* translators: 1. Link to contact support */
+						'content' => __( 'Automator has encountered an unknown error. Please contact %1$s with a screenshot of your recipe, details about what you were doing and any other information that may help us with the error.', 'uncanny-automator' )
+						// UncannyAutomator.i18n.debugging.fatalErrorHandler.generic.content
+					),
+
 				),
 				'uiCantLoad'          => array(
 					'title'   => __( 'The recipe creator could not be loaded', 'uncanny-automator' ),
@@ -711,6 +772,10 @@ class Automator_Translations {
 				'buttonGoBack'        => __( 'Go to all recipes', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.debugging.buttonGoBack
 				'learnMore'           => __( 'Learn more', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.debugging.learnMore
+				/* translators: 1. Trademarked term */
+				'automatorSupport'    => sprintf( __( '%1$s support', 'uncanny-automator' ), 'Uncanny Automator' ),
+				// UncannyAutomator.i18n.debugging.automatorSupport
 				'recipeTitle'         => 'Recipe',
 				'recipeItemsTitle'    => 'Recipe items',
 				'recipeType'          => 'Type',

@@ -32,31 +32,40 @@ class Learnpress_Helpers {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		add_action( 'wp_ajax_select_section_from_course_LPMARKLESSONDONE', array(
-			$this,
-			'select_section_from_course_func',
-		) );
-		add_action( 'wp_ajax_select_lesson_from_section_LPMARKLESSONDONE', array(
-			$this,
-			'select_lesson_from_section_func',
-		) );
-		add_action( 'wp_ajax_select_section_from_course_LPMARKLESSONDONE', [
-			$this,
-			'select_section_from_course_func',
-		] );
+		add_action(
+			'wp_ajax_select_section_from_course_LPMARKLESSONDONE',
+			array(
+				$this,
+				'select_section_from_course_func',
+			)
+		);
+		add_action(
+			'wp_ajax_select_lesson_from_section_LPMARKLESSONDONE',
+			array(
+				$this,
+				'select_lesson_from_section_func',
+			)
+		);
+		add_action(
+			'wp_ajax_select_section_from_course_LPMARKLESSONDONE',
+			array(
+				$this,
+				'select_section_from_course_func',
+			)
+		);
 	}
 
 	/**
 	 * @param Learnpress_Helpers $options
 	 */
-	public function setOptions( Learnpress_Helpers $options ) {
+	public function setOptions( Learnpress_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Learnpress_Pro_Helpers $pro
 	 */
-	public function setPro( Learnpress_Pro_Helpers $pro ) {
+	public function setPro( Learnpress_Pro_Helpers $pro ) { // phpcs:ignore
 		$this->pro = $pro;
 	}
 
@@ -70,27 +79,24 @@ class Learnpress_Helpers {
 	public function all_lp_courses( $label = null, $option_code = 'LPCOURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Course', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'post_type'      => 'lp_course',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -99,12 +105,12 @@ class Learnpress_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_lp_courses', $option );
 	}
@@ -118,27 +124,24 @@ class Learnpress_Helpers {
 	public function all_lp_lessons( $label = null, $option_code = 'LPLESSON', $any_option = true ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Lesson', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'post_type'      => 'lp_lesson',
 			'posts_per_page' => 9999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -147,12 +150,12 @@ class Learnpress_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_lp_lessons', $option );
 	}
@@ -162,26 +165,28 @@ class Learnpress_Helpers {
 	 */
 	public function select_section_from_course_func() {
 
-
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
-		if ( isset( $_POST ) ) {
-			if ( absint( $_POST['value'] ) > 0 ) {
-				$course_curd = new LP_Course_CURD();
-				$sections    = $course_curd->get_course_sections( absint( $_POST['value'] ) );
 
-				foreach ( $sections as $section ) {
-					$fields[] = [
-						'value' => $section->section_id,
-						'text'  => $section->section_name,
-					];
-				}
+		$value = absint( automator_filter_input( 'value', INPUT_POST ) );
+
+		if ( $value > 0 ) {
+			$course_curd = new LP_Course_CURD();
+			$sections    = $course_curd->get_course_sections( $value );
+
+			foreach ( $sections as $section ) {
+				$fields[] = array(
+					'value' => $section->section_id,
+					'text'  => $section->section_name,
+				);
 			}
 		}
 
+
 		echo wp_json_encode( $fields );
+
 		die();
 	}
 
@@ -190,23 +195,23 @@ class Learnpress_Helpers {
 	 */
 	public function select_lesson_from_section_func() {
 
-
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
-		if ( isset( $_POST ) ) {
-			$course_id = absint( $_POST['values']['LPCOURSE'] );
-			if ( $course_id > 0 ) {
-				$course_curd = new LP_Section_CURD( $course_id );
-				$lessons     = $course_curd->get_section_items( absint( $_POST['value'] ) );
 
-				foreach ( $lessons as $lesson ) {
-					$fields[] = [
-						'value' => $lesson['id'],
-						'text'  => $lesson['title'],
-					];
-				}
+		$values = automator_filter_input_array( 'values', INPUT_POST );
+
+		$course_id = absint( $values['LPCOURSE'] );
+		if ( $course_id > 0 ) {
+			$course_curd = new LP_Section_CURD( $course_id );
+			$lessons     = $course_curd->get_section_items( absint( automator_filter_input( 'value', INPUT_POST ) ) );
+
+			foreach ( $lessons as $lesson ) {
+				$fields[] = array(
+					'value' => $lesson['id'],
+					'text'  => $lesson['title'],
+				);
 			}
 		}
 

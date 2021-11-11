@@ -236,16 +236,17 @@ class Badgeos_Helpers {
 	 */
 	public function select_achievements_from_types_func() {
 
+		// Nonce and post object validation.
+		Automator()->utilities->ajax_auth_check();
 
-
-		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		$value = automator_filter_input( 'value', INPUT_POST );
 
 		$fields = array();
-		if ( isset( $_POST['value'] ) && ! empty( $_POST['value'] ) ) {
+
+		if ( isset( $value ) && ! empty( $value ) ) {
 
 			$args = [
-				'post_type'      => sanitize_text_field( $_POST['value'] ),
+				'post_type'      => sanitize_text_field( $value ),
 				'posts_per_page' => 999,
 				'orderby'        => 'title',
 				'order'          => 'ASC',
@@ -272,13 +273,16 @@ class Badgeos_Helpers {
 
 
 		// Nonce and post object validation.
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
+
+		$value = automator_filter_input( 'value', INPUT_POST );
 
 		$fields = array();
-		if ( isset( $_POST['value'] ) && ! empty( $_POST['value'] ) ) {
+
+		if ( isset( $value ) && ! empty( $value ) ) {
 
 			$args = [
-				'post_type'      => sanitize_text_field( $_POST['value'] ),
+				'post_type'      => sanitize_text_field( $value ),
 				'posts_per_page' => 999,
 				'orderby'        => 'title',
 				'order'          => 'ASC',

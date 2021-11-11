@@ -12,11 +12,11 @@ class Elem_Tokens {
 
 	public function __construct() {
 
-		add_filter( 'automator_maybe_trigger_elem_elemform_tokens', [ $this, 'elem_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'elem_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_elem_elemform_tokens', array( $this, 'elem_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'elem_token' ), 20, 6 );
 
 		// Save latest form entry in trigger meta for tokens.
-		add_action( 'automator_save_elementor_form_entry', [ $this, 'elem_save_form_entry' ], 10, 3 );
+		add_action( 'automator_save_elementor_form_entry', array( $this, 'elem_save_form_entry' ), 10, 3 );
 	}
 
 	/**
@@ -28,14 +28,22 @@ class Elem_Tokens {
 	 * @return array
 	 */
 	public function elem_possible_tokens( $tokens = array(), $args = array() ) {
+
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 
 		if ( ! empty( $form_id ) ) {
+
 			global $wpdb;
-			$query      = "SELECT ms.meta_value  FROM {$wpdb->postmeta} ms JOIN {$wpdb->posts} p on p.ID = ms.post_id WHERE ms.meta_key LIKE '_elementor_data' AND ms.meta_value LIKE '%form_fields%' AND p.post_status = 'publish' ";
-			$post_metas = $wpdb->get_results( $query );
-			$fields     = array();
+
+			$post_metas = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ms.meta_value  FROM {$wpdb->postmeta} ms JOIN {$wpdb->posts} p on p.ID = ms.post_id WHERE ms.meta_key LIKE '_elementor_data' AND ms.meta_value LIKE '%form_fields%' AND p.post_status = %s",
+					'publish'
+				)
+			);
+
+			$fields = array();
 			if ( ! empty( $post_metas ) ) {
 				foreach ( $post_metas as $post_meta ) {
 
@@ -47,22 +55,21 @@ class Elem_Tokens {
 									foreach ( $form->settings->form_fields as $field ) {
 										$input_id = $field->custom_id;
 										$token_id = "$form_id|$input_id";
-										$fields[] = [
-											'tokenId'         => $token_id,
-											'tokenName'       => isset( $field->field_label ) ? $field->field_label : 'Unknown',
-											'tokenType'       => isset( $field->field_type ) ? $field->field_type : 'text',
+										$fields[] = array(
+											'tokenId'   => $token_id,
+											'tokenName' => isset( $field->field_label ) ? $field->field_label : 'Unknown',
+											'tokenType' => isset( $field->field_type ) ? $field->field_type : 'text',
 											'tokenIdentifier' => $trigger_meta,
-										];
+										);
 									}
 								}
 								$tokens = array_merge( $tokens, $fields );
 							}
 						}
 					}
-				}
-			}
-		}
-
+				}//end foreach
+			}//end if
+		}//end if
 
 		return $tokens;
 	}
@@ -107,10 +114,10 @@ class Elem_Tokens {
 								}
 							}
 						}
-					}
-				}
-			}
-		}
+					}//end foreach
+				}//end if
+			}//end if
+		}//end if
 
 		return $value;
 	}
@@ -150,35 +157,37 @@ class Elem_Tokens {
 										if ( $recipe_log_id_raw ) {
 											$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 											$run_number     = (int) $trigger_result['args']['run_number'];
-											$args           = [
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'ELEMFORM_' . $form_id,
-												'meta_value'     => $data,
-												'run_number'     => $run_number, //get run number
-												'trigger_log_id' => $trigger_log_id,
-											];
+											$args           = array(
+												'user_id'  => $user_id,
+												'trigger_id' => $trigger_id,
+												'meta_key' => 'ELEMFORM_' . $form_id,
+												'meta_value' => $data,
+												'run_number' => $run_number,
+												// get run number
+																									'trigger_log_id' => $trigger_log_id,
+											);
 											Automator()->insert_trigger_meta( $args );
 											// For form name
-											$args = [
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'ELEMFORM_ELEMFORM',
-												'meta_value'     => $form_name,
-												'run_number'     => $run_number, //get run number
-												'trigger_log_id' => $trigger_log_id,
-											];
+											$args = array(
+												'user_id'  => $user_id,
+												'trigger_id' => $trigger_id,
+												'meta_key' => 'ELEMFORM_ELEMFORM',
+												'meta_value' => $form_name,
+												'run_number' => $run_number,
+												// get run number
+																									'trigger_log_id' => $trigger_log_id,
+											);
 
 											Automator()->insert_trigger_meta( $args );
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+										}//end if
+									}//end if
+								}//end foreach
+							}//end if
+						}//end foreach
+					}//end if
+				}//end if
+			}//end foreach
+		}//end if
 	}
 
 }

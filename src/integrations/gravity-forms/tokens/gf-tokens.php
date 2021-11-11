@@ -16,9 +16,9 @@ class Gf_Tokens {
 	 * Gf_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_gf_gfforms_tokens', [ $this, 'gf_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'gf_token' ], 20, 6 );
-		add_filter( 'automator_maybe_trigger_gf_anongfforms_tokens', [ $this, 'gf_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_gf_gfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'gf_token' ), 20, 6 );
+		add_filter( 'automator_maybe_trigger_gf_anongfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
 	}
 
 	/**
@@ -57,30 +57,29 @@ class Gf_Tokens {
 							$input_title = GFCommon::get_label( $field, $input['id'] );
 							$input_type  = $this->get_field_type( $input );
 							$token_id    = "$form_id|$input_id";
-							$fields[]    = [
+							$fields[]    = array(
 								'tokenId'         => $token_id,
 								'tokenName'       => $input_title,
 								'tokenType'       => $input_type,
 								'tokenIdentifier' => $trigger_meta,
-							];
+							);
 						}
 					} elseif ( ! rgar( $field, 'displayOnly' ) ) {
 						$input_id    = $field['id'];
 						$input_title = GFCommon::get_label( $field );
 						$token_id    = "$form_id|$input_id";
 						$input_type  = $this->get_field_type( $field );
-						$fields[]    = [
+						$fields[]    = array(
 							'tokenId'         => $token_id,
 							'tokenName'       => $input_title,
 							'tokenType'       => $input_type,
 							'tokenIdentifier' => $trigger_meta,
-						];
+						);
 					}
 				}
 			}
 			$tokens = array_merge( $tokens, $fields );
 		}
-
 
 		return $tokens;
 	}
@@ -90,7 +89,7 @@ class Gf_Tokens {
 	 *
 	 * @return string
 	 */
-	function get_field_type( $field ) {
+	public function get_field_type( $field ) {
 		if ( is_object( $field ) && isset( $field->type ) ) {
 			$field_type = $field->type;
 		} elseif ( is_array( $field ) && key_exists( 'type', $field ) ) {
@@ -100,7 +99,7 @@ class Gf_Tokens {
 		}
 
 		switch ( $field_type ) {
-			case'email':
+			case 'email':
 				$type = 'email';
 				break;
 			case 'number':
@@ -124,7 +123,7 @@ class Gf_Tokens {
 	 */
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'GFFORMS', $pieces ) || in_array( 'ANONGFFORMS', $pieces ) ) {
+			if ( in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true ) ) {
 				if ( isset( $pieces[2] ) && 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) {
 					$t_data   = array_shift( $trigger_data );
 					$form_id  = $t_data['meta'][ $pieces[2] ];
@@ -143,9 +142,16 @@ class Gf_Tokens {
 				} else {
 					$table_name = RGFormsModel::get_lead_table_name();
 				}
+
 				$where_user_id = 0 === absint( $user_id ) ? 'created_by IS NULL' : 'created_by=' . $user_id;
-				$qq            = $wpdb->prepare( "SELECT id FROM {$table_name} WHERE $where_user_id AND form_id = %d ORDER BY date_created DESC LIMIT 0,1", $form_id );
-				$lead_id       = (int) $wpdb->get_var( $qq );
+
+				$lead_id = (int) $wpdb->get_var(
+					$wpdb->prepare(
+						'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
+						$form_id
+					)
+				);
+
 				if ( $lead_id ) {
 
 					if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
@@ -154,7 +160,7 @@ class Gf_Tokens {
 						$table_name = RGFormsModel::get_lead_meta_table_name();
 					}
 
-					$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
+					$value = $wpdb->get_var( $wpdb->prepare( 'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s', $form_id, $lead_id, $meta_key ) );
 				} else {
 					if ( 0 !== (int) $user_id && is_user_logged_in() ) {
 						//fallback.. ... attempt to find them by email??
@@ -164,8 +170,13 @@ class Gf_Tokens {
 							$table_name = RGFormsModel::get_lead_meta_table_name();
 						}
 						$where_user_email = get_user_by( 'ID', $user_id )->user_email;
-						$aa               = $wpdb->prepare( "SELECT entry_id FROM {$table_name} WHERE meta_value LIKE '$where_user_email' AND form_id = %d ORDER BY entry_id DESC LIMIT 0,1", $form_id );
-						$lead_id          = $wpdb->get_var( $aa );
+
+						$lead_id = $wpdb->get_var(
+							$wpdb->prepare(
+								'SELECT entry_id FROM ' . esc_sql( $table_name ) . " WHERE meta_value LIKE '" . esc_sql( $where_user_email ) . "' AND form_id = %d ORDER BY entry_id DESC LIMIT 0,1",
+								$form_id
+							)
+						);
 						if ( $lead_id ) {
 							if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
 								$table_name = RGFormsModel::get_entry_meta_table_name();
@@ -173,7 +184,14 @@ class Gf_Tokens {
 								$table_name = RGFormsModel::get_lead_meta_table_name();
 							}
 
-							$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
+							$value = $wpdb->get_var(
+								$wpdb->prepare(
+									'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
+									$form_id,
+									$lead_id,
+									$meta_key
+								)
+							);
 						} else {
 							// Try again for anonymous user when its using a different email address
 							if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
@@ -182,8 +200,14 @@ class Gf_Tokens {
 								$table_name = RGFormsModel::get_lead_table_name();
 							}
 							$where_user_id = 'created_by IS NULL';
-							$qq            = $wpdb->prepare( "SELECT id FROM {$table_name} WHERE $where_user_id AND form_id = %d ORDER BY date_created DESC LIMIT 0,1", $form_id );
-							$lead_id       = (int) $wpdb->get_var( $qq );
+
+							$lead_id = (int) $wpdb->get_var(
+								$wpdb->prepare(
+									'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
+									$form_id
+								)
+							);
+
 							if ( $lead_id ) {
 								if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
 									$table_name = RGFormsModel::get_entry_meta_table_name();
@@ -191,7 +215,15 @@ class Gf_Tokens {
 									$table_name = RGFormsModel::get_lead_meta_table_name();
 								}
 
-								$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
+								$value = $wpdb->get_var(
+									$wpdb->prepare(
+										'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
+										$form_id,
+										$lead_id,
+										$meta_key
+									)
+								);
+
 							}
 						}
 					} elseif ( 0 !== (int) $user_id && ! is_user_logged_in() ) {
@@ -202,8 +234,13 @@ class Gf_Tokens {
 							$table_name = RGFormsModel::get_lead_table_name();
 						}
 						$where_user_id = 'created_by IS NULL';
-						$qq            = $wpdb->prepare( "SELECT id FROM {$table_name} WHERE $where_user_id AND form_id = %d ORDER BY date_created DESC LIMIT 0,1", $form_id );
-						$lead_id       = (int) $wpdb->get_var( $qq );
+
+						$lead_id = (int) $wpdb->get_var(
+							$wpdb->prepare(
+								'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
+								$form_id
+							)
+						);
 						if ( $lead_id ) {
 							if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
 								$table_name = RGFormsModel::get_entry_meta_table_name();
@@ -211,7 +248,14 @@ class Gf_Tokens {
 								$table_name = RGFormsModel::get_lead_meta_table_name();
 							}
 
-							$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s", $form_id, $lead_id, $meta_key ) );
+							$value = $wpdb->get_var(
+								$wpdb->prepare(
+									'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
+									$form_id,
+									$lead_id,
+									$meta_key
+								)
+							);
 						}
 					} else {
 						$value = '';

@@ -60,7 +60,7 @@ class Zapier_Helpers {
 
 
 
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$key_values = array();
 		$headers    = array();

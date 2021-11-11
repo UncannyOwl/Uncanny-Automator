@@ -246,12 +246,24 @@ class Automator_Utilities {
 	}
 
 	/**
-	 * @param $post
+	 * Verifies that a correct security nonce was used with time limit.
+	 *
+	 * @param array $post
 	 */
-	public function ajax_auth_check( $post ) {
+	public function ajax_auth_check( $post = array() ) {
+		$return = array();
+		// Check if nonce is available, if not just bail.
+		if ( ! isset( $post['nonce'] ) && ! isset( $_POST['nonce'] ) ) {
+			$return['status'] = 'auth-failed';
+			$return['error']  = __( 'Automator did not receive nonce.', 'uncanny-automator' );
+			echo wp_json_encode( $return );
+			die();
+		}
+
 		$capability = 'manage_options';
 		$capability = apply_filters_deprecated( 'modify_recipe', array( $capability ), '3.0', 'automator_capability_required' );
 		$capability = apply_filters( 'automator_capability_required', $capability, $post );
+		// Check if the current user is capable of calling this auth.
 		if ( ! current_user_can( $capability ) ) {
 			$return['status'] = 'auth-failed';
 			$return['error']  = __( 'You do not have permission to update options.', 'uncanny-automator' );
@@ -259,26 +271,15 @@ class Automator_Utilities {
 			die();
 		}
 
-		if ( empty( $post ) ) {
+		// check if the nonce is verifiable.
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wp_rest' ) ) {
 			$return['status'] = 'auth-failed';
-			$return['error']  = __( '$_POST object is empty.', 'uncanny-automator' );
+			$return['error']  = __( 'nonce validation failed.', 'uncanny-automator' );
 			echo wp_json_encode( $return );
 			die();
 		}
 
-		if ( ! isset( $post['nonce'] ) ) {
-			$return['status'] = 'auth-failed';
-			$return['error']  = __( 'nonce was not received.', 'uncanny-automator' );
-			echo wp_json_encode( $return );
-			die();
-		}
-
-		if ( ! wp_verify_nonce( $post['nonce'], 'wp_rest' ) ) {
-			$return['status'] = 'auth-failed';
-			$return['error']  = __( 'nonce did not validate.', 'uncanny-automator' );
-			echo wp_json_encode( $return );
-			die();
-		}
+		// all good.
 	}
 
 	/**
@@ -330,7 +331,7 @@ class Automator_Utilities {
 		if ( ! absint( $recipe_id ) ) {
 			return false;
 		}
-		
+
 		if ( ! empty( $this->recipe_types ) && isset( $this->recipe_types[ $recipe_id ] ) ) {
 			return $this->recipe_types[ $recipe_id ];
 		}
@@ -477,6 +478,6 @@ class Automator_Utilities {
 
 		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
 
-		return ! empty( $minimal ) && ! empty( $hide_settings_tabs ) && ! empty( $hide_settings_tabs );
+		return ! empty( $minimal ) && ! empty( $hide_settings_tabs );
 	}
 }

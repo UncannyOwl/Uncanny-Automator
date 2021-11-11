@@ -186,7 +186,7 @@ class Utilities {
 		if ( ! empty( $file_name ) && is_dir( dirname( $file_name ) ) ) {
 			$icon = basename( $file_name ); // icon with extension.
 			if ( version_compare( PHP_VERSION, '7.0', '>=' ) ) {
-				$integration_dir = basename( dirname( $file_name, 2 ) ); // integration folder path.
+				$integration_dir = basename( dirname( $file_name) ); // integration folder path.
 			} else {
 				$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
 			}

@@ -46,11 +46,11 @@ class Usage_Reports {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'call_api' ),
-				'permission_callback' => array( $this, 'validate_rest_call' )
+				'permission_callback' => array( $this, 'validate_rest_call' ),
 			)
 		);
 	}
-	
+
 	/**
 	 * validate_rest_call
 	 *
@@ -77,14 +77,14 @@ class Usage_Reports {
 	 */
 	public function initialize_report() {
 		return array(
-			'server'           => array(),
-			'wp'               => array(),
-			'automator'        => array(),
-			'license'          => array(),
-			'active_plugins'   => array(),
-			'theme'            => array(),
-			'integrations'     => array(),
-			'recipes'          => array(
+			'server'         => array(),
+			'wp'             => array(),
+			'automator'      => array(),
+			'license'        => array(),
+			'active_plugins' => array(),
+			'theme'          => array(),
+			'integrations'   => array(),
+			'recipes'        => array(
 				'live_recipes_count'        => 0,
 				'user_recipes_count'        => 0,
 				'everyone_recipes_count'    => 0,
@@ -174,9 +174,9 @@ class Usage_Reports {
 		$response = wp_remote_post(
 			$url,
 			array(
-				'timeout'   => 0.01,
-				'blocking'  => false,
-				'body'      => array(
+				'timeout'  => 0.01,
+				'blocking' => false,
+				'body'     => array(
 					'next_report' => $next_report,
 				),
 
@@ -204,7 +204,7 @@ class Usage_Reports {
 		$this->get_wp_info();
 		$this->get_theme_info();
 		$this->get_license_info();
-		$this->get_plugins_info( 'active' );
+		$this->report['active_plugins'] = $this->get_plugins_info( $this->system_report['active_plugins'] );
 		$this->get_automator_info();
 		$this->get_recipes_info();
 
@@ -244,7 +244,7 @@ class Usage_Reports {
 		$this->import_from_system_report( $keys );
 
 	}
-	
+
 	/**
 	 * import_from_system_report
 	 *
@@ -319,19 +319,26 @@ class Usage_Reports {
 	 *
 	 * @return void
 	 */
-	public function get_plugins_info( $status ) {
+	public function get_plugins_info( $plugins ) {
 
-		$plugins = $this->system_report[ $status . '_plugins' ];
+		$active_plugins = array();
 
 		foreach ( $plugins as $plugin ) {
+
+			if ( empty( trim( $plugin['name'] ) ) ) {
+				continue;
+			}
+
 			array_push(
-				$this->report[ $status . '_plugins' ],
+				$active_plugins,
 				array(
 					'name'    => $plugin['name'],
 					'version' => $plugin['version'],
 				)
 			);
 		}
+
+		return $active_plugins;
 
 	}
 
@@ -359,7 +366,12 @@ class Usage_Reports {
 	 * @return void
 	 */
 	public function get_automator_info() {
-		$this->report['automator']['version']                         = $this->system_report['environment']['version'];
+		$this->report['automator']['version'] = $this->system_report['environment']['version'];
+
+		if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+			$this->report['automator']['pro_version'] = AUTOMATOR_PRO_PLUGIN_VERSION;
+		}
+
 		$this->report['automator']['database_version']                = $this->system_report['database']['automator_database_version'];
 		$this->report['automator']['database_available_view_version'] = $this->system_report['database']['automator_database_available_view_version'];
 	}
@@ -388,8 +400,14 @@ class Usage_Reports {
 
 		}
 
+		$this->report['integrations_array'] = array_values( $this->report['integrations_array'] );
+
 		$this->report['recipes']['total_integrations_used'] = count( $this->report['integrations'] );
-		$this->report['recipes']['completed_recipes']       = Automator()->get->total_completed_runs();
+
+		$this->report['recipes']['completed_recipes'] = Automator()->get->total_completed_runs();
+
+		$report_frequency                                       = get_option( 'automator_report_frequency', WEEK_IN_SECONDS );
+		$this->report['recipes']['completed_recipes_last_week'] = Automator()->get->completed_runs( $report_frequency );
 
 	}
 
@@ -431,7 +449,7 @@ class Usage_Reports {
 
 			$this->process_async_actions( $data );
 
-			$this->count_integration( $data['meta']['integration'], $type, $data['meta']['code'] );
+			$this->count_integration( $data['meta'], $type );
 
 		}
 
@@ -467,12 +485,30 @@ class Usage_Reports {
 	 *
 	 * @return void
 	 */
-	public function count_integration( $integration, $type, $code ) {
-		if ( isset( $this->report['integrations'][ $integration ][ $type ][ $code ] ) ) {
-			$this->report['integrations'][ $integration ][ $type ][ $code ] ++;
+	public function count_integration( $meta, $type ) {
+
+		$integration_code = $meta['integration'];
+		$integration_name = $meta['integration_name'];
+		$item_code        = $meta['code'];
+
+		if ( isset( $this->report['integrations'][ $integration_code ][ $type ][ $item_code ] ) ) {
+			$this->report['integrations'][ $integration_code ][ $type ][ $item_code ] ++;
 		} else {
-			$this->report['integrations'][ $integration ][ $type ][ $code ] = 1;
+			$this->report['integrations'][ $integration_code ][ $type ][ $item_code ] = 1;
 		}
+
+		if ( isset( $this->report['integrations_array'][ $item_code ] ) ) {
+			$this->report['integrations_array'][ $item_code ]['usage'] ++;
+		} else {
+			$this->report['integrations_array'][ $item_code ] = array(
+				'integration_name' => $integration_name,
+				'name'             => $item_code,
+				'integration'      => $integration_code,
+				'type'             => $type,
+				'usage'            => 1,
+			);
+		}
+
 		$this->report['recipes'][ 'total_' . $type ] ++;
 	}
 
@@ -518,7 +554,7 @@ class Usage_Reports {
 		if ( ! is_wp_error( $body ) && is_array( $body ) && isset( $body['data']['report_frequency'] ) ) {
 			$frequency = (int) $body['data']['report_frequency'];
 			update_option( 'automator_next_report', time() + $frequency );
-
+			update_option( 'automator_report_frequency', $frequency );
 			return;
 		}
 

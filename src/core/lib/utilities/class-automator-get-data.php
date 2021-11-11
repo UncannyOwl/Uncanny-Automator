@@ -521,7 +521,7 @@ class Automator_Get_Data {
 	 * @return mixed|string|null
 	 */
 	public function value_from_action_meta( $action_code = null, $meta = null ) {
-		
+
 		if ( null === $action_code || ! is_string( $action_code ) ) {
 			Automator()->error->add_error( 'value_from_action_meta', 'ERROR: You are trying to get a action meta from an action code without providing an $action_code', $this );
 
@@ -534,7 +534,7 @@ class Automator_Get_Data {
 		}
 
 		// Load all default trigger settings
-		$meta_value      = null;
+		$meta_value     = null;
 		$system_actions = Automator()->get_actions();
 
 		if ( empty( $system_actions ) ) {
@@ -970,6 +970,11 @@ class Automator_Get_Data {
 			return array();
 		}
 		$key    = 'automator_recipes_of_' . $check_trigger_code;
+		// If recipe id is set then only specific recipe data needed instead of all recipes by code
+		if( ! empty( $recipe_id ) ) {
+			$key .= '_' . $recipe_id;
+		}
+		
 		$return = Automator()->cache->get( $key );
 		if ( ! empty( $return ) ) {
 			return $return;
@@ -1283,5 +1288,29 @@ WHERE t.automator_trigger_id = %d
 		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed=1" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return apply_filters( 'automator_total_completed_runs', absint( $results ) );
+	}
+
+	/**
+	 * completed_runs
+	 *
+	 * @param  mixed $seconds_to_include
+	 * @return void
+	 */
+	public function completed_runs( $seconds_to_include = null ) {
+		global $wpdb;
+
+		$tbl   = Automator()->db->tables->recipe;
+		$query = "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed=1";
+
+		if ( null !== $seconds_to_include ) {
+			$timestamp = current_time( 'timestamp' );
+			$time_ago  = strtotime( "-$seconds_to_include Seconds", $timestamp );
+			$date      = date_i18n( 'Y-m-d H:i:s', $time_ago );
+			$query    .= " AND date_time >= '$date'";
+		}
+
+		$results = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return apply_filters( 'automator_completed_runs', absint( $results ) );
 	}
 }

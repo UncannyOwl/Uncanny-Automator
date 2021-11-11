@@ -32,33 +32,31 @@ class MASTERSTUDY_QUIZFAILED {
 	 */
 	public function define_trigger() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'stm-courses',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
 
-		$course_relevant_tokens = [
-			'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
-			'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
-			'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+		$course_relevant_tokens = array(
+			'MSLMSCOURSE'           => esc_attr__( 'Course title', 'uncanny-automator' ),
+			'MSLMSCOURSE_ID'        => esc_attr__( 'Course ID', 'uncanny-automator' ),
+			'MSLMSCOURSE_URL'       => esc_attr__( 'Course URL', 'uncanny-automator' ),
 			'MSLMSCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
-			'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' )
-		];
-		$relevant_tokens        = [
-			$this->trigger_meta            => esc_attr__( 'Quiz title', 'uncanny-automator' ),
-			$this->trigger_meta . '_ID'    => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
-			$this->trigger_meta . '_URL'   => esc_attr__( 'Quiz URL', 'uncanny-automator' ),
-			$this->trigger_meta . '_THUMB_ID'    => esc_attr__( 'Quiz featured image ID', 'uncanny-automator' ),
-			$this->trigger_meta . '_THUMB_URL'   => esc_attr__( 'Quiz featured image URL', 'uncanny-automator' ),
-			$this->trigger_meta . '_SCORE' => esc_attr__( 'Quiz score', 'uncanny-automator' )
-		];
+			'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
+		);
+		$relevant_tokens        = array(
+			$this->trigger_meta                => esc_attr__( 'Quiz title', 'uncanny-automator' ),
+			$this->trigger_meta . '_ID'        => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_URL'       => esc_attr__( 'Quiz URL', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_ID'  => esc_attr__( 'Quiz featured image ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Quiz featured image URL', 'uncanny-automator' ),
+			$this->trigger_meta . '_SCORE'     => esc_attr__( 'Quiz score', 'uncanny-automator' ),
+		);
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -74,8 +72,8 @@ class MASTERSTUDY_QUIZFAILED {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'quiz_failed' ),
 			'options'             => array(),
-			'options_group'       => [
-				$this->trigger_meta => [
+			'options_group'       => array(
+				$this->trigger_meta => array(
 					Automator()->helpers->recipe->field->select_field_ajax(
 						'MSLMSCOURSE',
 						esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
@@ -84,20 +82,18 @@ class MASTERSTUDY_QUIZFAILED {
 						'',
 						false,
 						true,
-						[
+						array(
 							'target_field' => $this->trigger_meta,
 							'endpoint'     => 'select_mslms_quiz_from_course_QUIZ',
-						],
+						),
 						$course_relevant_tokens
 					),
 					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Quiz', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
-				],
-			],
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -107,14 +103,12 @@ class MASTERSTUDY_QUIZFAILED {
 	 */
 	public function quiz_failed( $user_id, $quiz_id, $user_quiz_progress ) {
 
-
-
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $quiz_id,
 			'user_id' => $user_id,
-		];
+		);
 
 		$args = Automator()->maybe_add_trigger_entry( $args, false );
 
@@ -122,41 +116,41 @@ class MASTERSTUDY_QUIZFAILED {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
 
-					$source    = ( ! empty( $_POST['source'] ) ) ? intval( $_POST['source'] ) : '';
-					$course_id = ( ! empty( $_POST['course_id'] ) ) ? intval( $_POST['course_id'] ) : '';
+					$source    = ( ! empty( automator_filter_input( 'source', INPUT_POST ) ) ) ? intval( automator_filter_input( 'source', INPUT_POST ) ) : '';
+					$course_id = ( ! empty( automator_filter_input( 'course_id', INPUT_POST ) ) ) ? intval( automator_filter_input( 'course_id', INPUT_POST ) ) : '';
 					$course_id = apply_filters( 'user_answers__course_id', $course_id, $source );
 
 					Automator()->insert_trigger_meta(
-						[
+						array(
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
 							'meta_key'       => 'MSLMSCOURSE',
 							'meta_value'     => $course_id,
 							'trigger_log_id' => $result['args']['get_trigger_id'],
 							'run_number'     => $result['args']['run_number'],
-						]
+						)
 					);
 
 					Automator()->insert_trigger_meta(
-						[
+						array(
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
 							'meta_key'       => $this->trigger_meta . '_SCORE',
 							'meta_value'     => $user_quiz_progress . '%',
 							'trigger_log_id' => $result['args']['get_trigger_id'],
 							'run_number'     => $result['args']['run_number'],
-						]
+						)
 					);
 
 					Automator()->insert_trigger_meta(
-						[
+						array(
 							'user_id'        => $user_id,
 							'trigger_id'     => $result['args']['trigger_id'],
 							'meta_key'       => $this->trigger_meta,
 							'meta_value'     => $quiz_id,
 							'trigger_log_id' => $result['args']['get_trigger_id'],
 							'run_number'     => $result['args']['run_number'],
-						]
+						)
 					);
 					Automator()->maybe_trigger_complete( $result['args'] );
 				}

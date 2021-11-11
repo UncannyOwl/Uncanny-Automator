@@ -7,21 +7,22 @@ use WPCF7_Pipes;
 
 /**
  * Class Cf7_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Cf7_Tokens {
 
 	public function __construct() {
 
-		add_filter( 'automator_maybe_trigger_cf7_cf7forms_tokens', [ $this, 'cf7_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_cf7_cf7fields_tokens', [ $this, 'cf7_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_cf7_anoncf7forms_tokens', [ $this, 'cf7_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_trigger_cf7_cf7forms_tokens', array( $this, 'cf7_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_cf7_cf7fields_tokens', array( $this, 'cf7_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_cf7_anoncf7forms_tokens', array( $this, 'cf7_possible_tokens' ), 20, 2 );
 
-		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_cf7_token' ], 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_cf7_token' ), 20, 6 );
 
-		//save submission to user meta
-		add_action( 'automator_save_cf7_form', [ $this, 'automator_save_cf7_form_func' ], 20, 3 );
-		add_action( 'automator_save_anon_cf7_form', [ $this, 'automator_save_cf7_form_func' ], 20, 3 );
+		// save submission to user meta
+		add_action( 'automator_save_cf7_form', array( $this, 'automator_save_cf7_form_func' ), 20, 3 );
+		add_action( 'automator_save_anon_cf7_form', array( $this, 'automator_save_cf7_form_func' ), 20, 3 );
 	}
 
 	/**
@@ -63,19 +64,20 @@ class Cf7_Tokens {
 					$user_id        = (int) $trigger_result['args']['user_id'];
 					$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 					$run_number     = (int) $trigger_result['args']['run_number'];
-					$args           = [
-						'user_id'        => $user_id,
-						'trigger_id'     => $trigger_id,
-						'meta_key'       => $meta_key_prefix . $form_id,
-						'meta_value'     => serialize( $data ),
-						'run_number'     => $run_number, //get run number
-						'trigger_log_id' => $trigger_log_id,
-					];
+					$args           = array(
+						'user_id'    => $user_id,
+						'trigger_id' => $trigger_id,
+						'meta_key'   => $meta_key_prefix . $form_id,
+						'meta_value' => serialize( $data ),
+						'run_number' => $run_number,
+						// get run number
+													'trigger_log_id' => $trigger_log_id,
+					);
 
 					Automator()->insert_trigger_meta( $args );
-				}
-			}
-		}
+				}//end foreach
+			}//end foreach
+		}//end foreach
 	}
 
 	/**
@@ -95,7 +97,10 @@ class Cf7_Tokens {
 
 				$pipes = $tag->pipes;
 
-				$value = ( ! empty( $_POST[ $tag->name ] ) ) ? Automator()->utilities->automator_sanitize( $_POST[ $tag->name ], 'mixed' ) : '';
+				$request_tag_name = automator_filter_input( $tag->name, INPUT_POST );
+
+				$value = ( ! empty( $request_tag_name ) ) ? Automator()->utilities->automator_sanitize( $request_tag_name, 'mixed' ) : '';
+				
 				if ( WPCF7_USE_PIPE && $pipes instanceof WPCF7_Pipes && ! $pipes->zero() ) {
 					if ( is_array( $value ) ) {
 						$new_value = array();
@@ -111,10 +116,10 @@ class Cf7_Tokens {
 				}
 
 				$data[ $tag->name ] = $value;
-			}
+			}//end foreach
 
 			return $data;
-		}
+		}//end if
 	}
 
 	/**
@@ -154,24 +159,24 @@ class Cf7_Tokens {
 					continue;
 				}
 				$input_id = $tag->name;
-				//convert your-name to Your Name, your-email to Your Email
-				$input_title = ucwords( str_replace( [ '-', '_' ], ' ', $tag->name ) );
+				// convert your-name to Your Name, your-email to Your Email
+				$input_title = ucwords( str_replace( array( '-', '_' ), ' ', $tag->name ) );
 				$token_id    = "$form_id|$input_id";
 				$token_type  = 'text';
 				if ( strpos( $tag->type, 'email' ) || 'email*' === $tag->type || 'email' === $tag->type ) {
 					$token_type = 'email';
 				}
 
-				$fields[] = [
+				$fields[] = array(
 					'tokenId'         => $token_id,
 					'tokenName'       => $input_title,
 					'tokenType'       => $token_type,
 					'tokenIdentifier' => $trigger_meta,
-				];
+				);
 			}
 
 			$tokens = array_merge( $tokens, $fields );
-		}
+		}//end if
 
 		return $tokens;
 	}
@@ -266,7 +271,7 @@ class Cf7_Tokens {
 					$value = $user_meta[ $meta_key ];
 				}
 			}
-		}
+		}//end foreach
 
 		if ( in_array( 'CF7SUBFIELD', $pieces ) ) {
 			if ( $trigger_data ) {

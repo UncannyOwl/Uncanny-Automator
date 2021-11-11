@@ -156,6 +156,11 @@
 	outline: none;
 }
 
+.uo-settings-content-form input[type="number"]::placeholder,
+.uo-license-content-form input[type="password"]::placeholder {
+	color: #a4a4a4;
+}
+
 .uo-settings-content-form #uo-settings-field:valid {
 	font-family: Consolas, Monaco, "Courier New", Courier, monospace;
 	letter-spacing: 1px;

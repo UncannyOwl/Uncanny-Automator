@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Pmp_Tokens
  * @package Uncanny_Automator
@@ -25,8 +24,8 @@ class Pmp_Tokens {
 		//*************************************************************//
 		//add_filter( 'automator_maybe_trigger_pmp_tokens', [ $this, 'pmp_general_tokens' ], 20, 2 );
 		//add_filter( 'automator_maybe_trigger_pmp_pmpmembership_tokens', [ $this, 'pmp_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'pmp_token' ], 20, 6 );
-		add_action( 'uap_save_pmp_membership_level', [ $this, 'uap_save_pmp_membership_level' ], 10, 4 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'pmp_token' ), 20, 6 );
+		add_action( 'uap_save_pmp_membership_level', array( $this, 'uap_save_pmp_membership_level' ), 10, 4 );
 	}
 
 	/**
@@ -52,14 +51,14 @@ class Pmp_Tokens {
 
 	public function uap_save_pmp_membership_level( $membership_id, $args, $user_id, $meta ) {
 
-		$args = [
+		$args = array(
 			'user_id'        => $user_id,
 			'trigger_id'     => $args['trigger_id'],
 			'meta_key'       => $meta,
 			'meta_value'     => $membership_id,
 			'run_number'     => $args['run_number'], //get run number
 			'trigger_log_id' => $args['get_trigger_id'],
-		];
+		);
 
 		Automator()->insert_trigger_meta( $args );
 	}
@@ -70,7 +69,7 @@ class Pmp_Tokens {
 	 *
 	 * @return array
 	 */
-	function pmp_possible_tokens( $tokens = array(), $args = array() ) {
+	public function pmp_possible_tokens( $tokens = array(), $args = array() ) {
 
 		return $tokens;
 	}
@@ -88,19 +87,31 @@ class Pmp_Tokens {
 	public function pmp_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		if ( $pieces ) {
-			if ( in_array( 'PMPMEMBERSHIP', $pieces ) ) {
+
+			if ( in_array( 'PMPMEMBERSHIP', $pieces, true ) ) {
+
 				global $wpdb;
+
 				$trigger_id     = $pieces[0];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$qry            = "SELECT meta_value
-									FROM {$wpdb->prefix}uap_trigger_log_meta
-									WHERE meta_key = '$field'
-									AND automator_trigger_log_id = $trigger_log_id
-									AND automator_trigger_id = $trigger_id
-									LIMIT 0,1";
-				$entry          = $wpdb->get_var( $qry );
-				$entry          = maybe_unserialize( $entry );
+
+				$entry = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT meta_value
+						FROM {$wpdb->prefix}uap_trigger_log_meta
+						WHERE meta_key = %s
+						AND automator_trigger_log_id = %d
+						AND automator_trigger_id = %d
+						LIMIT 0,1",
+						$field,
+						$trigger_log_id,
+						$trigger_id
+					)
+				);
+
+				$entry = maybe_unserialize( $entry );
+
 				if ( $entry ) {
 					$level = pmpro_getLevel( $entry );
 					if ( $level ) {

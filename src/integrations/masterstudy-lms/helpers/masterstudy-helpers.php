@@ -33,28 +33,34 @@ class Masterstudy_Helpers {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		add_action( 'wp_ajax_select_mslms_lesson_from_course_LESSONDONE', array(
-			$this,
-			'select_lesson_from_course_func',
-		) );
+		add_action(
+			'wp_ajax_select_mslms_lesson_from_course_LESSONDONE',
+			array(
+				$this,
+				'select_lesson_from_course_func',
+			)
+		);
 
-		add_action( 'wp_ajax_select_mslms_quiz_from_course_QUIZ', array(
-			$this,
-			'select_quiz_from_course_func',
-		) );
+		add_action(
+			'wp_ajax_select_mslms_quiz_from_course_QUIZ',
+			array(
+				$this,
+				'select_quiz_from_course_func',
+			)
+		);
 	}
 
 	/**
 	 * @param Masterstudy_Helpers $options
 	 */
-	public function setOptions( Masterstudy_Helpers $options ) {
+	public function setOptions( Masterstudy_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Masterstudy_Pro_Helpers $pro
 	 */
-	public function setPro( Masterstudy_Pro_Helpers $pro ) {
+	public function setPro( Masterstudy_Pro_Helpers $pro ) { // phpcs:ignore
 		$this->pro = $pro;
 	}
 
@@ -65,47 +71,55 @@ class Masterstudy_Helpers {
 	 */
 	public function select_lesson_from_course_func() {
 
-
-
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'value' => '-1',
 				'text'  => _x( 'Any lesson', 'MasterStudy LMS', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
-		if ( ! isset( $_POST ) ) {
+		$flags = array(
+			'filter' => 'FILTER_VALIDATE_STRING',
+			'flags'  => FILTER_REQUIRE_ARRAY,
+		);
+
+		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+
+		if ( empty( $values['MSLMSCOURSE'] ) ) {
 			echo wp_json_encode( $fields );
 			die();
 		}
 
-		$mslms_course_id = $_POST['values']['MSLMSCOURSE'];
+		$mslms_course_id = $values['MSLMSCOURSE'];
 
 		if ( absint( $mslms_course_id ) || '-1' === $mslms_course_id ) {
 			global $wpdb;
 
-			$course_lessons_q =
-				"Select ID, post_title
-				FROM $wpdb->posts
-				WHERE FIND_IN_SET(
-					ID,
-					(SELECT meta_value FROM wp_postmeta WHERE post_id = %d AND meta_key = 'curriculum')
+			$lessons = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID, post_title
+					FROM $wpdb->posts
+					WHERE FIND_IN_SET(
+						ID,
+						(SELECT meta_value FROM wp_postmeta WHERE post_id = %d AND meta_key = 'curriculum')
+					)
+					AND post_type = 'stm-lessons'
+					ORDER BY post_title ASC",
+					absint( $mslms_course_id )
 				)
-				AND post_type = 'stm-lessons'
-				ORDER BY post_title ASC";
-
-			$course_lessons_p = $wpdb->prepare( $course_lessons_q, absint( $mslms_course_id ) );
+			);
 
 			if ( '-1' === $mslms_course_id ) {
-				$course_lessons_p =
-					"Select ID, post_title FROM $wpdb->posts WHERE post_type = 'stm-lessons' ORDER BY post_title ASC";
+				$lessons = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT ID, post_title FROM $wpdb->posts WHERE post_type = %s ORDER BY post_title ASC",
+						'stm-lessons'
+					)
+				);
 			}
-
-
-			$lessons = $wpdb->get_results( $course_lessons_p );
 
 			foreach ( $lessons as $lesson ) {
 				$fields[] = array(
@@ -113,7 +127,6 @@ class Masterstudy_Helpers {
 					'text'  => $lesson->post_title,
 				);
 			}
-
 		}
 
 		echo wp_json_encode( $fields );
@@ -127,49 +140,60 @@ class Masterstudy_Helpers {
 	 */
 	public function select_quiz_from_course_func() {
 
-
-
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'value' => '-1',
 				'text'  => _x( 'Any quiz', 'MasterStudy LMS', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
-		if ( ! isset( $_POST ) ) {
+		$flags = array(
+			'filter' => 'FILTER_VALIDATE_STRING',
+			'flags'  => FILTER_REQUIRE_ARRAY,
+		);
+
+		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+
+		if ( empty( $values['MSLMSCOURSE'] ) ) {
 			echo wp_json_encode( $fields );
 			die();
 		}
 
-		$mslms_course_id = $_POST['values']['MSLMSCOURSE'];
+		$mslms_course_id = $values['MSLMSCOURSE'];
 
 		if ( absint( $mslms_course_id ) || '-1' === $mslms_course_id ) {
+
 			global $wpdb;
 
-			$course_quiz_q =
-				"Select ID, post_title
-				FROM $wpdb->posts
-				WHERE FIND_IN_SET(
-					ID,
-					(SELECT meta_value FROM wp_postmeta WHERE post_id = %d AND meta_key = 'curriculum')
+			$quizzes = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID, post_title
+					FROM $wpdb->posts
+					WHERE FIND_IN_SET(
+						ID,
+						(SELECT meta_value FROM wp_postmeta WHERE post_id = %d AND meta_key = 'curriculum')
+					)
+					AND post_type = 'stm-quizzes'
+					ORDER BY post_title ASC
+					",
+					absint( $mslms_course_id )
 				)
-				AND post_type = 'stm-quizzes'
-				ORDER BY post_title ASC";
-
-			$course_quiz_p = $wpdb->prepare( $course_quiz_q, absint( $mslms_course_id ) );
+			);
 
 			if ( '-1' === $mslms_course_id ) {
-				$course_quiz_p =
-					"Select ID, post_title
-				FROM $wpdb->posts
-				WHERE post_type = 'stm-quizzes'
-				ORDER BY post_title ASC";
+				$quizzes = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT ID, post_title
+						FROM $wpdb->posts
+						WHERE post_type = %s
+						ORDER BY post_title ASC",
+						'stm-quizzes'
+					)
+				);
 			}
-
-			$quizzes = $wpdb->get_results( $course_quiz_p );
 
 			foreach ( $quizzes as $lesson ) {
 				$fields[] = array(

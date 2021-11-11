@@ -55,15 +55,16 @@ class TWITTER_POSTSTATUS_2 {
 			'execution_function' => array( $this, 'post_status' ),
 			'options_group'      => array(
 				$this->action_meta => array(
-					Automator()->helpers->recipe->twitter->textarea_field( 
-						'TWITTERSTATUSCONTENT', 
-						esc_attr__( 'Status', 'uncanny-automator' ), 
-						true, 
-						'textarea', 
-						'', 
+					Automator()->helpers->recipe->twitter->textarea_field(
+						'TWITTERSTATUSCONTENT',
+						esc_attr__( 'Status', 'uncanny-automator' ),
 						true,
-						 esc_attr__( 'Messages posted to Twitter have a 280 character limit.', 'uncanny-automator' ),
-						 __( 'Enter the message', 'uncanny-automator' ), 278 
+						'textarea',
+						'',
+						true,
+						esc_attr__( 'Messages posted to Twitter have a 280 character limit.', 'uncanny-automator' ),
+						__( 'Enter the message', 'uncanny-automator' ),
+						278
 					),
 					// Image field.
 					Automator()->helpers->recipe->field->text(
@@ -159,7 +160,7 @@ class TWITTER_POSTSTATUS_2 {
 			$error_msg = $response->get_error_message();
 
 			throw new \Exception( $error_msg );
-			
+
 		}
 
 	}

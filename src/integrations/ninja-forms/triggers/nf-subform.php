@@ -31,8 +31,6 @@ class NF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/ninja-forms/' ),
@@ -46,10 +44,10 @@ class NF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'nform_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->ninja_forms->options->list_ninja_forms(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -64,20 +62,18 @@ class NF_SUBFORM {
 	 */
 	public function nform_submit( $form ) {
 
-
-
 		if ( empty( $form ) ) {
 			return;
 		}
 
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $form['form_id'] ),
 			'user_id' => $user_id,
-		];
+		);
 
 		$result = Automator()->maybe_add_trigger_entry( $args, false );
 
@@ -86,13 +82,13 @@ class NF_SUBFORM {
 				if ( true === $r['result'] ) {
 					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
 						//Saving form values in trigger log meta for token parsing!
-						$ninja_args = [
+						$ninja_args = array(
 							'trigger_id'     => (int) $r['args']['trigger_id'],
 							'meta_key'       => $this->trigger_meta,
 							'user_id'        => $user_id,
 							'trigger_log_id' => $r['args']['get_trigger_id'],
 							'run_number'     => $r['args']['run_number'],
-						];
+						);
 
 						Automator()->helpers->recipe->ninja_forms->extract_save_ninja_fields( $form, $ninja_args );
 					}

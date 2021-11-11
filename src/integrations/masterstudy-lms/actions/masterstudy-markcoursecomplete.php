@@ -32,15 +32,13 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 */
 	public function define_action() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'stm-courses',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, false );
 
@@ -56,16 +54,16 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 			'priority'           => 10,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'mark_course_complete' ),
-			'options'            => [
-				[
+			'options'            => array(
+				array(
 					'option_code'              => $this->action_meta,
 					'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
 					'input_type'               => 'select',
 					'required'                 => true,
 					'options'                  => $options,
 					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
-				],
-			],
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -80,7 +78,6 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 */
 	public function mark_course_complete( $user_id, $action_data, $recipe_id, $args ) {
 
-
 		$course_id = $action_data['meta'][ $this->action_meta ];
 
 		/*Check if lesson in course*/
@@ -89,12 +86,14 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 		if ( ! empty( $curriculum ) ) {
 			$curriculum = \STM_LMS_Helpers::only_array_numbers( explode( ',', $curriculum ) );
 
-			$curriculum_posts = get_posts( [
-				'post__in'       => $curriculum,
-				'posts_per_page' => 999,
-				'post_type'      => array( 'stm-lessons', 'stm-quizzes' ),
-				'post_status'    => 'publish',
-			] );
+			$curriculum_posts = get_posts(
+				array(
+					'post__in'       => $curriculum,
+					'posts_per_page' => 999,
+					'post_type'      => array( 'stm-lessons', 'stm-quizzes' ),
+					'post_status'    => 'publish',
+				)
+			);
 
 			if ( ! empty( $curriculum_posts ) ) {
 
@@ -104,7 +103,6 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 					\STM_LMS_Course::add_user_course( $course_id, $user_id, \STM_LMS_Course::item_url( $course_id, '' ), 0 );
 					\STM_LMS_Course::add_student( $course_id );
 				}
-
 
 				foreach ( $curriculum_posts as $post ) {
 

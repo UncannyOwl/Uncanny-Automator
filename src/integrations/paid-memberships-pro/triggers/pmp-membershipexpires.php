@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 use MemberOrder;
 
 /**
@@ -40,8 +39,6 @@ class PMP_MEMBERSHIPEXPIRES {
 	 */
 	public function define_trigger() {
 
-
-
 		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
 
 		$options['options'] = array( '-1' => esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
@@ -59,9 +56,9 @@ class PMP_MEMBERSHIPEXPIRES {
 			'priority'            => 100,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'pmpro_subscription_expired' ),
-			'options'             => [
+			'options'             => array(
 				$options,
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -97,10 +94,10 @@ class PMP_MEMBERSHIPEXPIRES {
 				foreach ( $recipe['triggers'] as $trigger ) {
 					$trigger_id = $trigger['ID'];//return early for all memberships
 					if ( - 1 === intval( $required_membership[ $recipe_id ][ $trigger_id ] ) ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 
 						break;
 					}
@@ -112,17 +109,17 @@ class PMP_MEMBERSHIPEXPIRES {
 				foreach ( $recipe['triggers'] as $trigger ) {
 					$trigger_id = $trigger['ID'];//return early for all memberships
 					if ( (int) $required_membership[ $recipe_id ][ $trigger_id ] === (int) $membership_id ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 					}
 				}
 			}
 
 			if ( ! empty( $matched_recipe_ids ) ) {
 				foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-					$args   = [
+					$args   = array(
 						'code'             => $this->trigger_code,
 						'meta'             => $this->trigger_meta,
 						'user_id'          => $user_id,
@@ -130,7 +127,7 @@ class PMP_MEMBERSHIPEXPIRES {
 						'trigger_to_match' => $matched_recipe_id['trigger_id'],
 						'ignore_post_id'   => true,
 						'is_signed_in'     => true,
-					];
+					);
 					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 					if ( $result ) {

@@ -1,3 +1,6 @@
+<?php
+// placeholder php
+?>
 <div class="uap-integrations-search" id="uap-integrations-search">
 	<input type="text" id="uap-integrations-search-field">
 

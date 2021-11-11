@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 use MemberOrder;
 
 /**
@@ -40,8 +39,6 @@ class PMP_MEMBERSHIPPURCH {
 	 */
 	public function define_trigger() {
 
-
-
 		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
 
 		$options['options'] = array( '-1' => esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
@@ -59,9 +56,9 @@ class PMP_MEMBERSHIPPURCH {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'pmpro_payment_completed' ),
-			'options'             => [
+			'options'             => array(
 				$options,
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -75,7 +72,6 @@ class PMP_MEMBERSHIPPURCH {
 	 * @param MemberOrder $morder
 	 */
 	public function pmpro_payment_completed( $user_id, MemberOrder $morder ) {
-
 
 		if ( ! $morder instanceof MemberOrder ) {
 			return;
@@ -94,10 +90,10 @@ class PMP_MEMBERSHIPPURCH {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all memberships
 				if ( - 1 === intval( $required_membership[ $recipe_id ][ $trigger_id ] ) ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 
 					break;
 				}
@@ -109,24 +105,24 @@ class PMP_MEMBERSHIPPURCH {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all memberships
 				if ( $required_membership[ $recipe_id ][ $trigger_id ] == $membership_id ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$args = [
+				$args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$result = Automator()->maybe_add_trigger_entry( $args, false );
 

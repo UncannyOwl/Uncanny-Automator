@@ -178,8 +178,6 @@ class Hubspot_Helpers {
 			return false;
 		}
 
-		$tokens = $this->maybe_refresh_token( $tokens );
-
 		return $tokens;
 	}
 
@@ -196,7 +194,6 @@ class Hubspot_Helpers {
 		update_option( '_automator_hubspot_settings', $tokens );
 
 		delete_transient( '_automator_hubspot_token_info' );
-		$this->api_token_info();
 
 		return $tokens;
 	}
@@ -243,6 +240,10 @@ class Hubspot_Helpers {
 	 */
 	public function disconnect() {
 
+		if ( automator_filter_input( 'tab' ) !== $this->setting_tab ) {
+			return;
+		}
+
 		if ( ! automator_filter_has_var( 'disconnect' ) ) {
 			return;
 		}
@@ -267,10 +268,10 @@ class Hubspot_Helpers {
 
 		$expiration_timestamp = $tokens['stored_at'] + $tokens['expires_in'];
 
-		// Check if token will expire in the next hour
-		if ( time() > $expiration_timestamp - HOUR_IN_SECONDS ) {
+		// Check if token will expire in the next minute
+		if ( time() > $expiration_timestamp - MINUTE_IN_SECONDS ) {
 			// Token is expired or will expire soon, refresh it
-			$this->api_refresh_token( $tokens );
+			return $this->api_refresh_token( $tokens );
 		}
 
 		return $tokens;
@@ -394,10 +395,16 @@ class Hubspot_Helpers {
 	 * @param  mixed $email
 	 * @return void
 	 */
-	public function create_contact( $properties ) {
+	public function create_contact( $properties, $update = true ) {
+
+		$action = 'create_contact';
+
+		if ( $update ) {
+			$action = 'create_or_update_contact';
+		}
 
 		$params = array(
-			'action'     => 'create_contact',
+			'action'     => $action,
 			'properties' => wp_json_encode( $properties ),
 		);
 
@@ -442,6 +449,8 @@ class Hubspot_Helpers {
 		$params = apply_filters( 'automator_hubspot_api_request_params', $params );
 
 		$client = $this->get_client();
+
+		$client = $this->maybe_refresh_token( $client );
 
 		if ( ! $client ) {
 			return false;

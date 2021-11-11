@@ -51,7 +51,7 @@ class Uoa_Helpers {
 	 * @param $_POST
 	 */
 	public function sendtest_webhook() {
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$key_values   = array();
 		$headers      = array();

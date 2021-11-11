@@ -198,7 +198,7 @@ class Mailchimp_Helpers {
 	public function select_mcgroupslist_from_mclist() {
 
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST ); // phpcs:ignore
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
 
@@ -319,7 +319,7 @@ class Mailchimp_Helpers {
 	public function select_mctagslist_from_mclist() {
 
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST ); // phpcs:ignore
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
 
@@ -373,7 +373,7 @@ class Mailchimp_Helpers {
 	public function select_segments_from_list() {
 
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST ); // phpcs:ignore
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
 
@@ -491,7 +491,7 @@ class Mailchimp_Helpers {
 	public function get_mailchimp_audience_fields() {
 
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST ); // phpcs:ignore
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
 

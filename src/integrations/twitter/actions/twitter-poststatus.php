@@ -51,20 +51,21 @@ class TWITTER_POSTSTATUS {
 			'select_option_name' => __( 'Post {{a status}} to Twitter', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
-			'is_deprecated' 	 => true,
+			'is_deprecated'      => true,
 			'requires_user'      => false,
 			'execution_function' => array( $this, 'post_status' ),
 			'options_group'      => array(
 				$this->action_meta => array(
-					Automator()->helpers->recipe->twitter->textarea_field( 
-						'TWITTERSTATUSCONTENT', 
-						esc_attr__( 'Status', 'uncanny-automator' ), 
-						true, 
-						'textarea', 
-						'', 
+					Automator()->helpers->recipe->twitter->textarea_field(
+						'TWITTERSTATUSCONTENT',
+						esc_attr__( 'Status', 'uncanny-automator' ),
 						true,
-						 esc_attr__( 'Messages posted to Twitter have a 280 character limit.', 'uncanny-automator' ),
-						 __( 'Enter the message', 'uncanny-automator' ), 278 
+						'textarea',
+						'',
+						true,
+						esc_attr__( 'Messages posted to Twitter have a 280 character limit.', 'uncanny-automator' ),
+						__( 'Enter the message', 'uncanny-automator' ),
+						278
 					),
 				),
 			),
@@ -143,5 +144,5 @@ class TWITTER_POSTSTATUS {
 		}
 
 	}
-	
+
 }

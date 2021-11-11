@@ -70,13 +70,23 @@ class Bdb_Tokens {
 		];
 		// Get BDB xprofile fields from DB.
 		global $wpdb;
-		$fields_table    = $wpdb->prefix . "bp_xprofile_fields";
-		$xprofile_fields = $wpdb->get_results( "SELECT * FROM {$fields_table} WHERE parent_id = 0 ORDER BY field_order ASC" );
+		
+		$xprofile_fields = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY field_order ASC",
+				0
+			)
+		);
 
 		if ( ! empty( $xprofile_fields ) ) {
 			foreach ( $xprofile_fields as $field ) {
 				if ( 'socialnetworks' === $field->type ) {
-					$child_fields = $wpdb->get_results( "SELECT * FROM {$fields_table} WHERE parent_id = {$field->id} ORDER BY field_order ASC" );
+					$child_fields = $wpdb->get_results( 
+						$wpdb->prepare(
+							"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY field_order ASC",
+							$field->id
+						)
+					);
 					if ( ! empty( $child_fields ) ) {
 						foreach ( $child_fields as $child_field ) {
 							$fields[] = [

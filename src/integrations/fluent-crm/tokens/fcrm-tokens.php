@@ -9,12 +9,14 @@ use FluentCrm\App\Models\Tag;
 
 /**
  * Class Fcrm_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Fcrm_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'FCRM';
@@ -94,17 +96,24 @@ class Fcrm_Tokens {
 			) {
 
 				// value is the list or lists(if any list was selected) that the subscriber was added too
-
 				global $wpdb;
 
 				// Get a serialized array of list_ids OR tag_ids added to subscriber
 				$entry = $wpdb->get_var(
-					"SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = '$trigger_meta'
-													AND automator_trigger_log_id = $trigger_log_id
-													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1"
+					$wpdb->prepare(
+						"SELECT meta_value
+							FROM {$wpdb->prefix}uap_trigger_log_meta
+							WHERE meta_key = %s
+							AND automator_trigger_log_id = %d
+							AND automator_trigger_id = %d
+							LIMIT 0, 1",
+						$trigger_meta,
+						// String. The trigger meta.
+						$trigger_log_id,
+						// Integer. The trigger log id.
+							$trigger_id
+						// Integer. The trigger id.
+					)
 				);
 
 				if ( $entry ) {
@@ -135,10 +144,11 @@ class Fcrm_Tokens {
 							}
 
 							return implode( ', ', $list_names );
-						}
-					}
+						}//end if
+					}//end if
 
 					if ( 'FCRMTAG' === $trigger_meta ) {
+
 						// ids added to subscriber during trigger
 						$tag_ids = maybe_unserialize( $entry );
 
@@ -164,12 +174,12 @@ class Fcrm_Tokens {
 							}
 
 							return implode( ', ', $tag_names );
-						}
-					}
-				}
+						}//end if
+					}//end if
+				}//end if
 
 				return '';
-			}
+			}//end if
 
 			if ( 'FCRMLIST' === $pieces['1'] || 'FCRMTAG' === $pieces['1'] ) {
 
@@ -179,12 +189,16 @@ class Fcrm_Tokens {
 
 				// Get the subscriber ID
 				$entry = $wpdb->get_var(
-					"SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = 'subscriber_id'
-													AND automator_trigger_log_id = $trigger_log_id
-													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1"
+					$wpdb->prepare(
+						"SELECT meta_value
+						FROM {$wpdb->prefix}uap_trigger_log_meta
+						WHERE meta_key = 'subscriber_id'
+						AND automator_trigger_log_id = %d
+						AND automator_trigger_id = %d
+						LIMIT 0, 1",
+						$trigger_log_id,
+						$trigger_id
+					)
 				);
 
 				if ( absint( $entry ) ) {
@@ -207,8 +221,8 @@ class Fcrm_Tokens {
 				}
 
 				return '';
-			}
-		}
+			}//end if
+		}//end if
 
 		return $value;
 	}

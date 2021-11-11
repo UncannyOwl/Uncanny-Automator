@@ -29,7 +29,6 @@ class Buddyboss_Helpers {
 	 * Buddyboss_Helpers constructor.
 	 */
 	public function __construct() {
-
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
@@ -79,16 +78,16 @@ class Buddyboss_Helpers {
 				$options[ - 1 ] = $args['uo_any_label'];
 			}
 
-			if ( $wpdb->query( $qry ) ) {
+			if ( $wpdb->query( $qry ) ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
 				// previous solution was not preparing correct query
 				$in_str_arr = array_fill( 0, count( $args['status'] ), '%s' );
 				$in_str     = join( ',', $in_str_arr );
-				$group_qry  = $wpdb->prepare(
-					"SELECT * FROM {$wpdb->prefix}bp_groups WHERE status IN ($in_str)",
-					$args['status']
-				);
 
-				$results = $wpdb->get_results( $group_qry );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT * FROM {$wpdb->prefix}bp_groups WHERE status IN ($in_str)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$args['status']
+				) );
 
 				if ( $results ) {
 					foreach ( $results as $result ) {

@@ -49,8 +49,8 @@ class HUBSPOT_CREATECONTACT {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			// translators: A contact
-			'sentence'           => sprintf( __( 'Create {{a contact:%1$s}} in HubSpot', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Create {{a contact}} in HubSpot', 'uncanny-automator' ),
+			'sentence'           => sprintf( __( 'Create/Update {{a contact:%1$s}} in HubSpot', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name' => __( 'Create/Update {{a contact}} in HubSpot', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'requires_user'      => false,
@@ -102,6 +102,14 @@ class HUBSPOT_CREATECONTACT {
 						'remove_row_button' => __( 'Remove field', 'uncanny-automator' ),
 						'hide_actions'      => false,
 					),
+					array(
+						'option_code'   => 'UPDATE',
+						'input_type'    => 'checkbox',
+						'label'         => __( 'If the contact already exists, update their info', 'uncanny-automator' ),
+						'description'   => '',
+						'required'      => false,
+						'default_value' => true,
+					),
 				),
 			),
 
@@ -116,6 +124,12 @@ class HUBSPOT_CREATECONTACT {
 	public function add_contact( $user_id, $action_data, $recipe_id, $args ) {
 
 		$email = trim( Automator()->parse->text( $action_data['meta']['HUBSPOTEMAIL'], $recipe_id, $user_id, $args ) );
+
+		$update = true;
+
+		if ( ! empty( $action_data['meta']['UPDATE'] ) ) {
+			$update = filter_var( $action_data['meta']['UPDATE'], FILTER_VALIDATE_BOOLEAN );
+		}
 
 		$properties = array();
 
@@ -155,7 +169,7 @@ class HUBSPOT_CREATECONTACT {
 			)
 		);
 
-		$response = Automator()->helpers->recipe->hubspot->options->create_contact( $properties );
+		$response = Automator()->helpers->recipe->hubspot->options->create_contact( $properties, $update );
 
 		if ( is_wp_error( $response ) ) {
 			$error_message                       = $response->get_error_message();

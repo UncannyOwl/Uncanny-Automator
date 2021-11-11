@@ -1,4 +1,7 @@
 <?php
+// Delete credit data transient on dashboard
+delete_transient( 'automator_api_credit_data' );
+delete_transient( 'automator_api_credits' );
 
 // Create an array where we could save CSS classes that
 // we will later add to the dashboard main container

@@ -35,138 +35,136 @@ class INTEGROMAT_SENDWEBHOOK {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/working-with-integromat-actions' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			'requires_user'      => false,
-			'sentence'           => sprintf(  esc_attr__( 'Send data to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' =>  esc_attr__( 'Send data to Integromat {{webhook}}', 'uncanny-automator' ),
+			'sentence'           => sprintf( esc_attr__( 'Send data to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name' => esc_attr__( 'Send data to Integromat {{webhook}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'send_webhook' ),
-			'options_group'      => [
-				$this->action_meta => [
+			'options_group'      => array(
+				$this->action_meta => array(
 					// Webhook URL
-					[
-						'input_type' => 'url',
+					array(
+						'input_type'      => 'url',
 
-						'option_code' => 'WEBHOOK_URL',
-						'label'       =>  esc_attr__( 'URL', 'uncanny-automator' ),
+						'option_code'     => 'WEBHOOK_URL',
+						'label'           => esc_attr__( 'URL', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
-						'required'        => true
-					],
+						'required'        => true,
+					),
 					// Action event
-					[
-						'input_type' => 'select',
+					array(
+						'input_type'    => 'select',
 
-						'option_code' => 'ACTION_EVENT',
+						'option_code'   => 'ACTION_EVENT',
 						/* translators: HTTP request method */
-						'label'       =>  esc_attr__( 'Request method', 'uncanny-automator' ),
-						'description' =>  esc_attr__( 'Select the HTTP request method supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues.', 'uncanny-automator' ),
+						'label'         => esc_attr__( 'Request method', 'uncanny-automator' ),
+						'description'   => esc_attr__( 'Select the HTTP request method supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues.', 'uncanny-automator' ),
 
-						'required' => true,
+						'required'      => true,
 
 						'default_value' => 'POST',
-						'options'       => [
+						'options'       => array(
 							'GET'  => 'GET',
 							'PUT'  => 'PUT',
 							'POST' => 'POST',
-						],
-					],
+						),
+					),
 					// Header
-					[
-						'input_type' => 'repeater',
+					array(
+						'input_type'        => 'repeater',
 
-						'option_code' => 'WEBHOOK_HEADERS',
+						'option_code'       => 'WEBHOOK_HEADERS',
 
-						'label'       =>  esc_attr__( 'Headers', 'uncanny-automator' ),
-						'description' =>  esc_attr__( 'Add any HTTP request headers required by the webhook destination.', 'uncanny-automator' ),
+						'label'             => esc_attr__( 'Headers', 'uncanny-automator' ),
+						'description'       => esc_attr__( 'Add any HTTP request headers required by the webhook destination.', 'uncanny-automator' ),
 
 						'required'          => false,
-						'fields'            => [
-							[
-								'input_type' => 'text',
+						'fields'            => array(
+							array(
+								'input_type'      => 'text',
 
-								'option_code' => 'NAME',
-								'label'       =>  esc_attr__( 'Name', 'uncanny-automator' ),
-
-								'supports_tokens' => true,
-								'required'        => true
-							],
-							[
-								'input_type' => 'text',
-
-								'option_code' => 'VALUE',
-								'label'       =>  esc_attr__( 'Value', 'uncanny-automator' ),
+								'option_code'     => 'NAME',
+								'label'           => esc_attr__( 'Name', 'uncanny-automator' ),
 
 								'supports_tokens' => true,
-								'required'        => true
-							],
-						],
+								'required'        => true,
+							),
+							array(
+								'input_type'      => 'text',
+
+								'option_code'     => 'VALUE',
+								'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true,
+							),
+						),
 
 						/* translators: Non-personal infinitive verb */
-						'add_row_button'    =>  esc_attr__( 'Add header', 'uncanny-automator' ),
+						'add_row_button'    => esc_attr__( 'Add header', 'uncanny-automator' ),
 						/* translators: Non-personal infinitive verb */
-						'remove_row_button' =>  esc_attr__( 'Remove header', 'uncanny-automator' ),
-					],
+						'remove_row_button' => esc_attr__( 'Remove header', 'uncanny-automator' ),
+					),
 					// Fields
-					[
-						'input_type' => 'repeater',
+					array(
+						'input_type'        => 'repeater',
 
-						'option_code' => 'WEBHOOK_FIELDS',
+						'option_code'       => 'WEBHOOK_FIELDS',
 
-						'label' =>  esc_attr__( 'Fields', 'uncanny-automator' ),
+						'label'             => esc_attr__( 'Fields', 'uncanny-automator' ),
 
 						'required'          => true,
-						'fields'            => [
-							[
-								'input_type' => 'text',
+						'fields'            => array(
+							array(
+								'input_type'      => 'text',
 
-								'option_code' => 'KEY',
-								'label'       =>  esc_attr__( 'Key', 'uncanny-automator' ),
-
-								'supports_tokens' => true,
-								'required'        => true
-							],
-							[
-								'input_type' => 'text',
-
-								'option_code' => 'VALUE',
-								'label'       =>  esc_attr__( 'Value', 'uncanny-automator' ),
+								'option_code'     => 'KEY',
+								'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
 
 								'supports_tokens' => true,
-								'required'        => true
-							],
-						],
+								'required'        => true,
+							),
+							array(
+								'input_type'      => 'text',
+
+								'option_code'     => 'VALUE',
+								'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true,
+							),
+						),
 
 						/* translators: Non-personal infinitive verb */
-						'add_row_button'    =>  esc_attr__( 'Add pair', 'uncanny-automator' ),
+						'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
 						/* translators: Non-personal infinitive verb */
-						'remove_row_button' =>  esc_attr__( 'Remove pair', 'uncanny-automator' ),
-					],
-				],
-			],
-			'buttons'            => [
-				[
+						'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
+					),
+				),
+			),
+			'buttons'            => array(
+				array(
 					'show_in'     => $this->action_meta,
-					'text'        =>  esc_attr__( 'Documentation', 'uncanny-automator' ),
+					'text'        => esc_attr__( 'Documentation', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--transparent',
 					'on_click'    => 'function(){ window.open( "https://automatorplugin.com", "_blank" ); }',
-				],
-				[
+				),
+				array(
 					'show_in'     => $this->action_meta,
 					/* translators: Non-personal infinitive verb */
-					'text'        =>  esc_attr__( 'Send test', 'uncanny-automator' ),
+					'text'        => esc_attr__( 'Send test', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => $this->send_test_js(),
-					'modules'     => [ 'markdown' ]
-				],
-			],
+					'modules'     => array( 'markdown' ),
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -189,74 +187,74 @@ class INTEGROMAT_SENDWEBHOOK {
 		// This must have only one anonymous function
 		?>
 
-        <script>
+		<script>
 
-            // Do when the user clicks on send test
-            function( $button, data, modules ){
-                // Add loading animation to the button
-                $button.addClass( 'uap-btn--loading uap-btn--disabled' );
+			// Do when the user clicks on send test
+			function( $button, data, modules ){
+				// Add loading animation to the button
+				$button.addClass( 'uap-btn--loading uap-btn--disabled' );
 
-                // Get the data we're going to send to the AJAX request
-                let dataToBeSent = {
-                    action: 'sendtest_integ_webhook',
-                    nonce: UncannyAutomator.nonce,
+				// Get the data we're going to send to the AJAX request
+				let dataToBeSent = {
+					action: 'sendtest_integ_webhook',
+					nonce: UncannyAutomator.nonce,
 
-                    integration_id: data.item.integrationCode,
-                    item_id: data.item.id,
-                    values: data.values
-                }
+					integration_id: data.item.integrationCode,
+					item_id: data.item.id,
+					values: data.values
+				}
 
-                // Do AJAX
-                jQuery.ajax({
-                    method: 'POST',
-                    dataType: 'json',
-                    url: ajaxurl,
-                    data: dataToBeSent,
+				// Do AJAX
+				jQuery.ajax({
+					method: 'POST',
+					dataType: 'json',
+					url: ajaxurl,
+					data: dataToBeSent,
 
-                    success: function (response) {
-                        // Remove loading animation from the button
-                        $button.removeClass('uap-btn--loading uap-btn--disabled');
+					success: function (response) {
+						// Remove loading animation from the button
+						$button.removeClass('uap-btn--loading uap-btn--disabled');
 
-                        // Create notice
-                        // But first check if the message is defined
-                        if (typeof response.message !== 'undefined') {
-                            // Get notice type
-                            let noticeType = typeof response.type !== 'undefined' ? response.type : 'gray';
+						// Create notice
+						// But first check if the message is defined
+						if (typeof response.message !== 'undefined') {
+							// Get notice type
+							let noticeType = typeof response.type !== 'undefined' ? response.type : 'gray';
 
-                            // Parse message using markdown
-                            let markdown = new modules.Markdown(response.message);
+							// Parse message using markdown
+							let markdown = new modules.Markdown(response.message);
 
-                            // Create notice
-                            let $notice = jQuery('<div/>', {
-                                'class': 'item-options__notice item-options__notice--' + noticeType
-                            });
+							// Create notice
+							let $notice = jQuery('<div/>', {
+								'class': 'item-options__notice item-options__notice--' + noticeType
+							});
 
-                            // Get markdown HTML
-                            let $message = markdown.getHTML();
+							// Get markdown HTML
+							let $message = markdown.getHTML();
 
-                            // Add message to the notice container
-                            $notice.html($message);
+							// Add message to the notice container
+							$notice.html($message);
 
-                            // Get the notices container
-                            let $noticesContainer = jQuery('.item[data-id="' + data.item.id + '"] .item-options__notices');
+							// Get the notices container
+							let $noticesContainer = jQuery('.item[data-id="' + data.item.id + '"] .item-options__notices');
 
-                            // Add notice
-                            $noticesContainer.html($notice);
-                        }
-                    },
+							// Add notice
+							$noticesContainer.html($notice);
+						}
+					},
 
-                    statusCode: {
-                        403: function () {
-                            location.reload();
-                        }
-                    },
+					statusCode: {
+						403: function () {
+							location.reload();
+						}
+					},
 
-                    fail: function (response) {
-                    }
-                });
-            }
+					fail: function (response) {
+					}
+				});
+			}
 
-        </script>
+		</script>
 
 		<?php
 
@@ -277,19 +275,17 @@ class INTEGROMAT_SENDWEBHOOK {
 	 */
 	public function send_webhook( $user_id, $action_data, $recipe_id, $args ) {
 
-
-		$key_values   = [];
-		$headers      = [];
+		$key_values   = array();
+		$headers      = array();
 		$request_type = 'POST';
 		if ( isset( $action_data['meta']['WEBHOOKURL'] ) ) {
 			$webhook_url = Automator()->parse->text( $action_data['meta']['WEBHOOKURL'], $recipe_id, $user_id, $args );
 
-			for ( $i = 1; $i <= INTEGROMAT_SENDWEBHOOK::$number_of_keys; $i ++ ) {
+			for ( $i = 1; $i <= self::$number_of_keys; $i ++ ) {
 				$key                = Automator()->parse->text( $action_data['meta'][ 'KEY' . $i ], $recipe_id, $user_id, $args );
 				$value              = Automator()->parse->text( $action_data['meta'][ 'VALUE' . $i ], $recipe_id, $user_id, $args );
 				$key_values[ $key ] = $value;
 			}
-
 		} elseif ( isset( $action_data['meta']['WEBHOOK_URL'] ) ) {
 			$webhook_url = Automator()->parse->text( $action_data['meta']['WEBHOOK_URL'], $recipe_id, $user_id, $args );
 
@@ -326,12 +322,12 @@ class INTEGROMAT_SENDWEBHOOK {
 		}
 
 		if ( $key_values && ! is_null( $webhook_url ) ) {
-			$args = [
+			$args = array(
 				'method'   => $request_type,
 				'body'     => $key_values,
 				'timeout'  => '30',
 				'blocking' => false,
-			];
+			);
 
 			if ( ! empty( $headers ) ) {
 				$args['headers'] = $headers;
@@ -341,7 +337,7 @@ class INTEGROMAT_SENDWEBHOOK {
 
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
-				$error_message = sprintf(  esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
+				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
 				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 				return;

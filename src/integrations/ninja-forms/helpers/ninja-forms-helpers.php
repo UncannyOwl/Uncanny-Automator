@@ -58,10 +58,8 @@ class Ninja_Forms_Helpers {
 	public function list_ninja_forms( $label = null, $option_code = 'NFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
@@ -72,7 +70,6 @@ class Ninja_Forms_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
-
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			$forms = Ninja_Forms()->form()->get_forms();
@@ -85,7 +82,7 @@ class Ninja_Forms_Helpers {
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -95,7 +92,7 @@ class Ninja_Forms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_list_ninja_forms', $option );
 
@@ -128,14 +125,14 @@ class Ninja_Forms_Helpers {
 
 			if ( $data ) {
 
-				$insert = [
+				$insert = array(
 					'user_id'        => $user_id,
 					'trigger_id'     => $trigger_id,
 					'trigger_log_id' => $trigger_log_id,
 					'meta_key'       => $meta_key,
 					'meta_value'     => maybe_serialize( $data ),
 					'run_number'     => $run_number,
-				];
+				);
 
 				Automator()->insert_trigger_meta( $insert );
 			}
@@ -167,10 +164,10 @@ class Ninja_Forms_Helpers {
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				if ( key_exists( $trigger_meta, $trigger['meta'] ) && (int) $trigger['meta'][ $trigger_meta ] === (int) $entry_to_match ) {
-					$matches[ $recipe['ID'] ]    = [
+					$matches[ $recipe['ID'] ]    = array(
 						'field' => $trigger['meta'][ $trigger_code ],
 						'value' => $trigger['meta'][ $trigger_second_code ],
-					];
+					);
 					$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
 					break;
 				}
@@ -202,10 +199,10 @@ class Ninja_Forms_Helpers {
 		}
 
 		if ( ! empty( $recipe_ids ) ) {
-			return [
+			return array(
 				'recipe_ids' => $recipe_ids,
 				'result'     => true,
-			];
+			);
 		}
 
 		return false;

@@ -35,7 +35,7 @@ class Add_Twitter_Integration {
 		$this->set_icon( 'twitter-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( '' );
-		$this->set_settings_url( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=twitter_api' );	
+		$this->set_settings_url( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=twitter_api' );
 		$this->set_connected( $this->is_connected() );
 	}
 
@@ -45,7 +45,7 @@ class Add_Twitter_Integration {
 	public function plugin_active() {
 		return true;
 	}
-	
+
 	/**
 	 * is_connected
 	 *
@@ -59,7 +59,7 @@ class Add_Twitter_Integration {
 
 		if ( ! empty( $tokens ) ) {
 			$connected = true;
-		} 
+		}
 
 		return $connected;
 

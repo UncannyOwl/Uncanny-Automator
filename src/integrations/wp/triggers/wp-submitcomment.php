@@ -93,6 +93,11 @@ class WP_SUBMITCOMMENT {
 							$this->trigger_meta . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
 							$this->trigger_meta . '_THUMB_ID' => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
 							$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Post featured image URL', 'uncanny-automator' ),
+							'POSTCOMMENTCONTENT' => esc_attr__( 'Comment', 'uncanny-automator' ),
+							'POSTCOMMENTDATE'    => esc_attr__( 'Comment date', 'uncanny-automator' ),
+							'POSTCOMMENTEREMAIL' => esc_attr__( 'Commenter email', 'uncanny-automator' ),
+							'POSTCOMMENTERNAME'  => esc_attr__( 'Commenter name', 'uncanny-automator' ),
+							'POSTCOMMENTSTATUS'  => esc_attr__( 'Commenter status', 'uncanny-automator' ),
 						]
 					),
 				],
@@ -162,6 +167,26 @@ class WP_SUBMITCOMMENT {
 								// Post Type Token
 								$trigger_meta['meta_key']   = 'WPPOSTTYPES';
 								$trigger_meta['meta_value'] = maybe_serialize( $post_type->labels->singular_name );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'POSTCOMMENTCONTENT';
+								$trigger_meta['meta_value'] = maybe_serialize( $commentdata['comment_content'] );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'POSTCOMMENTDATE';
+								$trigger_meta['meta_value'] = maybe_serialize( $commentdata['comment_date'] );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'POSTCOMMENTERNAME';
+								$trigger_meta['meta_value'] = maybe_serialize( $commentdata['comment_author'] );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'POSTCOMMENTEREMAIL';
+								$trigger_meta['meta_value'] = maybe_serialize( $commentdata['comment_author_email'] );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'POSTCOMMENTSTATUS';
+								$trigger_meta['meta_value'] = maybe_serialize( wp_get_comment_status( (int) $comment_id ) );
 								Automator()->insert_trigger_meta( $trigger_meta );
 
 								Automator()->maybe_trigger_complete( $result['args'] );

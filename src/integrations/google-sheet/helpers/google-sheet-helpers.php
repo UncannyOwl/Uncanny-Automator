@@ -241,7 +241,7 @@ class Google_Sheet_Helpers {
 		global $uncanny_automator;
 
 		// Nonce and post object validation
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		$uncanny_automator->utilities->ajax_auth_check();
 
 		$fields = array();
 
@@ -324,7 +324,7 @@ class Google_Sheet_Helpers {
 		global $uncanny_automator;
 
 		// Nonce and post object validation
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		$uncanny_automator->utilities->ajax_auth_check();
 
 		if ( ! isset( $_POST ) ) {
 			echo wp_json_encode( $fields );
@@ -350,7 +350,7 @@ class Google_Sheet_Helpers {
 		global $uncanny_automator;
 
 		// Nonce and post object validation
-		$uncanny_automator->utilities->ajax_auth_check( $_POST );
+		$uncanny_automator->utilities->ajax_auth_check();
 
 		$fields = array();
 
@@ -643,7 +643,7 @@ class Google_Sheet_Helpers {
 		$options = array();
 
 		$options['-1'] = __( 'My google drive', 'uncanny-automator' );
-		
+
 		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 			$body = json_decode( wp_remote_retrieve_body( $response ) );
 

@@ -328,7 +328,7 @@ class Learndash_Helpers {
 
 
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
 		if ( ! isset( $_POST ) ) {
@@ -384,7 +384,7 @@ class Learndash_Helpers {
 
 
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
 
@@ -446,7 +446,7 @@ class Learndash_Helpers {
 
 
 		// Nonce and post object validation
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$fields      = array();
 		$include_any = $this->load_any_options;

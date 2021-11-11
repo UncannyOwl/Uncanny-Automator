@@ -3,7 +3,6 @@
 
 namespace Uncanny_Automator;
 
-
 use WP_Error;
 use Uncanny_Automator_Pro\Integromat_Pro_Helpers;
 
@@ -41,14 +40,14 @@ class Integromat_Helpers {
 	/**
 	 * @param Integromat_Helpers $options
 	 */
-	public function setOptions( Integromat_Helpers $options ) {
+	public function setOptions( Integromat_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Integromat_Pro_Helpers $pro
 	 */
-	public function setPro( Integromat_Pro_Helpers $pro ) {
+	public function setPro( Integromat_Pro_Helpers $pro ) { // phpcs:ignore
 		$this->pro = $pro;
 	}
 
@@ -58,34 +57,45 @@ class Integromat_Helpers {
 	 */
 	public function sendtest_webhook() {
 
-
-
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$key_values = array();
 		$headers    = array();
-		$values     = (array) Automator()->utilities->automator_sanitize( $_POST['values'], 'mixed' );
+
+		$flags = array(
+			'filter' => 'FILTER_VALIDATE_STRING',
+			'flags'  => FILTER_REQUIRE_ARRAY,
+		);
+
+		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+
+		$values = (array) Automator()->utilities->automator_sanitize( $values, 'mixed' );
 		// Sanitizing webhook key pairs
 		$pairs          = array();
-		$webhook_fields = isset( $_POST['values']['WEBHOOK_FIELDS'] ) ? $_POST['values']['WEBHOOK_FIELDS'] : array();
+		$webhook_fields = isset( $values['WEBHOOK_FIELDS'] ) ? $values['WEBHOOK_FIELDS'] : array();
+
 		if ( ! empty( $webhook_fields ) ) {
 			foreach ( $webhook_fields as $key_index => $pair ) {
-				$pairs[] = [
+				$pairs[] = array(
 					'KEY'   => sanitize_text_field( $pair['KEY'] ),
 					'VALUE' => sanitize_text_field( $pair['VALUE'] ),
-				];
+				);
 			}
 		}
+
 		$values['WEBHOOK_FIELDS'] = $pairs;
 		$request_type             = 'POST';
+
 		if ( isset( $values['WEBHOOKURL'] ) ) {
 			$webhook_url = $values['WEBHOOKURL'];
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			for ( $i = 1; $i <= INTEGROMAT_SENDWEBHOOK::$number_of_keys; $i ++ ) {
@@ -100,21 +110,27 @@ class Integromat_Helpers {
 			$webhook_url = $values['WEBHOOK_URL'];
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
+					)
+				);
 			}
 			$fields = $values['WEBHOOK_FIELDS'];
 
-			for ( $i = 0; $i <= count( $fields ); $i ++ ) {
+			$field_count = count( $fields );
+
+			for ( $i = 0; $i <= $field_count; $i ++ ) {
 				$key                = $fields[ $i ]['KEY'];
 				$value              = $fields[ $i ]['VALUE'];
 				$key_values[ $key ] = $value;
@@ -122,7 +138,8 @@ class Integromat_Helpers {
 
 			$header_meta = isset( $values['WEBHOOK_HEADERS'] ) ? $values['WEBHOOK_HEADERS'] : array();
 			if ( ! empty( $header_meta ) ) {
-				for ( $i = 0; $i <= count( $header_meta ); $i ++ ) {
+				$meta_count = count( $header_meta );
+				for ( $i = 0; $i <= $meta_count; $i ++ ) {
 					$key = isset( $header_meta[ $i ]['NAME'] ) ? sanitize_text_field( $header_meta[ $i ]['NAME'] ) : null;
 					// remove colon if user added in NAME
 					$key   = str_replace( ':', '', $key );
@@ -160,19 +177,23 @@ class Integromat_Helpers {
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
 				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => $error_message,
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => $error_message,
+					)
+				);
 			}
 
 			/* translators: 1. Webhook URL */
 			$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
-			wp_send_json( array(
-				'type'    => 'success',
-				'message' => $success_message,
-			) );
+			wp_send_json(
+				array(
+					'type'    => 'success',
+					'message' => $success_message,
+				)
+			);
 		}
 	}
 }

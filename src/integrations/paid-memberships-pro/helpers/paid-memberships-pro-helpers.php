@@ -3,7 +3,6 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Paid_Memberships_Pro_Pro_Helpers;
 
 /**
@@ -38,14 +37,14 @@ class Paid_Memberships_Pro_Helpers {
 	/**
 	 * @param Paid_Memberships_Pro_Pro_Helpers $pro
 	 */
-	public function setPro( Paid_Memberships_Pro_Pro_Helpers $pro ) {
+	public function setPro( Paid_Memberships_Pro_Pro_Helpers $pro ) { // phpcs:ignore
 		$this->pro = $pro;
 	}
 
 	/**
 	 * @param Paid_Memberships_Pro_Helpers $options
 	 */
-	public function setOptions( Paid_Memberships_Pro_Helpers $options ) {
+	public function setOptions( Paid_Memberships_Pro_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
 	}
 
@@ -58,7 +57,6 @@ class Paid_Memberships_Pro_Helpers {
 	public function all_memberships( $label = null, $option_code = 'PMPMEMBERSHIP' ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -67,8 +65,9 @@ class Paid_Memberships_Pro_Helpers {
 		}
 
 		global $wpdb;
-		$qry     = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
-		$levels  = $wpdb->get_results( $qry );
+		$qry = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
+		// Ignored no need to escape since there are no arguments to accept.
+		$levels  = $wpdb->get_results( $qry ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$options = array();
 		if ( $levels ) {
 			$options['-1'] = esc_attr__( 'Any membership', 'uncanny-automator' );
@@ -76,18 +75,17 @@ class Paid_Memberships_Pro_Helpers {
 				$options[ $level->id ] = $level->name;
 			}
 		}
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code         => esc_attr__( 'Membership title', 'uncanny-automator' ),
 				$option_code . '_ID' => esc_attr__( 'Membership ID', 'uncanny-automator' ),
-				//$option_code . '_URL' =>  esc_attr__( 'Product URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_pmp_memberships', $option );
 	}

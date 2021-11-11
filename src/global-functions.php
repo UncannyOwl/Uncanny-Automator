@@ -412,12 +412,10 @@ function automator_utm_parameters( $url, $medium = '', $content = '' ) {
  */
 function is_automator_pro_active() {
 
-	$is_active = false;
-
 	// Check if automator pro is in list of active plugins.
-	if ( in_array( 'uncanny-automator-pro/uncanny-automator-pro.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+	if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
 		return true;
 	}
 
-	return $is_active;
+	return false;
 }

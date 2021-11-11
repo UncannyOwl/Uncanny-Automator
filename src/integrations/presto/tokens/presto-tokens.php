@@ -35,29 +35,33 @@ class Presto_Tokens {
 
 		$piece = 'PRESTOVIDEO';
 		if ( $pieces ) {
-			if ( in_array( $piece, $pieces ) ) {
+			if ( in_array( $piece, $pieces, true ) ) {
 
 				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
 						if ( key_exists( $piece, $trigger['meta'] ) ) {
 							$trigger_id = $trigger['ID'];
-							if ( $trigger['meta'][ $piece ] == '-1' ) {
+							if ( '-1' === $trigger['meta'][ $piece ] ) {
 								$trigger_log_id = $replace_args['trigger_log_id'];
 								global $wpdb;
 								$video_id = $wpdb->get_var(
-									"SELECT meta_value
-                                                    FROM {$wpdb->prefix}uap_trigger_log_meta
-                                                    WHERE meta_key = 'PRESTOVIDEO'
-                                                    AND automator_trigger_log_id = $trigger_log_id
-                                                    AND automator_trigger_id = $trigger_id
-                                                    LIMIT 0, 1"
+									$wpdb->prepare(
+										"SELECT meta_value
+										FROM {$wpdb->prefix}uap_trigger_log_meta
+										WHERE meta_key = 'PRESTOVIDEO'
+										AND automator_trigger_log_id = %d
+										AND automator_trigger_id = %d
+										LIMIT 0, 1",
+										$trigger_log_id,
+										$trigger_id
+									)
 								);
 							} else {
 								$video_id = $trigger['meta'][ $piece ];
 							}
 
-							if ( $pieces[2] == 'PRESTOVIDEO' ) {
+							if ( 'PRESTOVIDEO' === $pieces[2] ) {
 								$video = new \PrestoPlayer\Models\Video( $video_id );
 								$value = $video->title;
 							}

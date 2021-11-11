@@ -44,13 +44,13 @@ class Wp_Tokens {
 		$fields = [
 			[
 				'tokenId'         => 'authorname',
-				'tokenName'       => __( "Post's Author Name", 'uncanny-automator' ),
+				'tokenName'       => __( "Post's author name", 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			],
 			[
 				'tokenId'         => 'authoremail',
-				'tokenName'       => __( "Post's Author Email", 'uncanny_automator' ),
+				'tokenName'       => __( "Post's author email", 'uncanny_automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			],

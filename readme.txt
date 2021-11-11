@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.8.1
 Requires PHP: 5.6
-Stable tag: 3.3
+Stable tag: 3.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -75,6 +75,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-ceus/)
 - [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/)
 - [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/)
+- [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit/)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/)
 - [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/)
@@ -179,6 +180,54 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 3.4 [2021-11-11] =
+
+**New integration:**
+
+* [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit) #407
+
+**New Triggers:**
+
+* Uncanny Toolkit - A Group Leader is imported to a LearnDash group #1043
+* Uncanny Toolkit - A user is imported to a LearnDash course #1042
+* Uncanny Toolkit - A user is imported to a LearnDash group #1041
+* Uncanny Toolkit - A user is imported by the Import Users module #1038
+
+**Added:**
+
+* HubSpot - Added option to update existing contacts #1076
+* WordPress Core - "A user submits a comment on a post" - Added Comment token #1036
+* Popup Maker - Action now fires more consistently across varying site configurations #1034
+* WPForms - Added Form title, ID and URL tokens #795
+
+**Updated:**
+
+* WordPress Core - Create a post - Added "Featured image" field #463
+* WP Job Manager - CV token no longer outputs HTML link #1054
+* Tools > Status - Automator Debug Log line now hidden when Automator Debug mode is not enabled #1096
+* Tools > Status - Action Scheduler line now hidden when Uncanny Automator Pro is not active #1093
+* Improved error messaging when a recipe creation error occurs #730
+* Reduced calls to calls to the API on the Dashboard page #947
+* Code quality improved following WPCS #879 #878
+* Improved placeholder contrast #1098
+* Usage tracking datatweaks #1052
+
+**Fixed:**
+
+* Automator Core - Receive data from a webhook - Unrelated recipes no longer show "In Progress" on some sites
+* HubSpot - Looping issue causing excessive API usage #1095
+* GiveWP - Method: get_input_fields() - Give Form Field Manager - Fix#1078
+* GiveWP - A donation is made via a form no longer triggers on failed donations#1033
+* WP Job Manager - "A user applies for a job" trigger now requires resume add-on#1058
+* WP Job Manager - PHP error in some tokens when Resume Manager add-on not active #1059
+* WordPress Core - "A post in a specific taxonomy with a specific taxonomy term" Post featured image URL now outputs a URL more consistently#1025
+
+= 3.3.0.1 [2021-10-20] =
+
+**Fixed:**
+
+* Recipe UI - Missing vendor libraries
+
 = 3.3 [2021-10-20] =
 
 **New integrations:**
@@ -206,6 +255,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * JS standards #1016
 * Modern Events Calendar logo #1001
 * Removed integration icons from /dist folder
+* Recipe UI performance improved by deferring unnecessary API calls #649
 
 **Fixed bugs:**
 
@@ -216,7 +266,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WordPress Core - Added Post featured image ID and Post featured image URL tokens to "A specific type of post is viewed" #957
 * WordPress Core - Role triggers #956
 * Switching between Visual/Text tabs in the rich text editor no longer breaks HTML content when tokens used inside HTML element attributes #942
-* Recipe UI performance improved by deferring unnecessary API calls #649
 
 = 3.2.0.2 [2021-10-06] =
 

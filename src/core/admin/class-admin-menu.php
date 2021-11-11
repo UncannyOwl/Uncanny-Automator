@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Admin_Menu
+ *
  * @package Uncanny_Automator
  */
 class Admin_Menu {
@@ -14,24 +15,28 @@ class Admin_Menu {
 	public static $tabs = array();
 	/**
 	 * Setting Page title
+	 *
 	 * @var
 	 */
 	public $settings_page_slug;
 
 	/**
 	 * Automator Connect
+	 *
 	 * @var
 	 */
 	public $automator_connect;
 
 	/**
 	 * Setting Base URL
+	 *
 	 * @var
 	 */
 	public static $automator_connect_url = AUTOMATOR_FREE_STORE_URL;
 
 	/**
 	 * Setting Connect URLs
+	 *
 	 * @var
 	 */
 	public static $automator_connect_page = AUTOMATOR_FREE_STORE_CONNECT_URL;
@@ -141,43 +146,48 @@ class Admin_Menu {
 			// Get data about the connected site
 			$this->automator_connect = self::is_automator_connected();
 
-			add_filter( 'automator_assets_backend_js_data', function( $data ){
+			add_filter(
+				'automator_assets_backend_js_data',
+				function ( $data ) {
 
-				// Check if the user has Automator Pro
-				$is_pro_active = false;
-				if ( isset( $this->automator_connect['item_name'] ) ) {
-					if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) && $this->automator_connect['item_name'] === AUTOMATOR_PRO_ITEM_NAME ) {
-						$is_pro_active = true;
+					// Check if the user has Automator Pro
+					$is_pro_active = false;
+					if ( isset( $this->automator_connect['item_name'] ) ) {
+						if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) && $this->automator_connect['item_name'] === AUTOMATOR_PRO_ITEM_NAME ) {
+							$is_pro_active = true;
+						}
 					}
-				}
 
-				// Add it to the main JS variable
-				$data[ 'isPro' ] = $is_pro_active;
+					// Add it to the main JS variable
+					$data['isPro'] = $is_pro_active;
 
-				// Check if the site is connected
-				$data[ 'hasSiteConnected' ] = $this->automator_connect ? true : false;
+					// Check if the site is connected
+					$data['hasSiteConnected'] = $this->automator_connect ? true : false;
 
-				// Add strings
-				$data[ 'i18n' ][ 'credits' ] = array(
-					'recipesUsingCredits' => array(
-						'noRecipes' => __( 'No recipes using credits on this site', 'uncanny-automator' ),
-						'table'     => array(
-							'recipe'             => __( 'Recipe', 'uncanny-automator' ),
-							'completionsAllowed' => __( 'Completions allowed', 'uncanny-automator' ),
-							'completedRuns'      => __( 'Completed runs', 'uncanny-automator' ),
-							/* translators: 1. Number */
-							'perUser'            => __( 'Per user: %1$s', 'uncanny-automator' ),
-							/* translators: 1. Number */
-							'total'              => __( 'Total: %1$s', 'uncanny-automator' ),
-							/* translators: Unlimited times */
-							'unlimited'          => _x( 'Unlimited', 'Times', 'uncanny-automator' ),
+					// Add strings
+					$data['i18n']['credits'] = array(
+						'recipesUsingCredits' => array(
+							'noRecipes' => __( 'No recipes using credits on this site', 'uncanny-automator' ),
+							'table'     => array(
+								'recipe'             => __( 'Recipe', 'uncanny-automator' ),
+								'completionsAllowed' => __( 'Completions allowed', 'uncanny-automator' ),
+								'completedRuns'      => __( 'Completed runs', 'uncanny-automator' ),
+								/* translators: 1. Number */
+								'perUser'            => __( 'Per user: %1$s', 'uncanny-automator' ),
+								/* translators: 1. Number */
+								'total'              => __( 'Total: %1$s', 'uncanny-automator' ),
+								/* translators: Unlimited times */
+								'unlimited'          => _x( 'Unlimited', 'Times', 'uncanny-automator' ),
+							),
 						),
-					),
-				);
+					);
 
-				return $data;
+					return $data;
 
-			}, 10, 1 );
+				},
+				10,
+				1
+			);
 		}
 
 		if ( 'uo-recipe_page_uncanny-automator-integrations' === (string) $hook ) {
@@ -337,7 +347,7 @@ class Admin_Menu {
 					// automatorplugin.com link to manage connected sites under this account
 					'connected_sites'    => $is_connected ? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id'] : '#',
 					// URL to disconnect current site from the account
-					'disconnect_account' => add_query_arg( [ 'action' => 'discount_automator_connect' ] ),
+					'disconnect_account' => add_query_arg( array( 'action' => 'discount_automator_connect' ) ),
 				),
 			),
 			'connect_url'        => $connect_url,
@@ -427,7 +437,7 @@ class Admin_Menu {
 			$website            = preg_replace( '(^https?://)', '', get_home_url() );
 			$redirect_url       = site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-settings' );
 			$connect_url        = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . urlencode( $redirect_url );
-			$disconnect_account = add_query_arg( [ 'action' => 'discount_automator_connect' ] );
+			$disconnect_account = add_query_arg( array( 'action' => 'discount_automator_connect' ) );
 
 			$license_data = false;
 			if ( $is_connected ) {
@@ -454,7 +464,7 @@ class Admin_Menu {
 				$license_is_active = ( 'valid' === $status ) ? true : false;
 
 				// CSS Classes
-				$license_css_classes = [];
+				$license_css_classes = array();
 
 				if ( $license_is_active ) {
 					$license_css_classes[] = 'uo-license--active';
@@ -464,7 +474,6 @@ class Admin_Menu {
 				$where_to_get_my_license = 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=where_to_get_my_license';
 				$buy_new_license         = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=buy_new_license';
 				$knowledge_base          = 'https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=knowledge_base';
-
 
 			}
 		}
@@ -500,52 +509,52 @@ class Admin_Menu {
 	 * @return false|array
 	 */
 	public static function is_automator_connected() {
-		$have_valid_licence = false;
-		$licence_key        = '';
-		$item_name          = '';
-		$count              = 0;
-
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' !== get_option( 'uap_automator_pro_license_status' ) ) {
-			//	return false;
+		$existing_data = get_transient( 'automator_api_credit_data' );
+		if ( ! empty( $existing_data ) ) {
+			return is_object( $existing_data ) ? (array) $existing_data : $existing_data;
 		}
+		$licence_key = '';
 
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ) {
 			$licence_key = get_option( 'uap_automator_pro_license_key' );
-			$item_name   = AUTOMATOR_PRO_ITEM_NAME;
 		} elseif ( 'valid' === get_option( 'uap_automator_free_license_status' ) ) {
 			$licence_key = get_option( 'uap_automator_free_license_key' );
-			$item_name   = AUTOMATOR_FREE_ITEM_NAME;
 		}
 
 		if ( empty( $licence_key ) ) {
 			return false;
 		}
 
-		$website = preg_replace( '(^https?://)', '', get_home_url() );
-
 		$plugin_version = AUTOMATOR_PLUGIN_VERSION;
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) ) {
 			$plugin_version = defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
 		}
 		// data to send in our API request
-		$api_params = [
+		$api_params = array(
 			'action'  => 'get_credits',
 			'api_ver' => '2.0',
 			'plugins' => $plugin_version,
-		];
+		);
 
 		// Call the custom API.
-		$response = wp_remote_post( AUTOMATOR_API_URL . 'v2/credits', array(
-			'timeout'   => 15,
-			'sslverify' => false,
-			'body'      => $api_params,
-		) );
+		$response = wp_remote_post(
+			AUTOMATOR_API_URL . 'v2/credits',
+			array(
+				'timeout'   => 15,
+				'sslverify' => false,
+				'body'      => $api_params,
+			)
+		);
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
 
 		$credit_data = json_decode( wp_remote_retrieve_body( $response ) );
 
-		if ( $credit_data->statusCode == 200 ) {
-			return (array) $credit_data->data;
+		if ( 200 === $credit_data->statusCode ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			set_transient( 'automator_api_credit_data', (array) $credit_data->data, time() + ( ( 60 * 60 ) * 1 ) );
 
+			return (array) $credit_data->data;
 		}
 
 		return false;
@@ -568,11 +577,14 @@ class Admin_Menu {
 			);
 
 			// Call the custom API.
-			$response = wp_remote_post( AUTOMATOR_FREE_STORE_URL, array(
-				'timeout'   => 15,
-				'sslverify' => false,
-				'body'      => $api_params,
-			) );
+			$response = wp_remote_post(
+				AUTOMATOR_FREE_STORE_URL,
+				array(
+					'timeout'   => 15,
+					'sslverify' => false,
+					'body'      => $api_params,
+				)
+			);
 
 			// make sure the response came back okay
 			if ( is_wp_error( $response ) ) {
@@ -590,7 +602,7 @@ class Admin_Menu {
 					// License data
 					update_option( 'uap_automator_free_license_data', (array) $license_data );
 				}
-				wp_safe_redirect( remove_query_arg( [ 'action', 'uap_automator_free_license_key' ] ) );
+				wp_safe_redirect( remove_query_arg( array( 'action', 'uap_automator_free_license_key' ) ) );
 				die;
 			}
 		} elseif ( isset( $_GET['action'] ) && 'discount_automator_connect' === $_GET['action'] ) {
@@ -598,25 +610,30 @@ class Admin_Menu {
 			$license = get_option( 'uap_automator_free_license_key' );
 			if ( $license ) {
 				// data to send in our API request
-				$api_params = [
+				$api_params = array(
 					'edd_action' => 'deactivate_license',
 					'license'    => $license,
 					'item_name'  => urlencode( AUTOMATOR_FREE_ITEM_NAME ), // the name of our product in uo
 					'url'        => home_url(),
-				];
+				);
 
 				// Call the custom API.
-				$response = wp_remote_post( AUTOMATOR_FREE_STORE_URL, [
-					'timeout'   => 15,
-					'sslverify' => false,
-					'body'      => $api_params,
-				] );
+				$response = wp_remote_post(
+					AUTOMATOR_FREE_STORE_URL,
+					array(
+						'timeout'   => 15,
+						'sslverify' => false,
+						'body'      => $api_params,
+					)
+				);
 			}
 			delete_option( 'uap_automator_free_license_status' );
 			delete_option( 'uap_automator_free_license_key' );
 			delete_option( 'uap_automator_free_license_data' );
+			delete_transient( 'automator_api_credit_data' );
+			delete_transient( 'automator_api_credits' );
 
-			wp_safe_redirect( remove_query_arg( [ 'action' ] ) );
+			wp_safe_redirect( remove_query_arg( array( 'action' ) ) );
 			die;
 		}
 	}
@@ -653,11 +670,14 @@ class Admin_Menu {
 		);
 
 		// Call the custom API.
-		$response = wp_remote_post( AUTOMATOR_PRO_STORE_URL, array(
-			'timeout'   => 15,
-			'sslverify' => false,
-			'body'      => $api_params,
-		) );
+		$response = wp_remote_post(
+			AUTOMATOR_PRO_STORE_URL,
+			array(
+				'timeout'   => 15,
+				'sslverify' => false,
+				'body'      => $api_params,
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return false;

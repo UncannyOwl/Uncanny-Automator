@@ -9,6 +9,7 @@ use Uncanny_Automator_Pro\Fluent_Crm_Pro_Helpers;
 
 /**
  * Class Fluent_Crm_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Fluent_Crm_Helpers {
@@ -68,7 +69,7 @@ class Fluent_Crm_Helpers {
 	/**
 	 * Our callback function to attach the trigger 'automator_fluentcrm_status_update'.
 	 *
-	 * @param  mixed $subscriber The accepted subscriber object from status_action.
+	 * @param  mixed  $subscriber The accepted subscriber object from status_action.
 	 * @param  string $old_status The old status.
 	 *
 	 * @return void
@@ -84,7 +85,7 @@ class Fluent_Crm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
@@ -145,7 +146,7 @@ class Fluent_Crm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
@@ -201,10 +202,10 @@ class Fluent_Crm_Helpers {
 
 	/**
 	 * @param null|array|string $to_match
-	 * @param null $match_type
-	 * @param null $recipes
-	 * @param null $trigger_meta
-	 * @param null $trigger_code
+	 * @param null              $match_type
+	 * @param null              $recipes
+	 * @param null              $trigger_meta
+	 * @param null              $trigger_code
 	 *
 	 * @return array
 	 */
@@ -265,10 +266,10 @@ class Fluent_Crm_Helpers {
 							);
 							break;
 						}
-					}
-				}
-			}
-		}
+					}//end foreach
+				}//end if
+			}//end foreach
+		}//end foreach
 
 		return $matched_recipe_ids;
 	}
@@ -309,7 +310,7 @@ class Fluent_Crm_Helpers {
 				$user_id = $user->ID;
 			}
 		}
-		
+
 		// Just return the user id if the user is not logged in.
 		if ( ! is_user_logged_in() ) {
 			return $user_id;
@@ -337,8 +338,10 @@ class Fluent_Crm_Helpers {
 		 * This action is triggered by three different processes and returns either list ids
 		 * or pivot ids(table: wp_fc_subscriber_pivot)
 		 */
-		$list_ids = array();
-		if ( ! isset( $_POST['type'] ) ) {
+		$list_ids     = array();
+		$request_type = automator_filter_input( 'type', INPUT_POST );
+
+		if ( ! empty( $request_type ) ) {
 			// the $attachedListIds are actually pivot IDs
 			$pivots = SubscriberPivot::whereIn( 'id', $attachedListIds )->get();
 			if ( ! empty( $pivots ) ) {
@@ -365,13 +368,15 @@ class Fluent_Crm_Helpers {
 		 * or pivot ids(table: wp_fc_subscriber_pivot)
 		 */
 		$list_ids = array();
-		
+
 		// Just check to see if the user is logged in or not.
 		if ( ! is_user_logged_in() ) {
 			$list_ids = $attachedTagIds;
 		}
 
-		if ( ! isset( $_POST['type'] ) ) {
+		$request_type = automator_filter_input( 'type', INPUT_POST );
+
+		if ( ! empty( $request_type ) ) {
 			// the $attachedListIds are actually pivot IDs
 			$pivots = SubscriberPivot::whereIn( 'id', $attachedTagIds )->get();
 			if ( ! empty( $pivots ) ) {
@@ -382,8 +387,7 @@ class Fluent_Crm_Helpers {
 		} else {
 			$list_ids = $attachedTagIds;
 		}
-		
-	
+
 		return $list_ids;
 	}
 

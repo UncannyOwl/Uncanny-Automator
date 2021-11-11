@@ -31,15 +31,13 @@ class MASTERSTUDY_COURSEENROLLED {
 	 */
 	public function define_trigger() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'stm-courses',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
@@ -56,28 +54,26 @@ class MASTERSTUDY_COURSEENROLLED {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'course_enrolled' ),
-			'options'             => [
-				[
+			'options'             => array(
+				array(
 					'option_code'              => $this->trigger_meta,
 					'label'                    => esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
 					'input_type'               => 'select',
 					'required'                 => true,
 					'options'                  => $options,
-					'relevant_tokens'          => [
-						'MSLMSCOURSE'     => esc_attr__( 'Course title', 'uncanny-automator' ),
-						'MSLMSCOURSE_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
-						'MSLMSCOURSE_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+					'relevant_tokens'          => array(
+						'MSLMSCOURSE'           => esc_attr__( 'Course title', 'uncanny-automator' ),
+						'MSLMSCOURSE_ID'        => esc_attr__( 'Course ID', 'uncanny-automator' ),
+						'MSLMSCOURSE_URL'       => esc_attr__( 'Course URL', 'uncanny-automator' ),
 						'MSLMSCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
 						'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
-					],
+					),
 					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
-				],
-			],
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -87,14 +83,12 @@ class MASTERSTUDY_COURSEENROLLED {
 	 */
 	public function course_enrolled( $user_id, $course_id ) {
 
-
-
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $course_id,
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 

@@ -46,14 +46,14 @@ class Slack_Helpers {
 	/**
 	 * @param Slack_Helpers $options
 	 */
-	public function setOptions( Slack_Helpers $options ) {
+	public function setOptions( Slack_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Slack_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Slack_Pro_Helpers $pro ) {
+	public function setPro( \Uncanny_Automator_Pro\Slack_Pro_Helpers $pro ) { // phpcs:ignore
 		$this->pro = $pro;
 	}
 
@@ -125,7 +125,10 @@ class Slack_Helpers {
 		$placeholder              = key_exists( 'placeholder', $args ) ? $args['placeholder'] : null;
 		$options                  = array();
 
-		$options[] = array( 'value' => '-1', 'text' => __( 'Select a channel', 'uncanny-automator' ) );
+		$options[] = array(
+			'value' => '-1',
+			'text'  => __( 'Select a channel', 'uncanny-automator' ),
+		);
 
 		$client = $this->get_slack_client();
 
@@ -143,9 +146,15 @@ class Slack_Helpers {
 
 			foreach ( $data->channels as $channel ) {
 				if ( $channel->is_private ) {
-					$options[] = array( 'value' => $channel->id, 'text' => 'Private: ' . $channel->name );
+					$options[] = array(
+						'value' => $channel->id,
+						'text'  => 'Private: ' . $channel->name,
+					);
 				} else {
-					$options[] = array( 'value' => $channel->id, 'text' => $channel->name );
+					$options[] = array(
+						'value' => $channel->id,
+						'text'  => $channel->name,
+					);
 				}
 			}
 		}
@@ -202,7 +211,10 @@ class Slack_Helpers {
 		$placeholder              = key_exists( 'placeholder', $args ) ? $args['placeholder'] : null;
 		$options                  = array();
 
-		$options[] = array( 'value' => '-1', 'text' => __( 'Select a channel', 'uncanny-automator' ) );
+		$options[] = array(
+			'value' => '-1',
+			'text'  => __( 'Select a channel', 'uncanny-automator' ),
+		);
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
@@ -222,7 +234,10 @@ class Slack_Helpers {
 
 					if ( $data && $data->ok ) {
 						foreach ( $data->members as $member ) {
-							$options[] = array( 'value' => $member->id, 'text' => $member->name );
+							$options[] = array(
+								'value' => $member->id,
+								'text'  => $member->name,
+							);
 						}
 					}
 				}
@@ -340,7 +355,7 @@ class Slack_Helpers {
 		);
 
 		return apply_filters( 'uap_option_text_field', $option );
-	
+
 	}
 
 	/**
@@ -428,7 +443,7 @@ class Slack_Helpers {
 				$api_ver      = '1.0';
 				$scope        = $this->scope;
 				$action       = 'slack_authorization_request';
-				$redirect_url = urlencode( $tab_url );
+				$redirect_url = rawurlencode( $tab_url );
 				$button_url   = $this->automator_api . "?action={$action}&scope={$scope}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
 				$button_text  = __( 'Connect an account', 'uncanny-automator' );
 				$button_class = 'uo-connect-button';
@@ -437,11 +452,8 @@ class Slack_Helpers {
 			ob_start();
 			?>
 
-			<a href="<?php echo $button_url; ?>"
-			   class="uo-settings-btn uo-settings-btn--secondary <?php echo $button_class; ?>">
-				<?php
-				echo $button_text;
-				?>
+			<a href="<?php echo esc_url( $button_url ); ?>" class="uo-settings-btn uo-settings-btn--secondary <?php echo esc_attr( $button_class ); ?>">
+				<?php echo esc_attr( $button_text ); ?>
 			</a>
 
 			<style>
@@ -484,10 +496,13 @@ class Slack_Helpers {
 	 * @return void.
 	 */
 	public function capture_oauth_tokens() {
-		if ( isset( $_REQUEST['tab'] ) && $this->setting_tab == $_REQUEST['tab'] ) {
 
-			if ( ! empty( $_GET['automator_api_message'] ) ) {
-				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $_GET['automator_api_message'], wp_create_nonce( 'automator_slack_api_authentication' ) );
+		$tab = automator_filter_input( 'tab' );
+
+		if ( ! empty( $tab ) && $tab === $this->setting_tab ) {
+
+			if ( ! empty( automator_filter_input( 'automator_api_message' ) ) ) {
+				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( automator_filter_input( 'automator_api_message' ), wp_create_nonce( 'automator_slack_api_authentication' ) );
 
 				if ( $tokens ) {
 					update_option( '_uncannyowl_slack_settings', $tokens );
@@ -497,7 +512,7 @@ class Slack_Helpers {
 					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=2' ) );
 					die;
 				}
-			} elseif ( ! empty( $_GET['disconnect'] ) ) {
+			} elseif ( ! empty( automator_filter_input( 'disconnect' ) ) ) {
 				delete_option( '_uncannyowl_slack_settings' );
 				wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab ) );
 				die;
