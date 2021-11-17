@@ -107,7 +107,7 @@ class Automator_DB {
 
 		return "CREATE TABLE {$tbl_recipe_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
-`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 `user_id` bigint unsigned NOT NULL,
 `automator_recipe_id` bigint unsigned NOT NULL,
 `completed` tinyint(1) NOT NULL,
@@ -119,7 +119,7 @@ KEY automator_recipe_id (`automator_recipe_id`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_trigger_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
-`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 `user_id` bigint unsigned NOT NULL,
 `automator_trigger_id` bigint unsigned NOT NULL,
 `automator_recipe_id` bigint unsigned NOT NULL,
@@ -140,7 +140,7 @@ CREATE TABLE {$tbl_trigger_log_meta} (
 `meta_key` varchar(255) DEFAULT '' NOT NULL,
 `meta_value` longtext NULL,
 `run_number` mediumint unsigned NOT NULL DEFAULT 1,
-`run_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`run_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
 KEY run_number (`run_number`),
@@ -150,7 +150,7 @@ KEY meta_key (meta_key(20))
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_action_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
-`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 `user_id` bigint unsigned NOT NULL,
 `automator_action_id` bigint unsigned NOT NULL,
 `automator_recipe_id` bigint unsigned NOT NULL,
@@ -179,7 +179,7 @@ KEY meta_key (meta_key(20))
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_closure_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
-`date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 `user_id` bigint unsigned NOT NULL,
 `automator_closure_id` bigint unsigned NOT NULL,
 `automator_recipe_id` bigint unsigned NOT NULL,

@@ -2,9 +2,9 @@
 Contributors: uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
-Tested up to: 5.8.1
+Tested up to: 5.8.2
 Requires PHP: 5.6
-Stable tag: 3.4
+Stable tag: 3.4.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -180,6 +180,15 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 3.4.0.1 [2021-11-17] =
+
+**Fixed:**
+* Changed `datetime` to `TIMESTAMP` in database initialization script to support MySQL < 5.6 #1113
+* WordPress Core - Create a post - Featured image field no longer required #1112
+* Elementor - Form submission now works reliably on larger sites #1109
+* Google Sheets - API error on some sites #1024
+* Ultimate Member - Token parsing no longer conflicts with tokens for other integrations #1129
+
 = 3.4 [2021-11-11] =
 
 **New integration:**
@@ -210,17 +219,17 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Reduced calls to calls to the API on the Dashboard page #947
 * Code quality improved following WPCS #879 #878
 * Improved placeholder contrast #1098
-* Usage tracking datatweaks #1052
+* Usage tracking data tweaks #1052
 
 **Fixed:**
 
-* Automator Core - Receive data from a webhook - Unrelated recipes no longer show "In Progress" on some sites
+* Automator Core - Receive data from a webhook - Unrelated recipes no longer show "In Progress" on some sites #1022
 * HubSpot - Looping issue causing excessive API usage #1095
-* GiveWP - Method: get_input_fields() - Give Form Field Manager - Fix#1078
-* GiveWP - A donation is made via a form no longer triggers on failed donations#1033
-* WP Job Manager - "A user applies for a job" trigger now requires resume add-on#1058
+* GiveWP - Method: get_input_fields() - Give Form Field Manager - Fix# 1078
+* GiveWP - A donation is made via a form no longer triggers on failed donations #1033
+* WP Job Manager - "A user applies for a job" trigger now requires resume add-on #1058
 * WP Job Manager - PHP error in some tokens when Resume Manager add-on not active #1059
-* WordPress Core - "A post in a specific taxonomy with a specific taxonomy term" Post featured image URL now outputs a URL more consistently#1025
+* WordPress Core - "A post in a specific taxonomy with a specific taxonomy term" Post featured image URL now outputs a URL more consistently #1025
 
 = 3.3.0.1 [2021-10-20] =
 

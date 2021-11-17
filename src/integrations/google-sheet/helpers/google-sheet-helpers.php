@@ -917,56 +917,34 @@ class Google_Sheet_Helpers {
 	 */
 	public function get_user_info() {
 
-		$profile_endpoint = 'https://www.googleapis.com/oauth2/v3/userinfo';
-
-		$transient_key = '_uncannyowl_google_user_info';
-
 		$user_info = array(
 			'avatar_uri' => '',
 			'name'       => '',
 		);
 
+		$transient_key = '_uncannyowl_google_user_info';
+
 		$saved_user_info = get_transient( $transient_key );
 
-		if ( false === $saved_user_info ) {
-
-			$google_sheet_options = get_option( '_uncannyowl_google_sheet_settings' );
-
-			if ( false === $google_sheet_options ) {
-				return $saved_user_info;
-			}
-
-			$access_token = isset( $google_sheet_options['access_token'] ) ? $google_sheet_options['access_token'] : '';
-
-			$headers = array(
-				'Authorization'  => 'Bearer ' . $access_token,
-				'Content-Length' => 0,
-			);
-
-			$request = wp_remote_get(
-				$profile_endpoint,
-				array(
-					'headers' => $headers,
-				)
-			);
-
-			if ( ! is_wp_error( $request ) ) {
-				$response = json_decode( wp_remote_retrieve_body( $request ) );
-				if ( ! isset( $response->error ) ) {
-					$user_info['name']       = $response->name;
-					$user_info['avatar_uri'] = $response->picture;
-					$user_info['email']      = $response->email;
-					set_transient( '_uncannyowl_google_user_info', $user_info, WEEK_IN_SECONDS );
-				}
-			}
-		} else {
-
+		if ( false !== $saved_user_info ) {
 			return $saved_user_info;
-
 		}
 
-		return $user_info;
+		$response = $this->api_user_info();
 
+		if ( ! is_wp_error( $response ) ) {
+			$body = json_decode( wp_remote_retrieve_body( $response ) );
+
+			if ( $body && $body->statusCode == 200 ) {
+				$user = $body->data;
+				$user_info['name']       = $user->name;
+				$user_info['avatar_uri'] = $user->picture;
+				$user_info['email']      = $user->email;
+				set_transient( '_uncannyowl_google_user_info', $user_info, DAY_IN_SECONDS );
+			}
+		}
+		
+		return $user_info;
 	}
 
 	/**
@@ -1028,5 +1006,34 @@ class Google_Sheet_Helpers {
 
 		delete_option( '_uncannyowl_google_sheet_settings' );
 
+	}
+	
+	/**
+	 * api_user_info
+	 *
+	 * @return void
+	 */
+	public function api_user_info() {
+
+		$gs_client = $this->get_google_client();
+
+		if ( ! $gs_client ) {
+			return;
+		}
+
+		$response = wp_remote_post(
+			$this->automator_api,
+			array(
+				'method' => 'POST',
+				'body'   => array(
+					'action'       => 'user_info',
+					'access_token' => $gs_client,
+					'api_ver'      => '2.0',
+					'plugin_ver'   => InitializePlugin::PLUGIN_VERSION,
+				),
+			)
+		);
+
+		return $response;
 	}
 }

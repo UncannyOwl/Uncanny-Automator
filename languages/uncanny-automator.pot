@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.4\n"
+"Project-Id-Version: Uncanny Automator 3.4.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-11T18:53:12+00:00\n"
+"POT-Creation-Date: 2021-11-17T18:20:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -5400,7 +5400,7 @@ msgstr ""
 
 #: src/integrations/caldera-forms/helpers/caldera-helpers.php:65
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:65
-#: src/integrations/elementor/helpers/elementor-helpers.php:65
+#: src/integrations/elementor/helpers/elementor-helpers.php:68
 #: src/integrations/formidable/helpers/formidable-helpers.php:67
 #: src/integrations/forminator/helpers/forminator-helpers.php:66
 #: src/integrations/give/helpers/give-helpers.php:45
@@ -5607,7 +5607,7 @@ msgstr ""
 msgid "A user purchases {{a product}}"
 msgstr ""
 
-#: src/integrations/elementor/helpers/elementor-helpers.php:72
+#: src/integrations/elementor/helpers/elementor-helpers.php:75
 #: src/integrations/forminator/helpers/forminator-helpers.php:72
 #: src/integrations/give/helpers/give-helpers.php:59
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:72

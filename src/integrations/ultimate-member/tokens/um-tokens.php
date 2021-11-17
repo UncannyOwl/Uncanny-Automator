@@ -98,14 +98,13 @@ class Um_Tokens {
 		
 		$to_match = [ 'WPROLE', 'UMFORM' ];
 		
-		// Initialize the return value to empty string.
-		$value = '';
-
 		if ( $pieces ) {
 			if ( array_intersect( $to_match, $pieces ) ) {
 				$piece = $pieces[1];
 				$meta  = $pieces[2];
 				if ( $trigger_data ) {
+					// Initialize the return value to empty string.
+					$value = '';
 					foreach ( $trigger_data as $trigger ) {
 						if ( 'WPROLE' === $piece && isset( $trigger['meta'][ $piece ] ) ) {
 							$role = $trigger['meta'][ $piece ];
