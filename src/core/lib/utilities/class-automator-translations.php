@@ -760,6 +760,12 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.generic.content
 					),
 
+					'exceptions' => array(
+						'tags' => array(
+							'couldNotSave' => __( "We couldn't save the tags", 'uncanny-automator' ),
+							// UncannyAutomator.i18n.debugging.fatalErrorHandler.exceptions.tags.couldNotSave
+						)
+					)
 				),
 				'uiCantLoad'          => array(
 					'title'   => __( 'The recipe creator could not be loaded', 'uncanny-automator' ),

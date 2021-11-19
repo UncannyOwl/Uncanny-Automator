@@ -326,11 +326,6 @@ class Google_Sheet_Helpers {
 		// Nonce and post object validation
 		$uncanny_automator->utilities->ajax_auth_check();
 
-		if ( ! isset( $_POST ) ) {
-			echo wp_json_encode( $fields );
-			die();
-		}
-
 		$gs_spreadsheet_id = sanitize_text_field( $_POST['values']['GSSPREADSHEET'] );
 
 		$fields = $this->api_get_worksheets_from_spreadsheet( $gs_spreadsheet_id );
@@ -652,7 +647,9 @@ class Google_Sheet_Helpers {
 					$options[ $drive->id ] = $drive->name;
 				}
 			} else {
-				$options['-1'] = __( 'API returned an error: ', 'uncanny-automator' ) . $body->error->description;
+				if ( ! empty( $body->error->description) ) {
+					automator_log( $body->error->description );
+				}
 			}
 		} else {
 
@@ -662,10 +659,9 @@ class Google_Sheet_Helpers {
 				$error_response = $response->get_error_message();
 			}
 
-			$options['-1'] = sprintf(
-				__( 'Could not connect to the API with error: [%s].', 'uncanny-automator' ),
-				$error_response
-			);
+			if ( ! empty( $body->error->description) ) {
+				automator_log( $error_response );
+			}
 
 		}
 
@@ -943,7 +939,7 @@ class Google_Sheet_Helpers {
 				set_transient( '_uncannyowl_google_user_info', $user_info, DAY_IN_SECONDS );
 			}
 		}
-		
+
 		return $user_info;
 	}
 
@@ -1007,7 +1003,7 @@ class Google_Sheet_Helpers {
 		delete_option( '_uncannyowl_google_sheet_settings' );
 
 	}
-	
+
 	/**
 	 * api_user_info
 	 *
@@ -1018,6 +1014,16 @@ class Google_Sheet_Helpers {
 		$gs_client = $this->get_google_client();
 
 		if ( ! $gs_client ) {
+			return;
+		}
+
+		if ( empty( $gs_client['scope'] ) ) {
+			return;
+		}
+
+		$scope = $gs_client['scope'];
+
+		if ( ! ( strpos( $scope, self::SCOPE_USERINFO ) || strpos( $scope, self::SCOPE_USER_EMAIL ) ) ) {
 			return;
 		}
 

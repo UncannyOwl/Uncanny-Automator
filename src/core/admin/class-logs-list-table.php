@@ -407,7 +407,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_type_name = esc_attr_x( 'Anonymous', 'Recipe', 'uncanny-automator' );
 				}
 			}
-			$run_number_log = 'anonymous' === $current_type ? 1 : $run_number;
+			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $recipe->run_number ) ? 1 : $recipe->run_number : $recipe->run_number;
 			$url            = sprintf(
 				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&minimal=1',
 				admin_url( 'edit.php' ),
@@ -501,7 +501,7 @@ class Logs_List_Table extends WP_List_Table {
 				}
 			}
 
-			$run_number_log = 'anonymous' === $current_type ? 1 : $run_number;
+			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $recipe->run_number ) ? 1 : $recipe->run_number : $recipe->run_number;
 
 			$url     = sprintf( '%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&minimal=1', admin_url( 'edit.php' ), 'uo-recipe', 'uncanny-automator-recipe-activity-details', $recipe_id, $run_number_log, absint( $recipe_log_id ) );
 			$actions = array(

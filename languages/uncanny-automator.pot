@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.4.0.1\n"
+"Project-Id-Version: Uncanny Automator 3.4.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-17T18:20:03+00:00\n"
+"POT-Creation-Date: 2021-11-19T16:55:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -669,7 +669,7 @@ msgstr ""
 #: src/core/includes/automator-settings.php:118
 #: src/core/includes/automator-settings.php:250
 #: src/core/includes/automator-settings.php:381
-#: src/core/lib/utilities/class-automator-translations.php:891
+#: src/core/lib/utilities/class-automator-translations.php:897
 msgid "Save"
 msgstr ""
 
@@ -3231,405 +3231,409 @@ msgid "Automator has encountered an unknown error. Please contact %1$s with a sc
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:765
+msgid "We couldn't save the tags"
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:771
 msgid "The recipe creator could not be loaded"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:767
+#: src/core/lib/utilities/class-automator-translations.php:773
 msgid "Sorry, something went wrong when loading the recipe interface. Technical details are listed below."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:769
+#: src/core/lib/utilities/class-automator-translations.php:775
 msgid "Click Learn More for steps you can take to resolve this issue."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:772
+#: src/core/lib/utilities/class-automator-translations.php:778
 msgid "Go to all recipes"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:774
-#: src/core/lib/utilities/class-automator-translations.php:917
+#: src/core/lib/utilities/class-automator-translations.php:780
+#: src/core/lib/utilities/class-automator-translations.php:923
 msgid "Learn more"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/lib/utilities/class-automator-translations.php:777
+#: src/core/lib/utilities/class-automator-translations.php:783
 msgid "%1$s support"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:800
+#: src/core/lib/utilities/class-automator-translations.php:806
 msgid "Select date"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:801
+#: src/core/lib/utilities/class-automator-translations.php:807
 msgid "Select time"
 msgstr ""
 
 #. translators: Abbreviation - Monday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:805
+#: src/core/lib/utilities/class-automator-translations.php:811
 msgctxt "Date format"
 msgid "Mon"
 msgstr ""
 
 #. translators: Abbreviation - Tuesday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:807
+#: src/core/lib/utilities/class-automator-translations.php:813
 msgctxt "Date format"
 msgid "Tue"
 msgstr ""
 
 #. translators: Abbreviation - Wednesday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:809
+#: src/core/lib/utilities/class-automator-translations.php:815
 msgctxt "Date format"
 msgid "Wed"
 msgstr ""
 
 #. translators: Abbreviation - Thursday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:811
+#: src/core/lib/utilities/class-automator-translations.php:817
 msgctxt "Date format"
 msgid "Thu"
 msgstr ""
 
 #. translators: Abbreviation - Friday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:813
+#: src/core/lib/utilities/class-automator-translations.php:819
 msgctxt "Date format"
 msgid "Fri"
 msgstr ""
 
 #. translators: Abbreviation - Saturday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:815
+#: src/core/lib/utilities/class-automator-translations.php:821
 msgctxt "Date format"
 msgid "Sat"
 msgstr ""
 
 #. translators: Abbreviation - Sunday (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:817
+#: src/core/lib/utilities/class-automator-translations.php:823
 msgctxt "Date format"
 msgid "Sun"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:820
+#: src/core/lib/utilities/class-automator-translations.php:826
 msgctxt "Date format"
 msgid "Monday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:821
+#: src/core/lib/utilities/class-automator-translations.php:827
 msgctxt "Date format"
 msgid "Tuesday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:822
+#: src/core/lib/utilities/class-automator-translations.php:828
 msgctxt "Date format"
 msgid "Wednesday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:823
+#: src/core/lib/utilities/class-automator-translations.php:829
 msgctxt "Date format"
 msgid "Thursday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:824
+#: src/core/lib/utilities/class-automator-translations.php:830
 msgctxt "Date format"
 msgid "Friday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:825
+#: src/core/lib/utilities/class-automator-translations.php:831
 msgctxt "Date format"
 msgid "Saturday"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:826
+#: src/core/lib/utilities/class-automator-translations.php:832
 msgctxt "Date format"
 msgid "Sunday"
 msgstr ""
 
 #. translators: Abbreviation - January (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:832
+#: src/core/lib/utilities/class-automator-translations.php:838
 msgctxt "Date format"
 msgid "Jan"
 msgstr ""
 
 #. translators: Abbreviation - February (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:834
+#: src/core/lib/utilities/class-automator-translations.php:840
 msgctxt "Date format"
 msgid "Feb"
 msgstr ""
 
 #. translators: Abbreviation - March (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:836
+#: src/core/lib/utilities/class-automator-translations.php:842
 msgctxt "Date format"
 msgid "Mar"
 msgstr ""
 
 #. translators: Abbreviation - April (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:838
+#: src/core/lib/utilities/class-automator-translations.php:844
 msgctxt "Date format"
 msgid "Apr"
 msgstr ""
 
 #. translators: Abbreviation - May (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:840
-#: src/core/lib/utilities/class-automator-translations.php:861
+#: src/core/lib/utilities/class-automator-translations.php:846
+#: src/core/lib/utilities/class-automator-translations.php:867
 msgctxt "Date format"
 msgid "May"
 msgstr ""
 
 #. translators: Abbreviation - June (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:842
+#: src/core/lib/utilities/class-automator-translations.php:848
 msgctxt "Date format"
 msgid "Jun"
 msgstr ""
 
 #. translators: Abbreviation - July (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:844
+#: src/core/lib/utilities/class-automator-translations.php:850
 msgctxt "Date format"
 msgid "Jul"
 msgstr ""
 
 #. translators: Abbreviation - August (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:846
+#: src/core/lib/utilities/class-automator-translations.php:852
 msgctxt "Date format"
 msgid "Aug"
 msgstr ""
 
 #. translators: Abbreviation - September (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:848
+#: src/core/lib/utilities/class-automator-translations.php:854
 msgctxt "Date format"
 msgid "Sep"
 msgstr ""
 
 #. translators: Abbreviation - October (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:850
+#: src/core/lib/utilities/class-automator-translations.php:856
 msgctxt "Date format"
 msgid "Oct"
 msgstr ""
 
 #. translators: Abbreviation - November (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:852
+#: src/core/lib/utilities/class-automator-translations.php:858
 msgctxt "Date format"
 msgid "Nov"
 msgstr ""
 
 #. translators: Abbreviation - December (3 letters)
-#: src/core/lib/utilities/class-automator-translations.php:854
+#: src/core/lib/utilities/class-automator-translations.php:860
 msgctxt "Date format"
 msgid "Dec"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:857
+#: src/core/lib/utilities/class-automator-translations.php:863
 msgctxt "Date format"
 msgid "January"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:858
+#: src/core/lib/utilities/class-automator-translations.php:864
 msgctxt "Date format"
 msgid "February"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:859
+#: src/core/lib/utilities/class-automator-translations.php:865
 msgctxt "Date format"
 msgid "March"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:860
+#: src/core/lib/utilities/class-automator-translations.php:866
 msgctxt "Date format"
 msgid "April"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:862
+#: src/core/lib/utilities/class-automator-translations.php:868
 msgctxt "Date format"
 msgid "June"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:863
+#: src/core/lib/utilities/class-automator-translations.php:869
 msgctxt "Date format"
 msgid "July"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:864
+#: src/core/lib/utilities/class-automator-translations.php:870
 msgctxt "Date format"
 msgid "August"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:865
+#: src/core/lib/utilities/class-automator-translations.php:871
 msgctxt "Date format"
 msgid "September"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:866
+#: src/core/lib/utilities/class-automator-translations.php:872
 msgctxt "Date format"
 msgid "October"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:867
+#: src/core/lib/utilities/class-automator-translations.php:873
 msgctxt "Date format"
 msgid "November"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:868
+#: src/core/lib/utilities/class-automator-translations.php:874
 msgctxt "Date format"
 msgid "December"
 msgstr ""
 
 #. translators: Range separator
-#: src/core/lib/utilities/class-automator-translations.php:872
+#: src/core/lib/utilities/class-automator-translations.php:878
 msgctxt "Date format"
 msgid "to"
 msgstr ""
 
 #. translators: Numeric representation of the day of the week. 1 (for Sunday) through 7 (for Saturday)
-#: src/core/lib/utilities/class-automator-translations.php:874
+#: src/core/lib/utilities/class-automator-translations.php:880
 msgctxt "Date format"
 msgid "1"
 msgstr ""
 
 #. translators: Abbreviation - Week
-#: src/core/lib/utilities/class-automator-translations.php:876
+#: src/core/lib/utilities/class-automator-translations.php:882
 msgctxt "Date format"
 msgid "Wk"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:877
+#: src/core/lib/utilities/class-automator-translations.php:883
 msgctxt "Date format"
 msgid "AM"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:878
+#: src/core/lib/utilities/class-automator-translations.php:884
 msgctxt "Date format"
 msgid "PM"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:879
+#: src/core/lib/utilities/class-automator-translations.php:885
 msgctxt "Date format"
 msgid "Year"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:880
+#: src/core/lib/utilities/class-automator-translations.php:886
 msgctxt "Date format"
 msgid "Month"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:881
+#: src/core/lib/utilities/class-automator-translations.php:887
 msgctxt "Date format"
 msgid "Hour"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:882
+#: src/core/lib/utilities/class-automator-translations.php:888
 msgctxt "Date format"
 msgid "Minute"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:885
+#: src/core/lib/utilities/class-automator-translations.php:891
 msgid "No results found"
 msgstr ""
 
 #. translators: Character to separate items
-#: src/core/lib/utilities/class-automator-translations.php:888
+#: src/core/lib/utilities/class-automator-translations.php:894
 #: src/integrations/fluent-crm/actions/fcrm-tag-to-user.php:102
 #: src/integrations/fluent-crm/actions/fcrm-user-to-list.php:105
 msgid ","
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:894
+#: src/core/lib/utilities/class-automator-translations.php:900
 #: src/core/views/filters.php:172
 msgid "Search"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:896
+#: src/core/lib/utilities/class-automator-translations.php:902
 msgid "Searching"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:899
+#: src/core/lib/utilities/class-automator-translations.php:905
 msgid "Confirm"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:902
+#: src/core/lib/utilities/class-automator-translations.php:908
 msgid "Cancel"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:905
+#: src/core/lib/utilities/class-automator-translations.php:911
 msgid "Delete"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:908
+#: src/core/lib/utilities/class-automator-translations.php:914
 msgid "Clear"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:911
+#: src/core/lib/utilities/class-automator-translations.php:917
 msgid "Edit"
 msgstr ""
 
 #. translators: Noun
-#: src/core/lib/utilities/class-automator-translations.php:914
+#: src/core/lib/utilities/class-automator-translations.php:920
 msgctxt "Item options"
 msgid "Support"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:919
+#: src/core/lib/utilities/class-automator-translations.php:925
 msgid "True"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:921
+#: src/core/lib/utilities/class-automator-translations.php:927
 msgid "False"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:923
+#: src/core/lib/utilities/class-automator-translations.php:929
 msgid "Loading more results..."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:928
+#: src/core/lib/utilities/class-automator-translations.php:934
 msgid "This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:931
+#: src/core/lib/utilities/class-automator-translations.php:937
 msgid "Upgrade now"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:934
+#: src/core/lib/utilities/class-automator-translations.php:940
 msgid "Add row"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:937
+#: src/core/lib/utilities/class-automator-translations.php:943
 msgid "Remove row"
 msgstr ""
 
 #. translators: 1. Row number
-#: src/core/lib/utilities/class-automator-translations.php:940
+#: src/core/lib/utilities/class-automator-translations.php:946
 msgid "Row %1$s"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:942
+#: src/core/lib/utilities/class-automator-translations.php:948
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:453
 msgid "Yes"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:944
+#: src/core/lib/utilities/class-automator-translations.php:950
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:458
 msgid "No"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:946
+#: src/core/lib/utilities/class-automator-translations.php:952
 msgctxt "Verb"
 msgid "Close"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:948
+#: src/core/lib/utilities/class-automator-translations.php:954
 msgid "Needs user data"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:950
+#: src/core/lib/utilities/class-automator-translations.php:956
 msgid "Scroll to increment"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:952
+#: src/core/lib/utilities/class-automator-translations.php:958
 msgid "Click to toggle"
 msgstr ""
 
@@ -4894,7 +4898,7 @@ msgstr ""
 
 #: src/integrations/active-campaign/helpers/active-campaign-helpers.php:399
 #: src/integrations/active-campaign/helpers/active-campaign-helpers.php:400
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:524
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:519
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:757
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:573
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:574
@@ -5926,26 +5930,26 @@ msgid "A contact is added to {{a list}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Forms
-#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:61
+#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:67
 msgid "A contact is set to a {{specific status:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Forms
-#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:63
+#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:69
 msgid "A contact is set to a {{specific status}}"
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:74
+#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:80
 #: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:80
 msgid "List of all available status values for Fluent CRM contacts."
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:75
+#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:81
 #: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:81
 msgid "Select from dropdown list of the options above."
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:108
+#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:114
 #: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:128
 msgid "Subscription status"
 msgstr ""
@@ -6193,7 +6197,7 @@ msgid "Any drive"
 msgstr ""
 
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:154
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:645
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:640
 msgid "My google drive"
 msgstr ""
 
@@ -6205,19 +6209,19 @@ msgstr ""
 msgid "Any worksheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:414
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:409
 msgid "Google"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:415
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:410
 msgid "Google account settings"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:422
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:417
 msgid "Connect Google Sheets"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:438
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:433
 msgid ""
 "Connecting to Google requires signing into your account to link it to Automator.\n"
 "\t\t\tTo get started, click the \"Connect an account\" button below or the \"Change account\" button if you need to connect a new account.\n"
@@ -6226,7 +6230,7 @@ msgid ""
 "\t\t\tthey were set up under another account.)"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:497
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:492
 #: src/integrations/hubspot/helpers/hubspot-helpers.php:121
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:731
 #: src/integrations/slack/helpers/slack-helpers.php:448
@@ -6234,36 +6238,28 @@ msgstr ""
 msgid "Connect an account"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:500
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:495
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:735
 msgid "Change account"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:655
-msgid "API returned an error: "
-msgstr ""
-
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:659
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:656
 msgid "The API returned an invalid format."
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:666
-msgid "Could not connect to the API with error: [%s]."
-msgstr ""
-
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:713
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:709
 msgid "Select a Google Sheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:727
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:723
 msgid "Google returned an error: "
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:731
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:727
 msgid "Google returned an error. Please try again in a few minutes."
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:769
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:765
 msgid "Select a worksheet"
 msgstr ""
 

@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.8.2
 Requires PHP: 5.6
-Stable tag: 3.4.0.1
+Stable tag: 3.4.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -180,9 +180,20 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 3.4.0.2 [2021-11-19] =
+
+**Fixed:**
+
+* Page reload loop when a recipe contains tags #1133
+* Google Sheets - API requests that lack required scopes no longer throw an error #1139
+* Recipe Log - Activity report no longer shows a previous run's completion date in some situations #1136
+* FluentCRM - "A contact is set to a specific status" now triggers when the contact is set to any status #1115
+* FluentCRM - Everyone triggers now correctly populate token values #1115
+
 = 3.4.0.1 [2021-11-17] =
 
 **Fixed:**
+
 * Changed `datetime` to `TIMESTAMP` in database initialization script to support MySQL < 5.6 #1113
 * WordPress Core - Create a post - Featured image field no longer required #1112
 * Elementor - Form submission now works reliably on larger sites #1109

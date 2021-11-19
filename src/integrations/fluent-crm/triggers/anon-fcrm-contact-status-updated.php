@@ -4,30 +4,36 @@ namespace Uncanny_Automator;
 
 /**
  * Class ANON_FCRM_CONTACT_STATUS_UPDATED
+ *
  * @package Uncanny_Automator
  */
 class ANON_FCRM_CONTACT_STATUS_UPDATED {
 
 	/**
 	 * Integration code.
+	 *
 	 * @var string
 	 */
 	public static $integration = 'FCRM';
 
 	/**
 	 * The trigger code.
+	 *
 	 * @var string
 	 */
 	protected $trigger_code;
 
 	/**
 	 * The trigger meta.
+	 *
 	 * @var string
 	 */
 	protected $trigger_meta;
 
 	/**
 	 * Set up Automator trigger constructor.
+	 *
+	 * @return void
 	 */
 	public function __construct() {
 		$this->trigger_code = 'ANONFCRMUSERSTATUSUPDATED';
@@ -132,20 +138,50 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 	 * @return void
 	 */
 	public function process_trigger( $matched_recipe_ids = array(), $subscriber = null ) {
+
+		$user_id = get_current_user_id();
+
+		// Fluent CRM contact email.
+		$contact_email = '';
+
+		if ( isset( $subscriber->email ) ) {
+			$contact_email = $subscriber->email;
+		}
+
 		if ( ! empty( $matched_recipe_ids ) ) {
+
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 				$args = array(
 					'code'             => $this->get_trigger_code(),
 					'meta'             => $this->get_trigger_meta(),
-					'user_id'          => $subscriber->user_id,
+					'user_id'          => absint( $user_id ),
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
 				);
+
 				$args = Automator()->maybe_add_trigger_entry( $args, false );
+
 				if ( $args ) {
+
 					foreach ( $args as $result ) {
-						if ( true === $result['result'] && $result['args']['trigger_id'] && $result['args']['get_trigger_id'] ) {
+
+						if ( true === $result['result'] && $result['args']['trigger_id'] && $result['args']['trigger_log_id'] ) {
+
+							// The contact email meta config.
+							$contact_email_meta = array(
+								'user_id'        => absint( $user_id ),
+								'trigger_id'     => $result['args']['trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+								'trigger_log_id' => $result['args']['trigger_log_id'],
+								'meta_key'       => $this->get_trigger_meta(),
+								'meta_value'     => $contact_email,
+							);
+
+							// Add contact email as trigger meta.
+							Automator()->insert_trigger_meta( $contact_email_meta );
+
+							// Complete the trigger.
 							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
