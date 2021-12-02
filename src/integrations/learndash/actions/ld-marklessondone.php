@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_MARKLESSONDONE
+ *
  * @package Uncanny_Automator
  */
 class LD_MARKLESSONDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -32,15 +34,13 @@ class LD_MARKLESSONDONE {
 	 */
 	public function define_action() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
@@ -56,30 +56,34 @@ class LD_MARKLESSONDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_lesson' ),
-			'options_group'      => [
-				$this->action_meta => [
-					Automator()->helpers->recipe->field->select_field_args( [
-						'option_code' => 'LDCOURSE',
-						'options'     => $options,
-						'label'       => esc_attr__( 'Course', 'uncanny-automator' ),
+			'options_group'      => array(
+				$this->action_meta => array(
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'              => 'LDCOURSE',
+							'options'                  => $options,
+							'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
 
-						'required'                 => true,
-						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+							'required'                 => true,
+							'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
 
-						'is_ajax'      => true,
-						'target_field' => $this->action_meta,
-						'endpoint'     => 'select_lesson_from_course_MARKLESSONDONE',
-					] ),
+							'is_ajax'                  => true,
+							'target_field'             => $this->action_meta,
+							'endpoint'                 => 'select_lesson_from_course_MARKLESSONDONE',
+						)
+					),
 
-					Automator()->helpers->recipe->field->select_field_args( [
-						'option_code'              => $this->action_meta,
-						'options'                  => array(),
-						'label'                    => esc_attr__( 'Lesson', 'uncanny-automator' ),
-						'required'                 => true,
-						'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
-					] ),
-				],
-			],
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'              => $this->action_meta,
+							'options'                  => array(),
+							'label'                    => esc_attr__( 'Lesson', 'uncanny-automator' ),
+							'required'                 => true,
+							'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+						)
+					),
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -93,8 +97,6 @@ class LD_MARKLESSONDONE {
 	 * @param $recipe_id
 	 */
 	public function mark_completes_a_lesson( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$course_id = $action_data['meta']['LDCOURSE'];
 		$lesson_id = $action_data['meta'][ $this->action_meta ];

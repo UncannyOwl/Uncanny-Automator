@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UC_CODESPREFIX
+ *
  * @package Uncanny_Automator
  */
 class UC_CODESPREFIX {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UNCANNYCODE';
@@ -31,7 +33,6 @@ class UC_CODESPREFIX {
 	 */
 	public function define_trigger() {
 
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-codes/' ),
@@ -46,9 +47,9 @@ class UC_CODESPREFIX {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'user_redeemed_code_prefix' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->uncanny_codes->options->get_all_code_prefix( esc_attr__( 'Prefix', 'uncanny-automator' ), $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -66,7 +67,7 @@ class UC_CODESPREFIX {
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
 		}
-		if ( empty ( $user_id ) ) {
+		if ( empty( $user_id ) ) {
 			return;
 		}
 
@@ -81,7 +82,7 @@ class UC_CODESPREFIX {
 				if ( isset( $required_prefix[ $recipe_id ] ) && isset( $required_prefix[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( (string) $prefix === (string) $required_prefix[ $recipe_id ][ $trigger_id ] ) {
 						if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-							$pass_args = [
+							$pass_args = array(
 								'code'             => $this->trigger_code,
 								'meta'             => $this->trigger_meta,
 								'ignore_post_id'   => true,
@@ -89,7 +90,7 @@ class UC_CODESPREFIX {
 								'trigger_to_match' => $trigger_id,
 								'user_id'          => $user_id,
 								'is_signed_in'     => true,
-							];
+							);
 
 							$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -97,12 +98,12 @@ class UC_CODESPREFIX {
 								foreach ( $args as $result ) {
 									if ( true === $result['result'] ) {
 
-										$trigger_meta = [
-											'user_id'        => $user_id,
-											'trigger_id'     => $result['args']['trigger_id'],
+										$trigger_meta = array(
+											'user_id'    => $user_id,
+											'trigger_id' => $result['args']['trigger_id'],
 											'trigger_log_id' => $result['args']['get_trigger_id'],
-											'run_number'     => $result['args']['run_number'],
-										];
+											'run_number' => $result['args']['run_number'],
+										);
 
 										$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':' . $this->trigger_meta;
 										$trigger_meta['meta_value'] = maybe_serialize( $prefix );

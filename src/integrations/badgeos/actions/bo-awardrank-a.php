@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BO_AWARDRANK_A
+ *
  * @package Uncanny_Automator
  */
 class BO_AWARDRANK_A {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BO';
@@ -32,9 +34,7 @@ class BO_AWARDRANK_A {
 	 */
 	public function define_action() {
 
-
-
-		$action = [
+		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/badgeos/' ),
 			'integration'        => self::$integration,
@@ -45,32 +45,34 @@ class BO_AWARDRANK_A {
 			'select_option_name' => esc_attr__( 'Award {{a rank}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
-			'execution_function' => [ $this, 'award_points' ],
+			'execution_function' => array( $this, 'award_points' ),
 			'options'            => array(),
-			'options_group'      => [
-				$this->action_meta => [
+			'options_group'      => array(
+				$this->action_meta => array(
 					Automator()->helpers->recipe->badgeos->options->list_bo_rank_types(
 						'',
 						'BORANKTYPES',
-						[
+						array(
 							'token'        => false,
 							'is_ajax'      => true,
 							'target_field' => $this->action_meta,
 							'endpoint'     => 'select_ranks_from_types_BOAWARDRANKS',
-						]
+						)
 					),
 
-					Automator()->helpers->recipe->field->select_field_args( [
-						'option_code'              => $this->action_meta,
-						'options'                  => array(),
-						/* translators: Noun */
-						'label'                    => esc_attr__( 'Rank', 'uncanny-automator' ),
-						'required'                 => true,
-						'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' ),
-					] ),
-				],
-			],
-		];
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'              => $this->action_meta,
+							'options'                  => array(),
+							/* translators: Noun */
+							'label'                    => esc_attr__( 'Rank', 'uncanny-automator' ),
+							'required'                 => true,
+							'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' ),
+						)
+					),
+				),
+			),
+		);
 
 		Automator()->register->action( $action );
 	}
@@ -84,13 +86,13 @@ class BO_AWARDRANK_A {
 	 */
 	public function award_points( $user_id, $action_data, $recipe_id, $args ) {
 
-
-
 		$rank_id = $action_data['meta'][ $this->action_meta ];
-		badgeos_update_user_rank( [
-			'user_id' => $user_id,
-			'rank_id' => $rank_id,
-		] );
+		badgeos_update_user_rank(
+			array(
+				'user_id' => $user_id,
+				'rank_id' => $rank_id,
+			)
+		);
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}

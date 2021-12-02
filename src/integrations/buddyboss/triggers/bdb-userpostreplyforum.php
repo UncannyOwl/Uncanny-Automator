@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BDB_USERPOSTREPLYFORUM
+ *
  * @package Uncanny_Automator
  */
 class BDB_USERPOSTREPLYFORUM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BDB';
@@ -31,28 +33,26 @@ class BDB_USERPOSTREPLYFORUM {
 	 */
 	public function define_trigger() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'forum',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
-			'post_status'    => [ 'publish', 'private' ],
-		];
+			'post_status'    => array( 'publish', 'private' ),
+		);
 
 		$options               = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any forum', 'uncanny-automator' ) );
-		$forum_relevant_tokens = [
+		$forum_relevant_tokens = array(
 			'BDBFORUMS'     => __( 'Forum title', 'uncanny-automator' ),
 			'BDBFORUMS_ID'  => __( 'Forum ID', 'uncanny-automator' ),
 			'BDBFORUMS_URL' => __( 'Forum URL', 'uncanny-automator' ),
-		];
+		);
 
-		$relevant_tokens = [
+		$relevant_tokens = array(
 			$this->trigger_meta          => __( 'Topic title', 'uncanny-automator' ),
 			$this->trigger_meta . '_ID'  => __( 'Topic ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_URL' => __( 'Topic URL', 'uncanny-automator' ),
-		];
+		);
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -67,8 +67,8 @@ class BDB_USERPOSTREPLYFORUM {
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'bbp_insert_reply' ),
-			'options_group'       => [
-				$this->trigger_meta => [
+			'options_group'       => array(
+				$this->trigger_meta => array(
 					Automator()->helpers->recipe->field->select_field_ajax(
 						'BDBFORUMS',
 						__( 'Forum', 'uncanny-automator' ),
@@ -77,15 +77,15 @@ class BDB_USERPOSTREPLYFORUM {
 						'',
 						false,
 						true,
-						[
+						array(
 							'target_field' => $this->trigger_meta,
 							'endpoint'     => 'select_topic_from_forum_BDBTOPICREPLY',
-						],
+						),
 						$forum_relevant_tokens
 					),
 					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
-				],
-			],
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -102,8 +102,6 @@ class BDB_USERPOSTREPLYFORUM {
 	 */
 	public function bbp_insert_reply( $reply_id, $topic_id, $forum_id ) {
 
-
-
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 
 		$conditions = $this->match_condition( $topic_id, $forum_id, $recipes, $this->trigger_meta, $this->trigger_code, 'SUBVALUE' );
@@ -116,25 +114,25 @@ class BDB_USERPOSTREPLYFORUM {
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id => $trigger_id ) {
 				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					$args = [
+					$args = array(
 						'code'             => $this->trigger_code,
 						'meta'             => $this->trigger_meta,
 						'recipe_to_match'  => $recipe_id,
 						'trigger_to_match' => $trigger_id,
 						'post_id'          => $topic_id,
 						'user_id'          => $user_id,
-					];
+					);
 
 					$args = Automator()->maybe_add_trigger_entry( $args, false );
 					if ( $args ) {
 						foreach ( $args as $result ) {
 							if ( true === $result['result'] ) {
-								$trigger_meta = [
+								$trigger_meta = array(
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
 									'trigger_log_id' => $result['args']['get_trigger_id'],
 									'run_number'     => $result['args']['run_number'],
-								];
+								);
 
 								$trigger_meta['meta_key']   = 'BDBTOPICREPLY';
 								$trigger_meta['meta_value'] = $reply_id;
@@ -178,7 +176,10 @@ class BDB_USERPOSTREPLYFORUM {
 		}
 
 		if ( ! empty( $recipe_ids ) ) {
-			return [ 'recipe_ids' => $recipe_ids, 'result' => true ];
+			return array(
+				'recipe_ids' => $recipe_ids,
+				'result'     => true,
+			);
 		}
 
 		return false;

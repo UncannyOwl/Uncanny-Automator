@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BDB_ACTIVITYSTRM
+ *
  * @package Uncanny_Automator
  */
 class BDB_ACTIVITYSTRM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BDB';
@@ -31,7 +33,6 @@ class BDB_ACTIVITYSTRM {
 	 */
 	public function define_trigger() {
 
-
 		$bp_users_args = array(
 			'uo_include_any' => true,
 		);
@@ -49,9 +50,9 @@ class BDB_ACTIVITYSTRM {
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'bp_activity_posted_update' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->buddyboss->options->all_buddyboss_users( null, 'BDBUSERS', $bp_users_args ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -75,24 +76,24 @@ class BDB_ACTIVITYSTRM {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( intval( '-1' ) === intval( $required_users[ $recipe_id ][ $trigger_id ] ) || intval( $user_id ) === intval( $required_users[ $recipe_id ][ $trigger_id ] ) ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$args = [
+				$args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$returns = Automator()->maybe_add_trigger_entry( $args, false );
 
@@ -100,12 +101,12 @@ class BDB_ACTIVITYSTRM {
 					foreach ( $returns as $result ) {
 						if ( true === $result['result'] ) {
 
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							// ACTIVITY_ID Token
 							$trigger_meta['meta_key']   = 'ACTIVITY_ID';

@@ -3,12 +3,12 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Zapier_Pro_Helpers;
 use WP_Error;
 
 /**
  * Class Zapier_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Zapier_Helpers {
@@ -58,22 +58,20 @@ class Zapier_Helpers {
 	 */
 	public function sendtest_webhook() {
 
-
-
 		Automator()->utilities->ajax_auth_check();
 
 		$key_values = array();
 		$headers    = array();
-		$values     = (array) Automator()->utilities->automator_sanitize( $_POST['values'], 'mixed' );
+		$values     = (array) automator_filter_input_array( 'values', INPUT_POST );
 		// Sanitizing webhook key pairs
 		$pairs          = array();
-		$webhook_fields = isset( $_POST['values']['WEBHOOK_FIELDS'] ) ? $_POST['values']['WEBHOOK_FIELDS'] : array();
+		$webhook_fields = isset( $values['WEBHOOK_FIELDS'] ) ? $values['WEBHOOK_FIELDS'] : array();
 		if ( ! empty( $webhook_fields ) ) {
 			foreach ( $webhook_fields as $key_index => $pair ) {
-				$pairs[] = [
+				$pairs[] = array(
 					'KEY'   => sanitize_text_field( $pair['KEY'] ),
 					'VALUE' => sanitize_text_field( $pair['VALUE'] ),
-				];
+				);
 			}
 		}
 		$values['WEBHOOK_FIELDS'] = $pairs;
@@ -82,10 +80,12 @@ class Zapier_Helpers {
 			$webhook_url = $values['WEBHOOKURL'];
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			for ( $i = 1; $i <= ZAPIER_SENDWEBHOOK::$number_of_keys; $i ++ ) {
@@ -100,17 +100,21 @@ class Zapier_Helpers {
 			$webhook_url = $values['WEBHOOK_URL'];
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
+					)
+				);
 			}
 			$fields = $values['WEBHOOK_FIELDS'];
 
@@ -160,24 +164,27 @@ class Zapier_Helpers {
 			if ( $response instanceof WP_Error ) {
 				/* translators: 1. Webhook URL */
 				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => $error_message,
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => $error_message,
+					)
+				);
 			}
 
 			/* translators: 1. Webhook URL */
 			$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
 
-			wp_send_json( array(
-				'type'    => 'success',
-				'message' => $success_message,
-			) );
+			wp_send_json(
+				array(
+					'type'    => 'success',
+					'message' => $success_message,
+				)
+			);
 		}
 	}
 	/**
 	 *        if ( ! $this->load_options ) {
-	 *
 	 *
 	 * return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 	 * }

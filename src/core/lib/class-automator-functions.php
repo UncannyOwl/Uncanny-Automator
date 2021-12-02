@@ -596,85 +596,83 @@ class Automator_Functions {
 
 			global $wpdb;
 			// Fetch uo-trigger, uo-action, uo-closure.
-			$recipe_children = $wpdb->get_results( "SELECT ID, post_status, post_type
-													FROM $wpdb->posts
-													WHERE post_parent IN (SELECT ID
-													FROM $wpdb->posts
-													WHERE post_type = 'uo-recipe')" );
+			$recipe_children = $wpdb->get_results( "SELECT ID, post_status, post_type, menu_order FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = 'uo-recipe')" );
 
 			if ( $recipe_children ) {
 				foreach ( $recipe_children as $p ) {
-					$ID  = $p->ID;
-					$p_t = $p->post_type;
-					$p_s = $p->post_status;
+					$child_id = $p->ID;
+					$p_t      = $p->post_type;
+					$p_s      = $p->post_status;
+					$m_o      = $p->menu_order;
 					switch ( $p_t ) {
 						case 'uo-trigger':
-							$triggers[ $ID ] = [ 'ID' => $ID, 'post_status' => $p_s, ];
+							$triggers[ $child_id ] = array(
+								'ID'          => $child_id,
+								'post_status' => $p_s,
+								'menu_order'  => $m_o,
+							);
 							break;
 						case 'uo-action':
-							$actions[ $ID ] = [ 'ID' => $ID, 'post_status' => $p_s, ];
+							$actions[ $child_id ] = array(
+								'ID'          => $child_id,
+								'post_status' => $p_s,
+								'menu_order'  => $m_o,
+							);
 							break;
 						case 'uo-closure':
-							$closures[ $ID ] = [ 'ID' => $ID, 'post_status' => $p_s, ];
+							$closures[ $child_id ] = array(
+								'ID'          => $child_id,
+								'post_status' => $p_s,
+								'menu_order'  => $m_o,
+							);
 							break;
 					}
 				}
 			}
 
-			///END
-			//////////////////////
-			//////////////////////
-
-			//////////////////////
-			//////////////////////
-			//////////////////////
-			/////Fetch metas for uo-trigger, uo-action, uo-closure
-			$q             = $wpdb->prepare( "SELECT pm.post_id, pm.meta_key, pm.meta_value, p.post_parent, p.post_type
-														FROM $wpdb->postmeta pm
-														LEFT JOIN $wpdb->posts p
-														ON p.ID = pm.post_id
-														WHERE pm.post_id IN (SELECT ID
-														FROM $wpdb->posts
-														WHERE post_parent IN (SELECT ID
-														FROM $wpdb->posts
-														WHERE post_type = %s))", 'uo-recipe' );
-			$related_metas = $wpdb->get_results( $q );
+			// Fetch metas for uo-trigger, uo-action, uo-closure
+			$related_metas = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT pm.post_id, pm.meta_key, pm.meta_value, p.post_parent, p.post_type, p.menu_order
+FROM $wpdb->postmeta pm
+    LEFT JOIN $wpdb->posts p
+        ON p.ID = pm.post_id
+WHERE pm.post_id
+          IN (SELECT ID FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = %s))", 'uo-recipe'
+				)
+			);
 
 			if ( $related_metas ) {
 				foreach ( $related_metas as $p ) {
-					$ID  = $p->post_id;
-					$m_k = $p->meta_key;
-					$m_v = $p->meta_value;
-					if ( array_key_exists( $ID, $triggers ) ) {
-						$triggers[ $ID ]['meta'][ $m_k ] = $m_v;
-					} elseif ( array_key_exists( $ID, $actions ) ) {
-						$actions[ $ID ]['meta'][ $m_k ] = $m_v;
-					} elseif ( array_key_exists( $ID, $closures ) ) {
-						$closures[ $ID ]['meta'][ $m_k ] = $m_v;
+					$child_id = $p->post_id;
+					$m_k      = $p->meta_key;
+					$m_v      = $p->meta_value;
+					if ( array_key_exists( $child_id, $triggers ) ) {
+						$triggers[ $child_id ]['meta'][ $m_k ] = $m_v;
+					} elseif ( array_key_exists( $child_id, $actions ) ) {
+						$actions[ $child_id ]['meta'][ $m_k ] = $m_v;
+					} elseif ( array_key_exists( $child_id, $closures ) ) {
+						$closures[ $child_id ]['meta'][ $m_k ] = $m_v;
 					}
 				}
 			}
 			//Fix missing metas!
 			if ( $triggers ) {
-				foreach ( $triggers as $trigger_ID => $array ) {
+				foreach ( $triggers as $trigger_id => $array ) {
 					if ( ! array_key_exists( 'meta', $array ) ) {
-						$triggers[ $trigger_ID ]['meta'] = [ 'code' => '' ];
-					} elseif ( array_key_exists( 'meta', $array ) ) {
+						$triggers[ $trigger_id ]['meta'] = array( 'code' => '' );
+					} else {
 						//Attempt to return Trigger ID for magic button
 						foreach ( $array['meta'] as $mk => $mv ) {
 							if ( 'code' === (string) trim( $mk ) && 'WPMAGICBUTTON' === (string) trim( $mv ) ) {
-								$triggers[ $trigger_ID ]['meta']['WPMAGICBUTTON'] = $trigger_ID;
+								$triggers[ $trigger_id ]['meta']['WPMAGICBUTTON'] = $trigger_id;
 							}
 						}
 					}
 				}
 			}
 
-			///END
-			//////////////////////
-			//////////////////////
-
-			/////Build old recipe array style
+			//Build old recipe array style
 			foreach ( $related_metas as $r ) {
 				$recipe_id     = absint( $r->post_parent );
 				$non_recipe_id = absint( $r->post_id );
@@ -735,12 +733,7 @@ class Automator_Functions {
 		$completed = array();
 		global $wpdb;
 		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT COUNT(completed) AS completed, automator_recipe_id
-					FROM {$wpdb->prefix}uap_recipe_log
-WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
-  AND completed = 1
-  GROUP BY automator_recipe_id", $user_id )
+			$wpdb->prepare( "SELECT COUNT(completed) AS completed, automator_recipe_id FROM {$wpdb->prefix}uap_recipe_log WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ') AND completed = 1 GROUP BY automator_recipe_id', $user_id ) //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		);
 
 		if ( $results ) {
@@ -874,16 +867,42 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 	}
 
 	/**
+	 * @param $recipe_id
+	 * @param $type
+	 *
+	 * @return array|object|null
+	 */
+	public function get_recipe_children_query( $recipe_id, $type ) {
+		global $wpdb;
+		$q = $wpdb->prepare( "SELECT ID, post_status, menu_order FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", $recipe_id, $type );
+		if ( 'uo-action' === $type ) {
+			$q = "$q ORDER BY menu_order ASC";
+		}
+		$q = apply_filters_deprecated(
+			'q_get_recipe_data',
+			array(
+				$q,
+				$recipe_id,
+				$type,
+			),
+			'3.0',
+			'automator_get_recipe_data_query'
+		);
+		$q = apply_filters( 'automator_get_recipe_data_query', $q, $recipe_id, $type );
+
+		return $wpdb->get_results( $q, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	}
+
+	/**
 	 * Get saved data for recipe actions or triggers
 	 *
 	 * @param null $type
 	 * @param null $recipe_id
-	 * @param $recipe_children
-	 * @param null $matched_trigger
+	 * @param array $recipe_children
 	 *
 	 * @return null
 	 */
-	public function get_recipe_data( $type = null, $recipe_id = null, $recipe_children = array(), $matched_trigger = null ) {
+	public function get_recipe_data( $type = null, $recipe_id = null, $recipe_children = array() ) {
 
 		if ( null === $type ) {
 			return null;
@@ -893,7 +912,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 			return null;
 		}
 
-		if ( is_null( $recipe_id ) || ! is_numeric( $recipe_id ) ) {
+		if ( ! is_numeric( $recipe_id ) ) {
 			Automator()->error->trigger( 'You are trying to get recipe data without providing a recipe_id' );
 
 			return null;
@@ -901,21 +920,8 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 
 		global $wpdb;
 		if ( empty( $recipe_children ) ) {
-			$q = $wpdb->prepare( "SELECT ID, post_status FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", $recipe_id, $type );
-			$q = apply_filters_deprecated(
-				'q_get_recipe_data',
-				array(
-					$q,
-					$recipe_id,
-					$type,
-				),
-				'3.0',
-				'automator_get_recipe_data_query'
-			);
-			$q = apply_filters( 'automator_get_recipe_data_query', $q, $recipe_id, $type );
-
 			// All the triggers associated with the recipe
-			$recipe_children = $wpdb->get_results( $q, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$recipe_children = $this->get_recipe_children_query( $recipe_id, $type );
 		}
 		// All data for recipe triggers
 		$recipe_children_data = array();
@@ -950,47 +956,7 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 				$child_meta_single['WPMAGICBUTTON'] = $child['ID'];
 			}
 
-			$item_not_found = true;
-
-			if ( 'uo-trigger' === $type ) {
-				$system_triggers = $this->get_triggers();
-				if ( ! empty( $system_triggers ) ) {
-					foreach ( $system_triggers as $trigger ) {
-						if ( $trigger['code'] === $code ) {
-							$item_not_found = false;
-						}
-					}
-				} else {
-					$item_not_found = false;
-				}
-			}
-
-			if ( 'uo-action' === $type ) {
-				$system_actions = $this->get_actions();
-				if ( ! empty( $system_actions ) ) {
-					foreach ( $system_actions as $action ) {
-						if ( $action['code'] === $code ) {
-							$item_not_found = false;
-						}
-					}
-				} else {
-					$item_not_found = false;
-				}
-			}
-
-			if ( 'uo-closure' === $type ) {
-				$system_closures = $this->get_closures();
-				if ( ! empty( $system_closures ) ) {
-					foreach ( $system_closures as $closure ) {
-						if ( $closure['code'] === $code ) {
-							$item_not_found = false;
-						}
-					}
-				} else {
-					$item_not_found = false;
-				}
-			}
-
+			$item_not_found = $this->child_item_not_found_handle( $type, $code );
 			if ( $item_not_found ) {
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_status = 'draft' WHERE ID = %d", absint( $child['ID'] ) ) );
 				$child['post_status'] = 'draft';
@@ -1005,10 +971,13 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 			$recipe_children_data[ $key ]['post_status'] = $child['post_status'];
 			$recipe_children_data[ $key ]['meta']        = $child_meta_single;
 
+			if ( ! empty( $child['menu_order'] ) ) {
+				$recipe_children_data[ $key ]['menu_order'] = $child['menu_order'];
+			}
+
 			if ( 'uo-trigger' === $type ) {
 				$recipe_children_data[ $key ]['tokens'] = $this->tokens->trigger_tokens( $child_meta_single, $recipe_id );
 			}
-
 		}
 
 		return apply_filters(
@@ -1020,6 +989,57 @@ WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ")
 				'recipe_children' => $recipe_children,
 			)
 		);
+	}
+
+	/**
+	 * @param $type
+	 * @param $code
+	 *
+	 * @return bool
+	 */
+	public function child_item_not_found_handle( $type, $code ) {
+		$item_not_found = true;
+
+		if ( 'uo-trigger' === $type ) {
+			$system_triggers = $this->get_triggers();
+			if ( ! empty( $system_triggers ) ) {
+				foreach ( $system_triggers as $trigger ) {
+					if ( $trigger['code'] === $code ) {
+						$item_not_found = false;
+					}
+				}
+			} else {
+				$item_not_found = false;
+			}
+		}
+
+		if ( 'uo-action' === $type ) {
+			$system_actions = $this->get_actions();
+			if ( ! empty( $system_actions ) ) {
+				foreach ( $system_actions as $action ) {
+					if ( $action['code'] === $code ) {
+						$item_not_found = false;
+					}
+				}
+			} else {
+				$item_not_found = false;
+			}
+		}
+
+		if ( 'uo-closure' === $type ) {
+			$system_closures = $this->get_closures();
+			if ( ! empty( $system_closures ) ) {
+				foreach ( $system_closures as $closure ) {
+					if ( $closure['code'] === $code ) {
+						$item_not_found = false;
+					}
+				}
+			} else {
+				$item_not_found = false;
+			}
+		}
+
+		return $item_not_found;
 	}
 
 	/**

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class ZOOM_REGISTERUSER
+ *
  * @package Uncanny_Automator
  */
 class ZOOM_REGISTERUSER {
@@ -49,7 +50,7 @@ class ZOOM_REGISTERUSER {
 
 		Automator()->register->action( $action );
 	}
-	
+
 	/**
 	 * load_options
 	 *
@@ -58,8 +59,8 @@ class ZOOM_REGISTERUSER {
 	public function load_options() {
 		return array(
 			'options' => array(
-				Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta )
-			)
+				Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
+			),
 		);
 	}
 

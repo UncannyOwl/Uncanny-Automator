@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class AC_USER_REMOVE_TAG
+ *
  * @package Uncanny_Automator
  */
 class AC_USER_REMOVE_TAG {

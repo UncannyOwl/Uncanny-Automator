@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UOA_ERRORS
+ *
  * @package Uncanny_Automator
  */
 class UOA_ERRORS {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';

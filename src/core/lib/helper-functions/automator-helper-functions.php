@@ -45,7 +45,7 @@ function automator_update_recipe_run( $update, $where, $update_format, $where_fo
  * @package Uncanny_Automator
  * @version 3.0
  */
-function automator_add_text_field( $field_code, $label, $default = '',$required = true ) {
+function automator_add_text_field( $field_code, $label, $default = '', $required = true ) {
 	$options = array(
 		'option_code' => $field_code,
 		'input_type'  => 'text',

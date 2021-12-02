@@ -12,6 +12,7 @@ class WP_POSTRECEIVESCOMMENT {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WP';
@@ -50,23 +51,23 @@ class WP_POSTRECEIVESCOMMENT {
 		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			null,
 			'WPPOSTTYPES',
-			[
+			array(
 				'token'        => false,
 				'is_ajax'      => true,
 				'target_field' => $this->trigger_meta,
 				'endpoint'     => 'select_all_post_from_SELECTEDPOSTTYPE',
-			]
+			)
 		);
 
 		// now get regular post types.
-		$args = [
+		$args = array(
 			'public'   => true,
 			'_builtin' => true,
-		];
+		);
 
 		$output         = 'object';
 		$operator       = 'and';
-		$options        = [];
+		$options        = array();
 		$options['- 1'] = __( 'Any post type', 'uncanny-automator' );
 		$post_types     = get_post_types( $args, $output, $operator );
 		if ( ! empty( $post_types ) ) {
@@ -89,18 +90,18 @@ class WP_POSTRECEIVESCOMMENT {
 			'priority'            => 90,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'post_receives_comment' ),
-			'options'             => [],
-			'options_group'       => [
-				$this->trigger_meta => [
+			'options'             => array(),
+			'options_group'       => array(
+				$this->trigger_meta => array(
 					$all_post_types,
 					Automator()->helpers->recipe->field->select_field(
 						$this->trigger_meta,
 						__( 'Post', 'uncanny-automator' ),
-						[],
+						array(),
 						null,
 						false,
 						false,
-						[
+						array(
 							'POSTTITLE'          => esc_attr__( 'Post title', 'uncanny-automator' ),
 							'POSTAUTHORDN'       => esc_attr__( 'Post author', 'uncanny-automator' ),
 							'POSTCOMMENTCONTENT' => esc_attr__( 'Comment', 'uncanny-automator' ),
@@ -108,10 +109,10 @@ class WP_POSTRECEIVESCOMMENT {
 							'POSTCOMMENTEREMAIL' => esc_attr__( 'Commenter email', 'uncanny-automator' ),
 							'POSTCOMMENTERNAME'  => esc_attr__( 'Commenter name', 'uncanny-automator' ),
 							'POSTCOMMENTSTATUS'  => esc_attr__( 'Commenter status', 'uncanny-automator' ),
-						]
+						)
 					),
-				],
-			],
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -127,18 +128,18 @@ class WP_POSTRECEIVESCOMMENT {
 		$required_post      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$user_id            = get_post_field( 'post_author', (int) $commentdata['comment_post_ID'] );
 		$user_obj           = get_user_by( 'ID', (int) $user_id );
-		$matched_recipe_ids = [];
+		$matched_recipe_ids = array();
 
 		//Add where option is set to Any post / specific post
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( - 1 === intval( $required_post[ $recipe_id ][ $trigger_id ] ) ||
-				     $required_post[ $recipe_id ][ $trigger_id ] == $commentdata['comment_post_ID'] ) {
-					$matched_recipe_ids[] = [
+					 $required_post[ $recipe_id ][ $trigger_id ] == $commentdata['comment_post_ID'] ) {
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
@@ -146,25 +147,25 @@ class WP_POSTRECEIVESCOMMENT {
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 				if ( ! Automator()->is_recipe_completed( $matched_recipe_id['recipe_id'], $user_id ) ) {
-					$pass_args = [
+					$pass_args = array(
 						'code'             => $this->trigger_code,
 						'meta'             => $this->trigger_meta,
 						'user_id'          => $user_id,
 						'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 						'trigger_to_match' => $matched_recipe_id['trigger_id'],
 						'post_id'          => $commentdata['comment_post_ID'],
-					];
+					);
 
 					$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 					if ( $args ) {
 						foreach ( $args as $result ) {
 							if ( true === $result['result'] ) {
-								$trigger_meta = [
+								$trigger_meta = array(
 									'user_id'        => (int) $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
 									'trigger_log_id' => $result['args']['get_trigger_id'],
 									'run_number'     => $result['args']['run_number'],
-								];
+								);
 
 								$trigger_meta['meta_key']   = 'WPPOSTTYPES';
 								$trigger_meta['meta_value'] = maybe_serialize( get_post_field( 'post_type', (int) $commentdata['comment_post_ID'] ) );

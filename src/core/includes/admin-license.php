@@ -9,10 +9,10 @@ namespace Uncanny_Automator_Pro;
 		<div class="uo-header">
 			<div class="uo-header-top">
 				<div class="uo-header-top__title">
-					<?php _e( 'Uncanny Automator Pro', 'uncanny-automator-pro' ); ?>
+					<?php esc_attr_e( 'Uncanny Automator Pro', 'uncanny-automator-pro' ); ?>
 				</div>
 				<div class="uo-header-top__author">
-					<span><?php _e( 'by', 'uncanny-automator-pro' ); ?></span>
+					<span><?php esc_attr_e( 'by', 'uncanny-automator-pro' ); ?></span>
 					<a href="https://uncannyowl.com/?utm_medium=uncanny_automator_pro&utm_campaign=license_page_header"
 					   target="_blank" class="uo-header-top__logo">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1927.77 400.27">
@@ -50,7 +50,7 @@ namespace Uncanny_Automator_Pro;
 			</div>
 		</div>
 
-		<div class="uo-license <?php echo implode( ' ', $license_css_classes ); ?>">
+		<div class="uo-license <?php echo esc_attr( implode( ' ', $license_css_classes ) ); ?>">
 			<div class="uo-license-status">
 				<div class="uo-license-status__icon">
 
@@ -85,21 +85,20 @@ namespace Uncanny_Automator_Pro;
 					<div class="uo-license-content-top">
 						<div class="uo-license-content-info">
 
-							<?php ?>
 
 							<div class="uo-license-content-title">
 
 								<?php
 
 								if ( $license_is_active ) {
-									_e( 'Your license is active', 'uncanny-automator-pro' );
+									esc_attr_e( 'Your license is active', 'uncanny-automator-pro' );
 								} elseif ( 'expired' === $status ) {
-									_e( 'Your license has expired!', 'uncanny-automator-pro' );
+									esc_attr_e( 'Your license has expired!', 'uncanny-automator-pro' );
 								} else {
 									if ( empty( $license ) ) {
-										_e( 'Enter your license key', 'uncanny-automator-pro' );
+										esc_attr_e( 'Enter your license key', 'uncanny-automator-pro' );
 									} else {
-										_e( 'Your license is not active', 'uncanny-automator-pro' );
+										esc_attr_e( 'Your license is not active', 'uncanny-automator-pro' );
 									}
 								}
 
@@ -115,42 +114,52 @@ namespace Uncanny_Automator_Pro;
 										break;
 									case 'expired':
 										printf(
-											_x(
-												'You must renew your license to get access to plugin updates and support. Click %s to renew your license.',
-												'Your license has expired. Please renew your license to get instant access to updates and support.',
-												'uncanny-automator-pro'
+											wp_kses_post(
+												_x(
+													'You must renew your license to get access to plugin updates and support. Click %s to renew your license.',
+													'Your license has expired. Please renew your license to get instant access to updates and support.',
+													'uncanny-automator-pro'
+												)
 											),
 											sprintf(
 												'<a href="%s" target="_blank">%s</a>',
-												AUTOMATOR_PRO_STORE_URL . 'checkout/?edd_license_key=' . $license . '&download_id=' . AUTOMATOR_PRO_ITEM_ID . '&utm_medium=uncanny_automator_pro&utm_campaign=license_page',
-												__( 'here', 'uncanny-automator-pro' )
+												esc_url_raw( AUTOMATOR_PRO_STORE_URL . 'checkout/?edd_license_key=' . $license . '&download_id=' . AUTOMATOR_PRO_ITEM_ID . '&utm_medium=uncanny_automator_pro&utm_campaign=license_page' ),
+												esc_html__( 'here', 'uncanny-automator-pro' )
 											)
 										);
 										break;
 
 									case 'disabled':
 										printf(
-											_x( 'Your license is disabled. Please %s to get instant access to updates and support.',
-												'Your license has disabled. Please renew your license to get instant access to updates and support.',
-												'uncanny-automator-pro' ),
+											wp_kses_post(
+												_x(
+													'Your license is disabled. Please %s to get instant access to updates and support.',
+													'Your license has disabled. Please renew your license to get instant access to updates and support.',
+													'uncanny-automator-pro'
+												)
+											),
 											sprintf(
 												'<a href="%s" target="_blank">%s</a>',
-												AUTOMATOR_PRO_STORE_URL . 'checkout/?edd_license_key=' . $license . '&download_id=' . AUTOMATOR_PRO_ITEM_ID . '&utm_medium=uncanny_automator_pro&utm_campaign=license_page',
-												_x( 'renew your license',
-													'Your license has expired. Please renew your license to get instant access to updates and support.',
-													'uncanny-automator-pro' )
+												esc_url_raw( AUTOMATOR_PRO_STORE_URL . 'checkout/?edd_license_key=' . $license . '&download_id=' . AUTOMATOR_PRO_ITEM_ID . '&utm_medium=uncanny_automator_pro&utm_campaign=license_page' ),
+												wp_kses_post(
+													_x(
+														'renew your license',
+														'Your license has expired. Please renew your license to get instant access to updates and support.',
+														'uncanny-automator-pro'
+													)
+												)
 											)
 										);
 										break;
 
 									case 'invalid':
-										_e( 'The license code you entered is invalid.', 'uncanny-learndash-codes' );
+										esc_attr_e( 'The license code you entered is invalid.', 'uncanny-learndash-codes' );
 										break;
 									case 'inactive':
-										_e( 'The license code you entered is deactivated.', 'uncanny-learndash-codes' );
+										esc_attr_e( 'The license code you entered is deactivated.', 'uncanny-learndash-codes' );
 										break;
 									default:
-										_e( 'Please enter a valid license key and click "Activate now".', 'uncanny-automator-pro' );
+										esc_attr_e( 'Please enter a valid license key and click "Activate now".', 'uncanny-automator-pro' );
 										break;
 
 								}
@@ -166,26 +175,26 @@ namespace Uncanny_Automator_Pro;
 									<input id="uo-license-field"
 										   name="uap_automator_pro_license_key"
 										   type="password"
-										   value="<?php echo md5( $license ); ?>"
+										   value="<?php echo esc_attr( md5( $license ) ); ?>"
 										   disabled
-										   placeholder="<?php _e( 'Enter your license key', 'uncanny-automator-pro' ); ?>"
+										   placeholder="<?php esc_attr_e( 'Enter your license key', 'uncanny-automator-pro' ); ?>"
 										   required>
 									<div class="license-data">
 										<p>
 											<?php
 											if ( isset( $license_data->expires ) ) {
 												if ( 'lifetime' === $license_data->expires ) {
-													$date = __( 'Lifetime', 'uncanny-automator-pro' );
+													$date = esc_html__( 'Lifetime', 'uncanny-automator-pro' );
 												} else {
 													$date = wp_date( get_option( 'date_format' ), strtotime( $license_data->expires ) );
 												}
-												printf( '<strong>%s</strong>: %s', __( 'Expires', 'uncanny-automator-pro' ), $date );
+												printf( '<strong>%s</strong>: %s', esc_html__( 'Expires', 'uncanny-automator-pro' ), esc_attr( $date ) );
 											}
 											?>
 											<br/>
 											<?php
 											if ( isset( $license_data->license_limit ) ) {
-												printf( __( 'Activations left: %d of %d', 'uncanny-automator-pro' ), $license_data->activations_left, $license_data->license_limit );
+												printf( esc_html__( 'Activations left: %1$d of %2$d', 'uncanny-automator-pro' ), esc_attr( $license_data->activations_left ), esc_attr( $license_data->license_limit ) );
 											}
 											?>
 										</p>
@@ -195,13 +204,13 @@ namespace Uncanny_Automator_Pro;
 									<input id="uo-license-field"
 										   name="uap_automator_pro_license_key" type="password"
 										   value="<?php esc_attr_e( $license ); ?>"
-										   placeholder="<?php _e( 'Enter your license key', 'uncanny-automator-pro' ); ?>"
+										   placeholder="<?php esc_attr_e( 'Enter your license key', 'uncanny-automator-pro' ); ?>"
 										   required>
 									<div class="license-data">
 										<p>
 											<?php
 											if ( isset( $license_data->expires ) && ! empty( $license_data->expires ) && 'expired' === $status ) {
-												printf( '<strong>%s</strong>: %s', __( 'Expired', 'uncanny-automator-pro' ), wp_date( get_option( 'date_format' ), strtotime( $license_data->expires ) ) );
+												printf( '<strong>%s</strong>: %s', esc_html__( 'Expired', 'uncanny-automator-pro' ), esc_attr( wp_date( get_option( 'date_format' ), strtotime( $license_data->expires ) ) ) );
 											}
 											?>
 										</p>
@@ -217,19 +226,19 @@ namespace Uncanny_Automator_Pro;
 									<button type="submit"
 											name="uapro_license_deactivate"
 											class="uo-license-btn uo-license-btn--error">
-										<?php _e( 'Deactivate license', 'uncanny-automator-pro' ); ?>
+										<?php esc_attr_e( 'Deactivate license', 'uncanny-automator-pro' ); ?>
 									</button>
 
 								<?php } else { ?>
 
 									<button type="submit" name="uapro_license_activate"
 											class="uo-license-btn uo-license-btn--primary">
-										<?php _e( 'Activate now', 'uncanny-automator-pro' ); ?>
+										<?php esc_attr_e( 'Activate now', 'uncanny-automator-pro' ); ?>
 									</button>
 
-									<a href="<?php echo $buy_new_license; ?>" target="_blank"
+									<a href="<?php echo esc_url_raw( $buy_new_license ); ?>" target="_blank"
 									   class="uo-license-btn uo-license-btn--secondary">
-										<?php _e( 'Buy license', 'uncanny-automator-pro' ); ?>
+										<?php esc_attr_e( 'Buy license', 'uncanny-automator-pro' ); ?>
 									</a>
 
 								<?php } ?>
@@ -239,24 +248,25 @@ namespace Uncanny_Automator_Pro;
 						</div>
 						<div class="uo-license-content-faq">
 							<div class="uo-license-content-title">
-								<?php _e( 'Need help?', 'uncanny-automator-pro' ); ?>
+								<?php esc_attr_e( 'Need help?', 'uncanny-automator-pro' ); ?>
 							</div>
 
 							<div class="uo-license-content-faq-list">
 								<ul class="uo-license-content-faq-list-ul">
 									<li class="uo-license-content-faq-item">
-										<a href="<?php echo $where_to_get_my_license; ?>" target="_blank">
-											<?php _e( 'Where to get my license key', 'uncanny-automator-pro' ); ?>
+										<a href="<?php echo esc_url_raw( $where_to_get_my_license ); ?>"
+										   target="_blank">
+											<?php esc_attr_e( 'Where to get my license key', 'uncanny-automator-pro' ); ?>
 										</a>
 									</li>
 									<li class="uo-license-content-faq-item">
-										<a href="<?php echo $buy_new_license; ?>" target="_blank">
-											<?php _e( 'Buy a new license', 'uncanny-automator-pro' ); ?>
+										<a href="<?php echo esc_url_raw( $buy_new_license ); ?>" target="_blank">
+											<?php esc_attr_e( 'Buy a new license', 'uncanny-automator-pro' ); ?>
 										</a>
 									</li>
 									<li class="uo-license-content-faq-item">
-										<a href="<?php echo $knowledge_base; ?>" target="_blank">
-											<?php _e( 'Knowledge base', 'uncanny-automator-pro' ); ?>
+										<a href="<?php echo esc_url_raw( $knowledge_base ); ?>" target="_blank">
+											<?php esc_attr_e( 'Knowledge base', 'uncanny-automator-pro' ); ?>
 										</a>
 									</li>
 								</ul>
@@ -269,19 +279,19 @@ namespace Uncanny_Automator_Pro;
 
 							<button type="submit" name="uapro_license_deactivate"
 									class="uo-license-btn uo-license-btn--error">
-								<?php _e( 'Deactivate license', 'uncanny-automator-pro' ); ?>
+								<?php esc_attr_e( 'Deactivate license', 'uncanny-automator-pro' ); ?>
 							</button>
 
 						<?php } else { ?>
 
 							<button type="submit" name="uapro_license_activate"
 									class="uo-license-btn uo-license-btn--primary">
-								<?php _e( 'Activate now', 'uncanny-automator-pro' ); ?>
+								<?php esc_attr_e( 'Activate now', 'uncanny-automator-pro' ); ?>
 							</button>
 
-							<a href="<?php echo $buy_new_license; ?>" target="_blank"
+							<a href="<?php echo esc_url_raw( $buy_new_license ); ?>" target="_blank"
 							   class="uo-license-btn uo-license-btn--secondary">
-								<?php _e( 'Buy license', 'uncanny-automator-pro' ); ?>
+								<?php esc_attr_e( 'Buy license', 'uncanny-automator-pro' ); ?>
 							</a>
 
 						<?php } ?>

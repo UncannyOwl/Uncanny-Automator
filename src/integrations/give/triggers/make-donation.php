@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class MAKE_DONATION
+ *
  * @package Uncanny_Automator
  */
 class MAKE_DONATION {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GIVEWP';

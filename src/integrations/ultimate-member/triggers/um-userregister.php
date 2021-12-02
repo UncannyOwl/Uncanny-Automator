@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UM_USERREGISTER
+ *
  * @package Uncanny_Automator
  */
 class UM_USERREGISTER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UM';
@@ -37,8 +39,6 @@ class UM_USERREGISTER {
 	 */
 	public function define_trigger() {
 
-
-
 		$options = Automator()->helpers->recipe->ultimate_member->options->get_um_forms( esc_attr__( 'Form', 'uncanny-automator' ) );
 
 		$options['options'] = array( '-1' => esc_attr__( 'Any form', 'uncanny-automator' ) ) + $options['options'];
@@ -56,9 +56,9 @@ class UM_USERREGISTER {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'um_user_register_with_form' ),
-			'options'             => [
+			'options'             => array(
 				$options,
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -78,15 +78,13 @@ class UM_USERREGISTER {
 			return;
 		}
 
-
-
-		$args = [
+		$args = array(
 			'code'         => $this->trigger_code,
 			'meta'         => $this->trigger_meta,
 			'post_id'      => absint( $um_args['form_id'] ),
 			'user_id'      => absint( $user_id ),
 			'is_signed_in' => true,
-		];
+		);
 
 		if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
 			Automator()->process->user->maybe_add_trigger_entry( $args );

@@ -6,6 +6,7 @@ use Uncanny_Automator\Automator_System_Report;
 
 /**
  * Class Usage_Reports.
+ *
  * @package Uncanny_Automator
  */
 class Usage_Reports {
@@ -101,7 +102,7 @@ class Usage_Reports {
 	/**
 	 * maybe_report
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function maybe_report() {
 
@@ -120,7 +121,7 @@ class Usage_Reports {
 	/**
 	 * reporting_enabled
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function reporting_enabled() {
 
@@ -144,7 +145,7 @@ class Usage_Reports {
 	/**
 	 * time_to_report
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function time_to_report() {
 
@@ -160,7 +161,7 @@ class Usage_Reports {
 	/**
 	 * async_report
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function async_report() {
 
@@ -189,7 +190,7 @@ class Usage_Reports {
 	/**
 	 * get_data
 	 *
-	 * @return void
+	 * @return mixed
 	 */
 	public function get_data() {
 
@@ -217,8 +218,6 @@ class Usage_Reports {
 
 	/**
 	 * get_server_info
-	 *
-	 * @return void
 	 */
 	public function get_server_info() {
 

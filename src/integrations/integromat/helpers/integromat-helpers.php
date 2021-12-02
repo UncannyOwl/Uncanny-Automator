@@ -8,6 +8,7 @@ use Uncanny_Automator_Pro\Integromat_Pro_Helpers;
 
 /**
  * Class Integromat_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Integromat_Helpers {
@@ -53,7 +54,7 @@ class Integromat_Helpers {
 
 
 	/**
-	 * @param $_POST
+	 *
 	 */
 	public function sendtest_webhook() {
 
@@ -61,15 +62,7 @@ class Integromat_Helpers {
 
 		$key_values = array();
 		$headers    = array();
-
-		$flags = array(
-			'filter' => 'FILTER_VALIDATE_STRING',
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		);
-
-		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
-
-		$values = (array) Automator()->utilities->automator_sanitize( $values, 'mixed' );
+		$values     = automator_filter_input_array( 'values', INPUT_POST );
 		// Sanitizing webhook key pairs
 		$pairs          = array();
 		$webhook_fields = isset( $values['WEBHOOK_FIELDS'] ) ? $values['WEBHOOK_FIELDS'] : array();

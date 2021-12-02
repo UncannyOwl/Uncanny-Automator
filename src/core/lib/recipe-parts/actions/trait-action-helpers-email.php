@@ -7,6 +7,7 @@ use Uncanny_Automator\Automator_WP_Error;
 
 /**
  * Trait Action_Helpers_Email
+ *
  * @package Uncanny_Automator\Recipe
  */
 trait Action_Helpers_Email {
@@ -294,7 +295,7 @@ trait Action_Helpers_Email {
 	public function set_attachments( $attachments ) {
 		$this->attachments[] = $attachments;
 	}
-	
+
 	/**
 	 * maybe_santize_email
 	 *
@@ -306,9 +307,9 @@ trait Action_Helpers_Email {
 		$sanitized_emails = array();
 
 		foreach ( $emails as $key => $email ) {
-			$sanitized_emails[$key] = sanitize_email( $email );
+			$sanitized_emails[ $key ] = sanitize_email( $email );
 		}
-		
+
 		return $sanitized_emails;
 	}
 

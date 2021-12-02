@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LP_COURSEENROLLED
+ *
  * @package Uncanny_Automator
  */
 class LP_COURSEENROLLED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LP';

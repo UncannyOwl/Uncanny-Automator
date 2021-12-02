@@ -6,12 +6,14 @@ use WP_User;
 
 /**
  * Class GEN_USERROLE
+ *
  * @package Uncanny_Automator
  */
 class WP_USERROLE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WP';
@@ -33,8 +35,6 @@ class WP_USERROLE {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
@@ -47,9 +47,9 @@ class WP_USERROLE {
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'user_role' ),
-			'options'            => [
+			'options'            => array(
 				Automator()->helpers->recipe->wp->options->wp_user_roles(),
-			],
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -63,8 +63,6 @@ class WP_USERROLE {
 	 * @param $recipe_id
 	 */
 	public function user_role( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$role = $action_data['meta'][ $this->action_meta ];
 

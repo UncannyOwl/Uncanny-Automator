@@ -7,12 +7,14 @@ use WC_REST_Exception;
 
 /**
  * Class WCM_ADDUSER_A
+ *
  * @package Uncanny_Automator
  */
 class WCM_ADDUSER_A {
 
 	/**
 	 * Integration Code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WCMEMBERSHIPS';
@@ -31,25 +33,31 @@ class WCM_ADDUSER_A {
 
 	public function define_action() {
 
-
-		$action = [
+		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/woocommerce-memberships/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - WooCommerce Memberships */
-			'sentence'           => sprintf( esc_attr__( 'Add the user to {{a membership plan:%1$s}}',
-				'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf(
+				esc_attr__(
+					'Add the user to {{a membership plan:%1$s}}',
+					'uncanny-automator'
+				),
+				$this->action_meta
+			),
 			/* translators: Action - WooCommerce Memberships */
 			'select_option_name' => esc_attr__( 'Add the user to {{a membership plan}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
-			'execution_function' => [ $this, 'add_user_to_membership_plan' ],
-			'options'            => [
-				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans( null,
-					$this->action_meta ),
-			],
-		];
+			'execution_function' => array( $this, 'add_user_to_membership_plan' ),
+			'options'            => array(
+				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
+					null,
+					$this->action_meta
+				),
+			),
+		);
 
 		Automator()->register->action( $action );
 	}
@@ -63,7 +71,6 @@ class WCM_ADDUSER_A {
 	 * @param $args
 	 */
 	public function add_user_to_membership_plan( $user_id, $action_data, $recipe_id, $args ) {
-
 
 		$plan                  = $action_data['meta'][ $this->action_meta ];
 		$check_membership_plan = wc_memberships_is_user_member( $user_id, $plan );

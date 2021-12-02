@@ -6,6 +6,7 @@ use Uncanny_Automator\Automator_Exception;
 
 /**
  * Trait Closure_Setup
+ *
  * @package Uncanny_Automator\Recipe
  */
 trait Closure_Setup {
@@ -229,6 +230,7 @@ trait Closure_Setup {
 
 	/**
 	 * Define and register the closure by pushing it into the Automator object
+	 *
 	 * @throws Automator_Exception
 	 */
 	protected function register_closure() {

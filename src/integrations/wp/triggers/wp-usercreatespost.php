@@ -9,6 +9,7 @@ class WP_USERCREATESPOST {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WP';

@@ -6,6 +6,7 @@ use Uncanny_Automator\Recipe\Automator_Trigger_Condition_Helpers;
 
 /**
  * Class Automator_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Automator_Helpers {

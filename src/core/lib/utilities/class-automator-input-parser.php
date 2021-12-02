@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Input_Parser
+ *
  * @package Uncanny_Automator
  */
 class Automator_Input_Parser {
@@ -43,6 +44,15 @@ class Automator_Input_Parser {
 				'current_time',
 			)
 		);
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'automator_maybe_parse_postmeta_token',
+			),
+			99999,
+			6
+		);
 	}
 
 	/**
@@ -78,15 +88,14 @@ class Automator_Input_Parser {
 			$url = '{{site_url}}' . $url;
 		}
 
-
 		// Replace Tokens
-		$args = [
+		$args = array(
 			'field_text'  => $url,
 			'meta_key'    => null,
 			'user_id'     => null,
 			'action_data' => null,
 			'recipe_id'   => $recipe_id,
-		];
+		);
 		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
 			$args['trigger_log_id'] = $trigger_args['trigger_log_id'];
 		}
@@ -106,13 +115,13 @@ class Automator_Input_Parser {
 			// if the url is not valid and / isn't the first character then the url is missing the site url
 			$url = '{{site_url}}' . '/' . $url;
 			// Replace Tokens
-			$args = [
+			$args = array(
 				'field_text'  => $url,
 				'meta_key'    => null,
 				'user_id'     => null,
 				'action_data' => null,
 				'recipe_id'   => $recipe_id,
-			];
+			);
 
 			if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
 				$args['trigger_log_id'] = $trigger_args['trigger_log_id'];
@@ -166,7 +175,6 @@ class Automator_Input_Parser {
 		if ( empty( $arr ) ) {
 			return str_replace( array( '{{', '}}' ), '', $field_text );
 		}
-
 		$matches = $arr[1];
 		foreach ( $matches as $match ) {
 
@@ -203,15 +211,21 @@ class Automator_Input_Parser {
 				} else {
 					//Non usermeta
 					global $wpdb;
-					$qq          = "SELECT meta_value
+					$parsed_data = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT meta_value
 										FROM {$wpdb->prefix}uap_trigger_log_meta
 										WHERE 1=1
 										  AND meta_key = %s
 										  AND automator_trigger_log_id = %d
 										  AND user_id = %d
-										  AND run_number = %d";
-					$qq          = $wpdb->prepare( $qq, 'parsed_data', $trigger_log_id, $user_id, $run_number );
-					$parsed_data = $wpdb->get_var( $qq );
+										  AND run_number = %d",
+							'parsed_data',
+							$trigger_log_id,
+							$user_id,
+							$run_number
+						)
+					);
 					$run_func    = true;
 
 					if ( ! empty( $parsed_data ) ) {
@@ -326,8 +340,7 @@ class Automator_Input_Parser {
 			$field_text  = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 		}
 
-
-		return str_replace( [ '{{', '}}' ], '', $field_text );
+		return str_replace( array( '{{', '}}' ), '', $field_text );
 	}
 
 	/**
@@ -337,7 +350,7 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function replace_recipe_variables( $replace_args, $args = array() ) {
-		$pieces         = $replace_args['pieces'];
+		$pieces         = $this->parse_inner_token( $replace_args['pieces'], $replace_args );
 		$recipe_id      = $replace_args['recipe_id'];
 		$trigger_log_id = $replace_args['trigger_log_id'];
 		$run_number     = $replace_args['run_number'];
@@ -353,13 +366,12 @@ class Automator_Input_Parser {
 		if ( is_null( $user_id ) && 0 !== absint( $user_id ) ) {
 			$user_id = wp_get_current_user()->ID;
 		}
-
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false ||
-			     strpos( $piece, '_URL' ) !== false ||
-			     strpos( $piece, '_THUMB_URL' ) !== false ||
-			     strpos( $piece, '_THUMB_ID' ) !== false ) {
+				 strpos( $piece, '_URL' ) !== false ||
+				 strpos( $piece, '_THUMB_URL' ) !== false ||
+				 strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -457,6 +469,21 @@ class Automator_Input_Parser {
 				}
 			}
 		}
+		/**
+		 * Added POSTMETA token type
+		 *
+		 * @since 3.5
+		 */
+		if ( in_array( 'POSTMETA', $pieces, true ) ) {
+			// Postmeta token found
+			$post_id  = $pieces[1];
+			$meta_key = $pieces[2];
+			$return   = get_post_meta( $post_id, $meta_key, true );
+			if ( is_array( $return ) ) {
+				$return = join( ',', $return );
+			}
+		}
+
 		$return = $this->v3_parser( $return, $replace_args, $args );
 
 		$return = apply_filters( 'automator_maybe_parse_token', $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
@@ -478,7 +505,7 @@ class Automator_Input_Parser {
 	 * @return false|mixed
 	 */
 	public function v3_parser( $return, $replace_args, $args = array() ) {
-		$pieces     = $replace_args['pieces'];
+		$pieces     = $this->parse_inner_token( $replace_args['pieces'], $args );
 		$recipe_id  = $replace_args['recipe_id'];
 		$trigger_id = absint( $pieces[0] );
 		$trigger    = Automator()->get_trigger_data( $recipe_id, $trigger_id );
@@ -563,9 +590,108 @@ class Automator_Input_Parser {
 		/**
 		 * May be run a do_shortcode on the field itself if it contains a shortcode?
 		 * Ticket# 22255
+		 *
 		 * @since 3.0
 		 */
 		return do_shortcode( stripslashes( $return ) );
 	}
 
+	/**
+	 * This function parses inner token(s) {{POSTMETA:[[TOKEN]]:meta_key}} and replace its value in actual token
+	 *
+	 * @param $pieces
+	 * @param $args
+	 *
+	 * @return mixed
+	 * @sinc 3.5
+	 */
+	public function parse_inner_token( $pieces, $args ) {
+		if ( empty( $pieces ) ) {
+			return $pieces;
+		}
+		$pieces = $this->parse_inner_token_post_id_part( $pieces, $args );
+		$pieces = $this->parse_inner_token_meta_key_part( $pieces, $args );
+
+		return $pieces;
+	}
+
+	/**
+	 * This function parses "post ID" part of inner token {{POSTMETA:[[TOKEN]]:[[meta_key]]}} and replace its value in actual token
+	 *
+	 * @param $pieces
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
+	public function parse_inner_token_post_id_part( $pieces, $args ) {
+		if ( ! array_key_exists( 1, $pieces ) ) {
+			return $pieces;
+		}
+		if ( ! preg_match( '/\[\[(.+)\]\]/', $pieces[1], $arr ) ) {
+			return $pieces;
+		}
+		$recipe_id    = $args['recipe_id'];
+		$user_id      = $args['user_id'];
+		$trigger_args = $args;
+		unset( $trigger_args['pieces'] );
+		$token     = str_replace( array( '[', ']', ';' ), array( '{', '}', ':' ), $arr[0] );
+		$parsed    = $this->text( $token, $recipe_id, $user_id, $trigger_args );
+		$pieces[1] = apply_filters( 'automator_parse_inner_token', $parsed, $token, $pieces, $args );
+
+		return $pieces;
+	}
+
+	/**
+	 * This function parses "meta_key" part of inner token {{POSTMETA:[[TOKEN]]:[[meta_key]]}} and replace its value in actual token
+	 *
+	 * @param $pieces
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
+	public function parse_inner_token_meta_key_part( $pieces, $args ) {
+		if ( ! array_key_exists( 2, $pieces ) ) {
+			return $pieces;
+		}
+		if ( ! preg_match( '/\[\[(.+)\]\]/', $pieces[2], $arr ) ) {
+			return $pieces;
+		}
+		$recipe_id    = $args['recipe_id'];
+		$user_id      = $args['user_id'];
+		$trigger_args = $args;
+		unset( $trigger_args['pieces'] );
+		$token     = str_replace( array( '[', ']', ';' ), array( '{', '}', ':' ), $arr[0] );
+		$parsed    = $this->text( $token, $recipe_id, $user_id, $trigger_args );
+		$pieces[2] = apply_filters( 'automator_parse_inner_token', $parsed, $token, $pieces, $args );
+
+		return $pieces;
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return mixed|string
+	 */
+	public function automator_maybe_parse_postmeta_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( ! in_array( 'POSTMETA', $pieces, true ) ) {
+			return $value;
+		}
+		$pieces  = $this->parse_inner_token( $pieces, $replace_args );
+		$post_id = isset( $pieces[1] ) ? absint( $pieces[1] ) : null;
+		if ( null === $post_id ) {
+			return $value;
+		}
+		$meta_key = sanitize_text_field( $pieces[2] );
+		$value    = get_post_meta( $post_id, $meta_key, true );
+		if ( is_array( $value ) ) {
+			return join( ', ', $value );
+		}
+
+		return $value;
+	}
 }

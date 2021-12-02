@@ -4,11 +4,13 @@ namespace Uncanny_Automator;
 
 /**
  * Class WM_USERADDED
+ *
  * @package Uncanny_Automator
  */
 class WM_USERADDED {
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WISHLISTMEMBER';
@@ -36,8 +38,6 @@ class WM_USERADDED {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wishlist-member/' ),
@@ -51,9 +51,9 @@ class WM_USERADDED {
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'add_user_to_membership_level' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -68,12 +68,10 @@ class WM_USERADDED {
 	 */
 	public function add_user_to_membership_level( $user_id, $new_levels, $old_levels ) {
 
-
-
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
 		}
-		if ( empty ( $user_id ) ) {
+		if ( empty( $user_id ) ) {
 			return;
 		}
 
@@ -86,24 +84,24 @@ class WM_USERADDED {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( in_array( $required_level[ $recipe_id ][ $trigger_id ], $new_levels ) ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -115,7 +113,6 @@ class WM_USERADDED {
 					}
 				}
 			}
-
 		}
 
 		return;

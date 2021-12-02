@@ -16,6 +16,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Trigger_Setup
+ *
  * @package Uncanny_Automator\Recipe
  */
 trait Trigger_Setup {

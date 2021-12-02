@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\Gravity_Forms_Pro_Helpers;
 
 /**
  * Class Gravity_Forms_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Gravity_Forms_Helpers {
@@ -57,7 +58,6 @@ class Gravity_Forms_Helpers {
 	public function list_gravity_forms( $label = null, $option_code = 'GFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -71,7 +71,6 @@ class Gravity_Forms_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			$forms = GFFormsModel::get_forms();
 
@@ -81,7 +80,7 @@ class Gravity_Forms_Helpers {
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -91,7 +90,7 @@ class Gravity_Forms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_list_gravity_forms', $option );
 

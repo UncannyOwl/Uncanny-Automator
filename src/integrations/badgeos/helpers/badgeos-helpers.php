@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\Badgeos_Pro_Helpers;
 
 /**
  * Class Badgeos_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Badgeos_Helpers {
@@ -30,11 +31,14 @@ class Badgeos_Helpers {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		add_action( 'wp_ajax_select_achievements_from_types_BOAWARDACHIEVEMENT', [
-			$this,
-			'select_achievements_from_types_func',
-		] );
-		add_action( 'wp_ajax_select_ranks_from_types_BOAWARDRANKS', [ $this, 'select_ranks_from_types_func' ] );
+		add_action(
+			'wp_ajax_select_achievements_from_types_BOAWARDACHIEVEMENT',
+			array(
+				$this,
+				'select_achievements_from_types_func',
+			)
+		);
+		add_action( 'wp_ajax_select_ranks_from_types_BOAWARDRANKS', array( $this, 'select_ranks_from_types_func' ) );
 	}
 
 	/**
@@ -61,7 +65,6 @@ class Badgeos_Helpers {
 	public function list_bo_award_types( $label = null, $option_code = 'BOAWARDTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -84,20 +87,21 @@ class Badgeos_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			//$posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'achievement-type' ] );
-			$posts = $wpdb->get_results( "SELECT ID, post_name, post_title, post_type
+			$posts = $wpdb->get_results(
+				"SELECT ID, post_name, post_title, post_type
 											FROM $wpdb->posts
-											WHERE post_type LIKE 'achievement-type' AND post_status = 'publish' ORDER BY post_title ASC" );
+											WHERE post_type LIKE 'achievement-type' AND post_status = 'publish' ORDER BY post_title ASC"
+			);
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
 					$options[ $post->post_name ] = $post->post_title;
 				}
 			}
-
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'input_type'               => $type,
@@ -108,7 +112,7 @@ class Badgeos_Helpers {
 			'endpoint'                 => $end_point,
 			'options'                  => $options,
 			'custom_value_description' => _x( 'Achievement type slug', 'BadgeOS', 'uncanny-automator' ),
-		];
+		);
 
 		return apply_filters( 'uap_option_list_bo_award_types', $option );
 	}
@@ -122,7 +126,6 @@ class Badgeos_Helpers {
 	 */
 	public function list_bo_points_types( $label = null, $option_code = 'BOPOINTSTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -147,9 +150,11 @@ class Badgeos_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			//$posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'point_type' ] );
-			$posts = $wpdb->get_results( "SELECT ID, post_name, post_title
+			$posts = $wpdb->get_results(
+				"SELECT ID, post_name, post_title
 											FROM $wpdb->posts
-											WHERE post_type LIKE 'point_type' AND post_status = 'publish' ORDER BY post_title ASC" );
+											WHERE post_type LIKE 'point_type' AND post_status = 'publish' ORDER BY post_title ASC"
+			);
 
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
@@ -160,7 +165,7 @@ class Badgeos_Helpers {
 		//$options = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'point_type' ] );
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'input_type'               => $type,
@@ -171,7 +176,7 @@ class Badgeos_Helpers {
 			'endpoint'                 => $end_point,
 			'options'                  => $options,
 			'custom_value_description' => _x( 'Point type slug', 'BadgeOS', 'uncanny-automator' ),
-		];
+		);
 
 		return apply_filters( 'uap_option_list_bo_points_types', $option );
 	}
@@ -185,7 +190,6 @@ class Badgeos_Helpers {
 	 */
 	public function list_bo_rank_types( $label = null, $option_code = 'BORANKTYPES', $args = array() ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -204,9 +208,11 @@ class Badgeos_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			//$posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'rank_types' ] );
-			$posts = $wpdb->get_results( "SELECT ID, post_name, post_title, post_type
+			$posts = $wpdb->get_results(
+				"SELECT ID, post_name, post_title, post_type
 											FROM $wpdb->posts
-											WHERE post_type LIKE 'rank_types' AND post_status = 'publish' ORDER BY post_title ASC" );
+											WHERE post_type LIKE 'rank_types' AND post_status = 'publish' ORDER BY post_title ASC"
+			);
 			if ( ! empty( $posts ) ) {
 				foreach ( $posts as $post ) {
 					$options[ $post->post_name ] = $post->post_title;
@@ -215,7 +221,7 @@ class Badgeos_Helpers {
 		}
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'input_type'               => $type,
@@ -226,7 +232,7 @@ class Badgeos_Helpers {
 			'endpoint'                 => $end_point,
 			'options'                  => $options,
 			'custom_value_description' => _x( 'Rank type slug', 'BadgeOS', 'uncanny-automator' ),
-		];
+		);
 
 		return apply_filters( 'uap_option_list_bo_rank_types', $option );
 	}
@@ -245,21 +251,21 @@ class Badgeos_Helpers {
 
 		if ( isset( $value ) && ! empty( $value ) ) {
 
-			$args = [
+			$args = array(
 				'post_type'      => sanitize_text_field( $value ),
 				'posts_per_page' => 999,
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',
-			];
+			);
 
 			$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
-				$fields[] = [
+				$fields[] = array(
 					'value' => $award_id,
 					'text'  => $award_name,
-				];
+				);
 			}
 		}
 		echo wp_json_encode( $fields );
@@ -271,7 +277,6 @@ class Badgeos_Helpers {
 	 */
 	public function select_ranks_from_types_func() {
 
-
 		// Nonce and post object validation.
 		Automator()->utilities->ajax_auth_check();
 
@@ -281,21 +286,21 @@ class Badgeos_Helpers {
 
 		if ( isset( $value ) && ! empty( $value ) ) {
 
-			$args = [
+			$args = array(
 				'post_type'      => sanitize_text_field( $value ),
 				'posts_per_page' => 999,
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',
-			];
+			);
 
 			$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
-				$fields[] = [
+				$fields[] = array(
 					'value' => $award_id,
 					'text'  => $award_name,
-				];
+				);
 			}
 		}
 		echo wp_json_encode( $fields );

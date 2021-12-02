@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_ACHIEVEMENTS_AWARD
+ *
  * @package Uncanny_Automator
  */
 class LD_ACHIEVEMENTS_AWARD {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -105,7 +107,7 @@ class LD_ACHIEVEMENTS_AWARD {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
 		} else {
-			
+
 			$error_message = esc_attr__( "Error: Instance of '\LearnDash\Achievements\Achievement' is not found.", 'uncanny-automator' );
 
 			$action_data['complete_with_errors'] = true;

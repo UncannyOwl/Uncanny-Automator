@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_User_Recipe_Type
+ *
  * @package Uncanny_Automator
  */
 class Add_User_Recipe_Type {
@@ -11,7 +12,7 @@ class Add_User_Recipe_Type {
 	 * Add_User_Recipe_Type constructor.
 	 */
 	public function __construct() {
-		add_action( 'automator_add_recipe_type', [ $this, 'add_user_type_recipe' ] );
+		add_action( 'automator_add_recipe_type', array( $this, 'add_user_type_recipe' ) );
 	}
 
 	/**

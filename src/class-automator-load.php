@@ -16,6 +16,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Load
+ *
  * @package Uncanny_Automator
  */
 class Automator_Load {
@@ -54,7 +55,7 @@ class Automator_Load {
 			return;
 		}
 
-		if ( strpos( $_SERVER['REQUEST_URI'], 'favicon' ) ) {
+		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'favicon' ) ) {
 			// bail out if it's favicon.ico
 			return;
 		}
@@ -94,6 +95,10 @@ class Automator_Load {
 		);
 
 		$this->load_automator();
+
+		// Show set-up wizard.
+		$this->initiate_setup_wizard();
+		
 	}
 
 	/**
@@ -146,7 +151,7 @@ class Automator_Load {
 		$message        = sprintf( __( "%2\$s recipes have been disabled because your version of PHP (%3\$s) is not fully compatible with the version of %1\$s that's installed.", 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator', PHP_VERSION );
 		$message_update = sprintf( __( 'Please update %1$s to version %2$s or later.', 'uncanny-automator' ), 'Uncanny Automator Pro', $version );
 
-		printf( '<div class="%1$s"><h3 style="font-weight: bold; color: red"><span class="dashicons dashicons-warning"></span>%2$s <a href="%3$s">' . $message_update . '</a></h3></div>', esc_attr( $class ), esc_html( $message ), $url );
+		printf( '<div class="%1$s"><h3 style="font-weight: bold; color: red"><span class="dashicons dashicons-warning"></span>%2$s <a href="%3$s">' . esc_html( $message_update ) . '</a></h3></div>', esc_attr( $class ), esc_html( $message ), esc_url_raw( $url ) );
 	}
 
 	/**
@@ -154,7 +159,8 @@ class Automator_Load {
 	 */
 	public function automator_activated( $plugin ) {
 		if ( $plugin === plugin_basename( AUTOMATOR_BASE_FILE ) && true === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
-			exit( wp_redirect( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) );
+			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+			exit();
 		}
 	}
 
@@ -327,7 +333,6 @@ class Automator_Load {
 	 *
 	 * @return Automator_Load $instance The Automator_Load Class
 	 * @since 1.0.0
-	 *
 	 */
 	public static function get_instance() {
 
@@ -382,13 +387,12 @@ class Automator_Load {
 	 */
 	public function automator_license_style( $hook ) {
 		if ( strpos( $hook, 'uncanny-automator-license-activation' ) ) {
-			wp_enqueue_style( 'uap-admin-license', Utilities::automator_get_css( 'admin/license.css' ), array(), Utilities::automator_get_version() );
+			wp_enqueue_style( 'uap-admin-license', Utilities::automator_get_asset( 'legacy/css/admin/license.css' ), array(), Utilities::automator_get_version() );
 		}
 	}
 
 	/**
 	 * Enqueue script
-	 *
 	 */
 	public function automator_closure_scripts() {
 		if ( ! is_user_logged_in() ) {
@@ -406,7 +410,7 @@ class Automator_Load {
 			'user_id'           => $user_id,
 			'client_secret_key' => md5( 'l6fsX3vAAiJbSXticLBd' . $user_id ),
 		);
-		wp_register_script( 'uoapp-client', Utilities::automator_get_js( 'uo-sseclient.js' ), array(), '2.1.0' ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+		wp_register_script( 'uoapp-client', Utilities::automator_get_asset( 'legacy/js/uo-sseclient.js' ), array(), '2.1.0' ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 		wp_localize_script( 'uoapp-client', 'uoAppRestApiSetup', $api_setup );
 		wp_enqueue_script( 'uoapp-client' );
 	}
@@ -651,5 +655,21 @@ class Automator_Load {
 			});
 		</script>
 		<?php
+	}
+
+	/**
+	 * Initiate the set-up wizard.
+	 */
+	public function initiate_setup_wizard() {
+		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+			include_once UA_ABSPATH . 'src/core/admin/setup-wizard/setup-wizard.php';
+			$setup_wizard = new Setup_Wizard();
+		}
+
+		if ( defined( 'DOING_AJAX' ) ) {
+			// Add the ajax listener.
+			include_once UA_ABSPATH . 'src/core/admin/setup-wizard/setup-wizard.php';
+			add_action( 'wp_ajax_uo_setup_wizard_set_tried_connecting', array( '\Uncanny_Automator\Setup_Wizard', 'set_tried_connecting') );
+		}
 	}
 }

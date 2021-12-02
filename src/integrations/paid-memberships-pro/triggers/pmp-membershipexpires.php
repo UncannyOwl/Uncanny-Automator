@@ -6,12 +6,14 @@ use MemberOrder;
 
 /**
  * Class PMP_MEMBERSHIPEXPIRES
+ *
  * @package Uncanny_Automator
  */
 class PMP_MEMBERSHIPEXPIRES {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'PMP';

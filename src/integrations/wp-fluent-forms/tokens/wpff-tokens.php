@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wpff_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wpff_Tokens {
@@ -12,14 +13,19 @@ class Wpff_Tokens {
 	 * Wpff_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_wpff_anonwpffforms_tokens', [
-			$this,
-			'wpff_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpff_anonwpffforms_tokens',
+			array(
+				$this,
+				'wpff_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wpff_wpffforms_tokens', [ $this, 'wpff_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_wpff_wpffforms_tokens', [ $this, 'wpff_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'wpff_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_wpff_wpffforms_tokens', array( $this, 'wpff_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_wpff_wpffforms_tokens', array( $this, 'wpff_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wpff_token' ), 20, 6 );
 	}
 
 
@@ -43,7 +49,7 @@ class Wpff_Tokens {
 		}
 		if ( true === $fluent_active && ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 			$form = wpFluent()->table( 'fluentform_forms' )->where( 'id', '=', $form_id )
-			                  ->select( [ 'id', 'title', 'form_fields' ] )
+			                  ->select( array( 'id', 'title', 'form_fields' ) )
 			                  ->orderBy( 'id', 'DESC' )
 			                  ->get();
 			if ( $form ) {
@@ -80,7 +86,6 @@ class Wpff_Tokens {
 
 											$multi_input = $field_or_multi_input['fields'];
 
-
 											foreach ( $multi_input as $field ) {
 
 												// Skip html only feilds that are not actual form inputs
@@ -100,7 +105,6 @@ class Wpff_Tokens {
 
 												$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
 											}
-
 										} else {
 
 											// Multiple fields are in a column and are NOT grouped
@@ -140,12 +144,12 @@ class Wpff_Tokens {
 												$type = $field['attributes']['type'];
 											}
 										}
-										$fields_tokens[] = [
+										$fields_tokens[] = array(
 											'tokenId'         => $token_id,
 											'tokenName'       => $input_title,
 											'tokenType'       => $type,
 											'tokenIdentifier' => $trigger_meta,
-										];
+										);
 									} else {
 										$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
 									}
@@ -202,7 +206,6 @@ class Wpff_Tokens {
 			$field_type = $field['element'];
 		}
 
-
 		switch ( $field_type ) {
 			case 'number':
 				$type = 'int';
@@ -218,12 +221,12 @@ class Wpff_Tokens {
 			$token_id = "$form_id|$field_group_name|$field_name";
 		}
 
-		return [
+		return array(
 			'tokenId'         => $token_id,
 			'tokenName'       => $field_label,
 			'tokenType'       => $type,
 			'tokenIdentifier' => $trigger_meta,
-		];
+		);
 
 	}
 
@@ -247,12 +250,19 @@ class Wpff_Tokens {
 			$trigger_meta   = $pieces[1];
 			$field          = $pieces[2];
 			$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-			$entry          = $wpdb->get_var( "SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = '$trigger_meta'
-													AND automator_trigger_log_id = $trigger_log_id
-													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1" );
+			$entry          = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0, 1",
+					$trigger_meta,
+					$trigger_log_id,
+					$trigger_id
+				)
+			);
 			$entry          = maybe_unserialize( $entry );
 			$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
 			if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {

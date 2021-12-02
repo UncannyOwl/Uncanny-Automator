@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class ANON_GF_SUBFIELD
+ *
  * @package Uncanny_Automator
  */
 class ANON_GF_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GF';
@@ -51,9 +53,9 @@ class ANON_GF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'gform_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->gravity_forms->options->list_gravity_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -72,12 +74,12 @@ class ANON_GF_SUBFORM {
 
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $form['id'],
 			'user_id' => $user_id,
-		];
+		);
 		Automator()->process->user->maybe_add_trigger_entry( $args );
 	}
 }

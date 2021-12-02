@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Google_Sheet_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Google_Sheet_Integration {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GOOGLESHEET';
@@ -83,7 +85,7 @@ class Add_Google_Sheet_Integration {
 		$gtw_options = get_option( '_uncannyowl_google_sheet_settings', array() );
 
 		if ( isset( $gtw_options['refresh_token'] ) && ! empty( $gtw_options['refresh_token'] ) ) {
-			$this->connected   = true;
+			$this->connected = true;
 		}
 
 		$uncanny_automator->register->integration(
@@ -92,7 +94,7 @@ class Add_Google_Sheet_Integration {
 				'name'         => 'Google Sheets',
 				'connected'    => $this->connected,
 				'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/google-sheet-icon.svg' ),
-				'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=googlesheets_api'
+				'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=googlesheets_api',
 			)
 		);
 

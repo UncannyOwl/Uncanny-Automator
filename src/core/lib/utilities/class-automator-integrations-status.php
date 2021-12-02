@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class class Automator_Integrations_Status {
+ *
  * @package Uncanny_Automator
  */
 class Automator_Integrations_Status {
@@ -33,7 +34,9 @@ class Automator_Integrations_Status {
 	/**
 	 * Check if a plugin is active
 	 *
-	 * @param $integration this is either the plugins file name or the integrations code
+	 * this is either the plugins file name or the integrations code
+	 *
+	 * @param $integration
 	 *
 	 * @return bool || null
 	 */

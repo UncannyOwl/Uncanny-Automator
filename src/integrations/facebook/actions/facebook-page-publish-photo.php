@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class FACEBOOK_PAGE_PUBLISH_PHOTO
+ *
  * @package Uncanny_Automator
  */
 class FACEBOOK_PAGE_PUBLISH_PHOTO {
@@ -110,7 +111,7 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 		$page_id = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) : 0;
 
 		$image_url = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
-		
+
 		$message = isset( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) : '';
 
 		$access_token = $facebook->get_user_page_access_token( $page_id );
@@ -121,7 +122,7 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 				'access_token' => $access_token,
 				'image_url'    => $image_url,
 				'page_id'      => $page_id,
-				'message'      => $message
+				'message'      => $message,
 			),
 		);
 

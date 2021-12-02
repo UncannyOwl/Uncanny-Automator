@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_GP_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Gp_Integration {

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WP_CREATEPOST
+ *
  * @package Uncanny_Automator
  */
 class WP_CREATEPOST {
@@ -215,7 +216,7 @@ class WP_CREATEPOST {
 			if ( ! empty( $post_fimage ) ) {
 				$this->add_featured_image( $post_fimage, $post_id );
 			}
-			
+
 			$meta_pairs = json_decode( $action_data['meta']['CPMETA_PAIRS'], true );
 			if ( ! empty( $meta_pairs ) ) {
 				foreach ( $meta_pairs as $pair ) {
@@ -233,7 +234,6 @@ class WP_CREATEPOST {
 	 *
 	 * @param $image_url
 	 * @param $post_id
-	 *
 	 */
 	public function add_featured_image( $image_url, $post_id ) {
 		$upload_dir = wp_upload_dir();

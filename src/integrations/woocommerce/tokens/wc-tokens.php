@@ -2,18 +2,19 @@
 
 namespace Uncanny_Automator;
 
-
 use WC_Order;
 use WC_Order_Item_Product;
 
 /**
  * Class Wc_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wc_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WC';
@@ -66,32 +67,52 @@ class Wc_Tokens {
 			'order_products_links' => esc_attr__( 'Order products links', 'uncanny-automator' ),
 		);
 
-		add_action( 'uap_wc_trigger_save_meta', [ $this, 'uap_wc_trigger_save_meta_func' ], 20, 4 );
+		add_action( 'uap_wc_trigger_save_meta', array( $this, 'uap_wc_trigger_save_meta_func' ), 20, 4 );
 
 		//Adding WC tokens
-		add_filter( 'automator_maybe_trigger_wc_woordertotal_tokens', [
-			$this,
-			'wc_ordertotal_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wc_woordertotal_tokens',
+			array(
+				$this,
+				'wc_ordertotal_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wc_wcorderstatus_tokens', [
-			$this,
-			'wc_ordertotal_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wc_wcorderstatus_tokens',
+			array(
+				$this,
+				'wc_ordertotal_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wc_wooproduct_tokens', [
-			$this,
-			'wc_wooproduct_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wc_wooproduct_tokens',
+			array(
+				$this,
+				'wc_wooproduct_possible_tokens',
+			),
+			20,
+			2
+		);
 
 		//Parsing data
-		add_filter( 'automator_maybe_parse_token', [ $this, 'wc_ordertotal_tokens' ], 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wc_ordertotal_tokens' ), 20, 6 );
 
 		//Adding WC tokens
-		add_filter( 'automator_maybe_trigger_wc_wcshipstationshipped_tokens', [
-			$this,
-			'wc_order_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wc_wcshipstationshipped_tokens',
+			array(
+				$this,
+				'wc_order_possible_tokens',
+			),
+			20,
+			2
+		);
 	}
 
 	/**
@@ -119,14 +140,14 @@ class Wc_Tokens {
 					$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 					$run_number     = (int) $trigger_result['args']['run_number'];
 
-					$args = [
+					$args = array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $trigger_id,
 						'meta_key'       => 'order_id',
 						'meta_value'     => $order_id,
 						'run_number'     => $run_number, //get run number
 						'trigger_log_id' => $trigger_log_id,
-					];
+					);
 
 					Automator()->insert_trigger_meta( $args );
 
@@ -166,12 +187,12 @@ class Wc_Tokens {
 			} else {
 				$input_type = 'text';
 			}
-			$fields[] = [
+			$fields[] = array(
 				'tokenId'         => $token_id,
 				'tokenName'       => $input_title,
 				'tokenType'       => $input_type,
 				'tokenIdentifier' => $trigger_meta,
-			];
+			);
 		}
 		$tokens = array_merge( $tokens, $fields );
 

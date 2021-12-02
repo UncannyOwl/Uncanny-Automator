@@ -4,11 +4,13 @@ namespace Uncanny_Automator;
 
 /**
  * Class Uc_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Uc_Tokens {
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UNCANNYCODE';

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wc_Memberships_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Wc_Memberships_Helpers {
@@ -35,7 +36,6 @@ class Wc_Memberships_Helpers {
 	public function wcm_get_all_membership_plans( $label = null, $option_code = 'WCMEMBERSHIPPLANS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -49,18 +49,17 @@ class Wc_Memberships_Helpers {
 		$is_any      = key_exists( 'is_any', $args ) ? $args['is_any'] : false;
 		$end_point   = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 
-		$args = [
+		$args = array(
 			'post_type'      => 'wc_membership_plan',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $is_any, esc_attr__( 'Any membership plan', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -69,7 +68,7 @@ class Wc_Memberships_Helpers {
 			'is_ajax'         => $is_ajax,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_all_wc_variable_products', $option );
 	}

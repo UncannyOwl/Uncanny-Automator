@@ -8,6 +8,7 @@ use Uncanny_Automator_Pro\Forminator_Pro_Helpers;
 
 /**
  * Class Forminator_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Forminator_Helpers {
@@ -58,7 +59,6 @@ class Forminator_Helpers {
 	public function all_forminator_forms( $label = null, $option_code = 'FRFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -66,7 +66,8 @@ class Forminator_Helpers {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
-		$args = wp_parse_args( $args,
+		$args = wp_parse_args(
+			$args,
 			array(
 				'uo_include_any' => false,
 				'uo_any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
@@ -81,7 +82,7 @@ class Forminator_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
-				$options[ - 1 ] = $args['uo_any_label'];
+				$options[- 1] = $args['uo_any_label'];
 			}
 			$forms = Forminator_API::get_forms( null, 1, 999 );
 
@@ -92,7 +93,7 @@ class Forminator_Helpers {
 				}
 			}
 		}
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -102,7 +103,7 @@ class Forminator_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_all_forminator_forms', $option );
 	}

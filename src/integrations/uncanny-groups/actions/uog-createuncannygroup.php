@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UOG_CREATEUNCANNYGROUP
+ *
  * @package Uncanny_Automator
  */
 class UOG_CREATEUNCANNYGROUP {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOG';
@@ -212,7 +214,7 @@ class UOG_CREATEUNCANNYGROUP {
 		}
 
 		do_action( 'uo_new_group_created', $group_id, $user_id );
-		
+
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 	}

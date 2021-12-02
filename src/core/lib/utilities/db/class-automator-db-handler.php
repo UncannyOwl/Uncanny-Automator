@@ -4,9 +4,9 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_DB_Handler
+ *
  * @since 3.0
  * @package Uncanny_Automator
- *
  */
 class Automator_DB_Handler {
 	/**

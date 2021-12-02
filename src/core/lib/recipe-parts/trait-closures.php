@@ -16,6 +16,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Closure
+ *
  * @package Uncanny_Automator\Recipe
  */
 trait Closure {

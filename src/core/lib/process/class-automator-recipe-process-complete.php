@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Recipe_Process_Complete
+ *
  * @package Uncanny_Automator
  */
 class Automator_Recipe_Process_Complete {
@@ -257,7 +258,7 @@ class Automator_Recipe_Process_Complete {
 	 * @param null $recipe_log_id
 	 * @param array $args
 	 *
-	 * @return null
+	 * @return null|void
 	 */
 	public function action( $user_id = null, $action_data = null, $recipe_id = null, $error_message = '', $recipe_log_id = null, $args = array() ) {
 
@@ -358,7 +359,6 @@ class Automator_Recipe_Process_Complete {
 		do_action( 'automator_action_created', $do_action_args );
 
 		$this->recipe( $recipe_id, $user_id, $recipe_log_id, $args );
-
 	}
 
 	/**
@@ -406,15 +406,14 @@ class Automator_Recipe_Process_Complete {
 		 * 2 = completed with errors, error message provided
 		 * 5 = scheduled
 		 * 9 = completed, do nothing
-		 *
 		 */
 		$completed = 0;
 
 		if ( is_array( $action_data ) && ! empty( $error_message ) && key_exists( 'complete_with_errors', $action_data ) ) {
 			$completed = 2;
-		} else if ( ( is_array( $action_data ) && key_exists( 'do-nothing', $action_data ) ) ) {
+		} elseif ( ( is_array( $action_data ) && key_exists( 'do-nothing', $action_data ) ) ) {
 			$completed = 9;
-		} else if ( empty( $error_message ) ) {
+		} elseif ( empty( $error_message ) ) {
 			$completed = 1;
 		}
 
@@ -538,7 +537,6 @@ class Automator_Recipe_Process_Complete {
 		 * 2 = completed with errors, error message provided
 		 * 5 = in progress (some actions are scheduled)
 		 * 9 = completed, do nothing
-		 *
 		 */
 
 		$run_number = Automator()->get->next_run_number( $recipe_id, $user_id, true );
@@ -624,7 +622,6 @@ class Automator_Recipe_Process_Complete {
 	 * @param array $args
 	 *
 	 * @return bool
-	 *
 	 */
 	public function closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array() ) {
 

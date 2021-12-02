@@ -17,14 +17,14 @@ class Wpp_Tokens {
 	public static $integration = 'WPP';
 
 	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', [ $this, 'wp_polls_token' ], 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wp_polls_token' ), 20, 6 );
 	}
 
 	/**
 	 * Parse the token.
 	 *
-	 * @param string $value     .
-	 * @param array  $pieces    .
+	 * @param string $value .
+	 * @param array $pieces .
 	 * @param string $recipe_id .
 	 *
 	 * @param        $trigger_data
@@ -46,27 +46,32 @@ class Wpp_Tokens {
 				$trigger_meta   = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
 
-				$poll_id = $wpdb->get_var( "SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = 'WPPOLL'
-													AND automator_trigger_log_id = $trigger_log_id
-													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1" );
+				$poll_id = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0, 1",
+						'WPPOLL',
+						$trigger_log_id,
+						$trigger_id
+					)
+				);
 
 				switch ( $trigger_meta ) {
 					case 'WPPOLL':
-
 						// Get Poll Questions
-						$question = $wpdb->get_var( "SELECT pollq_question FROM $wpdb->pollsq WHERE pollq_id = $poll_id" );
+						$question = $wpdb->get_var( $wpdb->prepare( "SELECT pollq_question FROM $wpdb->pollsq WHERE pollq_id = %d", $poll_id ) );
 
 						if ( null !== $question ) {
 							return $question;
 						}
 						break;
 					case 'WPPOLL_ANSWERS':
-
 						// Get Poll Answers
-						$answers = $wpdb->get_results( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = $poll_id ORDER BY polla_aid DESC" );
+						$answers = $wpdb->get_results( $wpdb->prepare( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = %d ORDER BY polla_aid DESC", $poll_id ) );
 
 						if ( null !== $answers ) {
 							$value = '';
@@ -79,12 +84,11 @@ class Wpp_Tokens {
 
 						break;
 					case 'WPPOLL_START':
-
 						// Get Poll start timestamp
-						$start_timestamp = $wpdb->get_var( "SELECT pollq_timestamp FROM $wpdb->pollsq WHERE pollq_id = $poll_id" );
+						$start_timestamp = $wpdb->get_var( $wpdb->prepare( "SELECT pollq_timestamp FROM $wpdb->pollsq WHERE pollq_id = %d", $poll_id ) );
 
 						if ( null !== $start_timestamp && absint( $start_timestamp ) ) {
-							$poll_date = mysql2date( sprintf( __( '%s @ %s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $start_timestamp ) );
+							$poll_date = mysql2date( sprintf( __( '%1$s @ %2$s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $start_timestamp ) );
 
 							return $poll_date;
 						}
@@ -92,12 +96,11 @@ class Wpp_Tokens {
 						return __( 'Not set', 'uncanny-automator' );
 						break;
 					case 'WPPOLL_END':
-
 						// Get Poll end timestamp
-						$end_timestamp = $wpdb->get_var( "SELECT pollq_expiry FROM $wpdb->pollsq WHERE pollq_id = $poll_id" );
+						$end_timestamp = $wpdb->get_var( $wpdb->prepare( "SELECT pollq_expiry FROM $wpdb->pollsq WHERE pollq_id = %d", $poll_id ) );
 
 						if ( null !== $end_timestamp && absint( $end_timestamp ) ) {
-							$poll_date = mysql2date( sprintf( __( '%s @ %s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $end_timestamp ) );
+							$poll_date = mysql2date( sprintf( __( '%1$s @ %2$s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $end_timestamp ) );
 
 							return $poll_date;
 						}
@@ -106,14 +109,20 @@ class Wpp_Tokens {
 						break;
 					case 'WPPOLLANSWER':
 					case 'WPPOLL_WPPOLLANSWER':
-
 						// Get user's answer ids
-						$answer_ids = $wpdb->get_var( "SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = 'WPPOLLANSWER'
-													AND automator_trigger_log_id = $trigger_log_id
-													AND automator_trigger_id = $trigger_id
-													LIMIT 0, 1" );
+						$answer_ids = $wpdb->get_var(
+							$wpdb->prepare(
+								"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0, 1",
+								'WPPOLLANSWER',
+								$trigger_log_id,
+								$trigger_id
+							)
+						);
 
 						if ( null !== $answer_ids ) {
 
@@ -121,7 +130,7 @@ class Wpp_Tokens {
 							$ids        = join( "','", $answer_ids );
 
 							// Get user's Poll Answers
-							$answers = $wpdb->get_results( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = $poll_id AND polla_aid IN ('$ids') ORDER BY polla_aid DESC" );
+							$answers = $wpdb->get_results( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = $poll_id AND polla_aid IN ('$ids') ORDER BY polla_aid DESC" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 							if ( null !== $answers ) {
 								$value = '';

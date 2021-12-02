@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPF_USER_REPLIES_TO_TOPIC_TOKENS
+ *
  * @package Uncanny_Automator
  */
 class WPF_TOPIC_ADDED_TOKENS {
@@ -11,12 +12,13 @@ class WPF_TOPIC_ADDED_TOKENS {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPFORO';
 
 	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', [ $this, 'user_replies_to_topic' ], 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'user_replies_to_topic' ), 20, 6 );
 	}
 
 	/**
@@ -47,7 +49,7 @@ class WPF_TOPIC_ADDED_TOKENS {
 	 */
 	public function user_replies_to_topic( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
-		$tokens = [
+		$tokens = array(
 			'WPFORO_FORUM',
 			'WPFORO_FORUM_ID',
 			'WPFORO_FORUM_URL',
@@ -55,7 +57,7 @@ class WPF_TOPIC_ADDED_TOKENS {
 			'WPFORO_TOPIC_ID',
 			'WPFORO_TOPIC_URL',
 			'WPFORO_TOPIC_CONTENT',
-		];
+		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {
 			$meta_field = $pieces[2];
@@ -69,28 +71,30 @@ class WPF_TOPIC_ADDED_TOKENS {
 						$run_number     = $replace_args['run_number'];
 						$user_id        = $replace_args['user_id'];
 
-
-
-						$forum_id = absint( Automator()->get->get_trigger_log_meta(
-							'WPFORO_TOPIC_FORUM_ID',
-							$trigger_id,
-							$trigger_log_id,
-							$run_number,
-							$user_id
-						) );
+						$forum_id = absint(
+							Automator()->get->get_trigger_log_meta(
+								'WPFORO_TOPIC_FORUM_ID',
+								$trigger_id,
+								$trigger_log_id,
+								$run_number,
+								$user_id
+							)
+						);
 
 						$forum = array();
 						if ( $forum_id ) {
 							$forum = WPF()->forum->get_forum( $forum_id );
 						}
 
-						$topic_id = absint( Automator()->get->get_trigger_log_meta(
-							'WPFORO_TOPIC_ID',
-							$trigger_id,
-							$trigger_log_id,
-							$run_number,
-							$user_id
-						) );
+						$topic_id = absint(
+							Automator()->get->get_trigger_log_meta(
+								'WPFORO_TOPIC_ID',
+								$trigger_id,
+								$trigger_log_id,
+								$run_number,
+								$user_id
+							)
+						);
 
 						$topic = array();
 						if ( $topic_id ) {
@@ -124,7 +128,6 @@ class WPF_TOPIC_ADDED_TOKENS {
 								}
 								break;
 							case 'WPFORO_TOPIC_URL':
-
 								if ( ! empty( $forum ) && isset( $forum['slug'] ) ) {
 									if ( ! empty( $topic ) && isset( $topic['slug'] ) ) {
 										$value = wpforo_home_url( $forum['slug'] . '/' . $topic['slug'] );

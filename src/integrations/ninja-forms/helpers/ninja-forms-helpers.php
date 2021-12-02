@@ -8,6 +8,7 @@ use function Ninja_Forms;
 
 /**
  * Class Ninja_Forms_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Ninja_Forms_Helpers {

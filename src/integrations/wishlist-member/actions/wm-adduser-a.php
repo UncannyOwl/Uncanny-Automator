@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WM_ADDUSER_A
+ *
  * @package Uncanny_Automator
  */
 class WM_ADDUSER_A {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WISHLISTMEMBER';
@@ -31,9 +33,7 @@ class WM_ADDUSER_A {
 	 */
 	public function define_action() {
 
-
-
-		$action = [
+		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wishlist-member/' ),
 			'integration'        => self::$integration,
@@ -44,16 +44,17 @@ class WM_ADDUSER_A {
 			'select_option_name' => esc_attr__( 'Add the user to {{a membership level}}', 'uncanny-automator' ),
 			'priority'           => 99,
 			'accepted_args'      => 1,
-			'execution_function' => [ $this, 'add_user_to_membership_levels' ],
-			'options'            => [
-				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null,
+			'execution_function' => array( $this, 'add_user_to_membership_levels' ),
+			'options'            => array(
+				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels(
+					null,
 					$this->action_meta,
-					[
+					array(
 						'include_all' => true,
-					]
+					)
 				),
-			],
-		];
+			),
+		);
 
 		Automator()->register->action( $action );
 	}
@@ -67,7 +68,6 @@ class WM_ADDUSER_A {
 	 */
 	public function add_user_to_membership_levels( $user_id, $action_data, $recipe_id, $args ) {
 		global $WishListMemberInstance;
-
 
 		$level_ids = array();
 		$wm_level  = $action_data['meta'][ $this->action_meta ];

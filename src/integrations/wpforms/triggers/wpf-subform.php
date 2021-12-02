@@ -6,12 +6,14 @@ use Exception;
 
 /**
  * Class WPF_SUBFORM
+ *
  * @package Uncanny_Automator
  */
 class WPF_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPF';
@@ -27,6 +29,7 @@ class WPF_SUBFORM {
 
 	/**
 	 * Set up Automator trigger constructor.
+	 *
 	 * @throws Exception
 	 */
 	public function __construct() {

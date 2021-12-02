@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UOA_RECIPECOMPLETED
+ *
  * @package Uncanny_Automator
  */
 class UOA_RECIPECOMPLETED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';

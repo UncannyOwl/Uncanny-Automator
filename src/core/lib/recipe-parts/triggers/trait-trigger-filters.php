@@ -16,6 +16,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Trigger_Filters
+ *
  * @package Uncanny_Automator
  */
 trait Trigger_Filters {
@@ -60,7 +61,6 @@ trait Trigger_Filters {
 
 	/**
 	 * @param $is_login_required
-	 *
 	 */
 	public function set_is_login_required( $is_login_required ) {
 		$this->is_login_required = $is_login_required;

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WCM_ADDUSER
+ *
  * @package Uncanny_Automator
  */
 class WCM_ADDUSER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WCMEMBERSHIPS';
@@ -31,8 +33,6 @@ class WCM_ADDUSER {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/woocommerce-memberships/' ),
@@ -46,10 +46,13 @@ class WCM_ADDUSER {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wc_user_added_to_membership_plan' ),
-			'options'             => [
-				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans( null, $this->trigger_meta,
-					[ 'is_any' => true ] ),
-			],
+			'options'             => array(
+				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
+					null,
+					$this->trigger_meta,
+					array( 'is_any' => true )
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -69,7 +72,7 @@ class WCM_ADDUSER {
 
 		// If membership is active only.
 		$user_membership = wc_memberships_get_user_membership( $data['user_membership_id'] );
-		if( ! $user_membership->is_active() ) {
+		if ( ! $user_membership->is_active() ) {
 			return;
 		}
 
@@ -84,10 +87,10 @@ class WCM_ADDUSER {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( isset( $required_plan[ $recipe_id ] ) && isset( $required_plan[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( intval( '-1' ) === intval( $required_plan[ $recipe_id ][ $trigger_id ] ) || absint( $membership_plan->id ) === absint( $required_plan[ $recipe_id ][ $trigger_id ] ) ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 					}
 				}
 			}
@@ -97,7 +100,7 @@ class WCM_ADDUSER {
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $data['user_id'],
@@ -106,7 +109,7 @@ class WCM_ADDUSER {
 					'ignore_post_id'   => true,
 					'is_signed_in'     => true,
 					'post_id'          => $membership_plan->id,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 				if ( $args ) {
@@ -115,12 +118,12 @@ class WCM_ADDUSER {
 
 							if ( 'purchase' === $membership_plan_type ) {
 								$order_id     = get_post_meta( $data['user_membership_id'], '_order_id', true );
-								$trigger_meta = [
+								$trigger_meta = array(
 									'user_id'        => $data['user_id'],
 									'trigger_id'     => $result['args']['trigger_id'],
 									'trigger_log_id' => $result['args']['get_trigger_id'],
 									'run_number'     => $result['args']['run_number'],
-								];
+								);
 
 								$trigger_meta['meta_key']   = 'WCMPLANORDERID';
 								$trigger_meta['meta_value'] = maybe_serialize( $order_id );

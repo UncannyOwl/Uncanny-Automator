@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Uoa_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Uoa_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';
@@ -239,7 +241,7 @@ class Uoa_Tokens {
 				case 'UOARECIPES_recipe_edit_link':
 				case 'UOARECIPES_recipe_log_url':
 				case 'UOARECIPES_action_log_url':
-					$value = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE automator_trigger_log_id = {$replace_args['trigger_log_id']} && meta_key = '{$pieces[1]}'" );
+					$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE automator_trigger_log_id = %d && meta_key = %s", $replace_args['trigger_log_id'], $pieces[1] ) );
 
 					if ( 'UOAERRORS_recipe_log_url' === $pieces[1] || 'UOARECIPES_recipe_log_url' === $pieces[1] ) {
 						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-recipe-log&$value";
@@ -320,56 +322,56 @@ class Uoa_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$new_tokens = [
-			[
+		$new_tokens = array(
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'User ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_user_id',
-			],
-			[
+			),
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'Username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_username',
-			],
-			[
+			),
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'User email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_user_email',
-			],
-			[
+			),
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'Recipe ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_recipe_id',
-			],
-			[
+			),
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'Recipe title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_recipe_title',
-			],
-			[
+			),
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'Recipe edit link', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_recipe_edit_link',
-			],
-			[
+			),
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'Recipe log URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_recipe_log_url',
-			],
-			[
+			),
+			array(
 				'tokenId'         => $trigger_meta,
 				'tokenName'       => esc_attr__( 'Action log URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'UOARECIPES_action_log_url',
-			],
-		];
+			),
+		);
 
 		$tokens = array_merge( $tokens, $new_tokens );
 

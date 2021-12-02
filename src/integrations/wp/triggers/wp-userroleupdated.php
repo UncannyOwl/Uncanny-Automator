@@ -2,15 +2,16 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class WP_USERROLEUPDATED
+ *
  * @package Uncanny_Automator
  */
 class WP_USERROLEUPDATED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WP';
@@ -37,8 +38,6 @@ class WP_USERROLEUPDATED {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -70,7 +69,6 @@ class WP_USERROLEUPDATED {
 	 */
 	public function set_user_role( $user_id, $role, $old_roles ) {
 
-
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_user_role = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 
@@ -91,43 +89,43 @@ class WP_USERROLEUPDATED {
 				$trigger_id = $trigger['ID'];
 				//Add where option is set to Any post type
 				if ( intval( '-1' ) === intval( $required_user_role[ $recipe_id ][ $trigger_id ] ) ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 
 				if ( user_can( $user_obj, $required_user_role[ $recipe_id ][ $trigger_id ] ) && (string) $role === (string) $required_user_role[ $recipe_id ][ $trigger_id ] ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_obj->ID,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$results = Automator()->maybe_add_trigger_entry( $pass_args, false );
 				if ( $results ) {
 					foreach ( $results as $result ) {
 						if ( true === $result['result'] ) {
 
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 							$roles        = array();
 							foreach ( wp_roles()->roles as $role_name => $role_info ) {
 								$roles[ $role_name ] = $role_info['name'];
@@ -143,7 +141,6 @@ class WP_USERROLEUPDATED {
 					}
 				}
 			}
-
 		}
 	}
 

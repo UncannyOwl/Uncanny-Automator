@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_COURSEDONE
+ *
  * @package Uncanny_Automator
  */
 class LD_COURSEDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -31,8 +33,6 @@ class LD_COURSEDONE {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
@@ -46,11 +46,11 @@ class LD_COURSEDONE {
 			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'course_done' ),
-			'options'             => [
+			'options'             => array(
 
 				Automator()->helpers->recipe->learndash->options->all_ld_courses(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -65,8 +65,6 @@ class LD_COURSEDONE {
 	 */
 	public function course_done( $data ) {
 
-
-
 		if ( empty( $data ) ) {
 			return;
 		}
@@ -74,12 +72,12 @@ class LD_COURSEDONE {
 		$user   = $data['user'];
 		$course = $data['course'];
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $course->ID,
 			'user_id' => $user->ID,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

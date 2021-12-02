@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Facebook_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Facebook_Helpers {
@@ -27,8 +28,14 @@ class Facebook_Helpers {
 	 */
 	public $fb_endpoint_uri = '';
 
+	/**
+	 *
+	 */
 	const OPTION_KEY = '_uncannyowl_facebook_settings';
 
+	/**
+	 *
+	 */
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
@@ -54,16 +61,22 @@ class Facebook_Helpers {
 		add_action( "wp_ajax_{$this->wp_ajax_action}", array( $this, $this->wp_ajax_action ), 10 );
 
 		// Add a disconnect button.
-		add_action( "wp_ajax_{$this->wp_ajax_action}_disconnect", array(
-			$this,
-			sprintf( '%s_disconnect', $this->wp_ajax_action ),
-		) );
+		add_action(
+			"wp_ajax_{$this->wp_ajax_action}_disconnect",
+			array(
+				$this,
+				sprintf( '%s_disconnect', $this->wp_ajax_action ),
+			)
+		);
 
 		// Add a fetch user pages action.
-		add_action( "wp_ajax_{$this->wp_ajax_action}_fetch_user_pages", array(
-			$this,
-			sprintf( '%s_fetch_user_pages', $this->wp_ajax_action ),
-		) );
+		add_action(
+			"wp_ajax_{$this->wp_ajax_action}_fetch_user_pages",
+			array(
+				$this,
+				sprintf( '%s_fetch_user_pages', $this->wp_ajax_action ),
+			)
+		);
 
 	}
 
@@ -173,9 +186,9 @@ class Facebook_Helpers {
 		$message .= sprintf(
 			'<p>%s</p><p>%s</p>',
 			__(
-				'Connecting to Automator Facebook API requires 
-                    that you connect your existing Facebook Account with Automator App. 
-                    You must grant Automator App an access to the Facebook Pages and the Instagram Business Account (if you need Instagram later) 
+				'Connecting to Automator Facebook API requires
+                    that you connect your existing Facebook Account with Automator App.
+                    You must grant Automator App an access to the Facebook Pages and the Instagram Business Account (if you need Instagram later)
                     that you manage in order for Automator to work properly.',
 				'uncanny-automator'
 			),
@@ -203,46 +216,46 @@ class Facebook_Helpers {
 
 			<?php if ( isset( $user['user_id'] ) && ! empty( isset( $user['user_id'] ) ) ) : ?>
 
-                <h4>
+				<h4>
 					<?php esc_html_e( 'Facebook Account', 'automator-pro' ); ?>
-                </h4>
+				</h4>
 
-                <div class="uo-fb-connected-account">
+				<div class="uo-fb-connected-account">
 
 					<?php $fb_profile_link = '#'; // Dont show facebook profile. ?>
 
-                    <a class="uo-fb-connected-account__user-card" href="<?php echo esc_url( $fb_profile_link ); ?>"
-                       title="<?php echo esc_attr( $user['name'] ); ?>">
-                        <img alt="<?php echo esc_attr( $user['name'] ); ?>" width="24"
-                             src="<?php echo esc_url( $user['picture'] ); ?>"/>
+					<a class="uo-fb-connected-account__user-card" href="<?php echo esc_url( $fb_profile_link ); ?>"
+					   title="<?php echo esc_attr( $user['name'] ); ?>">
+						<img alt="<?php echo esc_attr( $user['name'] ); ?>" width="24"
+							 src="<?php echo esc_url( $user['picture'] ); ?>"/>
 						<?php echo esc_html( $user['name'] ); ?>
-                    </a>
+					</a>
 
-                </div>
+				</div>
 
 			<?php endif; ?>
 
-            <h4>
+			<h4>
 				<?php esc_html_e( 'Linked pages', 'uncanny-automator' ); ?>
-            </h4>
+			</h4>
 
-            <div id="uo-user-fb-pages">
-                <p>
-                    <span class="dashicons dashicons-image-rotate uo-preloader-rotate"></span>
+			<div id="uo-user-fb-pages">
+				<p>
+					<span class="dashicons dashicons-image-rotate uo-preloader-rotate"></span>
 					<?php esc_html_e( 'Please wait while we fetch the Facebook Pages that you have linked to Automator App...', 'uncanny-automator' ); ?>
-                </p>
-            </div>
+				</p>
+			</div>
 
-            <p>
-                <span class="dashicons dashicons-info-outline"
-                      style="font-size: 14px; position: relative; top: 3.25px;"></span>
+			<p>
+				<span class="dashicons dashicons-info-outline"
+					  style="font-size: 14px; position: relative; top: 3.25px;"></span>
 				<?php esc_html_e( 'Click on the Change Account Settings button to re-connect your Facebook Account and Facebook Pages.', 'uncanny-automator' ); ?>
-            </p>
-            <a title="<?php esc_attr_e( 'Change Account Settings', 'uncanny-automator' ); ?>"
-               href="<?php echo esc_url( $this->get_login_dialog_uri() ); ?>"
-               class="uo-settings-btn uo-settings-btn--secondary">
+			</p>
+			<a title="<?php esc_attr_e( 'Change Account Settings', 'uncanny-automator' ); ?>"
+			   href="<?php echo esc_url( $this->get_login_dialog_uri() ); ?>"
+			   class="uo-settings-btn uo-settings-btn--secondary">
 				<?php esc_html_e( 'Change Account Settings', 'uncanny-automator' ); ?>
-            </a>
+			</a>
 
 			<?php
 			$this->get_inline_js();
@@ -336,6 +349,9 @@ class Facebook_Helpers {
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function fetch_pages_from_api() {
 
 		$settings = get_option( '_uncannyowl_facebook_settings' );
@@ -395,6 +411,9 @@ class Facebook_Helpers {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_settings_page_uri() {
 
 		return add_query_arg(
@@ -407,6 +426,9 @@ class Facebook_Helpers {
 		);
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_user_connected() {
 
 		$settings = get_option( self::OPTION_KEY );
@@ -418,26 +440,32 @@ class Facebook_Helpers {
 		return true;
 	}
 
+	/**
+	 * @return false|string
+	 */
 	private function get_fb_settings_content() {
 		ob_start();
 		?>
 		<?php if ( $this->is_user_connected() ) : ?>
-            <a href="<?php echo esc_url( $this->get_disconnect_url() ); ?>"
-               class="uo-settings-btn uo-settings-btn--error">
+			<a href="<?php echo esc_url( $this->get_disconnect_url() ); ?>"
+			   class="uo-settings-btn uo-settings-btn--error">
 				<?php esc_html_e( 'Disconnect Facebook Pages' ); ?>
-            </a>
+			</a>
 		<?php else : ?>
-            <a href="<?php echo esc_url( $this->get_login_dialog_uri() ); ?>"
-               class="uo-settings-btn uo-settings-btn--secondary facebook-setting-btn">
-                <span class="dashicons dashicons-facebook"></span>
+			<a href="<?php echo esc_url( $this->get_login_dialog_uri() ); ?>"
+			   class="uo-settings-btn uo-settings-btn--secondary facebook-setting-btn">
+				<span class="dashicons dashicons-facebook"></span>
 				<?php esc_html_e( 'Connect Facebook Pages' ); ?>
-            </a>
+			</a>
 		<?php endif; ?>
 
 		<?php
 		return ob_get_clean();
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_disconnect_url() {
 
 		return add_query_arg(
@@ -450,6 +478,9 @@ class Facebook_Helpers {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	private function get_login_dialog_uri() {
 
 		return add_query_arg(
@@ -463,150 +494,159 @@ class Facebook_Helpers {
 
 	}
 
+	/**
+	 * @return false|string
+	 */
 	private function get_inline_style() {
 		ob_start();
 		?>
-        <style>
-            @keyframes uo-preloader-rotate {
-                to {
-                    transform: rotate(-360deg);
-                }
-            }
+		<style>
+			@keyframes uo-preloader-rotate {
+				to {
+					transform: rotate(-360deg);
+				}
+			}
 
-            .uo-preloader-rotate {
-                animation: uo-preloader-rotate 0.75s linear infinite;
-            }
+			.uo-preloader-rotate {
+				animation: uo-preloader-rotate 0.75s linear infinite;
+			}
 
-            span.dashicons-image-rotate {
-                color: #757575;
-                font-size: 14px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-            }
+			span.dashicons-image-rotate {
+				color: #757575;
+				font-size: 14px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+			}
 
-            button[name="uap_automator_facebook_api_save"] {
-                display: none;
-            }
+			button[name="uap_automator_facebook_api_save"] {
+				display: none;
+			}
 
-            .facebook-setting--user {
-                margin-right: 15px;
-            }
+			.facebook-setting--user {
+				margin-right: 15px;
+			}
 
-            .facebook-setting-btn:hover,
-            .facebook-setting-btn {
-                background-color: #2d88ff;
-                color: #fff;
-                border: 0 none;
-                padding: 6px 15px 8px;
-                box-shadow: none;
-                font-weight: 600;
-            }
+			.facebook-setting-btn:hover,
+			.facebook-setting-btn {
+				background-color: #2d88ff;
+				color: #fff;
+				border: 0 none;
+				padding: 6px 15px 8px;
+				box-shadow: none;
+				font-weight: 600;
+			}
 
-            .facebook-setting-btn:hover {
-                outline: 1px dashed #7bb4fd;
-                outline-offset: 3px;
-                outline-width: 1px;
-            }
+			.facebook-setting-btn:hover {
+				outline: 1px dashed #7bb4fd;
+				outline-offset: 3px;
+				outline-width: 1px;
+			}
 
-            .facebook-setting-btn .dashicons-facebook {
-                position: relative;
-                top: -1px;
-                left: -6px;
-                font-size: 24px;
-                opacity: 0.95;
-            }
+			.facebook-setting-btn .dashicons-facebook {
+				position: relative;
+				top: -1px;
+				left: -6px;
+				font-size: 24px;
+				opacity: 0.95;
+			}
 
-            #uo-user-fb-pages > p.error {
-                color: #e94b35;
-            }
+			#uo-user-fb-pages > p.error {
+				color: #e94b35;
+			}
 
-            span.uo-fb-pages-item-id {
-                border-radius: 3px;
-                font-size: 12px;
-                padding: 2px;
-                text-align: center;
-                width: 115px;
-                display: inline-block;
-                border: 2px dashed #fff27d;
-                margin-right: 10px;
-                background: #fffce2;
-            }
+			span.uo-fb-pages-item-id {
+				border-radius: 3px;
+				font-size: 12px;
+				padding: 2px;
+				text-align: center;
+				width: 115px;
+				display: inline-block;
+				border: 2px dashed #fff27d;
+				margin-right: 10px;
+				background: #fffce2;
+			}
 
-            span.uo-fb-pages-item-task {
-                color: #20831c;
-                position: relative;
-                top: 2.5px;
-            }
+			span.uo-fb-pages-item-task {
+				color: #20831c;
+				position: relative;
+				top: 2.5px;
+			}
 
-            #uo-user-fb-pages > ul > li > a {
-                margin-right: 15px;
-            }
+			#uo-user-fb-pages > ul > li > a {
+				margin-right: 15px;
+			}
 
-            .uo-fb-connected-account .uo-fb-connected-account__user-card {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                max-width: 200px;
-            }
+			.uo-fb-connected-account .uo-fb-connected-account__user-card {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				max-width: 200px;
+			}
 
-            .uo-fb-connected-account .uo-fb-connected-account__user-card > img {
-                margin-right: 10px;
-                border-radius: 50px;
-            }
-        </style>
+			.uo-fb-connected-account .uo-fb-connected-account__user-card > img {
+				margin-right: 10px;
+				border-radius: 50px;
+			}
+		</style>
 		<?php
 		return ob_get_clean();
 	}
 
+	/**
+	 *
+	 */
 	private function get_inline_js() {
 		?>
-        <script>
-            jQuery(document).ready(function ($) {
-                'use strict';
-                var url = "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>";
-                $.ajax({
-                    dataType: 'json',
-                    url: url,
-                    data: {
-                        action: '<?php echo esc_html( "{$this->wp_ajax_action}_fetch_user_pages" ); ?>',
-                        nonce: '<?php echo esc_html( wp_create_nonce( self::OPTION_KEY ) ); ?>'
-                    },
-                    success: function (response) {
+		<script>
+			jQuery(document).ready(function ($) {
+				'use strict';
+				var url = "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>";
+				$.ajax({
+					dataType: 'json',
+					url: url,
+					data: {
+						action: '<?php echo esc_html( "{$this->wp_ajax_action}_fetch_user_pages" ); ?>',
+						nonce: '<?php echo esc_html( wp_create_nonce( self::OPTION_KEY ) ); ?>'
+					},
+					success: function (response) {
 
-                        if (200 === response.status) {
+						if (200 === response.status) {
 
-                            var $li = "";
+							var $li = "";
 
-                            $.each(response.pages, function (i, page) {
+							$.each(response.pages, function (i, page) {
 
-                                $li += '<li>';
-                                $li += '<span class="uo-fb-pages-item-id">' + page.value + '</span>';
-                                $li += '<a href="https://facebook.com/' + page.value + '" target="_blank">' + page.text + '</a>';
+								$li += '<li>';
+								$li += '<span class="uo-fb-pages-item-id">' + page.value + '</span>';
+								$li += '<a href="https://facebook.com/' + page.value + '" target="_blank">' + page.text + '</a>';
 
-                                /*$.each( page.tasks, function(i, task){
+								/*$.each( page.tasks, function(i, task){
 									$li += '<span class="uo-fb-pages-item-task enabled">' + task + '</span>';
 								});*/
-                                $li += '<span class="uo-fb-pages-item-task enabled"><span class="dashicons dashicons-yes"></span></span>';
+								$li += '<span class="uo-fb-pages-item-task enabled"><span class="dashicons dashicons-yes"></span></span>';
 
-                                $li += '</li>';
-                            });
+								$li += '</li>';
+							});
 
-                            $('#uo-user-fb-pages').html('<ul>' + $li + '</ul>');
-                        } else {
-                            $('#uo-user-fb-pages > p').html(response.message).addClass('error');
-                        }
+							$('#uo-user-fb-pages').html('<ul>' + $li + '</ul>');
+						} else {
+							$('#uo-user-fb-pages > p').html(response.message).addClass('error');
+						}
 
-                    },
-                    error: function (e, message) {
-                        $('#uo-user-fb-pages > p').html(message).addClass('error');
-                    }
-                });
-            });
-        </script>
+					},
+					error: function (e, message) {
+						$('#uo-user-fb-pages > p').html(message).addClass('error');
+					}
+				});
+			});
+		</script>
 		<?php
 	}
 
+	/**
+	 * @return array|mixed
+	 */
 	private function get_user_connected() {
 
 		$graph = get_option( self::OPTION_KEY );
@@ -624,6 +664,12 @@ class Facebook_Helpers {
 		return $response;
 	}
 
+	/**
+	 * @param $user_id
+	 * @param $token
+	 *
+	 * @return array|mixed
+	 */
 	private function transient_get_user_connected( $user_id, $token ) {
 
 		$response = array(
@@ -668,6 +714,9 @@ class Facebook_Helpers {
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function get_user_pages_from_options_table() {
 
 		$pages = array();
@@ -705,6 +754,9 @@ class Facebook_Helpers {
 		return '';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_endpoint_url() {
 
 		return $this->fb_endpoint_uri;

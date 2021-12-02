@@ -9,6 +9,7 @@ class ANON_MAKE_DONATION {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GIVEWP';

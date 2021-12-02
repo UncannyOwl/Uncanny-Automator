@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class ANON_CF_SUBFORM
+ *
  * @package Uncanny_Automator
  */
 class ANON_CF_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'CF';
@@ -55,9 +57,9 @@ class ANON_CF_SUBFORM {
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'caldera_forms_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->caldera_forms->options->list_caldera_forms_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -83,14 +85,14 @@ class ANON_CF_SUBFORM {
 			if ( Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 				continue;
 			}
-			$args = [
+			$args = array(
 				'code'             => $this->trigger_code,
 				'meta'             => $this->trigger_meta,
 				'recipe_to_match'  => $recipe_id,
 				'trigger_to_match' => $trigger_id,
 				'ignore_post_id'   => true,
 				'user_id'          => $user_id,
-			];
+			);
 
 			Automator()->process->user->maybe_add_trigger_entry( $args );
 
@@ -113,7 +115,7 @@ class ANON_CF_SUBFORM {
 			return false;
 		}
 
-		$recipe_ids     = [];
+		$recipe_ids     = array();
 		$entry_to_match = $form['ID'];
 
 		foreach ( $recipes as $recipe ) {
@@ -125,7 +127,10 @@ class ANON_CF_SUBFORM {
 		}
 
 		if ( ! empty( $recipe_ids ) ) {
-			return [ 'recipe_ids' => $recipe_ids, 'result' => true ];
+			return array(
+				'recipe_ids' => $recipe_ids,
+				'result'     => true,
+			);
 		}
 
 		return false;

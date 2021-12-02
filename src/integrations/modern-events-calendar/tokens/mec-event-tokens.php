@@ -141,10 +141,10 @@ class Mec_Event_Tokens {
 					break;
 				case $this->token . 'EVENT_THUMB_ID':
 					$value = $helper->get_event_featured_image_id();
-					break;	
+					break;
 				case $this->token . 'EVENT_THUMB_URL':
 					$value = $helper->get_event_featured_image_url();
-					break;	
+					break;
 			}
 		}
 

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPLMS_COURSESTARTED
+ *
  * @package Uncanny_Automator
  */
 class WPLMS_COURSESTARTED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPLMS';
@@ -31,8 +33,6 @@ class WPLMS_COURSESTARTED {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-lms/' ),
@@ -46,10 +46,10 @@ class WPLMS_COURSESTARTED {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wplms_course_started' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wplms->options->all_wplms_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -74,14 +74,12 @@ class WPLMS_COURSESTARTED {
 			return;
 		}
 
-
-
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $course_id ),
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

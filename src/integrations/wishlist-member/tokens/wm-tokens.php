@@ -4,11 +4,13 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wm_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wm_Tokens {
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WISHLISTMEMBER';
@@ -17,7 +19,7 @@ class Wm_Tokens {
 	 * Wm_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_wm_token' ], 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_wm_token' ), 20, 6 );
 	}
 
 	/**
@@ -50,9 +52,9 @@ class Wm_Tokens {
 	 * @return mixed
 	 */
 	public function parse_wm_token( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args ) {
-		$tokens = [
+		$tokens = array(
 			'WMMEMBERSHIPLEVELS',
-		];
+		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {
 			$meta_field = $pieces[2];

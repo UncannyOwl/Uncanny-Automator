@@ -6,6 +6,7 @@ use Firebase\JWT\JWT;
 
 /**
  * Class Zoom_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Zoom_Helpers {
@@ -127,7 +128,6 @@ class Zoom_Helpers {
 				}
 			}
 		}
-
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -409,12 +409,12 @@ class Zoom_Helpers {
 			'name'           => __( 'Zoom Meeting', 'uncanny-automator' ),
 			'title'          => __( 'Zoom Meeting API settings', 'uncanny-automator' ),
 			'description'    => sprintf(
-									'<p>%1$s</p>',
-									sprintf(
-										__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit %1\$s for simple instructions.", 'uncanny-automator' ),
-										'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/zoom/</a>'
-									)
-								) . $this->get_user_info(),
+				'<p>%1$s</p>',
+				sprintf(
+					__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit %1\$s for simple instructions.", 'uncanny-automator' ),
+					'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/zoom/</a>'
+				)
+			) . $this->get_user_info(),
 			'is_pro'         => false,
 			'is_expired'     => false,
 			'settings_field' => 'uap_automator_zoom_api_settings',

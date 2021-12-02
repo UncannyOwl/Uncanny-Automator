@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class INSTAGRAM_PUBLISH_PHOTO
+ *
  * @package Uncanny_Automator
  */
 class INSTAGRAM_PUBLISH_PHOTO {

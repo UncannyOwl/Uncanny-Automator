@@ -3,11 +3,11 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Edd_Pro_Helpers;
 
 /**
  * Class Edd_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Edd_Helpers {
@@ -57,7 +57,6 @@ class Edd_Helpers {
 	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -65,18 +64,17 @@ class Edd_Helpers {
 			$label = esc_attr__( 'Product', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'post_type'      => 'download',
 			'posts_per_page' => 9999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any download', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -85,14 +83,14 @@ class Edd_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
-				$option_code          => esc_attr__( 'Download title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Download ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Download URL', 'uncanny-automator' ),
+			'relevant_tokens' => array(
+				$option_code                => esc_attr__( 'Download title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Download ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_attr__( 'Download URL', 'uncanny-automator' ),
 				$option_code . '_THUMB_ID'  => esc_attr__( 'Download featured image ID', 'uncanny-automator' ),
 				$option_code . '_THUMB_URL' => esc_attr__( 'Download featured image URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_edd_downloads', $option );
 	}

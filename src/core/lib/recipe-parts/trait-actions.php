@@ -16,6 +16,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Actions
+ *
  * @package Uncanny_Automator\Recipe
  */
 trait Actions {
@@ -50,7 +51,6 @@ trait Actions {
 	 * @param $action_data
 	 * @param $recipe_id
 	 * @param $args
-	 *
 	 */
 	public function do_action( $user_id, $action_data, $recipe_id, $args ) {
 

@@ -8,6 +8,7 @@ global $zoom_webinar_token_renew;
 
 /**
  * Class Zoom_Webinar_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Zoom_Webinar_Helpers {
@@ -129,15 +130,13 @@ class Zoom_Webinar_Helpers {
 
 						$options[] = array(
 							'value' => $webinar['id'],
-							'text' => $webinar['topic']
+							'text'  => $webinar['topic'],
 						);
 
 					}
 				}
 			}
 		}
-
-		
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -461,59 +460,66 @@ class Zoom_Webinar_Helpers {
 	 */
 	public function zoom_oauth_save() {
 
-		if ( isset( $_POST['uap_automator_zoom_webinar_api_nonce'] ) && wp_verify_nonce( $_POST['uap_automator_zoom_webinar_api_nonce'], 'uap_automator_zoom_webinar_api_nonce' ) ) {
+		if ( ! isset( $_POST['uap_automator_zoom_webinar_api_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['uap_automator_zoom_webinar_api_nonce'] ) ), 'uap_automator_zoom_webinar_api_nonce' ) ) {
+			return;
+		}
 
-			if ( isset( $_POST['uap_automator_zoom_webinar_api_consumer_key'] ) && ! empty( $_POST['uap_automator_zoom_webinar_api_consumer_key'] ) && isset( $_POST['uap_automator_zoom_webinar_api_consumer_secret'] ) && ! empty( $_POST['uap_automator_zoom_webinar_api_consumer_secret'] ) ) {
+		if ( ! automator_filter_has_var( 'uap_automator_zoom_webinar_api_consumer_key', INPUT_POST ) || ! automator_filter_has_var( 'uap_automator_zoom_webinar_api_consumer_secret', INPUT_POST ) ) {
+			return;
+		}
+		if ( empty( automator_filter_has_var( 'uap_automator_zoom_webinar_api_consumer_key', INPUT_POST ) ) || empty( automator_filter_has_var( 'uap_automator_zoom_webinar_api_consumer_secret', INPUT_POST ) ) ) {
+			return;
+		}
 
-				update_option( 'uap_automator_zoom_webinar_api_consumer_key', $_POST['uap_automator_zoom_webinar_api_consumer_key'] );
-				update_option( 'uap_automator_zoom_webinar_api_consumer_secret', $_POST['uap_automator_zoom_webinar_api_consumer_secret'] );
-				delete_transient( 'uap_automator_zoom_webinar_api_user_info' );
+		update_option( 'uap_automator_zoom_webinar_api_consumer_key', automator_filter_input( 'uap_automator_zoom_webinar_api_consumer_key', INPUT_POST ) );
+		update_option( 'uap_automator_zoom_webinar_api_consumer_secret', automator_filter_input( 'uap_automator_zoom_webinar_api_consumer_secret', INPUT_POST ) );
+		delete_transient( 'uap_automator_zoom_webinar_api_user_info' );
 
-				$client = $this->refresh_token();
+		$client = $this->refresh_token();
 
-				// Check if token is working fine or not.
-				$response = wp_remote_post(
-					$this->automator_api,
+		// Check if token is working fine or not.
+		$response = wp_remote_post(
+			$this->automator_api,
+			array(
+				'body' =>
 					array(
-						'body' =>
-							array(
-								'action'       => 'get_webinars',
-								'access_token' => $client['access_token'],
-								'page_number'  => 1,
-								'page_size'    => 300,
-								'type'         => 'upcoming',
-							),
-					)
-				);
+						'action'       => 'get_webinars',
+						'access_token' => $client['access_token'],
+						'page_number'  => 1,
+						'page_size'    => 300,
+						'type'         => 'upcoming',
+					),
+			)
+		);
 
-				if ( is_wp_error( $response ) ) {
-					$error_msg = implode( ', ', $response->get_error_messages() );
-					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
-				} else {
+		if ( is_wp_error( $response ) ) {
+			$error_msg = implode( ', ', $response->get_error_messages() );
+			wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
+		} else {
 
-					$status_code = wp_remote_retrieve_response_code( $response );
+			$status_code = wp_remote_retrieve_response_code( $response );
 
-					// Check for a meeting API call if not 200 then its wrong pair.
-					if ( $status_code !== 200 ) {
+			// Check for a meeting API call if not 200 then its wrong pair.
+			if ( $status_code !== 200 ) {
 
-						$body = json_decode( wp_remote_retrieve_body( $response ), true );
+				$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-						delete_option( '_uncannyowl_zoom_webinar_settings' );
+				delete_option( '_uncannyowl_zoom_webinar_settings' );
 
-						$error_msg = ! empty( $body['data']['message'] ) ? $body['data']['message'] : '2';
+				$error_msg = ! empty( $body['data']['message'] ) ? $body['data']['message'] : '2';
 
-						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
+				wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=' . $error_msg ) );
 
-					} else {
+			} else {
 
-						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
+				wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
 
-					}
-				}
-
-				die;
 			}
 		}
+
+		die;
+
+
 	}
 
 	/**
@@ -618,7 +624,7 @@ class Zoom_Webinar_Helpers {
 			if ( 200 === $status_code ) {
 				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
 				set_transient( $transient_key, $response_body->data, WEEK_IN_SECONDS );
-	
+
 				return $response_body->data;
 			}
 		}

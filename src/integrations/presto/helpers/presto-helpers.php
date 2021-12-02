@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\Presto_Pro_Helpers;
 
 /**
  * Class Presto_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Presto_Helpers {

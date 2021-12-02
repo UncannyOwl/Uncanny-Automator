@@ -2,9 +2,9 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Automator_Cache_Handler
+ *
  * @package Uncanny_Automator
  */
 class Automator_Cache_Handler {
@@ -277,20 +277,23 @@ class Automator_Cache_Handler {
 	 *
 	 */
 	public function remove_all_cache() {
-		if ( ! isset( $_GET['automator_flush_all'] ) ) {
+		if ( ! automator_filter_has_var( 'automator_flush_all' ) ) {
 			return;
 		}
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], AUTOMATOR_BASE_FILE ) ) {
+		if ( ! wp_verify_nonce( automator_filter_input( '_wpnonce' ), AUTOMATOR_BASE_FILE ) ) {
 			return;
 		}
 		$this->remove_all();
-		add_action( 'admin_notices', function () {
-			?>
-			<div class="notice notice-success is-dismissible">
-				<p><?php _e( 'Automator cache flushed!', 'uncanny-automator' ); ?></p>
-			</div>
-			<?php
-		} );
+		add_action(
+			'admin_notices',
+			function () {
+				?>
+				<div class="notice notice-success is-dismissible">
+					<p><?php esc_html_e( 'Automator cache flushed!', 'uncanny-automator' ); ?></p>
+				</div>
+				<?php
+			}
+		);
 	}
 
 	/**
@@ -321,7 +324,7 @@ class Automator_Cache_Handler {
 			'href'  => admin_url( 'admin.php?page=uncanny-automator-dashboard' ),
 			'meta'  => array(
 				'class' => 'automator',
-				'title' => __( 'Automator', 'uncanny-automator' ),
+				'title' => esc_html__( 'Automator', 'uncanny-automator' ),
 			),
 		);
 		$wp_admin_bar->add_node( $args );

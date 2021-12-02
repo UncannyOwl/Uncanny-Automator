@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class PMP_CANCELMEMBERSHIP
+ *
  * @package Uncanny_Automator
  */
 class PMP_MEMBERSHIPCANCEL {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'PMP';

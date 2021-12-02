@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class ANON_CF7_SUBFORM
+ *
  * @package Uncanny_Automator
  */
 class ANON_CF7_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'CF7';
@@ -53,9 +55,9 @@ class ANON_CF7_SUBFORM {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wpcf7_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->contact_form7->options->list_contact_form7_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -71,12 +73,12 @@ class ANON_CF7_SUBFORM {
 		if ( 'validation_failed' === (string) $result['status'] ) {
 			return;
 		}
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $form->id(),
 			'user_id' => 0,
-		];
+		);
 
 		$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 

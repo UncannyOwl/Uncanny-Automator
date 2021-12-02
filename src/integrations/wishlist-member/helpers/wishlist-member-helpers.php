@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Wishlist_Member_Pro_Helpers;
 
 /**
  * Class Wishlist_Member_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Wishlist_Member_Helpers {
@@ -56,7 +57,6 @@ class Wishlist_Member_Helpers {
 	public function wm_get_all_membership_levels( $label = null, $option_code = 'WMMEMBERSHIPLEVELS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -87,7 +87,7 @@ class Wishlist_Member_Helpers {
 			}
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -97,10 +97,10 @@ class Wishlist_Member_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code => esc_attr__( 'Membership Level', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_wm_get_all_membership_levels', $option );
 	}

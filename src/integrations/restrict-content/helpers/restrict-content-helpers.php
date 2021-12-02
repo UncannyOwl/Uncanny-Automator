@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Restrict_Content_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Restrict_Content_Helpers {
@@ -55,7 +56,6 @@ class Restrict_Content_Helpers {
 
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -81,7 +81,7 @@ class Restrict_Content_Helpers {
 
 		if ( function_exists( 'rcp_get_membership_levels' ) ) {
 			// only available in Restrict Content Pro Version 3.4+
-			$levels = rcp_get_membership_levels( [ 'number' => 999 ] );
+			$levels = rcp_get_membership_levels( array( 'number' => 999 ) );
 
 			if ( ! empty( $levels ) ) {
 				foreach ( $levels as $level ) {
@@ -90,7 +90,7 @@ class Restrict_Content_Helpers {
 			}
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -100,7 +100,7 @@ class Restrict_Content_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_rc_get_membership_levels', $option );
 	}

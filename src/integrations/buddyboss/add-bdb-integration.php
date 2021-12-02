@@ -4,11 +4,12 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Bdb_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Bdb_Integration {
 
-	Use Recipe\Integrations;
+	use Recipe\Integrations;
 
 	/**
 	 * Add_Bdb_Integration constructor.

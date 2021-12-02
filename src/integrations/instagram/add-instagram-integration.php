@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Adds Integration to Automator.
+ *
  * @since 2.4.0
  */
 class Add_Instagram_Integration {

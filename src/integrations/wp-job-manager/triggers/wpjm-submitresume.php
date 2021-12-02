@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPJM_SUBMITRESUME
+ *
  * @package Uncanny_Automator
  */
 class WPJM_SUBMITRESUME {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPJM';

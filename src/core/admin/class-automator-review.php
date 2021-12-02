@@ -252,14 +252,13 @@ class Automator_Review {
 	 *
 	 * @param object $request
 	 *
-	 * @return object
 	 * @since 2.11
 	 */
 	public function save_review_settings_action() {
 		// check if its a valid request.
-		if ( isset( $_GET['action'] ) && ( 'uo-maybe-later' === $_GET['action'] || 'uo-hide-forever' === $_GET['action'] ) ) {
+		if ( automator_filter_has_var( 'action' ) && ( 'uo-maybe-later' === automator_filter_input( 'action' ) || 'uo-hide-forever' === automator_filter_input( 'action' ) ) ) {
 			if ( function_exists( 'is_admin' ) && is_admin() ) {
-				$_action = str_replace( 'uo-', '', $_GET['action'] );
+				$_action = str_replace( 'uo-', '', automator_filter_input( 'action' ) );
 
 				update_option( '_uncanny_automator_review_reminder', $_action );
 				update_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
@@ -268,7 +267,7 @@ class Automator_Review {
 				die;
 			}
 		}
-		if ( isset( $_GET['action'] ) && 'uo-allow-tracking' === $_GET['action'] ) {
+		if ( automator_filter_has_var( 'action' ) && 'uo-allow-tracking' === automator_filter_input( 'action' ) ) {
 			if ( function_exists( 'is_admin' ) && is_admin() ) {
 				update_option( 'automator_reporting', true );
 				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
@@ -278,7 +277,7 @@ class Automator_Review {
 				die;
 			}
 		}
-		if ( isset( $_GET['action'] ) && 'uo-hide-track' === $_GET['action'] ) {
+		if ( automator_filter_has_var( 'action' ) && 'uo-hide-track' === automator_filter_input( 'action' ) ) {
 			if ( function_exists( 'is_admin' ) && is_admin() ) {
 
 				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
@@ -369,7 +368,7 @@ class Automator_Review {
 		if ( 200 === $credit_data->statusCode ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$response->credits_left  = $credit_data->data->usage_limit - $credit_data->data->paid_usage_count;
 			$response->total_credits = $credit_data->data->usage_limit;
-			set_transient( 'automator_api_credits', $credit_data, time() + ( ( 60 * 60 ) * 1 ) );
+			set_transient( 'automator_api_credits', $credit_data, HOUR_IN_SECONDS );
 		}
 
 		return new \WP_REST_Response( $response, 200 );
@@ -393,7 +392,7 @@ class Automator_Review {
 		}
 
 		$meta          = implode( ' OR ', $where_meta );
-		$check_recipes = $wpdb->get_col( "SELECT rp.ID as ID FROM {$wpdb->posts} cp LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent WHERE cp.ID IN (SELECT post_id  FROM {$wpdb->postmeta} WHERE {$meta} ) AND cp.post_status LIKE 'publish' AND rp.post_status LIKE 'publish' " );
+		$check_recipes = $wpdb->get_col( $wpdb->prepare( "SELECT rp.ID as ID FROM $wpdb->posts cp LEFT JOIN $wpdb->posts rp ON rp.ID = cp.post_parent WHERE cp.ID IN ( SELECT post_id FROM $wpdb->postmeta WHERE $meta ) AND cp.post_status LIKE %s AND rp.post_status LIKE %s", 'publish', 'publish' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		// The rest response object
 		$response = (object) array();

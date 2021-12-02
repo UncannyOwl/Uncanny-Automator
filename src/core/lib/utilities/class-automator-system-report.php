@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class System_Report
+ *
  * @package Uncanny_Automator
  */
 class Automator_System_Report {
@@ -109,7 +110,7 @@ class Automator_System_Report {
 			$curl_version = curl_version();
 			$curl_version = $curl_version['version'] . ', ' . $curl_version['ssl_version'];
 		} elseif ( extension_loaded( 'curl' ) ) {
-			$curl_version = __( 'cURL installed but unable to retrieve version.', 'uncanny-automator' );
+			$curl_version = esc_html__( 'cURL installed but unable to retrieve version.', 'uncanny-automator' );
 		}
 
 		// WP memory limit.

@@ -100,7 +100,7 @@ class Cf7_Tokens {
 				$request_tag_name = automator_filter_input( $tag->name, INPUT_POST );
 
 				$value = ( ! empty( $request_tag_name ) ) ? Automator()->utilities->automator_sanitize( $request_tag_name, 'mixed' ) : '';
-				
+
 				if ( WPCF7_USE_PIPE && $pipes instanceof WPCF7_Pipes && ! $pipes->zero() ) {
 					if ( is_array( $value ) ) {
 						$new_value = array();

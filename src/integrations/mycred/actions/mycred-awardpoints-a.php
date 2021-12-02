@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class MYCRED_AWARDPOINTS_A
+ *
  * @package Uncanny_Automator
  */
 class MYCRED_AWARDPOINTS_A {
 
 	/**
 	 * integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'MYCRED';
@@ -37,15 +39,15 @@ class MYCRED_AWARDPOINTS_A {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - myCred */
-			'sentence'           => sprintf( esc_attr__( 'Award {{a number:%1$s}} {{of a specific type of:%2$s}} points to the user', 'uncanny-automator' ), 'MYCREDPOINTVALUE', $this->action_meta ),
+			'sentence'           => sprintf( esc_attr__( 'Award {{a number of:%1$s}} points to the user', 'uncanny-automator' ), 'MYCREDPOINTVALUE' ),
 			/* translators: Action - myCred */
-			'select_option_name' => esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
+			'select_option_name' => esc_attr__( 'Award {{a number of}} points to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_mycred_points' ),
 			'options'            => array(),
 			'options_group'      => array(
-				$this->action_meta => array(
+				'MYCREDPOINTVALUE' => array(
 					Automator()->helpers->recipe->mycred->options->list_mycred_points_types(
 						esc_attr__( 'Point type', 'uncanny-automator' ),
 						$this->action_meta,
@@ -55,7 +57,7 @@ class MYCRED_AWARDPOINTS_A {
 						)
 					),
 					array(
-						'input_type'      => 'int',
+						'input_type'      => 'float',
 						'option_code'     => 'MYCREDPOINTVALUE',
 						'label'           => esc_attr__( 'Points', 'uncanny-automator' ),
 						'supports_tokens' => true,

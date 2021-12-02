@@ -44,7 +44,6 @@ class TUTORLMS_QUIZATTEMPTED {
 
 		// global automator object.
 
-
 		// setup trigger configuration.
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -60,10 +59,10 @@ class TUTORLMS_QUIZATTEMPTED {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'attempted' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_quizzes( null, $this->trigger_meta, true ),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -90,14 +89,12 @@ class TUTORLMS_QUIZATTEMPTED {
 		$user_id = get_current_user_id();
 
 		// trigger entry args.
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $attempt->quiz_id,
 			'user_id' => $user_id,
-		];
-
-
+		);
 
 		// run trigger.
 		Automator()->maybe_add_trigger_entry( $args, true );

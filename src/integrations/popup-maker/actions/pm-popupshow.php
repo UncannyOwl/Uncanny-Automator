@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class PM_POPUPSHOW
+ *
  * @package Uncanny_Automator
  */
 class PM_POPUPSHOW {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'PM';

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class ANON_BB_NEWTOPIC
+ *
  * @package Uncanny_Automator
  */
 class ANON_BB_NEWTOPIC {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BB';
@@ -44,9 +46,9 @@ class ANON_BB_NEWTOPIC {
 			'accepted_args'       => 4,
 			'type'                => 'anonymous',
 			'validation_function' => array( $this, 'bbp_new_topic' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->bbpress->options->list_bbpress_forums( null, $this->trigger_meta, true ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -75,11 +77,11 @@ class ANON_BB_NEWTOPIC {
 				if ( isset( $required_forum[ $recipe_id ] ) && isset( $required_forum[ $recipe_id ][ $trigger_id ] ) ) {
 					//Add where option is set to Any Forum
 					if ( - 1 === intval( $required_forum[ $recipe_id ][ $trigger_id ] )
-					     || $required_forum[ $recipe_id ][ $trigger_id ] == $forum_id ) {
-						$matched_recipe_ids[] = [
+						 || $required_forum[ $recipe_id ][ $trigger_id ] == $forum_id ) {
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 					}
 				}
 			}
@@ -87,14 +89,14 @@ class ANON_BB_NEWTOPIC {
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'post_id'          => $forum_id,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -102,12 +104,12 @@ class ANON_BB_NEWTOPIC {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
 
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							$trigger_meta['meta_key']   = 'ANONYMOUS_EMAIL';
 							$trigger_meta['meta_value'] = maybe_serialize( $anonymous_data['bbp_anonymous_email'] );
@@ -118,7 +120,6 @@ class ANON_BB_NEWTOPIC {
 					}
 				}
 			}
-
 		}
 
 		return;

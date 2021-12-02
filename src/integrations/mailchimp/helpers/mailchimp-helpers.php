@@ -8,6 +8,7 @@ use Uncanny_Automator_Pro\Mailchimp_Pro_Helpers;
 
 /**
  * Class Mailchimp_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Mailchimp_Helpers {
@@ -201,13 +202,7 @@ class Mailchimp_Helpers {
 		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
-
-		$flags = array(
-			'filter' => 'FILTER_VALIDATE_STRING',
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		);
-
-		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+		$values = automator_filter_input_array( 'values', INPUT_POST );
 
 		if ( empty( $values['MCLIST'] ) ) {
 			echo wp_json_encode( $fields );
@@ -322,13 +317,7 @@ class Mailchimp_Helpers {
 		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
-
-		$flags = array(
-			'filter' => 'FILTER_VALIDATE_STRING',
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		);
-
-		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+		$values = automator_filter_input_array( 'values', INPUT_POST );
 
 		if ( empty( $values['MCLIST'] ) ) {
 			echo wp_json_encode( $fields );
@@ -382,12 +371,7 @@ class Mailchimp_Helpers {
 			'text'  => __( 'Select a Segment or Tag', 'uncanny-automator' ),
 		);
 
-		$flags = array(
-			'filter' => 'FILTER_VALIDATE_STRING',
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		);
-
-		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+		$values = automator_filter_input_array( 'values', INPUT_POST );
 
 		if ( empty( $values['MCLIST'] ) ) {
 			echo wp_json_encode( $fields );
@@ -517,37 +501,37 @@ class Mailchimp_Helpers {
 					foreach ( $response->data->merge_fields as $field ) {
 						$merge_order = $field->display_order * 10;
 						if ( 'address' === $field->type ) {
-							++$merge_order;
+							++ $merge_order;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_addr1',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							++$merge_order;
+							++ $merge_order;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_addr2',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							++$merge_order;
+							++ $merge_order;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_city',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							++$merge_order;
+							++ $merge_order;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_state',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							++$merge_order;
+							++ $merge_order;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_zip',
 								'type' => 'text',
 								'data' => $field->name,
 							);
-							++$merge_order;
+							++ $merge_order;
 							$fields[ $merge_order ] = array(
 								'key'  => $field->tag . '_country',
 								'type' => 'text',
@@ -739,7 +723,8 @@ class Mailchimp_Helpers {
 			?>
 			<div class="uo-settings-content-form">
 
-				<a href="<?php echo esc_url( $auth_url ); ?>" class="uo-settings-btn uo-settings-btn--primary <?php echo esc_attr( $button_class ); ?>">
+				<a href="<?php echo esc_url( $auth_url ); ?>"
+				   class="uo-settings-btn uo-settings-btn--primary <?php echo esc_attr( $button_class ); ?>">
 					<?php echo esc_attr( $button_text ); ?>
 				</a>
 
@@ -876,7 +861,8 @@ class Mailchimp_Helpers {
 			<div class="uo-mailchimp-user-info">
 				<?php if ( ! empty( $user_info['avatar'] ) ) : ?>
 					<div class="uo-mailchimp-user-info__avatar">
-						<img width="32" src="<?php echo esc_url( $user_info['avatar'] ); ?>" alt="<?php echo esc_html( $user_info['login_name'] ); ?>"/>
+						<img width="32" src="<?php echo esc_url( $user_info['avatar'] ); ?>"
+							 alt="<?php echo esc_html( $user_info['login_name'] ); ?>"/>
 					</div>
 				<?php endif; ?>
 				<div class="uo-mailchimp-user-info__email">

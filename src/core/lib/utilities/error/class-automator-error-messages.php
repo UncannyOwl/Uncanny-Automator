@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Error_Messages
+ *
  * @package Uncanny_Automator
  */
 class Automator_Error_Messages {
@@ -14,6 +15,7 @@ class Automator_Error_Messages {
 	public static $instance;
 	/**
 	 * Collection of error messages
+	 *
 	 * @var array
 	 */
 	private $error_messages = array();
@@ -60,7 +62,7 @@ class Automator_Error_Messages {
 		 */
 		$error_messages = apply_filters( 'automator_error_messages', $this->error_messages );
 		if ( ! isset( $error_messages[ $error_key ] ) ) {
-			return __( 'No message', 'uncanny-automator' );
+			return esc_html__( 'No message', 'uncanny-automator' );
 		}
 		$error_message = $error_messages[ $error_key ] . $additional_information;
 

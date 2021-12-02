@@ -6,12 +6,14 @@ use FluentCrm\App\Models\Subscriber;
 
 /**
  * Class FCRM_TAG_TO_USER
+ *
  * @package Uncanny_Automator
  */
 class FCRM_USER_TO_LIST {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'FCRM';
@@ -33,7 +35,6 @@ class FCRM_USER_TO_LIST {
 	 */
 	public function define_action() {
 
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/fluentcrm/' ),
@@ -46,12 +47,16 @@ class FCRM_USER_TO_LIST {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'list_to_user' ),
-			'options'            => [
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists( esc_attr_x( 'Lists', 'Fluent Forms', 'uncanny-automator' ), $this->action_meta, [
-					'supports_multiple_values' => true,
-					'is_any'                   => false
-				] ),
-			],
+			'options'            => array(
+				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists(
+					esc_attr_x( 'Lists', 'Fluent Forms', 'uncanny-automator' ),
+					$this->action_meta,
+					array(
+						'supports_multiple_values' => true,
+						'is_any'                   => false,
+					)
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -66,7 +71,6 @@ class FCRM_USER_TO_LIST {
 	 * @param $recipe_id
 	 */
 	public function list_to_user( $user_id, $action_data, $recipe_id ) {
-
 
 		$lists     = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
 		$user_info = get_userdata( $user_id );
@@ -115,7 +119,6 @@ class FCRM_USER_TO_LIST {
 					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
-
 
 				}
 			} else {

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPWH_TRIGGERTRIGGERED
+ *
  * @package Uncanny_Automator
  */
 class WPWH_TRIGGERTRIGGERED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPWEBHOOKS';
@@ -31,8 +33,6 @@ class WPWH_TRIGGERTRIGGERED {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/automator-core/' ),
@@ -46,9 +46,9 @@ class WPWH_TRIGGERTRIGGERED {
 			'priority'            => 10,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'save_data' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wp_webhooks->options->list_webhook_triggers( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -60,7 +60,6 @@ class WPWH_TRIGGERTRIGGERED {
 	 * Validation function when the trigger action is hit
 	 */
 	public function save_data( $response, $url, $http_args, $webhook ) {
-
 
 		if ( ! isset( $webhook['webhook_name'] ) || empty( $webhook['webhook_name'] ) ) {
 			return;
@@ -84,13 +83,13 @@ class WPWH_TRIGGERTRIGGERED {
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
 				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					$args = [
+					$args = array(
 						'code'            => $this->trigger_code,
 						'meta'            => $this->trigger_meta,
 						'recipe_to_match' => $recipe_id,
 						'ignore_post_id'  => true,
 						'user_id'         => $user_id,
-					];
+					);
 
 					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
@@ -100,13 +99,13 @@ class WPWH_TRIGGERTRIGGERED {
 								$_args = array();
 								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
 									//Saving params in trigger log meta for token parsing!
-									$_args = [
+									$_args = array(
 										'trigger_id'     => (int) $r['args']['trigger_id'],
 										'meta_key'       => $this->trigger_meta . '_request_body',
 										'user_id'        => $user_id,
 										'trigger_log_id' => $r['args']['get_trigger_id'],
 										'run_number'     => $r['args']['run_number'],
-									];
+									);
 
 									$params = $http_args['body'];
 									if ( 'json' === $body_data_format ) {

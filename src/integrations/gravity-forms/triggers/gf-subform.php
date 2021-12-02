@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class GF_SUBFORM
+ *
  * @package Uncanny_Automator
  */
 class GF_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GF';
@@ -31,7 +33,6 @@ class GF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ),
@@ -45,10 +46,10 @@ class GF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'gform_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->gravity_forms->options->list_gravity_forms(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -64,20 +65,18 @@ class GF_SUBFORM {
 	 */
 	public function gform_submit( $entry, $form ) {
 
-
-
 		if ( empty( $entry ) ) {
 			return;
 		}
 
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $form['id'],
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

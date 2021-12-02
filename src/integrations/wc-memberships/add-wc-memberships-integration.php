@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Wc_Memberships_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Wc_Memberships_Integration {

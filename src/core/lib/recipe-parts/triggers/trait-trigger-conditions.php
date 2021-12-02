@@ -19,6 +19,7 @@ use stdClass;
 
 /**
  * Trait Trigger_Conditions
+ *
  * @package Uncanny_Automator
  */
 trait Trigger_Conditions {
@@ -177,7 +178,6 @@ trait Trigger_Conditions {
 
 	/**
 	 * @param $conditional_trigger
-	 *
 	 */
 	protected function set_conditional_trigger( $conditional_trigger ) {
 		$this->conditional_trigger = $conditional_trigger;
@@ -324,37 +324,37 @@ trait Trigger_Conditions {
 	 */
 	protected function find_value_in_number_cond( $value, $match_in, $recipes ) {
 		$matched = array();
-//		if ( empty( $recipes ) ) {
-//			return $matched;
-//		}
-//		// Add where option is set to Any product.
-//		foreach ( $recipes as $recipe_id => $recipe ) {
-//			foreach ( $recipe['triggers'] as $trigger ) {
-//				// Recipe ID does not exist in $match_in.
-//				if ( ! isset( $match_in[ $recipe_id ] ) ) {
-//					continue;
-//				}
-//
-//				$trigger_id = absint( $trigger['ID'] );
-//				// Trigger ID does not exist in $match_in.
-//				if ( ! isset( $match_in[ $recipe_id ][ $trigger_id ] ) ) {
-//					continue;
-//				}
-//
-//				// $value set is -1 (Any).
-//				if ( true === $this->get_find_any() && intval( '-1' ) === intval( $match_in[ $recipe_id ][ $trigger_id ] ) ) {
-//					$matched[ $recipe_id ] = $trigger_id;
-//				}
-//				// If value is not an array
-//				if ( ! is_array( $value ) && (int) $value === (int) $match_in[ $recipe_id ][ $trigger_id ] ) {
-//					$matched[ $recipe_id ] = $trigger_id;
-//				}
-//				// if value is of type array
-//				if ( is_array( $value ) && in_array( (int) $match_in[ $recipe_id ][ $trigger_id ], array_map( 'absint', $value ), true ) ) {
-//					$matched[ $recipe_id ] = $trigger_id;
-//				}
-//			}
-//		}
+		//      if ( empty( $recipes ) ) {
+		//          return $matched;
+		//      }
+		//      // Add where option is set to Any product.
+		//      foreach ( $recipes as $recipe_id => $recipe ) {
+		//          foreach ( $recipe['triggers'] as $trigger ) {
+		//              // Recipe ID does not exist in $match_in.
+		//              if ( ! isset( $match_in[ $recipe_id ] ) ) {
+		//                  continue;
+		//              }
+		//
+		//              $trigger_id = absint( $trigger['ID'] );
+		//              // Trigger ID does not exist in $match_in.
+		//              if ( ! isset( $match_in[ $recipe_id ][ $trigger_id ] ) ) {
+		//                  continue;
+		//              }
+		//
+		//              // $value set is -1 (Any).
+		//              if ( true === $this->get_find_any() && intval( '-1' ) === intval( $match_in[ $recipe_id ][ $trigger_id ] ) ) {
+		//                  $matched[ $recipe_id ] = $trigger_id;
+		//              }
+		//              // If value is not an array
+		//              if ( ! is_array( $value ) && (int) $value === (int) $match_in[ $recipe_id ][ $trigger_id ] ) {
+		//                  $matched[ $recipe_id ] = $trigger_id;
+		//              }
+		//              // if value is of type array
+		//              if ( is_array( $value ) && in_array( (int) $match_in[ $recipe_id ][ $trigger_id ], array_map( 'absint', $value ), true ) ) {
+		//                  $matched[ $recipe_id ] = $trigger_id;
+		//              }
+		//          }
+		//      }
 
 		return $matched;
 	}

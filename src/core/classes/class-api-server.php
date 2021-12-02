@@ -6,6 +6,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Api.
+ *
  * @package Uncanny_Automator
  */
 class Api_Server {
@@ -75,9 +76,8 @@ class Api_Server {
 	 */
 	public static function get_license_key() {
 		$license_type = self::get_license_type();
-		$licence_key  = get_option( 'uap_automator_' . $license_type . '_license_key' );
 
-		return $licence_key;
+		return get_option( 'uap_automator_' . $license_type . '_license_key' );
 	}
 
 	/**

@@ -6,12 +6,14 @@ use TINCANNYSNC\Database;
 
 /**
  * Class WP_LOGIN
+ *
  * @package Uncanny_Automator
  */
 class TC_MODULEINTERACTION {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -37,8 +39,6 @@ class TC_MODULEINTERACTION {
 	 */
 	public function define_trigger() {
 
-
-
 		$options       = array();
 		$modules       = Database::get_modules();
 		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
@@ -60,7 +60,7 @@ class TC_MODULEINTERACTION {
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'tincanny_module_completed_func' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->field->select(
 					array(
 						'option_code' => $this->trigger_meta,
@@ -82,7 +82,7 @@ class TC_MODULEINTERACTION {
 						),
 					)
 				),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -110,8 +110,6 @@ class TC_MODULEINTERACTION {
 			}
 		}
 
-
-
 		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$module_ids = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$verbs      = Automator()->get->meta_from_recipes( $recipes, 'TCVERB' );
@@ -126,10 +124,10 @@ class TC_MODULEINTERACTION {
 
 				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === (int) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && $verbs[ $recipe_id ][ $trigger_id ] === $verb ) {
 
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
@@ -151,50 +149,60 @@ class TC_MODULEINTERACTION {
 					)
 				);
 				$can_run = true;
-				if( ! empty( $results ) ) {
+				if ( ! empty( $results ) ) {
 					$last_time = strtotime( $results->date_time );
 					//$last_time_round = round(ceil($last_time/10) * 10 );
 					$current_time = strtotime( $results->current_mysql_time );
 					//$current_time_round = round(ceil($current_time/10) * 10 );
 
-					if( ( $current_time - $last_time ) <= 10 ) {
+					if ( ( $current_time - $last_time ) <= 10 ) {
 						$can_run = false;
 					}
 				}
 
 				if ( ! Automator()->is_recipe_completed( $matched_recipe_id['recipe_id'], $user_id ) && $can_run ) {
-					$args = [
+					$args = array(
 						'code'             => $this->trigger_code,
 						'meta'             => $this->trigger_meta,
 						'user_id'          => $user_id,
 						'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 						'trigger_to_match' => $matched_recipe_id['trigger_id'],
-						'ignore_post_id'   => TRUE,
-						'is_signed_in'     => TRUE,
+						'ignore_post_id'   => true,
+						'is_signed_in'     => true,
 						'post_id'          => $module_id,
-					];
+					);
 
-					$args = Automator()->process->user->maybe_add_trigger_entry( $args, FALSE );
+					$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 					if ( $args ) {
 						foreach ( $args as $result ) {
-							if ( TRUE === $result['result'] ) {
+							if ( true === $result['result'] ) {
 
-								Automator()->db->trigger->add_meta( $result['args']['trigger_id'], $result['args']['get_trigger_id'], $result['args']['run_number'], [
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => 'TCVERB',
-									'meta_value'     => $verb,
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								] );
-								Automator()->db->trigger->add_meta( $result['args']['trigger_id'], $result['args']['get_trigger_id'], $result['args']['run_number'], [
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => $this->trigger_meta,
-									'meta_value'     => $module_id,
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								] );
+								Automator()->db->trigger->add_meta(
+									$result['args']['trigger_id'],
+									$result['args']['get_trigger_id'],
+									$result['args']['run_number'],
+									array(
+										'user_id'        => $user_id,
+										'trigger_id'     => $result['args']['trigger_id'],
+										'meta_key'       => 'TCVERB',
+										'meta_value'     => $verb,
+										'trigger_log_id' => $result['args']['get_trigger_id'],
+										'run_number'     => $result['args']['run_number'],
+									)
+								);
+								Automator()->db->trigger->add_meta(
+									$result['args']['trigger_id'],
+									$result['args']['get_trigger_id'],
+									$result['args']['run_number'],
+									array(
+										'user_id'        => $user_id,
+										'trigger_id'     => $result['args']['trigger_id'],
+										'meta_key'       => $this->trigger_meta,
+										'meta_value'     => $module_id,
+										'trigger_log_id' => $result['args']['get_trigger_id'],
+										'run_number'     => $result['args']['run_number'],
+									)
+								);
 
 								Automator()->process->user->maybe_trigger_complete( $result['args'] );
 							}

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Upsell_Plugin_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Upsell_Plugin_Integration {

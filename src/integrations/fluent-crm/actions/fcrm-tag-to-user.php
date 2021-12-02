@@ -6,12 +6,14 @@ use FluentCrm\App\Models\Subscriber;
 
 /**
  * Class FCRM_TAG_TO_USER
+ *
  * @package Uncanny_Automator
  */
 class FCRM_TAG_TO_USER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'FCRM';
@@ -33,8 +35,6 @@ class FCRM_TAG_TO_USER {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/fluentcrm/' ),
@@ -47,9 +47,9 @@ class FCRM_TAG_TO_USER {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'tag_to_user' ),
-			'options'            => [
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->action_meta, [ 'supports_multiple_values' => true ] ),
-			],
+			'options'            => array(
+				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->action_meta, array( 'supports_multiple_values' => true ) ),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -64,8 +64,6 @@ class FCRM_TAG_TO_USER {
 	 * @param $recipe_id
 	 */
 	public function tag_to_user( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$tags      = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
 		$user_info = get_userdata( $user_id );

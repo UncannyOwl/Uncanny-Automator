@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Recipe_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Automator_Helpers_Recipe extends Automator_Helpers {
@@ -233,6 +234,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $mailchimp;
 	/**
+	 * @var Divi_Helpers;
+	 */
+	public $divi;
+	/**
 	 * @var Hubspot_Helpers
 	 */
 	public $hubspot;
@@ -275,14 +280,13 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * is_edit_page
 	 * function to check if the current page is a post edit page
 	 *
-	 *
 	 * @return boolean
 	 */
 	public function is_edit_page() {
 		global $pagenow;
 
 		if ( null === $pagenow && isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
-			$pagenow = basename( $_SERVER['SCRIPT_FILENAME'] );
+			$pagenow = basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) ) );
 		}
 		//make sure we are on the backend
 		if ( ! is_admin() ) {

@@ -16,6 +16,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Trigger_Process
+ *
  * @package Uncanny_Automator
  */
 trait Trigger_Process {

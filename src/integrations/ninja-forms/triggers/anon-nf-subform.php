@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class ANON_NF_SUBFORM
+ *
  * @package Uncanny_Automator
  */
 class ANON_NF_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'NF';

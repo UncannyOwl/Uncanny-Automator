@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class PRESTO_VIDEOCOMPLETE
+ *
  * @package Uncanny_Automator
  */
 class PRESTO_VIDEOCOMPLETE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'PRESTO';

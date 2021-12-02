@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wpjm_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wpjm_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPJM';
@@ -399,12 +401,17 @@ class Wpjm_Tokens {
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
 				$entry          = $wpdb->get_var(
-					"SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = '{$trigger_meta}'
-													AND automator_trigger_log_id = {$trigger_log_id}
-													AND automator_trigger_id = {$trigger_id}
-													LIMIT 0,1"
+					$wpdb->prepare(
+						"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0,1",
+						$trigger_meta,
+						$trigger_log_id,
+						$trigger_id
+					)
 				);
 
 				$entry = maybe_unserialize( $entry );
@@ -492,12 +499,17 @@ class Wpjm_Tokens {
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
 				$entry          = $wpdb->get_var(
-					"SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = '{$trigger_meta}'
-													AND automator_trigger_log_id = {$trigger_log_id}
-													AND automator_trigger_id = {$trigger_id}
-													LIMIT 0,1"
+					$wpdb->prepare(
+						"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0,1",
+						$trigger_meta,
+						$trigger_log_id,
+						$trigger_id
+					)
 				);
 
 				$entry = maybe_unserialize( $entry );
@@ -562,7 +574,7 @@ class Wpjm_Tokens {
 						}
 					}
 					$return .= '</ul>';
-					$value   = $return;
+					$value  = $return;
 				} elseif ( $pieces[2] === 'WPJMRESUMEEDUCATION' ) {
 					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {
 						$entry = $_resume_id;
@@ -617,9 +629,9 @@ class Wpjm_Tokens {
 
 					// Get the job application attachments.
 					if ( ! function_exists( 'get_job_application_attachments' ) ) {
-						return esc_html__('The addon WP Job Manager - Applications must be activated to use this token.', 'uncanny-automator');
+						return esc_html__( 'The addon WP Job Manager - Applications must be activated to use this token.', 'uncanny-automator' );
 					}
-					
+
 					$attachments = get_job_application_attachments( $entry );
 
 					if ( ! empty( $attachments ) ) {
@@ -630,8 +642,8 @@ class Wpjm_Tokens {
 
 					// Get the resume files.
 					if ( ! function_exists( 'get_resume_files' ) ) {
-						return esc_html__('The addon WP Job Manager - Resume Manager must be activated to use this token.', 'uncanny-automator');
-					} 
+						return esc_html__( 'The addon WP Job Manager - Resume Manager must be activated to use this token.', 'uncanny-automator' );
+					}
 
 					$attachments = get_resume_files( $entry );
 

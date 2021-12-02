@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Give_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Give_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GIVEWP';
@@ -19,12 +21,17 @@ class Give_Tokens {
 	 */
 	public function __construct() {
 
-		add_filter( 'automator_maybe_trigger_givewp_givewpmakedonation_tokens', [
-			$this,
-			'givewp_possible_tokens',
-		], 30, 2 );
+		add_filter(
+			'automator_maybe_trigger_givewp_givewpmakedonation_tokens',
+			array(
+				$this,
+				'givewp_possible_tokens',
+			),
+			30,
+			2
+		);
 
-		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_give_donation_token' ], 30, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_give_donation_token' ), 30, 6 );
 	}
 
 	/**
@@ -38,11 +45,11 @@ class Give_Tokens {
 	 * @return mixed
 	 */
 	public function parse_give_donation_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		$tokens = [
+		$tokens = array(
 			'GIVEWPMAKEDONATION',
 			'ACTUALDONATEDAMOUNT',
 			'DONATIONFORM',
-		];
+		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {
 			$meta_field = $pieces[2];
@@ -66,7 +73,7 @@ class Give_Tokens {
 				}
 			} else {
 				if ( 'DONATIONFORM' === $pieces[1] ) {
-					$billing_fields = [ 'address1', 'address2', 'city', 'state', 'zip', 'country' ];
+					$billing_fields = array( 'address1', 'address2', 'city', 'state', 'zip', 'country' );
 					global $wpdb;
 					if ( $trigger_data ) {
 						foreach ( $trigger_data as $trigger ) {
@@ -88,7 +95,6 @@ class Give_Tokens {
 											}
 										}
 									}
-
 								}
 							} elseif ( ! empty( $field_key ) && in_array( $field_key, $billing_fields, true ) ) {
 								$meta_key   = 'payment_id';
@@ -120,7 +126,6 @@ class Give_Tokens {
 			return $tokens;
 		}
 
-
 		$form_fields = Automator()->helpers->recipe->give->get_form_fields_and_ffm( $form_id );
 
 		if ( empty( $form_fields ) ) {
@@ -139,12 +144,12 @@ class Give_Tokens {
 
 			$existing_tokens = array_column( $tokens, 'tokenId' );
 			if ( ! in_array( $token_id, $existing_tokens, false ) ) {
-				$fields[] = [
+				$fields[] = array(
 					'tokenId'         => $token_id,
 					'tokenName'       => $_field['label'],
 					'tokenType'       => $token_type,
 					'tokenIdentifier' => 'DONATIONFORM',
-				];
+				);
 			}
 		}
 

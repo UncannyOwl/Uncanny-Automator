@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class MASTERSTUDY_COURSEENROLLED
+ *
  * @package Uncanny_Automator
  */
 class MASTERSTUDY_COURSEENROLLED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'MSLMS';

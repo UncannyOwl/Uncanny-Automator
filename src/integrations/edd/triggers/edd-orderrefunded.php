@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class EDD_ORDERREFUNDED
+ *
  * @package Uncanny_Automator
  */
 class EDD_ORDERREFUNDED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'EDD';
@@ -43,7 +45,7 @@ class EDD_ORDERREFUNDED {
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'edd_order_refunded' ),
-			'options'             => [],
+			'options'             => array(),
 		);
 		Automator()->register->trigger( $trigger );
 	}
@@ -71,12 +73,12 @@ class EDD_ORDERREFUNDED {
 			$user_id = wp_get_current_user()->ID;
 		}
 
-		$pass_args = [
+		$pass_args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $post_id,
 			'user_id' => $user_id,
-		];
+		);
 
 		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -84,12 +86,12 @@ class EDD_ORDERREFUNDED {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
 
-					$trigger_meta = [
+					$trigger_meta = array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $result['args']['trigger_id'],
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],
-					];
+					);
 
 					$item_names  = array();
 					$order_items = edd_get_payment_meta_cart_details( $order_id );

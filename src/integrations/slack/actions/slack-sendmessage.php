@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class SLACK_SENDMESSAGE
+ *
  * @package Uncanny_Automator
  */
 class SLACK_SENDMESSAGE {

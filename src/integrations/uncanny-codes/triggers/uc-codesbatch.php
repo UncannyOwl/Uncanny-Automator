@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UC_CODESBATCH
+ *
  * @package Uncanny_Automator
  */
 class UC_CODESBATCH {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UNCANNYCODE';
@@ -34,7 +36,6 @@ class UC_CODESBATCH {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -102,10 +103,10 @@ class UC_CODESBATCH {
 									if ( true === $result['result'] ) {
 
 										$trigger_meta = array(
-											'user_id'        => $user_id,
-											'trigger_id'     => $result['args']['trigger_id'],
+											'user_id'    => $user_id,
+											'trigger_id' => $result['args']['trigger_id'],
 											'trigger_log_id' => $result['args']['get_trigger_id'],
-											'run_number'     => $result['args']['run_number'],
+											'run_number' => $result['args']['run_number'],
 										);
 
 										$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':' . $this->trigger_meta;

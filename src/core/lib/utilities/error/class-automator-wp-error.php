@@ -7,6 +7,7 @@ use WP_Error;
 
 /**
  * Class Automator_Error_Handler
+ *
  * @package Uncanny_Automator
  */
 class Automator_WP_Error {

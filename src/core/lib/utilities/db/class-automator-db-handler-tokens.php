@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_DB_Handler_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Automator_DB_Handler_Tokens {

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class ActiveCampaign Helpers
+ *
  * @package Uncanny_Automator
  */
 class Active_Campaign_helpers {
@@ -180,7 +181,7 @@ class Active_Campaign_helpers {
 
 		if ( ! is_wp_error( $response ) ) {
 
-			$body = json_decode( wp_remote_retrieve_body( $response ) );
+			$body          = json_decode( wp_remote_retrieve_body( $response ) );
 			$response_data = isset( $body->data ) ? $body->data : '';
 
 			$lists = array();

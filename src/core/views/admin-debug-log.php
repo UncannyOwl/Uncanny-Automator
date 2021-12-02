@@ -1,5 +1,5 @@
 <?php
-include_once UA_ABSPATH . 'src/core/views/admin-tools-header.php';
+require_once UA_ABSPATH . 'src/core/views/admin-tools-header.php';
 if ( ( filter_has_var( INPUT_GET, 'delete_log' ) && 'yes' === filter_input( INPUT_GET, 'delete_log' ) ) && ( filter_has_var( INPUT_GET, '_wpnonce' ) && wp_verify_nonce( filter_input( INPUT_GET, '_wpnonce' ), 'Aut0mAt0r' ) ) ) {
 	$file = filter_input( INPUT_GET, 'delete' );
 	if ( file_exists( UA_DEBUG_LOGS_DIR . $file ) ) {
@@ -57,7 +57,7 @@ $handle = opendir( $log_directory );
 if ( $handle ) {
 	$entry = readdir( $handle );
 	while ( false !== ( $entry = readdir( $handle ) ) ) {
-		if ( '.' !== $entry && '..' !== $entry ) {
+		if ( '.' !== $entry && '..' !== $entry && strpos( $entry, '.log' ) ) {
 			$log_files[] = $entry;
 		}
 	}
@@ -80,7 +80,9 @@ if ( empty( $log_files ) ) {
 			<ul class="nav-tab-wrapper uap-nav-tab-wrapper">
 				<?php if ( $log_files ) { ?>
 					<?php foreach ( $log_files as $log ) { ?>
-						<li><a class="nav-tab" href="#<?php echo $log; ?>"><?php echo $log; ?></a></li>
+						<li><a class="nav-tab"
+							   href="#<?php echo esc_attr( $log ); ?>"><?php echo esc_attr( $log ); ?></a>
+						</li>
 					<?php } ?>
 				<?php } ?>
 			</ul>
@@ -88,8 +90,10 @@ if ( empty( $log_files ) ) {
 				<div class="uap-log-table-container">
 					<?php if ( $log_files ) { ?>
 						<?php foreach ( $log_files as $log ) { ?>
-							<section class="uap-logs" id="<?php echo $log; ?>">
-								<h2><?php echo $log;
+							<section class="uap-logs" id="<?php echo esc_attr( $log ); ?>">
+								<h2>
+									<?php
+									echo esc_attr( $log );
 									$url = add_query_arg(
 										array(
 											'post_type'  => filter_input( INPUT_GET, 'post_type' ),
@@ -104,10 +108,10 @@ if ( empty( $log_files ) ) {
 									<a style="float:right; display:inline-block"
 									   class="button button-secondary button-small"
 									   onclick="javascript: return confirm('<?php echo esc_html__( 'Are you sure you want to delete this log?', 'uncanny-automator' ); ?>');"
-									   href="<?php echo $url; ?>"><?php echo esc_html__( 'Delete log', 'uncanny-automator' ); ?></a>
+									   href="<?php echo esc_url_raw( $url ); ?>"><?php echo esc_html__( 'Delete log', 'uncanny-automator' ); ?></a>
 								</h2>
 								<textarea rows="50" style="width:100%;font-family: monospace; font-size:12px;">
-								<?php echo file_get_contents( $log_directory . $log ); ?>
+								<?php echo esc_textarea( file_get_contents( $log_directory . $log ) ); ?>
 									</textarea>
 							</section>
 						<?php } ?>

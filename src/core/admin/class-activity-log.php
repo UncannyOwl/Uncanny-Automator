@@ -15,6 +15,7 @@ class Activity_Log {
 
 	/**
 	 * Activity Page title
+	 *
 	 * @var $settings_page_slug
 	 */
 	public $settings_page_slug;
@@ -71,19 +72,19 @@ class Activity_Log {
 		return false;
 	}
 
-	public function close_window_on_load(){
+	public function close_window_on_load() {
 		// Check if we should close the window
-		if ( automator_filter_has_var( 'ua_close_window' ) ){
+		if ( automator_filter_has_var( 'ua_close_window' ) ) {
 			?>
 
 			<script>
 
-			try {
-			    // Close this window
-			    window.close();
-			} catch ( e ){
-				console.log( e );
-			}
+				try {
+					// Close this window
+					window.close();
+				} catch (e) {
+					console.log(e);
+				}
 
 			</script>
 
@@ -92,7 +93,7 @@ class Activity_Log {
 	}
 
 	public function load_minimal_admin() {
-		if ( automator_filter_has_var( 'hide_settings_tabs' ) ){
+		if ( automator_filter_has_var( 'hide_settings_tabs' ) ) {
 			ob_start();
 			?>
 			<style>
@@ -101,7 +102,8 @@ class Activity_Log {
 				}
 			</style>
 			<?php
-			echo ob_get_clean();
+			//  Escaping it would make html entities not render properly. Ignoring
+			echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( ! automator_filter_has_var( 'minimal' ) ) {
@@ -141,7 +143,8 @@ class Activity_Log {
 			}
 		</style>
 		<?php
-		echo ob_get_clean();
+		//  Escaping it would make html entities not render properly. Ignoring
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -159,19 +162,18 @@ class Activity_Log {
 		wp_enqueue_script( 'uap-lity', Utilities::automator_get_vendor_asset( 'lity/js/lity.min.js' ), array( 'jquery' ), '2.4.1', true );
 
 		// Recipe details css.
-		wp_enqueue_style( 'uap-recipe-details', Utilities::automator_get_css( 'admin/recipe-details.css' ), array(), Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-recipe-details', Utilities::automator_get_asset( 'legacy/css/admin/recipe-details.css' ), array(), Utilities::automator_get_version() );
 
 	}
 
 	/**
 	 * Ajax load triggers for recipe
-	 *
 	 */
 	public function load_recipe_triggers() {
 		global $wpdb;
 		check_ajax_referer( 'load-recipes-ref', 'ajax_nonce' );
 
-		$recipe_id     = absint( $_REQUEST['recipe_id'] );
+		$recipe_id     = absint( automator_filter_input( 'recipe_id', INPUT_POST ) );
 		$return_data   = array();
 		$return_data[] = array(
 			'id'   => '',
@@ -183,7 +185,14 @@ class Activity_Log {
 		}
 
 		$triggers = $wpdb->get_results(
-			"select distinct(r.automator_trigger_id) as id,p.post_title as trigger_title from {$wpdb->prefix}uap_trigger_log r join {$wpdb->posts} p on p.ID = r.automator_trigger_id WHERE r.automator_recipe_id = '{$recipe_id}'  order by trigger_title asc",
+			$wpdb->prepare(
+				"SELECT DISTINCT (r.automator_trigger_id) AS id, p.post_title as trigger_title
+FROM {$wpdb->prefix}uap_trigger_log r
+    JOIN $wpdb->posts p on p.ID = r.automator_trigger_id
+WHERE r.automator_recipe_id = %d
+ORDER BY trigger_title ASC",
+				$recipe_id
+			),
 			ARRAY_A
 		);
 
@@ -201,13 +210,12 @@ class Activity_Log {
 
 	/**
 	 * Ajax load triggers for recipe
-	 *
 	 */
 	public function load_recipe_actions() {
 		global $wpdb;
 		check_ajax_referer( 'load-recipes-ref', 'ajax_nonce' );
 
-		$recipe_id     = absint( $_REQUEST['recipe_id'] );
+		$recipe_id     = absint( automator_filter_input( 'recipe_id', INPUT_POST ) );
 		$return_data   = array();
 		$return_data[] = array(
 			'id'   => '',
@@ -218,7 +226,15 @@ class Activity_Log {
 			wp_send_json( $return_data );
 		}
 		$actions = $wpdb->get_results(
-			"select distinct(r.automator_action_id) as id,p.post_title as action_title from {$wpdb->prefix}uap_action_log r join {$wpdb->posts} p on p.ID = r.automator_action_id WHERE r.automator_recipe_id = '{$recipe_id}' order by action_title asc",
+			$wpdb->prepare(
+				"SELECT
+    DISTINCT (r.automator_action_id) AS id, p.post_title AS action_title
+FROM {$wpdb->prefix}uap_action_log r
+    JOIN $wpdb->posts p ON p.ID = r.automator_action_id
+WHERE r.automator_recipe_id = %d
+ORDER BY action_title",
+				$recipe_id
+			),
 			ARRAY_A
 		);
 

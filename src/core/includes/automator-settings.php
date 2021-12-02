@@ -9,9 +9,9 @@ namespace Uncanny_Automator;
  * @version 2.4
  */
 
-$active    = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'settings';
+$active    = automator_filter_has_var( 'tab' ) ? automator_filter_input( 'tab' ) : 'settings';
 $tab       = isset( Admin_Menu::$tabs[ $active ] ) ? json_decode( json_encode( Admin_Menu::$tabs[ $active ] ), false ) : array();
-$connected = isset( $_GET['connect'] ) ? sanitize_text_field( $_GET['connect'] ) : '';
+$connected = automator_filter_has_var( 'connect' ) ? automator_filter_input( 'connect' ) : '';
 if ( ! empty( $tab ) && 'settings' !== $active ) {
 	?>
 	<div class="wrap"> <!-- WP container -->
@@ -62,7 +62,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 										<div
 											class='error-message'><?php esc_attr_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator' ); ?></div>
 									<?php } elseif ( ! empty ( $connected ) ) { ?>
-										<div class='error-message'><?php echo $connected; ?></div>
+										<div class='error-message'><?php echo esc_attr( $connected ); ?></div>
 									<?php } ?>
 									<?php if ( isset( $tab->fields ) && $tab->fields ) { ?>
 										<?php foreach ( $tab->fields as $field_id => $field_settings ) {
@@ -77,14 +77,14 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 											?>
 											<div class="uo-settings-content-form">
 												<label
-													for="<?php echo $field_id ?>"><?php echo $field_settings->title; ?></label>
-												<input id="<?php echo $field_id ?>"
-													   name="<?php echo $field_id ?>"
-													   type="<?php echo $field_settings->type ?>"
-													   class="uo-admin-input <?php echo $field_settings->css_classes; ?>"
-													   value="<?php echo get_option( $field_id, '' ); ?>"
-													   placeholder="<?php echo $field_settings->placeholder ?>"
-													<?php echo $attributes; ?>
+													for="<?php echo esc_attr( $field_id ) ?>"><?php echo esc_attr( $field_settings->title ); ?></label>
+												<input id="<?php echo esc_attr( $field_id ) ?>"
+													   name="<?php echo esc_attr( $field_id ) ?>"
+													   type="<?php echo esc_attr( $field_settings->type ) ?>"
+													   class="uo-admin-input <?php echo esc_attr( $field_settings->css_classes ); ?>"
+													   value="<?php echo wp_kses_post( get_option( $field_id, '' ) ); ?>"
+													   placeholder="<?php echo esc_attr( $field_settings->placeholder ) ?>"
+													<?php echo wp_kses_post( $attributes ); ?>
 													   <?php if ( $field_settings->required ){ ?>required="required"<?php } ?>>
 											</div>
 										<?php } ?>
@@ -153,7 +153,6 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 } elseif ( 'settings' === $active ) {
 
 	if ( ! $is_pro_active ) {
-
 		?>
 		<div class="wrap"> <!-- WP container -->
 			<div class="uo-settings">
@@ -166,7 +165,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 										<strong><?php esc_html_e( 'License', 'uncanny-automator' ); ?></strong></div>
 									<div class="uo-settings-content-form">
 										<?php if ( ! $is_connected ) { ?>
-											<a href="<?php echo $connect_url; ?>"
+											<a href="<?php echo esc_url_raw( $connect_url ); ?>"
 											   class="uo-settings-btn uo-settings-btn--primary uo-connected-button">
 												<?php esc_html_e( 'Connect your site', 'uncanny-automator' ); ?></a>
 										<?php } else { ?>
@@ -176,7 +175,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 											</div>
 											<div></div>
 
-											<a href="<?php echo $disconnect_account; ?>"
+											<a href="<?php echo esc_url_raw( $disconnect_account ); ?>"
 											   class="uo-settings-btn uo-settings-btn--secondary uo-connected-button">
 												<?php esc_html_e( 'Disconnect your site', 'uncanny-automator' ); ?></a>
 										<?php } ?>
@@ -224,39 +223,44 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 				</div>
 			</div>
 		</div>
-		<div class="wrap"> <!-- WP container -->
-			<div class="uo-settings">
-				<div class="uo-settings-content">
-					<form class="uo-settings-content-form" id="uo_tracking" method="POST" action="options.php">
-						<div class="uo-settings-content-form">
-							<div class="uo-settings-content-top">
-								<div class="uo-settings-content-info">
-									<div class="uo-settings-content-title">
-										<strong><?php esc_html_e( 'Allow usage tracking', 'uncanny-automator' ); ?></strong>
-									</div>
-									<div class="uo-settings-content-form">
-										<label>
-											<input type="checkbox" name="uap_automator_allow_tracking"
-												   id="uap_automator_allow_tracking" <?php if ( $uap_automator_allow_tracking ) {
-												echo 'checked="checked"';
-											} ?>
-												   value="1">
-											<?php esc_html_e( "By allowing us to anonymously track usage data, we'll have a better idea of which integrations are most popular and where we should focus our development effort, as well as which WordPress configurations, themes PHP versions we should test against.", 'uncanny-automator' ); ?>
-										</label>
-									</div>
-									<div class="uo-settings-content-form" style="margin-top: 20px;">
-										<button class="uo-settings-btn uo-settings-btn--primary"
-												id="uap_automator_allow_tracking_button"
-												type="button"><?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
-										</button>
+
+		<?php $is_connected = Admin_Menu::is_automator_connected(); ?>
+
+		<?php if ( false === $is_connected ): ?>
+			<div class="wrap"> <!-- WP container -->
+				<div class="uo-settings">
+					<div class="uo-settings-content">
+						<form class="uo-settings-content-form" id="uo_tracking" method="POST" action="options.php">
+							<div class="uo-settings-content-form">
+								<div class="uo-settings-content-top">
+									<div class="uo-settings-content-info">
+										<div class="uo-settings-content-title">
+											<strong><?php esc_html_e( 'Allow usage tracking', 'uncanny-automator' ); ?></strong>
+										</div>
+										<div class="uo-settings-content-form">
+											<label>
+												<input type="checkbox" name="uap_automator_allow_tracking"
+													   id="uap_automator_allow_tracking" <?php if ( $uap_automator_allow_tracking ) {
+													echo 'checked="checked"';
+												} ?>
+													   value="1">
+												<?php esc_html_e( "By allowing us to anonymously track usage data, we'll have a better idea of which integrations are most popular and where we should focus our development effort, as well as which WordPress configurations, themes PHP versions we should test against.", 'uncanny-automator' ); ?>
+											</label>
+										</div>
+										<div class="uo-settings-content-form" style="margin-top: 20px;">
+											<button class="uo-settings-btn uo-settings-btn--primary"
+													id="uap_automator_allow_tracking_button"
+													type="button"><?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
+											</button>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</form>
+						</form>
+					</div>
 				</div>
 			</div>
-		</div>
+		<?php endif; ?>
 		<?php
 	} else {
 		include __DIR__ . '/admin-license.php';
@@ -340,14 +344,14 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 											?>
 											<div class="uo-settings-content-form">
 												<label
-													for="<?php echo $field_id ?>"><?php echo $field_settings->title; ?></label>
-												<input id="<?php echo $field_id ?>"
-													   name="<?php echo $field_id ?>"
-													   type="<?php echo $field_settings->type ?>"
-													   class="uo-admin-input <?php echo $field_settings->css_classes; ?>"
-													   value="<?php echo get_option( $field_id, '' ); ?>"
-													   placeholder="<?php echo $field_settings->placeholder ?>"
-													<?php echo $attributes; ?>
+													for="<?php echo esc_attr( $field_id ) ?>"><?php echo esc_attr( $field_settings->title ); ?></label>
+												<input id="<?php echo esc_attr( $field_id ) ?>"
+													   name="<?php echo esc_attr( $field_id ) ?>"
+													   type="<?php echo esc_attr( $field_settings->type ) ?>"
+													   class="uo-admin-input <?php echo esc_attr( $field_settings->css_classes ); ?>"
+													   value="<?php echo wp_kses_post( get_option( $field_id, '' ) ); ?>"
+													   placeholder="<?php echo esc_attr( $field_settings->placeholder ) ?>"
+													<?php echo wp_kses_post( $attributes ); ?>
 													   <?php if ( $field_settings->required ){ ?>required="required"<?php } ?>>
 											</div>
 										<?php } ?>

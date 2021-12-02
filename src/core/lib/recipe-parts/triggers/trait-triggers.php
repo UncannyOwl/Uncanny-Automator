@@ -9,7 +9,6 @@
  * @version 3.0
  * @package Uncanny_Automator
  * @author  Saad S.
- *
  */
 
 
@@ -19,6 +18,7 @@ use Exception;
 
 /**
  * Trait Triggers
+ *
  * @package Uncanny_Automator
  */
 trait Triggers {

@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.8.2
 Requires PHP: 5.6
-Stable tag: 3.4.0.2
+Stable tag: 3.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/)
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/)
+- [Divi](https://automatorplugin.com/integration/divi/)
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/)
 - [Elementor](https://automatorplugin.com/integration/elementor/)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/)
@@ -179,6 +180,40 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.5 [2021-12-02] =
+
+**New integration:**
+
+* Divi
+
+**New Triggers:**
+
+* Divi: {A form} is submitted #729
+* Divi: A user submits {a form} #728
+
+**Added:**
+
+* Ability to drag and drop to reorder actions - Actions execute in the order displayed on the edit recipe page #1071
+* Post meta tokens - Use any meta of any post in an action; also supports basic ACF fields #127
+* Automator Setup Wizard #430
+* Right-click on the trigger in the token dropdown to automatically add all tokens in a group to an action #1080
+* Integrations page for viewing all available integrations #314
+
+**Updated:**
+
+* myCred - Support for decimal credit values #1106
+* Friendly tokens are now displayed in user selector fields #280
+* Code quality improved following WPCS #881
+
+**Fixed:**
+
+* Automator Core - Send a webhook now properly records error conditions encountered during send #1162
+* HappyForms - Some tokens no longer return boolean values instead of actual values #1161
+* AffiliateWP - Referral amount value token now returns correct value on AffiliateWP 2.8+ #1140
+* Ultimate Member - Form title now renders reliably #1182
+* Ajax auth check now returns an error instead of reloading the recipe page #1086
+* Google Sheets - `Utilities.js` console error on some sites #1168
 
 = 3.4.0.2 [2021-11-19] =
 

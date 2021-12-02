@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPJM_JOBAPPLICATION
+ *
  * @package Uncanny_Automator
  */
 class WPJM_JOBAPPLICATION {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPJM';
@@ -80,9 +82,9 @@ class WPJM_JOBAPPLICATION {
 			return;
 		}
 		$user_id = get_current_user_id();
-		if ( isset( $_POST['wp_job_manager_resumes_apply_with_resume'] ) && ! empty( $_POST['wp_job_manager_resumes_apply_with_resume'] ) ) {
-			if ( $application_id !== $_POST['wp_job_manager_resumes_apply_with_resume'] ) {
-				update_post_meta( $application_id, '_resume_id', $_POST['wp_job_manager_resumes_apply_with_resume'] );
+		if ( automator_filter_has_var( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) && ! empty( automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) ) ) {
+			if ( $application_id !== automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) ) {
+				update_post_meta( $application_id, '_resume_id', automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) );
 			}
 		}
 		foreach ( $conditions['recipe_ids'] as $recipe_id => $trigger_id ) {

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BP_USERSENDSFRIENDREQUEST
+ *
  * @package Uncanny_Automator
  */
 class BP_USERSENDSFRIENDREQUEST {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BP';
@@ -30,8 +32,6 @@ class BP_USERSENDSFRIENDREQUEST {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -62,15 +62,13 @@ class BP_USERSENDSFRIENDREQUEST {
 	 */
 	public function bp_friends_friendship_requested( $id, $initiator_user_id, $friend_user_id, $friendship ) {
 
-
-
-		$args = [
+		$args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $initiator_user_id,
 			'ignore_post_id' => true,
 			'is_signed_in'   => true,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

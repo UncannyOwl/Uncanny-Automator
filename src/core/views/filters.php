@@ -1,19 +1,19 @@
 <?php
 
-$post_type    = sanitize_text_field( $_GET['post_type'] );
+$post_type    = sanitize_text_field( automator_filter_input( 'post_type' ) );
 $form_action  = admin_url( 'edit.php' ) . '?post_type=uo-recipe';
-$search_query = isset( $_GET['search_key'] ) ? sanitize_text_field( $_GET['search_key'] ) : '';
+$search_query = automator_filter_has_var( 'search_key' ) ? sanitize_text_field( automator_filter_input( 'search_key' ) ) : '';
 $current_tab  = $GLOBALS['ua_current_tab'];
 
 ?>
 
 <div class="uap">
 	<div class="uap-report">
-		<form class="uap-report-filters" method="GET" action="<?php echo $form_action; ?>">
+		<form class="uap-report-filters" method="GET" action="<?php echo esc_url_raw( $form_action ); ?>">
 
-			<input type="hidden" name="post_type" value="<?php echo $post_type; ?>"/>
-			<input type="hidden" name="page" value="uncanny-automator-<?php echo $current_tab; ?>"/>
-			<input type="hidden" name="tab" value="<?php echo $current_tab; ?>"/>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $post_type ); ?>"/>
+			<input type="hidden" name="page" value="uncanny-automator-<?php echo esc_attr( $current_tab ); ?>"/>
+			<input type="hidden" name="tab" value="<?php echo esc_attr( $current_tab ); ?>"/>
 
 			<div class="uap-report-filters-content">
 				<div class="uap-report-filters-left">
@@ -165,12 +165,14 @@ $current_tab  = $GLOBALS['ua_current_tab'];
 				</div>
 				<div class="uap-report-filters-right">
 					<div class="uap-report-filters-search">
-						<input type="text" name="search_key" value="<?php echo $search_query; ?>"
+						<input type="text" name="search_key" value="<?php echo esc_attr( $search_query ); ?>"
 							   class="uap-report-filters-search__field"/>
-						<input type="submit" name="filter_action" value="<?php
+						<input type="submit" name="filter_action" value="
+						<?php
 						/* translators: Non-personal infinitive verb */
 						esc_attr_e( 'Search', 'uncanny-automator' );
-						?>" class="button uap-report-filters-search__submit">
+						?>
+						" class="button uap-report-filters-search__submit">
 					</div>
 				</div>
 			</div>

@@ -2,12 +2,14 @@
 
 namespace Uncanny_Automator;
 
+use WPForms_Provider;
+
 /**
  * Uncanny Automator integration.
  *
  * @since 3.2
  */
-class WPForms_Uncanny_Automator extends \WPForms_Provider {
+class WPForms_Uncanny_Automator extends WPForms_Provider {
 
 	/**
 	 * Configuration.
@@ -39,7 +41,7 @@ class WPForms_Uncanny_Automator extends \WPForms_Provider {
 		$this->name     = 'Uncanny Automator';
 		$this->slug     = 'uncanny-automator';
 		$this->priority = 19;
-		$this->icon     = Utilities::automator_get_media( 'wpforms-automator-icon.png' );
+		$this->icon     = Utilities::automator_get_asset( 'external/wpforms/wpforms-automator-icon.png' );
 
 		if ( is_admin() ) {
 			add_action( 'wpforms_admin_page', array( $this, 'learn_more_page' ) );
@@ -67,7 +69,6 @@ class WPForms_Uncanny_Automator extends \WPForms_Provider {
 	 *
 	 * @return bool
 	 * @since 1.7.0
-	 *
 	 */
 	public function is_integrations_page() {
 		return automator_filter_has_var( 'page' ) && 'wpforms-settings' === automator_filter_input( 'page' );
@@ -78,7 +79,6 @@ class WPForms_Uncanny_Automator extends \WPForms_Provider {
 	 *
 	 * @return bool
 	 * @since 1.7.0
-	 *
 	 */
 	public function is_marketing_page() {
 		return automator_filter_has_var( 'page' ) && 'wpforms-builder' === automator_filter_input( 'page' );
@@ -93,14 +93,23 @@ class WPForms_Uncanny_Automator extends \WPForms_Provider {
 		$configured = '';
 		global $wpdb;
 
-		$forms = $wpdb->get_col( $wpdb->prepare( "SELECT p.post_parent
+		$forms = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT p.post_parent
 FROM $wpdb->postmeta pm
 LEFT JOIN $wpdb->posts p
 ON p.ID = pm.post_id AND p.post_type = %s
 WHERE 1=1
 AND ( pm.`meta_key` LIKE %s OR pm.`meta_key` LIKE %s OR pm.`meta_key` LIKE %s )
 AND pm.`meta_value` LIKE %d
-GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFORM', $form_id ) );
+GROUP BY p.post_parent",
+				'uo-trigger',
+				'ANONWPFFORMS',
+				'WPFFORMS',
+				'ANONWPFSUBFORM',
+				$form_id
+			)
+		);
 		if ( ! empty( $forms ) ) {
 			$configured               = 'configured';
 			$this->configured_recipes = $forms;
@@ -129,14 +138,14 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 
 		wp_enqueue_style(
 			'wpforms-admin-page-uncanny-automator',
-			Utilities::automator_get_css( 'admin/wpforms-provider.css' ),
+			Utilities::automator_get_asset( 'external/wpforms/wpforms.css' ),
 			null,
 			AUTOMATOR_PLUGIN_VERSION
 		);
 
 		wp_enqueue_script(
 			'wpforms-admin-page-uncanny-automator',
-			Utilities::automator_get_js( 'admin/wpforms-provider.js' ),
+			Utilities::automator_get_asset( 'external/wpforms/wpforms.js' ),
 			array(),
 			AUTOMATOR_PLUGIN_VERSION
 		);
@@ -153,7 +162,6 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 	 *
 	 * @return array Array of strings.
 	 * @since 1.7.0
-	 *
 	 */
 	protected function get_js_strings() {
 
@@ -213,7 +221,7 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 
 			<div class="wpforms-panel-content-section-title">
 
-				<?php echo $this->name; ?>
+				<?php echo esc_attr( $this->name ); ?>
 
 			</div>
 
@@ -263,7 +271,7 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 
 		$new_recipe_url          .= '&optionCode=ANONWPFFORMS&optionValue=' . $form_id . '&optionValue_readable=' . rawurlencode( $form->post_title );
 		$new_anon_recipe_url     .= '&optionCode=ANONWPFFORMS&optionValue=' . $form_id . '&optionValue_readable=' . rawurlencode( $form->post_title );
-		$is_automator_pro_active = defined( 'AUTOMATOR_PRO_FILE' ) ? true : false;
+		$is_automator_pro_active = defined( 'AUTOMATOR_PRO_FILE' );
 		?>
 
 		<div class="uap-wpf-integration">
@@ -302,10 +310,11 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 								$checked  = 'ANONWPFSUBFORM' === $trigger_code ? ' checked="checked"' : '';
 								?>
 								<label class="uap-wpf-integration-recipe-trigger <?php echo esc_attr( $class ); ?>">
-									<input type="radio" value="<?php echo $trigger_code; ?>"
-										   data-target="create_<?php echo $trigger_code; ?>" class="uap-wpf-integration-recipe-trigger-radio"
-										<?php echo $disabled; ?>
-										<?php echo $checked; ?>
+									<input type="radio" value="<?php echo esc_attr( $trigger_code ); ?>"
+										   data-target="create_<?php echo esc_attr( $trigger_code ); ?>"
+										   class="uap-wpf-integration-recipe-trigger-radio"
+										<?php echo esc_attr( $disabled ); ?>
+										<?php echo esc_attr( $checked ); ?>
 									>
 									<?php echo $trigger_sentence; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
@@ -333,11 +342,12 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 					</div>
 
 					<div class="uap-wpf-integration-flow-step__content">
-						<a data-id="ANONWPFSUBFORM" href="<?php echo esc_url_raw( $new_recipe_url ) ?>" target="_blank"
+						<a data-id="ANONWPFSUBFORM" href="<?php echo esc_url_raw( $new_recipe_url ); ?>" target="_blank"
 						   class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
 							<?php esc_attr_e( 'Create automation', 'uncanny-automator' ); ?>
 						</a>
-						<a data-id="ANONWPFSUBMITFIELD" href="<?php echo esc_url_raw( $new_anon_recipe_url ) ?>" target="_blank"
+						<a data-id="ANONWPFSUBMITFIELD" href="<?php echo esc_url_raw( $new_anon_recipe_url ); ?>"
+						   target="_blank"
 						   class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
 							<?php esc_attr_e( 'Create automation', 'uncanny-automator' ); ?>
 						</a>
@@ -349,7 +359,7 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 				<p>&nbsp;</p>
 				<p>&nbsp;</p>
 				<h5 class="uap-wpf-integration__title">
-					<?php echo _nx( 'Recipe using this form', 'Recipes using this form', count( $this->configured_recipes ), 'uncanny-automator' ); ?>
+					<?php echo esc_attr( _nx( 'Recipe using this form', 'Recipes using this form', count( $this->configured_recipes ), 'uncanny-automator' ) ); ?>
 				</h5>
 				<div class="uap-wpdf-connected-recipes">
 					<ul>
@@ -385,7 +395,6 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 	 * @param array $settings
 	 *
 	 * @since 1.7.0
-	 *
 	 */
 	public function integrations_tab_options( $active, $settings ) {
 
@@ -397,7 +406,6 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 	 * @param string $class Additonal button classes.
 	 *
 	 * @since 1.7.0
-	 *
 	 */
 	public function install_button( $class = '' ) {
 
@@ -408,7 +416,6 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 	 *
 	 * @return bool True if Uncanny Automator plugin is active.
 	 * @since 1.7.0
-	 *
 	 */
 	protected function installed() {
 		return array_key_exists( $this->config['plugin'], get_plugins() );
@@ -419,7 +426,6 @@ GROUP BY p.post_parent", 'uo-trigger', 'ANONWPFFORMS', 'WPFFORMS', 'ANONWPFSUBFO
 	 *
 	 * @return bool True if Uncanny Automator plugin is active.
 	 * @since 1.7.0
-	 *
 	 */
 	protected function active() {
 		return defined( 'AUTOMATOR_BASE_FILE' ) && ( is_plugin_active( $this->config['plugin'] ) );

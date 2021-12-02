@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPJM_SUBMITJOB
+ *
  * @package Uncanny_Automator
  */
 class WPJM_SUBMITJOB {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPJM';
@@ -24,7 +26,7 @@ class WPJM_SUBMITJOB {
 		$this->trigger_code = 'WPJMSUBMITJOB';
 		$this->trigger_meta = 'WPJMJOBTYPE';
 		if ( is_admin() ) {
-			add_action( 'init', [ $this, 'plugins_loaded' ], 19 );
+			add_action( 'init', array( $this, 'plugins_loaded' ), 19 );
 		} else {
 			$this->define_trigger();
 		}
@@ -34,8 +36,6 @@ class WPJM_SUBMITJOB {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -50,9 +50,9 @@ class WPJM_SUBMITJOB {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'job_manager_job_submitted' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wp_job_manager->options->list_wpjm_job_types(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -71,8 +71,6 @@ class WPJM_SUBMITJOB {
 	 * @param $update
 	 */
 	public function job_manager_job_submitted( $new_status, $old_status, $post ) {
-
-
 
 		if ( empty( $post ) ) {
 			return;
@@ -118,12 +116,12 @@ class WPJM_SUBMITJOB {
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							$trigger_meta['meta_key']   = $this->trigger_code;
 							$trigger_meta['meta_value'] = $job_id;
@@ -162,7 +160,7 @@ class WPJM_SUBMITJOB {
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( in_array( (int) $trigger['meta'][ $trigger_meta ], $entry_to_match, true ) || $trigger['meta'][ $trigger_meta ] === "-1" ) ) {
+				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( in_array( (int) $trigger['meta'][ $trigger_meta ], $entry_to_match, true ) || $trigger['meta'][ $trigger_meta ] === '-1' ) ) {
 					$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
 					break;
 				}

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class ZOOM_UNREGISTERUSER
+ *
  * @package Uncanny_Automator
  */
 class ZOOM_UNREGISTERUSER {
@@ -44,7 +45,7 @@ class ZOOM_UNREGISTERUSER {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'zoom_unregister_user' ),
-			'options_callback'   => array( $this, 'load_options' )
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
@@ -58,8 +59,8 @@ class ZOOM_UNREGISTERUSER {
 	public function load_options() {
 		return array(
 			'options' => array(
-				Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta )
-			)
+				Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
+			),
 		);
 	}
 

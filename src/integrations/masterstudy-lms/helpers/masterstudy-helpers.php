@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Masterstudy_Pro_Helpers;
 
 /**
  * Class Masterstudy_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Masterstudy_Helpers {
@@ -81,12 +82,7 @@ class Masterstudy_Helpers {
 			),
 		);
 
-		$flags = array(
-			'filter' => 'FILTER_VALIDATE_STRING',
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		);
-
-		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+		$values = automator_filter_input_array( 'values', INPUT_POST );
 
 		if ( empty( $values['MSLMSCOURSE'] ) ) {
 			echo wp_json_encode( $fields );
@@ -150,12 +146,7 @@ class Masterstudy_Helpers {
 			),
 		);
 
-		$flags = array(
-			'filter' => 'FILTER_VALIDATE_STRING',
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		);
-
-		$values = automator_filter_input_array( 'values', INPUT_POST, $flags );
+		$values = automator_filter_input_array( 'values', INPUT_POST );
 
 		if ( empty( $values['MSLMSCOURSE'] ) ) {
 			echo wp_json_encode( $fields );

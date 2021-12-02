@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class CF7_SUBFORM
+ *
  * @package Uncanny_Automator
  */
 class CF7_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'CF7';

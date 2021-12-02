@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wcm_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wcm_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WCMEMBERSHIPS';
@@ -18,11 +20,16 @@ class Wcm_Tokens {
 	 * Wcm_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_wcmemberships_wcmmembershipplan_tokens', [
-			$this,
-			'wcm_possible_order_tokens',
-		], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'wcm_parse_tokens' ], 20, 6 );
+		add_filter(
+			'automator_maybe_trigger_wcmemberships_wcmmembershipplan_tokens',
+			array(
+				$this,
+				'wcm_possible_order_tokens',
+			),
+			20,
+			2
+		);
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wcm_parse_tokens' ), 20, 6 );
 	}
 
 	/**
@@ -47,8 +54,8 @@ class Wcm_Tokens {
 	}
 
 	/**
-	 * @param array  $tokens
-	 * @param array  $args
+	 * @param array $tokens
+	 * @param array $args
 	 * @param string $type
 	 *
 	 * @return array
@@ -96,12 +103,12 @@ class Wcm_Tokens {
 			} else {
 				$input_type = 'text';
 			}
-			$fields[] = [
+			$fields[] = array(
 				'tokenId'         => $token_id,
 				'tokenName'       => $input_title,
 				'tokenType'       => $input_type,
 				'tokenIdentifier' => 'WCMPLANORDERID',
-			];
+			);
 		}
 		$tokens = array_merge( $tokens, $fields );
 
@@ -157,12 +164,19 @@ class Wcm_Tokens {
 					$trigger_log_id = $replace_args['trigger_log_id'];
 					if ( 'WCMMEMBERSHIPPLAN' === $parse ) {
 						$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-						$entry          = $wpdb->get_var( "SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = 'WCMMEMBERSHIPPLAN'
-													AND automator_trigger_log_id = {$trigger_log_id}
-													AND automator_trigger_id = {$trigger_id}
-													LIMIT 0,1" );
+						$entry          = $wpdb->get_var(
+							$wpdb->prepare(
+								"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0,1",
+								'WCMMEMBERSHIPPLAN',
+								$trigger_log_id,
+								$trigger_id
+							)
+						);
 
 						if ( ! empty( $entry ) ) {
 							$value = get_the_title( $entry );
@@ -279,7 +293,7 @@ class Wcm_Tokens {
 										$items = $order->get_items();
 										if ( $items ) {
 											$value = '<ul>';
-											/** @var WC_Order_Item_Product $item */
+											/** @var \WC_Order_Item_Product $item */
 											foreach ( $items as $item ) {
 												$product = $item->get_product();
 												$value   .= '<li>' . $product->get_title() . '</li>';
@@ -292,7 +306,7 @@ class Wcm_Tokens {
 										$items = $order->get_items();
 										if ( $items ) {
 											$value = '<ul>';
-											/** @var WC_Order_Item_Product $item */
+											/** @var \WC_Order_Item_Product $item */
 											foreach ( $items as $item ) {
 												$product = $item->get_product();
 												$value   .= '<li>' . $product->get_title() . ' x ' . $item->get_quantity() . '</li>';
@@ -305,7 +319,7 @@ class Wcm_Tokens {
 										$items = $order->get_items();
 										if ( $items ) {
 											$value = '<ul>';
-											/** @var WC_Order_Item_Product $item */
+											/** @var \WC_Order_Item_Product $item */
 											foreach ( $items as $item ) {
 												$product = $item->get_product();
 												$value   .= '<li><a href="' . $product->get_permalink() . '">' . $product->get_title() . '</a></li>';

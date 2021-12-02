@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Pmp_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Pmp_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'PMP';

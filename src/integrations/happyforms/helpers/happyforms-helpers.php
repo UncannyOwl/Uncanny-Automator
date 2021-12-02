@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Happyforms_Pro_Helpers;
 
 /**
  * Class Happyforms_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Happyforms_Helpers {
@@ -58,7 +59,6 @@ class Happyforms_Helpers {
 	public function all_happyforms_forms( $label = null, $option_code = 'HFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -66,11 +66,12 @@ class Happyforms_Helpers {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
-		$args = wp_parse_args( $args,
-			[
+		$args = wp_parse_args(
+			$args,
+			array(
 				'uo_include_any' => false,
 				'uo_any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
-			]
+			)
 		);
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -81,7 +82,7 @@ class Happyforms_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
-				$options[ - 1 ] = $args['uo_any_label'];
+				$options[- 1] = $args['uo_any_label'];
 			}
 			$form_controller = happyforms_get_form_controller();
 
@@ -89,11 +90,11 @@ class Happyforms_Helpers {
 
 			if ( ! empty( $forms ) ) {
 				foreach ( $forms as $form ) {
-					$options[ $form["ID"] ] = $form["post_title"];
+					$options[ $form['ID'] ] = $form['post_title'];
 				}
 			}
 		}
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -103,7 +104,7 @@ class Happyforms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_all_happyforms_forms', $option );
 	}
@@ -132,14 +133,14 @@ class Happyforms_Helpers {
 
 			if ( $data ) {
 
-				$insert = [
+				$insert = array(
 					'user_id'        => $user_id,
 					'trigger_id'     => $trigger_id,
 					'trigger_log_id' => $trigger_log_id,
 					'meta_key'       => $meta_key,
 					'meta_value'     => maybe_serialize( $data ),
 					'run_number'     => $run_number,
-				];
+				);
 
 				Automator()->insert_trigger_meta( $insert );
 			}

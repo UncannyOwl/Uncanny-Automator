@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Wpjm_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Wpjm_Integration {

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class EM_REGISTER
+ *
  * @package Uncanny_Automator
  */
 class EM_REGISTER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'EVENTSMANAGER';
@@ -31,8 +33,6 @@ class EM_REGISTER {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/events-manager/' ),
@@ -46,12 +46,13 @@ class EM_REGISTER {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'user_registered_for_event' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->events_manager->options->all_em_events(
 					__( 'Event', 'uncanny-automator' ),
 					$this->trigger_meta,
-					[ 'any_option' => true ] ),
-			],
+					array( 'any_option' => true )
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -66,7 +67,6 @@ class EM_REGISTER {
 	 * @return mixed
 	 */
 	public function user_registered_for_event( $em_status, $em_booking_obj ) {
-
 
 		if ( 0 === (int) get_option( 'dbem_bookings_approval', 0 ) || $em_booking_obj->get_status() != 'Approved' ) {
 			return $em_status;
@@ -83,10 +83,10 @@ class EM_REGISTER {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( isset( $required_event[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( $required_event[ $recipe_id ][ $trigger_id ] == $em_event_id || $required_event[ $recipe_id ][ $trigger_id ] == '-1' ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 					}
 				}
 			}
@@ -94,14 +94,14 @@ class EM_REGISTER {
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -113,7 +113,6 @@ class EM_REGISTER {
 					}
 				}
 			}
-
 		}
 
 		return $em_status;

@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\Wpwh_Pro_Helpers;
 
 /**
  * Class Wpwh_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Wpwh_Helpers {
@@ -67,7 +68,6 @@ class Wpwh_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 
-
 		$options       = array();
 		$options['-1'] = __( 'Any trigger', 'uncanny-automator' );
 
@@ -80,7 +80,7 @@ class Wpwh_Helpers {
 			}
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -91,7 +91,7 @@ class Wpwh_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(),
-		];
+		);
 
 		return apply_filters( 'uap_option_list_webhook_triggers', $option );
 	}
@@ -124,9 +124,11 @@ class Wpwh_Helpers {
 			}
 		}
 
-
 		if ( ! empty( $recipe_ids ) ) {
-			return [ 'recipe_ids' => $recipe_ids, 'result' => true ];
+			return array(
+				'recipe_ids' => $recipe_ids,
+				'result'     => true,
+			);
 		}
 
 		return false;
@@ -150,14 +152,14 @@ class Wpwh_Helpers {
 
 		if ( $data ) {
 
-			$insert = [
+			$insert = array(
 				'user_id'        => $user_id,
 				'trigger_id'     => $trigger_id,
 				'trigger_log_id' => $trigger_log_id,
 				'meta_key'       => $meta_key,
 				'meta_value'     => maybe_serialize( $data ),
 				'run_number'     => $run_number,
-			];
+			);
 
 			Automator()->insert_trigger_meta( $insert );
 		}
@@ -175,7 +177,7 @@ class Wpwh_Helpers {
 
 		foreach ( $parent as $name => $element ) {
 			( $node = &$array[ $name ] )
-			&& ( 1 === count( $node ) ? $node = [ $node ] : 1 )
+			&& ( 1 === count( $node ) ? $node = array( $node ) : 1 )
 			&& $node = &$node[];
 
 			$node = $element->count() ? $this->XML2Array( $element ) : trim( $element );

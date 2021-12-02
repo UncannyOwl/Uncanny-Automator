@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BO_AWARDACHIEVEMENT_A
+ *
  * @package Uncanny_Automator
  */
 class BO_AWARDACHIEVEMENT_A {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BO';
@@ -32,11 +34,9 @@ class BO_AWARDACHIEVEMENT_A {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
-			'support_link'       => Automator()->get_author_support_link($this->action_code, 'integration/badgeos/'),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/badgeos/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - BadgeOS */
@@ -46,30 +46,32 @@ class BO_AWARDACHIEVEMENT_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_an_achievement' ),
-			'options_group'      => [
-				$this->action_meta => [
+			'options_group'      => array(
+				$this->action_meta => array(
 					Automator()->helpers->recipe->badgeos->options->list_bo_award_types(
 						esc_attr__( 'Achievement type', 'uncanny-automator' ),
 						'BOAWARDTYPES',
-						[
+						array(
 							'token'                 => false,
 							'is_ajax'               => true,
 							'target_field'          => $this->action_meta,
 							'supports_custom_value' => false,
 							'endpoint'              => 'select_achievements_from_types_BOAWARDACHIEVEMENT',
-						]
+						)
 					),
 
-					Automator()->helpers->recipe->field->select_field_args( [
-						'option_code'              => $this->action_meta,
-						'options'                  => array(),
-						/* translators: Noun */
-						'label'                    => esc_attr__( 'Award', 'uncanny-automator' ),
-						'required'                 => true,
-						'custom_value_description' => esc_attr__( 'Award ID', 'uncanny-automator' ),
-					] ),
-				],
-			],
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'              => $this->action_meta,
+							'options'                  => array(),
+							/* translators: Noun */
+							'label'                    => esc_attr__( 'Award', 'uncanny-automator' ),
+							'required'                 => true,
+							'custom_value_description' => esc_attr__( 'Award ID', 'uncanny-automator' ),
+						)
+					),
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -83,8 +85,6 @@ class BO_AWARDACHIEVEMENT_A {
 	 * @param $recipe_id
 	 */
 	public function award_an_achievement( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$achievement_id = $action_data['meta'][ $this->action_meta ];
 		badgeos_award_achievement_to_user( absint( $achievement_id ), absint( $user_id ) );

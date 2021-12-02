@@ -215,7 +215,6 @@ class Ld_Tokens {
 					return $value;
 				}
 
-
 				$replace_pieces       = $replace_args['pieces'];
 				$recipe_id            = $replace_args['recipe_id'];
 				$run_number           = $replace_args['run_number'];
@@ -328,8 +327,7 @@ class Ld_Tokens {
 					global $wpdb;
 
 					$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
-					$q            = "SELECT * FROM {$table_name} WHERE user_id = {$user_id} AND module LIKE '%/uncanny-snc/{$module_id}/%' ORDER BY xstored DESC LIMIT 0,1";
-					$tin_can_data = $wpdb->get_row( $q );
+					$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 					if ( ! empty( $tin_can_data ) ) {
 						if ( in_array( 'TCMODULEINTERACTION_maybe_course', $pieces, true ) && ! empty( $tin_can_data->course_id ) ) {
@@ -393,8 +391,8 @@ class Ld_Tokens {
 						}
 
 						if ( intval( '-1' ) === intval( $quiz_id ) ) {
-							if ( isset( $_REQUEST['quiz'] ) ) {
-								$quiz_id = absint( $_REQUEST['quiz'] );
+							if ( automator_filter_has_var( 'quiz', INPUT_POST ) ) {
+								$quiz_id = absint( automator_filter_input( 'quiz', INPUT_POST ) );
 								if ( $quiz_id > 0 ) {
 									if ( in_array( 'LDQUIZ', $pieces, true ) ) {
 										$value = get_the_title( $quiz_id );

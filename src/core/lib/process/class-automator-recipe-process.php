@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Recipe_Process
+ *
  * @package Uncanny_Automator
  */
 class Automator_Recipe_Process {

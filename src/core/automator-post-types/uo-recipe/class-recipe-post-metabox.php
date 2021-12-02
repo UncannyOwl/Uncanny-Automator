@@ -16,6 +16,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Recipe_Post_Metabox
+ *
  * @package Uncanny_Automator
  */
 class Recipe_Post_Metabox {
@@ -50,8 +51,7 @@ class Recipe_Post_Metabox {
 		} else {
 			if ( 'anonymous' === (string) $recipe_type ) {
 				$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Trigger', 'uncanny-automator' ), $recipe_type );
-			}
-			else {
+			} else {
 				$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Triggers', 'uncanny-automator' ), $recipe_type );
 			}
 		}
@@ -96,7 +96,8 @@ class Recipe_Post_Metabox {
 					</div>
 				</div>
 				<?php
-				echo ob_get_clean();
+				// HTML is included. Ignoring
+				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			},
 			'uo-recipe',
 			'uap_items',
@@ -137,7 +138,8 @@ class Recipe_Post_Metabox {
 					</div>
 				</div>
 				<?php
-				echo ob_get_clean();
+				// HTML is included. Ignoring
+				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			},
 			'uo-recipe',
 			'uap_items',
@@ -206,7 +208,8 @@ class Recipe_Post_Metabox {
 
 				</div>
 				<?php
-				echo ob_get_clean();
+				// HTML is included. Ignoring
+				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			},
 			'uo-recipe',
 			'side',

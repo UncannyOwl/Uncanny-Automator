@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Handle_Anon
+ *
  * @package Uncanny_Automator
  */
 class Automator_Handle_Anon {
@@ -12,9 +13,9 @@ class Automator_Handle_Anon {
 	 * Automator_Handle_Anon constructor.
 	 */
 	public function __construct() {
-		add_filter( 'uap_meta_box_title', [ $this, 'uap_meta_box_title_func' ], 10, 2 );
-		add_filter( 'automator_recipe_types', [ $this, 'uap_recipe_types_func' ], 10 );
-		add_filter( 'uap_error_messages', [ $this, 'uap_error_messages_func' ], 10 );
+		add_filter( 'uap_meta_box_title', array( $this, 'uap_meta_box_title_func' ), 10, 2 );
+		add_filter( 'automator_recipe_types', array( $this, 'uap_recipe_types_func' ), 10 );
+		add_filter( 'uap_error_messages', array( $this, 'uap_error_messages_func' ), 10 );
 	}
 
 	/**

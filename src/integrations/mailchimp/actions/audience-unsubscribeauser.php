@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class AUDIENCE_UNSUBSCRIBEAUSER
+ *
  * @package Uncanny_Automator
  */
 class AUDIENCE_UNSUBSCRIBEAUSER {

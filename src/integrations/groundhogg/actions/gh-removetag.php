@@ -7,12 +7,14 @@ use Groundhogg\Plugin;
 
 /**
  * Class HG_REMOVETAG
+ *
  * @package Uncanny_Automator
  */
 class GH_REMOVETAG {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GH';
@@ -34,21 +36,20 @@ class GH_REMOVETAG {
 	 */
 	public function define_action() {
 
-
-		$tags = new Tags;
+		$tags = new Tags();
 
 		$tag_options = array();
 		foreach ( $tags->get_tags() as $tag ) {
 			$tag_options[ $tag->tag_id ] = $tag->tag_name;
 		}
 
-		$option = [
+		$option = array(
 			'option_code' => $this->action_meta,
 			'label'       => esc_attr__( 'Tags', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $tag_options,
-		];
+		);
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -62,9 +63,9 @@ class GH_REMOVETAG {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'remove_tag_to_user' ),
-			'options'            => [
+			'options'            => array(
 				$option,
-			],
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -77,8 +78,6 @@ class GH_REMOVETAG {
 	 */
 	public function remove_tag_to_user( $user_id, $action_data, $recipe_id, $args ) {
 
-
-
 		$tag_id = absint( $action_data['meta'][ $this->action_meta ] );
 
 		if ( 0 !== $tag_id ) {
@@ -88,7 +87,7 @@ class GH_REMOVETAG {
 				return;
 			}
 
-			$tags_to_add = [ $tag_id ];
+			$tags_to_add = array( $tag_id );
 			$contact->remove_tag( $tags_to_add );
 
 		}

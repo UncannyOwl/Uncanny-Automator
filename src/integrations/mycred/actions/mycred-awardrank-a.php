@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class MYCRED_AWARDRANK_A
+ *
  * @package Uncanny_Automator
  */
 class MYCRED_AWARDRANK_A {
 
 	/**
 	 * integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'MYCRED';
@@ -31,9 +33,7 @@ class MYCRED_AWARDRANK_A {
 	 */
 	public function define_action() {
 
-
-
-		$action = [
+		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mycred/' ),
 			'integration'        => self::$integration,
@@ -44,23 +44,23 @@ class MYCRED_AWARDRANK_A {
 			'select_option_name' => esc_attr__( 'Award {{a rank}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
-			'execution_function' => [ $this, 'award_mycred_ranks' ],
+			'execution_function' => array( $this, 'award_mycred_ranks' ),
 			'options'            => array(),
-			'options_group'      => [
-				$this->action_meta => [
+			'options_group'      => array(
+				$this->action_meta => array(
 					/* translators: Noun */
 					Automator()->helpers->recipe->mycred->options->list_mycred_rank_types(
 						esc_attr__( 'Rank', 'uncanny-automator' ),
 						$this->action_meta,
-						[
+						array(
 							'token'        => false,
 							'is_ajax'      => true,
 							'target_field' => $this->action_meta,
-						]
+						)
 					),
-				],
-			],
-		];
+				),
+			),
+		);
 
 		Automator()->register->action( $action );
 	}
@@ -73,7 +73,6 @@ class MYCRED_AWARDRANK_A {
 	 * @param $recipe_id
 	 */
 	public function award_mycred_ranks( $user_id, $action_data, $recipe_id, $args ) {
-
 
 		$rank_id = $action_data['meta'][ $this->action_meta ];
 

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class ANON_WPFF_SUBFIELD
+ *
  * @package Uncanny_Automator
  */
 class ANON_WPFF_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPFF';
@@ -51,9 +53,9 @@ class ANON_WPFF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpffform_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 		Automator()->register->trigger( $trigger );
 	}
@@ -82,7 +84,7 @@ class ANON_WPFF_SUBFORM {
 			if ( Automator()->is_recipe_completed( $match['recipe_id'], $user_id ) ) {
 				continue;
 			}
-			$args = [
+			$args = array(
 				'code'             => $this->trigger_code,
 				'meta'             => $this->trigger_meta,
 				'meta_key'         => $this->trigger_meta,
@@ -90,7 +92,7 @@ class ANON_WPFF_SUBFORM {
 				'trigger_to_match' => $trigger_id,
 				'ignore_post_id'   => true,
 				'user_id'          => $user_id,
-			];
+			);
 
 			$result = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 
@@ -99,7 +101,7 @@ class ANON_WPFF_SUBFORM {
 					if ( true === $r['result'] ) {
 						if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
 							//Saving form values in trigger log meta for token parsing!
-							$wp_ff_args = [
+							$wp_ff_args = array(
 								'code'           => $this->trigger_code,
 								'meta'           => $this->trigger_meta,
 								'post_id'        => intval( $form->id ),
@@ -108,18 +110,18 @@ class ANON_WPFF_SUBFORM {
 								'user_id'        => $user_id,
 								'trigger_log_id' => $r['args']['get_trigger_id'],
 								'run_number'     => $r['args']['run_number'],
-							];
+							);
 
 							Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
 
-							$insert = [
+							$insert = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => (int) $r['args']['trigger_id'],
 								'trigger_log_id' => $r['args']['get_trigger_id'],
 								'meta_key'       => $this->trigger_meta . '_ID',
 								'meta_value'     => intval( $form->id ),
 								'run_number'     => $r['args']['run_number'],
-							];
+							);
 
 							Automator()->insert_trigger_meta( $insert );
 							Automator()->process->user->maybe_trigger_complete( $r['args'] );
@@ -146,7 +148,7 @@ class ANON_WPFF_SUBFORM {
 			return false;
 		}
 
-		$matches = [];
+		$matches = array();
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -156,9 +158,9 @@ class ANON_WPFF_SUBFORM {
 					&& isset( $trigger['meta']['ANONWPFFFORMS'] ) && ! empty( $trigger['meta']['ANONWPFFFORMS'] )
 					&& ( (int) $form_data->id === (int) $trigger['meta']['ANONWPFFFORMS'] || '-1' === $trigger['meta']['ANONWPFFFORMS'] )
 				) {
-					$matches[ $trigger['ID'] ] = [
+					$matches[ $trigger['ID'] ] = array(
 						'recipe_id' => $recipe['ID'],
-					];
+					);
 				}
 			}
 		}

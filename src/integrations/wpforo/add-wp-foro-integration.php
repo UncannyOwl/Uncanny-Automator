@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Wp_Foro_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Wp_Foro_Integration {

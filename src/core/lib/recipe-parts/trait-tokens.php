@@ -15,6 +15,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Tokens
+ *
  * @package Uncanny_Automator
  */
 trait Tokens {
@@ -23,10 +24,10 @@ trait Tokens {
 	 * @var mixed|void
 	 */
 	public static $user_tokens;
-//	/**
-//	 * @var
-//	 */
-//	protected static $token_parser;
+	//  /**
+	//   * @var
+	//   */
+	//  protected static $token_parser;
 
 	/**
 	 * Tokens constructor.
@@ -45,19 +46,19 @@ trait Tokens {
 		);
 	}
 
-//	/**
-//	 * @return mixed
-//	 */
-//	public static function get_token_parser() {
-//		return self::$token_parser;
-//	}
-//
-//	/**
-//	 * @param mixed $token_parser
-//	 */
-//	public static function set_token_parser( $token_parser ) {
-//		self::$token_parser = $token_parser;
-//	}
+	//  /**
+	//   * @return mixed
+	//   */
+	//  public static function get_token_parser() {
+	//      return self::$token_parser;
+	//  }
+	//
+	//  /**
+	//   * @param mixed $token_parser
+	//   */
+	//  public static function set_token_parser( $token_parser ) {
+	//      self::$token_parser = $token_parser;
+	//  }
 
 	/**
 	 * @param $trigger_code
@@ -107,16 +108,16 @@ trait Tokens {
 		$token_id = isset( $args['token_id'] ) ? esc_attr( $args['token_id'] ) : null;
 		$type     = isset( $args['type'] ) ? esc_attr( $args['type'] ) : null;
 		$prefix   = isset( $args['prefix'] ) ? esc_attr( $args['prefix'] ) : '';
-//		$parsing_func = self::get_token_parser();
-//		$parse_from = isset( $args['parse_from'] ) ? $args['parse_from'] : null;
+		//      $parsing_func = self::get_token_parser();
+		//      $parse_from = isset( $args['parse_from'] ) ? $args['parse_from'] : null;
 
 		return array(
 			'tokenId'         => strtoupper( $token_id ),
 			'tokenName'       => self::generate_token_name( $token_id, $prefix ),
 			'tokenType'       => $type,
 			'tokenIdentifier' => $trigger_code,
-//			'tokenParser'     => $parsing_func,
-//			'parserObject'    => $parse_from,
+		//          'tokenParser'     => $parsing_func,
+		//          'parserObject'    => $parse_from,
 		);
 	}
 

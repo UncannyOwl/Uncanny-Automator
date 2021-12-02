@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Bo_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Bo_Integration {

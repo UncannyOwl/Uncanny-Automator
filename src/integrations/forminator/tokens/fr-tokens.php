@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 use Forminator_API;
 
 /**
@@ -16,11 +15,11 @@ class Fr_Tokens {
 	 * Fr_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_fr_frform_tokens', [ $this, 'fr_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'fr_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_fr_frform_tokens', array( $this, 'fr_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'fr_token' ), 20, 6 );
 
 		// Save latest form entry in trigger meta for tokens.
-		add_action( 'automator_save_forminator_form_entry', [ $this, 'fr_save_form_entry' ], 10, 3 );
+		add_action( 'automator_save_forminator_form_entry', array( $this, 'fr_save_form_entry' ), 10, 3 );
 	}
 
 	/**
@@ -44,19 +43,18 @@ class Fr_Tokens {
 						$input_id    = $field->slug;
 						$input_title = $field->raw['field_label'];
 						$token_id    = "$form_id|$input_id";
-						$fields[]    = [
+						$fields[]    = array(
 							'tokenId'         => $token_id,
 							'tokenName'       => $input_title,
 							'tokenType'       => $field->raw['type'],
 							'tokenIdentifier' => $trigger_meta,
-						];
+						);
 					}
 				}
 
 				$tokens = array_merge( $tokens, $fields );
 			}
 		}
-
 
 		return $tokens;
 	}
@@ -180,14 +178,14 @@ class Fr_Tokens {
 					if ( $recipe_log_id_raw ) {
 						$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 						$run_number     = (int) $trigger_result['args']['run_number'];
-						$args           = [
+						$args           = array(
 							'user_id'        => $user_id,
 							'trigger_id'     => $trigger_id,
 							'meta_key'       => 'FRFORM_' . $form_id,
 							'meta_value'     => $data,
 							'run_number'     => $run_number, //get run number
 							'trigger_log_id' => $trigger_log_id,
-						];
+						);
 
 						Automator()->insert_trigger_meta( $args );
 					}

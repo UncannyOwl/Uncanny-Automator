@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Wm_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Wm_Integration {

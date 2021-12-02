@@ -11,6 +11,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 /**
  * Class Logs_List_Table
+ *
  * @package Uncanny_Automator
  */
 class Logs_List_Table extends WP_List_Table {
@@ -61,7 +62,6 @@ class Logs_List_Table extends WP_List_Table {
 
 	/**
 	 * Prepare items/data
-	 *
 	 */
 	public function prepare_items() {
 		global $wpdb, $_wp_column_headers;
@@ -532,7 +532,6 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private function format_trigger_data( $triggers ) {
 
-
 		$data         = array();
 		$recipes_data = Automator()->get_recipes_data( false );
 
@@ -615,7 +614,7 @@ class Logs_List_Table extends WP_List_Table {
 				'recipe_completed'   => $recipe_status,
 				'recipe_date_time'   => $recipe_date_completed,
 				'recipe_run_number'  => $recipe_run_number,
-				'trigger_run_number' => sprintf( esc_attr__( '%d of %d', 'uncanny-automator' ), $trigger_run_number, $trigger_total_times ),
+				'trigger_run_number' => sprintf( esc_attr__( '%1$d of %2$d', 'uncanny-automator' ), $trigger_run_number, $trigger_total_times ),
 				'display_name'       => $user_name,
 			);
 		}
@@ -678,8 +677,8 @@ class Logs_List_Table extends WP_List_Table {
 			// and replace the curly brackets of the sentence token with the <span>
 			// > output: "Send an email to <span>{{user_email}}</span>"
 			$sentence = preg_replace(
-				'(\{\{(.*?)\}\}(?=\s|$))',
-				"<span class=\"uap-logs-table-item-name__token\">$1</span>",
+				'({{(.*?)}}(?=\s|$))',
+				'<span class="uap-logs-table-item-name__token">$1</span>',
 				$sentence
 			);
 		}
@@ -806,7 +805,8 @@ class Logs_List_Table extends WP_List_Table {
 				$filter_html = ob_get_clean();
 			}
 
-			echo $filter_html;
+			// There's HTML involved. Ignoring
+			echo $filter_html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 

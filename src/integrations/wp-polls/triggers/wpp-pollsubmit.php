@@ -4,17 +4,25 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPP_POLLSUBMIT
+ *
  * @package Uncanny_Automator
  */
 class WPP_POLLSUBMIT {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPP';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -30,8 +38,6 @@ class WPP_POLLSUBMIT {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		global $wpdb;
 
@@ -65,7 +71,7 @@ class WPP_POLLSUBMIT {
 			'priority'            => 1,
 			'accepted_args'       => 0,
 			'validation_function' => array( $this, 'poll_success' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->field->select_field(
 					$this->trigger_meta,
 					esc_attr__( 'Poll', 'uncanny-automator' ),
@@ -73,15 +79,15 @@ class WPP_POLLSUBMIT {
 					null,
 					'',
 					false,
-					[
+					array(
 						$this->trigger_meta                   => __( 'Poll question', 'uncanny-automator' ),
 						$this->trigger_meta . '_ANSWERS'      => __( 'Poll answers', 'uncanny-automator' ),
 						$this->trigger_meta . '_START'        => __( 'Poll start date', 'uncanny-automator' ),
 						$this->trigger_meta . '_END'          => __( 'Poll end date', 'uncanny-automator' ),
 						$this->trigger_meta . '_WPPOLLANSWER' => __( 'Poll selected answer(s)', 'uncanny-automator' ),
-					]
+					)
 				),
-			],
+			),
 			'options_group'       => array(),
 		);
 
@@ -90,74 +96,79 @@ class WPP_POLLSUBMIT {
 		return;
 	}
 
+	/**
+	 *
+	 */
 	public function poll_success() {
+		if ( ! automator_filter_has_var( 'action', INPUT_POST ) ) {
+			return;
+		}
+		if ( 'polls' !== sanitize_key( automator_filter_input( 'action', INPUT_POST ) ) ) {
+			return;
+		}
 
-		if ( isset( $_REQUEST['action'] ) && sanitize_key( $_REQUEST['action'] ) === 'polls' ) {
+		// Get Poll ID
+		$poll_id = automator_filter_has_var( 'poll_id', INPUT_POST ) ? (int) sanitize_key( automator_filter_input( 'poll_id', INPUT_POST ) ) : 0;
 
-			// Get Poll ID
-			$poll_id = ( isset( $_REQUEST['poll_id'] ) ? (int) sanitize_key( $_REQUEST['poll_id'] ) : 0 );
+		// Ensure Poll ID Is Valid
+		if ( $poll_id === 0 ) {
+			return;
+		}
 
-			// Ensure Poll ID Is Valid
-			if ( $poll_id === 0 ) {
-				return;
-			}
+		// Verify Referer
+		if ( ! check_ajax_referer( 'poll_' . $poll_id . '-nonce', 'poll_' . $poll_id . '_nonce', false ) ) {
+			return;
+		}
 
-			// Verify Referer
-			if ( ! check_ajax_referer( 'poll_' . $poll_id . '-nonce', 'poll_' . $poll_id . '_nonce', false ) ) {
-				return;
-			}
+		$view = sanitize_key( automator_filter_input( 'view', INPUT_POST ) );
+		if ( 'process' !== $view ) {
+			return;
+		}
+		$poll_aid_array   = array_unique( array_map( 'intval', array_map( 'sanitize_key', explode( ',', automator_filter_input( "poll_$poll_id", INPUT_POST ) ) ) ) );
+		$recipes          = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_poll_id = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 
-			$view = sanitize_key( $_REQUEST['view'] );
-			if ( 'process' === $view ) {
-				$poll_aid_array = array_unique( array_map( 'intval', array_map( 'sanitize_key', explode( ',', $_POST["poll_$poll_id"] ) ) ) );
+		foreach ( $recipes as $recipe_id => $recipe ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id = $trigger['ID'];//return early for all products
+				if (
+					isset( $required_poll_id[ $recipe_id ] )
+					&& isset( $required_poll_id[ $recipe_id ][ $trigger_id ] )
+				) {
+					if (
+						0 === (int) (string) $required_poll_id[ $recipe_id ][ $trigger_id ] ||
+						(string) $poll_id === (string) $required_poll_id[ $recipe_id ][ $trigger_id ]
+					) {
 
+						$pass_args = array(
+							'code'           => $this->trigger_code,
+							'meta'           => $this->trigger_meta,
+							'ignore_post_id' => true,
+							'user_id'        => get_current_user_id(),
+						);
 
-				$recipes          = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-				$required_poll_id = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+						$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
-				foreach ( $recipes as $recipe_id => $recipe ) {
-					foreach ( $recipe['triggers'] as $trigger ) {
-						$trigger_id = $trigger['ID'];//return early for all products
-						if (
-							isset( $required_poll_id[ $recipe_id ] )
-							&& isset( $required_poll_id[ $recipe_id ][ $trigger_id ] )
-						) {
-							if (
-								0 === (int) (string) $required_poll_id[ $recipe_id ][ $trigger_id ] ||
-								(string) $poll_id === (string) $required_poll_id[ $recipe_id ][ $trigger_id ]
-							) {
+						if ( isset( $args ) ) {
+							foreach ( $args as $result ) {
+								if ( true === $result['result'] ) {
 
-								$pass_args = [
-									'code'           => $this->trigger_code,
-									'meta'           => $this->trigger_meta,
-									'ignore_post_id' => true,
-									'user_id'        => get_current_user_id(),
-								];
+									$trigger_meta = array(
+										'user_id'        => get_current_user_id(),
+										'trigger_id'     => $result['args']['trigger_id'],
+										'trigger_log_id' => $result['args']['get_trigger_id'],
+										'run_number'     => $result['args']['run_number'],
+									);
 
-								$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+									$trigger_meta['meta_key']   = $this->trigger_meta;
+									$trigger_meta['meta_value'] = $poll_id;
+									Automator()->insert_trigger_meta( $trigger_meta );
 
-								if ( isset( $args ) ) {
-									foreach ( $args as $result ) {
-										if ( true === $result['result'] ) {
+									$trigger_meta['meta_key']   = 'WPPOLLANSWER';
+									$trigger_meta['meta_value'] = maybe_serialize( $poll_aid_array );
+									Automator()->insert_trigger_meta( $trigger_meta );
 
-											$trigger_meta = [
-												'user_id'        => get_current_user_id(),
-												'trigger_id'     => $result['args']['trigger_id'],
-												'trigger_log_id' => $result['args']['get_trigger_id'],
-												'run_number'     => $result['args']['run_number'],
-											];
-
-											$trigger_meta['meta_key']   = $this->trigger_meta;
-											$trigger_meta['meta_value'] = $poll_id;
-											Automator()->insert_trigger_meta( $trigger_meta );
-
-											$trigger_meta['meta_key']   = 'WPPOLLANSWER';
-											$trigger_meta['meta_value'] = maybe_serialize( $poll_aid_array );
-											Automator()->insert_trigger_meta( $trigger_meta );
-
-											Automator()->maybe_trigger_complete( $result['args'] );
-										}
-									}
+									Automator()->maybe_trigger_complete( $result['args'] );
 								}
 							}
 						}
@@ -165,5 +176,7 @@ class WPP_POLLSUBMIT {
 				}
 			}
 		}
+
+
 	}
 }

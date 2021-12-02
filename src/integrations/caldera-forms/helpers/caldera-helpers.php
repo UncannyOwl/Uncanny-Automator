@@ -8,6 +8,7 @@ use Uncanny_Automator_Pro\Caldera_Forms_Pro_Helpers;
 
 /**
  * Class Caldera_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Caldera_Helpers {
@@ -57,7 +58,6 @@ class Caldera_Helpers {
 	public function list_caldera_forms_forms( $label = null, $option_code = 'CFFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -82,7 +82,7 @@ class Caldera_Helpers {
 
 		$type = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -92,7 +92,7 @@ class Caldera_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_list_caldera_forms_forms', $option );
 	}

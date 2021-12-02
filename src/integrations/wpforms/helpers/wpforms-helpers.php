@@ -7,6 +7,7 @@ use WPForms_Form_Handler;
 
 /**
  * Class Wpforms_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Wpforms_Helpers {
@@ -94,9 +95,9 @@ class Wpforms_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code                => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'        => esc_attr__( 'Form ID', 'uncanny-automator' ),
-				$option_code . '_URL'       => esc_attr__( 'Form URL', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_attr__( 'Form URL', 'uncanny-automator' ),
 			),
 		);
 

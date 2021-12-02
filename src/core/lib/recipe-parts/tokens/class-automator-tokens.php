@@ -15,6 +15,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Automator_Tokens {

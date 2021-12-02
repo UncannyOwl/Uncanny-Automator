@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LP_COURSEDONE
+ *
  * @package Uncanny_Automator
  */
 class LP_COURSEDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LP';
@@ -31,8 +33,6 @@ class LP_COURSEDONE {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learnpress/' ),
@@ -46,10 +46,10 @@ class LP_COURSEDONE {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'lp_course_done' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->learnpress->options->all_lp_courses(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -70,14 +70,12 @@ class LP_COURSEDONE {
 			return;
 		}
 
-
-
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $course_id ),
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

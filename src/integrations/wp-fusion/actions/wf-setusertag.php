@@ -2,15 +2,16 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class FUSION_SETUSERTAG
+ *
  * @package Uncanny_Automator
  */
 class WF_SETUSERTAG {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WF';
@@ -32,8 +33,6 @@ class WF_SETUSERTAG {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wp-fusion/' ),
@@ -46,9 +45,9 @@ class WF_SETUSERTAG {
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'set_user_tag' ),
-			'options'            => [
+			'options'            => array(
 				Wp_Fusion_Helpers::fusion_tags( '', $this->action_meta ),
-			],
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -62,8 +61,6 @@ class WF_SETUSERTAG {
 	 * @param $recipe_id
 	 */
 	public function set_user_tag( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		if ( ! empty( $user_id ) ) {
 			// is the use in DB?

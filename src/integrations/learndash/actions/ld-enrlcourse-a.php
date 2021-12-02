@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_ENRLCOURSE_A
+ *
  * @package Uncanny_Automator
  */
 class LD_ENRLCOURSE_A {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -31,8 +33,6 @@ class LD_ENRLCOURSE_A {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
@@ -45,9 +45,9 @@ class LD_ENRLCOURSE_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'enroll_in_course' ),
-			'options'            => [
+			'options'            => array(
 				Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
-			],
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -62,8 +62,6 @@ class LD_ENRLCOURSE_A {
 	 * @param $recipe_id
 	 */
 	public function enroll_in_course( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		if ( ! function_exists( 'ld_update_course_access' ) ) {
 			$error_message = 'The function ld_update_course_access does not exist';

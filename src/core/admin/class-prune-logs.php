@@ -46,10 +46,6 @@ class Prune_Logs {
 	/**
 	 *
 	 * Add values to settings tab
-	 *
-	 * @param $tabs
-	 *
-	 * @return mixed
 	 */
 	public function add_purge_settings() {
 		?>
@@ -70,14 +66,14 @@ class Prune_Logs {
 
 						?>
 
-						<?php if ( ! empty( $section_header_content ) ){ ?> 
+						<?php if ( ! empty( $section_header_content ) ) { ?>
 
 							<div class="uo-settings-content-header<?php echo esc_html( $class ); ?>">
-								<?php echo $section_header_content; ?>
+								<?php echo $section_header_content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							</div>
 
 						<?php } ?>
-						
+
 						<div class="uo-settings-content-top">
 							<div class="uo-settings-content-info">
 								<div class="uo-settings-content-title">

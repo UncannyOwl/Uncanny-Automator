@@ -57,29 +57,26 @@ class Tutorlms_Helpers {
 	public function all_tutorlms_lessons( $label = null, $option_code = 'TUTORLMSLESSON', $any_option = false ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Lesson', 'uncanny-automator' );
 		}
 
 		// post query arguments.
-		$args = [
+		$args = array(
 			'post_type'      => tutor()->lesson_post_type,
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -88,14 +85,14 @@ class Tutorlms_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
-				$option_code          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+			'relevant_tokens' => array(
+				$option_code                => esc_attr__( 'Lesson title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
 				$option_code . '_THUMB_ID'  => esc_attr__( 'Lesson featured image ID', 'uncanny-automator' ),
 				$option_code . '_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_tutorlms_lessons', $option );
 
@@ -109,7 +106,6 @@ class Tutorlms_Helpers {
 	public function all_tutorlms_courses( $label = null, $option_code = 'TUTORLMSCOURSE', $all_label = false, $any_option = false ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -118,19 +114,18 @@ class Tutorlms_Helpers {
 		}
 
 		// post query arguments.
-		$args = [
+		$args = array(
 			'post_type'      => tutor()->course_post_type,
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ), $all_label );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -139,14 +134,14 @@ class Tutorlms_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
-				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+			'relevant_tokens' => array(
+				$option_code                => esc_attr__( 'Course title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Course ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_attr__( 'Course URL', 'uncanny-automator' ),
 				$option_code . '_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
-				$option_code . '_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' )
-			],
-		];
+				$option_code . '_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
+			),
+		);
 
 		return apply_filters( 'uap_option_all_tutorlms_courses', $option );
 
@@ -160,29 +155,26 @@ class Tutorlms_Helpers {
 	public function all_tutorlms_quizzes( $label = null, $option_code = 'TUTORLMSQUIZ', $any_option = false ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Quiz', 'uncanny-automator' );
 		}
 
 		// post query arguments.
-		$args = [
+		$args = array(
 			'post_type'      => 'tutor_quiz',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any quiz', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -191,12 +183,12 @@ class Tutorlms_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Quiz title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Quiz URL', 'uncanny-automator' )
-			],
-		];
+				$option_code . '_URL' => esc_attr__( 'Quiz URL', 'uncanny-automator' ),
+			),
+		);
 
 		return apply_filters( 'uap_option_all_tutorlms_quizzes', $option );
 

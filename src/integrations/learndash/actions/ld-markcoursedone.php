@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_MARKCOURSEDONE
+ *
  * @package Uncanny_Automator
  */
 class LD_MARKCOURSEDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -32,8 +34,6 @@ class LD_MARKCOURSEDONE {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
@@ -46,9 +46,9 @@ class LD_MARKCOURSEDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_course' ),
-			'options'            => [
+			'options'            => array(
 				Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
-			],
+			),
 		);
 
 		Automator()->register->action( $action );

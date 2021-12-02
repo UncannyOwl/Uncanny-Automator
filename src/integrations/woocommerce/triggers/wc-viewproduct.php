@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WC_VIEWPRODUCT
+ *
  * @package Uncanny_Automator
  */
 class WC_VIEWPRODUCT {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WC';
@@ -31,7 +33,6 @@ class WC_VIEWPRODUCT {
 	 */
 	public function define_trigger() {
 
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/woocommerce/' ),
@@ -46,10 +47,10 @@ class WC_VIEWPRODUCT {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_woo_product' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->woocommerce->options->all_wc_products(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -62,8 +63,6 @@ class WC_VIEWPRODUCT {
 	 */
 	public function view_woo_product() {
 
-
-
 		global $post;
 
 		if ( 'product' !== $post->post_type ) {
@@ -71,12 +70,12 @@ class WC_VIEWPRODUCT {
 		}
 
 		$user_id = get_current_user_id();
-		$args    = [
+		$args    = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $post->ID,
 			'user_id' => $user_id,
-		];
+		);
 
 		$arr = Automator()->maybe_add_trigger_entry( $args, false );
 

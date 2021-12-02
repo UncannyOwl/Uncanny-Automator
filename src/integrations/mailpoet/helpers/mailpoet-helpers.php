@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Mailpoet_Pro_Helpers;
 
 /**
  * Class Mailpoet_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Mailpoet_Helpers {
@@ -50,7 +51,6 @@ class Mailpoet_Helpers {
 	public function get_all_mailpoet_lists( $label = null, $option_code = 'MAILPOETLISTS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -70,7 +70,6 @@ class Mailpoet_Helpers {
 			$options['all'] = esc_attr__( 'All lists', 'uncanny-automator' );
 		}
 
-
 		$mailpoet  = \MailPoet\API\API::MP( 'v1' );
 		$all_lists = $mailpoet->getLists();
 
@@ -78,24 +77,23 @@ class Mailpoet_Helpers {
 			$options[ $list['id'] ] = $list['name'];
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code         => esc_attr__( 'List', 'uncanny-automator' ),
 				$option_code . '_ID' => esc_attr__( 'List ID', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_get_all_mailpoet_lists', $option );
 	}
 
 	public function get_all_mailpoet_subscribers( $label = null, $option_code = 'MAILPOETSUBSCRIBERS', $args = array() ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -114,17 +112,17 @@ class Mailpoet_Helpers {
 			$options[ $subscriber['id'] ] = $subscriber['email'];
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code         => esc_attr__( 'Subscriber', 'uncanny-automator' ),
 				$option_code . '_ID' => esc_attr__( 'Subscriber ID', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_get_all_mailpoet_subscribers', $option );
 	}

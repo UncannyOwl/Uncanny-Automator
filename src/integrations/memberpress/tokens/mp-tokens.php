@@ -6,6 +6,7 @@ use MeprOptions;
 
 /**
  * Class Mp_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Mp_Tokens {

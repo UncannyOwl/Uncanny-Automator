@@ -9,6 +9,7 @@ use Uncanny_Automator_Pro\Learnpress_Pro_Helpers;
 
 /**
  * Class Learnpress_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Learnpress_Helpers {
@@ -183,7 +184,6 @@ class Learnpress_Helpers {
 				);
 			}
 		}
-
 
 		echo wp_json_encode( $fields );
 

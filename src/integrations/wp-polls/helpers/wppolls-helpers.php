@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Wppolls_Pro_Helpers;
 
 /**
  * Class Buddypress_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Wppolls_Helpers {

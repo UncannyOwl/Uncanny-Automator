@@ -20,13 +20,13 @@ $current_tab = 'trigger-log';
 		<li>
 			<div class="recipe-details__label recipe-details__column-1">
 				<?php esc_html_e( 'Recipe:', 'uncanny-automator' ); ?>
-			</div>  
+			</div>
 			<div class="recipe-details__recipe-title recipe-details__column-2"></div>
 		</li>
 		<li>
 			<div class="recipe-details__label recipe-details__column-1">
 				<?php esc_html_e( 'Status:', 'uncanny-automator' ); ?>
-			</div>  
+			</div>
 			<div class="recipe-details__recipe-status recipe-details__column-2"></div>
 		</li>
 		<li>
@@ -55,14 +55,15 @@ $current_tab = 'trigger-log';
 		add_filter( 'automator_setup_trigger_logs_sortables', '__return_empty_array' );
 
 		// Display the trigger logs table.
-		automator_setup_trigger_logs( 
-			$current_tab, array( 
-				'trigger_title' => esc_html__( 'Trigger activity', 'uncanny-automator' ),
-				'trigger_date' => esc_html__( 'Completion date:', 'uncanny-automator' ),
+		automator_setup_trigger_logs(
+			$current_tab,
+			array(
+				'trigger_title'      => esc_html__( 'Trigger activity', 'uncanny-automator' ),
+				'trigger_date'       => esc_html__( 'Completion date:', 'uncanny-automator' ),
 				'trigger_run_number' => esc_attr__( 'Trigger run #:', 'uncanny-automator' ),
-				)
-			);
-	?>
+			)
+		);
+		?>
 
 	<?php
 		// Action Activity.
@@ -73,15 +74,16 @@ $current_tab = 'trigger-log';
 		add_filter( 'automator_setup_action_logs_sortables', '__return_empty_array' );
 
 		// Display the action logs table.
-		automator_setup_action_logs( 
-			$current_tab, array( 
-				'action_title' => esc_html__( 'Action activity', 'uncanny-automator' ),
-				'action_date' => esc_html__( 'Completion date:', 'uncanny-automator' ),
+		automator_setup_action_logs(
+			$current_tab,
+			array(
+				'action_title'     => esc_html__( 'Action activity', 'uncanny-automator' ),
+				'action_date'      => esc_html__( 'Completion date:', 'uncanny-automator' ),
 				'action_completed' => esc_html__( 'Status:', 'uncanny-automator' ),
-				'error_message' => esc_html__( 'Notes:', 'uncanny-automator' ),
-				) 
-			);
-	?>
+				'error_message'    => esc_html__( 'Notes:', 'uncanny-automator' ),
+			)
+		);
+		?>
 </div>
 
 <script>
@@ -148,7 +150,7 @@ $current_tab = 'trigger-log';
 			if ( 0 === $(this).html().trim().length ) {
 				$(this).addClass('hidden');
 			}
-		} 
+		}
 
 	});
 
@@ -161,8 +163,5 @@ $current_tab = 'trigger-log';
 
 	// Open all links to target window.
 	$('.recipe-details__list a').attr('target', '_BLANK');
-
-	return;
-
 })(jQuery);
 </script>

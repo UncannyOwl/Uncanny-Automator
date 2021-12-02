@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Email_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Automator_Email_Helpers {
@@ -102,11 +103,11 @@ class Automator_Email_Helpers {
 		$attachments = $mail['attachment'];
 		$is_html     = $mail['is_html'];
 		$error       = Automator()->error;
-	
+
 		if ( ! $error->get_message( 'wp_mail_to' ) ) {
 			if ( is_array( $to ) ) {
 				foreach ( $to as $to_email ) {
-					if ( empty ( $to_email  ) ) {
+					if ( empty( $to_email ) ) {
 						$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
 					}
 					if ( ! is_email( $to_email ) ) {
@@ -114,7 +115,7 @@ class Automator_Email_Helpers {
 					}
 				}
 			} else {
-				if ( empty ( $to  ) ) {
+				if ( empty( $to ) ) {
 					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
 				}
 				if ( ! is_email( $to ) ) {
@@ -122,18 +123,10 @@ class Automator_Email_Helpers {
 				}
 			}
 		}
-		
+
 		if ( empty( $headers ) ) {
 			$headers = array();
 		}
-
-//		if ( empty( $subject ) ) {
-//			$error->add_error( 'subject_empty', esc_attr__( 'Email subject is empty.', 'uncanny-automator' ), $mail );
-//		}
-//
-//		if ( empty( $body ) ) {
-//			$error->add_error( 'body_empty', esc_attr__( 'Email body is empty.', 'uncanny-automator' ), $mail );
-//		}
 
 		if ( empty( $attachments ) ) {
 			$attachments = array();

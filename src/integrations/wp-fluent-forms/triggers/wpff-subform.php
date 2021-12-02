@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPFF_SUBFORM
+ *
  * @package Uncanny_Automator
  */
 class WPFF_SUBFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPFF';
@@ -37,8 +39,6 @@ class WPFF_SUBFORM {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-fluent-forms/' ),
@@ -52,10 +52,10 @@ class WPFF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpffform_submit' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -91,14 +91,14 @@ class WPFF_SUBFORM {
 		if ( ! empty( $matches ) ) {
 			foreach ( $matches as $recipe_id => $match ) {
 				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					$args = [
+					$args = array(
 						'code'            => $this->trigger_code,
 						'meta'            => $this->trigger_meta,
 						'meta_key'        => $this->trigger_meta,
 						'recipe_to_match' => $recipe_id,
 						'ignore_post_id'  => true,
 						'user_id'         => $user_id,
-					];
+					);
 
 					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
@@ -107,13 +107,13 @@ class WPFF_SUBFORM {
 							if ( true === $r['result'] ) {
 								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
 									//Saving form values in trigger log meta for token parsing!
-									$wp_ff_args = [
+									$wp_ff_args = array(
 										'trigger_id'     => (int) $r['args']['trigger_id'],
 										'meta_key'       => $this->trigger_meta,
 										'user_id'        => $user_id,
 										'trigger_log_id' => $r['args']['get_trigger_id'],
 										'run_number'     => $r['args']['run_number'],
-									];
+									);
 									Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
 									Automator()->maybe_add_trigger_entry( $args );
 								}
@@ -151,9 +151,9 @@ class WPFF_SUBFORM {
 					&& isset( $trigger['meta']['WPFFFORMS'] ) && ! empty( $trigger['meta']['WPFFFORMS'] )
 					&& ( (int) $form_data->id === (int) $trigger['meta']['WPFFFORMS'] || '-1' === $trigger['meta']['WPFFFORMS'] )
 				) {
-					$matches[ $recipe['ID'] ] = [
+					$matches[ $recipe['ID'] ] = array(
 						'recipe_id' => $recipe['ID'],
-					];
+					);
 				}
 			}
 		}

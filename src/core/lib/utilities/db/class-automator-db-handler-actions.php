@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_DB_Handler_Actions
+ *
  * @package Uncanny_Automator
  */
 class Automator_DB_Handler_Actions {
@@ -210,6 +211,22 @@ class Automator_DB_Handler_Actions {
 			array(
 				'automator_recipe_id'     => $recipe_id,
 				'automator_recipe_log_id' => $automator_recipe_log_id,
+			)
+		);
+	}
+
+	/**
+	 * update_menu_order
+	 *
+	 * @param  int $action_id
+	 * @param  int $order
+	 * @return void
+	 */
+	public function update_menu_order( $action_id, $order ) {
+		wp_update_post(
+			array(
+				'ID'         => $action_id,
+				'menu_order' => $order,
 			)
 		);
 	}

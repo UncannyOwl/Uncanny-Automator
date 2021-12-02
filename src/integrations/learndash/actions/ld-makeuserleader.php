@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_MAKEUSERLEADER
+ *
  * @package Uncanny_Automator
  */
 class LD_MAKEUSERLEADER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -30,15 +32,13 @@ class LD_MAKEUSERLEADER {
 	 */
 	public function define_action() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'groups',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args );
 
@@ -55,16 +55,16 @@ class LD_MAKEUSERLEADER {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'make_user_leader_of_group' ),
 			'options_group'      =>
-				[
+				array(
 					$this->action_meta =>
-						[
-							[
+						array(
+							array(
 								'option_code' => 'LDGROUP',
 								'label'       => esc_attr__( 'Group', 'uncanny-automator' ),
 								'input_type'  => 'select',
 								'required'    => true,
 								'options'     => $options,
-							],
+							),
 							array(
 								'input_type'            => 'select',
 								'option_code'           => 'GROUP_LEADER_ROLE_ASSIGNMENT',
@@ -81,8 +81,8 @@ class LD_MAKEUSERLEADER {
 								'supports_custom_value' => false,
 								'supports_tokens'       => false,
 							),
-						],
-				],
+						),
+				),
 		);
 
 		Automator()->register->action( $action );
@@ -97,8 +97,6 @@ class LD_MAKEUSERLEADER {
 	 * @param $args
 	 */
 	public function make_user_leader_of_group( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$uo_group                     = Automator()->parse->text( $action_data['meta']['LDGROUP'], $recipe_id, $user_id, $args );
 		$group_leader_role_assignment = Automator()->parse->text( $action_data['meta']['GROUP_LEADER_ROLE_ASSIGNMENT'], $recipe_id, $user_id, $args );

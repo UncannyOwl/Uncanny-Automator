@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UC_CODEREDEEMED
+ *
  * @package Uncanny_Automator
  */
 class UC_CODEREDEEMED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UNCANNYCODE';
@@ -30,7 +32,6 @@ class UC_CODEREDEEMED {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -61,20 +62,19 @@ class UC_CODEREDEEMED {
 	 */
 	public function user_redeemed_code( $user_id, $coupon_id, $result ) {
 
-
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
 		}
-		if ( empty ( $user_id ) ) {
+		if ( empty( $user_id ) ) {
 			return;
 		}
 
-		$args = [
+		$args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'ignore_post_id' => true,
 			'user_id'        => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

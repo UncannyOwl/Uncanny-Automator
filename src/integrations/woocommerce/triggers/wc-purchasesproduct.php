@@ -6,12 +6,14 @@ use WC_Order_Item_Product;
 
 /**
  * Class WC_PURCHASESPRODUCT
+ *
  * @package Uncanny_Automator
  */
 class WC_PURCHASESPRODUCT {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WC';
@@ -55,19 +57,19 @@ class WC_PURCHASESPRODUCT {
 			'sentence'            => sprintf( esc_attr__( 'A user {{completes, pays for, lands on a thank you page for:%3$s}} an order with {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES', $this->trigger_condition ),
 			/* translators: Logged-in trigger - WooCommerce */
 			'select_option_name'  => esc_attr__( 'A user {{completes, pays for, lands on a thank you page for}} an order with {{a product}}', 'uncanny-automator' ),
-			'action'              => [
+			'action'              => array(
 				'woocommerce_order_status_completed',
 				'woocommerce_thankyou',
 				'woocommerce_payment_complete',
-			],
+			),
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'payment_completed' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->options->number_of_times(),
 				$options,
 				$trigger_condition,
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -159,10 +161,10 @@ class WC_PURCHASESPRODUCT {
 					continue;
 				}
 				if ( intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) || in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
@@ -172,14 +174,14 @@ class WC_PURCHASESPRODUCT {
 		}
 
 		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-			$pass_args = [
+			$pass_args = array(
 				'code'             => $this->trigger_code,
 				'meta'             => $this->trigger_meta,
 				'user_id'          => $user_id,
 				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 				'trigger_to_match' => $matched_recipe_id['trigger_id'],
 				'ignore_post_id'   => true,
-			];
+			);
 
 			$args = Automator()->process->user->maybe_add_trigger_entry( $pass_args, false );
 

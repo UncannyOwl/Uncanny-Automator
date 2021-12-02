@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class CAMPAIGN_CREATEANDSEND
+ *
  * @package Uncanny_Automator
  */
 class CAMPAIGN_CREATEANDSEND {

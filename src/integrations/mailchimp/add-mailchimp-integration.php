@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Mailchimp_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Mailchimp_Integration {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'MAILCHIMP';

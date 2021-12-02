@@ -23,7 +23,6 @@ class Automator_DB {
 	 *
 	 * @return Automator_DB $instance
 	 * @since 1.0.0
-	 *
 	 */
 	public static function get_instance() {
 

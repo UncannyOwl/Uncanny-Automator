@@ -2,11 +2,11 @@
 
 namespace Uncanny_Automator;
 
-
 class UOA_RECIPESUCCESSCOMPLETEDTIMES {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';

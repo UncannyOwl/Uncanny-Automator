@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\Wpjm_Pro_Helpers;
 
 /**
  * Class Wpjm_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Wpjm_Helpers {

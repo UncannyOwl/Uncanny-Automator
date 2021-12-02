@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wp_Post_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wp_Post_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WP';
@@ -18,8 +20,8 @@ class Wp_Post_Tokens {
 	 * WP_Anon_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_wp_post_tokens' ], 20, 6 );
-		add_filter( 'automator_maybe_trigger_wp_userspost_tokens', [ $this, 'wp_possible_tokens' ], 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_wp_post_tokens' ), 20, 6 );
+		add_filter( 'automator_maybe_trigger_wp_userspost_tokens', array( $this, 'wp_possible_tokens' ), 20, 2 );
 	}
 
 	/**
@@ -50,44 +52,44 @@ class Wp_Post_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'tokenId'         => 'POSTTITLE',
-				'tokenName'       => __( "Post title", 'uncanny-automator' ),
+				'tokenName'       => __( 'Post title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'POSTID',
-				'tokenName'       => __( "Post ID", 'uncanny_automator' ),
+				'tokenName'       => __( 'Post ID', 'uncanny_automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'POSTURL',
-				'tokenName'       => __( "Post URL", 'uncanny-automator' ),
+				'tokenName'       => __( 'Post URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
 				'tokenIdentifier' => $trigger_meta,
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'POSTCONTENT',
-				'tokenName'       => __( "Post content", 'uncanny_automator' ),
+				'tokenName'       => __( 'Post content', 'uncanny_automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'POSTIMAGEURL',
-				'tokenName'       => __( "Post featured image URL", 'uncanny-automator' ),
+				'tokenName'       => __( 'Post featured image URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
 				'tokenIdentifier' => $trigger_meta,
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'POSTIMAGEID',
-				'tokenName'       => __( "Post featured image ID", 'uncanny_automator' ),
+				'tokenName'       => __( 'Post featured image ID', 'uncanny_automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
-			],
-		];
+			),
+		);
 
 		$tokens = array_merge( $tokens, $fields );
 
@@ -106,7 +108,7 @@ class Wp_Post_Tokens {
 	 * @return mixed
 	 */
 	public function parse_wp_post_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args = array() ) {
-		$tokens = [
+		$tokens = array(
 			'WPTAXONOMIES',
 			'SPECIFICTAXONOMY',
 			'POSTSTATUSUPDATED',
@@ -129,8 +131,8 @@ class Wp_Post_Tokens {
 			'POSTCOMMENTSTATUS',
 			'WPPOST',
 			'WPPOST_ID',
-			'WPPOST_URL'
-		];
+			'WPPOST_URL',
+		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {
 			$meta_field = $pieces[2];
@@ -148,7 +150,7 @@ class Wp_Post_Tokens {
 							default:
 								global $wpdb;
 								$trigger_id = $trigger['ID'];
-								$meta_value = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE '%{$meta_field}' AND automator_trigger_id = {$trigger_id} ORDER BY ID DESC LIMIT 0,1" );
+								$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$meta_field", $trigger_id ) );
 								if ( ! empty( $meta_value ) ) {
 									$value = maybe_unserialize( $meta_value );
 								}

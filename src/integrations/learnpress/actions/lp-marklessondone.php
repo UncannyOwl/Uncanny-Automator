@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LP_MARKLESSONDONE
+ *
  * @package Uncanny_Automator
  */
 class LP_MARKLESSONDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LP';
@@ -31,14 +33,13 @@ class LP_MARKLESSONDONE {
 	 */
 	public function define_action() {
 
-
-		$args    = [
+		$args    = array(
 			'post_type'      => 'lp_course',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
 		$action = array(
@@ -53,44 +54,50 @@ class LP_MARKLESSONDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lp_mark_lesson_done' ),
-			'options_group'      => [
-				$this->action_meta => [
-					Automator()->helpers->recipe->field->select_field_args( [
-						'option_code' => 'LPCOURSE',
-						'options'     => $options,
-						'label'       => esc_attr__( 'Course', 'uncanny-automator' ),
+			'options_group'      => array(
+				$this->action_meta => array(
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'              => 'LPCOURSE',
+							'options'                  => $options,
+							'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
 
-						'required'                 => true,
-						'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+							'required'                 => true,
+							'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
 
-						'is_ajax'      => true,
-						'target_field' => 'LPSECTION',
-						'endpoint'     => 'select_section_from_course_LPMARKLESSONDONE',
-					] ),
+							'is_ajax'                  => true,
+							'target_field'             => 'LPSECTION',
+							'endpoint'                 => 'select_section_from_course_LPMARKLESSONDONE',
+						)
+					),
 
-					Automator()->helpers->recipe->field->select_field_args( [
-						'option_code' => 'LPSECTION',
-						'options'     => array(),
-						'label'       => esc_attr__( 'Section', 'uncanny-automator' ),
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'              => 'LPSECTION',
+							'options'                  => array(),
+							'label'                    => esc_attr__( 'Section', 'uncanny-automator' ),
 
-						'required'                 => true,
-						'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
+							'required'                 => true,
+							'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
 
-						'is_ajax'      => true,
-						'target_field' => $this->action_meta,
-						'endpoint'     => 'select_lesson_from_section_LPMARKLESSONDONE',
-					] ),
+							'is_ajax'                  => true,
+							'target_field'             => $this->action_meta,
+							'endpoint'                 => 'select_lesson_from_section_LPMARKLESSONDONE',
+						)
+					),
 
-					Automator()->helpers->recipe->field->select_field_args( [
-						'option_code' => $this->action_meta,
-						'options'     => array(),
-						'label'       => esc_attr__( 'Lesson', 'uncanny-automator' ),
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'              => $this->action_meta,
+							'options'                  => array(),
+							'label'                    => esc_attr__( 'Lesson', 'uncanny-automator' ),
 
-						'required'                 => true,
-						'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
-					] ),
-				],
-			],
+							'required'                 => true,
+							'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+						)
+					),
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -105,8 +112,6 @@ class LP_MARKLESSONDONE {
 	 * @param string $recipe_id recipe id.
 	 */
 	public function lp_mark_lesson_done( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		if ( ! function_exists( 'learn_press_get_current_user' ) ) {
 			$error_message = 'The function learn_press_get_current_user does not exist';

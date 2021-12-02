@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_H5P_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_H5P_Integration {

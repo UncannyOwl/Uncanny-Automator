@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UPSELL_PLUGIN_PURCHPROD
+ *
  * @package Uncanny_Automator
  */
 class UPSELL_PLUGIN_PURCHPROD {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UPSELLPLUGIN';
@@ -31,8 +33,6 @@ class UPSELL_PLUGIN_PURCHPROD {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/upsell-plugin/' ),
@@ -46,10 +46,10 @@ class UPSELL_PLUGIN_PURCHPROD {
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'upsell_order_completed' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->upsell_plugin->options->all_upsell_products( esc_attr__( 'Product', 'uncanny-automator' ) ),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -60,7 +60,6 @@ class UPSELL_PLUGIN_PURCHPROD {
 
 	public function upsell_order_completed( $order ) {
 
-
 		if ( ! $order ) {
 			return;
 		}
@@ -68,7 +67,6 @@ class UPSELL_PLUGIN_PURCHPROD {
 		if ( 'completed' !== $order->status() ) {
 			return;
 		}
-
 
 		$customer = get_user_by_email( $order->customer_email );
 		$user_id  = ( ! empty( $customer ) ) ? $customer->ID : 0;
@@ -88,10 +86,10 @@ class UPSELL_PLUGIN_PURCHPROD {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( isset( $required_product[ $recipe_id ] ) && isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( - 1 === intval( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 
 						break;
 					}
@@ -100,7 +98,6 @@ class UPSELL_PLUGIN_PURCHPROD {
 		}
 		$items       = $order->items();
 		$product_ids = array();
-
 
 		foreach ( $items as $index => $item ) {
 			$product_ids[] = $item['id'];
@@ -112,10 +109,10 @@ class UPSELL_PLUGIN_PURCHPROD {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( isset( $required_product[ $recipe_id ] ) && isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 					}
 				}
 			}
@@ -123,7 +120,7 @@ class UPSELL_PLUGIN_PURCHPROD {
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
@@ -131,7 +128,7 @@ class UPSELL_PLUGIN_PURCHPROD {
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
 					'is_signed_in'     => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -146,7 +143,6 @@ class UPSELL_PLUGIN_PURCHPROD {
 					}
 				}
 			}
-
 		}
 
 		return;

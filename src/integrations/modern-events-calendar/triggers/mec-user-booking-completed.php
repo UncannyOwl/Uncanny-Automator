@@ -11,6 +11,7 @@ class MEC_USER_BOOKING_COMPLETED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'MEC';
@@ -66,8 +67,8 @@ class MEC_USER_BOOKING_COMPLETED {
 					$this->token . 'EVENT_LOCATION'  => esc_html__( 'Event location', 'uncanny-automator' ),
 					$this->token . 'EVENT_ORGANIZER' => esc_html__( 'Event organizer', 'uncanny-automator' ),
 					$this->token . 'EVENT_COST'      => esc_html__( 'Event cost', 'uncanny-automator' ),
-					$this->token . 'EVENT_THUMB_ID'      => esc_html__( 'Event featured image ID', 'uncanny-automator' ),
-					$this->token . 'EVENT_THUMB_URL'      => esc_html__( 'Event featured image URL', 'uncanny-automator' ),
+					$this->token . 'EVENT_THUMB_ID'  => esc_html__( 'Event featured image ID', 'uncanny-automator' ),
+					$this->token . 'EVENT_THUMB_URL' => esc_html__( 'Event featured image URL', 'uncanny-automator' ),
 				),
 			)
 		);

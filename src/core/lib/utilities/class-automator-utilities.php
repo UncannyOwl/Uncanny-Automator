@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Utilities
+ *
  * @package Uncanny_Automator
  */
 class Automator_Utilities {
@@ -35,7 +36,7 @@ class Automator_Utilities {
 	 *
 	 * @param $item
 	 *
-	 * @return $item;
+	 * @return array;
 	 */
 	public function keep_order_of_options( $item ) {
 		// Check if it has options
@@ -104,7 +105,6 @@ class Automator_Utilities {
 
 	/**
 	 * Sort integrations alphabetically
-	 *
 	 */
 	public function sort_integrations_alphabetically() {
 
@@ -253,9 +253,9 @@ class Automator_Utilities {
 	public function ajax_auth_check( $post = array() ) {
 		$return = array();
 		// Check if nonce is available, if not just bail.
-		if ( ! isset( $post['nonce'] ) && ! isset( $_POST['nonce'] ) ) {
+		if ( ! isset( $_POST['nonce'] ) && ! isset( $post['nonce'] ) ) {
 			$return['status'] = 'auth-failed';
-			$return['error']  = __( 'Automator did not receive nonce.', 'uncanny-automator' );
+			$return['error']  = esc_html__( 'Automator did not receive nonce.', 'uncanny-automator' );
 			echo wp_json_encode( $return );
 			die();
 		}
@@ -266,20 +266,18 @@ class Automator_Utilities {
 		// Check if the current user is capable of calling this auth.
 		if ( ! current_user_can( $capability ) ) {
 			$return['status'] = 'auth-failed';
-			$return['error']  = __( 'You do not have permission to update options.', 'uncanny-automator' );
+			$return['error']  = esc_html__( 'You do not have permission to update options.', 'uncanny-automator' );
 			echo wp_json_encode( $return );
 			die();
 		}
 
 		// check if the nonce is verifiable.
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wp_rest' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wp_rest' ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) ) {
 			$return['status'] = 'auth-failed';
-			$return['error']  = __( 'nonce validation failed.', 'uncanny-automator' );
+			$return['error']  = esc_html__( 'nonce validation failed.', 'uncanny-automator' );
 			echo wp_json_encode( $return );
 			die();
 		}
-
-		// all good.
 	}
 
 	/**

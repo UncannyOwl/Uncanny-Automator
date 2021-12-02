@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_PASSQUIZ
+ *
  * @package Uncanny_Automator
  */
 class LD_PASSQUIZ {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -31,8 +33,6 @@ class LD_PASSQUIZ {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
@@ -47,10 +47,10 @@ class LD_PASSQUIZ {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'learndash_quiz_completed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -73,8 +73,6 @@ class LD_PASSQUIZ {
 
 		if ( 0 !== (int) $q_status ) {
 
-
-
 			$user    = $current_user;
 			$quiz    = $data['quiz'];
 			$post_id = is_object( $quiz ) ? $quiz->ID : $quiz;
@@ -83,12 +81,12 @@ class LD_PASSQUIZ {
 				$user = wp_get_current_user();
 			}
 
-			$args = [
+			$args = array(
 				'code'    => $this->trigger_code,
 				'meta'    => $this->trigger_meta,
 				'post_id' => (int) $post_id,
 				'user_id' => $user->ID,
-			];
+			);
 
 			Automator()->maybe_add_trigger_entry( $args );
 		}

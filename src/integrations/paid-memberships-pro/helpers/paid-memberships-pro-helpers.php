@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\Paid_Memberships_Pro_Pro_Helpers;
 
 /**
  * Class Paid_Memberships_Pro_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Paid_Memberships_Pro_Helpers {

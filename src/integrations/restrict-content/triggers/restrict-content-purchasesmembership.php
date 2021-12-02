@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class RESTRICT_CONTENT_PURCHASESMEMBERSHIP
+ *
  * @package Uncanny_Automator
  */
 class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'RC';
@@ -38,8 +40,6 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/restrict-content/' ),
@@ -53,13 +53,13 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 			'priority'            => 5,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'user_purchases_membership_level' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->restrict_content->options->get_membership_levels(
 					null,
 					$this->trigger_meta,
-					[ 'any' => true ]
+					array( 'any' => true )
 				),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -72,8 +72,6 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 	 * @param \RCP_Membership $membership Membership object.
 	 */
 	public function user_purchases_membership_level( $membership_id, \RCP_Membership $RCP_Membership ) {
-
-
 
 		$user_id = $RCP_Membership->get_user_id();
 
@@ -92,10 +90,10 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( $required_level[ $recipe_id ][ $trigger_id ] === '-1' || $required_level[ $recipe_id ][ $trigger_id ] === $level_id ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
@@ -103,14 +101,14 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -120,14 +118,14 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 
 							// Add token for options
 							Automator()->insert_trigger_meta(
-								[
+								array(
 									'user_id'        => $user_id,
 									'trigger_id'     => $result['args']['trigger_id'],
 									'meta_key'       => $this->trigger_meta . '_MEMBERSHIPID ',
 									'meta_value'     => $membership_id,
 									'trigger_log_id' => $result['args']['get_trigger_id'],
 									'run_number'     => $result['args']['run_number'],
-								]
+								)
 							);
 
 							Automator()->maybe_trigger_complete( $result['args'] );

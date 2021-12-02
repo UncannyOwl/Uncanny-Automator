@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WP_SENDEMAIL
+ *
  * @package Uncanny_Automator
  */
 class WP_SENDEMAIL {

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WP_SUBMITPOST
+ *
  * @package Uncanny_Automator
  */
 class WP_SUBMITPOST {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WP';
@@ -32,8 +34,6 @@ class WP_SUBMITPOST {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
@@ -41,8 +41,8 @@ class WP_SUBMITPOST {
 			'code'                => $this->trigger_code,
 			'action'              => 'shutdown',
 			'validation_function' => array( $this, 'submit_post' ),
-			'options'             => [
-				[
+			'options'             => array(
+				array(
 					'option_code'        => 'NUMTIMES',
 					'label'              => 'Number of Times',
 					'input_type'         => 'text',
@@ -51,10 +51,9 @@ class WP_SUBMITPOST {
 					'default_value'      => false,
 					'validation_type'    => 'integer',
 					'validation_message' => 'Please add how many times the page must be submitted.',
-				],
-			],
+				),
+			),
 		);
-
 
 		Automator()->register->trigger( $trigger );
 

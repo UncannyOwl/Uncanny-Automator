@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BP_ADDTOGROUP
+ *
  * @package Uncanny_Automator
  */
 class BP_ADDTOGROUP {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BP';
@@ -31,8 +33,6 @@ class BP_ADDTOGROUP {
 	 */
 	public function define_action() {
 
-
-
 		$bp_group_args = array(
 			'uo_include_any' => false,
 			'status'         => array( 'public', 'hidden', 'private' ),
@@ -50,11 +50,10 @@ class BP_ADDTOGROUP {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_to_bp_group' ),
-			'options'            => [
+			'options'            => array(
 				Automator()->helpers->recipe->buddypress->options->all_buddypress_groups( null, 'BPGROUPS', $bp_group_args ),
-			],
+			),
 		);
-
 
 		Automator()->register->action( $action );
 	}
@@ -67,8 +66,6 @@ class BP_ADDTOGROUP {
 	 * @param $recipe_id
 	 */
 	public function add_to_bp_group( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$add_to_bp_gropu = $action_data['meta'][ $this->action_meta ];
 

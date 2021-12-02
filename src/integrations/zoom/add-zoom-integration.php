@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Zoom_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Zoom_Integration {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'ZOOM';

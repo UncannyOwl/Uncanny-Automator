@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class Presto_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Presto_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'PRESTO';

@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class AC_USER_LIST_REMOVE
+ *
  * @package Uncanny_Automator
  */
 class AC_USER_LIST_REMOVE {

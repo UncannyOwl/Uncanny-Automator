@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BP_USERUPDATEPROFILE
+ *
  * @package Uncanny_Automator
  */
 class BP_USERUPDATEPROFILE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BP';
@@ -30,8 +32,6 @@ class BP_USERUPDATEPROFILE {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -64,15 +64,13 @@ class BP_USERUPDATEPROFILE {
 	 */
 	public function bp_user_updated_profile( $user_id, $posted_field_ids, $errors, $old_values, $new_values ) {
 
-
-
-		$args = [
+		$args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $user_id,
 			'ignore_post_id' => true,
 			'is_signed_in'   => true,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

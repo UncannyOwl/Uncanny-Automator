@@ -193,12 +193,19 @@ class Wpum_Tokens {
 				$trigger_id     = $pieces[0];
 				$trigger_meta   = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var( "SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = '{$trigger_meta}'
-													AND automator_trigger_log_id = {$trigger_log_id}
-													AND automator_trigger_id = {$trigger_id}
-													LIMIT 0,1" );
+				$entry          = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0,1",
+						$trigger_meta,
+						$trigger_log_id,
+						$trigger_id
+					)
+				);
 
 				$value = maybe_unserialize( $entry );
 			} elseif ( in_array( 'WPUMUSERPPHOTO', $pieces ) || in_array( 'WPUMPPUPDATED', $pieces )
@@ -212,12 +219,19 @@ class Wpum_Tokens {
 					$trigger_id     = $pieces[0];
 					$trigger_meta   = $pieces[2];
 					$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-					$entry          = $wpdb->get_var( "SELECT meta_value
-													FROM {$wpdb->prefix}uap_trigger_log_meta
-													WHERE meta_key = '{$trigger_meta}'
-													AND automator_trigger_log_id = {$trigger_log_id}
-													AND automator_trigger_id = {$trigger_id}
-													LIMIT 0,1" );
+					$entry          = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT meta_value
+FROM {$wpdb->prefix}uap_trigger_log_meta
+WHERE meta_key = %s
+  AND automator_trigger_log_id = %d
+  AND automator_trigger_id = %d
+LIMIT 0,1",
+							$trigger_meta,
+							$trigger_log_id,
+							$trigger_id
+						)
+					);
 
 					$value = maybe_unserialize( $entry );
 				} else {
@@ -271,7 +285,7 @@ class Wpum_Tokens {
 				break;
 			default:
 				global $wpdb;
-				$field_id = $wpdb->get_var( "SELECT id FROM {$wpdb->prefix}wpum_fields WHERE type = '{$field}' LIMIT 0,1" );
+				$field_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpum_fields WHERE type = %s LIMIT 0,1", $field ) );
 				$value    = get_user_meta( $user->ID, WPUM()->field_meta->get_meta( $field_id, 'user_meta_key' ),
 					true );
 		}

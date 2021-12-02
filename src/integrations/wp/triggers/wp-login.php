@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WP_LOGIN
+ *
  * @package Uncanny_Automator
  */
 class WP_LOGIN {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WP';
@@ -31,8 +33,6 @@ class WP_LOGIN {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
@@ -47,9 +47,9 @@ class WP_LOGIN {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wp_login' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -65,17 +65,15 @@ class WP_LOGIN {
 	 */
 	public function wp_login( $user_login, $user ) {
 
-
-
 		$user_id = $user->ID;
 
-		$args = [
+		$args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $user_id,
 			'ignore_post_id' => true,
 			'is_signed_in'   => true,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

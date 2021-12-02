@@ -208,7 +208,7 @@ function automator_filter_has_var( $variable = null, $type = INPUT_GET ) {
 function automator_filter_input_array( $variable = null, $type = INPUT_GET, $flags = array() ) {
 	if ( empty( $flags ) ) {
 		$flags = array(
-			'filter' => FILTER_VALIDATE_INT,
+			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY,
 		);
 	}

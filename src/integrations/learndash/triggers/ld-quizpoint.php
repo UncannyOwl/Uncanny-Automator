@@ -9,6 +9,7 @@ class LD_QUIZPOINT {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';

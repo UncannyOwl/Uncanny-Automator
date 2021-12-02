@@ -2,9 +2,6 @@
 /**
  * @return array
  */
-/**
- * @return array
- */
 function automator_pro_items_list() {
 	return array(
 		'ACF'            => array(

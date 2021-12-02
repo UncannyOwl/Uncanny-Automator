@@ -20,9 +20,9 @@ if ( filter_has_var( INPUT_GET, 'page' ) ) {
 			<?php
 			foreach ( $available_tabs as $tab => $tab_name ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				?>
-				<a href="<?php echo admin_url( 'edit.php' ) ?>?post_type=uo-recipe&page=<?php echo $tab; ?>"
+				<a href="<?php echo esc_url_raw( admin_url( 'edit.php' ) ); ?>?post_type=uo-recipe&page=<?php echo esc_attr( $tab ); ?>"
 				   class="nav-tab <?php echo ( (string) $tab === (string) $current_tab ) ? 'nav-tab-active' : ''; ?>">
-					<?php echo $tab_name; ?>
+					<?php echo esc_attr( $tab_name ); ?>
 				</a>
 				<?php
 			}

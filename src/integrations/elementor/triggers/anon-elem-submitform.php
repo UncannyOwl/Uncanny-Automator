@@ -2,15 +2,16 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class ANON_ELEM_SUBMITFORM
+ *
  * @package Uncanny_Automator
  */
 class ANON_ELEM_SUBMITFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'ELEM';
@@ -52,9 +53,9 @@ class ANON_ELEM_SUBMITFORM {
 			'type'                => 'anonymous',
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'elem_submit_form' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->elementor->options->all_elementor_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -89,14 +90,14 @@ class ANON_ELEM_SUBMITFORM {
 			if ( Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
 				continue;
 			}
-			$args = [
+			$args = array(
 				'code'             => $this->trigger_code,
 				'meta'             => $this->trigger_meta,
 				'recipe_to_match'  => $recipe_id,
 				'trigger_to_match' => $trigger_id,
 				'ignore_post_id'   => true,
 				'user_id'          => $user_id,
-			];
+			);
 
 			$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 			do_action( 'automator_save_elementor_form_entry', $record, $recipes, $args );
@@ -126,7 +127,7 @@ class ANON_ELEM_SUBMITFORM {
 			return false;
 		}
 
-		$recipe_ids     = [];
+		$recipe_ids     = array();
 		$entry_to_match = $form_id;
 
 		foreach ( $recipes as $recipe ) {
@@ -138,7 +139,10 @@ class ANON_ELEM_SUBMITFORM {
 		}
 
 		if ( ! empty( $recipe_ids ) ) {
-			return [ 'recipe_ids' => $recipe_ids, 'result' => true ];
+			return array(
+				'recipe_ids' => $recipe_ids,
+				'result'     => true,
+			);
 		}
 
 		return false;

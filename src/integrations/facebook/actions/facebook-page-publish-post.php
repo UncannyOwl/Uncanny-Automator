@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class FACEBOOK_PAGE_PUBLISH_POST
+ *
  * @package Uncanny_Automator
  */
 class FACEBOOK_PAGE_PUBLISH_POST {
@@ -49,7 +50,7 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 		$this->set_action_meta( 'FACEBOOK_PAGE_PUBLISH_POST_META' );
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
-		
+
 		/* translators: Action - WordPress */
 		$this->set_sentence( sprintf( esc_attr__( 'Publish a post to {{a Facebook page:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
 

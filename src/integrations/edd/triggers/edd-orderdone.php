@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class EDD_ORDERDONE
+ *
  * @package Uncanny_Automator
  */
 class EDD_ORDERDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'EDD';
@@ -44,11 +46,11 @@ class EDD_ORDERDONE {
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'edd_complete_purchase' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->field->integer_field( $this->trigger_meta ),
 				Automator()->helpers->recipe->field->less_or_greater_than(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -64,12 +66,12 @@ class EDD_ORDERDONE {
 		//TODO:: Complete this function
 		$post_id = 0;
 		$user_id = get_current_user_id();
-		$args    = [
+		$args    = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $post_id,
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UM_USERROLECHANGE
+ *
  * @package Uncanny_Automator
  */
 class UM_USERROLECHANGE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UM';
@@ -37,8 +39,6 @@ class UM_USERROLECHANGE {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/ultimate-member/' ),
@@ -52,9 +52,9 @@ class UM_USERROLECHANGE {
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'set_user_role' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wp->options->wp_user_roles(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -71,18 +71,17 @@ class UM_USERROLECHANGE {
 	 */
 	public function set_user_role( $user_id, $role, $old_roles ) {
 
-
 		$matched_recipe_ids = $this->match_condition( $role );
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$args = [
+				$args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				if ( isset( Automator()->process ) && isset( Automator()->process->user ) && Automator()->process->user instanceof Automator_Recipe_Process_User ) {
 					Automator()->process->user->maybe_add_trigger_entry( $args );
@@ -110,10 +109,10 @@ class UM_USERROLECHANGE {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( - 1 === intval( $required_role[ $recipe_id ][ $trigger_id ] ) ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 
 					break;
 				}
@@ -125,10 +124,10 @@ class UM_USERROLECHANGE {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( $required_role[ $recipe_id ][ $trigger_id ] == $role ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}

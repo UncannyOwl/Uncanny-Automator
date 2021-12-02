@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class MP_PURCHASEPRODUCTRECURRING
+ *
  * @package Uncanny_Automator
  */
 class MP_PURCHASEPRODUCTRECURRING {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'MP';

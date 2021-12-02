@@ -2,17 +2,18 @@
 
 namespace Uncanny_Automator;
 
-
 use UCTINCAN\Database;
 
 /**
  * Class Restrict_Content_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Restrict_Content_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'RC';
@@ -22,8 +23,8 @@ class Restrict_Content_Tokens {
 		// See this filter generator AT automator-get-data.php
 		// in function recipe_trigger_tokens()
 		//*************************************************************//
-		add_filter( 'automator_maybe_trigger_rc_rcmembershiplevel_tokens', [ $this, 'possible_tokens' ], 9999, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'rc_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_rc_rcmembershiplevel_tokens', array( $this, 'possible_tokens' ), 9999, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'rc_token' ), 20, 6 );
 	}
 
 	/**
@@ -46,18 +47,18 @@ class Restrict_Content_Tokens {
 
 		$new_tokens = array();
 		if ( ! empty( $id ) && absint( $id ) ) {
-			$new_tokens[] = [
+			$new_tokens[] = array(
 				'tokenId'         => 'RCMEMBERSHIPLEVEL_INITIAL',
 				'tokenName'       => _x( 'Membership initial payment', 'Restrict Content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'RCPURCHASESMEMBERSHIP',
-			];
-			$new_tokens[] = [
+			);
+			$new_tokens[] = array(
 				'tokenId'         => 'RCMEMBERSHIPLEVEL_RECURRING',
 				'tokenName'       => _x( 'Membership recurring payment', 'Restrict Content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'RCPURCHASESMEMBERSHIP',
-			];
+			);
 
 			$tokens = array_merge( $tokens, $new_tokens );
 		}
@@ -85,7 +86,6 @@ class Restrict_Content_Tokens {
 				if ( ! absint( $recipe_id ) ) {
 					return $value;
 				}
-
 
 				$replace_pieces = $replace_args['pieces'];
 				$trigger_log_id = $replace_args['trigger_log_id'];

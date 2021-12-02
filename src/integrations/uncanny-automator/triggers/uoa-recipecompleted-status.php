@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UOA_RECIPECOMPLETED_STATUS
+ *
  * @package Uncanny_Automator
  */
 class UOA_RECIPECOMPLETED_STATUS {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';
@@ -47,7 +49,7 @@ class UOA_RECIPECOMPLETED_STATUS {
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'on_completion' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->uncanny_automator->options->get_recipes( null, $this->trigger_meta, true ),
 				array(
 					'option_code'     => 'RECIPESTATUS',
@@ -66,7 +68,7 @@ class UOA_RECIPECOMPLETED_STATUS {
 						'UOARECIPES_recipe_status' => esc_attr__( 'Recipe status', 'uncanny-automator' ),
 					),
 				),
-			],
+			),
 		);
 		Automator()->register->trigger( $trigger );
 	}
@@ -88,9 +90,7 @@ class UOA_RECIPECOMPLETED_STATUS {
 
 		global $wpdb;
 		// get recipe actions
-		$table_name    = $wpdb->prefix . 'uap_recipe_log';
-		$query         = "SELECT `completed` FROM $table_name WHERE ID = $recipe_log_id AND automator_recipe_id = $recipe_id";
-		$recipe_status = $wpdb->get_var( $query );
+		$recipe_status = $wpdb->get_var( $wpdb->prepare( "SELECT `completed` FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d AND automator_recipe_id = %d", $recipe_log_id, $recipe_id ) );
 
 		if ( ! isset( $recipe_status ) ) {
 			return;

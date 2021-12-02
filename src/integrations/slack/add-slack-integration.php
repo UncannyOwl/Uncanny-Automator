@@ -4,11 +4,13 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Slack_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Slack_Integration {
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'SLACK';

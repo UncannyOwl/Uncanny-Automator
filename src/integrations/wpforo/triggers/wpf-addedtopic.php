@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPF_ADDEDTOPIC
+ *
  * @package Uncanny_Automator
  */
 class WPF_ADDEDTOPIC {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPFORO';
@@ -32,16 +34,14 @@ class WPF_ADDEDTOPIC {
 	 */
 	public function define_trigger() {
 
+		$forums = WPF()->forum->get_forums( array( 'type' => 'forum' ) );
 
-
-		$forums = WPF()->forum->get_forums( [ 'type' => 'forum' ] );
-
-		$forum_options = [ 0 => 'Any Forum' ];
+		$forum_options = array( 0 => 'Any Forum' );
 		foreach ( $forums as $forum ) {
 			$forum_options[ $forum['forumid'] ] = $forum['title'];
 		}
 
-		$forum_relevant_tokens = [
+		$forum_relevant_tokens = array(
 			'WPFORO_FORUM'         => __( 'Forum title', 'uncanny-automator' ),
 			'WPFORO_FORUM_ID'      => __( 'Forum ID', 'uncanny-automator' ),
 			'WPFORO_FORUM_URL'     => __( 'Forum URL', 'uncanny-automator' ),
@@ -49,7 +49,7 @@ class WPF_ADDEDTOPIC {
 			'WPFORO_TOPIC_ID'      => __( 'Topic ID', 'uncanny-automator' ),
 			'WPFORO_TOPIC_URL'     => __( 'Topic URL', 'uncanny-automator' ),
 			'WPFORO_TOPIC_CONTENT' => __( 'Topic content', 'uncanny-automator' ),
-		];
+		);
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -64,17 +64,19 @@ class WPF_ADDEDTOPIC {
 			'priority'            => 5,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'added_topic' ),
-			'options'             => [
-				Automator()->helpers->recipe->field->select_field_args( [
-					'option_code'     => $this->trigger_meta,
-					'options'         => $forum_options,
-					'label'           => esc_attr__( 'Forums', 'uncanny-automator' ),
-					'required'        => true,
-					'token_name'      => 'Forum ID',
-					'relevant_tokens' => $forum_relevant_tokens,
-				] ),
+			'options'             => array(
+				Automator()->helpers->recipe->field->select_field_args(
+					array(
+						'option_code'     => $this->trigger_meta,
+						'options'         => $forum_options,
+						'label'           => esc_attr__( 'Forums', 'uncanny-automator' ),
+						'required'        => true,
+						'token_name'      => 'Forum ID',
+						'relevant_tokens' => $forum_relevant_tokens,
+					)
+				),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -83,8 +85,6 @@ class WPF_ADDEDTOPIC {
 	}
 
 	public function added_topic( $args ) {
-
-
 
 		if ( isset( $args['forumid'] ) ) {
 			$forum_id = absint( $args['forumid'] );
@@ -112,24 +112,24 @@ class WPF_ADDEDTOPIC {
 					0 === absint( $required_forum_id ) || // Any forum is set as the option
 					$forum_id === absint( $required_forum_id ) // Match specific forum
 				) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => get_current_user_id(),
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -137,12 +137,12 @@ class WPF_ADDEDTOPIC {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
 
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => get_current_user_id(),
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							$trigger_meta['meta_key']   = 'WPFORO_TOPIC_ID';
 							$trigger_meta['meta_value'] = $topic_id;
@@ -159,7 +159,6 @@ class WPF_ADDEDTOPIC {
 					}
 				}
 			}
-
 		}
 	}
 }

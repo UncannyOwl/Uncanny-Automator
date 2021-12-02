@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPSP_PURCHWITHFORM
+ *
  * @package Uncanny_Automator
  */
 class WPSP_PURCHWITHFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPSIMPLEPAY';
@@ -31,27 +33,35 @@ class WPSP_PURCHWITHFORM {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-simple-pay/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Job Manager */
-			'sentence'            => sprintf( esc_attr__( 'A user completes a purchase with {{a form:%1$s}}',
-				'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf(
+				esc_attr__(
+					'A user completes a purchase with {{a form:%1$s}}',
+					'uncanny-automator'
+				),
+				$this->trigger_meta
+			),
 			/* translators: Logged-in trigger - WP Job Manager */
-			'select_option_name'  => esc_attr__( 'A user completes a purchase with {{a form}}',
-				'uncanny-automator' ),
+			'select_option_name'  => esc_attr__(
+				'A user completes a purchase with {{a form}}',
+				'uncanny-automator'
+			),
 			'action'              => 'simpay_charge_created',
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'simple_pay_charge_created' ),
-			'options'             => [
-				Automator()->helpers->recipe->wp_simple_pay->options->list_wp_simpay_forms( null,
-					$this->trigger_meta, [ 'is_any' => true ] ),
-			],
+			'options'             => array(
+				Automator()->helpers->recipe->wp_simple_pay->options->list_wp_simpay_forms(
+					null,
+					$this->trigger_meta,
+					array( 'is_any' => true )
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -86,18 +96,18 @@ class WPSP_PURCHWITHFORM {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( $required_form[ $recipe_id ][ $trigger_id ] == $form_id ||
-				     $required_form[ $recipe_id ][ $trigger_id ] == '-1' ) {
-					$matched_recipe_ids[] = [
+					 $required_form[ $recipe_id ][ $trigger_id ] == '-1' ) {
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
@@ -105,19 +115,19 @@ class WPSP_PURCHWITHFORM {
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							$trigger_meta['meta_key']   = $this->trigger_code;
 							$trigger_meta['meta_value'] = $form_name;

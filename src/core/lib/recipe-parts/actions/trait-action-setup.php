@@ -5,6 +5,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Action_Setup
+ *
  * @package Uncanny_Automator\Recipe
  */
 trait Action_Setup {

@@ -6,6 +6,7 @@ use Uncanny_Automator\Recipe_Post_Rest_Api as Recipe_Api;
 
 /**
  * Class Populate_From_Query.
+ *
  * @package Uncanny_Automator
  */
 class Import_Recipe {
@@ -28,24 +29,36 @@ class Import_Recipe {
 
 	}
 
+	/**
+	 * @param $path
+	 *
+	 * @return int|mixed|\WP_Error
+	 */
 	public function import_from_file( $path ) {
 
 		$recipe = $this->load_file( $path );
 
-		$recipe_id = $this->import_from_array( $recipe );
-
-		return $recipe_id;
+		return $this->import_from_array( $recipe );
 	}
 
+	/**
+	 * @param $path
+	 *
+	 * @return mixed
+	 */
 	public function load_file( $path ) {
 
 		$string = file_get_contents( $path );
 
-		$json_array = json_decode( $string, true );
-
-		return $json_array;
+		return json_decode( $string, true );
 	}
 
+	/**
+	 * @param $recipe
+	 *
+	 * @return int|mixed|\WP_Error
+	 * @throws \Exception
+	 */
 	public function import_from_array( $recipe ) {
 
 		$recipe['ID'] = $this->create_recipe_post( $recipe );
@@ -70,16 +83,20 @@ class Import_Recipe {
 			}
 		}
 
-
 		$this->set_status( $recipe );
 
 		return $recipe['ID'];
 
 	}
 
+	/**
+	 * @param $recipe
+	 *
+	 * @return int|\WP_Error
+	 */
 	public function create_recipe_post( $recipe ) {
 
-		$recipe_title = $recipe['title'] ? $recipe['title'] : 'Imported recipe';
+		$recipe_title = ! empty( $recipe['title'] ) ? $recipe['title'] : 'Imported recipe';
 
 		$recipe_post = array(
 			'post_type'   => 'uo-recipe',
@@ -90,6 +107,13 @@ class Import_Recipe {
 		return wp_insert_post( $recipe_post );
 	}
 
+	/**
+	 * @param $recipe_id
+	 * @param $trigger
+	 *
+	 * @return mixed
+	 * @throws \Exception
+	 */
 	public function add_trigger( $recipe_id, $trigger ) {
 
 		$request = new \WP_REST_Request( 'POST' );
@@ -100,21 +124,23 @@ class Import_Recipe {
 
 		$trigger_added = $this->recipe_api->add( $request );
 
-
 		if ( ! $trigger_added->data['success'] ) {
 
 			throw new \Exception( "Trigger couldn't be added." );
 
-		} else {
-
-			return $trigger_added->data['post_ID'];
-
 		}
 
-		return;
+		return $trigger_added->data['post_ID'];
 	}
 
 
+	/**
+	 * @param $recipe_id
+	 * @param $action
+	 *
+	 * @return mixed
+	 * @throws \Exception
+	 */
 	public function add_action( $recipe_id, $action ) {
 
 		$request = new \WP_REST_Request( 'POST' );
@@ -129,22 +155,23 @@ class Import_Recipe {
 
 			throw new \Exception( "Action couldn't be added." );
 
-		} else {
-
-			return $action_added->data['post_ID'];
-
 		}
 
-		return;
+		return $action_added->data['post_ID'];
 	}
 
+	/**
+	 * @param $item
+	 * @param null $recipe
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function set_values( $item, $recipe = null ) {
 
 		$request = new \WP_REST_Request( 'POST' );
 
 		$request->set_param( 'itemId', $item['ID'] );
-
-		$options = array();
 
 		if ( empty( $item['fields'] ) ) {
 			return true;
@@ -153,10 +180,8 @@ class Import_Recipe {
 		foreach ( $item['fields'] as $option ) {
 
 			$request = new \WP_REST_Request( 'POST' );
-
 			$request->set_param( 'itemId', $item['ID'] );
 			$request->set_param( 'optionCode', $option['meta'] );
-			$option_value = array();
 			if ( is_array( $option['value'] ) ) {
 				$option_value = json_encode( $option['value'] );
 			} else {
@@ -177,6 +202,12 @@ class Import_Recipe {
 		return true;
 	}
 
+	/**
+	 * @param $item
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function set_status( $item ) {
 		$request = new \WP_REST_Request( 'POST' );
 		$request->set_param( 'post_ID', $item['ID'] );
@@ -193,6 +224,12 @@ class Import_Recipe {
 		return true;
 	}
 
+	/**
+	 * @param $text
+	 * @param $recipe
+	 *
+	 * @return array|mixed|string|string[]
+	 */
 	public function parse_tokens( $text, $recipe ) {
 
 		if ( ! $recipe || empty( $recipe['triggers'] ) ) {

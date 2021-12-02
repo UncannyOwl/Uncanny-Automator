@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_CREATEGROUP
+ *
  * @package Uncanny_Automator
  */
 class LD_CREATEGROUP {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';
@@ -30,15 +32,13 @@ class LD_CREATEGROUP {
 	 */
 	public function define_action() {
 
-
-
-		$args = [
+		$args = array(
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args );
 
@@ -55,24 +55,24 @@ class LD_CREATEGROUP {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'create_group' ),
 			'options_group'      =>
-				[
+				array(
 					$this->action_meta =>
-						[
-							[
+						array(
+							array(
 								'option_code' => 'LDGROUPTITLE',
 								'label'       => esc_attr__( 'Group name', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
-							],
-							[
+							),
+							array(
 								'option_code'              => 'LDGROUPCOURSES',
 								'label'                    => esc_attr__( 'Group courses', 'uncanny-automator' ),
 								'input_type'               => 'select',
 								'supports_multiple_values' => true,
 								'required'                 => true,
 								'options'                  => $options,
-							],
-							[
+							),
+							array(
 								'input_type'            => 'select',
 								'option_code'           => 'GROUP_LEADER_ROLE_ASSIGNMENT',
 								/* translators: Uncanny Groups */
@@ -80,16 +80,16 @@ class LD_CREATEGROUP {
 								'description'           => '<div class="user-selector__warning">' . esc_attr__( 'Only users with the Group Leader role can be made the leader of a group.', 'uncanny-automator' ) . '</div>',
 								'required'              => true,
 								'default_value'         => 'do_nothing',
-								'options'               => [
+								'options'               => array(
 									'do_nothing' => esc_attr__( 'Do nothing', 'uncanny-automator' ),
 									'add'        => esc_attr__( 'Add the role to their existing role(s)', 'uncanny-automator' ),
 									'replace'    => esc_attr__( 'Replace their existing role(s) with the Group Leader role', 'uncanny-automator' ),
-								],
+								),
 								'supports_custom_value' => false,
 								'supports_tokens'       => false,
-							],
-						],
-				],
+							),
+						),
+				),
 		);
 
 		Automator()->register->action( $action );
@@ -104,8 +104,6 @@ class LD_CREATEGROUP {
 	 * @param $args
 	 */
 	public function create_group( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$uo_group_title               = Automator()->parse->text( $action_data['meta']['LDGROUPTITLE'], $recipe_id, $user_id, $args );
 		$uo_group_courses             = Automator()->parse->text( $action_data['meta']['LDGROUPCOURSES'], $recipe_id, $user_id, $args );
@@ -162,7 +160,6 @@ class LD_CREATEGROUP {
 				delete_transient( $transient_key );
 			}
 		}
-
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 

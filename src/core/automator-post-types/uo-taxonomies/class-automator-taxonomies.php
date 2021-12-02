@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Recipe_Taxonomies
+ *
  * @package Uncanny_Automator
  */
 class Automator_Taxonomies {
@@ -100,17 +101,19 @@ class Automator_Taxonomies {
 		foreach ( $taxonomies as $taxonomy_slug ) {
 
 			// Display filter HTML
-			wp_dropdown_categories( [
-				'show_option_all' => get_taxonomy( $taxonomy_slug )->labels->all_items,
-				'hierarchical'    => 1,
-				'show_count'      => 0,
-				'orderby'         => 'name',
-				'name'            => $taxonomy_slug,
-				'value_field'     => 'slug',
-				'taxonomy'        => $taxonomy_slug,
-				'hide_if_empty'   => true,
-				'hide_empty'      => false,
-			] );
+			wp_dropdown_categories(
+				array(
+					'show_option_all' => get_taxonomy( $taxonomy_slug )->labels->all_items,
+					'hierarchical'    => 1,
+					'show_count'      => 0,
+					'orderby'         => 'name',
+					'name'            => $taxonomy_slug,
+					'value_field'     => 'slug',
+					'taxonomy'        => $taxonomy_slug,
+					'hide_if_empty'   => true,
+					'hide_empty'      => false,
+				)
+			);
 		}
 
 	}
@@ -162,14 +165,14 @@ class Automator_Taxonomies {
 			case 'recipe_category':
 				$terms = get_the_term_list( $post_id, 'recipe_category', '', ',', '' );
 				if ( is_string( $terms ) ) {
-					echo $terms;
+					echo wp_kses_post( $terms );
 				}
 				break;
 
-			case 'recipe_tag' :
+			case 'recipe_tag':
 				$terms = get_the_term_list( $post_id, 'recipe_tag', '', ',', '' );
 				if ( is_string( $terms ) ) {
-					echo $terms;
+					echo wp_kses_post( $terms );
 				}
 				break;
 

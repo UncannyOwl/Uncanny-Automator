@@ -48,7 +48,7 @@ class Badgeos_Tokens {
 
 			if ( 'BOAWARDTYPES' === $token ) {
 				if ( $award_type != '-1' ) {
-					$value = isset($trigger_data[0]['meta']['BOAWARDTYPES_readable']) ? $trigger_data[0]['meta']['BOAWARDTYPES_readable'] : '';
+					$value = isset( $trigger_data[0]['meta']['BOAWARDTYPES_readable'] ) ? $trigger_data[0]['meta']['BOAWARDTYPES_readable'] : '';
 				} else {
 					global $wpdb;
 					$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d ORDER BY ID DESC LIMIT 0,1", $token, $trigger_data[0]['ID'], $replace_args['trigger_log_id'] ) );
@@ -56,7 +56,6 @@ class Badgeos_Tokens {
 						$value = maybe_unserialize( $meta_value );
 					}
 				}
-
 			}
 		}
 

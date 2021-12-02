@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class ELEM_SUBMITFORM
+ *
  * @package Uncanny_Automator
  */
 class ELEM_SUBMITFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'ELEM';
@@ -43,9 +45,9 @@ class ELEM_SUBMITFORM {
 			'priority'            => 100,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'elem_submit_form' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->elementor->options->all_elementor_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -70,7 +72,6 @@ class ELEM_SUBMITFORM {
 			return;
 		}
 
-
 		$user_id    = wp_get_current_user()->ID;
 		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$conditions = $this->match_condition( $form_id, $recipes, $this->trigger_meta, $this->trigger_code );
@@ -82,13 +83,13 @@ class ELEM_SUBMITFORM {
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
 				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					$args = [
+					$args = array(
 						'code'            => $this->trigger_code,
 						'meta'            => $this->trigger_meta,
 						'recipe_to_match' => $recipe_id,
 						'ignore_post_id'  => true,
 						'user_id'         => $user_id,
-					];
+					);
 
 					$args = Automator()->maybe_add_trigger_entry( $args, false );
 					do_action( 'automator_save_elementor_form_entry', $record, $recipes, $args );
@@ -133,7 +134,10 @@ class ELEM_SUBMITFORM {
 		}
 
 		if ( ! empty( $recipe_ids ) ) {
-			return [ 'recipe_ids' => $recipe_ids, 'result' => true ];
+			return array(
+				'recipe_ids' => $recipe_ids,
+				'result'     => true,
+			);
 		}
 
 		return false;

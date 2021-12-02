@@ -72,8 +72,8 @@ class Utilities {
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param $class_name The name of the class instance
-	 * @param object $class_instance The reference to the class instance
+	 * @param $class_name
+	 * @param object $class_instance
 	 *
 	 * @since    1.0.0
 	 */
@@ -84,8 +84,8 @@ class Utilities {
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param $integration The name of the class instance
-	 * @param object $class_instance The reference to the class instance
+	 * @param $integration
+	 * @param object $class_instance
 	 *
 	 * @since    2.1.0
 	 *
@@ -119,7 +119,7 @@ class Utilities {
 	/**
 	 * Get a specific class instance
 	 *
-	 * @param $class_name The name of the class instance
+	 * @param $class_name
 	 *
 	 * @return object | bool
 	 * @since    1.0.0
@@ -186,7 +186,7 @@ class Utilities {
 		if ( ! empty( $file_name ) && is_dir( dirname( $file_name ) ) ) {
 			$icon = basename( $file_name ); // icon with extension.
 			if ( version_compare( PHP_VERSION, '7.0', '>=' ) ) {
-				$integration_dir = basename( dirname( $file_name) ); // integration folder path.
+				$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
 			} else {
 				$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
 			}
@@ -263,7 +263,7 @@ class Utilities {
 	 *
 	 */
 	public static function automator_get_vendor_asset( $file_name ) {
-		return plugins_url( 'src/assets/vendor/' . $file_name, AUTOMATOR_BASE_FILE );
+		return plugins_url( 'src/assets/legacy/vendor/' . $file_name, AUTOMATOR_BASE_FILE );
 	}
 
 	/**
@@ -271,60 +271,26 @@ class Utilities {
 	 *
 	 * @param $file_name
 	 *
-	 * @return $asset_url
 	 * @since    1.0.0
 	 *
 	 */
-	public static function automator_enqueue_global_assets() {
+	public static function legacy_automator_enqueue_global_assets() {
 		wp_enqueue_style( 'uap-admin-global-fonts', 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap', array(), Utilities::automator_get_version() );
 
-		wp_enqueue_style( 'uap-admin-global', Utilities::automator_get_css( 'admin/global.css' ), array( 'uap-admin-global-fonts' ), Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-admin-global', Utilities::automator_get_asset( 'legacy/css/admin/global.css' ), array( 'uap-admin-global-fonts' ), Utilities::automator_get_version() );
 		self::automator_enqueue_frontend_assets();
 
-		wp_enqueue_script( 'uap-admin-global', Utilities::automator_get_js( 'admin/global.js' ), array( 'jquery' ), Utilities::automator_get_version(), true );
-
-
-
-
-
-		// Enqueue main JS
-		wp_enqueue_script(
-			'uap-admin',
-			Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
-			array(),
-			Utilities::automator_get_version(),
-			true
-		);
-
-		// Get data for the main script
-		$automator_backend_js = apply_filters( 'automator_assets_backend_js_data', array(
-			'rest' => array(
-				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
-				'nonce' => \wp_create_nonce( 'wp_rest' ),
-			),
-			'i18n' => array()
-		) );
-
-		wp_localize_script( 'uap-admin', 'UncannyAutomatorBackend', $automator_backend_js );
-
-		// Enqueue main CSS
-		wp_enqueue_style(
-			'uap-admin',
-			Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
-			array(),
-			Utilities::automator_get_version()
-		);
+		wp_enqueue_script( 'uap-admin-global', Utilities::automator_get_asset( 'legacy/js/admin/global.js' ), array( 'jquery' ), Utilities::automator_get_version(), true );
 	}
 
 	/**
 	 * Enqueues frontend JS and CSS files
 	 *
-	 * @return $asset_url
 	 * @since    3.1.1
 	 *
 	 */
 	public static function automator_enqueue_frontend_assets() {
-		wp_enqueue_style( 'uap-automator-css', Utilities::automator_get_css( 'automator.css' ), null, Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-automator-css', Utilities::automator_get_asset( 'legacy/css/automator.css' ), null, Utilities::automator_get_version() );
 	}
 
 	/**
@@ -410,7 +376,7 @@ class Utilities {
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param $class_name The name of the class instance
+	 * @param $class_name
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    1.0.0
@@ -425,7 +391,7 @@ class Utilities {
 	/**
 	 * Adds the autoloaded class in an accessible object
 	 *
-	 * @param $integration The name of the class instance
+	 * @param $integration
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    2.1.0
@@ -462,7 +428,7 @@ class Utilities {
 	/**
 	 * Get a specific class instance
 	 *
-	 * @param $class_name The name of the class instance
+	 * @param $class_name
 	 *
 	 * @return object | bool
 	 * @since    1.0.0
@@ -475,7 +441,7 @@ class Utilities {
 	/**
 	 * Get a specific class instance
 	 *
-	 * @param $class_name The name of the class instance
+	 * @param $class_name
 	 *
 	 * @return array
 	 * @since    1.0.0
@@ -533,10 +499,12 @@ class Utilities {
 			return false;
 		}
 
-		$timestamp         = current_time( self::automator_get_date_time_format() ); //phpcs ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
-		$current_page_link = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$trace_start       = "\n===========================<<<< $timestamp >>>>===========================\n";
-		$trace_heading     = "* Heading: $trace_heading \n* Current Page: $current_page_link \n";
+		$timestamp           = current_time( self::automator_get_date_time_format() ); //phpcs ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+		$current_host        = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+		$current_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$current_page_link   = "https://{$current_host}{$current_request_uri}";
+		$trace_start         = "\n===========================<<<< $timestamp >>>>===========================\n";
+		$trace_heading       = "* Heading: $trace_heading \n* Current Page: $current_page_link \n";
 		//$trace_end         = "\n===========================<<<< TRACE END >>>>===========================\n";
 
 		$backtrace_start = "\n===========================<<<< BACKTRACE START >>>>===========================\n";

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BB_NEWTOPIC
+ *
  * @package Uncanny_Automator
  */
 class BB_NEWTOPIC {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BB';
@@ -31,8 +33,6 @@ class BB_NEWTOPIC {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/bbpress/' ),
@@ -46,10 +46,10 @@ class BB_NEWTOPIC {
 			'priority'            => 10,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'bbp_new_topic' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->bbpress->options->list_bbpress_forums( null, $this->trigger_meta, true ),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -67,15 +67,14 @@ class BB_NEWTOPIC {
 	 */
 	public function bbp_new_topic( $topic_id, $forum_id, $anonymous_data, $topic_author ) {
 
-
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $forum_id,
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

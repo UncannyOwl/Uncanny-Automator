@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Slack_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Slack_Helpers {

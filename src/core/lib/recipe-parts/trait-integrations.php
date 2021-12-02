@@ -18,6 +18,7 @@ use Uncanny_Automator\Utilities;
 
 /**
  * Trait Integrations
+ *
  * @package Uncanny_Automator
  */
 trait Integrations {

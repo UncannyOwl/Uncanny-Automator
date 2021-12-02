@@ -8,6 +8,7 @@ use Uncanny_Automator_Pro\Event_Tickets_Pro_Helpers;
 
 /**
  * Class Event_Tickets_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Event_Tickets_Helpers {
@@ -57,7 +58,6 @@ class Event_Tickets_Helpers {
 	public function all_ec_events( $label = null, $option_code = 'ECEVENTS' ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -65,32 +65,31 @@ class Event_Tickets_Helpers {
 			$label = esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'tribe_events',
 			'post_status'    => 'publish',
-		];
-
+		);
 
 		$all_events = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any event', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			//'default_value'      => 'Any post',
 			'options'         => $all_events,
-			'relevant_tokens' => [
-				$option_code          => esc_attr__( 'Event title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Event ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Event URL', 'uncanny-automator' ),
+			'relevant_tokens' => array(
+				$option_code                => esc_attr__( 'Event title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Event ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_attr__( 'Event URL', 'uncanny-automator' ),
 				$option_code . '_THUMB_ID'  => esc_attr__( 'Event featured image ID', 'uncanny-automator' ),
 				$option_code . '_THUMB_URL' => esc_attr__( 'Event featured image URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_ec_events', $option );
 	}
@@ -104,7 +103,6 @@ class Event_Tickets_Helpers {
 	public function all_ec_rsvp_events( $label = null, $option_code = 'ECEVENTS' ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -112,13 +110,13 @@ class Event_Tickets_Helpers {
 			$label = esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
-		$args    = [
+		$args    = array(
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'tribe_events',
 			'post_status'    => 'publish',
-		];
+		);
 		$options = array();
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
@@ -134,24 +132,24 @@ class Event_Tickets_Helpers {
 
 				$rsvp_ticket = $ticket_handler->get_event_rsvp_tickets( get_post( $post_id ) );
 
-				if ( ! empty ( $rsvp_ticket ) ) {
+				if ( ! empty( $rsvp_ticket ) ) {
 					$options[ $post_id ] = $title;
 				}
 			}
 		}
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			//'default_value'      => 'Any post',
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Event title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Event ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Event URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_ec_events', $option );
 	}

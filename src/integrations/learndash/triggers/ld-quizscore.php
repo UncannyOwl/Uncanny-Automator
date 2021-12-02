@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_QUIZSCORE
+ *
  * @package Uncanny_Automator
  */
 class LD_QUIZSCORE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';

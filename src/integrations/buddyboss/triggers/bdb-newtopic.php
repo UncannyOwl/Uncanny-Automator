@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BDB_NEWTOPIC
+ *
  * @package Uncanny_Automator
  */
 class BDB_NEWTOPIC {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BDB';
@@ -31,8 +33,6 @@ class BDB_NEWTOPIC {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddyboss/' ),
@@ -46,10 +46,10 @@ class BDB_NEWTOPIC {
 			'priority'            => 10,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'bbp_new_topic' ),
-			'options'             => [
-				Automator()->helpers->recipe->buddyboss->options->list_buddyboss_forums( esc_attr__( 'Forum', 'uncanny-automator' ), $this->trigger_meta, [ 'uo_include_any' => true ] ),
+			'options'             => array(
+				Automator()->helpers->recipe->buddyboss->options->list_buddyboss_forums( esc_attr__( 'Forum', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => true ) ),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -67,27 +67,26 @@ class BDB_NEWTOPIC {
 	 */
 	public function bbp_new_topic( $topic_id, $forum_id, $anonymous_data, $topic_author ) {
 
-
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => absint( $forum_id ),
 			'user_id' => $user_id,
-		];
+		);
 
 		$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
-					$trigger_meta = [
+					$trigger_meta = array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $result['args']['trigger_id'],
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],
-					];
+					);
 
 					$trigger_meta['meta_key']   = 'BDBTOPIC';
 					$trigger_meta['meta_value'] = $topic_id;

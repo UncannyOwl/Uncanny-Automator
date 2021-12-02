@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Uncanny_Codes_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Uncanny_Codes_Helpers {
@@ -36,7 +37,6 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_codes( $label = null, $option_code = 'UNCANNYCODES' ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -72,7 +72,6 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_prefix( $label = null, $option_code = 'UCPREFIX' ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -113,7 +112,6 @@ class Uncanny_Codes_Helpers {
 	public function get_all_code_suffix( $label = null, $option_code = 'UCSUFFIX' ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -153,7 +151,6 @@ class Uncanny_Codes_Helpers {
 
 	public function get_all_code_batch( $label = null, $option_code = 'UCBATCH' ) {
 		if ( ! $this->load_options ) {
-
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}

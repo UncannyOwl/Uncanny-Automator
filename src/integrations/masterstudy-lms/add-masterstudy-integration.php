@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Masterstudy_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Masterstudy_Integration {

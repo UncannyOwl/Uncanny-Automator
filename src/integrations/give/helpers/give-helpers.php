@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Give_Pro_Helpers;
 
 /**
  * Class Give_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Give_Helpers {

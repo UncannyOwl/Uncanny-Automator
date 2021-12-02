@@ -6,12 +6,14 @@ use WP_Error;
 
 /**
  * Class UOA_SENDWEBHOOK
+ *
  * @package Uncanny_Automator
  */
 class UOA_SENDWEBHOOK {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';
@@ -27,7 +29,7 @@ class UOA_SENDWEBHOOK {
 		$this->action_meta    = 'WPWEBHOOK';
 		self::$number_of_keys = 7;
 		$this->define_action();
-		add_filter( 'automator_api_setup', [ $this, 'legacy_meta_data' ] );
+		add_filter( 'automator_api_setup', array( $this, 'legacy_meta_data' ) );
 
 	}
 
@@ -36,10 +38,9 @@ class UOA_SENDWEBHOOK {
 	 */
 	public function define_action() {
 
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/send-data-to-a-webhook' ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			'requires_user'      => false,
@@ -50,127 +51,127 @@ class UOA_SENDWEBHOOK {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'send_webhook' ),
-			'options_group'      => [
-				$this->action_meta => [
+			'options_group'      => array(
+				$this->action_meta => array(
 					// Webhook URL
-					[
-						'input_type' => 'url',
+					array(
+						'input_type'      => 'url',
 
-						'option_code' => 'WEBHOOK_URL',
-						'label'       => esc_attr__( 'URL', 'uncanny-automator' ),
+						'option_code'     => 'WEBHOOK_URL',
+						'label'           => esc_attr__( 'URL', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
 						'required'        => true,
-					],
+					),
 					// Action event
-					[
-						'input_type' => 'select',
+					array(
+						'input_type'    => 'select',
 
-						'option_code' => 'ACTION_EVENT',
+						'option_code'   => 'ACTION_EVENT',
 						/* translators: HTTP request method */
-						'label'       => esc_attr__( 'Request method', 'uncanny-automator' ),
-						'description' => esc_attr__( 'Select the HTTP request method supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues.', 'uncanny-automator' ),
+						'label'         => esc_attr__( 'Request method', 'uncanny-automator' ),
+						'description'   => esc_attr__( 'Select the HTTP request method supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues.', 'uncanny-automator' ),
 
-						'required' => true,
+						'required'      => true,
 
 						'default_value' => 'POST',
-						'options'       => [
+						'options'       => array(
 							'GET'    => 'GET',
 							'PUT'    => 'PUT',
 							'POST'   => 'POST',
 							'DELETE' => 'DELETE',
 							'HEAD'   => 'HEAD',
-						],
-					],
+						),
+					),
 					// Header
-					[
-						'input_type' => 'repeater',
+					array(
+						'input_type'        => 'repeater',
 
-						'option_code' => 'WEBHOOK_HEADERS',
+						'option_code'       => 'WEBHOOK_HEADERS',
 
-						'label'       => esc_attr__( 'Headers', 'uncanny-automator' ),
-						'description' => esc_attr__( 'Add any HTTP request headers required by the webhook destination.', 'uncanny-automator' ),
+						'label'             => esc_attr__( 'Headers', 'uncanny-automator' ),
+						'description'       => esc_attr__( 'Add any HTTP request headers required by the webhook destination.', 'uncanny-automator' ),
 
 						'required'          => false,
-						'fields'            => [
-							[
-								'input_type' => 'text',
+						'fields'            => array(
+							array(
+								'input_type'      => 'text',
 
-								'option_code' => 'NAME',
-								'label'       => esc_attr__( 'Name', 'uncanny-automator' ),
-
-								'supports_tokens' => true,
-								'required'        => true,
-							],
-							[
-								'input_type' => 'text',
-
-								'option_code' => 'VALUE',
-								'label'       => esc_attr__( 'Value', 'uncanny-automator' ),
+								'option_code'     => 'NAME',
+								'label'           => esc_attr__( 'Name', 'uncanny-automator' ),
 
 								'supports_tokens' => true,
 								'required'        => true,
-							],
-						],
+							),
+							array(
+								'input_type'      => 'text',
+
+								'option_code'     => 'VALUE',
+								'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true,
+							),
+						),
 
 						/* translators: Non-personal infinitive verb */
 						'add_row_button'    => esc_attr__( 'Add header', 'uncanny-automator' ),
 						/* translators: Non-personal infinitive verb */
 						'remove_row_button' => esc_attr__( 'Remove header', 'uncanny-automator' ),
-					],
+					),
 					// Fields
-					[
-						'input_type' => 'repeater',
+					array(
+						'input_type'        => 'repeater',
 
-						'option_code' => 'WEBHOOK_FIELDS',
+						'option_code'       => 'WEBHOOK_FIELDS',
 
-						'label' => esc_attr__( 'Fields', 'uncanny-automator' ),
+						'label'             => esc_attr__( 'Fields', 'uncanny-automator' ),
 
 						'required'          => true,
-						'fields'            => [
-							[
-								'input_type' => 'text',
+						'fields'            => array(
+							array(
+								'input_type'      => 'text',
 
-								'option_code' => 'KEY',
-								'label'       => esc_attr__( 'Key', 'uncanny-automator' ),
-
-								'supports_tokens' => true,
-								'required'        => true,
-							],
-							[
-								'input_type' => 'text',
-
-								'option_code' => 'VALUE',
-								'label'       => esc_attr__( 'Value', 'uncanny-automator' ),
+								'option_code'     => 'KEY',
+								'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
 
 								'supports_tokens' => true,
 								'required'        => true,
-							],
-						],
+							),
+							array(
+								'input_type'      => 'text',
+
+								'option_code'     => 'VALUE',
+								'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
+
+								'supports_tokens' => true,
+								'required'        => true,
+							),
+						),
 
 						/* translators: Non-personal infinitive verb */
 						'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
 						/* translators: Non-personal infinitive verb */
 						'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
-					],
-				],
-			],
-			'buttons'            => [
-				[
+					),
+				),
+			),
+			'buttons'            => array(
+				array(
 					'show_in'     => $this->action_meta,
 					'text'        => esc_attr__( 'Documentation', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--transparent',
 					'on_click'    => 'function(){ window.open( "https://automatorplugin.com", "_blank" ); }',
-				],
-				[
+				),
+				array(
 					'show_in'     => $this->action_meta,
 					/* translators: Non-personal infinitive verb */
 					'text'        => esc_attr__( 'Send test', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => $this->send_test_js(),
-					'modules'     => [ 'markdown' ],
-				],
-			],
+					'modules'     => array( 'markdown' ),
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -288,10 +289,10 @@ class UOA_SENDWEBHOOK {
 									$webhook_field = array();
 									for ( $i = 1; $i <= self::$number_of_keys; $i ++ ) {
 										if ( isset( $action['meta'][ 'KEY' . $i ] ) && ! empty( $action['meta'][ 'KEY' . $i ] ) ) {
-											$webhook_field[] = [
+											$webhook_field[] = array(
 												'KEY'   => $action['meta'][ 'KEY' . $i ],
 												'VALUE' => $action['meta'][ 'VALUE' . $i ],
-											];
+											);
 										}
 									}
 									$recipe_data['recipes_object'][ $recipe_key ]['actions'][ $action_key ]['meta']['WEBHOOK_FIELDS'] = json_encode( $webhook_field );
@@ -319,7 +320,6 @@ class UOA_SENDWEBHOOK {
 	 */
 	public function send_webhook( $user_id, $action_data, $recipe_id, $args ) {
 
-
 		$key_values   = array();
 		$headers      = array();
 		$request_type = 'POST';
@@ -327,13 +327,12 @@ class UOA_SENDWEBHOOK {
 		if ( isset( $action_data['meta']['WEBHOOKURL'] ) ) {
 			$webhook_url = Automator()->parse->text( $action_data['meta']['WEBHOOKURL'], $recipe_id, $user_id, $args );
 
-			for ( $i = 1; $i <= UOA_SENDWEBHOOK::$number_of_keys; $i ++ ) {
+			for ( $i = 1; $i <= self::$number_of_keys; $i ++ ) {
 
 				$key                = Automator()->parse->text( $action_data['meta'][ 'KEY' . $i ], $recipe_id, $user_id, $args );
 				$value              = Automator()->parse->text( $action_data['meta'][ 'VALUE' . $i ], $recipe_id, $user_id, $args );
 				$key_values[ $key ] = $value;
 			}
-
 		} elseif ( isset( $action_data['meta']['WEBHOOK_URL'] ) ) {
 			$webhook_url = Automator()->parse->text( $action_data['meta']['WEBHOOK_URL'], $recipe_id, $user_id, $args );
 
@@ -377,10 +376,9 @@ class UOA_SENDWEBHOOK {
 
 		if ( $key_values && ! is_null( $webhook_url ) ) {
 			$args = array(
-				'method'   => $request_type,
-				'body'     => $key_values,
-				'timeout'  => '30',
-				'blocking' => false,
+				'method'  => $request_type,
+				'body'    => $key_values,
+				'timeout' => '30',
 			);
 
 			if ( ! empty( $headers ) ) {
@@ -389,9 +387,38 @@ class UOA_SENDWEBHOOK {
 
 			$response = wp_remote_request( $webhook_url, $args );
 
-			if ( $response instanceof WP_Error ) {
+			$response_code = wp_remote_retrieve_response_code( $response );
+
+			// Server return invalid response.
+			if ( 200 !== $response_code ) {
+
+				/* translators: Error message */
+				$error_message = sprintf( esc_html__( 'An error has been encountered with response code: %s', 'uncanny-automator' ), $response_code );
+
+				$response = json_decode( wp_remote_retrieve_body( $response ) );
+
+				if ( isset( $response->message ) && ! empty( $response->message ) ) {
+
+					$error_message = $response->message;
+
+				}
+
+				$action_data['complete_with_errors'] = true;
+
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+
+				return;
+
+			}
+
+			// The client return an invalid response. Failed to send data to webhook url server.
+			if ( is_wp_error( $response ) ) {
+
 				/* translators: 1. Webhook URL */
-				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $webhook_url );
+				$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $response->get_error_message() );
+
+				$action_data['complete_with_errors'] = true;
+
 				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 				return;

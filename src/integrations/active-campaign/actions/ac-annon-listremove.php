@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class AC_ANNON_LISTREMOVE
+ *
  * @package Uncanny_Automator
  */
 class AC_ANNON_LISTREMOVE {

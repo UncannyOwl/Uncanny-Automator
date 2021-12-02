@@ -39,7 +39,9 @@ class Elem_Tokens {
 
 		global $wpdb;
 
-		$post_metas = $wpdb->get_results( $wpdb->prepare( "SELECT pm.meta_value
+		$post_metas = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT pm.meta_value
 FROM $wpdb->postmeta pm
     LEFT JOIN $wpdb->posts p
         ON p.ID = pm.post_id
@@ -47,7 +49,13 @@ WHERE p.post_type IS NOT NULL
   AND p.post_status = %s
   AND pm.meta_key = %s
   AND pm.`meta_value` LIKE %s
-  AND pm.`meta_value` LIKE %s", 'publish', '_elementor_data', '%%form_fields%%', "%%$form_id%%" ) );
+  AND pm.`meta_value` LIKE %s",
+				'publish',
+				'_elementor_data',
+				'%%form_fields%%',
+				"%%$form_id%%"
+			)
+		);
 
 		$fields = array();
 		if ( empty( $post_metas ) ) {
@@ -167,22 +175,22 @@ WHERE p.post_type IS NOT NULL
 											$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 											$run_number     = (int) $trigger_result['args']['run_number'];
 											$args           = array(
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'ELEMFORM_' . $form_id,
-												'meta_value'     => $data,
-												'run_number'     => $run_number,
+												'user_id'  => $user_id,
+												'trigger_id' => $trigger_id,
+												'meta_key' => 'ELEMFORM_' . $form_id,
+												'meta_value' => $data,
+												'run_number' => $run_number,
 												// get run number
 												'trigger_log_id' => $trigger_log_id,
 											);
 											Automator()->insert_trigger_meta( $args );
 											// For form name
 											$args = array(
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'ELEMFORM_ELEMFORM',
-												'meta_value'     => $form_name,
-												'run_number'     => $run_number,
+												'user_id'  => $user_id,
+												'trigger_id' => $trigger_id,
+												'meta_key' => 'ELEMFORM_ELEMFORM',
+												'meta_value' => $form_name,
+												'run_number' => $run_number,
 												// get run number
 												'trigger_log_id' => $trigger_log_id,
 											);

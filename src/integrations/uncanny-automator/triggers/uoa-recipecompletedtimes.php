@@ -9,6 +9,7 @@ class UOA_RECIPECOMPLETEDTIMES {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';

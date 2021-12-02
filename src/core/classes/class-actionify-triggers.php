@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Actionify_Triggers
+ *
  * @package Uncanny_Automator
  */
 class Actionify_Triggers {
@@ -24,7 +25,7 @@ class Actionify_Triggers {
 	}
 
 	/**
-	 * Load up our activity triggers so we can add actions to them
+	 * Load up our activity triggers, so we can add actions to them
 	 *
 	 * @return void
 	 * @since 1.0.0
@@ -54,7 +55,7 @@ class Actionify_Triggers {
 				continue;
 			}
 
-			// Collect all trigger codes that have been actionified so we don't double register
+			// Collect all trigger codes that have been actionified, so we don't double register
 			$actionified_triggers = array();
 
 			// Loop through each trigger and add our trigger event to the hook

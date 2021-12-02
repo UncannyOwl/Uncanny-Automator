@@ -9,6 +9,7 @@ class UOA_RECIPEERRORSTIMES {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UOA';

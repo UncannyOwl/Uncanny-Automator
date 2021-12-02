@@ -8,6 +8,7 @@ use ReflectionException;
 
 /**
  * Class Set_Automator_Triggers
+ *
  * @package Uncanny_Automator
  */
 class Set_Up_Automator {
@@ -43,11 +44,12 @@ class Set_Up_Automator {
 
 	/**
 	 * Set_Up_Automator constructor.
+	 *
 	 * @throws Exception
 	 */
 	public function __construct() {
 
-		if ( strpos( $_SERVER['REQUEST_URI'], 'favicon' ) ) {
+		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'favicon' ) ) {
 			// bail out if it's favicon.ico
 			return;
 		}
@@ -79,33 +81,35 @@ class Set_Up_Automator {
 	 * @since 3.0.4
 	 */
 	public function automator_pro_configure() {
-		if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
-			$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
-			if ( version_compare( $version, '3.0', '<' ) ) {
-				?>
-				<div class="notice notice-error">
-					<?php
-					echo sprintf(
-						'<p><strong>%s:</strong> %s</p>',
-						esc_html__( 'Warning', 'uncanny-automator' ),
-						sprintf(
-							'%s (%s) %s <a href="%s" target="_blank">%s<span style="font-size:14px; margin-left:-3px" class="dashicons dashicons-external"></span></a>',
-							esc_html__( 'The version of Uncanny Automator Pro', 'uncanny-automator' ),
-							esc_attr( $version ),
-							esc_html__( 'installed on your site is incompatible with Uncanny Automator 3.0 and higher. Uncanny Automator Pro has been temporarily disabled. Upgrade to the latest version of Uncanny Automator Pro to re-enable functionality or downgrade Uncanny Automator to version 2.11.1.', 'uncanny-automator' ),
-							'https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_medium=admin_notice&utm_campaign=30upgradewarning',
-							esc_html__( 'Learn More', 'uncanny-automator' )
-						)  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					?>
-				</div>
+		if ( ! class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+			return;
+		}
+		$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
+		if ( version_compare( $version, '3.0', '<' ) ) {
+			?>
+			<div class="notice notice-error">
 				<?php
-			}
+				echo sprintf(
+					'<p><strong>%s:</strong> %s</p>',
+					esc_html__( 'Warning', 'uncanny-automator' ),
+					sprintf(
+						'%s (%s) %s <a href="%s" target="_blank">%s<span style="font-size:14px; margin-left:-3px" class="dashicons dashicons-external"></span></a>',
+						esc_html__( 'The version of Uncanny Automator Pro', 'uncanny-automator' ),
+						esc_attr( $version ),
+						esc_html__( 'installed on your site is incompatible with Uncanny Automator 3.0 and higher. Uncanny Automator Pro has been temporarily disabled. Upgrade to the latest version of Uncanny Automator Pro to re-enable functionality or downgrade Uncanny Automator to version 2.11.1.', 'uncanny-automator' ),
+						'https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_medium=admin_notice&utm_campaign=30upgradewarning',
+						esc_html__( 'Learn More', 'uncanny-automator' )
+					)  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+			</div>
+			<?php
 		}
 	}
 
 	/**
 	 * Sets all trigger, actions, and closure classes directories
+	 *
 	 * @throws Exception
 	 */
 	public function get_integrations_autoload_directories() {
@@ -203,6 +207,7 @@ class Set_Up_Automator {
 
 	/**
 	 * Hook Here
+	 *
 	 * @throws Exception
 	 */
 	public function automator_configure() {
@@ -316,10 +321,10 @@ class Set_Up_Automator {
 				}
 				/**
 				 * Include only active integrations. Legacy method.
+				 *
 				 * @since 3.0, trait-integrations.php does not contains this function. Not required to define
 				 * for each integration now.
 				 * @see \Uncanny_Automator\Recipe\Integrations::add_integration()
-				 *
 				 */
 				if ( method_exists( $i, 'add_integration_func' ) ) {
 					$i->add_integration_func();
@@ -486,7 +491,7 @@ class Set_Up_Automator {
 	public static function validate_namespace( $class_name, $file_name, $file ) {
 		$class_name = strtoupper( $class_name );
 		try {
-			$is_free = new \ReflectionClass( 'Uncanny_Automator\\' . $class_name );
+			$is_free = new ReflectionClass( 'Uncanny_Automator\\' . $class_name );
 			if ( $is_free->inNamespace() ) {
 				return 'Uncanny_Automator\\' . $class_name;
 			}
@@ -494,7 +499,7 @@ class Set_Up_Automator {
 		}
 
 		try {
-			$is_pro = new \ReflectionClass( 'Uncanny_Automator_Pro\\' . $class_name );
+			$is_pro = new ReflectionClass( 'Uncanny_Automator_Pro\\' . $class_name );
 			if ( $is_pro->inNamespace() ) {
 				return 'Uncanny_Automator_Pro\\' . $class_name;
 			}
@@ -503,7 +508,7 @@ class Set_Up_Automator {
 
 		try {
 			$custom_namespace = apply_filters( 'automator_class_namespace', __NAMESPACE__, $class_name, $file_name, $file );
-			$is_custom        = new \ReflectionClass( $custom_namespace . '\\' . $class_name );
+			$is_custom        = new ReflectionClass( $custom_namespace . '\\' . $class_name );
 			if ( $is_custom->inNamespace() ) {
 				return $custom_namespace . '\\' . $class_name;
 			}

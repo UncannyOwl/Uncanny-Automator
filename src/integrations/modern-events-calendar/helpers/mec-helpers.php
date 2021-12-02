@@ -381,7 +381,7 @@ class MEC_HELPERS {
 	 */
 	public function get_event_featured_image_id() {
 
-		$thumbnail_id = get_post_thumbnail_id($this->event_id);
+		$thumbnail_id = get_post_thumbnail_id( $this->event_id );
 
 		return $thumbnail_id;
 
@@ -394,7 +394,7 @@ class MEC_HELPERS {
 	 */
 	public function get_event_featured_image_url() {
 
-		$thumbnail_url = get_the_post_thumbnail_url($this->event_id);
+		$thumbnail_url = get_the_post_thumbnail_url( $this->event_id );
 
 		return $thumbnail_url;
 

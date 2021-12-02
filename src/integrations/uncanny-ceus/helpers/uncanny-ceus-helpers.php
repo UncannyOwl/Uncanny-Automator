@@ -5,6 +5,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Uncanny_Ceus_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Uncanny_Ceus_Helpers {

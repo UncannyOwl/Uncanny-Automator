@@ -18,13 +18,18 @@ class Bdb_Tokens {
 	public static $integration = 'BDB';
 
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_bdb_tokens', [ $this, 'bdb_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_bdb_bdbforumstopic_tokens', [
-			$this,
-			'bdb_bdbforums_possible_tokens',
-		], 20, 2 );
-		add_filter( 'automator_maybe_trigger_bdb_bdbtopic_tokens', [ $this, 'bdb_topic_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_bp_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_bdb_tokens', array( $this, 'bdb_possible_tokens' ), 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_bdb_bdbforumstopic_tokens',
+			array(
+				$this,
+				'bdb_bdbforums_possible_tokens',
+			),
+			20,
+			2
+		);
+		add_filter( 'automator_maybe_trigger_bdb_bdbtopic_tokens', array( $this, 'bdb_topic_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_bp_token' ), 20, 6 );
 
 	}
 
@@ -60,17 +65,17 @@ class Bdb_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'tokenId'         => 'BDBUSER',
 				'tokenName'       => __( 'Avatar URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERAVATAR',
-			],
-		];
+			),
+		);
 		// Get BDB xprofile fields from DB.
 		global $wpdb;
-		
+
 		$xprofile_fields = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY field_order ASC",
@@ -81,7 +86,7 @@ class Bdb_Tokens {
 		if ( ! empty( $xprofile_fields ) ) {
 			foreach ( $xprofile_fields as $field ) {
 				if ( 'socialnetworks' === $field->type ) {
-					$child_fields = $wpdb->get_results( 
+					$child_fields = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY field_order ASC",
 							$field->id
@@ -89,58 +94,58 @@ class Bdb_Tokens {
 					);
 					if ( ! empty( $child_fields ) ) {
 						foreach ( $child_fields as $child_field ) {
-							$fields[] = [
+							$fields[] = array(
 								'tokenId'         => 'BDBUSER',
 								'tokenName'       => $field->name . ' - ' . $child_field->name,
 								'tokenType'       => 'text',
 								'tokenIdentifier' => 'BDBXPROFILE:' . $field->id . '|' . $child_field->name,
-							];
+							);
 						}
 					}
 				} elseif ( 'membertypes' === $field->type ) {
-					$fields[] = [
+					$fields[] = array(
 						'tokenId'         => 'BDBUSER',
 						'tokenName'       => $field->name,
 						'tokenType'       => 'text',
 						'tokenIdentifier' => 'BDBXPROFILE:' . $field->id . '|membertypes',
-					];
+					);
 				} else {
-					$fields[] = [
+					$fields[] = array(
 						'tokenId'         => 'BDBUSER',
 						'tokenName'       => $field->name,
 						'tokenType'       => 'text',
 						'tokenIdentifier' => 'BDBXPROFILE:' . $field->id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( isset( $args['triggers_meta']['code'] ) && 'BDBACTIVITYSTRM' === $args['triggers_meta']['code'] ) {
 
-			$fields[] = [
+			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_ID',
 				'tokenName'       => __( 'Activity ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
-			];
-			$fields[] = [
+			);
+			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_URL',
 				'tokenName'       => __( 'Activity URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
-			];
-			$fields[] = [
+			);
+			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_STREAM_URL',
 				'tokenName'       => __( 'Activity stream URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
-			];
-			$fields[] = [
+			);
+			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_CONTENT',
 				'tokenName'       => __( 'Activity content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
-			];
+			);
 		}
 		$tokens = array_merge( $tokens, $fields );
 
@@ -157,14 +162,14 @@ class Bdb_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'tokenId'         => 'BDBTOPICREPLY',
 				'tokenName'       => __( 'Reply content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERPOSTREPLYFORUM',
-			],
-		];
+			),
+		);
 
 		$tokens = array_merge( $tokens, $fields );
 
@@ -316,32 +321,32 @@ class Bdb_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'tokenId'         => 'BDBTOPICID',
 				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'BDBTOPICTITLE',
 				'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'BDBTOPICURL',
 				'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
-			],
-			[
+			),
+			array(
 				'tokenId'         => 'BDBTOPICCONTENT',
 				'tokenName'       => __( 'Topic content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
-			],
-		];
+			),
+		);
 
 		$tokens = array_merge( $tokens, $fields );
 

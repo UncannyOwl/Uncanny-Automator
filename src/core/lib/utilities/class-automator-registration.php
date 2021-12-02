@@ -6,6 +6,7 @@ use Exception;
 
 /**
  * Class Automator_Registration
+ *
  * @package Uncanny_Automator
  */
 class Automator_Registration {

@@ -6,6 +6,7 @@ use function Ninja_Forms;
 
 /**
  * Class Nf_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Nf_Tokens {

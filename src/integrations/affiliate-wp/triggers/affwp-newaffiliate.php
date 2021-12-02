@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class AFFWP_NEWAFFILAITE
+ *
  * @package Uncanny_Automator
  */
 class AFFWP_NEWAFFILIATE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'AFFWP';

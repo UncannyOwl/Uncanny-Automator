@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Uoa_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Restrict_Content_Integration {

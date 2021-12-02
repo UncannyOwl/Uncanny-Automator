@@ -7,6 +7,7 @@ use WP_REST_Request;
 
 /**
  * Class Populate_From_Query.
+ *
  * @package Uncanny_Automator
  */
 class Populate_From_Query {
@@ -56,10 +57,11 @@ class Populate_From_Query {
 
 				return false;
 			}
-		} catch ( \Throwable $e ) {
+		} catch ( \Exception $e ) {
 			Automator()->error->add_error( 555, 'Uncanny_Automator\Populate_From_Query: ' . $e->getMessage() );
 		}
 
+		return true;
 	}
 
 	/**
@@ -104,7 +106,7 @@ class Populate_From_Query {
 
 		foreach ( $args as $arg ) {
 
-			if ( ! isset( $_GET[ $arg ] ) ) {
+			if ( ! automator_filter_has_var( $arg ) ) {
 
 				return false;
 			}
@@ -121,7 +123,7 @@ class Populate_From_Query {
 	 */
 	private static function is_authorized() {
 
-		if ( ! wp_verify_nonce( $_GET['nonce'], self::$nonce ) ) {
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::$nonce ) ) {
 
 			throw new Automator_Exception( 'Invalid nonce.' );
 
@@ -129,7 +131,7 @@ class Populate_From_Query {
 		// To validate nonce
 		$_SERVER['HTTP_X_WP_NONCE'] = wp_create_nonce( 'wp_rest' );
 
-		// Use the save_setting_permissings function from the recipe class to check required capabilities.
+		// Use the save_settings_permissions function from the recipe class to check required capabilities.
 		return self::$recipe->save_settings_permissions();
 	}
 
@@ -141,7 +143,7 @@ class Populate_From_Query {
 	 */
 	protected static function populate() {
 
-		switch ( $_GET['action'] ) {
+		switch ( automator_filter_input( 'action' ) ) {
 
 			case 'add-new-trigger':
 				if ( self::query_args_exist( array( 'item_code' ) ) ) {
@@ -229,8 +231,8 @@ class Populate_From_Query {
 		$request->set_body_params(
 			array(
 				'recipePostID' => self::$post->ID,
-				'action'       => $_GET['action'],
-				'item_code'    => $_GET['item_code'],
+				'action'       => automator_filter_input( 'action' ),
+				'item_code'    => automator_filter_input( 'item_code' ),
 			)
 		);
 
@@ -276,15 +278,15 @@ class Populate_From_Query {
 	 * @throws Automator_Exception
 	 */
 	public static function add_trigger_value( $trigger_id ) {
-		$option_code = $_GET['optionCode'];
+		$option_code = automator_filter_input( 'optionCode' );
 		$request     = new WP_REST_Request( 'POST', '', '' );
 		$request->set_body_params(
 			array(
 				'itemId'      => $trigger_id,
 				'optionCode'  => $option_code,
 				'optionValue' => array(
-					$option_code               => $_GET['optionValue'],
-					$option_code . '_readable' => urldecode( $_GET['optionValue_readable'] ),
+					$option_code               => automator_filter_input( 'optionValue' ),
+					$option_code . '_readable' => urldecode( automator_filter_input( 'optionValue_readable' ) ),
 				),
 			)
 		);

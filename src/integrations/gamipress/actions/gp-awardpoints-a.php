@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class GP_AWARDPOINTS_A
+ *
  * @package Uncanny_Automator
  */
 class GP_AWARDPOINTS_A {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'GP';
@@ -32,9 +34,7 @@ class GP_AWARDPOINTS_A {
 	 */
 	public function define_action() {
 
-
-
-		$action = [
+		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/gamipress/' ),
 			'integration'        => self::$integration,
@@ -45,28 +45,32 @@ class GP_AWARDPOINTS_A {
 			'select_option_name' => esc_attr__( 'Award {{points}} to the user', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
-			'execution_function' => [ $this, 'award_points' ],
+			'execution_function' => array( $this, 'award_points' ),
 			'options'            => array(),
-			'options_group'      => [
-				$this->action_meta => [
-					Automator()->helpers->recipe->gamipress->options->list_gp_points_types( esc_attr__( 'Point type', 'uncanny-automator' ), $this->action_meta, [
-						'token'   => false,
-						'is_ajax' => false,
-					] ),
-				],
-				'GPPOINTVALUE'     => [
-					[
-						'input_type' => 'int',
+			'options_group'      => array(
+				$this->action_meta => array(
+					Automator()->helpers->recipe->gamipress->options->list_gp_points_types(
+						esc_attr__( 'Point type', 'uncanny-automator' ),
+						$this->action_meta,
+						array(
+							'token'   => false,
+							'is_ajax' => false,
+						)
+					),
+				),
+				'GPPOINTVALUE'     => array(
+					array(
+						'input_type'      => 'int',
 
-						'option_code' => 'GPPOINTVALUE',
-						'label'       => esc_attr__( 'Points', 'uncanny-automator' ),
+						'option_code'     => 'GPPOINTVALUE',
+						'label'           => esc_attr__( 'Points', 'uncanny-automator' ),
 
 						'supports_tokens' => true,
 						'required'        => true,
-					],
-				],
-			],
-		];
+					),
+				),
+			),
+		);
 
 		Automator()->register->action( $action );
 	}
@@ -79,8 +83,6 @@ class GP_AWARDPOINTS_A {
 	 * @param $recipe_id
 	 */
 	public function award_points( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		$points_type = $action_data['meta'][ $this->action_meta ];
 		$points      = Automator()->parse->text( $action_data['meta']['GPPOINTVALUE'], $recipe_id, $user_id, $args );

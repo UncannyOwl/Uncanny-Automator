@@ -1,0 +1,168 @@
+#wpfooter,
+#adminmenumain,
+#wpadminbar,
+.notice#uap-review-banner,
+#wpbody-content > .updated,
+#screen-meta-links,
+#screen-meta,
+.uo-recipe_page_uncanny-automator-setup-wizard .error,
+.uo-recipe_page_uncanny-automator-setup-wizard .notice {
+    display: none!important;
+}
+
+body.uo-recipe_page_uncanny-automator-setup-wizard {
+    font-size: 13px;
+}
+
+.automator-setup-wizard__footer {
+    text-align: center;
+}
+
+.automator-setup-wizard__footer a {
+    text-decoration: none;
+    color: #3c434a;
+    opacity: 0.65;
+}
+
+#wpcontent, #wpfooter {
+    margin-left: 0;
+    padding-left: 0;
+}
+.automator-setup-wizard a {
+    text-decoration: none;
+}
+
+.automator-setup-wizard {
+    display: block;
+    margin: 0 auto;
+    max-width: 800px;
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border-radius: 8px;
+    padding: 4em 4.5em;
+    box-sizing: border-box;
+}
+
+body.uo-recipe_page_uncanny-automator-setup-wizard .lity {
+    background: #0006;
+}
+.automator-setup-wizard .center {
+    text-align: center;
+}
+
+.automator-setup-wizard .text-align-right {
+    text-align: right;
+}
+.automator-setup-wizard h2.title {
+    font-size: 1.75em;
+    line-height: 1.3em;
+}
+.automator-setup-wizard p {
+    font-size: 14px;
+}
+.automator-setup-wizard-wrap {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.automator-setup-wizard-wrap h3 {
+    font-size: 1.3em;
+    line-height: 1.3em;
+}
+
+.automator-setup-wizard-wrap.step-3 {
+    min-height: 100vh;
+}
+.automator-setup-wizard .row-1 {
+    margin-bottom: 35px;
+}
+
+.automator-setup-wizard.step-1 .footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.automator-setup-wizard__steps__inner-wrap ol,
+.automator-setup-wizard__steps__inner-wrap li {
+    list-style: none;
+}
+
+.automator-setup-wizard__steps__inner-wrap ol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.automator-setup-wizard__steps__inner-wrap {
+    margin: 35px 0;
+}
+
+.automator-setup-wizard__steps__inner-wrap ol > li,
+.automator-setup-wizard__steps__inner-wrap ol > li > span {
+    display: block;
+}
+
+.automator-setup-wizard__steps__inner-wrap ol > li {
+    text-indent: -9999px;
+}
+
+.automator-setup-wizard__steps__inner-wrap ol > li > span {
+    width: 15px;
+    height: 15px;
+    border-radius: 20px;
+    background: #d9d9d9;
+}
+.automator-setup-wizard__steps__inner-wrap ol > li {
+    display: flex;
+    align-items: center;
+}
+.automator-setup-wizard__steps__inner-wrap ol > li::after {
+    content: " ";
+    display: inline-block;
+    height: 1px;
+    width: 40px;
+    background: #d9d9d9;
+}
+.automator-setup-wizard__steps__inner-wrap ol > li:last-child:after {
+    content: "";
+    display: none;
+}
+
+.automator-setup-wizard__steps__inner-wrap ol > li.active > span {
+    background: #0790e8;
+}
+
+a#ua-connect-account-btn {
+    margin-top: 15px;
+}
+
+p.footer-actions span a {
+    color: #7f7e7e;
+}
+
+/**
+ * Skip modal styling
+ */
+#automator-setup-wizard-skip-modal {
+    width: 450px;
+    padding: 20px 40px;
+    border-radius: 6px;
+}
+
+#automator-setup-wizard-skip-modal p {
+    font-size: 16px;
+}
+
+#automator-setup-wizard-skip-modal a {
+    text-decoration: none;
+}
+
+#automator-setup-wizard-skip-modal a#ua-connect-account-btn {
+    margin-top: 0px;
+}
+

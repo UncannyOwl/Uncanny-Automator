@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UC_CODEREDEEMED
+ *
  * @package Uncanny_Automator
  */
 class UNCANNYCEUS_EARNSCEUS {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UNCANNYCEUS';
@@ -26,8 +28,8 @@ class UNCANNYCEUS_EARNSCEUS {
 		if ( version_compare( $version, '3.0.6', '>' ) ) {
 
 			// Ths trigger is running through a crob job .. We need to let is pass through cron checks
-			add_filter( 'uap_run_automator_actions', [ $this, 'maybe_allow_triggers_to_actionify', 10, 2 ] );
-			add_filter( 'automator_maybe_parse_token', [ $this, 'tokens' ], 20, 6 );
+			add_filter( 'uap_run_automator_actions', array( $this, 'maybe_allow_triggers_to_actionify', 10, 2 ) );
+			add_filter( 'automator_maybe_parse_token', array( $this, 'tokens' ), 20, 6 );
 			$this->trigger_code = 'EARNSCEUS';
 			$this->trigger_meta = 'AMOUNTSCEUS';
 			$this->define_trigger();
@@ -40,7 +42,6 @@ class UNCANNYCEUS_EARNSCEUS {
 	public function define_trigger() {
 
 		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -56,16 +57,16 @@ class UNCANNYCEUS_EARNSCEUS {
 			'priority'            => 20,
 			'accepted_args'       => 7,
 			'validation_function' => array( $this, 'updated_user_ceu_record' ),
-			'options'             => [
-				[
+			'options'             => array(
+				array(
 					'option_code'     => $this->trigger_meta,
 					/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
 					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
 					'input_type'      => 'float',
 					'validation_type' => 'integer',
 					'required'        => true,
-				],
-			],
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -100,12 +101,10 @@ class UNCANNYCEUS_EARNSCEUS {
 	 */
 	public function updated_user_ceu_record( $current_user, $is_manual_creation, $completion_date, $current_course_id, $current_course_title, $course_slug, $ceu_value ) {
 
-
-
 		// The class contains all ceu creation code
 		$ceu_shortcodes = \uncanny_ceu\Utilities::get_class_instance( 'CeuShortcodes' );
 
-		$atts       = [ 'user-id' => $current_user->ID ];
+		$atts       = array( 'user-id' => $current_user->ID );
 		$total_ceus = (float) $ceu_shortcodes->uo_ceu_total( $atts );
 		$ceu_value  = (float) $ceu_value;
 
@@ -127,17 +126,17 @@ class UNCANNYCEUS_EARNSCEUS {
 				$ceu_amount = $require_ceu_amount[ $recipe_id ][ $trigger_id ];
 
 				if ( $total_ceus >= (float) $ceu_amount ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $current_user->ID,
@@ -145,7 +144,7 @@ class UNCANNYCEUS_EARNSCEUS {
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
 					'is_signed_in'     => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -153,12 +152,12 @@ class UNCANNYCEUS_EARNSCEUS {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
 
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $current_user->ID,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							$trigger_meta['meta_key']   = $this->trigger_meta;
 							$trigger_meta['meta_value'] = maybe_serialize( $ceu_value );
@@ -177,7 +176,6 @@ class UNCANNYCEUS_EARNSCEUS {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -190,7 +188,7 @@ class UNCANNYCEUS_EARNSCEUS {
 	 *
 	 * @return string|null
 	 */
-	public function tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = [] ) {
+	public function tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
 
 		if ( $pieces ) {
 			if (

@@ -114,6 +114,6 @@ $url = add_query_arg(
 );
 ?>
 <p>
-	<a href="<?php echo $url ?>"
+	<a href="<?php echo esc_url_raw( $url ); ?>"
 	   class="button button-primary"><?php echo esc_html__( 'Repair Automator tables', 'uncanny-automator' ); ?></a>
 </p>

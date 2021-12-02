@@ -8,6 +8,7 @@ use RGFormsModel;
 
 /**
  * Class Gf_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Gf_Tokens {

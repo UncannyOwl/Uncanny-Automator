@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BDB_USERNEWFOLLOWER
+ *
  * @package Uncanny_Automator
  */
 class BDB_USERNEWFOLLOWER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BDB';
@@ -30,8 +32,6 @@ class BDB_USERNEWFOLLOWER {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -61,14 +61,12 @@ class BDB_USERNEWFOLLOWER {
 	 */
 	public function bp_start_following_user( $follow ) {
 
-
-
-		$args = [
+		$args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $follow->follower_id,
 			'ignore_post_id' => true,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

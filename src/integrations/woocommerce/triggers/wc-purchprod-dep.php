@@ -6,12 +6,14 @@ use WC_Order_Item_Product;
 
 /**
  * Class WC_PURCHPROD
+ *
  * @package Uncanny_Automator
  */
 class WC_PURCHPROD_DEP {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WC';
@@ -47,18 +49,18 @@ class WC_PURCHPROD_DEP {
 			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WooCommerce */
 			'select_option_name'  => esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
-			'action'              => [
+			'action'              => array(
 				'woocommerce_order_status_completed',
 				'woocommerce_thankyou',
 				'woocommerce_payment_complete',
-			],
+			),
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'payment_completed' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->options->number_of_times(),
 				$options,
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -72,7 +74,6 @@ class WC_PURCHPROD_DEP {
 	 * @param $order_id
 	 */
 	public function payment_completed( $order_id ) {
-
 
 		if ( ! $order_id ) {
 			return;
@@ -105,10 +106,10 @@ class WC_PURCHPROD_DEP {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( isset( $required_product[ $recipe_id ] ) && isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( - 1 === intval( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 
 						break;
 					}
@@ -127,10 +128,10 @@ class WC_PURCHPROD_DEP {
 				$trigger_id = $trigger['ID'];//return early for all products
 				if ( isset( $required_product[ $recipe_id ] ) && isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
 					if ( in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
-						$matched_recipe_ids[] = [
+						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
-						];
+						);
 					}
 				}
 			}
@@ -138,14 +139,14 @@ class WC_PURCHPROD_DEP {
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $user_id,
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -160,7 +161,6 @@ class WC_PURCHPROD_DEP {
 					}
 				}
 			}
-
 		}
 
 		return;

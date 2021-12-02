@@ -2,23 +2,24 @@
 
 namespace Uncanny_Automator;
 
-
 /**
  * Class Wpwh_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wpwh_Tokens {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPWEBHOOKS';
 
 	public function __construct() {
 
-		add_filter( 'automator_maybe_trigger_wpwebhooks_wpwhtrigger_tokens', [ $this, 'wpwh_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'wpwh_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_wpwebhooks_wpwhtrigger_tokens', array( $this, 'wpwh_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wpwh_token' ), 20, 6 );
 	}
 
 	/**
@@ -60,7 +61,7 @@ class Wpwh_Tokens {
 						case 'create_user':
 						case 'login_user':
 						case 'update_user':
-							$possible_tokens = [
+							$possible_tokens = array(
 								'ID',
 								'user_login',
 								'user_pass',
@@ -71,29 +72,29 @@ class Wpwh_Tokens {
 								'user_activation_key',
 								'user_status',
 								'display_name',
-							];
+							);
 							foreach ( $possible_tokens as $_token ) {
-								$fields[] = [
+								$fields[] = array(
 									'tokenId'         => 'data|' . $_token,
 									'tokenName'       => $_token,
 									'tokenType'       => 'text',
 									'tokenIdentifier' => $trigger_meta,
-								];
+								);
 							}
 							$tokens = array_merge( $tokens, $fields );
 							break;
 						case 'deleted_user':
-							$possible_tokens = [
+							$possible_tokens = array(
 								'user_id',
 								'reassign',
-							];
+							);
 							foreach ( $possible_tokens as $_token ) {
-								$fields[] = [
+								$fields[] = array(
 									'tokenId'         => $_token,
 									'tokenName'       => $_token,
 									'tokenType'       => 'text',
 									'tokenIdentifier' => $trigger_meta,
-								];
+								);
 							}
 							$tokens = array_merge( $tokens, $fields );
 							break;
@@ -101,7 +102,7 @@ class Wpwh_Tokens {
 						case 'post_update':
 						case 'post_delete':
 						case 'post_trash':
-							$possible_tokens = [
+							$possible_tokens = array(
 								'ID',
 								'post_author',
 								'post_date',
@@ -126,14 +127,14 @@ class Wpwh_Tokens {
 								'post_mime_type',
 								'comment_count',
 								'filter',
-							];
+							);
 							foreach ( $possible_tokens as $_token ) {
-								$fields[] = [
+								$fields[] = array(
 									'tokenId'         => 'post|' . $_token,
 									'tokenName'       => $_token,
 									'tokenType'       => 'text',
 									'tokenIdentifier' => $trigger_meta,
-								];
+								);
 							}
 							$tokens = array_merge( $tokens, $fields );
 							break;

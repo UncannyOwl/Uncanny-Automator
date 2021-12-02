@@ -9,6 +9,7 @@ use WP_REST_Response;
 
 /**
  * Class Recipe_Rest_Api
+ *
  * @package Uncanny_Automator
  */
 class Recipe_Post_Rest_Api {
@@ -180,6 +181,16 @@ class Recipe_Post_Rest_Api {
 				'permission_callback' => array( $this, 'save_settings_permissions' ),
 			)
 		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/actions_order/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'update_actions_order' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 	}
 
 	/**
@@ -193,13 +204,12 @@ class Recipe_Post_Rest_Api {
 			return false;
 		}
 
-		return wp_verify_nonce( $_SERVER['HTTP_X_WP_NONCE'], 'wp_rest' );
+		return wp_verify_nonce( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_WP_NONCE'] ) ), 'wp_rest' );
 	}
 
 	/**
 	 * Permission callback function that let the rest API allow or disallow access
-	 */
-	/**
+	 *
 	 * @return bool|WP_Error
 	 */
 	public function save_settings_permissions() {
@@ -1031,6 +1041,45 @@ class Recipe_Post_Rest_Api {
 			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
 			$return['recipes_object'] = Automator()->get_recipes_data( true );
+
+			return new WP_REST_Response( $return, 200 );
+
+		}
+
+		$return['message'] = 'Failed to update';
+		$return['success'] = false;
+		$return['action']  = 'show_error';
+
+		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * Function to update the menu_order of the actions
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function update_actions_order( WP_REST_Request $request ) {
+
+		// Make sure we have a recipe ID and the newOrder
+		if ( $request->has_param( 'recipeID' ) && $request->has_param( 'newOrder' ) ) {
+
+			$recipe_id = absint( $request->get_param( 'recipeID' ) );
+			$new_order = $request->get_param( 'newOrder' );
+
+			// Update the actions menu_order here
+			foreach ( $new_order as $index => $action_id ) {
+				Automator()->db->action->update_menu_order( $action_id, ( $index + 1 ) * 10 );
+			}
+
+			$return['message'] = 'Updated!';
+			$return['success'] = true;
+			$return['action']  = 'update_actions_order';
+
+			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
+
+			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 
 			return new WP_REST_Response( $return, 200 );
 

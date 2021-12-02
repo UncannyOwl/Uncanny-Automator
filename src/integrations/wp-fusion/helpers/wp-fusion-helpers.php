@@ -3,11 +3,11 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Wp_Fusion_Pro_Helpers;
 
 /**
  * Class Wp_Fusion_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Wp_Fusion_Helpers {

@@ -1,6 +1,5 @@
 /**
  * WPForms - Uncanny Automator tab
- * 
  * This file is loaded in the Uncanny Automator tab in WPForms
  * As this file is not getting compiled, it has to use
  * ES5 for better compability.

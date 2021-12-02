@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPF_USERGROUP
+ *
  * @package Uncanny_Automator
  */
 class WPF_USERGROUP {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPFORO';
@@ -31,7 +33,6 @@ class WPF_USERGROUP {
 	 */
 	public function define_action() {
 
-
 		$usergroups = WPF()->usergroup->get_usergroups();
 
 		$group_options = array();
@@ -39,13 +40,13 @@ class WPF_USERGROUP {
 			$group_options[ $group['groupid'] ] = $group['name'];
 		}
 
-		$option = [
+		$option = array(
 			'option_code' => 'FOROGROUP',
 			'label'       => esc_attr__( 'User groups', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $group_options,
-		];
+		);
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -59,9 +60,9 @@ class WPF_USERGROUP {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'enrol_in_to_group' ),
-			'options'            => [
+			'options'            => array(
 				$option,
-			],
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -74,13 +75,12 @@ class WPF_USERGROUP {
 	 */
 	public function enrol_in_to_group( $user_id, $action_data, $recipe_id, $args ) {
 
-
 		$group_id = $action_data['meta'][ $this->action_meta ];
 
 		if ( wpforo_feature( 'role-synch' ) ) {
 			WPF()->member->set_usergroup( $user_id, $group_id );
 		} else {
-			WPF()->usergroup->set_users_groupid( array( $group_id => [ $user_id ] ) );
+			WPF()->usergroup->set_users_groupid( array( $group_id => array( $user_id ) ) );
 		}
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );

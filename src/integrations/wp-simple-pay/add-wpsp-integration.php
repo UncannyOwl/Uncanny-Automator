@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Wpsp_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Wpsp_Integration {

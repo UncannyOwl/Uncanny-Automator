@@ -6,6 +6,7 @@ use WPForms_Form_Handler;
 
 /**
  * Class Wpf_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wpf_Tokens {

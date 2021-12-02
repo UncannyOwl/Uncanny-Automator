@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class MP_PURCHASEPRODUCTONETIME
+ *
  * @package Uncanny_Automator
  */
 class MP_PURCHASEPRODUCTONETIME {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'MP';

@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class BDB_ACCACTIVATE
+ *
  * @package Uncanny_Automator
  */
 class BDB_ACCACTIVATE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'BDB';
@@ -30,8 +32,6 @@ class BDB_ACCACTIVATE {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -61,15 +61,13 @@ class BDB_ACCACTIVATE {
 	 */
 	public function bp_core_activated_user( $user_id, $key, $user ) {
 
-
-
-		$args = [
+		$args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $user_id,
 			'ignore_post_id' => true,
 			'is_signed_in'   => true,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

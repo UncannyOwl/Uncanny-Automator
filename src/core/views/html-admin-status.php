@@ -209,9 +209,9 @@ $theme              = $report['theme'];
 		</td>
 		<td class="help"><?php echo esc_html__( 'The Automator REST API path on your site.', 'uncanny-automator' ); ?></td>
 		<td>
-			<?php
-			echo '<mark class="yes"><span class="dashicons dashicons-yes"></span><code class="private">' . site_url() . '/wp-json/' . esc_html( AUTOMATOR_REST_API_END_POINT ) . '</code></mark> ';
-			?>
+			<mark class="yes"><span class="dashicons dashicons-yes"></span><code
+					class="private"><?php echo esc_url_raw( site_url() . '/wp-json/' . esc_html( AUTOMATOR_REST_API_END_POINT ) ) ?></code>
+			</mark>
 		</td>
 	</tr>
 	<?php if ( is_automator_pro_active() ) { ?>
@@ -568,8 +568,12 @@ $theme              = $report['theme'];
 	<thead>
 	<tr>
 		<th colspan="3" data-export-label="Active Plugins (<?php echo count( $active_plugins ); ?>)">
-			<h2><?php esc_html_e( 'Active plugins', 'uncanny-automator' );
-				echo ' (' . count( $active_plugins ) . ')'; ?></h2></th>
+			<h2>
+				<?php
+				esc_html_e( 'Active plugins', 'uncanny-automator' );
+				echo ' (' . count( $active_plugins ) . ')';
+				?>
+			</h2></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -620,10 +624,19 @@ if ( 0 < count( $dropins_mu_plugins['mu_plugins'] ) ) :
 	<table class="automator_status_table widefat" cellspacing="0">
 		<thead>
 		<tr>
-			<th colspan="3" data-export-label="Must Use Plugins (<?php echo count( $dropins_mu_plugins['mu_plugins'] );
-			?>)"><h2><?php esc_html_e( 'Must Use Plugins', 'uncanny-automator' );
-					?> (<?php echo count( $dropins_mu_plugins['mu_plugins'] );
-					?>)</h2></th>
+			<th colspan="3" data-export-label="Must Use Plugins (
+			<?php
+			echo count( $dropins_mu_plugins['mu_plugins'] );
+			?>
+			)"><h2>
+					<?php
+					esc_html_e( 'Must Use Plugins', 'uncanny-automator' );
+					?>
+					(
+					<?php
+					echo count( $dropins_mu_plugins['mu_plugins'] );
+					?>
+					)</h2></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -636,8 +649,11 @@ if ( 0 < count( $dropins_mu_plugins['mu_plugins'] ) ) :
 
 			?>
 			<tr>
-				<td><?php echo wp_kses_post( $plugin_name );
-					?></td>
+				<td>
+					<?php
+					echo wp_kses_post( $plugin_name );
+					?>
+				</td>
 				<td class="help">&nbsp;</td>
 				<td>
 					<?php

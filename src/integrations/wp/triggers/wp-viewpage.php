@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class WP_VIEWPAGE
+ *
  * @package Uncanny_Automator
  */
 class WP_VIEWPAGE {
@@ -50,10 +51,10 @@ class WP_VIEWPAGE {
 			'priority'            => 90,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_page' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wp->options->all_pages(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -72,7 +73,7 @@ class WP_VIEWPAGE {
 		}
 
 		// Bail out if post id is null.
-		if ( ! isset ( $post->ID ) ) {
+		if ( ! isset( $post->ID ) ) {
 			return;
 		}
 
@@ -85,12 +86,12 @@ class WP_VIEWPAGE {
 			return;
 		}
 		$user_id = get_current_user_id();
-		$args    = [
+		$args    = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $post->ID,
 			'user_id' => $user_id,
-		];
+		);
 
 		$arr = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 

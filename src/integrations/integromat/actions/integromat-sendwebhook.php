@@ -6,12 +6,14 @@ use WP_Error;
 
 /**
  * Class INTEGROMAT_SENDWEBHOOK
+ *
  * @package Uncanny_Automator
  */
 class INTEGROMAT_SENDWEBHOOK {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'INTEGROMAT';

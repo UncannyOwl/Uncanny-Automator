@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPF_USERREPUTATION
+ *
  * @package Uncanny_Automator
  */
 class WPF_USERREPUTATION {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPFORO';
@@ -31,8 +33,6 @@ class WPF_USERREPUTATION {
 	 */
 	public function define_action() {
 
-
-
 		$reputation_options = array();
 		$levels             = WPF()->member->levels();
 
@@ -41,13 +41,13 @@ class WPF_USERREPUTATION {
 			$reputation_options[ 'L' . strval( $level ) ] = $title;
 		}
 
-		$option = [
+		$option = array(
 			'option_code' => $this->action_meta,
 			'label'       => esc_attr__( 'Reputation', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'options'     => $reputation_options,
-		];
+		);
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -61,9 +61,9 @@ class WPF_USERREPUTATION {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'set_reputation' ),
-			'options'            => [
+			'options'            => array(
 				$option,
-			],
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -76,9 +76,7 @@ class WPF_USERREPUTATION {
 	 */
 	public function set_reputation( $user_id, $action_data, $recipe_id, $args ) {
 
-
-
-		$reputation_id = absint( str_replace( "L", "", $action_data['meta'][ $this->action_meta ] ) );
+		$reputation_id = absint( str_replace( 'L', '', $action_data['meta'][ $this->action_meta ] ) );
 		$points        = WPF()->member->rating( $reputation_id, 'points' );
 
 		$args = array( 'rank' => $points );

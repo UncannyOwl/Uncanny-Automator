@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LD_QUIZPERCENT
+ *
  * @package Uncanny_Automator
  */
 class LD_QUIZPERCENT {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LD';

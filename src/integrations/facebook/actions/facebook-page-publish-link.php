@@ -3,6 +3,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class FACEBOOK_PAGE_PUBLISH_LINK
+ *
  * @package Uncanny_Automator
  */
 class FACEBOOK_PAGE_PUBLISH_LINK {

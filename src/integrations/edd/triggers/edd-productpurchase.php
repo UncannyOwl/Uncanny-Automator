@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class EDD_PRODUCTPURCHASE
+ *
  * @package Uncanny_Automator
  */
 class EDD_PRODUCTPURCHASE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'EDD';
@@ -43,9 +45,9 @@ class EDD_PRODUCTPURCHASE {
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'edd_product_purchase' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->edd->options->all_edd_downloads( esc_attr__( 'Product', 'uncanny-automator' ), $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -65,12 +67,12 @@ class EDD_PRODUCTPURCHASE {
 		foreach ( $cart_items as $item ) {
 			$post_id = $item['id'];
 			$user_id = get_current_user_id();
-			$args    = [
+			$args    = array(
 				'code'    => $this->trigger_code,
 				'meta'    => $this->trigger_meta,
 				'post_id' => $post_id,
 				'user_id' => $user_id,
-			];
+			);
 			Automator()->maybe_add_trigger_entry( $args );
 		}
 	}

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Copy_Recipe_Parts
+ *
  * @package Uncanny_Automator
  */
 class Copy_Recipe_Parts {
@@ -53,7 +54,7 @@ class Copy_Recipe_Parts {
 			return;
 		}
 
-		if ( automator_filter_has_var( 'action' ) && 'copy_recipe_parts' !== automator_filter_input( 'action' ) ) {
+		if ( 'copy_recipe_parts' !== automator_filter_input( 'action' ) ) {
 			return;
 		}
 
@@ -105,11 +106,11 @@ class Copy_Recipe_Parts {
 
 		if ( $recipe_tax > 0 ) {
 			//Clone tags and categories
-			$wpdb->query( "DELETE FROM {$wpdb->term_relationships} WHERE object_id={$new_recipe_id};" );
-			$wpdb->query( "CREATE TEMPORARY TABLE tmpCopyCats SELECT * FROM {$wpdb->term_relationships} WHERE object_id={$recipe_id};" );
-			$wpdb->query( "UPDATE tmpCopyCats SET object_id={$new_recipe_id} WHERE object_id={$recipe_id};" );
-			$wpdb->query( "INSERT INTO  {$wpdb->term_relationships} SELECT * FROM tmpCopyCats;" );
-			$wpdb->query( 'DROP TEMPORARY TABLE IF EXISTS tmpCopyCats;' );
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->term_relationships WHERE object_id=%d;", $new_recipe_id ) );
+			$wpdb->query( $wpdb->prepare( "CREATE TEMPORARY TABLE tmpCopyCats SELECT * FROM $wpdb->term_relationships WHERE object_id=%d;", $recipe_id ) );
+			$wpdb->query( $wpdb->prepare( 'UPDATE tmpCopyCats SET object_id=%d WHERE object_id=%d;', $new_recipe_id, $recipe_id ) );
+			$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->term_relationships SELECT * FROM tmpCopyCats;" ) );
+			$wpdb->query( $wpdb->prepare( 'DROP TEMPORARY TABLE IF EXISTS tmpCopyCats;' ) );
 		}
 
 		return $new_recipe_id;
@@ -203,6 +204,7 @@ class Copy_Recipe_Parts {
 	/**
 	 * @param $post_id
 	 * @param $new_post_id
+	 * @param int $post_parent
 	 */
 	public function copy_recipe_metas( $post_id, $new_post_id, $post_parent = 0 ) {
 		$recipe_meta = get_post_meta( $post_id );
@@ -216,6 +218,8 @@ class Copy_Recipe_Parts {
 
 	/**
 	 * @param $content
+	 * @param int $post_parent
+	 * @param int $new_post_id
 	 *
 	 * @return mixed
 	 */

@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Ultimate_Member_Pro_Helpers;
 
 /**
  * Class Ultimate_Member_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Ultimate_Member_Helpers {
@@ -56,7 +57,6 @@ class Ultimate_Member_Helpers {
 	public function get_um_forms( $label = null, $option_code = 'UMFORM', $type = 'register', $params = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -85,13 +85,13 @@ class Ultimate_Member_Helpers {
 		);
 
 		if ( 'any' !== (string) $type ) {
-			$args['meta_query'] = [
-				[
+			$args['meta_query'] = array(
+				array(
 					'key'     => '_um_mode',
 					'value'   => $type,
 					'compare' => 'LIKE',
-				],
-			];
+				),
+			);
 		}
 
 		//$forms_list = get_posts( $args );
@@ -105,8 +105,7 @@ class Ultimate_Member_Helpers {
 			}
 		}*/
 
-
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -116,11 +115,11 @@ class Ultimate_Member_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $forms_list,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
 				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_um_forms', $option );
 	}

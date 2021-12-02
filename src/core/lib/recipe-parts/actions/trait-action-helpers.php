@@ -5,6 +5,7 @@ namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Action_Helpers
+ *
  * @package Uncanny_Automator\Recipe
  */
 trait Action_Helpers {

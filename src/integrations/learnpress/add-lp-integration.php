@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Lp_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Lp_Integration {

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class SLACK_CREATECHANNEL
+ *
  * @package Uncanny_Automator
  */
 class SLACK_CREATECHANNEL {

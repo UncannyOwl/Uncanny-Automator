@@ -56,7 +56,6 @@ class Gamipress_Tokens {
 						$value = maybe_unserialize( $meta_value );
 					}
 				}
-
 			}
 		}
 

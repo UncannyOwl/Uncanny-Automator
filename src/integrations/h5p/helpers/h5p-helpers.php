@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\H5p_Pro_Helpers;
 
 /**
  * Class H5p_Helpers
+ *
  * @package Uncanny_Automator
  */
 class H5p_Helpers {

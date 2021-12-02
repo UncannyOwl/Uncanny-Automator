@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class FR_SUBMITFIELD
+ *
  * @package Uncanny_Automator
  */
 class ANON_FR_SUBMITFORM {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'FR';
@@ -51,9 +53,9 @@ class ANON_FR_SUBMITFORM {
 			'priority'            => 100,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'fr_submit_form' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->forminator->options->all_forminator_forms( null, $this->trigger_meta ),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -69,12 +71,12 @@ class ANON_FR_SUBMITFORM {
 	public function fr_submit_form( $entry, $form_id, $field_data_array ) {
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $form_id ),
 			'user_id' => intval( $user_id ),
-		];
+		);
 
 		$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 
@@ -93,14 +95,14 @@ class ANON_FR_SUBMITFORM {
 						$meta_key       = (string) $this->trigger_meta;
 						foreach ( $field_data_array as $entry_field ) {
 							$field_meta = "{$trigger_id}:{$meta_key}:{$form_id}|" . $entry_field['name'];
-							$insert     = [
+							$insert     = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $trigger_id,
 								'trigger_log_id' => $trigger_log_id,
 								'meta_key'       => $field_meta,
 								'meta_value'     => maybe_serialize( $entry_field['value'] ),
 								'run_number'     => $run_number,
-							];
+							);
 							Automator()->process->user->insert_trigger_meta( $insert );
 						}
 					}

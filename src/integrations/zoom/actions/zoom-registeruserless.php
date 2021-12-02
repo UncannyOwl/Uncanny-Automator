@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class ZOOM_REGISTERUSERLESS
+ *
  * @package Uncanny_Automator
  */
 class ZOOM_REGISTERUSERLESS {
@@ -44,19 +45,19 @@ class ZOOM_REGISTERUSERLESS {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'zoom_register_user' ),
-			'options_callback'   => array( $this, 'load_options' )
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
-	
+
 	/**
 	 * load_options
 	 *
 	 * @return void
 	 */
 	public function load_options() {
-		
+
 		$email_field_options = array(
 			'option_code' => 'EMAIL',
 			'input_type'  => 'text',
@@ -97,14 +98,14 @@ class ZOOM_REGISTERUSERLESS {
 		$last_name_field = Automator()->helpers->recipe->field->text( $last_name_field_options );
 
 		return array(
-			'options_group'      => array(
+			'options_group' => array(
 				$this->action_meta => array(
 					$email_field,
 					$first_name_field,
 					$last_name_field,
-					Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta )
-				)
-			)
+					Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
+				),
+			),
 		);
 	}
 

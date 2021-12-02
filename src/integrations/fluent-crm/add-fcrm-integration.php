@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Add_Wpff_Integration
+ *
  * @package Uncanny_Automator
  */
 class Add_Fcrm_Integration {

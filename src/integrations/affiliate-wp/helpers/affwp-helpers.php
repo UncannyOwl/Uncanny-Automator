@@ -6,6 +6,7 @@ use Uncanny_Automator_Pro\Affwp_Pro_Helpers;
 
 /**
  * Class Affwp_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Affwp_Helpers {
@@ -76,7 +77,7 @@ class Affwp_Helpers {
 			$options[ $type_id ] = $title;
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -86,7 +87,7 @@ class Affwp_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_get_referral_types', $option );
 	}

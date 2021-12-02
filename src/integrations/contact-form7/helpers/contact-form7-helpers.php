@@ -3,11 +3,11 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Contact_Form7_Pro_Helpers;
 
 /**
  * Class Contact_Form7_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Contact_Form7_Helpers {
@@ -57,7 +57,6 @@ class Contact_Form7_Helpers {
 	public function list_contact_form7_forms( $label = null, $option_code = 'CF7FORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -70,19 +69,18 @@ class Contact_Form7_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		$args = [
+		$args = array(
 			'post_type'      => 'wpcf7_contact_form',
 			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args );
 		$type    = 'select';
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => $type,
@@ -92,12 +90,12 @@ class Contact_Form7_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Form URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_list_contact_form7_forms', $option );
 	}

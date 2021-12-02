@@ -6,12 +6,14 @@ use WP_Post;
 
 /**
  * Class EC_REGISTER
+ *
  * @package Uncanny_Automator
  */
 class EC_REGISTER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'EC';
@@ -33,8 +35,6 @@ class EC_REGISTER {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/the-events-calendar/' ),
@@ -44,17 +44,17 @@ class EC_REGISTER {
 			'sentence'            => sprintf( esc_attr__( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Calendar */
 			'select_option_name'  => esc_attr__( 'A user registers for {{an event}}', 'uncanny-automator' ),
-			'action'              => [
+			'action'              => array(
 				'event_tickets_rsvp_tickets_generated_for_product',
 				'event_tickets_woocommerce_tickets_generated_for_product',
 				'event_tickets_tpp_tickets_generated_for_product',
-			],
+			),
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'user_registered' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->event_tickets->options->all_ec_events(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -78,12 +78,12 @@ class EC_REGISTER {
 
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $event_id,
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

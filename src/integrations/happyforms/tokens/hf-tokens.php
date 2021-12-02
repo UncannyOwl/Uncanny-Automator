@@ -24,34 +24,41 @@ class Hf_Tokens {
 	 * @return array
 	 */
 	public function hf_possible_tokens( $tokens = array(), $args = array() ) {
-		$form_id             = $args['value'];
-		$trigger_integration = $args['integration'];
-		$trigger_meta        = $args['meta'];
+	   $form_id             = $args['value'];
+	   $trigger_integration = $args['integration'];
+	   $trigger_meta        = $args['meta'];
 
-		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
-			$form_controller = happyforms_get_form_controller();
-			$form            = $form_controller->get( $form_id );
-			if ( $form ) {
-				$fields = array();
-				$meta   = $form['parts'];
-				if ( is_array( $meta ) && ! empty( $meta ) ) {
-					foreach ( $meta as $field ) {
-						$input_id    = $field['id'];
-						$input_title = '' !== $field['label'] . ( $field['type'] ? ' (' . $field['type'] . ') ' : '' );
-						$token_id    = "$form_id|$input_id";
-						$fields[]    = array(
-							'tokenId'         => $token_id,
-							'tokenName'       => $input_title,
-							'tokenType'       => $field['type'],
-							'tokenIdentifier' => $trigger_meta,
-						);
-					}
-				}
-				$tokens = array_merge( $tokens, $fields );
-			}
-		}
+	   if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
+	      $form_controller = happyforms_get_form_controller();
+	      $form            = $form_controller->get( $form_id );
+	      if ( $form ) {
+	         $fields = array();
+	         $meta   = $form['parts'];
+	         if ( is_array( $meta ) && ! empty( $meta ) ) {
+	            foreach ( $meta as $field ) {
+	               $input_id   = $field['id'];
+	               $field_type = 'text';
+	               if ( 'int' === $field['type'] || 'numeric' === $field['type'] || 'number' === $field['type'] ) {
+	                  $field_type = 'int';
+	               }
+	               if ( 'email' === $field['type'] ) {
+	                  $field_type = 'email';
+	               }
+					$input_title = empty( $field['label'] ) ? $field['type'] : $field['label'];               
+					$token_id    = "$form_id|$input_id";
+	               $fields[]    = array(
+	                  'tokenId'         => $token_id,
+	                  'tokenName'       => $input_title,
+	                  'tokenType'       => $field_type,
+	                  'tokenIdentifier' => $trigger_meta,
+	               );
+	            }
+	         }
+	         $tokens = array_merge( $tokens, $fields );
+	      }
+	   }
 
-		return $tokens;
+	   return $tokens;
 	}
 
 	/**

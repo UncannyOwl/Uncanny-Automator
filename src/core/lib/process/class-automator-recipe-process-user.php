@@ -1,9 +1,6 @@
 <?php
 
-
 namespace Uncanny_Automator;
-
-use Uncanny_Automator\Utilities;
 
 /**
  * Class Automator_Recipe_Process_User
@@ -183,7 +180,10 @@ class Automator_Recipe_Process_User {
 					if ( 1 === + $mark_trigger_complete ) {
 						$this->maybe_trigger_complete( $args );
 					} else {
-						$result[] = array( 'result' => true, 'args' => $args ); //phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+						$result[] = array(
+							'result' => true,
+							'args'   => $args,
+						); //phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 					}
 				}
 			}
@@ -294,14 +294,7 @@ class Automator_Recipe_Process_User {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'uap_recipe_log';
 
-		$results = $wpdb->get_var( $wpdb->prepare(
-			"SELECT
-				COUNT(completed)
-				FROM $table_name
-				WHERE 1=1
-				AND completed = 1
-				AND user_id = %d
-				AND automator_recipe_id = %d", $user_id, $recipe_id ) );
+		$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(completed) FROM {$wpdb->prefix}uap_recipe_log WHERE  completed = 1 AND user_id = %d AND automator_recipe_id = %d", $user_id, $recipe_id ) );
 
 		if ( 0 !== absint( $user_id ) ) {
 			$num_times_recipe_run = Automator()->utilities->recipe_number_times_completed( $recipe_id, $results );
@@ -382,7 +375,7 @@ class Automator_Recipe_Process_User {
 		if ( empty( $args ) || null === $trigger || null === $recipe_id ) {
 			return [
 				'result' => false,
-				'error'  => __( 'One of the required field is missing.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'One of the required field is missing.', 'uncanny-automator' ),
 			];
 		}
 
@@ -403,7 +396,7 @@ class Automator_Recipe_Process_User {
 
 			return [
 				'result' => false,
-				'error'  => __( 'Plugin is not active.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Plugin is not active.', 'uncanny-automator' ),
 			];
 		}
 
@@ -417,7 +410,7 @@ class Automator_Recipe_Process_User {
 		if ( $is_trigger_completed ) {
 			return [
 				'result' => false,
-				'error'  => __( 'Trigger is completed.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Trigger is completed.', 'uncanny-automator' ),
 			];
 		}
 		// Skip if the executed trigger doesn't match
@@ -431,7 +424,7 @@ class Automator_Recipe_Process_User {
 		if ( 0 !== (int) $matched_recipe_id && (int) $recipe_id !== (int) $matched_recipe_id ) {
 			return [
 				'result' => false,
-				'error'  => __( 'Recipe not matched.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Recipe not matched.', 'uncanny-automator' ),
 			];
 		} elseif ( (int) $recipe_id === (int) $matched_recipe_id ) {
 			/**
@@ -445,7 +438,7 @@ class Automator_Recipe_Process_User {
 			if ( ! isset( $trigger['meta'][ $trigger_meta ] ) && ! isset( $trigger['meta'][ $args['code'] ] ) ) {
 				return [
 					'result' => false,
-					'error'  => __( 'Trigger meta not found.', 'uncanny-automator' ),
+					'error'  => esc_html__( 'Trigger meta not found.', 'uncanny-automator' ),
 				];
 			}
 		}
@@ -489,7 +482,7 @@ class Automator_Recipe_Process_User {
 		if ( null === $trigger_id || null === $recipe_id || null === $user_id ) {
 			return array(
 				'result' => false,
-				'error'  => __( 'One of the required field is missing.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'One of the required field is missing.', 'uncanny-automator' ),
 			);
 		}
 
@@ -543,7 +536,7 @@ class Automator_Recipe_Process_User {
 		if ( empty( $args ) || null === $trigger || null === $recipe_id ) {
 			return [
 				'result' => false,
-				'error'  => __( 'One of the required field is missing.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'One of the required field is missing.', 'uncanny-automator' ),
 			];
 		}
 
@@ -562,7 +555,7 @@ class Automator_Recipe_Process_User {
 
 			return [
 				'result' => false,
-				'error'  => __( 'Plugin is not active.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Plugin is not active.', 'uncanny-automator' ),
 			];
 		}
 
@@ -572,7 +565,7 @@ class Automator_Recipe_Process_User {
 		if ( $is_trigger_completed ) {
 			return [
 				'result' => false,
-				'error'  => __( 'Trigger is completed.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Trigger is completed.', 'uncanny-automator' ),
 			];
 		}
 
@@ -580,7 +573,7 @@ class Automator_Recipe_Process_User {
 		if ( $check_trigger_code !== $trigger_code ) {
 			return [
 				'result' => false,
-				'error'  => __( 'Trigger isn\'t matched.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Trigger isn\'t matched.', 'uncanny-automator' ),
 			];
 		}
 
@@ -595,12 +588,12 @@ class Automator_Recipe_Process_User {
 			if ( is_numeric( $trigger_post_id ) && is_numeric( $post_id ) && absint( $trigger_post_id ) !== absint( $post_id ) ) {
 				return [
 					'result' => false,
-					'error'  => __( 'Trigger not matched.', 'uncanny-automator' ),
+					'error'  => esc_html__( 'Trigger not matched.', 'uncanny-automator' ),
 				];
 			} elseif ( (string) $trigger_post_id != (string) $post_id ) {
 				return [
 					'result' => false,
-					'error'  => __( 'Trigger not matched.', 'uncanny-automator' ),
+					'error'  => esc_html__( 'Trigger not matched.', 'uncanny-automator' ),
 				];
 			}
 		}
@@ -627,7 +620,7 @@ class Automator_Recipe_Process_User {
 		if ( null === $trigger_id || null === $trigger || null === $user_id ) {
 			return array(
 				'result' => false,
-				'error'  => __( 'One of the required field is missing.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'One of the required field is missing.', 'uncanny-automator' ),
 			);
 		}
 
@@ -762,7 +755,7 @@ class Automator_Recipe_Process_User {
 		if ( is_null( $save_for_option ) ) {
 			return array(
 				'result' => false,
-				'error'  => __( 'Option meta not defined.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Option meta not defined.', 'uncanny-automator' ),
 			);
 		}
 
@@ -796,7 +789,7 @@ class Automator_Recipe_Process_User {
 		if ( ! $meta_already_saved ) {
 			return array(
 				'result' => Automator()->db->trigger->add_meta( $trigger_id, $trigger_log_id, $run_number, $args ),
-				'error'  => __( 'Meta entry added.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Meta entry added.', 'uncanny-automator' ),
 			);
 		}
 		if ( is_numeric( $meta_already_saved ) ) {
@@ -804,13 +797,13 @@ class Automator_Recipe_Process_User {
 
 			return array(
 				'result' => $this->update_trigger_meta( $user_id, $trigger_id, $trigger_meta, $post_id, $trigger_log_id ),
-				'error'  => __( 'Meta entry updated.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Meta entry updated.', 'uncanny-automator' ),
 			);
 		}
 
 		return array(
 			'result' => false,
-			'error'  => __( 'No action happened.', 'uncanny-automator' ),
+			'error'  => esc_html__( 'No action happened.', 'uncanny-automator' ),
 		);
 
 	}
@@ -898,7 +891,7 @@ class Automator_Recipe_Process_User {
 	 *
 	 * @param $args
 	 *
-	 * @return bool
+	 * @return bool|void
 	 */
 	public function maybe_trigger_complete( $args ) {
 		$is_signed_in = Automator()->is_user_signed_in( $args );
@@ -947,8 +940,7 @@ class Automator_Recipe_Process_User {
 		}
 
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'uap_trigger_log_meta';
-		$results    = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $table_name WHERE user_id = %d AND meta_key LIKE %s AND automator_trigger_id = %d", $user_id, $meta_key, $trigger_id ) );
+		$results = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}uap_trigger_log_meta WHERE user_id = %d AND meta_key LIKE %s AND automator_trigger_id = %d", $user_id, $meta_key, $trigger_id ) );
 
 		if ( null !== $results ) {
 			return (int) $results;
@@ -966,7 +958,7 @@ class Automator_Recipe_Process_User {
 	 * @param $recipe_id  null
 	 * @param $ID         null
 	 *
-	 * @return null
+	 * @return null|void
 	 */
 	public function update_trigger( $user_id = null, $trigger_id = null, $recipe_id = null, $ID = null ) {
 

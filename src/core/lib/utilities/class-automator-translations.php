@@ -4,23 +4,34 @@ namespace Uncanny_Automator;
 
 /**
  * Class Automator_Translations
+ *
  * @package Uncanny_Automator
  */
 class Automator_Translations {
 
+	/**
+	 * @var
+	 */
 	public static $instance;
 	/**
 	 * Collection of error messages
+	 *
 	 * @var array
 	 */
 	private $ls = array();
 
+	/**
+	 *
+	 */
 	public function __construct() {
 		$this->set_strings();
 		do_action_deprecated( 'uap_localized_string_after', array(), '3.0', 'automator_localized_string_after' );
 		do_action( 'automator_localized_string_after' );
 	}
 
+	/**
+	 *
+	 */
 	private function set_strings() {
 
 		// Localized strings
@@ -117,13 +128,13 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.action.asyncActions.modal.year
 						'years'           => esc_attr__( 'Years', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.years
-						'after'           => __( "after completion of the triggers", 'uncanny-automator' ),
+						'after'           => esc_html__( 'after completion of the triggers', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.after
 						'scheduleDesc'    => esc_attr__( 'Run this action at a specific date and time', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.scheduleDesc
-						'scheduleNotice1' => __( "Note: If the action is triggered after the specified date, this action will run immediately.", 'uncanny-automator' ),
+						'scheduleNotice1' => esc_html__( 'Note: If the action is triggered after the specified date, this action will run immediately.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.scheduleNotice1
-						'scheduleNotice2' => esc_attr__( "Note: Changes will not affect previously delayed or scheduled actions.", 'uncanny-automator' ),
+						'scheduleNotice2' => esc_attr__( 'Note: Changes will not affect previously delayed or scheduled actions.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.scheduleNotice2
 						'timezone'        => esc_attr__( 'Timezone', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezone
@@ -145,7 +156,6 @@ class Automator_Translations {
 							'positiveNumber' => esc_attr__( 'Please use a positive number.', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.action.asyncActions.modal.validation.positiveNumber
 						),
-
 
 					),
 				),
@@ -340,11 +350,17 @@ class Automator_Translations {
 					'advanced'            => esc_attr_x( 'Advanced', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.advanced
 					/* translators: Token name */
-					'userMetaKey'         => esc_attr_x( 'User meta key', 'Token', 'uncanny-automator' ),
+					'userMetaKey'         => esc_attr_x( 'User meta', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userMetaKey
-					/* translators: Token name */
-					'userMetaKeyTemplate' => esc_attr_x( 'User meta key: %1$s', 'Token', 'uncanny-automator' ),
+					/* translators: 1. The user meta key */
+					'userMetaKeyTemplate' => esc_attr_x( 'User meta: %1$s', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userMetaKeyTemplate
+					/* translators: Token name */
+					'postMetaKey'         => esc_attr_x( 'Post meta', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.postMetaKey
+					/* translators: 1. The post. 2. The meta key */
+					'postMetaKeyTemplate' => esc_attr_x( 'Post: %1$s meta: %2$s', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.postMetaKeyTemplate
 					/* translators: Token name */
 					'currentDate'         => esc_attr_x( 'Current date', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.currentDate
@@ -357,18 +373,44 @@ class Automator_Translations {
 						'modal' => array(
 							'title'                  => esc_attr__( "What's the key of the meta you want to retrieve?", 'uncanny-automator' ),
 							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.title
-							'confirmButton'          => esc_attr__( "Add token", 'uncanny-automator' ),
+							'confirmButton'          => esc_attr__( 'Add token', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.confirmButton
 							'userMetaKey'            => esc_attr_x( 'User meta key', 'Token', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.userMetaKey
-							'userMetaKeyDescription' => esc_attr__( "For example: admin_color", 'uncanny-automator' ),
+							'userMetaKeyDescription' => esc_attr__( 'For example: admin_color', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.userMetaKeyDescription
+						),
+					),
+					'postMeta' => array(
+						'modal' => array(
+							'title'                => esc_attr__( 'Token data', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.title
+							'confirmButton'        => esc_attr__( 'Add token', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.confirmButton
+							'postFieldLabel'       => esc_attr__( 'Post ID', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.postFieldLabel
+							'postFieldDescription' => esc_attr__( 'The ID of the post that contains the meta data. %1$s.', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.postFieldDescription
+							'keyFieldLabel'        => esc_attr__( 'Meta key', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.keyFieldLabel
+							'keyFieldDescription'  => esc_attr__( 'The meta key associated with the data you want to retrieve. Only one meta key can be entered per token.', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.keyFieldDescription
 						),
 					),
 				),
 				/* translators: 1. Token type */
 				'filter'                         => esc_attr__( 'Only %1$s tokens', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.tokens.filter
+				'addAllTokensInGroup'            => esc_attr__( 'Add all in this group', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.addAllTokensInGroup
+				'includeTokenName'               => esc_attr__( 'Include token name', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.includeTokenName
+				'includeTokenID'                 => esc_attr__( 'Include token ID', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.includeTokenID
+				'addTokens'                      => esc_attr__( 'Add tokens', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.addTokens
+				'addAllDescription'              => esc_attr__( 'On confirmation, all the tokens in the group "%1$s" will be added to the field  "%2$s".', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.addAllDescription
 			),
 			'integration'         => array(
 				/* translators: Verb conjugated in present-tense second-person singular */
@@ -572,7 +614,7 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.userSelector.existingUser.valueFieldLabel
 					'valueFieldPlaceholder'              => esc_attr__( 'Value of the unique field', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.existingUser.valueFieldPlaceholder
-					'createNewUserFieldLabel'            => __( "What to do if the user doesn't exist", 'uncanny-automator' ),
+					'createNewUserFieldLabel'            => esc_html__( "What to do if the user doesn't exist", 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.existingUser.createNewUserFieldLabel
 					/* translators: Non-personal infinitive verb */
 					'createNewUserFieldOptionCreateUser' => esc_attr__( 'Create new user', 'uncanny-automator' ),
@@ -580,7 +622,7 @@ class Automator_Translations {
 					/* translators: Non-personal infinitive verb */
 					'createNewUserFieldOptionDoNothing'  => esc_attr__( 'Do nothing', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.existingUser.createNewUserFieldOptionDoNothing
-					'doNothingMessage'                   => esc_attr__( 'If no user matches the unique field and value then the actions are not going to be executed.', 'uncanny-automator' )
+					'doNothingMessage'                   => esc_attr__( 'If no user matches the unique field and value then the actions are not going to be executed.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.existingUser.doNothingMessage
 				),
 				'newUser'        => array(
@@ -623,12 +665,12 @@ class Automator_Translations {
 							'title'         => esc_attr__( 'We need some user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.action.allowed.title
 							'content'       => array(
-								'mustRunOnUser' => esc_attr__( "This action must be run on a WordPress user.", 'uncanny-automator' ),
+								'mustRunOnUser' => esc_attr__( 'This action must be run on a WordPress user.', 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.action.allowed.content.mustRunOnUser
 								'description'   => esc_attr__( "Since this is a recipe that runs for everyone, including logged-out users, you'll need to select a new or existing user that this action will run on.", 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.action.allowed.content.description
 							),
-							'confirmButton' => esc_attr__( "Set user data", 'uncanny-automator' ),
+							'confirmButton' => esc_attr__( 'Set user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.action.allowed.confirmButton
 						),
 						// User can't add the action
@@ -636,7 +678,7 @@ class Automator_Translations {
 							'title'         => esc_attr__( 'We need some user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.action.forbidden.title
 							'content'       => array(
-								'mustRunOnUser' => esc_attr__( "This action must be run on a WordPress user.", 'uncanny-automator' ),
+								'mustRunOnUser' => esc_attr__( 'This action must be run on a WordPress user.', 'uncanny-automator' ),
 								// UncannyAutomator.i18n.userSelector.userDataModal.action.forbidden.content.mustRunOnUser
 								/* translators: 1. Trademarked term. */
 								'description'   => esc_attr__( 'Because the action is associated with user data, it must be mapped to a new or existing user. This requires %1$s.', 'uncanny-automator' ),
@@ -662,7 +704,7 @@ class Automator_Translations {
 							),
 							'cancelButton'  => esc_attr__( 'Remove token', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.allowed.cancelButton
-							'confirmButton' => esc_attr__( "Set user data", 'uncanny-automator' ),
+							'confirmButton' => esc_attr__( 'Set user data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.userSelector.userDataModal.token.allowed.confirmButton
 						),
 						// User can't add the token
@@ -695,92 +737,92 @@ class Automator_Translations {
 			),
 			'debugging'           => array(
 				'fatalErrorHandler'   => array(
-					'title'   => __( 'Sorry, something went wrong', 'uncanny-automator' ),
+					'title'        => esc_html__( 'Sorry, something went wrong', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.fatalErrorHandler.title
-					'content' => __( 'Click "Learn more" for steps you can take to resolve this issue.', 'uncanny-automator' ),
+					'content'      => esc_html__( 'Click "Learn more" for steps you can take to resolve this issue.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.fatalErrorHandler.content
 
 					'accessDenied' => array(
-						'title'   => __( 'Access denied', 'uncanny-automator' ),
+						'title'   => esc_html__( 'Access denied', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.accessDenied.title
 						/* translators: 1. The endpoint */
-						'content' => __( 'Automator experienced a permissions (403) error. This might be caused by an expired WordPress session or a REST endpoint access issue. Automator specifically failed to do a REST call to %1$s. Reloading the page may fix the issue, otherwise have your host investigate why requests to %1$s are returning a 403 error.', 'uncanny-automator' )
+						'content' => esc_html__( 'Automator experienced a permissions (403) error. This might be caused by an expired WordPress session or a REST endpoint access issue. Automator specifically failed to do a REST call to %1$s. Reloading the page may fix the issue, otherwise have your host investigate why requests to %1$s are returning a 403 error.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.accessDenied.content
 					),
 
-					'notFound' => array(
-						'title'   => __( 'Not found', 'uncanny-automator' ),
+					'notFound'     => array(
+						'title'          => esc_html__( 'Not found', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.title
 						/* translators: 1. Link to "Site permalinks". 2. Link to "Uncanny Automator support" */
-						'content' => __( 'A endpoint that Automator requires is missing. If your %1$s are set to Plain, please change them to something else. Otherwise, removing and reinstalling Automator plugins to rule out an upload issue is recommended, otherwise please contact %2$s.', 'uncanny-automator' ),
+						'content'        => esc_html__( 'A endpoint that Automator requires is missing. If your %1$s are set to Plain, please change them to something else. Otherwise, removing and reinstalling Automator plugins to rule out an upload issue is recommended, otherwise please contact %2$s.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.content
-						'sitePermalinks' => __( 'site permalinks', 'uncanny-automator' ),
+						'sitePermalinks' => esc_html__( 'site permalinks', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.sitePermalinks=
 					),
 
-					'timeout' => array(
-						'title'   => __( 'Request timeout', 'uncanny-automator' ),
+					'timeout'      => array(
+						'title'   => esc_html__( 'Request timeout', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.timeout.title
-						'content' => __( 'The Automator request timed out, likely due to insufficient server resources. Please contact your host.', 'uncanny-automator' )
+						'content' => esc_html__( 'The Automator request timed out, likely due to insufficient server resources. Please contact your host.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.timeout.content
 					),
 
-					'serverError' => array(
-						'title'   => __( 'Internal error', 'uncanny-automator' ),
+					'serverError'  => array(
+						'title'   => esc_html__( 'Internal error', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.serverError.title
 						/* translators: 1. Link to "Uncanny Automator support" */
-						'content' => __( 'Automator experienced a fatal error on your site. Please check your PHP and debug error log for more details, then sent the associated error details to %1$s.', 'uncanny-automator' )
+						'content' => esc_html__( 'Automator experienced a fatal error on your site. Please check your PHP and debug error log for more details, then sent the associated error details to %1$s.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.serverError.content
 					),
 
-					'parserError' => array(
-						'title'   => __( 'Parser error', 'uncanny-automator' ),
+					'parserError'  => array(
+						'title'   => esc_html__( 'Parser error', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.parserError.title
-						'content' => __( "We have detected a conflict with another plugin. Try testing in a Staging environment with only Automator plugins active, then gradually reactivate plugins until things break again to trace what's causing it.", 'uncanny-automator' )
+						'content' => esc_html__( "We have detected a conflict with another plugin. Try testing in a Staging environment with only Automator plugins active, then gradually reactivate plugins until things break again to trace what's causing it.", 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.parserError.content
 					),
 
-					'dataMissing' => array(
-						'title'   => __( 'Data missing', 'uncanny-automator' ),
+					'dataMissing'  => array(
+						'title'          => esc_html__( 'Data missing', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.title
 						/* translators: 1. Link to contact support. 2. Link to the "Automator Tools" page */
-						'content' => __( 'Automator has detected that expected data is missing. Please %1$s with details of the issue and a copy of the System Report on the %2$s page.', 'uncanny-automator' ),
+						'content'        => esc_html__( 'Automator has detected that expected data is missing. Please %1$s with details of the issue and a copy of the System Report on the %2$s page.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.content
-						'contactSupport' => __( 'contact support', 'uncanny-automator' ),
+						'contactSupport' => esc_html__( 'contact support', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.contactSupport
-						'automatorTools' => __( 'Automator Tools', 'uncanny-automator' )
+						'automatorTools' => esc_html__( 'Automator Tools', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.automatorTools
 					),
 
-					'generic' => array(
-						'title'   => __( 'Unknown error', 'uncanny-automator' ),
+					'generic'      => array(
+						'title'   => esc_html__( 'Unknown error', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.generic.title
 						/* translators: 1. Link to contact support */
-						'content' => __( 'Automator has encountered an unknown error. Please contact %1$s with a screenshot of your recipe, details about what you were doing and any other information that may help us with the error.', 'uncanny-automator' )
+						'content' => esc_html__( 'Automator has encountered an unknown error. Please contact %1$s with a screenshot of your recipe, details about what you were doing and any other information that may help us with the error.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.generic.content
 					),
 
-					'exceptions' => array(
+					'exceptions'   => array(
 						'tags' => array(
-							'couldNotSave' => __( "We couldn't save the tags", 'uncanny-automator' ),
+							'couldNotSave' => esc_html__( "We couldn't save the tags", 'uncanny-automator' ),
 							// UncannyAutomator.i18n.debugging.fatalErrorHandler.exceptions.tags.couldNotSave
-						)
-					)
+						),
+					),
 				),
 				'uiCantLoad'          => array(
-					'title'   => __( 'The recipe creator could not be loaded', 'uncanny-automator' ),
+					'title'   => esc_html__( 'The recipe creator could not be loaded', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.uiCantLoad.title
-					'warning' => __( 'Sorry, something went wrong when loading the recipe interface. Technical details are listed below.', 'uncanny-automator' ),
+					'warning' => esc_html__( 'Sorry, something went wrong when loading the recipe interface. Technical details are listed below.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.uiCantLoad.warning
-					'content' => __( 'Click Learn More for steps you can take to resolve this issue.', 'uncanny-automator' ),
+					'content' => esc_html__( 'Click Learn More for steps you can take to resolve this issue.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.uiCantLoad.content
 				),
-				'buttonGoBack'        => __( 'Go to all recipes', 'uncanny-automator' ),
+				'buttonGoBack'        => esc_html__( 'Go to all recipes', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.debugging.buttonGoBack
-				'learnMore'           => __( 'Learn more', 'uncanny-automator' ),
+				'learnMore'           => esc_html__( 'Learn more', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.debugging.learnMore
 				/* translators: 1. Trademarked term */
-				'automatorSupport'    => sprintf( __( '%1$s support', 'uncanny-automator' ), 'Uncanny Automator' ),
+				'automatorSupport'    => sprintf( esc_html__( '%1$s support', 'uncanny-automator' ), 'Uncanny Automator' ),
 				// UncannyAutomator.i18n.debugging.automatorSupport
 				'recipeTitle'         => 'Recipe',
 				'recipeItemsTitle'    => 'Recipe items',
@@ -803,8 +845,8 @@ class Automator_Translations {
 			),
 			'format'              => array(
 				'date' => array(
-					'selectDate'       => __( 'Select date', 'uncanny-automator' ),
-					'selectTime'       => __( 'Select time', 'uncanny-automator' ),
+					'selectDate'       => esc_html__( 'Select date', 'uncanny-automator' ),
+					'selectTime'       => esc_html__( 'Select time', 'uncanny-automator' ),
 					'weekdays'         => array(
 						'shorthand' => array(
 							/* translators: Abbreviation - Monday (3 letters) */
@@ -891,7 +933,7 @@ class Automator_Translations {
 			'noResults'           => esc_attr__( 'No results found', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.noResults
 			/* translators: Character to separate items */
-			'itemSeparator'       => __( ',', 'uncanny-automator' ),
+			'itemSeparator'       => esc_html__( ',', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.itemSeparator
 			/* translators: Non-personal infinitive verb */
 			'save'                => esc_attr__( 'Save', 'uncanny-automator' ),
@@ -931,8 +973,12 @@ class Automator_Translations {
 			/* translators: 1. Post ID */
 			'postIDPlaceholder'   => esc_attr__( 'ID: %1$s' ),
 			// UncannyAutomator.i18n.postIDPlaceholder
+			'debuggingTools'      => esc_attr__( 'Debugging tools' ),
+			// UncannyAutomator.i18n.debuggingTools
 			'itemMissing'         => esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.itemMissing
+			'noLabel'             => esc_attr__( '(no label)', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.noLabel
 			/* translators: Non-personal infinitive verb */
 			'upgradeNow'          => esc_attr__( 'Upgrade now', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.upgradeNow
@@ -966,6 +1012,9 @@ class Automator_Translations {
 		);
 	}
 
+	/**
+	 * @return Automator_Translations
+	 */
 	public static function get_instance() {
 
 		if ( null === self::$instance ) {

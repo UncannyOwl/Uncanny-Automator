@@ -5,13 +5,13 @@
  * This class used to be in uncanny-automator < 3.0. Some of the plugins hooked in to InitializePlugin::PLUGIN_VERSION
  * to grab the version of Automator. We have moved away from this in 3.0 to CONSTANT, see
  * uncanny-automator/src/globals.php.
- *
  */
 
 namespace Uncanny_Automator;
 
 /**
  * Class InitializePlugin
+ *
  * @package    Uncanny_Automator
  * @deprecated 3.0
  * @use        AUTOMATOR_PLUGIN_VERSION
@@ -104,7 +104,6 @@ class InitializePlugin {
 	 *
 	 * @return InitializePlugin $instance The InitializePlugin Class
 	 * @since 1.0.0
-	 *
 	 */
 	public static function get_instance() {
 

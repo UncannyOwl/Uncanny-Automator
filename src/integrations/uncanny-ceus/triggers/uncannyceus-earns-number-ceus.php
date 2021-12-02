@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class UC_CODEREDEEMED
+ *
  * @package Uncanny_Automator
  */
 class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'UNCANNYCEUS';
@@ -24,7 +26,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 		// The hook is only available on or after CEU version 3.0.7
 		$version = \uncanny_ceu\Utilities::get_version();
 		if ( version_compare( $version, '3.0.6', '>' ) ) {
-			add_filter( 'automator_maybe_parse_token', [ $this, 'tokens' ], 20, 6 );
+			add_filter( 'automator_maybe_parse_token', array( $this, 'tokens' ), 20, 6 );
 			$this->trigger_code = 'EARNSCEUSNUMBER';
 			$this->trigger_meta = 'AMOUNTSCEUS';
 			$this->define_trigger();
@@ -52,21 +54,21 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 			'priority'            => 20,
 			'accepted_args'       => 7,
 			'validation_function' => array( $this, 'updated_user_ceu_record' ),
-			'options'             => [
-				[
+			'options'             => array(
+				array(
 					'option_code'     => $this->trigger_meta,
 					/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
 					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
 					'input_type'      => 'float',
 					'validation_type' => 'integer',
 					'required'        => true,
-					'relevant_tokens' => [
+					'relevant_tokens' => array(
 						$this->trigger_meta            => sprintf( esc_attr__( '%1$s amount', 'uncanny-automator' ), $credit_designation_label_plural ),
 						$this->trigger_meta . '_title' => sprintf( esc_attr__( 'Course or %1$s title', 'uncanny-automator' ), $credit_designation_label_plural ),
 						$this->trigger_meta . '_date'  => esc_attr__( 'Date awarded', 'uncanny-automator' ),
-					],
-				],
-			],
+					),
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -95,7 +97,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		// Get the specific WPFFORUMID meta data from the recipes
 		$require_ceu_amount = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$matched_recipe_ids = [];
+		$matched_recipe_ids = array();
 
 		// Loop through recipe
 		foreach ( $recipes as $recipe_id => $recipe ) {
@@ -105,17 +107,17 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 				$ceu_amount = $require_ceu_amount[ $recipe_id ][ $trigger_id ];
 
 				if ( $ceu_value === (float) $ceu_amount ) {
-					$matched_recipe_ids[] = [
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $current_user->ID,
@@ -123,7 +125,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
 					'is_signed_in'     => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
@@ -131,12 +133,12 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
 
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $current_user->ID,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							$trigger_meta['meta_key']   = $this->trigger_meta;
 							$trigger_meta['meta_value'] = maybe_serialize( $ceu_value );
@@ -155,7 +157,6 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -168,7 +169,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 	 *
 	 * @return string|null
 	 */
-	public function tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = [] ) {
+	public function tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
 
 		if ( $pieces ) {
 			if (

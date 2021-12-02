@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class AUDIENCE_ADDUSERTAG
+ *
  * @package Uncanny_Automator
  */
 class AUDIENCE_ADDUSERTAG {

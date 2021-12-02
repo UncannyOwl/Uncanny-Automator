@@ -290,7 +290,7 @@ class Fcrm_Tokens {
 				if ( isset( $contact->id ) ) {
 					$contact_id = $contact->id;
 				}
-				
+
 				$token_value = $this->get_custom_field_value( $property, $contact_id );
 			}
 

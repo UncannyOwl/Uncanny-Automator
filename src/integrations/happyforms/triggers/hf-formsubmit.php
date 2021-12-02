@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class HF_FORMSUBMIT
+ *
  * @package Uncanny_Automator
  */
 class HF_FORMSUBMIT {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'HF';
@@ -37,8 +39,6 @@ class HF_FORMSUBMIT {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/happyforms/' ),
@@ -52,13 +52,16 @@ class HF_FORMSUBMIT {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'hf_form_submitted' ),
-			'options'             => [
-				Automator()->helpers->recipe->happyforms->options->all_happyforms_forms( null, $this->trigger_meta,
-					[
+			'options'             => array(
+				Automator()->helpers->recipe->happyforms->options->all_happyforms_forms(
+					null,
+					$this->trigger_meta,
+					array(
 						'include_any' => true,
 						'any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
-					] ),
-			],
+					)
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -76,16 +79,14 @@ class HF_FORMSUBMIT {
 
 	public function hf_form_submitted( $submission, $form, $misc ) {
 
-
-
 		$user_id = get_current_user_id();
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $form['ID'] ),
 			'user_id' => intval( $user_id ),
-		];
+		);
 
 		$result = Automator()->maybe_add_trigger_entry( $args, false );
 
@@ -94,13 +95,13 @@ class HF_FORMSUBMIT {
 				if ( true === $r['result'] ) {
 					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
 						//Saving form values in trigger log meta for token parsing!
-						$hf_args = [
+						$hf_args = array(
 							'trigger_id'     => (int) $r['args']['trigger_id'],
 							'meta_key'       => $this->trigger_meta,
 							'user_id'        => $user_id,
 							'trigger_log_id' => $r['args']['get_trigger_id'],
 							'run_number'     => $r['args']['run_number'],
-						];
+						);
 
 						Automator()->helpers->recipe->happyforms->extract_save_hf_fields( $submission, $form['ID'], $hf_args );
 					}

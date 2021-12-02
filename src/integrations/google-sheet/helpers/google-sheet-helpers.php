@@ -9,6 +9,7 @@ use Uncanny_Automator_Pro\Google_Sheet_Pro_Helpers;
 
 /**
  * Class Google_Sheet_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Google_Sheet_Helpers {
@@ -245,12 +246,17 @@ class Google_Sheet_Helpers {
 
 		$fields = array();
 
-		if ( ! isset( $_POST ) ) {
+		if ( ! automator_filter_has_var( 'values', INPUT_POST ) ) {
 			echo wp_json_encode( $fields );
 			die();
 		}
 
-		$gs_drive_id = sanitize_text_field( $_POST['values']['GSDRIVE'] );
+		$values = automator_filter_input_array( 'values', INPUT_POST );
+		if ( ! isset( $values['GSDRIVE'] ) ) {
+			echo wp_json_encode( $fields );
+			die();
+		}
+		$gs_drive_id = sanitize_text_field( $values['GSDRIVE'] );
 
 		$fields = $this->api_get_spreadsheets_from_drive( $gs_drive_id );
 
@@ -325,8 +331,13 @@ class Google_Sheet_Helpers {
 
 		// Nonce and post object validation
 		$uncanny_automator->utilities->ajax_auth_check();
-
-		$gs_spreadsheet_id = sanitize_text_field( $_POST['values']['GSSPREADSHEET'] );
+		$fields = array();
+		$values = automator_filter_input_array( 'values', INPUT_POST );
+		if ( ! isset( $values['GSSPREADSHEET'] ) ) {
+			echo wp_json_encode( $fields );
+			die();
+		}
+		$gs_spreadsheet_id = sanitize_text_field( $values['GSSPREADSHEET'] );
 
 		$fields = $this->api_get_worksheets_from_spreadsheet( $gs_spreadsheet_id );
 
@@ -354,13 +365,13 @@ class Google_Sheet_Helpers {
 			'samples' => array(),
 		);
 
-		if ( ! isset( $_POST ) ) {
+		if ( ! automator_filter_has_var( 'sheet', INPUT_POST ) && ! automator_filter_has_var( 'worksheet', INPUT_POST ) ) {
 			echo wp_json_encode( $response );
 			die();
 		}
 
-		$gs_spreadsheet_id = sanitize_text_field( $_POST['sheet'] );
-		$worksheet_id      = sanitize_text_field( $_POST['worksheet'] );
+		$gs_spreadsheet_id = sanitize_text_field( automator_filter_input( 'sheet', INPUT_POST ) );
+		$worksheet_id      = sanitize_text_field( automator_filter_input( 'worksheet', INPUT_POST ) );
 		$hashed            = sha1( self::$hash_string );
 		$sheet_id          = substr( $hashed, 0, 9 );
 
@@ -440,32 +451,32 @@ class Google_Sheet_Helpers {
 		);
 		ob_start();
 		?>
-        <p>
+		<p>
 			<?php echo esc_html( $description ); ?>
-        </p>
+		</p>
 
 		<?php $user = $this->get_user_info(); ?>
 		<?php if ( ! empty( $user['name'] ) ) : ?>
-            <div class="uo-google-user-info">
+			<div class="uo-google-user-info">
 				<?php if ( ! empty( $user['avatar_uri'] ) ) : ?>
-                    <div class="uo-google-user-info__avatar">
-                        <img width="32" src="<?php echo esc_url( $user['avatar_uri'] ); ?>"
-                             alt="<?php esc_attr_e( $user['name'] ); ?>"/>
-                    </div>
+					<div class="uo-google-user-info__avatar">
+						<img width="32" src="<?php echo esc_url( $user['avatar_uri'] ); ?>"
+							 alt="<?php esc_attr_e( $user['name'] ); ?>"/>
+					</div>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $user['email'] ) ) : ?>
-                    <div class="uo-google-user-info__email">
+					<div class="uo-google-user-info__email">
 						<?php echo esc_html( $user['email'] ); ?>
-                    </div>
+					</div>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $user['name'] ) ) : ?>
-                    <div class="uo-google-user-info__name">
-                        (<?php echo esc_html( $user['name'] ); ?>)
-                    </div>
+					<div class="uo-google-user-info__name">
+						(<?php echo esc_html( $user['name'] ); ?>)
+					</div>
 				<?php endif; ?>
-            </div>
+			</div>
 		<?php endif; ?>
 		<?php
 		return ob_get_clean();
@@ -497,14 +508,14 @@ class Google_Sheet_Helpers {
 			}
 			ob_start();
 			?>
-            <div class="uo-settings-content-form">
+			<div class="uo-settings-content-form">
 
-                <a href="<?php echo $auth_url; ?>"
-                   class="uo-settings-btn uo-settings-btn--primary <?php echo $button_class; ?>">
+				<a href="<?php echo esc_url_raw( $auth_url ); ?>"
+				   class="uo-settings-btn uo-settings-btn--primary <?php echo esc_attr( $button_class ); ?>">
 					<?php
-					echo $button_text;
+					echo esc_html( $button_text );
 					?>
-                </a>
+				</a>
 				<?php if ( $gs_client ) : ?>
 					<?php
 					$disconnect_uri = add_query_arg(
@@ -515,41 +526,41 @@ class Google_Sheet_Helpers {
 						admin_url( 'admin-ajax.php' )
 					);
 					?>
-                    <a href="<?php echo esc_url( $disconnect_uri ); ?>" class="uo-settings-btn uo-settings-btn--error ">
+					<a href="<?php echo esc_url( $disconnect_uri ); ?>" class="uo-settings-btn uo-settings-btn--error ">
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
-                    </a>
+					</a>
 				<?php endif; ?>
 
-            </div>
-            <style>
-                .uo-google-user-info {
-                    display: flex;
-                    align-items: center;
-                    margin: 20px 0;
-                }
+			</div>
+			<style>
+				.uo-google-user-info {
+					display: flex;
+					align-items: center;
+					margin: 20px 0;
+				}
 
-                .uo-google-user-info__avatar {
-                    display: inline-flex;
-                    align-items: center;
-                    overflow: hidden;
-                    border-radius: 32px;
-                    margin-right: 10px;
-                }
+				.uo-google-user-info__avatar {
+					display: inline-flex;
+					align-items: center;
+					overflow: hidden;
+					border-radius: 32px;
+					margin-right: 10px;
+				}
 
-                .uo-google-user-info__name {
-                    margin-left: 5px;
-                    opacity: 0.75;
-                }
+				.uo-google-user-info__name {
+					margin-left: 5px;
+					opacity: 0.75;
+				}
 
-                .uo-connected-button {
-                    color: #fff;
-                    background-color: #0790e8;
-                }
+				.uo-connected-button {
+					color: #fff;
+					background-color: #0790e8;
+				}
 
-                .uo-settings-content-footer {
-                    display: none !important;
-                }
-            </style>
+				.uo-settings-content-footer {
+					display: none !important;
+				}
+			</style>
 			<?php
 		}
 
@@ -575,12 +586,12 @@ class Google_Sheet_Helpers {
 	 */
 	public function validate_oauth_tokens() {
 
-		if ( ! empty( $_GET['automator_api_message'] ) && isset( $_REQUEST['tab'] ) && $this->setting_tab == $_REQUEST['tab'] ) {
+		if ( ! empty( automator_filter_input( 'automator_api_message' ) ) && automator_filter_has_var( 'tab' ) && $this->setting_tab === automator_filter_input( 'tab' ) ) {
 			try {
-				if ( ! empty( $_GET['automator_api_message'] ) ) {
+				if ( ! empty( automator_filter_input( 'automator_api_message' ) ) ) {
 					global $uncanny_automator;
 					$secret = get_transient( 'automator_api_google_authorize_nonce' );
-					$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $_GET['automator_api_message'], $secret );
+					$tokens = Automator_Helpers_Recipe::automator_api_decode_message( automator_filter_input( 'automator_api_message' ), $secret );
 					if ( ! empty( $tokens['access_token'] ) ) {
 						// On success
 						update_option( '_uncannyowl_google_sheet_settings', $tokens );
@@ -610,7 +621,7 @@ class Google_Sheet_Helpers {
 	/**
 	 * Method api_get_google_drives
 	 *
-	 * @return void
+	 * @return void|null|array
 	 */
 	public function api_get_google_drives() {
 
@@ -647,22 +658,21 @@ class Google_Sheet_Helpers {
 					$options[ $drive->id ] = $drive->name;
 				}
 			} else {
-				if ( ! empty( $body->error->description) ) {
+				if ( ! empty( $body->error->description ) ) {
 					automator_log( $body->error->description );
 				}
 			}
 		} else {
 
-			$error_response = __('The API returned an invalid format.', 'uncanny-automator');
+			$error_response = __( 'The API returned an invalid format.', 'uncanny-automator' );
 
 			if ( is_wp_error( $response ) ) {
 				$error_response = $response->get_error_message();
 			}
 
-			if ( ! empty( $body->error->description) ) {
+			if ( ! empty( $body->error->description ) ) {
 				automator_log( $error_response );
 			}
-
 		}
 
 		set_transient( 'automator_api_get_google_drives', $options, 60 );
@@ -677,7 +687,7 @@ class Google_Sheet_Helpers {
 	 *
 	 * @param $drive_id
 	 *
-	 * @return void
+	 * @return void|null|array
 	 */
 	public function api_get_spreadsheets_from_drive( $drive_id ) {
 
@@ -736,7 +746,7 @@ class Google_Sheet_Helpers {
 	 *
 	 * @param $spreadsheet_id
 	 *
-	 * @return void
+	 * @return void|null|array
 	 */
 	public function api_get_worksheets_from_spreadsheet( $spreadsheet_id ) {
 
@@ -806,7 +816,7 @@ class Google_Sheet_Helpers {
 	 * @param $spreadsheet_id
 	 * @param $worksheet_id
 	 *
-	 * @return void
+	 * @return void|null|array
 	 */
 	public function api_get_rows( $spreadsheet_id, $worksheet_id ) {
 
@@ -877,7 +887,7 @@ class Google_Sheet_Helpers {
 	 * @param $worksheet_id
 	 * @param $key_values
 	 *
-	 * @return void
+	 * @return void|null|array
 	 */
 	public function api_append_row( $spreadsheet_id, $worksheet_id, $key_values ) {
 
@@ -932,7 +942,7 @@ class Google_Sheet_Helpers {
 			$body = json_decode( wp_remote_retrieve_body( $response ) );
 
 			if ( $body && $body->statusCode == 200 ) {
-				$user = $body->data;
+				$user                    = $body->data;
 				$user_info['name']       = $user->name;
 				$user_info['avatar_uri'] = $user->picture;
 				$user_info['email']      = $user->email;
@@ -946,7 +956,7 @@ class Google_Sheet_Helpers {
 	/**
 	 * Removes the google settings from wp_options table.
 	 *
-	 * @return void.
+	 * @return void|null|array.
 	 */
 	public function disconnect_user() {
 
@@ -977,7 +987,7 @@ class Google_Sheet_Helpers {
 	/**
 	 * revoke_access
 	 *
-	 * @return void
+	 * @return void|null|array
 	 */
 	public function api_revoke_access() {
 
@@ -1007,7 +1017,7 @@ class Google_Sheet_Helpers {
 	/**
 	 * api_user_info
 	 *
-	 * @return void
+	 * @return void|null|array
 	 */
 	public function api_user_info() {
 

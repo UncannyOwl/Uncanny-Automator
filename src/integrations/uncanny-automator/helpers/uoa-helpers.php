@@ -7,6 +7,7 @@ use WP_Error;
 
 /**
  * Class Uoa_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Uoa_Helpers {
@@ -48,46 +49,52 @@ class Uoa_Helpers {
 	}
 
 	/**
-	 * @param $_POST
+	 *
 	 */
 	public function sendtest_webhook() {
 		Automator()->utilities->ajax_auth_check();
 
 		$key_values   = array();
 		$headers      = array();
-		$values       = (array) Automator()->utilities->automator_sanitize( $_POST['values'], 'mixed' );
+		$values       = (array) automator_filter_input_array( 'values', INPUT_POST );
 		$request_type = 'POST';
+		$webhook_url  = null;
 		if ( isset( $values['WEBHOOKURL'] ) ) {
 			$webhook_url = esc_url_raw( $values['WEBHOOKURL'] );
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
-			for ( $i = 1; $i <= WP_SENDWEBHOOK::$number_of_keys; $i ++ ) {
+			for ( $i = 1; $i <= UOA_SENDWEBHOOK::$number_of_keys; $i ++ ) {
 				$key                = sanitize_text_field( $values[ 'KEY' . $i ] );
 				$value              = sanitize_text_field( $values[ 'VALUE' . $i ] );
 				$key_values[ $key ] = $value;
 			}
-
 		} elseif ( isset( $values['WEBHOOK_URL'] ) ) {
 			$webhook_url = esc_url_raw( $values['WEBHOOK_URL'] );
 
 			if ( empty( $webhook_url ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter a valid webhook URL.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			if ( ! isset( $values['WEBHOOK_FIELDS'] ) || empty( $values['WEBHOOK_FIELDS'] ) ) {
-				wp_send_json( [
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
-				] );
+				wp_send_json(
+					array(
+						'type'    => 'error',
+						'message' => esc_attr__( 'Please enter valid fields.', 'uncanny-automator' ),
+					)
+				);
 			}
 
 			$fields = $values['WEBHOOK_FIELDS'];
