@@ -476,6 +476,8 @@ class Automator_Functions {
 			$this->recipes_data[ $recipe_id ]['completed_by_current_user'] = array_key_exists( $recipe_id, $recipes_completed ) ? $recipes_completed[ $recipe_id ] : false;
 		}
 
+		$this->recipes_data = apply_filters( 'automator_get_recipes_data', $this->recipes_data, $recipe_id );
+
 		Automator()->cache->set( $this->cache->recipes_data, $this->recipes_data );
 
 		return $this->recipes_data;
@@ -523,6 +525,8 @@ class Automator_Functions {
 		$recipe[ $key ]['completed_by_current_user'] = $is_recipe_completed;
 
 		$recipe[ $key ]['extra_options'] = $this->load_extra_options( $recipe[ $key ] );
+
+		$recipe = apply_filters( 'automator_get_recipe_data_by_recipe_id', $recipe, $key );
 
 		Automator()->cache->set( $key, $recipe );
 

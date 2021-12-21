@@ -18,6 +18,8 @@ class Um_Tokens {
 	}
 
 	/**
+	 * List all possible tokens.
+	 *
 	 * @param array $tokens
 	 * @param array $args
 	 *
@@ -47,7 +49,7 @@ class Um_Tokens {
 				$tokens = array_merge( $tokens, $fields );
 
 			}
-		}
+		}//end if
 
 		return $tokens;
 	}
@@ -74,6 +76,8 @@ class Um_Tokens {
 	}
 
 	/**
+	 * Parse the tokens.
+	 *
 	 * @param $value
 	 * @param $pieces
 	 * @param $recipe_id
@@ -85,36 +89,53 @@ class Um_Tokens {
 	 */
 	public function um_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
-		$to_match = array( 'WPROLE', 'UMFORM' );
+		$to_match = array( 'WPROLE', 'UMFORM', 'UMFORM_FORM_TITLE' );
 
 		if ( $pieces ) {
+
 			if ( array_intersect( $to_match, $pieces ) ) {
+
 				$piece = $pieces[1];
 				$meta  = $pieces[2];
+
 				if ( $trigger_data ) {
 					// Initialize the return value to empty string.
 					$value = '';
 					foreach ( $trigger_data as $trigger ) {
-						if ( ( 'UMFORM' === $pieces[1] || 'ANONUMFORM' === $pieces[1] ) || 'UMFORM' === $pieces[2] ) {
+
+						// Form title.
+						if ( 'UMUSERREGISTER' === $pieces[1] && 'UMFORM_FORM_TITLE' === $pieces[2] ) {
+							return $trigger['meta']['UMFORM_readable'];
+						}
+
+						// For forms.
+						if ( ( 'UMFORM' === $pieces[1] || 'ANONUMFORM' === $pieces[1] ) && 'UMFORM' === $pieces[2] ) {
+
 							if ( isset( $trigger['meta'][ $pieces[2] . '_readable' ] ) ) {
 								return $trigger['meta'][ $pieces[2] . '_readable' ];
 							}
+
 							if ( isset( $trigger['meta'][ $pieces[1] . '_readable' ] ) ) {
 								return $trigger['meta'][ $pieces[1] . '_readable' ];
 							}
 						}
+
+						// For roles.
 						if ( 'WPROLE' === $piece && isset( $trigger['meta'][ $piece ] ) ) {
+
 							$role = $trigger['meta'][ $piece ];
 							foreach ( wp_roles()->roles as $role_name => $role_info ) {
-								if ( $role == $role_name ) {
+								if ( $role === $role_name ) {
 									$value = $role_info['name'];
 								}
 							}
 						} elseif ( key_exists( $piece, $trigger['meta'] ) ) {
+
 							$token_info = explode( '|', $meta );
 							$form_id    = $token_info[0];
 							$meta_key   = $token_info[1];
 							$match      = "{$meta_key}-{$form_id}";
+
 							if ( automator_filter_has_var( $match, INPUT_POST ) ) {
 								$value = sanitize_text_field( automator_filter_input( $match, INPUT_POST ) );
 							} else {
@@ -138,12 +159,12 @@ class Um_Tokens {
 										}
 									}
 								}
-							}
-						}
-					}
-				}
-			}
-		}
+							}//end if
+						}//end if
+					}//end foreach
+				}//end if
+			}//end if
+		}//end if
 
 		return $value;
 	}

@@ -169,24 +169,30 @@ if ( $dashboard->has_site_connected ) {
 				<div class="uap-notice__actions">
 					<?php if ( ! $dashboard->is_pro_installed ) { ?>
 						<?php
-							$setup_wizard_link = add_query_arg(
-								array(
-									'post_type' => 'uo-recipe',
-									'page' => 'uncanny-automator-setup-wizard'
-								),
-								admin_url('edit.php')
-							);
+						$setup_wizard_link = add_query_arg(
+							array(
+								'post_type' => 'uo-recipe',
+								'page'      => 'uncanny-automator-setup-wizard',
+							),
+							admin_url( 'edit.php' )
+						);
 						?>
-						<a href="<?php echo esc_url( $setup_wizard_link ) ?>"
-							class="uap-btn uap-btn--primary">
+
+						<automator-button
+							href="<?php echo esc_url( $setup_wizard_link ) ?>"
+						>
 							<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
-						</a>
+						</automator-button>
+
 					<?php } ?>
 					<?php if ( ! $dashboard->is_pro && $dashboard->is_pro_installed ) { ?>
-						<a href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
-						   class="uap-btn uap-btn--primary">
+
+						<automator-button
+							href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
+						>
 							<?php esc_attr_e( 'Activate your license', 'uncanny-automator' ); ?>
-						</a>
+						</automator-button>
+
 					<?php } ?>
 				</div>
 			</div>
@@ -213,7 +219,7 @@ if ( $dashboard->has_site_connected ) {
 				</div>
 				<div class="uap-dashboard-box-content uap-dashboard-box-content--top">
 					<div class="uap-video uap-video--16-9">
-						<iframe src="https://www.youtube.com/embed/NgSMwD1fjKk" title="YouTube video player"
+						<iframe src="https://www.youtube.com/embed/LMR5YIPu2Kk" title="YouTube video player"
 								frameborder="0"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowfullscreen></iframe>
@@ -569,7 +575,7 @@ if ( $dashboard->has_site_connected ) {
 
 				<div class="uap-dashboard-box-footer">
 					<a href="https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=view_all_articles"
-					   target="blank">
+					   target="_blank">
 						<?php esc_attr_e( 'View all articles', 'uncanny-automator' ); ?> <span
 							class="uap-icon uap-icon--external-link-alt"></span>
 					</a>
@@ -635,8 +641,7 @@ if ( $dashboard->has_site_connected ) {
 
 				</div>
 				<div class="uap-dashboard-box-footer">
-					<a href="https://www.youtube.com/watch?v=NgSMwD1fjKk&list=PL1RknUTvSLClS5ggNPBZXK461vx6kNdTt"
-					   target="blank">
+					<a href="https://www.youtube.com/watch?v=LMR5YIPu2Kk&list=PL1RknUTvSLClS5ggNPBZXK461vx6kNdTt" target="_blank">
 						<?php esc_attr_e( 'View all videos', 'uncanny-automator' ); ?> <span
 							class="uap-icon uap-icon--external-link-alt"></span>
 					</a>
@@ -696,7 +701,7 @@ if ( $dashboard->has_site_connected ) {
 						</div>
 						<div class="uap-dashboard-box-footer">
 							<a href="https://automatorplugin.com/article-categories/specialized-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=connect_premium_integrations"
-							   target="blank">
+							   target="_blank">
 								<?php esc_attr_e( 'Connect premium integrations', 'uncanny-automator' ); ?> <span
 									class="uap-icon uap-icon--external-link-alt"></span>
 							</a>
@@ -735,15 +740,18 @@ if ( $dashboard->has_site_connected ) {
 						</div>
 						<?php if ( $dashboard->is_pro_installed ) { ?>
 							<div class="uap-dashboard-box-footer">
-								<a href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>" target="blank"
-								   class="uap-btn uap-btn--primary">
+
+								<automator-button
+									href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
+								>
 									<?php esc_attr_e( 'Activate Pro license', 'uncanny-automator' ); ?>
-								</a>
+								</automator-button>
+
 							</div>
 						<?php } else { ?>
 							<div class="uap-dashboard-box-footer">
 								<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=how_do_i_get_more_credits"
-								   target="blank">
+								   target="_blank">
 									<?php esc_attr_e( 'How do I get more credits?', 'uncanny-automator' ); ?> <span
 										class="uap-icon uap-icon--external-link-alt"></span>
 								</a>
@@ -778,23 +786,30 @@ if ( $dashboard->has_site_connected ) {
 					<div class="uap-dashboard-box-footer">
 						<?php if ( ! $dashboard->is_pro_installed ) { ?>
 							<?php
-								$setup_wizard_link = add_query_arg(
-									array(
-										'post_type' => 'uo-recipe',
-										'page' => 'uncanny-automator-setup-wizard'
-									),
-									admin_url('edit.php')
-								);
+							$setup_wizard_link = add_query_arg(
+								array(
+									'post_type' => 'uo-recipe',
+									'page'      => 'uncanny-automator-setup-wizard',
+								),
+								admin_url( 'edit.php' )
+							);
 							?>
-							<a href="<?php echo esc_url( $setup_wizard_link ) ?>" class="uap-btn uap-btn--primary">
+
+							<automator-button
+								href="<?php echo esc_url( $setup_wizard_link ) ?>"
+							>
 								<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
-							</a>
+							</automator-button>
+
 						<?php } ?>
 						<?php if ( ! $dashboard->is_pro && $dashboard->is_pro_installed ) { ?>
-							<a href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
-							   class="uap-btn uap-btn--primary">
+
+							<automator-button
+								href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
+							>
 								<?php esc_attr_e( 'Activate your license', 'uncanny-automator' ); ?>
-							</a>
+							</automator-button>
+
 						<?php } ?>
 					</div>
 				</div>

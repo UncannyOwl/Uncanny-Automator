@@ -93,16 +93,17 @@ class WP_SUBMITCOMMENT {
 						false,
 						false,
 						array(
-							$this->trigger_meta          => esc_attr__( 'Post title', 'uncanny-automator' ),
-							$this->trigger_meta . '_ID'  => esc_attr__( 'Post ID', 'uncanny-automator' ),
-							$this->trigger_meta . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
-							$this->trigger_meta . '_THUMB_ID' => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
+							$this->trigger_meta                => esc_attr__( 'Post title', 'uncanny-automator' ),
+							$this->trigger_meta . '_EXCERPT'   => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
+							$this->trigger_meta . '_ID'        => esc_attr__( 'Post ID', 'uncanny-automator' ),
+							$this->trigger_meta . '_URL'       => esc_attr__( 'Post URL', 'uncanny-automator' ),
+							$this->trigger_meta . '_THUMB_ID'  => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
 							$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Post featured image URL', 'uncanny-automator' ),
-							'POSTCOMMENTCONTENT'         => esc_attr__( 'Comment', 'uncanny-automator' ),
-							'POSTCOMMENTDATE'            => esc_attr__( 'Comment date', 'uncanny-automator' ),
-							'POSTCOMMENTEREMAIL'         => esc_attr__( 'Commenter email', 'uncanny-automator' ),
-							'POSTCOMMENTERNAME'          => esc_attr__( 'Commenter name', 'uncanny-automator' ),
-							'POSTCOMMENTSTATUS'          => esc_attr__( 'Commenter status', 'uncanny-automator' ),
+							'POSTCOMMENTCONTENT'               => esc_attr__( 'Comment', 'uncanny-automator' ),
+							'POSTCOMMENTDATE'                  => esc_attr__( 'Comment date', 'uncanny-automator' ),
+							'POSTCOMMENTEREMAIL'               => esc_attr__( 'Commenter email', 'uncanny-automator' ),
+							'POSTCOMMENTERNAME'                => esc_attr__( 'Commenter name', 'uncanny-automator' ),
+							'POSTCOMMENTSTATUS'                => esc_attr__( 'Commenter status', 'uncanny-automator' ),
 						)
 					),
 				),
@@ -140,6 +141,7 @@ class WP_SUBMITCOMMENT {
 			return;
 		}
 		$post_type = get_post_type_object( $post_type );
+
 		if ( ! empty( $conditions ) ) {
 			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
 				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
@@ -229,8 +231,8 @@ class WP_SUBMITCOMMENT {
 					}
 				} else {
 					if ( key_exists( $trigger_meta, $trigger['meta'] )
-						 && ( (string) $trigger['meta'][ $trigger_meta ] === (string) $match_post_id || '-1' === (string) $trigger['meta'][ $trigger_meta ] )
-						 && ( (string) $trigger['meta']['WPPOSTTYPES'] === (string) $match_post_type || '-1' === (string) $trigger['meta']['WPPOSTTYPES'] )
+					     && ( (string) $trigger['meta'][ $trigger_meta ] === (string) $match_post_id || '-1' === (string) $trigger['meta'][ $trigger_meta ] )
+					     && ( (string) $trigger['meta']['WPPOSTTYPES'] === (string) $match_post_type || '-1' === (string) $trigger['meta']['WPPOSTTYPES'] )
 					) {
 						$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
 					}

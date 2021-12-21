@@ -209,7 +209,7 @@ class Automator_DB_Handler_Recipes {
 
 		$tbl = Automator()->db->tables->action;
 
-		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed NOT IN (1,2,7,9) AND automator_recipe_log_id = $recipe_log_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed = 5 AND automator_recipe_log_id = $recipe_log_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return apply_filters( 'automator_has_scheduled_actions', absint( $results ), $recipe_log_id, $args );
 	}
@@ -240,6 +240,29 @@ class Automator_DB_Handler_Recipes {
 			array(
 				'automator_recipe_id' => $recipe_id,
 				'ID'                  => $automator_recipe_log_id,
+			)
+		);
+	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return void
+	 */
+	public function clear_activity_log_by_recipe_id( $recipe_id ) {
+		global $wpdb;
+
+		// Delete from closures
+		Automator()->db->closure->delete_by_recipe_id( $recipe_id );
+		// Delete from actions
+		Automator()->db->action->delete_by_recipe_id( $recipe_id );
+		// Delete from triggers
+		Automator()->db->trigger->delete_by_recipe_id( $recipe_id );
+		// delete from uap_recipe_log
+		$wpdb->delete(
+			$wpdb->prefix . Automator()->db->tables->recipe,
+			array(
+				'automator_recipe_id' => $recipe_id,
 			)
 		);
 	}

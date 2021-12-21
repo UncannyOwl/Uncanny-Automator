@@ -44,15 +44,15 @@
 			</p>
 
 			<p style="margin-top: 20px;">
-				<a 
-					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>" 
-					title="<?php echo esc_html_e( 'Maybe later', 'uncanny-automator' ); ?>"
+				<a
+					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
+					title="<?php esc_html_e( 'Maybe later', 'uncanny-automator' ); ?>"
 					class="uo-settings-btn uo-settings-btn--secondary">
 					<?php esc_html_e( 'Maybe later!', 'uncanny-automator' ); ?>
 				</a>
-				<a 
-					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>" 
-					title="<?php echo esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>"
+				<a
+					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
+					title="<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>"
 					class="uo-settings-btn uo-settings-btn--primary">
 					<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>
 				</a>
@@ -69,21 +69,21 @@
 			<p>
 				<?php
 					esc_html_e(
-						'Your site is not connected to an Uncanny Automator account. 
-                    You can still create recipes (automations) with any of our built-in integrations. 
-                    To use third-party integrations (like Facebook, Slack, MailChimp and more), connect 
+						'Your site is not connected to an Uncanny Automator account.
+                    You can still create recipes (automations) with any of our built-in integrations.
+                    To use third-party integrations (like Facebook, Slack, MailChimp and more), connect
                     your site with a free Uncanny Automator account.',
 						'uncanny-automator'
 					);
 				?>
 			</p>
 			<p>
-				<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>" 
-					id="ua-connect-account-btn" 
+				<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
+					id="ua-connect-account-btn"
 					class="ua-connect-account-btn-class uo-settings-btn uo-settings-btn--primary"
 					target="popup"
 					>
-					<?php echo esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
+					<?php esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
 				</a>
 			</p>
 		</div>
@@ -99,15 +99,15 @@
 			</p>
 
 			<p style="margin-top: 20px;">
-				<a 
-					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>" 
-					title="<?php echo esc_html_e( 'Maybe later', 'uncanny-automator' ); ?>"
+				<a
+					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
+					title="<?php esc_html_e( 'Maybe later', 'uncanny-automator' ); ?>"
 					class="uo-settings-btn uo-settings-btn--secondary">
 					<?php esc_html_e( 'Maybe later!', 'uncanny-automator' ); ?>
 				</a>
-				<a 
-					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>" 
-					title="<?php echo esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>"
+				<a
+					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
+					title="<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>"
 					class="uo-settings-btn uo-settings-btn--primary">
 					<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>
 				</a>

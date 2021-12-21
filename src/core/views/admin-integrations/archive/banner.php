@@ -7,7 +7,7 @@ namespace Uncanny_Automator;
 
 <div class="uap-integrations-banner" id="uap-integrations-banner">
 	<a href="<?php echo esc_url( $all_recipes_url ); ?>" class="uap-integrations-banner__breadcrumbs">
-		<span class="uap-icon uap-icon--angle-left"></span>
+		<automator-icon id="angle-left"></automator-icon>
 		<?php esc_html_e( 'Go to all recipes', 'uncanny-automator' ); ?>
 	</a>
 	<div class="uap-integrations-banner__title">
@@ -16,7 +16,7 @@ namespace Uncanny_Automator;
 	<div class="uap-integrations-banner-items">
 		<div class="uap-integrations-banner-item">
 			<span class="uap-integrations-banner-item__icon">
-				<span class="uap-icon uap-icon--tachometer"></span>
+				<automator-icon id="tachometer"></automator-icon>
 			</span>
 			<div class="uap-integrations-banner-item__text">
 				<?php esc_html_e( 'Improve your workflow efficiency', 'uncanny-automator' ); ?>
@@ -24,7 +24,7 @@ namespace Uncanny_Automator;
 		</div>
 		<div class="uap-integrations-banner-item">
 			<span class="uap-integrations-banner-item__icon">
-				<span class="uap-icon uap-icon--laugh-beam"></span>
+				<automator-icon id="laugh-beam"></automator-icon>
 			</span>
 			<div class="uap-integrations-banner-item__text">
 				<?php esc_html_e( 'Create a user experience that leads to conversions', 'uncanny-automator' ); ?>
@@ -32,7 +32,7 @@ namespace Uncanny_Automator;
 		</div>
 		<div class="uap-integrations-banner-item">
 			<span class="uap-integrations-banner-item__icon">
-				<span class="uap-icon uap-icon--usd-circle"></span>
+				<automator-icon id="usd-circle"></automator-icon>
 			</span>
 			<div class="uap-integrations-banner-item__text">
 				<?php esc_html_e( 'Slash custom development costs', 'uncanny-automator' ); ?>

@@ -145,6 +145,7 @@ class Wp_Helpers {
 				$option_code                => esc_attr__( 'Post title', 'uncanny-automator' ),
 				$option_code . '_ID'        => esc_attr__( 'Post ID', 'uncanny-automator' ),
 				$option_code . '_URL'       => esc_attr__( 'Post URL', 'uncanny-automator' ),
+				$option_code . '_EXCERPT'   => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
 				$option_code . '_THUMB_ID'  => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
 				$option_code . '_THUMB_URL' => esc_attr__( 'Post featured image URL', 'uncanny-automator' ),
 			),
@@ -190,8 +191,9 @@ class Wp_Helpers {
 				$option_code                => esc_attr__( 'Page title', 'uncanny-automator' ),
 				$option_code . '_ID'        => esc_attr__( 'Page ID', 'uncanny-automator' ),
 				$option_code . '_URL'       => esc_attr__( 'Page URL', 'uncanny-automator' ),
-				$option_code . '_THUMB_ID'  => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
-				$option_code . '_THUMB_URL' => esc_attr__( 'Post featured image URL', 'uncanny-automator' ),
+				$option_code . '_EXCERPT'   => esc_attr__( 'Page excerpt', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Page featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Page featured image URL', 'uncanny-automator' ),
 			),
 		);
 
@@ -478,6 +480,7 @@ class Wp_Helpers {
 			$option_code                => __( 'Post title', 'uncanny-automator' ),
 			$option_code . '_ID'        => __( 'Post ID', 'uncanny-automator' ),
 			$option_code . '_URL'       => __( 'Post URL', 'uncanny-automator' ),
+			$option_code . '_EXCERPT'   => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
 			$option_code . '_THUMB_ID'  => __( 'Post featured image ID', 'uncanny-automator' ),
 			$option_code . '_THUMB_URL' => __( 'Post featured image URL', 'uncanny-automator' ),
 		);

@@ -191,6 +191,16 @@ class Recipe_Post_Rest_Api {
 				'permission_callback' => array( $this, 'save_settings_permissions' ),
 			)
 		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/set_any_or_all_trigger_option/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'set_any_or_all_trigger_option' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 	}
 
 	/**
@@ -1076,6 +1086,40 @@ class Recipe_Post_Rest_Api {
 			$return['message'] = 'Updated!';
 			$return['success'] = true;
 			$return['action']  = 'update_actions_order';
+
+			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
+
+			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
+
+			return new WP_REST_Response( $return, 200 );
+
+		}
+
+		$return['message'] = 'Failed to update';
+		$return['success'] = false;
+		$return['action']  = 'show_error';
+
+		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function set_any_or_all_trigger_option( WP_REST_Request $request ) {
+
+		// Make sure we have a recipe ID and the newOrder
+		if ( $request->has_param( 'recipeID' ) ) {
+
+			$recipe_id  = absint( $request->get_param( 'recipeID' ) );
+			$all_or_any = $request->get_param( 'allOrAnyOption' );
+
+			update_post_meta( $recipe_id, 'run_when_any_trigger_complete', $all_or_any );
+
+			$return['message'] = 'Updated!';
+			$return['success'] = true;
+			$return['action']  = 'set_any_trigger_option';
 
 			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 

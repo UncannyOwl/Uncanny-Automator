@@ -1,6 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Actions;
+
 /**
  * Class AC_ANNON_REMOVETAG
  *
@@ -8,7 +10,7 @@ namespace Uncanny_Automator;
  */
 class AC_ANNON_REMOVETAG {
 
-	use \Uncanny_Automator\Recipe\Actions;
+	use Actions;
 
 	public $prefix = '';
 
@@ -54,15 +56,16 @@ class AC_ANNON_REMOVETAG {
 		$options_group = array(
 			$this->get_action_meta() => array(
 				array(
-					'option_code'           => $this->get_action_meta(),
+					'option_code'              => $this->get_action_meta(),
 					/* translators: Email field */
-					'label'                 => esc_attr__( 'Tag', 'uncanny-automator' ),
-					'input_type'            => 'select',
-					'supports_custom_value' => false,
-					'required'              => true,
-					'is_ajax'               => true,
-					'endpoint'              => 'active-campaign-list-tags',
-					'fill_values_in'        => $this->get_action_meta(),
+					'label'                    => esc_attr__( 'Tag', 'uncanny-automator' ),
+					'input_type'               => 'select',
+					'supports_custom_value'    => true,
+					'required'                 => true,
+					'is_ajax'                  => true,
+					'endpoint'                 => 'active-campaign-list-tags',
+					'fill_values_in'           => $this->get_action_meta(),
+					'custom_value_description' => _x( 'Tag ID', 'ActiveCampaign', 'uncanny-automator' ),
 				),
 				array(
 					'option_code' => $this->prefix . '_CONTACT_ID',
@@ -104,6 +107,7 @@ class AC_ANNON_REMOVETAG {
 		if ( true === $contact['error'] ) {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $contact['message'] );
+
 			return;
 		}
 
@@ -126,6 +130,7 @@ class AC_ANNON_REMOVETAG {
 		if ( is_wp_error( $response ) ) {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $response->get_error_message() );
+
 			return;
 		}
 
@@ -162,6 +167,7 @@ class AC_ANNON_REMOVETAG {
 		if ( is_wp_error( $response ) ) {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $response->get_error_message() );
+
 			return;
 		}
 
@@ -174,12 +180,14 @@ class AC_ANNON_REMOVETAG {
 
 			$message = __( 'Cannot find the tag. Please check to see if the tag exists.', 'uncanny-automator' );
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
+
 			return;
 		}
 
 		if ( ! empty( $message ) ) {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
+
 			return;
 		}
 

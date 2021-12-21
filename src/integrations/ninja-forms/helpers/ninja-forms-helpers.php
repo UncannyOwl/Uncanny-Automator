@@ -93,6 +93,10 @@ class Ninja_Forms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code                => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Form ID', 'uncanny-automator' )
+			),
 		);
 
 		return apply_filters( 'uap_option_list_ninja_forms', $option );

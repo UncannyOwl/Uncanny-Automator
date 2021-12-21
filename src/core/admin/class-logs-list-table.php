@@ -417,11 +417,23 @@ class Logs_List_Table extends WP_List_Table {
 				$run_number_log,
 				absint( $recipe_log_id )
 			);
+			$delete_url     = sprintf(
+				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&delete_specific_activity=1&wpnonce=' . wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ),
+				admin_url( 'edit.php' ),
+				'uo-recipe',
+				'uncanny-automator-recipe-log',
+				$recipe_id,
+				$run_number_log,
+				absint( $recipe_log_id )
+			);
 
 			$actions = array(
-				'view' => sprintf( '<a href="%s" data-lity class="button button-secondary">%s</a>', $url, esc_attr__( 'Details', 'uncanny-automator' ) ),
+				'view' => sprintf( '<a href="%s" data-lity class="button button-primary">%s</a>', $url, esc_attr__( 'Details', 'uncanny-automator' ) ),
 				//Removed: 'rerun' => sprintf( '<a href="%s" onclick="javascript: return confirm(\"%s\")">%s</a>', '#', esc_attr__( 'Are you sure you want to re-run this recipe?', 'uncanny-automator' ), esc_attr__( 'Re-run', 'uncanny-automator' ) ),
 			);
+			if ( true === apply_filters( 'automator_allow_users_to_delete_in_progress_recipe_runs', true, $recipe_id ) ) {
+				$actions['delete'] = sprintf( '<a href="%s" class="button button-secondary" onclick="javascript: return confirm(\'%s\')">%s</a>', $delete_url, esc_attr__( 'Are you sure you want to delete this run? This action is irreversible.', 'uncanny-automator' ), esc_attr__( 'Delete', 'uncanny-automator' ) );
+			}
 
 			$data[] = array(
 				'recipe_type'      => $recipe_type_name,
@@ -430,7 +442,7 @@ class Logs_List_Table extends WP_List_Table {
 				'display_name'     => $user_name,
 				'recipe_completed' => $recipe_status,
 				'run_number'       => $run_number,
-				'actions'          => join( ' | ', $actions ), // Added.
+				'actions'          => join( ' ', $actions ), // Added.
 			);
 		}
 

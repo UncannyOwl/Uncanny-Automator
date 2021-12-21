@@ -49,9 +49,9 @@ class WP_USERROLEADDED {
 			'sentence'            => sprintf( __( '{{A specific:%1$s}} role is added to the user', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WordPress Core */
 			'select_option_name'  => __( '{{A specific}} role is added to the user', 'uncanny-automator' ),
-			'action'              => 'add_user_role',
+			'action'              => array( 'add_user_role', 'set_user_role' ),
 			'priority'            => 90,
-			'accepted_args'       => 2,
+			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'add_user_role' ),
 			'options_group'       => array(),
 			'options'             => array(
@@ -67,7 +67,7 @@ class WP_USERROLEADDED {
 	 * @param $role
 	 * @param $old_roles
 	 */
-	public function add_user_role( $user_id, $role ) {
+	public function add_user_role( $user_id, $role, $old_roles = array() ) {
 
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_user_role = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );

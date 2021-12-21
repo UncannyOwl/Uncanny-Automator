@@ -39,7 +39,11 @@ class Automator_Input_Parser {
 				'reset_pass_link',
 				'admin_email',
 				'site_url',
+				'recipe_id',
+				'recipe_total_run',
+				'recipe_run',
 				'recipe_name',
+				'user_role',
 				'current_date',
 				'current_time',
 			)
@@ -204,6 +208,19 @@ class Automator_Input_Parser {
 									$replaceable = $user_meta;
 								}
 								break;
+							default:
+								$replace_args = array(
+									'pieces'         => $pieces,
+									'recipe_id'      => $recipe_id,
+									'recipe_log_id'  => $recipe_log_id,
+									'trigger_id'     => $trigger_id,
+									'trigger_log_id' => $trigger_log_id,
+									'run_number'     => $run_number,
+									'user_id'        => $user_id,
+								);
+
+								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
+								break;
 						}
 					}
 					$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
@@ -323,11 +340,41 @@ class Automator_Input_Parser {
 
 						break;
 
+					case 'recipe_total_run':
+						$replaceable = Automator()->get->recipe_completed_times( $recipe_id );
+						break;
+
+					case 'recipe_run':
+						$replaceable = $run_number;
+						break;
+
 					case 'recipe_name':
 						$recipe = get_post( $recipe_id );
 						if ( null !== $recipe ) {
 							$replaceable = $recipe->post_title;
 						}
+						break;
+
+					case 'recipe_id':
+						$replaceable = $recipe_id;
+						break;
+
+					case 'user_role':
+						$roles = '';
+						if ( is_a( $current_user, 'WP_User' ) ) {
+							$roles = $current_user->roles;
+							$rr    = array();
+							global $wp_roles;
+							if ( ! empty( $roles ) ) {
+								foreach ( $roles as $r ) {
+									if ( isset( $wp_roles->roles[ $r ] ) && isset( $wp_roles->roles[ $r ]['name'] ) ) {
+										$rr[] = $wp_roles->roles[ $r ]['name'];
+									}
+								}
+								$roles = join( ', ', $rr );
+							}
+						}
+						$replaceable = $roles;
 						break;
 					default:
 						$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $current_user );
@@ -369,9 +416,10 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false ||
-				 strpos( $piece, '_URL' ) !== false ||
-				 strpos( $piece, '_THUMB_URL' ) !== false ||
-				 strpos( $piece, '_THUMB_ID' ) !== false ) {
+			     strpos( $piece, '_URL' ) !== false ||
+			     strpos( $piece, '_EXCERPT' ) !== false ||
+			     strpos( $piece, '_THUMB_URL' ) !== false ||
+			     strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -403,6 +451,8 @@ class Automator_Input_Parser {
 								$return = get_the_post_thumbnail_url( $post_id, 'full' );
 							} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 								$return = get_post_thumbnail_id( $post_id );
+							} elseif ( 'EXCERPT' === $sub_piece[1] ) {
+								$return = get_post( $post_id )->post_excerpt;
 							}
 						} else {
 							$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
@@ -433,6 +483,8 @@ class Automator_Input_Parser {
 										$return = get_the_post_thumbnail_url( $post_id, 'full' );
 									} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 										$return = get_post_thumbnail_id( $post_id );
+									} elseif ( 'EXCERPT' === $sub_piece[1] ) {
+										$return = get_post( $post_id )->post_excerpt;
 									}
 								} else {
 									$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
@@ -451,6 +503,8 @@ class Automator_Input_Parser {
 									$return = get_the_post_thumbnail_url( $trigger['meta'][ $piece ], 'full' );
 								} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 									$return = get_post_thumbnail_id( $trigger['meta'][ $piece ] );
+								} elseif ( 'EXCERPT' === $sub_piece[1] ) {
+									$return = get_post( $trigger['meta'][ $piece ] )->post_excerpt;
 								}
 							} else {
 								$return = html_entity_decode( get_the_title( $trigger['meta'][ $piece ] ), ENT_QUOTES, 'UTF-8' );

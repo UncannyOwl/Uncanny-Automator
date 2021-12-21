@@ -1,6 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Actions;
+
 /**
  * Class AC_ANNON_LIST_ADD
  *
@@ -8,7 +10,7 @@ namespace Uncanny_Automator;
  */
 class AC_ANNON_LIST_ADD {
 
-	use \Uncanny_Automator\Recipe\Actions;
+	use Actions;
 
 	public $prefix = '';
 
@@ -39,7 +41,7 @@ class AC_ANNON_LIST_ADD {
 		/* translators: Action - WordPress */
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
+			/* translators: Action sentence */
 				esc_attr__( 'Add {{a contact:%1$s}} to {{a list:%2$s}}', 'uncanny-automator' ),
 				$this->prefix . '_CONTACT_ID' . ':' . $this->get_action_meta(),
 				$this->get_action_meta()
@@ -64,15 +66,16 @@ class AC_ANNON_LIST_ADD {
 					'fill_values_in'        => $this->prefix . '_CONTACT_ID',
 				),
 				array(
-					'option_code'           => $this->get_action_meta(),
+					'option_code'              => $this->get_action_meta(),
 					/* translators: Email field */
-					'label'                 => esc_attr__( 'List', 'uncanny-automator' ),
-					'input_type'            => 'select',
-					'supports_custom_value' => false,
-					'required'              => true,
-					'is_ajax'               => true,
-					'endpoint'              => 'active-campaign-list-retrieve',
-					'fill_values_in'        => $this->get_action_meta(),
+					'label'                    => esc_attr__( 'List', 'uncanny-automator' ),
+					'input_type'               => 'select',
+					'required'                 => true,
+					'is_ajax'                  => true,
+					'endpoint'                 => 'active-campaign-list-retrieve',
+					'fill_values_in'           => $this->get_action_meta(),
+					'supports_custom_value'    => true,
+					'custom_value_description' => _x( 'List ID', 'ActiveCampaign', 'uncanny-automator' ),
 				),
 			),
 		);
@@ -106,6 +109,7 @@ class AC_ANNON_LIST_ADD {
 		if ( true === $contact['error'] ) {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $contact['message'] );
+
 			return;
 		}
 

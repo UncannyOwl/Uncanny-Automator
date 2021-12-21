@@ -461,4 +461,33 @@ class Automator_DB_Handler_Triggers {
 			)
 		);
 	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return void
+	 */
+	public function delete_by_recipe_id( $recipe_id ) {
+		global $wpdb;
+		$trigger_tbl      = $wpdb->prefix . Automator()->db->tables->trigger;
+		$trigger_meta_tbl = $wpdb->prefix . Automator()->db->tables->trigger_meta;
+		$triggers         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $trigger_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( $triggers ) {
+			foreach ( $triggers as $automator_trigger_log_id ) {
+				// delete from uap_trigger_log_meta
+				$wpdb->delete(
+					$trigger_meta_tbl,
+					array( 'automator_trigger_log_id' => $automator_trigger_log_id )
+				);
+			}
+		}
+
+		// delete from uap_trigger_log
+		$wpdb->delete(
+			$trigger_tbl,
+			array(
+				'automator_recipe_id' => $recipe_id,
+			)
+		);
+	}
 }

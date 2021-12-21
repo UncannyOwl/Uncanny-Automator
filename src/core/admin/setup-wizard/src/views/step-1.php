@@ -36,12 +36,12 @@
 		</p>
 
 		<p>
-			<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>" 
-				id="ua-connect-account-btn" 
+			<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
+				id="ua-connect-account-btn"
 				class="ua-connect-account-btn-class uo-settings-btn uo-settings-btn--primary"
 				target="popup"
 				>
-				<?php echo esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
 			</a>
 		</p>
 	</div>
@@ -57,7 +57,7 @@
 		<p>
 			<?php
 				esc_html_e(
-					'All WordPress plugin integrations in the free version are free and unlimited forever. 
+					'All WordPress plugin integrations in the free version are free and unlimited forever.
 				Connecting a free account unlocks',
 					'uncanny-automator'
 				);
@@ -76,7 +76,7 @@
 			</strong>
 			<?php
 				esc_html_e(
-					'credits plus hundreds of additional triggers and actions, as well as extra features 
+					'credits plus hundreds of additional triggers and actions, as well as extra features
 					like scheduled actions.',
 					'uncanny-automator'
 				);
@@ -84,11 +84,11 @@
 		</p>
 		<p class="footer-actions">
 			<a target="_blank" href="<?php echo esc_url( $this->get_checkout_uri() ); ?>" class="uo-settings-btn uo-settings-btn--primary">
-				<?php echo esc_html_e( 'Upgrade to Pro now and save up to $200', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'Upgrade to Pro now and save up to $200', 'uncanny-automator' ); ?>
 			</a>
 			<span>
 				<a data-lity data-lity-target="#automator-setup-wizard-skip-modal" href="#" class="footer-actions__skip">
-					<?php echo esc_html_e( 'Skip this', 'uncanny-automator' ); ?>
+					<?php esc_html_e( 'Skip this', 'uncanny-automator' ); ?>
 				</a>
 			</span>
 		</p>
@@ -96,12 +96,12 @@
 
 	<div id="automator-setup-wizard-skip-modal" style="background:#fff" class="lity-hide">
 		<h3>
-			<?php echo esc_html_e( 'Are you sure?', 'uncanny-automator' ); ?>
+			<?php esc_html_e( 'Are you sure?', 'uncanny-automator' ); ?>
 		</h3>
 		<p>
 			<?php
 				esc_html_e(
-					'Your free account gives you access to Slack, Google Sheets, 
+					'Your free account gives you access to Slack, Google Sheets,
                     Facebook, exclusive discounts, updates and much more. ',
 					'uncanny-automator'
 				);
@@ -111,15 +111,15 @@
 		<p>
 
 			<a href="<?php echo esc_url( $this->get_dashboard_uri( 2 ) ); ?>" class="uo-settings-btn uo-settings-btn--secondary">
-				<?php echo esc_html_e( 'Skip for now', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'Skip for now', 'uncanny-automator' ); ?>
 			</a>
 
-			<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>" 
-				id="ua-connect-account-btn" 
+			<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
+				id="ua-connect-account-btn"
 				class="ua-connect-account-btn-class uo-settings-btn uo-settings-btn--primary"
 				target="popup"
 				>
-				<?php echo esc_html_e( 'Sign Up Now!', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'Sign Up Now!', 'uncanny-automator' ); ?>
 			</a>
 
 		</p>

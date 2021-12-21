@@ -213,6 +213,16 @@ class UOA_RECIPECOMPLETED {
 						'run_number'     => $result['args']['run_number'],
 					)
 				);
+				Automator()->insert_trigger_meta(
+					array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'meta_key'       => 'UOARECIPES_trigger_log_url',
+						'meta_value'     => "recipe_id=$recipe_id&user_id=$user_id",
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					)
+				);
 
 				Automator()->maybe_trigger_complete( $result['args'] );
 			}

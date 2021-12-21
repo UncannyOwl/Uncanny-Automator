@@ -1312,4 +1312,33 @@ WHERE t.automator_trigger_id = %d
 
 		return apply_filters( 'automator_completed_runs', absint( $results ) );
 	}
+
+	/**
+	 * Return the number of times recipe is completed successfully
+	 *
+	 * @param $recipe_id
+	 *
+	 * @return string|null
+	 */
+	public function recipe_completed_times( $recipe_id ) {
+		global $wpdb;
+		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $recipe_id, 1 ) );
+
+		return is_numeric( $count ) ? $count : 0;
+	}
+
+	/**
+	 * Return the number of times recipe is completed successfully by a user
+	 *
+	 * @param $recipe_id
+	 * @param $user_id
+	 *
+	 * @return string|null
+	 */
+	public function recipe_completed_times_by_user( $recipe_id, $user_id ) {
+		global $wpdb;
+		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed=%d AND user_id=%d", $recipe_id, 1, $user_id ) );
+
+		return is_numeric( $count ) ? $count : 0;
+	}
 }

@@ -142,7 +142,7 @@ class Uoa_Tokens {
 			}
 			$trigger_data = array_shift( $trigger_data );
 			if ( isset( $trigger_data['meta'][ $pieces[2] ] ) ) {
-				return $trigger_data['meta'][ $pieces[2] ];
+				return $trigger_data['meta'][ $pieces[2] .'_readable' ];
 			}
 		}
 
@@ -152,7 +152,31 @@ class Uoa_Tokens {
 			return $value;
 		}
 
-		switch ( $pieces[1] ) {
+		if ( $trigger_data ) {
+			foreach ( $trigger_data as $trigger ) {
+				global $wpdb;
+				$meta_field = $pieces[1];
+				$trigger_id = $trigger['ID'];
+				$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$meta_field%%", $trigger_id ) );
+				if ( ! empty( $meta_value ) ) {
+					$value = maybe_unserialize( $meta_value );
+
+					if ( 'UOAERRORS_recipe_log_url' === $meta_field || 'UOARECIPES_recipe_log_url' === $meta_field ) {
+					$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-recipe-log&" . $value;
+					}
+					if ( 'UOAERRORS_trigger_log_url' === $meta_field || 'UOARECIPES_trigger_log_url' === $meta_field ) {
+						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-trigger-log&" . $value;
+					}
+					if ( 'UOAERRORS_action_log_url' === $meta_field || 'UOARECIPES_action_log_url' === $meta_field ) {
+						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-action-log&" . $value;
+					}
+
+				}
+			}
+		}
+
+		if ( empty( $value ) ) {
+			switch ( $pieces[1] ) {
 			case 'UOAERRORS_recipe_id':
 			case 'UOARECIPES_recipe_id':
 				$value = $recipe_id;
@@ -207,6 +231,7 @@ class Uoa_Tokens {
 					$value = get_the_title( $recipe_id );
 				}
 				break;
+			}
 		}
 
 		return $value;

@@ -280,8 +280,7 @@ class Recipe_Post_Utilities {
 
 		// Remove any cached extra options
 		delete_post_meta( $post_id, 'extra_options' );
-		global $wpdb;
-		$count     = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $post_id, 1 ) );
+		$count     = Automator()->get->recipe_completed_times( $post_id );
 		$url       = add_query_arg(
 			array(
 				'post_type' => 'uo-recipe',

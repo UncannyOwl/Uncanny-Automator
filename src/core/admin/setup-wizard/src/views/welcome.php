@@ -5,7 +5,7 @@
 ?>
 
 <script>
-	if ( window.opener && window.opener !== window ) 
+	if ( window.opener && window.opener !== window )
 	{
 		window.close();
 	}
@@ -16,7 +16,7 @@
 	<div class="automator-setup-wizard <?php echo esc_attr( $this->get_step() ); ?>">
 
 		<?php $step = sanitize_file_name( $this->get_step() ); ?>
-	   
+
 		<?php $view = $this->get_view_path() . sprintf( '%s.php', $step ); ?>
 
 		<?php if ( ! file_exists( $view ) ) : ?>
@@ -50,7 +50,7 @@
 					if (popupWindow.closed) {
 						clearInterval(popupTick);
 						setTriedConnectedTrue();
-					   
+
 						$('#ua-connect-account-btn.uo-settings-btn').addClass('uo-settings-btn--disabled').addClass('loading');
 					}
 				}, 500);
@@ -77,10 +77,10 @@
 		$('.ua-connect-account-btn-class').on('click', function(e){
 			e.preventDefault();
 			popupWindow(
-				'<?php echo esc_url( $this->get_connect_button_uri() ); ?>', 
-				'<?php echo esc_html_e( 'Uncanny Automator', 'uncanny-automator' ); ?>',
-				window, 
-				500, 
+				'<?php echo esc_url( $this->get_connect_button_uri() ); ?>',
+				'<?php esc_html_e( 'Uncanny Automator', 'uncanny-automator' ); ?>',
+				window,
+				500,
 				600
 			);
 		});
@@ -88,10 +88,10 @@
 		$('#ua-checkout-btn').on('click', function(e){
 			e.preventDefault();
 			popupWindow(
-				'<?php echo esc_url( $this->get_checkout_uri() ); ?>', 
-				'<?php echo esc_html_e( 'Uncanny Automator', 'uncanny-automator' ); ?>',
-				window, 
-				500, 
+				'<?php echo esc_url( $this->get_checkout_uri() ); ?>',
+				'<?php esc_html_e( 'Uncanny Automator', 'uncanny-automator' ); ?>',
+				window,
+				500,
 				600
 			);
 		});

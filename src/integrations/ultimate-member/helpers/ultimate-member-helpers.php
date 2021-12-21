@@ -116,8 +116,8 @@ class Ultimate_Member_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $forms_list,
 			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code . '_FORM_TITLE' => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'         => esc_attr__( 'Form ID', 'uncanny-automator' ),
 			),
 		);
 

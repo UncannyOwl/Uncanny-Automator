@@ -42,6 +42,138 @@ class Activity_Log {
 		add_action( 'admin_init', array( $this, 'close_window_on_load' ) );
 		// Remove all admin notices in recipe details log modal.
 		add_action( 'in_admin_header', array( $this, 'recipe_logs_notices_remove' ), 99 );
+
+		// Clear recipe run / activity logs
+		add_action( 'admin_init', array( $this, 'remove_specific_run' ), 999 );
+		add_action( 'admin_init', array( $this, 'remove_specific_recipe_runs' ), 999 );
+		add_action( 'admin_notices', array( $this, 'recipe_run_cleared' ) );
+		add_filter( 'post_row_actions', array( $this, 'add_delete_recipe_run_row' ), 10, 2 );
+	}
+
+	/**
+	 * Remove a specific run from DB
+	 *
+	 * @return void
+	 */
+	public function remove_specific_run() {
+		if ( ! automator_filter_has_var( 'delete_specific_activity' ) ) {
+			return;
+		}
+		if ( ! automator_filter_has_var( 'wpnonce' ) ) {
+			return;
+		}
+		if ( ! automator_filter_has_var( 'recipe_id' ) ) {
+			return;
+		}
+		if ( ! automator_filter_has_var( 'run_number' ) ) {
+			return;
+		}
+		if ( ! automator_filter_has_var( 'recipe_log_id' ) ) {
+			return;
+		}
+		if ( ! wp_verify_nonce( automator_filter_input( 'wpnonce' ), AUTOMATOR_FREE_ITEM_NAME ) ) {
+			return;
+		}
+		$recipe_id     = (int) automator_filter_input( 'recipe_id' );
+		$recipe_log_id = (int) automator_filter_input( 'recipe_log_id' );
+		$page          = (string) automator_filter_input( 'page' );
+
+		// Delete closure logs
+		automator_purge_closure_logs( $recipe_id, $recipe_log_id );
+
+		// Delete action logs
+		automator_purge_action_logs( $recipe_id, $recipe_log_id );
+
+		// Delete trigger logs
+		automator_purge_trigger_logs( $recipe_id, $recipe_log_id );
+
+		// Delete recipe logs
+		automator_purge_recipe_logs( $recipe_id, $recipe_log_id );
+		$get_referer = wp_get_referer();
+		if ( preg_match( "/$page/", $get_referer ) ) {
+			wp_safe_redirect( sprintf( '%s&recipe_activity_run_success=1', $get_referer ) );
+			exit;
+		}
+		wp_safe_redirect( sprintf( '%s?post_type=%s&page=%s&recipe_activity_run_success=1', admin_url( 'edit.php' ), 'uo-recipe', $page ) );
+		exit;
+	}
+
+	/**
+	 * Remove all logs of a specific recipe
+	 *
+	 * @return void
+	 */
+	public function remove_specific_recipe_runs() {
+		if ( ! automator_filter_has_var( 'clear_recipe_activity' ) ) {
+			return;
+		}
+		if ( ! automator_filter_has_var( 'wpnonce' ) ) {
+			return;
+		}
+		if ( ! automator_filter_has_var( 'recipe_id' ) ) {
+			return;
+		}
+		if ( ! wp_verify_nonce( automator_filter_input( 'wpnonce' ), AUTOMATOR_FREE_ITEM_NAME ) ) {
+			return;
+		}
+		$recipe_id = (int) automator_filter_input( 'recipe_id' );
+		if ( empty( $recipe_id ) ) {
+			return;
+		}
+		// clear logs
+		clear_recipe_logs( $recipe_id );
+		wp_safe_redirect( sprintf( '%s?post_type=%s&recipe_activity_clear_success=1', admin_url( 'edit.php' ), 'uo-recipe' ) );
+		exit;
+	}
+
+	/**
+	 * Show success messages
+	 *
+	 * @return void
+	 */
+	public function recipe_run_cleared() {
+		if ( ! automator_filter_has_var( 'recipe_activity_clear_success' ) && ! automator_filter_has_var( 'recipe_activity_run_success' ) ) {
+			return;
+		}
+		$message = '';
+		if ( automator_filter_has_var( 'recipe_activity_clear_success' ) ) {
+			$message = esc_attr__( 'Recipe run data successfully deleted.', 'uncanny-automator' );
+		}
+		if ( automator_filter_has_var( 'recipe_activity_run_success' ) ) {
+			$message = esc_attr__( 'Recipe run successfully deleted.', 'uncanny-automator' );
+		}
+
+		if ( empty( $message ) ) {
+			return;
+		}
+		?>
+		<div class="notice notice-success is-dismissible">
+			<p><?php echo esc_attr( $message ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Add "Clear activity logs" row under Recipe title on all recipes page
+	 *
+	 * @param $actions
+	 * @param $post
+	 *
+	 * @return mixed
+	 */
+	public function add_delete_recipe_run_row( $actions, $post ) {
+		if ( 'uo-recipe' !== $post->post_type ) {
+			return $actions;
+		}
+		$post_type_object = get_post_type_object( $post->post_type );
+		$can_edit_post    = current_user_can( $post_type_object->cap->edit_post, $post->ID );
+		if ( ! $can_edit_post ) {
+			return $actions;
+		}
+		$delete_url                   = sprintf( '%s?post_type=%s&recipe_id=%d&clear_recipe_activity=1&wpnonce=%s', admin_url( 'edit.php' ), 'uo-recipe', $post->ID, wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ) );
+		$actions['clear_recipe_runs trash'] = sprintf( '<a href="%s" class="submitdelete" onclick="javascript: return confirm(\'%s\')">%s</a>', $delete_url, esc_attr__( 'Are you sure you want to delete all run data associated with this recipe? This will reset recipe runs to zero for all users. This action is irreversible.', 'uncanny-automator' ), esc_attr__( 'Clear activity logs', 'uncanny-automator' ) );
+
+		return $actions;
 	}
 
 	/**
@@ -72,6 +204,9 @@ class Activity_Log {
 		return false;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function close_window_on_load() {
 		// Check if we should close the window
 		if ( automator_filter_has_var( 'ua_close_window' ) ) {
@@ -92,6 +227,9 @@ class Activity_Log {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function load_minimal_admin() {
 		if ( automator_filter_has_var( 'hide_settings_tabs' ) ) {
 			ob_start();

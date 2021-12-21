@@ -101,7 +101,7 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.action.asyncActions.closuresLabelInstant
 					'closuresLabelAsyncOnly' => esc_attr__( 'Redirect when all triggers are completed', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.action.asyncActions.closuresLabelAsyncOnly
-					'pleaseSave'             => esc_attr__( 'Please, save the action first', 'uncanny-automator' ),
+					'pleaseSave'             => esc_attr__( 'Please save the action first', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.action.asyncActions.pleaseSave
 					'modal'                  => array(
 						'title'           => esc_attr__( 'Delay or schedule this action', 'uncanny-automator' ),
@@ -159,10 +159,61 @@ class Automator_Translations {
 
 					),
 				),
-
 			),
 			'closure'             => array(
 				'name' => 'Closures', // UncannyAutomator.i18n.closure.name
+			),
+			'conditions'          => array(
+				'filter' => esc_html__( 'Filter', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.filter
+
+				'unlockConditions' => sprintf( esc_attr__( 'Get %s to unlock conditions', 'uncanny-automator' ), 'Uncanny Automator Pro' ),
+				// UncannyAutomator.i18n.conditions.unlockConditions
+
+				'addBtnLabel' => esc_html__( 'Add', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.addBtnLabel
+
+				'noConditions' => esc_html__( 'No conditions', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.noConditions
+
+				/* translators: 1. Either "any" or "all". Code inside the curly brackets is not as prominent as the text outside it. */
+				'runIfAnyFull' => esc_html_x( 'Run if %1$s {{of the following conditions are met}}', 'Conditions - Logic sentence', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.runIfAnyFull
+
+				/* translators: Used in "Run if %1$s of the following conditions are met" */
+				'any'          => esc_html_x( 'Any', 'Conditions - Logic sentence', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.any
+
+				/* translators: Used in "Run if %1$s of the following conditions are met" */
+				'all'          => esc_html_x( 'All', 'Conditions - Logic sentence', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.all
+
+				'runIf' => esc_html_x( 'Run if', 'Conditions - Logic sentence', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.runIf
+
+				'options' => array(
+					'modalTitle'    => esc_html__( 'Configure the rule', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.conditions.options.modalTitle
+					'saveCondition' => esc_html__( 'Save condition', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.conditions.options.saveCondition
+				),
+
+				'actionWontRun' => esc_html__( "This action won't run", 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.actionWontRun
+
+				'actionsWontRun' => esc_html__( "These actions won't run", 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.actionsWontRun
+
+				/* translators: 1. Trademarked term. */
+				'actionWontRunContent' => esc_html__( 'Conditions/Filters are a feature of %1$s. Please re-activate Uncanny Automator Pro to enable this action.', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.actionWontRunContent
+
+				/* translators: 1. Trademarked term. */
+				'actionsWontRunContent' => esc_html__( 'Conditions/Filters are a feature of %1$s. Please re-activate Uncanny Automator Pro to enable these actions.', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.actionsWontRunContent
+
+				'pleaseSaveActionFirst' => esc_attr__( 'Please save the action first', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.pleaseSaveActionFirst
 			),
 			'validation'          => array(
 				'recipe' => array(
@@ -346,6 +397,14 @@ class Automator_Translations {
 					/* translators: Token name */
 					'recipeName'          => esc_attr_x( 'Recipe name', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.recipeName
+					'recipeRunToken'      => esc_attr_x( 'Recipe run #', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.recipeRunToken
+					'recipeTotalRunToken' => esc_attr_x( 'Recipe run # (total)', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.recipeTotalRunToken
+					'recipeId'            => esc_attr_x( 'Recipe ID', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.recipeId
+					'userRole'            => esc_attr_x( 'User role', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.userRole
 					/* translators: Token category. It refers to advanced tokens. */
 					'advanced'            => esc_attr_x( 'Advanced', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.advanced
@@ -729,17 +788,11 @@ class Automator_Translations {
 					),
 				),
 			),
-			'title'               => array(
-				'saving' => esc_attr__( 'Saving title', 'uncanny-automator' ),
-				// UncannyAutomator.i18n.title.saving
-				'saved'  => esc_attr_x( 'Saved', 'Title', 'uncanny-automator' ),
-				// UncannyAutomator.i18n.title.saved
-			),
 			'debugging'           => array(
 				'fatalErrorHandler'   => array(
-					'title'        => esc_html__( 'Sorry, something went wrong', 'uncanny-automator' ),
+					'title'   => esc_html__( 'Sorry, something went wrong', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.fatalErrorHandler.title
-					'content'      => esc_html__( 'Click "Learn more" for steps you can take to resolve this issue.', 'uncanny-automator' ),
+					'content' => esc_html__( 'Click "Learn more" for steps you can take to resolve this issue.', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.debugging.fatalErrorHandler.content
 
 					'accessDenied' => array(
@@ -750,7 +803,7 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.accessDenied.content
 					),
 
-					'notFound'     => array(
+					'notFound' => array(
 						'title'          => esc_html__( 'Not found', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.title
 						/* translators: 1. Link to "Site permalinks". 2. Link to "Uncanny Automator support" */
@@ -760,14 +813,14 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.sitePermalinks=
 					),
 
-					'timeout'      => array(
+					'timeout' => array(
 						'title'   => esc_html__( 'Request timeout', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.timeout.title
 						'content' => esc_html__( 'The Automator request timed out, likely due to insufficient server resources. Please contact your host.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.timeout.content
 					),
 
-					'serverError'  => array(
+					'serverError' => array(
 						'title'   => esc_html__( 'Internal error', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.serverError.title
 						/* translators: 1. Link to "Uncanny Automator support" */
@@ -775,14 +828,14 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.serverError.content
 					),
 
-					'parserError'  => array(
+					'parserError' => array(
 						'title'   => esc_html__( 'Parser error', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.parserError.title
 						'content' => esc_html__( "We have detected a conflict with another plugin. Try testing in a Staging environment with only Automator plugins active, then gradually reactivate plugins until things break again to trace what's causing it.", 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.parserError.content
 					),
 
-					'dataMissing'  => array(
+					'dataMissing' => array(
 						'title'          => esc_html__( 'Data missing', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.title
 						/* translators: 1. Link to contact support. 2. Link to the "Automator Tools" page */
@@ -794,7 +847,7 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.dataMissing.automatorTools
 					),
 
-					'generic'      => array(
+					'generic' => array(
 						'title'   => esc_html__( 'Unknown error', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.generic.title
 						/* translators: 1. Link to contact support */
@@ -802,7 +855,7 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.generic.content
 					),
 
-					'exceptions'   => array(
+					'exceptions' => array(
 						'tags' => array(
 							'couldNotSave' => esc_html__( "We couldn't save the tags", 'uncanny-automator' ),
 							// UncannyAutomator.i18n.debugging.fatalErrorHandler.exceptions.tags.couldNotSave
@@ -973,6 +1026,8 @@ class Automator_Translations {
 			/* translators: 1. Post ID */
 			'postIDPlaceholder'   => esc_attr__( 'ID: %1$s' ),
 			// UncannyAutomator.i18n.postIDPlaceholder
+			'emptyValue'          => esc_html__( '(empty)', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.emptyValue
 			'debuggingTools'      => esc_attr__( 'Debugging tools' ),
 			// UncannyAutomator.i18n.debuggingTools
 			'itemMissing'         => esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),

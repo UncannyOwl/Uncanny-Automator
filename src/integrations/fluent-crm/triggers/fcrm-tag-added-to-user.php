@@ -67,11 +67,7 @@ class FCRM_TAG_ADDED_TO_USER {
 	 */
 	public function contact_added_to_tags( $attachedTagIds, $subscriber ) {
 
-		$user_id = Automator()
-			->helpers
-			->recipe
-			->fluent_crm
-			->get_subscriber_user_id( $subscriber );
+		$user_id = $subscriber->user_id;
 
 		if ( 0 === $user_id ) {
 			// There is no wp user associated with the subscriber

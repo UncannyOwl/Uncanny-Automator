@@ -1,6 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Actions;
+
 /**
  * Class AC_ANNON_LISTREMOVE
  *
@@ -8,7 +10,7 @@ namespace Uncanny_Automator;
  */
 class AC_ANNON_LISTREMOVE {
 
-	use \Uncanny_Automator\Recipe\Actions;
+	use Actions;
 
 	public $prefix = '';
 
@@ -61,15 +63,16 @@ class AC_ANNON_LISTREMOVE {
 					'required'    => true,
 				),
 				array(
-					'option_code'           => $this->get_action_meta(),
+					'option_code'              => $this->get_action_meta(),
 					/* translators: Email field */
-					'label'                 => esc_attr__( 'List', 'uncanny-automator' ),
-					'input_type'            => 'select',
-					'supports_custom_value' => false,
-					'required'              => true,
-					'is_ajax'               => true,
-					'endpoint'              => 'active-campaign-list-retrieve',
-					'fill_values_in'        => $this->get_action_meta(),
+					'label'                    => esc_attr__( 'List', 'uncanny-automator' ),
+					'input_type'               => 'select',
+					'supports_custom_value'    => true,
+					'required'                 => true,
+					'is_ajax'                  => true,
+					'endpoint'                 => 'active-campaign-list-retrieve',
+					'fill_values_in'           => $this->get_action_meta(),
+					'custom_value_description' => _x( 'List ID', 'ActiveCampaign', 'uncanny-automator' ),
 				),
 			),
 		);
@@ -103,6 +106,7 @@ class AC_ANNON_LISTREMOVE {
 		if ( true === $contact['error'] ) {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $contact['message'] );
+
 			return;
 		}
 

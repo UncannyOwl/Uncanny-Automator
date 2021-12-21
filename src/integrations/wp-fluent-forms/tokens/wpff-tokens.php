@@ -30,6 +30,8 @@ class Wpff_Tokens {
 
 
 	/**
+	 * The possible tokens.
+	 *
 	 * @param array $tokens
 	 * @param array $args
 	 *
@@ -44,14 +46,18 @@ class Wpff_Tokens {
 		$forms = array();
 		global $wpdb;
 		$fluent_active = true;
+
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}fluentform_forms'" ) !== "{$wpdb->prefix}fluentform_forms" ) {
 			$fluent_active = false;
 		}
+
 		if ( true === $fluent_active && ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
+
 			$form = wpFluent()->table( 'fluentform_forms' )->where( 'id', '=', $form_id )
-			                  ->select( array( 'id', 'title', 'form_fields' ) )
-			                  ->orderBy( 'id', 'DESC' )
-			                  ->get();
+			->select( array( 'id', 'title', 'form_fields' ) )
+			->orderBy( 'id', 'DESC' )
+			->get();
+
 			if ( $form ) {
 				$form               = array_pop( $form );
 				$forms[ $form->id ] = json_decode( $form->form_fields, true );
@@ -145,9 +151,9 @@ class Wpff_Tokens {
 											}
 										}
 										$fields_tokens[] = array(
-											'tokenId'         => $token_id,
-											'tokenName'       => $input_title,
-											'tokenType'       => $type,
+											'tokenId'   => $token_id,
+											'tokenName' => $input_title,
+											'tokenType' => $type,
 											'tokenIdentifier' => $trigger_meta,
 										);
 									} else {
@@ -182,6 +188,8 @@ class Wpff_Tokens {
 	}
 
 	/**
+	 * Create the list of tokens.
+	 *
 	 * @param $form_id
 	 * @param $field
 	 * @param $trigger_meta
@@ -210,6 +218,9 @@ class Wpff_Tokens {
 			case 'number':
 				$type = 'int';
 				break;
+			case 'email':
+				$type = 'email';
+				break;
 			default:
 				$type = 'text';
 				break;
@@ -231,6 +242,8 @@ class Wpff_Tokens {
 	}
 
 	/**
+	 * Process the token.
+	 *
 	 * @param $value
 	 * @param $pieces
 	 * @param $recipe_id
@@ -241,30 +254,36 @@ class Wpff_Tokens {
 	 * @return null|string
 	 */
 	public function wpff_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+
 		if ( ! $pieces ) {
 			return $value;
 		}
-		if ( in_array( 'WPFFFORMS', $pieces ) || in_array( 'ANONWPFFFORMS', $pieces ) ) {
+
+		if ( in_array( 'WPFFFORMS', $pieces, true ) || in_array( 'ANONWPFFFORMS', $pieces, true ) ) {
 			global $wpdb;
 			$trigger_id     = $pieces[0];
 			$trigger_meta   = $pieces[1];
 			$field          = $pieces[2];
 			$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-			$entry          = $wpdb->get_var(
+
+			$entry = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT meta_value
-FROM {$wpdb->prefix}uap_trigger_log_meta
-WHERE meta_key = %s
-  AND automator_trigger_log_id = %d
-  AND automator_trigger_id = %d
-LIMIT 0, 1",
+					FROM {$wpdb->prefix}uap_trigger_log_meta
+					WHERE meta_key = %s
+					AND automator_trigger_log_id = %d
+					AND automator_trigger_id = %d
+					LIMIT 0, 1",
 					$trigger_meta,
 					$trigger_log_id,
 					$trigger_id
 				)
 			);
-			$entry          = maybe_unserialize( $entry );
-			$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
+
+			$entry = maybe_unserialize( $entry );
+
+			$to_match = "{$trigger_id}:{$trigger_meta}:{$field}";
+
 			if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
 				$value = $entry[ $to_match ];
 			} else {

@@ -75,7 +75,8 @@ class Nf_Tokens {
 	 */
 	public function nf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'NFFORMS', $pieces, true ) || in_array( 'ANONNFFORMS', $pieces, true ) ) {
+			if ( in_array( 'NFFORMS', $pieces, true ) || in_array( 'NFSUBFIELD', $pieces, true ) || in_array( 'ANONNFSUBFIELD', $pieces, true ) || in_array( 'ANONNFFORMS', $pieces, true ) || in_array( 'ANONNFSUBFORM', $pieces, true ) ) {
+
 
 				// Render Form Name
 				if ( isset( $pieces[2] ) && ( 'NFFORMS' === $pieces[2] || 'ANONNFFORMS' === $pieces[2] ) ) {
@@ -88,6 +89,30 @@ class Nf_Tokens {
 						}
 						if ( isset( $t_d['meta']['ANONNFFORMS_readable'] ) ) {
 							return $t_d['meta']['ANONNFFORMS_readable'];
+						}
+					}
+				}
+
+				$field = $pieces[2];
+
+				// Form specific field
+				if ( 'NFSUBFIELD' === $field || 'ANONNFSUBFIELD' === $field ) {
+					if ( $trigger_data ) {
+						foreach ( $trigger_data as $trigger ) {
+							if ( array_key_exists( $field . '_readable', $trigger['meta'] ) ) {
+								return $trigger['meta'][ $field . '_readable' ];
+							}
+						}
+					}
+				}
+
+				// Form specific field value
+				if ( 'SUBVALUE' === $field ) {
+					if ( $trigger_data ) {
+						foreach ( $trigger_data as $trigger ) {
+							if ( array_key_exists( $field, $trigger['meta'] ) ) {
+								return $trigger['meta'][ $field ];
+							}
 						}
 					}
 				}

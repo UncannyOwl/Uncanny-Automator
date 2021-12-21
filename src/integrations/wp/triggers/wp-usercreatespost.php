@@ -209,6 +209,9 @@ class WP_USERCREATESPOST {
 
 				// if a specific taxonomy
 				if ( '0' !== $required_post_taxonomy[ $recipe_id ][ $trigger_id ] ) {
+					if ( empty( $terms_list ) ) {
+						continue;
+					}
 					// let check if the post has any term in the selected taxonomy
 					$post_terms = wp_get_post_terms( $post_id, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
 					if ( empty( $post_terms ) ) {
@@ -220,6 +223,12 @@ class WP_USERCREATESPOST {
 						$terms = wp_get_post_terms( $post->ID, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
 
 						foreach ( $terms as $term ) {
+							if ( ! array_key_exists( $recipe_id, $terms_list ) ) {
+								continue;
+							}
+							if ( ! array_key_exists( $trigger_id, $terms_list[ $recipe_id ] ) ) {
+								continue;
+							}
 							if ( ! array_key_exists( $term->term_id, $terms_list[ $recipe_id ][ $trigger_id ] ) ) {
 								$terms_list[ $recipe_id ][ $trigger_id ][ $term->term_id ] = $term->name;
 							}
@@ -351,6 +360,11 @@ class WP_USERCREATESPOST {
 				// Post Content Token
 				$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTCONTENT';
 				$trigger_meta['meta_value'] = maybe_serialize( $post->post_content );
+				Automator()->insert_trigger_meta( $trigger_meta );
+
+				// Post Excerpt Token
+				$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTEXCERPT';
+				$trigger_meta['meta_value'] = maybe_serialize( $post->post_excerpt );
 				Automator()->insert_trigger_meta( $trigger_meta );
 
 				// Post Type Token

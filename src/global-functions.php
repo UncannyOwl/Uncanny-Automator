@@ -9,6 +9,8 @@ use Uncanny_Automator\Utilities;
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'helper-functions' . DIRECTORY_SEPARATOR . 'automator-helper-functions.php';
 
 /**
+ * Get recipe ID by it's child item
+ *
  * @param $item_id
  *
  * @return int
@@ -18,6 +20,8 @@ function automator_get_recipe_id( $item_id ) {
 }
 
 /**
+ * Add an integration
+ *
  * @param $directory
  *
  * @return array|false
@@ -32,6 +36,8 @@ function automator_add_integration( $directory ) {
 }
 
 /**
+ * Check if integration exists
+ *
  * @param $integration
  *
  * @return bool
@@ -50,6 +56,8 @@ function automator_integration_exists( $integration ) {
 }
 
 /**
+ * Get integration by name
+ *
  * @param $name
  *
  * @return string
@@ -87,6 +95,8 @@ function automator_get_integration_by_name( $name ) {
 }
 
 /**
+ * Add a trigger
+ *
  * @param $path
  * @param $integration
  *
@@ -108,6 +118,8 @@ function automator_add_trigger( $path, $integration ) {
 }
 
 /**
+ * Add an action
+ *
  * @param $path
  * @param $integration
  *
@@ -129,6 +141,8 @@ function automator_add_action( $path, $integration ) {
 }
 
 /**
+ * Add integration directory
+ *
  * @param $integration_code
  * @param $directory
  *
@@ -151,6 +165,8 @@ function automator_add_integration_directory( $integration_code, $directory ) {
 }
 
 /**
+ * Add an integration
+ *
  * @param $icon_path
  *
  * @return string
@@ -160,6 +176,8 @@ function automator_add_integration_icon( $icon_path, $plugin_path = AUTOMATOR_BA
 }
 
 /**
+ * Get the $_POST/$_GET/$_REQUEST variable
+ *
  * @param $type
  * @param null $variable
  * @param $flags
@@ -180,6 +198,8 @@ function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = F
 
 
 /**
+ * Automator filter has var - check if the $_POST/$_GET/$_REQUEST has the variable
+ *
  * @param $type
  * @param null $variable
  * @param $flags
@@ -195,6 +215,8 @@ function automator_filter_has_var( $variable = null, $type = INPUT_GET ) {
 }
 
 /**
+ * Automator filter input array - get the $_POST/$_GET/$_REQUEST array variable
+ *
  * @param $type
  * @param null $variable
  * @param $flags
@@ -223,6 +245,8 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
 }
 
 /**
+ * Automator exception
+ *
  * @param mixed $message
  * @param $code
  *
@@ -237,6 +261,8 @@ function automator_exception( $message, $code = 999 ) {
 }
 
 /**
+ * Add Error
+ *
  * @param $message
  * @param mixed $error_code
  * @param mixed $data
@@ -251,6 +277,8 @@ function automator_wp_error( $message, $error_code = 'something_wrong', $data = 
 
 
 /**
+ * Show error messages
+ *
  * @param $error_code
  *
  * @since 3.0
@@ -262,6 +290,8 @@ function automator_wp_error_messages( $error_code = '' ) {
 }
 
 /**
+ * Show error message
+ *
  * @param string|mixed $error_code
  *
  * @since 3.0
@@ -270,10 +300,11 @@ function automator_wp_error_messages( $error_code = '' ) {
  */
 function automator_wp_error_get_message( $error_code = 'something_wrong' ) {
 	Automator()->error->get_message( $error_code );
-
 }
 
 /**
+ * Check if thing is an error
+ *
  * @param mixed $thing
  *
  * @return bool
@@ -287,6 +318,8 @@ function is_automator_error( $thing ) {
 }
 
 /**
+ * Check if VIEWS exits
+ *
  * @param $type
  *
  * @return bool
@@ -296,7 +329,7 @@ function automator_db_view_exists( $type = 'recipe' ) {
 }
 
 /**
- * global function to create and log custom messages.
+ * Global function to create and log custom messages.
  *
  * @param mixed $message
  * @param mixed $subject
@@ -313,6 +346,8 @@ function automator_log( $message = '', $subject = '', $force_log = false, $log_f
 }
 
 /**
+ * Purge recipe logs
+ *
  * @param $recipe_id
  * @param $automator_recipe_log_id
  */
@@ -321,6 +356,8 @@ function automator_purge_recipe_logs( $recipe_id, $automator_recipe_log_id ) {
 }
 
 /**
+ * Purge trigger logs
+ *
  * @param $recipe_id
  * @param $automator_recipe_log_id
  */
@@ -329,6 +366,8 @@ function automator_purge_trigger_logs( $recipe_id, $automator_recipe_log_id ) {
 }
 
 /**
+ * Purge action logs
+ *
  * @param $recipe_id
  * @param $automator_recipe_log_id
  */
@@ -337,6 +376,8 @@ function automator_purge_action_logs( $recipe_id, $automator_recipe_log_id ) {
 }
 
 /**
+ * Purge closure logs
+ *
  * @param $recipe_id
  * @param $automator_recipe_log_id
  */
@@ -413,9 +454,29 @@ function automator_utm_parameters( $url, $medium = '', $content = '' ) {
 function is_automator_pro_active() {
 
 	// Check if automator pro is in list of active plugins.
-	if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+	return defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' );
+}
+
+/**
+ * Check if pro license is valid
+ *
+ * @return bool
+ */
+function is_automator_pro_license_valid() {
+	if ( 'pro' === \Uncanny_Automator\Api_Server::get_license_type() ) {
 		return true;
 	}
 
 	return false;
+}
+
+/**
+ * Clear all recipe activity
+ *
+ * @param $recipe_id
+ *
+ * @return void
+ */
+function clear_recipe_logs( $recipe_id ) {
+	Automator()->db->recipe->clear_activity_log_by_recipe_id( $recipe_id );
 }

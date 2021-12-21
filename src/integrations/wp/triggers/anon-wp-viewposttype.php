@@ -71,6 +71,7 @@ class ANON_WP_VIEWPOSTTYPE {
 							'POSTIMAGEID'  => __( 'Post featured image ID', 'uncanny-automator' ),
 							'POSTIMAGEURL' => __( 'Post featured image URL', 'uncanny-automator' ),
 							'WPPOSTTYPES'  => __( 'Post type', 'uncanny-automator' ),
+							'POSTEXCERPT'  => __( 'Post excerpt', 'uncanny-automator' ),
 						),
 					)
 				),
@@ -105,7 +106,7 @@ class ANON_WP_VIEWPOSTTYPE {
 
 				//Add where option is set to Any post type
 				if ( - 1 === intval( $required_post_type[ $recipe_id ][ $trigger_id ] )
-					 || $required_post_type[ $recipe_id ][ $trigger_id ] === $post->post_type ) {
+				     || $required_post_type[ $recipe_id ][ $trigger_id ] === $post->post_type ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
@@ -143,6 +144,11 @@ class ANON_WP_VIEWPOSTTYPE {
 
 							$trigger_meta['meta_key']   = 'WPPOSTTYPES';
 							$trigger_meta['meta_value'] = maybe_serialize( $post->post_type );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							// Post excerpt
+							$trigger_meta['meta_key']   = 'WPPOSTEXCERPT';
+							$trigger_meta['meta_value'] = maybe_serialize( $post->post_excerpt );
 							Automator()->insert_trigger_meta( $trigger_meta );
 
 							$trigger_meta['meta_key']   = 'WPPOST_ID';

@@ -78,6 +78,12 @@ class Wp_Post_Tokens {
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
+				'tokenId'         => 'POSTEXCERPT',
+				'tokenName'       => __( 'Post excerpt', 'uncanny_automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			),
+			array(
 				'tokenId'         => 'POSTIMAGEURL',
 				'tokenName'       => __( 'Post featured image URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
@@ -117,6 +123,7 @@ class Wp_Post_Tokens {
 			'POSTAUTHORDN',
 			'POSTAUTHOREMAIL',
 			'POSTCONTENT',
+			'POSTEXCERPT',
 			'POSTURL',
 			'POSTID',
 			'POSTTITLE',

@@ -1,6 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Actions;
+
 /**
  * Class AC_ANNON_ADDTAG
  *
@@ -8,7 +10,7 @@ namespace Uncanny_Automator;
  */
 class AC_ANNON_ADDTAG {
 
-	use \Uncanny_Automator\Recipe\Actions;
+	use Actions;
 
 	public $prefix = '';
 
@@ -40,11 +42,11 @@ class AC_ANNON_ADDTAG {
 		/* translators: Action - WordPress */
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
+			/* translators: Action sentence */
 				esc_attr__( 'Add {{a tag:%1$s}} to {{a contact:%2$s}}', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				$this->prefix . '_CONTACT_ID' . ':' . $this->get_action_meta()
-				//'WPTAXONOMYTERM' . ':' . $this->trigger_meta,
+			//'WPTAXONOMYTERM' . ':' . $this->trigger_meta,
 			)
 		);
 
@@ -54,15 +56,16 @@ class AC_ANNON_ADDTAG {
 		$options_group = array(
 			$this->get_action_meta() => array(
 				array(
-					'option_code'           => $this->get_action_meta(),
+					'option_code'              => $this->get_action_meta(),
 					/* translators: Tag field */
-					'label'                 => esc_attr__( 'Tag', 'uncanny-automator' ),
-					'input_type'            => 'select',
-					'supports_custom_value' => false,
-					'required'              => true,
-					'is_ajax'               => true,
-					'endpoint'              => 'active-campaign-list-tags',
-					'fill_values_in'        => $this->get_action_meta(),
+					'label'                    => esc_attr__( 'Tag', 'uncanny-automator' ),
+					'input_type'               => 'select',
+					'supports_custom_value'    => true,
+					'required'                 => true,
+					'is_ajax'                  => true,
+					'endpoint'                 => 'active-campaign-list-tags',
+					'fill_values_in'           => $this->get_action_meta(),
+					'custom_value_description' => _x( 'Tag ID', 'ActiveCampaign', 'uncanny-automator' ),
 				),
 				array(
 					'option_code' => $this->prefix . '_CONTACT_ID',
@@ -104,6 +107,7 @@ class AC_ANNON_ADDTAG {
 		if ( true === $contact['error'] ) {
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $contact['message'] );
+
 			return;
 		}
 

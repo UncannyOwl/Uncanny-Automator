@@ -77,7 +77,6 @@ class WP_VIEWCUSTOMPOST {
 				),
 			),
 		);
-
 		Automator()->register->trigger( $trigger );
 
 		return;

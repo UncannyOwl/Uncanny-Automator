@@ -262,9 +262,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 			</div>
 		<?php endif; ?>
 		<?php
-	} else {
-		include __DIR__ . '/admin-license.php';
 	}
+
 	do_action( 'automator_on_settings_page_metabox' );
 	?>
 	<div class="wrap"> <!-- WP container -->

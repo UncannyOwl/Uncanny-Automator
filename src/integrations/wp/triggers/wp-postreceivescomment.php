@@ -104,6 +104,7 @@ class WP_POSTRECEIVESCOMMENT {
 						array(
 							'POSTTITLE'          => esc_attr__( 'Post title', 'uncanny-automator' ),
 							'POSTAUTHORDN'       => esc_attr__( 'Post author', 'uncanny-automator' ),
+							'POSTEXCERPT'        => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
 							'POSTCOMMENTCONTENT' => esc_attr__( 'Comment', 'uncanny-automator' ),
 							'POSTCOMMENTDATE'    => esc_attr__( 'Comment date', 'uncanny-automator' ),
 							'POSTCOMMENTEREMAIL' => esc_attr__( 'Commenter email', 'uncanny-automator' ),
@@ -114,7 +115,6 @@ class WP_POSTRECEIVESCOMMENT {
 				),
 			),
 		);
-
 		Automator()->register->trigger( $trigger );
 	}
 
@@ -135,7 +135,7 @@ class WP_POSTRECEIVESCOMMENT {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( - 1 === intval( $required_post[ $recipe_id ][ $trigger_id ] ) ||
-					 $required_post[ $recipe_id ][ $trigger_id ] == $commentdata['comment_post_ID'] ) {
+				     $required_post[ $recipe_id ][ $trigger_id ] == $commentdata['comment_post_ID'] ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
@@ -177,6 +177,10 @@ class WP_POSTRECEIVESCOMMENT {
 
 								$trigger_meta['meta_key']   = 'POSTAUTHORDN';
 								$trigger_meta['meta_value'] = maybe_serialize( $user_obj->display_name );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'POSTEXCERPT';
+								$trigger_meta['meta_value'] = maybe_serialize( get_the_excerpt( (int) $commentdata['comment_post_ID'] ) );
 								Automator()->insert_trigger_meta( $trigger_meta );
 
 								$trigger_meta['meta_key']   = 'POSTCOMMENTCONTENT';

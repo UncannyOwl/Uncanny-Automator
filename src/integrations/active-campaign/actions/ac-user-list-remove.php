@@ -1,6 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Actions;
+
 /**
  * Class AC_USER_LIST_REMOVE
  *
@@ -8,7 +10,7 @@ namespace Uncanny_Automator;
  */
 class AC_USER_LIST_REMOVE {
 
-	use \Uncanny_Automator\Recipe\Actions;
+	use Actions;
 
 	public $prefix = '';
 
@@ -48,15 +50,16 @@ class AC_USER_LIST_REMOVE {
 		$options_group = array(
 			$this->get_action_meta() => array(
 				array(
-					'option_code'           => $this->get_action_meta(),
+					'option_code'              => $this->get_action_meta(),
 					/* translators: Email field */
-					'label'                 => esc_attr__( 'List', 'uncanny-automator' ),
-					'input_type'            => 'select',
-					'supports_custom_value' => false,
-					'required'              => true,
-					'is_ajax'               => true,
-					'endpoint'              => 'active-campaign-list-retrieve',
-					'fill_values_in'        => $this->get_action_meta(),
+					'label'                    => esc_attr__( 'List', 'uncanny-automator' ),
+					'input_type'               => 'select',
+					'supports_custom_value'    => true,
+					'required'                 => true,
+					'is_ajax'                  => true,
+					'endpoint'                 => 'active-campaign-list-retrieve',
+					'fill_values_in'           => $this->get_action_meta(),
+					'custom_value_description' => _x( 'List ID', 'ActiveCampaign', 'uncanny-automator' ),
 				),
 			),
 		);
