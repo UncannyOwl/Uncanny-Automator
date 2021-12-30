@@ -2,8 +2,8 @@
 /*
  * Plugin Name:         Uncanny Automator
  * Description:         Connect WordPress plugins together to create powerful recipes that save time and improve the user experience. With no coding required, Uncanny Automator can replace dozens of plugins with millions of recipe combinations!
- * Author:              Uncanny Owl
- * Author URI:          https://www.uncannyowl.com/
+ * Author:              Uncanny Automator, Uncanny Owl
+ * Author URI:          https://automatorplugin.com/
  * Plugin URI:          https://automatorplugin.com/
  * Text Domain:         uncanny-automator
  * Domain Path:         /languages
