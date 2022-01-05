@@ -63,12 +63,12 @@ class WP_VIEWPOST {
 	 */
 	public function view_post() {
 		global $post;
-		$user_id = get_current_user_id();
 
-		if ( ! is_single() ) {
+		if ( ! is_singular( $post->post_type ) && ! is_post_type_viewable( $post->post_type ) ) {
 			return;
 		}
-
+		
+		$user_id   = get_current_user_id();
 		$pass_args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,

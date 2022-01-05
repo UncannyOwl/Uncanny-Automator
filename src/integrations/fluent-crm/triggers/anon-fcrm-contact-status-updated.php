@@ -139,7 +139,7 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 	 */
 	public function process_trigger( $matched_recipe_ids = array(), $subscriber = null ) {
 
-		$user_id = get_current_user_id();
+		$user_id = $subscriber->user_id;
 
 		// Fluent CRM contact email.
 		$contact_email = '';

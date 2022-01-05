@@ -52,7 +52,7 @@ class Happyforms_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -82,7 +82,7 @@ class Happyforms_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
-				$options[- 1] = $args['uo_any_label'];
+				$options[ - 1 ] = $args['uo_any_label'];
 			}
 			$form_controller = happyforms_get_form_controller();
 
@@ -104,6 +104,10 @@ class Happyforms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
+			),
 		);
 
 		return apply_filters( 'uap_option_all_happyforms_forms', $option );

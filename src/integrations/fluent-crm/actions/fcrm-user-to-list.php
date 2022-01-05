@@ -80,23 +80,23 @@ class FCRM_USER_TO_LIST {
 
 			if ( $subscriber ) {
 
-				$existingLists   = $subscriber->lists;
-				$existingListIds = array();
-				foreach ( $existingLists as $list ) {
+				$existing_lists    = $subscriber->lists;
+				$existing_list_ids = array();
+				foreach ( $existing_lists as $list ) {
 					if ( in_array( $list->id, $lists ) ) {
-						$existingListIds[] = $list->title;
+						$existing_list_ids[] = $list->title;
 					}
 				}
 
 				$subscriber->attachLists( $lists );
 
-				if ( empty( $existingListIds ) ) {
+				if ( empty( $existing_list_ids ) ) {
 					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
 				} else {
 
-					if ( count( $existingListIds ) === count( $lists ) ) {
+					if ( count( $existing_list_ids ) === count( $lists ) ) {
 						// ALL lists were already assigned
 						$action_data['do-nothing']           = true;
 						$action_data['complete_with_errors'] = true;
@@ -107,7 +107,7 @@ class FCRM_USER_TO_LIST {
 							implode(
 							/* translators: Character to separate items */
 								__( ',', 'uncanny-automator' ) . ' ',
-								$existingListIds
+								$existing_list_ids
 							)
 						);
 

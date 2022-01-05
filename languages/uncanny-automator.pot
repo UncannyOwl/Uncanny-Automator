@@ -1,15 +1,15 @@
-# Copyright (C) 2021 Uncanny Owl
+# Copyright (C) 2022 Uncanny Automator, Uncanny Owl
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.5.1\n"
+"Project-Id-Version: Uncanny Automator 3.5.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-12-21T18:11:53+00:00\n"
+"POT-Creation-Date: 2022-01-04T22:04:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -21,6 +21,7 @@ msgid "Uncanny Automator"
 msgstr ""
 
 #. Plugin URI of the plugin
+#. Author URI of the plugin
 msgid "https://automatorplugin.com/"
 msgstr ""
 
@@ -29,11 +30,7 @@ msgid "Connect WordPress plugins together to create powerful recipes that save t
 msgstr ""
 
 #. Author of the plugin
-msgid "Uncanny Owl"
-msgstr ""
-
-#. Author URI of the plugin
-msgid "https://www.uncannyowl.com/"
+msgid "Uncanny Automator, Uncanny Owl"
 msgstr ""
 
 #. translators: 1. Trademarked term. 2. Trademarked term
@@ -5334,19 +5331,19 @@ msgstr ""
 msgid "The contact %s does not contain the specified tag."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:130
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:142
 msgid "ActiveCampaign"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:131
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:143
 msgid "ActiveCampaign settings"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:132
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:144
 msgid "Please enter your API Access URL and Key to get started with ActiveCampaign. Go to your ActiveCampaign account settings, and under developer tab to see your unique url and key."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:136
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:148
 #: src/integrations/facebook/helpers/facebook-helpers.php:148
 #: src/integrations/hubspot/helpers/hubspot-helpers.php:85
 #: src/integrations/instagram/helpers/instagram-helpers.php:175
@@ -5355,22 +5352,22 @@ msgstr ""
 msgid "Save settings"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:139
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:151
 msgid "Account url:"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:147
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:159
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:435
 #: src/integrations/zoom/helpers/zoom-helpers.php:426
 msgid "API key:"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:365
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:289
 msgid "Status: Not connected"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:400
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:401
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:354
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:355
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:530
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:742
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:579
@@ -5380,13 +5377,33 @@ msgstr ""
 msgid "Disconnect"
 msgstr ""
 
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:395
+msgid "Error fetching resource: "
+msgstr ""
+
 #. translators: Email error message.
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:506
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:504
 msgid "The contact %s does not exist in ActiveCampaign."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:524
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:522
 msgid "Unexpected error has occured."
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:701
+msgid "Refresh available tags and lists"
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:702
+msgid "Connecting"
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:703
+msgid "Syncing tags and lists"
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:704
+msgid "Complete"
 msgstr ""
 
 #: src/integrations/affiliate-wp/helpers/affwp-helpers.php:58
@@ -5979,6 +5996,7 @@ msgid "A user submits {{a form}}"
 msgstr ""
 
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:94
+#: src/integrations/happyforms/helpers/happyforms-helpers.php:108
 #: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:97
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:119
 #: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:96
@@ -5987,6 +6005,7 @@ msgid "Form title"
 msgstr ""
 
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:95
+#: src/integrations/happyforms/helpers/happyforms-helpers.php:109
 #: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:98
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:120
 #: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:97
@@ -9736,7 +9755,7 @@ msgstr ""
 #: src/integrations/wp/helpers/wp-helpers.php:125
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:99
 #: src/integrations/wp/triggers/wp-submitcomment.php:90
-#: src/integrations/wp/triggers/wp-viewcustompost.php:76
+#: src/integrations/wp/triggers/wp-viewcustompost.php:85
 msgid "Post"
 msgstr ""
 
@@ -9762,6 +9781,7 @@ msgstr ""
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:74
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:107
 #: src/integrations/wp/triggers/wp-submitcomment.php:97
+#: src/integrations/wp/triggers/wp-viewcustompost.php:67
 msgid "Post excerpt"
 msgstr ""
 

@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-
 use FrmEntry;
 use FrmField;
 use FrmForm;
@@ -15,9 +14,9 @@ use FrmForm;
 class Fi_Tokens {
 
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_fi_fiform_tokens', [ $this, 'fi_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_trigger_fi_anonfiform_tokens', [ $this, 'fi_possible_tokens' ], 20, 2 );
-		add_filter( 'automator_maybe_parse_token', [ $this, 'fi_token' ], 20, 6 );
+		add_filter( 'automator_maybe_trigger_fi_fiform_tokens', array( $this, 'fi_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_fi_anonfiform_tokens', array( $this, 'fi_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'fi_token' ), 20, 6 );
 	}
 
 	/**
@@ -53,14 +52,14 @@ class Fi_Tokens {
 				if ( is_array( $meta ) ) {
 					foreach ( $meta as $field ) {
 						$input_id    = $field->id;
-						$input_title = $field->name . ( $field->description !== '' ? ' (' . $field->description . ') ' : '' );
+						$input_title = $field->name . ( '' !== $field->description ? ' (' . $field->description . ') ' : '' );
 						$token_id    = "$form_id|$input_id";
-						$fields[]    = [
+						$fields[]    = array(
 							'tokenId'         => $token_id,
 							'tokenName'       => $input_title,
 							'tokenType'       => $field->type,
 							'tokenIdentifier' => $trigger_meta,
-						];
+						);
 					}
 				}
 				$tokens = array_merge( $tokens, $fields );
@@ -93,6 +92,7 @@ class Fi_Tokens {
 						$value = $trigger_data[0]['meta']['ANONFIFORM_readable'];
 					}
 				} else {
+
 					$token_info = explode( '|', $pieces[2] );
 
 					$form_id  = $token_info[0];
@@ -115,13 +115,11 @@ class Fi_Tokens {
 
 					if ( ! empty( $enrties ) ) {
 						foreach ( $enrties as $enrty ) {
-							if ( isset( $enrty->metas )
-							     && isset( $enrty->metas[ $meta_key ] )
-							) {
+							if ( isset( $enrty->metas ) && isset( $enrty->metas[ $meta_key ] ) ) {
 
 								if ( is_array( $enrty->metas[ $meta_key ] ) ) {
 									$value = implode( ', ', $enrty->metas[ $meta_key ] );
-								} elseif ( in_array( $meta_key, $file_fields ) ) {
+								} elseif ( in_array( $meta_key, $file_fields, true ) ) {
 
 									$media_id = $enrty->metas[ $meta_key ];
 
@@ -130,14 +128,11 @@ class Fi_Tokens {
 										$value = $enrty->metas[ $meta_key ];
 									}
 
-									$image = $orig_image = wp_get_attachment_image( $media_id, 'thumbnail', true );
+									$image = wp_get_attachment_image( $media_id, 'thumbnail', true );
 
-									//if this is a mime type icon
-									if ( $image && ! preg_match( '/wp-content\/uploads/', $image ) ) {
-										$label = basename( $attachment->guid );
-									}
+									// Check if its image. Then just return the url.
 									if ( $image ) {
-										$value = '<a href="' . esc_url( wp_get_attachment_url( $media_id ) ) . '">' . $label . '</a>';
+										$value = esc_url( wp_get_attachment_url( $media_id ) );
 									}
 								} else {
 									$value = $enrty->metas[ $meta_key ];

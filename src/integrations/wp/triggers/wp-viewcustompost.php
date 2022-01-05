@@ -59,6 +59,15 @@ class WP_VIEWCUSTOMPOST {
 			'validation_function' => array( $this, 'view_post' ),
 			'options'             => array(
 				Automator()->helpers->recipe->options->number_of_times(),
+				Automator()->helpers->recipe->wp->options->all_wp_post_types(
+					null,
+					$this->trigger_meta,
+					array(
+						'relevant_tokens' => array(
+							'POSTEXCERPT' => __( 'Post excerpt', 'uncanny-automator' ),
+						)
+					)
+				),
 			),
 			'options_group'       => array(
 				$this->trigger_meta => array(
@@ -113,6 +122,19 @@ class WP_VIEWCUSTOMPOST {
 				foreach ( $arr as $result ) {
 					if ( true === $result['result'] ) {
 						$result['args']['post_type_label'] = $post_type->labels->singular_name;
+
+						$trigger_meta = array(
+							'user_id'        => (int) $user_id,
+							'trigger_id'     => $result['args']['trigger_id'],
+							'trigger_log_id' => $result['args']['get_trigger_id'],
+							'run_number'     => $result['args']['run_number'],
+						);
+
+						// Post excerpt
+						$trigger_meta['meta_key']   = 'WPPOSTEXCERPT';
+						$trigger_meta['meta_value'] = maybe_serialize( $post->post_excerpt );
+						Automator()->insert_trigger_meta( $trigger_meta );
+
 						Automator()->maybe_trigger_complete( $result['args'] );
 					}
 				}

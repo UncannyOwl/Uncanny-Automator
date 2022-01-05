@@ -64,13 +64,13 @@ class ANON_FCRM_ADDED_TO_LIST {
 	}
 
 	/**
-	 * @param $attachedListIds
+	 * @param $attached_list_ids
 	 * @param $subscriber
 	 */
-	public function contact_added_to_lists( $attachedListIds, $subscriber ) {
+	public function contact_added_to_lists( $attached_list_ids, $subscriber ) {
 
-		$user_id  = Automator()->helpers->recipe->fluent_crm->get_subscriber_user_id( $subscriber );
-		$list_ids = Automator()->helpers->recipe->fluent_crm->get_attached_list_ids( $attachedListIds );
+		$user_id  = $subscriber->user_id;
+		$list_ids = Automator()->helpers->recipe->fluent_crm->get_attached_list_ids( $attached_list_ids );
 
 		if ( empty( $list_ids ) ) {
 			// sanity check

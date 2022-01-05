@@ -65,13 +65,13 @@ class Cf7_Tokens {
 					$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 					$run_number     = (int) $trigger_result['args']['run_number'];
 					$args           = array(
-						'user_id'    => $user_id,
-						'trigger_id' => $trigger_id,
-						'meta_key'   => $meta_key_prefix . $form_id,
-						'meta_value' => serialize( $data ),
-						'run_number' => $run_number,
+						'user_id'        => $user_id,
+						'trigger_id'     => $trigger_id,
+						'meta_key'       => $meta_key_prefix . $form_id,
+						'meta_value'     => serialize( $data ),
+						'run_number'     => $run_number,
 						// get run number
-													'trigger_log_id' => $trigger_log_id,
+						'trigger_log_id' => $trigger_log_id,
 					);
 
 					Automator()->insert_trigger_meta( $args );
@@ -89,17 +89,19 @@ class Cf7_Tokens {
 		$data = array();
 		if ( $contact_form instanceof WPCF7_ContactForm ) {
 			$tags = $contact_form->scan_form_tags();
-
 			foreach ( $tags as $tag ) {
 				if ( empty( $tag->name ) ) {
 					continue;
 				}
+				$array_data_types = apply_filters( 'automator_cf7_data_type_of_array', array( 'checkbox' ), $tag, $contact_form );
+				if ( in_array( $tag->type, $array_data_types, true ) ) {
+					$request_tag_name = automator_filter_input_array( $tag->name, INPUT_POST );
+				} else {
+					$request_tag_name = automator_filter_input( $tag->name, INPUT_POST );
+				}
 
 				$pipes = $tag->pipes;
-
-				$request_tag_name = automator_filter_input( $tag->name, INPUT_POST );
-
-				$value = ( ! empty( $request_tag_name ) ) ? Automator()->utilities->automator_sanitize( $request_tag_name, 'mixed' ) : '';
+				$value = ! empty( $request_tag_name ) ? Automator()->utilities->automator_sanitize( $request_tag_name, 'mixed' ) : '';
 
 				if ( WPCF7_USE_PIPE && $pipes instanceof WPCF7_Pipes && ! $pipes->zero() ) {
 					if ( is_array( $value ) ) {
@@ -117,7 +119,6 @@ class Cf7_Tokens {
 
 				$data[ $tag->name ] = $value;
 			}//end foreach
-
 			return $data;
 		}//end if
 	}

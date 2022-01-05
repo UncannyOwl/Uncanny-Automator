@@ -152,9 +152,19 @@ WHERE p.post_type IS NOT NULL
 		$form_id   = $record->get_form_settings( 'id' );
 		$form_name = $record->get_form_settings( 'form_name' );
 		$data      = $record->get( 'sent_data' );
+		$fields    = $record->get( 'fields' );
+	
 		if ( ! empty( $data ) ) {
+			if ( ! empty( $fields ) ) {
+				foreach( $fields as $field_name => $field_data ){
+					if( ! isset( $data[$field_name] ) ){
+						$data[$field_name] = $field_data['value'];
+					}
+				}
+			}
 			$data = serialize( $data );
 		}
+
 		if ( is_array( $args ) ) {
 			foreach ( $args as $trigger_result ) {
 				if ( true === $trigger_result['result'] ) {

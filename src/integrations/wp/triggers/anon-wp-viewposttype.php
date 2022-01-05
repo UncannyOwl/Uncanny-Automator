@@ -88,7 +88,9 @@ class ANON_WP_VIEWPOSTTYPE {
 	 */
 	public function view_post_type() {
 		global $post;
-
+		if ( ! is_singular( $post->post_type ) && ! is_post_type_viewable( $post->post_type ) ) {
+			return;
+		}
 		$user_id            = get_current_user_id();
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_post_type = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );

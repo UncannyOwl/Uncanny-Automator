@@ -130,14 +130,14 @@ if ( $dashboard->has_site_connected ) {
 									', ',
 									array(
 										// Integration names are not translatable
-										'<strong>Slack</strong>',
+										'<automator-icon id="slack"></automator-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<strong>Google Sheets</strong>',
+										'<automator-icon id="google-sheet"></automator-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
-										'<strong>Facebook</strong>',
+										'<automator-icon id="facebook"></automator-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <span class="uap-icon uap-icon--external-link-alt"></span></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <automator-icon id="external-link"></automator-icon></a>',
 							)
 						);
 					}
@@ -153,14 +153,14 @@ if ( $dashboard->has_site_connected ) {
 									', ',
 									array(
 										// Integration names are not translatable
-										'<strong>Slack</strong>',
+										'<automator-icon id="slack"></automator-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<strong>Google Sheets</strong>',
+										'<automator-icon id="google-sheet"></automator-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
-										'<strong>Facebook</strong>',
+										'<automator-icon id="facebook"></automator-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <span class="uap-icon uap-icon--external-link-alt"></span></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <automator-icon id="external-link"></automator-icon></a>',
 							)
 						);
 					}

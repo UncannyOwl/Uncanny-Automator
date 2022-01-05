@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.8.2
 Requires PHP: 5.6
-Stable tag: 3.5.1
+Stable tag: 3.5.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -181,6 +181,25 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.5.2 [2022-01-05] =
+
+**Updated:**
+
+* WordPress Core - Added post excerpt tokens to additional triggers #1261
+* ActiveCampaign - Added local tag and list sync for tags, lists and custom contact fields #1208
+* HappyForms - Added Form title and ID tokens #794
+* Improved recipe UI on sites using an RTL language in /wp-admin #1247
+
+**Fixed:**
+
+* WordPress Core - "A user publishes a type of post with a taxonomy term in a taxonomy" now runs more reliably #1305
+* Formidable Forms - Image tokens no longer return HTML #1303
+* Elementor - File upload field token now renders a value #1283
+* FluentCRM Pro - All tag triggers now fire when tags are added via Smart Link #1271
+* WordPress Core - "A user views a post" and "A post of a specific type is viewed" no longer triggers on unrelated events in some situations #1192
+* JavaScript error on URL fields when populated with postmeta or usermeta tokens #1290
+* When "Use a custom value" is selected in a dropdown, the saved value is now displayed when the action is edited #1286
 
 = 3.5.1 [2021-12-21] =
 

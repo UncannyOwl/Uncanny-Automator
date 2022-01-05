@@ -61,17 +61,16 @@ class FCRM_ADD_USER_TO_LIST {
 
 		return;
 	}
-
-	/*
+	
+	/**
+	 * @param $attached_list_ids
+	 * @param $subscriber
 	 *
+	 * @return void
 	 */
-	public function contact_added_to_lists( $attachedListIds, $subscriber ) {
+	public function contact_added_to_lists( $attached_list_ids, $subscriber ) {
 
-		$user_id = Automator()
-			->helpers
-			->recipe
-			->fluent_crm
-			->get_subscriber_user_id( $subscriber );
+		$user_id = $subscriber->user_id;
 
 		if ( 0 === $user_id ) {
 			// There is no wp user associated with the subscriber
@@ -82,7 +81,7 @@ class FCRM_ADD_USER_TO_LIST {
 			->helpers
 			->recipe
 			->fluent_crm
-			->get_attached_list_ids( $attachedListIds );
+			->get_attached_list_ids( $attached_list_ids );
 
 		if ( empty( $list_ids ) ) {
 			// sanity check

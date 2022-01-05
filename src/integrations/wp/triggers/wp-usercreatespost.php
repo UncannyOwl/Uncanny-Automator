@@ -209,9 +209,6 @@ class WP_USERCREATESPOST {
 
 				// if a specific taxonomy
 				if ( '0' !== $required_post_taxonomy[ $recipe_id ][ $trigger_id ] ) {
-					if ( empty( $terms_list ) ) {
-						continue;
-					}
 					// let check if the post has any term in the selected taxonomy
 					$post_terms = wp_get_post_terms( $post_id, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
 					if ( empty( $post_terms ) ) {
@@ -223,12 +220,6 @@ class WP_USERCREATESPOST {
 						$terms = wp_get_post_terms( $post->ID, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
 
 						foreach ( $terms as $term ) {
-							if ( ! array_key_exists( $recipe_id, $terms_list ) ) {
-								continue;
-							}
-							if ( ! array_key_exists( $trigger_id, $terms_list[ $recipe_id ] ) ) {
-								continue;
-							}
 							if ( ! array_key_exists( $term->term_id, $terms_list[ $recipe_id ][ $trigger_id ] ) ) {
 								$terms_list[ $recipe_id ][ $trigger_id ][ $term->term_id ] = $term->name;
 							}

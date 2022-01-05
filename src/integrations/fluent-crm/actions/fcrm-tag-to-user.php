@@ -73,22 +73,22 @@ class FCRM_TAG_TO_USER {
 
 			if ( $subscriber ) {
 
-				$existingTags   = $subscriber->tags;
-				$existingTagIds = array();
-				foreach ( $existingTags as $tag ) {
+				$existing_tags    = $subscriber->tags;
+				$existing_tag_ids = array();
+				foreach ( $existing_tags as $tag ) {
 					if ( in_array( $tag->id, $tags ) ) {
-						$existingTagIds[] = $tag->title;
+						$existing_tag_ids[] = $tag->title;
 					}
 				}
 
 				$subscriber->attachTags( $tags );
-				if ( empty( $existingTagIds ) ) {
+				if ( empty( $existing_tag_ids ) ) {
 					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
 				} else {
 
-					if ( count( $existingTagIds ) === count( $tags ) ) {
+					if ( count( $existing_tag_ids ) === count( $tags ) ) {
 						// ALL tags were already assigned
 						$action_data['do-nothing']           = true;
 						$action_data['complete_with_errors'] = true;
@@ -98,7 +98,7 @@ class FCRM_TAG_TO_USER {
 							implode(
 							/* translators: Character to separate items */
 								__( ',', 'uncanny-automator' ) . ' ',
-								$existingTagIds
+								$existing_tag_ids
 							)
 						);
 

@@ -62,10 +62,14 @@ class FCRM_TAG_ADDED_TO_USER {
 		return;
 	}
 
-	/*
+
+	/**
+	 * @param $attached_tag_ids
+	 * @param $subscriber
 	 *
+	 * @return void
 	 */
-	public function contact_added_to_tags( $attachedTagIds, $subscriber ) {
+	public function contact_added_to_tags( $attached_tag_ids, $subscriber ) {
 
 		$user_id = $subscriber->user_id;
 
@@ -78,7 +82,7 @@ class FCRM_TAG_ADDED_TO_USER {
 			->helpers
 			->recipe
 			->fluent_crm
-			->get_attached_tag_ids( $attachedTagIds );
+			->get_attached_tag_ids( $attached_tag_ids );
 
 		if ( empty( $tag_ids ) ) {
 			// sanity check

@@ -63,12 +63,12 @@ class ANON_FCRM_TAG_ADDED {
 	}
 
 	/**
-	 * @param $attachedTagIds
+	 * @param $attached_tag_ids
 	 * @param $subscriber
 	 */
-	public function anon_tag_added_to_contact( $attachedTagIds, $subscriber ) {
-		$user_id = Automator()->helpers->recipe->fluent_crm->get_subscriber_user_id( $subscriber );
-		$tag_ids = Automator()->helpers->recipe->fluent_crm->get_attached_tag_ids( $attachedTagIds );
+	public function anon_tag_added_to_contact( $attached_tag_ids, $subscriber ) {
+		$user_id = $subscriber->user_id;
+		$tag_ids = Automator()->helpers->recipe->fluent_crm->get_attached_tag_ids( $attached_tag_ids );
 
 		if ( empty( $tag_ids ) ) {
 			// sanity check
