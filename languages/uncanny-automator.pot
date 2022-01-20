@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-01-20T16:28:21+00:00\n"
+"POT-Creation-Date: 2022-01-20T16:52:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -86,20 +86,20 @@ msgid "Recipe activity details"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:212
-#: src/core/admin/class-admin-menu.php:382
+#: src/core/admin/class-admin-menu.php:384
 #: src/core/includes/recipe-logs-view.php:13
 #: src/core/lib/helpers/class-automator-cache-handler.php:354
 msgid "Recipe log"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:213
-#: src/core/admin/class-admin-menu.php:385
+#: src/core/admin/class-admin-menu.php:387
 #: src/core/includes/recipe-logs-view.php:14
 msgid "Trigger log"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:214
-#: src/core/admin/class-admin-menu.php:388
+#: src/core/admin/class-admin-menu.php:390
 #: src/core/includes/recipe-logs-view.php:15
 msgid "Action log"
 msgstr ""
@@ -128,51 +128,51 @@ msgstr ""
 msgid "Database tools"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:759
+#: src/core/admin/class-admin-menu.php:761
 msgid "Bad request"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:763
+#: src/core/admin/class-admin-menu.php:765
 #: src/core/lib/utilities/class-automator-translations.php:799
 msgid "Access denied"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:767
+#: src/core/admin/class-admin-menu.php:769
 #: src/core/lib/utilities/class-automator-translations.php:807
 msgid "Not found"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:771
+#: src/core/admin/class-admin-menu.php:773
 #: src/core/lib/utilities/class-automator-translations.php:817
 msgid "Request timeout"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:775
+#: src/core/admin/class-admin-menu.php:777
 #: src/core/lib/utilities/class-automator-translations.php:824
 msgid "Internal error"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:779
+#: src/core/admin/class-admin-menu.php:781
 #: src/core/lib/utilities/class-automator-translations.php:832
 msgid "Parser error"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:783
+#: src/core/admin/class-admin-menu.php:785
 #: src/core/lib/utilities/class-automator-translations.php:851
 msgid "Unknown error"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:788
+#: src/core/admin/class-admin-menu.php:790
 msgid "Pro"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:840
+#: src/core/admin/class-admin-menu.php:842
 #: src/core/views/admin-dashboard.php:945
 msgid "No recipes using credits on this site"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/admin/class-admin-menu.php:842
+#: src/core/admin/class-admin-menu.php:844
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:160
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:29
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:65
@@ -185,46 +185,46 @@ msgstr ""
 msgid "Recipe"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:843
+#: src/core/admin/class-admin-menu.php:845
 msgid "Completions allowed"
 msgstr ""
 
 #. translators: The number of times a recipe was completed
-#: src/core/admin/class-admin-menu.php:844
+#: src/core/admin/class-admin-menu.php:846
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:648
 msgid "Completed runs"
 msgstr ""
 
 #. translators: 1. Number
-#: src/core/admin/class-admin-menu.php:846
+#: src/core/admin/class-admin-menu.php:848
 msgid "Per user: %1$s"
 msgstr ""
 
 #. translators: 1. Number
-#: src/core/admin/class-admin-menu.php:848
+#: src/core/admin/class-admin-menu.php:850
 msgid "Total: %1$s"
 msgstr ""
 
 #. translators: Unlimited times
-#: src/core/admin/class-admin-menu.php:850
+#: src/core/admin/class-admin-menu.php:852
 msgctxt "Times"
 msgid "Unlimited"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1007
+#: src/core/admin/class-admin-menu.php:1009
 msgid "Installed integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1008
+#: src/core/admin/class-admin-menu.php:1010
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1118
+#: src/core/admin/class-admin-menu.php:1120
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1119
+#: src/core/admin/class-admin-menu.php:1121
 msgid "Put your WordPress site on autopilot"
 msgstr ""
 

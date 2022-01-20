@@ -208,7 +208,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **Added:**
 
 * ActiveCampaign - Support for custom fields in "Add a contact/the user to ActiveCampaign" #1209
-* Automator Core - Send data to a webhook - Support for JSON formatted and nested data #195
+* Automator Core - Send data to a webhook - Now supports JSON, XML, GraphQL, Text, HTML, `form-data` and `x-www-form-urlencoded` formats #195
+* Automator Core - Send data to a webhook - Now supports nested JSON and XML data #195
 * Fluent Forms - Form title and Form ID tokens added #804
 * Formidable Forms - Form title and Form ID tokens added #827
 * Forminator - Form title and Form ID tokens added #1065
