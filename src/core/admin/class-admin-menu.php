@@ -301,8 +301,10 @@ class Admin_Menu {
 			}
 		}
 
-		$user      = wp_get_current_user();
-		$dashboard = (object) array(
+		$user             = wp_get_current_user();
+		$paid_usage_count = isset( $is_connected['paid_usage_count'] ) ? $is_connected['paid_usage_count'] : 0;
+		$usage_limit      = isset( $is_connected['usage_limit'] ) ? $is_connected['usage_limit'] : 1000;
+		$dashboard        = (object) array(
 			// Check if the user is using Automator Pro
 			'is_pro'             => $is_pro_active,
 			// Is Pro connected
@@ -329,7 +331,7 @@ class Admin_Menu {
 			),
 			'connect_url'        => $connect_url,
 			'miscellaneous'      => (object) array(
-				'free_credits'              => $is_connected ? ( $is_connected['usage_limit'] - $is_connected['paid_usage_count'] ) : 1000,
+				'free_credits'              => $is_connected ? ( $usage_limit - $paid_usage_count ) : 1000,
 				'site_url_without_protocol' => preg_replace( '(^https?://)', '', get_site_url() ),
 			),
 		);
@@ -1002,7 +1004,7 @@ class Admin_Menu {
 				}
 
 				// Add "Installed integrations"
-				$collections[ 'installed-integrations' ] = (object) array(
+				$collections['installed-integrations'] = (object) array(
 					'id'           => 'installed-integrations',
 					'name'         => esc_html__( 'Installed integrations', 'uncanny-automator' ),
 					'description'  => esc_html__( 'Ready-to-use integrations', 'uncanny-automator' ),
@@ -1091,7 +1093,7 @@ class Admin_Menu {
 		}
 
 		// Filter them to get only the installed ones
-		$installed_integrations = array_filter( $integrations, function( $integration ){
+		$installed_integrations = array_filter( $integrations, function ( $integration ) {
 			return $integration->is_installed;
 		} );
 
@@ -1118,7 +1120,7 @@ class Admin_Menu {
 			'name'                => esc_html__( 'All integrations', 'uncanny-automator' ),
 			'description'         => esc_html__( 'Put your WordPress site on autopilot', 'uncanny-automator' ),
 			'integrations'        => array_keys( $integrations ),
-			'add_no_results_item' => true
+			'add_no_results_item' => true,
 		);
 	}
 
