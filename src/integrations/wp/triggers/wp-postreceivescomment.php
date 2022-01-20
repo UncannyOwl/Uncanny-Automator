@@ -103,6 +103,7 @@ class WP_POSTRECEIVESCOMMENT {
 						false,
 						array(
 							'POSTTITLE'          => esc_attr__( 'Post title', 'uncanny-automator' ),
+							'POSTURL'            => esc_attr__( 'Post URL', 'uncanny-automator' ),
 							'POSTAUTHORDN'       => esc_attr__( 'Post author', 'uncanny-automator' ),
 							'POSTEXCERPT'        => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
 							'POSTCOMMENTCONTENT' => esc_attr__( 'Comment', 'uncanny-automator' ),
@@ -173,6 +174,10 @@ class WP_POSTRECEIVESCOMMENT {
 
 								$trigger_meta['meta_key']   = 'POSTTITLE';
 								$trigger_meta['meta_value'] = maybe_serialize( get_post_field( 'post_title', (int) $commentdata['comment_post_ID'] ) );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'POSTURL';
+								$trigger_meta['meta_value'] = maybe_serialize( get_post_permalink( (int) $commentdata['comment_post_ID'] ) );
 								Automator()->insert_trigger_meta( $trigger_meta );
 
 								$trigger_meta['meta_key']   = 'POSTAUTHORDN';

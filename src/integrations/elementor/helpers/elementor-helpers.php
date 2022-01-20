@@ -60,10 +60,6 @@ class Elementor_Helpers {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-		//      $cache = Automator()->cache->get( 'uap_option_all_elementor_forms' );
-		//      if ( ! empty( $cache ) ) {
-		//          return apply_filters( 'uap_option_all_elementor_forms', $cache );
-		//      }
 		if ( ! $label ) {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
@@ -84,7 +80,7 @@ class Elementor_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
-				$options[- 1] = $args['uo_any_label'];
+				$options['-1'] = $args['uo_any_label'];
 			}
 			global $wpdb;
 			$post_metas = $wpdb->get_results(
@@ -94,10 +90,11 @@ FROM $wpdb->postmeta pm
     LEFT JOIN $wpdb->posts p
         ON p.ID = pm.post_id
 WHERE p.post_type IS NOT NULL
-  AND p.post_status = %s
+  AND p.post_type NOT LIKE %s
+  AND p.post_status NOT IN('trash', 'inherit', 'auto-draft')
   AND pm.meta_key = %s
   AND pm.`meta_value` LIKE %s",
-					'publish',
+					'revision',
 					'_elementor_data',
 					'%%form_fields%%'
 				)

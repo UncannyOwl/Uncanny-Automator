@@ -142,13 +142,13 @@ class Uoa_Tokens {
 			}
 			$trigger_data = array_shift( $trigger_data );
 			if ( isset( $trigger_data['meta'][ $pieces[2] ] ) ) {
-				return $trigger_data['meta'][ $pieces[2] .'_readable' ];
+				return $trigger_data['meta'][ $pieces[2] . '_readable' ];
 			}
 		}
 
 		if ( ! in_array( 'UOAERRORS', $pieces, true ) &&
-		     ! in_array( 'UOARECIPES', $pieces, true ) &&
-		     ! in_array( 'UOARECIPESSTATUS', $pieces, true ) ) {
+			 ! in_array( 'UOARECIPES', $pieces, true ) &&
+			 ! in_array( 'UOARECIPESSTATUS', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -162,75 +162,74 @@ class Uoa_Tokens {
 					$value = maybe_unserialize( $meta_value );
 
 					if ( 'UOAERRORS_recipe_log_url' === $meta_field || 'UOARECIPES_recipe_log_url' === $meta_field ) {
-					$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-recipe-log&" . $value;
+						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-recipe-log&' . $value;
 					}
 					if ( 'UOAERRORS_trigger_log_url' === $meta_field || 'UOARECIPES_trigger_log_url' === $meta_field ) {
-						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-trigger-log&" . $value;
+						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-trigger-log&' . $value;
 					}
 					if ( 'UOAERRORS_action_log_url' === $meta_field || 'UOARECIPES_action_log_url' === $meta_field ) {
-						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-action-log&" . $value;
+						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-action-log&' . $value;
 					}
-
 				}
 			}
 		}
 
 		if ( empty( $value ) ) {
 			switch ( $pieces[1] ) {
-			case 'UOAERRORS_recipe_id':
-			case 'UOARECIPES_recipe_id':
-				$value = $recipe_id;
-				break;
-			case 'UOARECIPESSTATUS':
-			case 'UOARECIPES_recipe_status':
-				$recipe_log_id = $replace_args['recipe_log_id'];
-				$run_number    = $replace_args['recipe_log_id'];
-				$trigger_id    = $replace_args['trigger_id'];
-				$value         = Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'UOARECIPES_recipe_status', 0, $recipe_log_id );
-				switch ( $value ) {
-					case 0:
-						$value = esc_attr__( 'In progress', 'uncanny-automator' );
-						break;
-					case 1:
-						$value = esc_attr__( 'Completed', 'uncanny-automator' );
-						break;
-					case 2:
-						$value = esc_attr__( 'Completed with errors', 'uncanny-automator' );
-						break;
-					case 5:
-						$value = esc_attr__( 'Scheduled', 'uncanny-automator' );
-						break;
-					case 9:
-						$value = esc_attr__( 'Completed - do nothing', 'uncanny-automator' );
-						break;
-				}
-				break;
-			case 'UOAERRORS_recipe_title':
-			case 'UOAERRORS_recipe_edit_link':
-			case 'UOAERRORS_recipe_log_url':
-			case 'UOAERRORS_action_log_url':
-			case 'UOAERRORS_trigger_log_url':
-			case 'UOARECIPES_recipe_title':
-			case 'UOARECIPES_recipe_edit_link':
-			case 'UOARECIPES_recipe_log_url':
-			case 'UOARECIPES_action_log_url':
-			case 'UOARECIPES_trigger_log_url':
-				if ( 'UOAERRORS_recipe_log_url' === $pieces[1] || 'UOARECIPES_recipe_log_url' === $pieces[1] ) {
-					$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-recipe-log&recipe_id=$recipe_id";
-				}
-				if ( 'UOAERRORS_trigger_log_url' === $pieces[1] || 'UOARECIPES_trigger_log_url' === $pieces[1] ) {
-					$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-trigger-log&recipe_id=$recipe_id";
-				}
-				if ( 'UOAERRORS_action_log_url' === $pieces[1] || 'UOARECIPES_action_log_url' === $pieces[1] ) {
-					$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-action-log&recipe_id=$recipe_id";
-				}
-				if ( 'UOAERRORS_recipe_edit_link' === $pieces[1] || 'UOARECIPES_recipe_edit_link' === $pieces[1] ) {
-					$value = get_edit_post_link( $recipe_id );
-				}
-				if ( 'UOAERRORS_recipe_title' === $pieces[1] || 'UOARECIPES_recipe_title' === $pieces[1] ) {
-					$value = get_the_title( $recipe_id );
-				}
-				break;
+				case 'UOAERRORS_recipe_id':
+				case 'UOARECIPES_recipe_id':
+					$value = $recipe_id;
+					break;
+				case 'UOARECIPESSTATUS':
+				case 'UOARECIPES_recipe_status':
+					$recipe_log_id = $replace_args['recipe_log_id'];
+					$run_number    = $replace_args['recipe_log_id'];
+					$trigger_id    = $replace_args['trigger_id'];
+					$value         = Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'UOARECIPES_recipe_status', 0, $recipe_log_id );
+					switch ( $value ) {
+						case 0:
+							$value = esc_attr__( 'In progress', 'uncanny-automator' );
+							break;
+						case 1:
+							$value = esc_attr__( 'Completed', 'uncanny-automator' );
+							break;
+						case 2:
+							$value = esc_attr__( 'Completed with errors', 'uncanny-automator' );
+							break;
+						case 5:
+							$value = esc_attr__( 'Scheduled', 'uncanny-automator' );
+							break;
+						case 9:
+							$value = esc_attr__( 'Completed - do nothing', 'uncanny-automator' );
+							break;
+					}
+					break;
+				case 'UOAERRORS_recipe_title':
+				case 'UOAERRORS_recipe_edit_link':
+				case 'UOAERRORS_recipe_log_url':
+				case 'UOAERRORS_action_log_url':
+				case 'UOAERRORS_trigger_log_url':
+				case 'UOARECIPES_recipe_title':
+				case 'UOARECIPES_recipe_edit_link':
+				case 'UOARECIPES_recipe_log_url':
+				case 'UOARECIPES_action_log_url':
+				case 'UOARECIPES_trigger_log_url':
+					if ( 'UOAERRORS_recipe_log_url' === $pieces[1] || 'UOARECIPES_recipe_log_url' === $pieces[1] ) {
+						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-recipe-log&recipe_id=$recipe_id";
+					}
+					if ( 'UOAERRORS_trigger_log_url' === $pieces[1] || 'UOARECIPES_trigger_log_url' === $pieces[1] ) {
+						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-trigger-log&recipe_id=$recipe_id";
+					}
+					if ( 'UOAERRORS_action_log_url' === $pieces[1] || 'UOARECIPES_action_log_url' === $pieces[1] ) {
+						$value = admin_url( 'edit.php' ) . "?post_type=uo-recipe&page=uncanny-automator-action-log&recipe_id=$recipe_id";
+					}
+					if ( 'UOAERRORS_recipe_edit_link' === $pieces[1] || 'UOARECIPES_recipe_edit_link' === $pieces[1] ) {
+						$value = get_edit_post_link( $recipe_id );
+					}
+					if ( 'UOAERRORS_recipe_title' === $pieces[1] || 'UOARECIPES_recipe_title' === $pieces[1] ) {
+						$value = get_the_title( $recipe_id );
+					}
+					break;
 			}
 		}
 
@@ -250,7 +249,7 @@ class Uoa_Tokens {
 	public function uoa_anonymous_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
 
 		if ( in_array( 'ANONUOAERRORS', $pieces, true )
-		     || in_array( 'ANONUOARECIPES', $pieces, true ) ) {
+			 || in_array( 'ANONUOARECIPES', $pieces, true ) ) {
 			global $wpdb;
 
 			switch ( $pieces[1] ) {
@@ -398,8 +397,6 @@ class Uoa_Tokens {
 			),
 		);
 
-		$tokens = array_merge( $tokens, $new_tokens );
-
-		return $tokens;
+		return array_merge( $tokens, $new_tokens );
 	}
 }

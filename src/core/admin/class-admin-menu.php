@@ -520,7 +520,7 @@ class Admin_Menu {
 
 		$credit_data = json_decode( wp_remote_retrieve_body( $response ) );
 
-		if ( 200 === $credit_data->statusCode ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		if ( ! empty( $credit_data->statusCode ) && 200 === $credit_data->statusCode ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			set_transient( 'automator_api_credit_data', (array) $credit_data->data, HOUR_IN_SECONDS );
 
 			return (array) $credit_data->data;
@@ -598,6 +598,7 @@ class Admin_Menu {
 			delete_option( 'uap_automator_free_license_data' );
 			delete_transient( 'automator_api_credit_data' );
 			delete_transient( 'automator_api_credits' );
+			delete_transient( 'automator_api_license' );
 
 			wp_safe_redirect( remove_query_arg( array( 'action' ) ) );
 			die;

@@ -28,6 +28,17 @@ class Recipe_Post_Rest_Api {
 	 * @since 1.0
 	 */
 	public function register_routes_for_recipes() {
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/create/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'create' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
+
 		register_rest_route(
 			AUTOMATOR_REST_API_END_POINT,
 			'/add/',
@@ -242,6 +253,44 @@ class Recipe_Post_Rest_Api {
 		$setting = apply_filters_deprecated( 'uap_save_setting_permissions', array( $setting ), '3.0', 'automator_save_setting_permissions' );
 
 		return apply_filters( 'automator_save_setting_permissions', $setting );
+	}
+
+	/**
+	 * Create a recipe
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function create( WP_REST_Request $request ) {
+		$return['success'] = false;
+		$return['data']    = $request;
+
+		$recipe_post = array(
+			'post_type'   => 'uo-recipe',
+			'post_author' => get_current_user_id()
+		);
+
+		if ( $request->has_param( 'recipeTitle' ) ) {
+			$recipe_post['title'] = wp_strip_all_tags( $request->get_param( 'recipeTitle' ) );
+		}
+
+		$post_id = wp_insert_post( $recipe_post );
+
+		if ( is_wp_error( $post_id ) ) {
+			$return['message'] = sprintf( '%s:%s', __( 'The action failed to create the post. The response was', 'uncanny-automator' ), $post_id );
+
+			return new WP_REST_Response( $return, 400 );
+		}
+
+		$return                   = array();
+		$return['success']        = true;
+		$return['post_ID']        = $post_id;
+		$return['action']         = $action;
+		$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe->ID );
+
+		return new WP_REST_Response( $return, 200 );
+
 	}
 
 	/**

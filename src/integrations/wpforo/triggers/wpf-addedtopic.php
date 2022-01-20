@@ -59,7 +59,7 @@ class WPF_ADDEDTOPIC {
 			/* translators: Logged-in trigger - wpForo */
 			'sentence'            => sprintf( esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - wpForo */
-			'select_option_name'  => esc_attr__( 'A user creates a {{new topic}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user creates a new topic in {{a forum}}', 'uncanny-automator' ),
 			'action'              => 'wpforo_after_add_topic',
 			'priority'            => 5,
 			'accepted_args'       => 1,

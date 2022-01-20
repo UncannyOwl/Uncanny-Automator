@@ -51,7 +51,7 @@ class Gravity_Forms_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -90,6 +90,10 @@ class Gravity_Forms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code         => __( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => __( 'Form ID', 'uncanny-automator' )
+			),
 		);
 
 		return apply_filters( 'uap_option_list_gravity_forms', $option );

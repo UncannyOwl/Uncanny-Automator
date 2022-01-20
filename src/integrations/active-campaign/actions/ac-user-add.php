@@ -41,27 +41,7 @@ class AC_USER_ADD {
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Add {{the user}} to ActiveCampaign', 'uncanny-automator' ) );
 
-		$options_group = array(
-			$this->get_action_meta() => array(
-				array(
-					'option_code' => $this->prefix . '_PHONE_NUMBER',
-					'label'       => esc_attr__( 'Phone number', 'uncanny-automator' ),
-					'placeholder' => esc_attr__( '(+00) 987 123 4567', 'uncanny-automator' ),
-					'input_type'  => 'text',
-					'required'    => false,
-				),
-				array(
-					'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
-					'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
-					'input_type'  => 'checkbox',
-				),
-				array(
-					'input_type'  => 'text',
-					'option_code' => 'ACTIVECAMPAIGNHIDDEN',
-					'is_hidden'   => true,
-				),
-			),
-		);
+		$options_group = array( $this->get_action_meta() => $this->get_field() );
 
 		$this->set_options_group( $options_group );
 
@@ -93,6 +73,10 @@ class AC_USER_ADD {
 		$is_update = isset( $parsed[ $this->prefix . '_UPDATE_IF_CONTACT_EXISTS' ] ) ? $parsed[ $this->prefix . '_UPDATE_IF_CONTACT_EXISTS' ] : 'false';
 		$is_update = trim( wp_strip_all_tags( $is_update ) );
 
+		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
+
+		$custom_fields = $ac_helper->get_registered_fields( $parsed, $this->prefix );
+
 		$form_data = array(
 			'action'         => 'add_contact',
 			'url'            => get_option( 'uap_active_campaign_api_url', '' ),
@@ -102,6 +86,7 @@ class AC_USER_ADD {
 			'lastName'       => $lastname,
 			'phone'          => $phone,
 			'updateIfExists' => $is_update, // String.
+			'fields'         => wp_json_encode( $custom_fields ),
 		);
 
 		$response = wp_remote_post(
@@ -154,6 +139,39 @@ class AC_USER_ADD {
 				Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 			}
 		}
+	}
+
+	public function get_field() {
+
+		$custom_fields = get_transient( 'ua_ac_contact_fields_list' );
+
+		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
+
+		if ( false === $custom_fields ) {
+			$ac_helper->sync_contact_fields( false );
+		}
+
+		$fields = array(
+			array(
+				'option_code' => $this->prefix . '_PHONE_NUMBER',
+				'label'       => esc_attr__( 'Phone number', 'uncanny-automator' ),
+				'placeholder' => esc_attr__( '(+00) 987 123 4567', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => false,
+			),
+		);
+
+		// Add the custom fields options.
+		$fields = array_merge( $fields, $ac_helper->get_custom_fields( $this->prefix ) );
+
+		// Add the checkbox.
+		$fields[] = array(
+			'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
+			'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
+			'input_type'  => 'checkbox',
+		);
+
+		return $fields;
 
 	}
 }

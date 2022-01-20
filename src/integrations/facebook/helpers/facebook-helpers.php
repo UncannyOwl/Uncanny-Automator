@@ -139,8 +139,8 @@ class Facebook_Helpers {
 		if ( $this->display_settings_tab() ) {
 
 			$tabs[ $this->setting_tab ] = array(
-				'name'           => __( 'Facebook', 'uncanny-automator' ),
-				'title'          => __( 'Facebook account settings', 'uncanny-automator' ),
+				'name'           => __( 'Facebook Pages', 'uncanny-automator' ),
+				'title'          => __( 'Facebook Pages account settings', 'uncanny-automator' ),
 				'description'    => $this->get_tab_content(),
 				'settings_field' => 'uap_automator_facebook_api_settings',
 				'wp_nonce_field' => 'uap_automator_facebook_api_nonce',
@@ -247,8 +247,6 @@ class Facebook_Helpers {
 			</div>
 
 			<p>
-				<span class="dashicons dashicons-info-outline"
-					  style="font-size: 14px; position: relative; top: 3.25px;"></span>
 				<?php esc_html_e( 'Click on the Change Account Settings button to re-connect your Facebook Account and Facebook Pages.', 'uncanny-automator' ); ?>
 			</p>
 			<a title="<?php esc_attr_e( 'Change Account Settings', 'uncanny-automator' ); ?>"
@@ -556,11 +554,10 @@ class Facebook_Helpers {
 			}
 
 			span.uo-fb-pages-item-id {
-				border-radius: 3px;
-				font-size: 12px;
-				padding: 2px;
+				border-radius: 8px;
+				font-size: 14px;
+				padding: 2px 4px;
 				text-align: center;
-				width: 115px;
 				display: inline-block;
 				border: 2px dashed #fff27d;
 				margin-right: 10px;
@@ -572,7 +569,13 @@ class Facebook_Helpers {
 				position: relative;
 				top: 2.5px;
 			}
-
+			#uo-user-fb-pages > ul {
+				margin-left: 0;
+			}
+			#uo-user-fb-pages > ul > li {
+				list-style: none!important;
+				margin: 0 0 10px 0;
+			}
 			#uo-user-fb-pages > ul > li > a {
 				margin-right: 15px;
 			}

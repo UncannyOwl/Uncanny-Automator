@@ -42,40 +42,7 @@ class AC_ANNON_ADD {
 		$this->set_readable_sentence( esc_attr__( 'Add {{a contact}} to ActiveCampaign', 'uncanny-automator' ) );
 
 		$options_group = array(
-			$this->get_action_meta() => array(
-				array(
-					'option_code' => $this->get_action_meta(),
-					/* translators: Email address */
-					'label'       => esc_attr__( 'Email address', 'uncanny-automator' ),
-					'input_type'  => 'email',
-					'required'    => true,
-				),
-				array(
-					'option_code' => $this->prefix . '_FIRST_NAME',
-					/* translators: First name */
-					'label'       => esc_attr__( 'First name', 'uncanny-automator' ),
-					'input_type'  => 'text',
-					'required'    => true,
-				),
-				array(
-					'option_code' => $this->prefix . '_LAST_NAME',
-					/* translators: Last name */
-					'label'       => esc_attr__( 'Last name', 'uncanny-automator' ),
-					'input_type'  => 'text',
-					'required'    => true,
-				),
-				array(
-					'option_code' => $this->prefix . '_PHONE',
-					'label'       => esc_attr__( 'Phone number', 'uncanny-automator' ),
-					'placeholder' => esc_attr__( '(+00) 987 123 4567', 'uncanny-automator' ),
-					'input_type'  => 'text',
-				),
-				array(
-					'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
-					'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
-					'input_type'  => 'checkbox',
-				),
-			),
+			$this->get_action_meta() => $this->get_fields(),
 		);
 
 		$this->set_options_group( $options_group );
@@ -105,6 +72,10 @@ class AC_ANNON_ADD {
 		$is_update = isset( $parsed[ $this->prefix . '_UPDATE_IF_CONTACT_EXISTS' ] ) ? $parsed[ $this->prefix . '_UPDATE_IF_CONTACT_EXISTS' ] : 'false';
 		$is_update = trim( wp_strip_all_tags( $is_update ) );
 
+		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
+
+		$custom_fields = $ac_helper->get_registered_fields( $parsed, $this->prefix );
+
 		$form_data = array(
 			'action'         => 'add_contact',
 			'url'            => get_option( 'uap_active_campaign_api_url', '' ),
@@ -113,7 +84,8 @@ class AC_ANNON_ADD {
 			'firstName'      => $firstname,
 			'lastName'       => $lastname,
 			'phone'          => $phone,
-			'updateIfExists' => $is_update, // String.
+			'updateIfExists' => $is_update, // String.,
+			'fields'         => wp_json_encode( $custom_fields ),
 		);
 
 		$response = wp_remote_post(
@@ -135,6 +107,7 @@ class AC_ANNON_ADD {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
 		} else {
+
 			// Decode the response, if everythings is fine.
 			$body = json_decode( wp_remote_retrieve_body( $response ) );
 
@@ -150,6 +123,8 @@ class AC_ANNON_ADD {
 					foreach ( $errors as $error ) {
 						$error_message[] = $error->title;
 					}
+
+					$action_data['do-nothing'] = true;
 
 					$action_data['complete_with_errors'] = true;
 
@@ -170,10 +145,71 @@ class AC_ANNON_ADD {
 					$error_message = sprintf( esc_html__( 'ActiveCampaign return with an error: %s', 'uncanny-automator' ), $body->error->description );
 				}
 
+				$action_data['do-nothing'] = true;
+
 				$action_data['complete_with_errors'] = true;
 
 				Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 			}
 		}
 	}
+
+	/**
+	 * Get the fields.
+	 */
+	public function get_fields() {
+
+		$custom_fields = get_transient( 'ua_ac_contact_fields_list' );
+
+		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
+
+		if ( false === $custom_fields ) {
+			$ac_helper->sync_contact_fields( false );
+		}
+
+		// Default ActiveCampaign fields.
+		$fields = array(
+			array(
+				'option_code' => $this->get_action_meta(),
+				/* translators: Email address */
+				'label'       => esc_attr__( 'Email address', 'uncanny-automator' ),
+				'input_type'  => 'email',
+				'required'    => true,
+			),
+			array(
+				'option_code' => $this->prefix . '_FIRST_NAME',
+				/* translators: First name */
+				'label'       => esc_attr__( 'First name', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+			),
+			array(
+				'option_code' => $this->prefix . '_LAST_NAME',
+				/* translators: Last name */
+				'label'       => esc_attr__( 'Last name', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+			),
+			array(
+				'option_code' => $this->prefix . '_PHONE',
+				'label'       => esc_attr__( 'Phone number', 'uncanny-automator' ),
+				'placeholder' => esc_attr__( '(+00) 987 123 4567', 'uncanny-automator' ),
+				'input_type'  => 'text',
+			),
+		);
+
+		// Add the custom fields options.
+		$fields = array_merge( $fields, $ac_helper->get_custom_fields( $this->prefix ) );
+
+		// Add the checkbox.
+		$fields[] = array(
+			'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
+			'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
+			'input_type'  => 'checkbox',
+		);
+
+		return $fields;
+
+	}
+
 }

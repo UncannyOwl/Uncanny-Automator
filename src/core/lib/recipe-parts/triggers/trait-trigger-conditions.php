@@ -221,6 +221,7 @@ trait Trigger_Conditions {
 			$match_in = $condition->match_in;
 
 			$matched_condition          = $this->required_condition_in_trigger_meta( $recipes, $match_in );
+
 			$matched_recipe_ids[ $key ] = $this->find_value_in_trigger_meta( $match, $matched_condition, $recipes );
 		}
 
@@ -301,7 +302,7 @@ trait Trigger_Conditions {
 					$matched[ $recipe_id ] = $trigger_id;
 				}
 				// If value is not an array
-				if ( ! is_array( $value ) && (int) $value === (int) $match_in[ $recipe_id ][ $trigger_id ] ) {
+				if ( ! is_array( $value ) && $value === $match_in[ $recipe_id ][ $trigger_id ] ) {
 					$matched[ $recipe_id ] = $trigger_id;
 				}
 				// if value is of type array

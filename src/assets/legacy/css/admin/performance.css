@@ -131,9 +131,10 @@
 	width: 60%;
 }
 
-.uo-settings-content-form {}
+.uo-settings-content-form {
+	margin-top: 10px;
+}
 
-.uo-settings-content-form .uo-admin-input,
 .uo-settings-content-form input[type="text"],
 .uo-settings-content-form input[type="number"],
 .uo-settings-content-form input[type="select"],

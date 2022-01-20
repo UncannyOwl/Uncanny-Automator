@@ -124,14 +124,39 @@ class Gf_Tokens {
 	 */
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true ) ) {
-				if ( isset( $pieces[2] ) && 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) {
+			if ( in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true ) || in_array( 'SUBFIELD', $pieces, true ) ) {
+				if ( isset( $pieces[2] ) && ( 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
 					$t_data   = array_shift( $trigger_data );
 					$form_id  = $t_data['meta'][ $pieces[2] ];
 					$forminfo = RGFormsModel::get_form( $form_id );
 
 					return $forminfo->title;
 				}
+
+				if ( isset( $pieces[2] ) && 'GFFORMS_ID' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+
+					return $t_data['meta']['GFFORMS'];
+				}
+
+				if ( isset( $pieces[2] ) && 'ANONGFFORMS_ID' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+
+					return $t_data['meta']['ANONGFFORMS'];
+				}
+
+				if ( isset( $pieces[2] ) && 'SUBVALUE' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+
+					return $t_data['meta'][ $pieces[2] ];
+				}
+				if ( isset( $pieces[2] ) && 'SUBFIELD' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+
+					return $t_data['meta'][ $pieces[2] . '_readable' ];
+				}
+
+
 				$token_piece = $pieces[2];
 				global $wpdb;
 				$token_info = explode( '|', $token_piece );

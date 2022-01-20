@@ -78,12 +78,33 @@ class FCRM_USER_TO_LIST {
 		if ( $user_info ) {
 			$subscriber = Subscriber::where( 'email', $user_info->user_email )->first();
 
+			// User exists but is not a FluentCRM contact.
+			$subscriber = Automator()->helpers->recipe->fluent_crm->add_user_as_contact( $user_info );
+
+			// Did not create new contact successfully.
+			if ( false === $subscriber || is_null( $subscriber ) ) {
+
+				// Do nothing.
+				$action_data['do-nothing'] = true;
+
+				// Complete with errors.
+				$action_data['complete_with_errors'] = true;
+
+				// Send some error message to the log.
+				$message = esc_html__( 'There was an error while trying to add the user as a FluentCRM contact.', 'uncanny-automator' );
+
+				Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
+
+				return;
+
+			}
+
 			if ( $subscriber ) {
 
 				$existing_lists    = $subscriber->lists;
 				$existing_list_ids = array();
 				foreach ( $existing_lists as $list ) {
-					if ( in_array( $list->id, $lists ) ) {
+					if ( in_array( $list->id, $lists, true ) ) {
 						$existing_list_ids[] = $list->title;
 					}
 				}
@@ -121,21 +142,6 @@ class FCRM_USER_TO_LIST {
 					return;
 
 				}
-			} else {
-				// User is not a contact
-				$args['do-nothing']                  = true;
-				$action_data['do-nothing']           = true;
-				$action_data['complete_with_errors'] = true;
-
-				$message = sprintf(
-				/* translators: 1. The user email */
-					_x( 'User is not a contact: %1$s', 'FluentCRM', 'uncanny-automator' ),
-					$user_info->user_email
-				);
-
-				Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
-
-				return;
 			}
 		} else {
 			// User does not exist

@@ -77,7 +77,17 @@ trait Action_Setup {
 	/**
 	 * @var
 	 */
+	protected $options_callback;
+
+	/**
+	 * @var
+	 */
 	protected $requires_user = true;
+
+	/**
+	 * @var
+	 */
+	protected $buttons;
 
 	/**
 	 * @return mixed
@@ -234,6 +244,20 @@ trait Action_Setup {
 	}
 
 	/**
+	 * @param mixed $callback
+	 */
+	public function set_options_callback( $callback ) {
+		$this->options_callback = $callback;
+	}
+
+	/**
+	 * @param mixed $options
+	 */
+	public function get_options_callback() {
+		return $this->options_callback;
+	}
+
+	/**
 	 * @return mixed
 	 */
 	public function get_requires_user() {
@@ -247,6 +271,19 @@ trait Action_Setup {
 		$this->requires_user = $requires_user;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function get_buttons() {
+		return $this->buttons;
+	}
+
+	/**
+	 * @param mixed $buttons
+	 */
+	public function set_buttons( $buttons ) {
+		$this->buttons = $buttons;
+	}
 
 	/**
 	 * Define and register the action by pushing it into the Automator object
@@ -272,6 +309,14 @@ trait Action_Setup {
 
 		if ( ! empty( $this->get_options_group() ) ) {
 			$action['options_group'] = $this->get_options_group();
+		}
+
+		if ( ! empty( $this->get_options_callback() ) ) {
+			$action['options_callback'] = $this->get_options_callback();
+		}
+		
+		if ( ! empty( $this->get_buttons() ) ) {
+			$action['buttons'] = $this->get_buttons();
 		}
 
 		$action = apply_filters( 'automator_register_action', $action );

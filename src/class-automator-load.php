@@ -98,7 +98,7 @@ class Automator_Load {
 
 		// Show set-up wizard.
 		$this->initiate_setup_wizard();
-		
+
 	}
 
 	/**
@@ -542,11 +542,13 @@ class Automator_Load {
 			$classes['Automator_Handle_Anon'] = UA_ABSPATH . 'src/core/anon/automator-handle-anon.php';
 		}
 
-		$classes['Automator_Review']     = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
-		$classes['Automator_Autoloader'] = UA_ABSPATH . 'src/core/lib/autoload/class-ua-autoloader.php';
-		$classes['Api_Server']           = UA_ABSPATH . 'src/core/classes/class-api-server.php';
-		$classes['Usage_Reports']        = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
-		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
+		// Webhooks
+		$classes['Automator_Send_Webhook_Ajax_Handler'] = UA_ABSPATH . 'src/core/lib/webhooks/class-automator-send-webhook-ajax-handler.php';
+		$classes['Automator_Review']                    = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
+		$classes['Automator_Autoloader']                = UA_ABSPATH . 'src/core/lib/autoload/class-ua-autoloader.php';
+		$classes['Api_Server']                          = UA_ABSPATH . 'src/core/classes/class-api-server.php';
+		$classes['Usage_Reports']                       = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
+		$classes['Set_Up_Automator']                    = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
 
 		//$classes['Import_Recipe'] = UA_ABSPATH . 'src/core/classes/class-import-recipe.php';
 
@@ -562,17 +564,21 @@ class Automator_Load {
 	public function load_traits() {
 		do_action( 'automator_before_traits' );
 
+		// Integrations
 		$classes['Integrations'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-integrations.php';
 
+		// Closures
 		$classes['Trait_Closure_Setup'] = UA_ABSPATH . 'src/core/lib/recipe-parts/closures/trait-closure-setup.php';
 		$classes['Closures']            = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-closures.php';
 
+		// Triggers
 		$classes['Trait_Trigger_Setup']      = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-setup.php';
 		$classes['Trait_Trigger_Filters']    = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-filters.php';
 		$classes['Trait_Trigger_Conditions'] = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-conditions.php';
 		$classes['Trait_Trigger_Process']    = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-process.php';
 		$classes['Triggers']                 = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-triggers.php';
 
+		// Actions
 		$classes['Trait_Action_Setup']         = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-setup.php';
 		$classes['Trait_Action_Conditions']    = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-conditions.php';
 		$classes['Trait_Action_Parser']        = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-parser.php';
@@ -580,6 +586,13 @@ class Automator_Load {
 		$classes['Trait_Action_Helpers_Email'] = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-helpers-email.php';
 		$classes['Trait_Action_Helpers']       = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-helpers.php';
 		$classes['Actions']                    = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-actions.php';
+
+		// Webhooks
+		//$classes['Webhook_Ajax_Handler']        = UA_ABSPATH . 'src/core/lib/recipe-parts/webhooks/trait-webhook-ajax-handler.php';
+		$classes['Webhook_Send_Rest_Handler']   = UA_ABSPATH . 'src/core/lib/recipe-parts/webhooks/trait-webhook-send-rest-handler.php';
+		$classes['Webhook_Send_Sample_Handler'] = UA_ABSPATH . 'src/core/lib/recipe-parts/webhooks/trait-webhook-send-sample-handler.php';
+		$classes['Webhook_Static_Content']      = UA_ABSPATH . 'src/core/lib/recipe-parts/webhooks/trait-webhook-static-content.php';
+		$classes['Webhooks']                    = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-webhooks.php';
 
 		if ( empty( $classes ) ) {
 			return;
@@ -669,7 +682,10 @@ class Automator_Load {
 		if ( defined( 'DOING_AJAX' ) ) {
 			// Add the ajax listener.
 			include_once UA_ABSPATH . 'src/core/admin/setup-wizard/setup-wizard.php';
-			add_action( 'wp_ajax_uo_setup_wizard_set_tried_connecting', array( '\Uncanny_Automator\Setup_Wizard', 'set_tried_connecting') );
+			add_action( 'wp_ajax_uo_setup_wizard_set_tried_connecting', array(
+				'\Uncanny_Automator\Setup_Wizard',
+				'set_tried_connecting',
+			) );
 		}
 	}
 }

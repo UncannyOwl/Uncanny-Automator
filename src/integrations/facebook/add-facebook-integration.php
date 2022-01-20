@@ -58,7 +58,7 @@ class Add_Facebook_Integration {
 
 		// set up configuration.
 		$integration_config = array(
-			'name'         => 'Facebook',
+			'name'         => 'Facebook Pages',
 			'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/facebook-icon.svg' ),
 			'connected'    => $this->connected, //
 			'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=facebook_api',

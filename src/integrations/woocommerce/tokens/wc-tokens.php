@@ -65,6 +65,7 @@ class Wc_Tokens {
 			'order_qty'            => esc_attr__( 'Order quantity', 'uncanny-automator' ),
 			'payment_method'       => esc_attr__( 'Payment method', 'uncanny-automator' ),
 			'order_products_links' => esc_attr__( 'Order products links', 'uncanny-automator' ),
+			'order_summary'        => esc_attr__( 'Order summary', 'uncanny-automator' ),
 		);
 
 		add_action( 'uap_wc_trigger_save_meta', array( $this, 'uap_wc_trigger_save_meta_func' ), 20, 4 );
@@ -495,7 +496,7 @@ class Wc_Tokens {
 											$prods[] = $product->get_title() . ' x ' . $item->get_quantity();
 										}
 									}
-									$value = join( $multi_line_separator, $prods );
+									$value = implode( $multi_line_separator, $prods );
 
 									break;
 								case 'order_qty':
@@ -532,6 +533,9 @@ class Wc_Tokens {
 								case 'SHIP_DATE':
 									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
 									$value = $value ? date( 'Y-m-d H:i:s', $value ) : ''; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+									break;
+								case 'order_summary':
+									$value = $this->build_summary_style_html( $order );
 									break;
 								default:
 									if ( preg_match( '/custom_order_meta/', $parse ) ) {
@@ -715,5 +719,131 @@ class Wc_Tokens {
 		$tokens       = array_merge( $tokens, $fields );
 
 		return $this->wc_possible_tokens( $tokens, $args, 'order' );
+	}
+
+	/**
+	 * @param $order
+	 *
+	 * @return string
+	 */
+	private function build_summary_style_html( $order ) {
+		$font_colour      = apply_filters( 'automator_woocommerce_order_summary_text_color', '#000', $order );
+		$font_family      = apply_filters( 'automator_woocommerce_order_summary_font_family', "'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif", $order );
+		$table_styles     = apply_filters( 'automator_woocommerce_order_summary_table_style', '', $order );
+		$border_colour    = apply_filters( 'automator_woocommerce_order_summary_border_color', '#eee', $order );
+		$tr_border_colour = apply_filters( 'automator_woocommerce_order_summary_tr_border_color', '#e5e5e5', $order );
+		$tr_text_colour   = apply_filters( 'automator_woocommerce_order_summary_tr_text_color', '#636363', $order );
+		$td_border_colour = apply_filters( 'automator_woocommerce_order_summary_td_border_color', '#e5e5e5', $order );
+		$td_text_colour   = apply_filters( 'automator_woocommerce_order_summary_td_text_color', '#636363', $order );
+
+		$html   = array();
+		$html[] = sprintf(
+			'<table class="td" cellspacing="0" cellpadding="6" border="1" style="color:%s; border: 1px solid %s; vertical-align: middle; width: 100%%; font-family: %s;%s">',
+			$font_colour,
+			$border_colour,
+			$font_family,
+			$table_styles
+		);
+		$items  = $order->get_items();
+		$html[] = '<thead>';
+		$html[] = '<tr class="row">';
+		$th     = sprintf(
+			'<th class="td" scope="col" style="color: %s; border: 1px solid %s; vertical-align: middle; padding: 12px; text-align: left;">',
+			$tr_text_colour,
+			$tr_border_colour
+		);
+		$html[] = $th . '<strong>' . apply_filters( 'automator_woocommerce_order_summary_product_title', esc_attr__( 'Product', 'uncanny-automator' ) ) . '</strong></th>';
+		$html[] = $th . '<strong>' . apply_filters( 'automator_woocommerce_order_summary_quantity_title', esc_attr__( 'Quantity', 'uncanny-automator' ) ) . '</strong></th>';
+		$html[] = $th . '<strong>' . apply_filters( 'automator_woocommerce_order_summary_price_title', esc_attr__( 'Price', 'uncanny-automator' ) ) . '</strong></th>';
+		$html[] = '</thead>';
+		if ( $items ) {
+			/** @var WC_Order_Item_Product $item */
+			$td = sprintf(
+				'<td class="td" style="color: %s; border: 1px solid %s; padding: 12px; text-align: left; vertical-align: middle; font-family: %s">',
+				$td_text_colour,
+				$td_border_colour,
+				$font_family
+			);
+			foreach ( $items as $item ) {
+				$product = $item->get_product();
+				if ( true === apply_filters( 'automator_woocommerce_order_summary_show_product_in_invoice', true, $product, $item, $order ) ) {
+					$html[] = '<tr class="order_item">';
+					$title  = $product->get_title();
+					if ( $item->get_variation_id() ) {
+						$variation      = new \WC_Product_Variation( $item->get_variation_id() );
+						$variation_name = implode( ' / ', $variation->get_variation_attributes() );
+						$title          = apply_filters( 'automator_woocommerce_order_summary_line_item_title', "$title - $variation_name", $product, $item, $order );
+					}
+					if ( true === apply_filters( 'automator_woocommerce_order_summary_link_to_line_item', true, $product, $item, $order ) ) {
+						$title = sprintf( '<a style="color: %s; vertical-align: middle; padding: 12px 0; text-align: left;" href="%s">%s</a>', $td_text_colour, $product->get_permalink(), $title );
+					}
+					$html[] = sprintf( '%s %s</td>', $td, $title );
+					$html[] = $td . $item->get_quantity() . '</td>';
+					$html[] = $td . wc_price( $item->get_total() ) . '</td>';
+					$html[] = '</tr>';
+				}
+			}
+		}
+
+		$td       = sprintf(
+			'<td colspan="2" class="td" style="color: %s; border: 1px solid %s; vertical-align: middle; padding: 12px; text-align: left; border-top-width: 4px;">',
+			$td_text_colour,
+			$td_border_colour
+		);
+		$td_right = sprintf(
+			'<td class="td" style="color: %s; border: 1px solid %s; vertical-align: middle; padding: 12px; text-align: left; border-top-width: 4px;">',
+			$td_text_colour,
+			$td_border_colour
+		);
+		// Subtotal
+		if ( true === apply_filters( 'automator_woocommerce_order_summary_show_subtotal', true, $order ) ) {
+			$html[] = '<tr>';
+			$html[] = $td;
+			$html[] = apply_filters( 'automator_woocommerce_order_summary_subtotal_title', esc_attr__( 'Subtotal:', 'uncanny-automator' ) );
+			$html[] = '</td>';
+			$html[] = $td_right;
+			$html[] = $order->get_subtotal_to_display();
+			$html[] = '</td>';
+			$html[] = '</tr>';
+		}
+		// Tax
+		if ( true === apply_filters( 'automator_woocommerce_order_summary_show_taxes', true, $order ) ) {
+			if ( ! empty( $order->get_taxes() ) ) {
+				$html[] = '<tr>';
+				$html[] = $td;
+				$html[] = apply_filters( 'automator_woocommerce_order_summary_tax_title', esc_attr__( 'Tax:', 'uncanny-automator' ) );
+				$html[] = '</td>';
+				$html[] = $td_right;
+				$html[] = wc_price( $order->get_total_tax() );
+				$html[] = '</td>';
+				$html[] = '</tr>';
+			}
+		}
+		// Payment method
+		if ( true === apply_filters( 'automator_woocommerce_order_summary_show_payment_method', true, $order ) ) {
+			$html[] = '<tr>';
+			$html[] = $td;
+			$html[] = apply_filters( 'automator_woocommerce_order_summary_payment_method_title', esc_attr__( 'Payment method:', 'uncanny-automator' ) );
+			$html[] = '</td>';
+			$html[] = $td_right;
+			$html[] = $order->get_payment_method_title();
+			$html[] = '</td>';
+			$html[] = '</tr>';
+		}
+		// Total
+		if ( true === apply_filters( 'automator_woocommerce_order_summary_show_total', true, $order ) ) {
+			$html[] = '<tr>';
+			$html[] = $td;
+			$html[] = apply_filters( 'automator_woocommerce_order_summary_total_title', esc_attr__( 'Total:', 'uncanny-automator' ) );
+			$html[] = '</td>';
+			$html[] = $td_right;
+			$html[] = $order->get_formatted_order_total();
+			$html[] = '</td>';
+			$html[] = '</tr>';
+		}
+		$html[] = '</table>';
+		$html   = apply_filters( 'automator_order_summary_html_raw', $html, $order );
+
+		return implode( PHP_EOL, $html );
 	}
 }

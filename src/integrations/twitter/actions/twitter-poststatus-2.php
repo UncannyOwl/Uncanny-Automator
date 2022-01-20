@@ -44,7 +44,7 @@ class TWITTER_POSTSTATUS_2 {
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/twitter/' ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/twitter/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			'sentence'           => sprintf( __( 'Post {{a status:%1$s}} to Twitter', 'uncanny-automator' ), $this->action_meta ),

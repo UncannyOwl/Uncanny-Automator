@@ -424,5 +424,43 @@ class Fluent_Crm_Helpers {
 
 	}
 
+	/**
+	 * Add the wp user as a FluentCrm contact.
+	 *
+	 * @param object $user The WordPress user object returned by function get_userdata.
+	 *
+	 * @return mixed Returns false if not successful. Otherwise instance of \FluentCrm\App\Models\Subscriber.
+	 */
+	public function add_user_as_contact( $user, $tags = array(), $list = array() ) {
+
+		if ( ! function_exists( 'FluentCrmApi' ) ) {
+			return 0;
+		}
+
+		$contact_api = FluentCrmApi( 'contacts' );
+
+		$data = array(
+			'first_name' => isset( $user->first_name ) ? sanitize_text_field( $user->first_name ) : '',
+			'last_name'  => isset( $user->last_name ) ? sanitize_text_field( $user->last_name ) : '',
+			'email'      => $user->user_email,
+			'status'     => 'subscribe',
+		);
+
+		// Update the tags if argument is supplied.
+		if ( ! empty( $tags ) ) {
+			$data['tags'] = $tags;
+		}
+
+		// Update the list if argument is supplied.
+		if ( ! empty( $list ) ) {
+			$data['lists'] = $list;
+		}
+
+		$contact = $contact_api->createOrUpdate( $data );
+
+		return $contact;
+
+	}
+
 
 }

@@ -65,30 +65,62 @@ class FCRM_TAG_TO_USER {
 	 */
 	public function tag_to_user( $user_id, $action_data, $recipe_id, $args ) {
 
-		$tags      = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
+		$tags = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
+
 		$user_info = get_userdata( $user_id );
 
 		if ( $user_info ) {
+
 			$subscriber = Subscriber::where( 'email', $user_info->user_email )->first();
+
+			if ( false === $subscriber || is_null( $subscriber ) ) {
+
+				// User exists but is not a FluentCRM contact.
+				$subscriber = Automator()->helpers->recipe->fluent_crm->add_user_as_contact( $user_info );
+
+				// Did not create new contact successfully.
+				if ( false === $subscriber ) {
+
+					// Do nothing.
+					$action_data['do-nothing'] = true;
+
+					// Complete with errors.
+					$action_data['complete_with_errors'] = true;
+
+					// Send some error message to the log.
+					$message = esc_html__( 'There was an error while trying to add the user as a FluentCRM contact.', 'uncanny-automator' );
+
+					Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
+
+					return;
+
+				}
+			}
 
 			if ( $subscriber ) {
 
-				$existing_tags    = $subscriber->tags;
+				$existing_tags = $subscriber->tags;
+
 				$existing_tag_ids = array();
+
 				foreach ( $existing_tags as $tag ) {
-					if ( in_array( $tag->id, $tags ) ) {
+					if ( in_array( $tag->id, $tags, true ) ) {
 						$existing_tag_ids[] = $tag->title;
 					}
 				}
 
 				$subscriber->attachTags( $tags );
+
 				if ( empty( $existing_tag_ids ) ) {
+
 					Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 					return;
+
 				} else {
 
 					if ( count( $existing_tag_ids ) === count( $tags ) ) {
+
 						// ALL tags were already assigned
 						$action_data['do-nothing']           = true;
 						$action_data['complete_with_errors'] = true;
@@ -112,21 +144,9 @@ class FCRM_TAG_TO_USER {
 
 					return;
 				}
-			} else {
-				// User is not a contact
-				$action_data['do-nothing']           = true;
-				$action_data['complete_with_errors'] = true;
-				$message                             = sprintf(
-				/* translators: 1. The user email */
-					_x( 'User is not a contact: %1$s', 'FluentCRM', 'uncanny-automator' ),
-					$user_info->user_email
-				);
-
-				Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
-
-				return;
 			}
 		} else {
+
 			// User does not exist
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
@@ -141,4 +161,5 @@ class FCRM_TAG_TO_USER {
 			return;
 		}
 	}
+
 }

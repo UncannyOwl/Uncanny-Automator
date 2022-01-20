@@ -91,8 +91,8 @@ trait Action_Helpers_Email {
 		$from_email = sanitize_email( $data['from'] );
 		$from_name  = sanitize_text_field( $data['from_name'] );
 		$to_email   = $data['to']; // The sanitize_email is added to Automator Email Helpers sent method.
-		$cc_email   = $data['cc'];
-		$bcc_email  = $data['bcc'];
+		$cc_email   = ! empty( $data['cc'] ) ? $data['cc'] : '';
+		$bcc_email  = ! empty( $data['bcc'] ) ? $data['bcc'] : '';
 		$reply_to   = sanitize_email( $data['reply_to'] );
 		$content    = sanitize_text_field( $data['content'] );
 		$charset    = sanitize_text_field( $data['charset'] );
@@ -299,7 +299,8 @@ trait Action_Helpers_Email {
 	/**
 	 * maybe_santize_email
 	 *
-	 * @param  mixed $emails
+	 * @param mixed $emails
+	 *
 	 * @return void
 	 */
 	public function santize_emails( $emails ) {

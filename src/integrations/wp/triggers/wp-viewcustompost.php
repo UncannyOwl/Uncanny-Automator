@@ -59,15 +59,6 @@ class WP_VIEWCUSTOMPOST {
 			'validation_function' => array( $this, 'view_post' ),
 			'options'             => array(
 				Automator()->helpers->recipe->options->number_of_times(),
-				Automator()->helpers->recipe->wp->options->all_wp_post_types(
-					null,
-					$this->trigger_meta,
-					array(
-						'relevant_tokens' => array(
-							'POSTEXCERPT' => __( 'Post excerpt', 'uncanny-automator' ),
-						)
-					)
-				),
 			),
 			'options_group'       => array(
 				$this->trigger_meta => array(
@@ -82,7 +73,14 @@ class WP_VIEWCUSTOMPOST {
 						)
 					),
 					/* translators: Noun */
-					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Post', 'uncanny-automator' ) ),
+					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Post', 'uncanny-automator' ), array(), null, false, '', array(
+						$this->trigger_meta              => esc_attr__( 'Post title', 'uncanny-automator' ),
+						$this->trigger_meta . '_ID'      => esc_attr__( 'Post ID', 'uncanny-automator' ),
+						$this->trigger_meta . '_URL'     => esc_attr__( 'Post URL', 'uncanny-automator' ),
+						$this->trigger_meta . '_EXCERPT' => __( 'Post excerpt', 'uncanny-automator' ),
+						'POSTIMAGEURL'                   => __( 'Post featured image URL', 'uncanny-automator' ),
+						'POSTIMAGEID'                    => __( 'Post featured image ID', 'uncanny-automator' ),
+					) ),
 				),
 			),
 		);
@@ -131,8 +129,18 @@ class WP_VIEWCUSTOMPOST {
 						);
 
 						// Post excerpt
-						$trigger_meta['meta_key']   = 'WPPOSTEXCERPT';
+						$trigger_meta['meta_key']   = $this->trigger_meta . '_EXCERPT';
 						$trigger_meta['meta_value'] = maybe_serialize( $post->post_excerpt );
+						Automator()->insert_trigger_meta( $trigger_meta );
+
+						// Post Featured Image URL
+						$trigger_meta['meta_key']   = 'POSTIMAGEURL';
+						$trigger_meta['meta_value'] = maybe_serialize( get_the_post_thumbnail_url( $post->ID, 'full' ) );
+						Automator()->insert_trigger_meta( $trigger_meta );
+
+						// Post Featured Image ID
+						$trigger_meta['meta_key']   = 'POSTIMAGEID';
+						$trigger_meta['meta_value'] = maybe_serialize( get_post_thumbnail_id( $post->ID ) );
 						Automator()->insert_trigger_meta( $trigger_meta );
 
 						Automator()->maybe_trigger_complete( $result['args'] );

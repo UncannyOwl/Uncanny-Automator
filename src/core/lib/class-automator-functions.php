@@ -172,6 +172,11 @@ class Automator_Functions {
 	public $cache;
 
 	/**
+	 * @var Automator_Send_Webhook
+	 */
+	public $send_webhook;
+
+	/**
 	 * Initializes all development helper classes and variables via class composition
 	 */
 	public function __construct() {
@@ -250,6 +255,10 @@ class Automator_Functions {
 		// Load System report
 		require_once __DIR__ . '/utilities/class-automator-system-report.php';
 		$this->system_report = Automator_System_Report::get_instance();
+
+		// Load Webhook files
+		require_once __DIR__ . '/webhooks/class-automator-send-webhook.php';
+		$this->send_webhook = Automator_Send_Webhook::get_instance();
 	}
 
 	/**
@@ -962,8 +971,8 @@ WHERE pm.post_id
 
 			$item_not_found = $this->child_item_not_found_handle( $type, $code );
 			if ( $item_not_found ) {
-				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_status = 'draft' WHERE ID = %d", absint( $child['ID'] ) ) );
-				$child['post_status'] = 'draft';
+				//$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_status = 'draft' WHERE ID = %d", absint( $child['ID'] ) ) );
+				//$child['post_status'] = 'draft';
 			}
 
 			// The trigger is create/stored automatically but may not have been saved. Delete if not saved!

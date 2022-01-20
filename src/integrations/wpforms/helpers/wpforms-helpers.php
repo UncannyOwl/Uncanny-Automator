@@ -97,7 +97,6 @@ class Wpforms_Helpers {
 			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Form URL', 'uncanny-automator' ),
 			),
 		);
 
