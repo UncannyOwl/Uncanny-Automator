@@ -70,14 +70,11 @@ class Wp_Helpers {
 			echo wp_json_encode( $fields );
 			die();
 		}
-//		if ( empty( automator_filter_input( 'value', INPUT_POST ) ) ) {
-//			echo wp_json_encode( $fields );
-//			die();
-//		}
 		$post_type = automator_filter_input( 'value', INPUT_POST );
 
 		$args = array(
-			'posts_per_page'   => 999,
+			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page'   => apply_filters( 'automator_select_custom_post_limit', 999, $post_type ),
 			'orderby'          => 'title',
 			'order'            => 'ASC',
 			'post_type'        => $post_type,
@@ -126,7 +123,8 @@ class Wp_Helpers {
 		}
 
 		$args = array(
-			'posts_per_page' => 999,
+			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => apply_filters( 'automator_select_all_posts_limit', 999, 'post' ),
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'post',
@@ -172,7 +170,8 @@ class Wp_Helpers {
 		}
 
 		$args = array(
-			'posts_per_page' => 999,
+			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => apply_filters( 'automator_select_all_pages_limit', 999, 'page' ),
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'page',
@@ -400,14 +399,12 @@ class Wp_Helpers {
 			echo wp_json_encode( $fields );
 			die();
 		}
-//		if ( empty( automator_filter_input( 'value', INPUT_POST ) ) ) {
-//			echo wp_json_encode( $fields );
-//			die();
-//		}
+
 		$post_type = automator_filter_input( 'value', INPUT_POST );
 
 		$args       = array(
-			'posts_per_page'   => 999,
+			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page'   => apply_filters( 'automator_select_posts_by_post_type_limit', 999, $post_type ),
 			'orderby'          => 'title',
 			'order'            => 'ASC',
 			'post_type'        => $post_type,

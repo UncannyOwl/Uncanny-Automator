@@ -103,6 +103,11 @@ trait Trigger_Setup {
 	/**
 	 * @var
 	 */
+	protected $options_callback;
+
+	/**
+	 * @var
+	 */
 	protected $trigger_tokens = array();
 	/**
 	 * @var
@@ -225,6 +230,20 @@ trait Trigger_Setup {
 	 */
 	public function set_options( $options ) {
 		$this->options = $options;
+	}
+
+	/**
+	 * @param mixed $callback
+	 */
+	public function set_options_callback( $callback ) {
+		$this->options_callback = $callback;
+	}
+
+	/**
+	 * @param mixed $options
+	 */
+	public function get_options_callback() {
+		return $this->options_callback;
 	}
 
 	/**
@@ -429,6 +448,10 @@ trait Trigger_Setup {
 
 		if ( ! empty( $this->get_options_group() ) ) {
 			$trigger['options_group'] = $this->get_options_group();
+		}
+
+		if ( ! empty( $this->get_options_callback() ) ) {
+			$trigger['options_callback'] = $this->get_options_callback();
 		}
 
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );

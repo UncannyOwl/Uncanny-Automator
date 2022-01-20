@@ -75,9 +75,9 @@ class Wp_Fluent_Forms_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( function_exists( 'wpFluent' ) ) {
 				$forms = wpFluent()->table( 'fluentform_forms' )
-								   ->select( array( 'id', 'title' ) )
-								   ->orderBy( 'id', 'DESC' )
-								   ->get();
+				                   ->select( array( 'id', 'title' ) )
+				                   ->orderBy( 'id', 'DESC' )
+				                   ->get();
 
 				if ( ! empty( $forms ) ) {
 					foreach ( $forms as $form ) {
@@ -98,6 +98,10 @@ class Wp_Fluent_Forms_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
+			),
 		);
 
 		return apply_filters( 'uap_option_list_wp_fluent_forms', $option );

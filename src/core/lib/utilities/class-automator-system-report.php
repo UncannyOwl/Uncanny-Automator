@@ -395,8 +395,10 @@ class Automator_System_Report {
 		$active_plugins_data = array();
 
 		foreach ( $active_plugins as $plugin ) {
-			$data                  = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
-			$active_plugins_data[] = $this->format_plugin_data( $plugin, $data );
+			if( file_exists( WP_PLUGIN_DIR . '/' . $plugin ) ){
+				$data                  = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
+				$active_plugins_data[] = $this->format_plugin_data( $plugin, $data );
+			}
 		}
 
 		return $active_plugins_data;

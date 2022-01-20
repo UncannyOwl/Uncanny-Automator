@@ -154,6 +154,9 @@ class Nf_Tokens {
 				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
 					$value = $entry[ $to_match ];
 				}
+				if ( is_array( $value ) ) {
+					$value = join( ', ', $value );
+				}
 			}
 		}
 

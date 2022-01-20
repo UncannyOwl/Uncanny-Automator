@@ -43,6 +43,7 @@ class Automator_Get_Data {
 		$item_code = null;
 
 		$recipes_data = Automator()->get_recipes_data( true );
+
 		if ( empty( $recipes_data ) ) {
 			return null;
 		}
@@ -1032,7 +1033,14 @@ class Automator_Get_Data {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$recipe_id = $recipe['ID'];
 				if ( array_key_exists( $trigger_meta, $trigger['meta'] ) ) {
-					$metas[ $recipe_id ][ $trigger['ID'] ] = $trigger['meta'][ $trigger_meta ];
+					$value = $trigger['meta'][ $trigger_meta ];
+
+					// If the meta is a custom value
+					if ( 'automator_custom_value' === $value ) {
+						$value = $trigger['meta'][ $trigger_meta . '_custom' ];
+					}
+					
+					$metas[ $recipe_id ][ $trigger['ID'] ] = $value;
 				}
 			}
 		}

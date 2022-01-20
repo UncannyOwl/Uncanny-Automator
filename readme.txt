@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
-Tested up to: 5.8.2
+Tested up to: 5.8.3
 Requires PHP: 5.6
-Stable tag: 3.5.2
+Stable tag: 3.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -54,7 +54,9 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Groundhogg](https://automatorplugin.com/integration/groundhogg/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [HappyForms](https://automatorplugin.com/integration/happyforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [HubSpot](https://automatorplugin.com/integration/hubspot/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [IFTTT](https://automatorplugin.com/integration/ifttt?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Instagram](https://automatorplugin.com/integration/instagram?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Integrately](https://automatorplugin.com/integration/integrately/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Integromat](https://automatorplugin.com/integration/integromat/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnDash](https://automatorplugin.com/integration/learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnPress](https://automatorplugin.com/integration/learnpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -70,6 +72,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Tin Canny Reporting for LearnDash](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -181,6 +184,66 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.6 [2022-01-20] =
+
+**New Integrations:**
+
+* [IFTTT](https://automatorplugin.com/integration/ifttt?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1293
+* [Integrately](https://automatorplugin.com/integration/integrately/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1291
+* [Tin Canny Reporting for LearnDash](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1274
+
+**New Triggers:**
+
+* ActiveCampaign - A tag is added to a contact #1107, #963
+* ActiveCampaign - A tag is removed from a contact #1108, #963
+* Tin Canny Reporting - A user attains a score greater than, less than, etc. on a Tin Canny module #438
+
+**New Actions:**
+
+* Google Sheets - Update a row in a Google sheet #1083
+* IFTTT - Send data to IFTTT webhook #1293 
+* Integrately - Send data to Integrately webhook #1291 
+
+**Added:**
+
+* ActiveCampaign - Support for custom fields in "Add a contact/the user to ActiveCampaign" #1209
+* Automator Core - Send data to a webhook - Support for JSON formatted and nested data #195
+* Fluent Forms - Form title and Form ID tokens added #804
+* Formidable Forms - Form title and Form ID tokens added #827
+* Forminator - Form title and Form ID tokens added #1065
+* Gravity Forms - Form title and Form ID tokens added #1066
+* WPForms - Form title and Form ID tokens added #1386
+* WooCommerce - Order summary token #1395
+* WordPress Core - A user views a custom post type - Post ID, Title, URL, Image and Excerpt tokens added #800
+* Recipe UI - New `apply_filters` added to change the `posts_per_page` parameter when fetching posts #1337
+* Advanced Tokens - User meta now returns a comma separated list of values if the meta value is an array #1392
+
+**Updated:**
+
+* Divi - Now lists forms in Draft and Private posts #1362
+* Elementor - Now lists forms in Draft and Private posts #1362
+* Facebook - Renamed to Facebook Pages #1377
+* FluentCRM - Actions now add the user as a contact if they do not already exist #1320
+* FluentCRM - "A user is set to a specific status - Sentence updated for consistency #798
+* LearnDash - Create a group - Changed "Do nothing" to "Do not add the Group Leader role" for clarity #1378
+* Tin Canny Reporting - Moved from LearnDash to Tin Canny Reporting integration #1274
+* wpForo - "A user creates a new topic in a forum" - Sentence updated for consistency #799
+* Support links for Facebook, Instagram, Slack, Google Sheets, Zoom etc. #856
+* Actions are no longer automatically set to draft when the corresponding plugin is deactivated and the recipe's triggers are completed #1361
+
+**Fixed:**
+
+* WordPress - "Send an Email" no longer adds an empty BCC recipient on some sites #1373
+* Tools > System Report no longer triggers an error on some multisite installs #1366
+* Error when removing an action from a recipe when Uncanny Automator Pro is not active #1357
+* Pasting a URL into a URL field no longer takes 100% of the browser's resources #1315
+* Google Sheets - Unnecessary API call on recipe UI load #1310
+* Contact Form 7 - Tokens for checkbox values now render reliably #1297
+* Ultimate Member - Tokens for multiple value fields now render reliably #1294
+* Ninja Forms - Tokens for multiple value fields now render reliably #1285
+* BuddyBoss - A user replies to a topic in a forum - Forum field is now formatted correctly #802
+* Style of links on the Dashboard page #1346
 
 = 3.5.2 [2022-01-05] =
 

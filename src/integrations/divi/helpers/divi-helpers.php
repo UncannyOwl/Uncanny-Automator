@@ -155,7 +155,7 @@ class Divi_Helpers {
 	 */
 	public static function extract_forms() {
 		global $wpdb;
-		$form_posts = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_content`, `post_title` FROM $wpdb->posts WHERE post_status = %s AND post_type = %s AND post_content LIKE %s", 'publish', 'page', '%%et_pb_contact_form%%' ) );
+		$form_posts = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_content`, `post_title` FROM $wpdb->posts WHERE post_status NOT IN('trash', 'inherit', 'auto-draft') AND post_type IS NOT NULL AND post_type NOT LIKE %s AND post_content LIKE %s", 'revision', '%%et_pb_contact_form%%' ) );
 
 		$data = array();
 		if ( empty( $form_posts ) ) {

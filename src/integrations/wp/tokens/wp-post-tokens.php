@@ -124,6 +124,7 @@ class Wp_Post_Tokens {
 			'POSTAUTHOREMAIL',
 			'POSTCONTENT',
 			'POSTEXCERPT',
+			'WPCUSTOMPOST_EXCERPT',
 			'POSTURL',
 			'POSTID',
 			'POSTTITLE',

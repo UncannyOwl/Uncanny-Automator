@@ -72,6 +72,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 													foreach ( $field_settings->custom_atts as $attr => $val ) {
 														$attributes .= " $attr=\"$val\"";
 													}
+												} else {
+													$attributes .= $field_settings->custom_atts;
 												}
 											}
 											?>
@@ -82,7 +84,26 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 													   name="<?php echo esc_attr( $field_id ) ?>"
 													   type="<?php echo esc_attr( $field_settings->type ) ?>"
 													   class="uo-admin-input <?php echo esc_attr( $field_settings->css_classes ); ?>"
-													   value="<?php echo wp_kses_post( get_option( $field_id, '' ) ); ?>"
+
+													   <?php 
+													   	
+													   $value = '';
+													   $default = '';
+													   if ( isset( $field_settings->default ) && ! empty( $field_settings->default ) ) {
+														   $default = $field_settings->default;
+													   }
+
+														if ( 'checkbox' === $field_settings->type ) {
+															$on_off_value = get_option( $field_id, $default );
+															
+															if ( 'on' === $on_off_value ) {
+																$value = 'checked';
+															}
+														} else {
+															$value = 'value="' . get_option( $field_id, $default ) . '"';
+														}
+
+													   echo wp_kses_post( $value ); ?> 
 													   placeholder="<?php echo esc_attr( $field_settings->placeholder ) ?>"
 													<?php echo wp_kses_post( $attributes ); ?>
 													   <?php if ( $field_settings->required ){ ?>required="required"<?php } ?>>

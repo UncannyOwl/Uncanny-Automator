@@ -1021,6 +1021,10 @@ class Automator_Translations {
 			// UncannyAutomator.i18n.trueLabel
 			'falseLabel'          => esc_attr__( 'False', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.falseLabel
+			'yes'                 => esc_attr__( 'Yes', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.yes
+			'no'                  => esc_attr__( 'No', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.no
 			'loadingMoreResults'  => esc_attr__( 'Loading more results...', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.loadingMoreResults
 			/* translators: 1. Post ID */

@@ -48,6 +48,7 @@ class INSTAGRAM_PUBLISH_PHOTO {
 		$this->set_action_code( 'INSTAGRAM_PUBLISH_PHOTO' );
 		$this->set_action_meta( 'INSTAGRAM_PUBLISH_PHOTO_ACCOUNT_ID' );
 		$this->set_is_pro( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/instagram/' ) );
 		$this->set_requires_user( false );
 
 		/* translators: Action - WordPress */

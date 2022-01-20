@@ -207,6 +207,9 @@ class Automator_Input_Parser {
 									$user_meta   = get_user_meta( $user_id, $pieces[1], true );
 									$replaceable = $user_meta;
 								}
+								if ( is_array( $replaceable ) ) {
+									$replaceable = join( ', ', $replaceable );
+								}
 								break;
 							default:
 								$replace_args = array(
@@ -534,7 +537,7 @@ class Automator_Input_Parser {
 			$meta_key = $pieces[2];
 			$return   = get_post_meta( $post_id, $meta_key, true );
 			if ( is_array( $return ) ) {
-				$return = join( ',', $return );
+				$return = join( ', ', $return );
 			}
 		}
 

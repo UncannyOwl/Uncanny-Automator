@@ -9,6 +9,7 @@ use Uncanny_Automator_Pro\Formidable_Pro_Helpers;
 
 /**
  * Class Formidable_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Formidable_Helpers {
@@ -52,7 +53,7 @@ class Formidable_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -111,6 +112,10 @@ class Formidable_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code          => __( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'  => __( 'Form ID', 'uncanny-automator' ),
+			),
 		];
 
 		return apply_filters( 'uap_option_all_formidable_forms', $option );

@@ -54,9 +54,9 @@ class Wpff_Tokens {
 		if ( true === $fluent_active && ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 
 			$form = wpFluent()->table( 'fluentform_forms' )->where( 'id', '=', $form_id )
-			->select( array( 'id', 'title', 'form_fields' ) )
-			->orderBy( 'id', 'DESC' )
-			->get();
+			                  ->select( array( 'id', 'title', 'form_fields' ) )
+			                  ->orderBy( 'id', 'DESC' )
+			                  ->get();
 
 			if ( $form ) {
 				$form               = array_pop( $form );
@@ -108,8 +108,9 @@ class Wpff_Tokens {
 												if ( false === $field['settings']['visible'] ) {
 													continue;
 												}
-
-												$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
+												if ( isset( $field['attributes']['name'] ) ) {
+													$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
+												}
 											}
 										} else {
 
@@ -127,8 +128,10 @@ class Wpff_Tokens {
 												continue;
 											}
 
-											// Single field in column
-											$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta );
+											if ( isset( $field['attributes']['name'] ) ) {
+												// Single field in column
+												$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta );
+											}
 										}
 									}
 								}
@@ -151,13 +154,15 @@ class Wpff_Tokens {
 											}
 										}
 										$fields_tokens[] = array(
-											'tokenId'   => $token_id,
-											'tokenName' => $input_title,
-											'tokenType' => $type,
+											'tokenId'         => $token_id,
+											'tokenName'       => $input_title,
+											'tokenType'       => $type,
 											'tokenIdentifier' => $trigger_meta,
 										);
 									} else {
-										$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
+										if ( isset( $field['attributes']['name'] ) ) {
+											$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta, $field_group_name );
+										}
 									}
 								}
 							}
@@ -175,7 +180,10 @@ class Wpff_Tokens {
 
 							$field = $raw_field;
 
-							$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta );
+							if ( isset( $field['attributes']['name'] ) ) {
+								$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta );
+							}
+
 						}
 					}
 				}
@@ -200,7 +208,7 @@ class Wpff_Tokens {
 	public function create_token( $form_id, $field, $trigger_meta, $field_group_name = '' ) {
 
 		$field_label = '';
-		if ( isset( $field['settings']['label'] ) ) {
+		if ( isset( $field['settings']['label'] ) && ! empty( $field['settings']['label'] ) ) {
 			$field_label = $field['settings']['label'];
 		} elseif ( isset( $field['settings']['admin_field_label'] ) ) {
 			$field_label = $field['settings']['admin_field_label'];

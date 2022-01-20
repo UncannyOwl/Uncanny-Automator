@@ -64,9 +64,9 @@ class FCRM_USER_STATUS_UPDATED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Fluent Forms */
-			'sentence'            => sprintf( esc_html__( 'A user is set to a {{specific status:%1$s}}', 'uncanny-automator' ), $this->trigger_code ),
+			'sentence'            => sprintf( esc_html__( 'A user is set to a {{specific:%1$s}} status', 'uncanny-automator' ), $this->trigger_code ),
 			/* translators: Logged-in trigger - Fluent Forms */
-			'select_option_name'  => esc_html__( 'A user is set to a {{specific status}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user is set to a {{specific}} status', 'uncanny-automator' ),
 			'action'              => 'automator_fluentcrm_status_update',
 			'priority'            => 200,
 			'accepted_args'       => 2,
@@ -176,6 +176,16 @@ class FCRM_USER_STATUS_UPDATED {
 					foreach ( $args as $result ) {
 
 						if ( true === $result['result'] && $result['args']['trigger_id'] && $result['args']['get_trigger_id'] ) {
+
+							$insert = array(
+								'user_id'        => $subscriber->user_id,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+								'meta_key'       => $this->trigger_meta,
+								'meta_value'     => maybe_serialize( $subscriber->email ),
+							);
+							Automator()->insert_trigger_meta( $insert );
 
 							Automator()->maybe_trigger_complete( $result['args'] );
 

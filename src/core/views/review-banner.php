@@ -22,7 +22,7 @@
 						<?php
 
 						/* translators: Non-personal infinitive verb */
-						echo esc_html_x( 'Add my 5-star review', 'Reviews banner', 'uncanny-automator' );
+						echo esc_html_x( 'Add my review', 'Reviews banner', 'uncanny-automator' );
 
 						?>
 					</a>

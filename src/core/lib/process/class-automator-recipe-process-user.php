@@ -876,7 +876,7 @@ class Automator_Recipe_Process_User {
 			$where_format[] = '%d';
 		}
 
-		return Automator()->db->trigger->update(
+		return Automator()->db->trigger->update_meta(
 			$update,
 			$where,
 			$update_format,

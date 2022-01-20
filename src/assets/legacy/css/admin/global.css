@@ -22,7 +22,7 @@
 }
 
 .uap a {
-	color: var(--uap-color-primary);
+	color: var(--uap-color-blue);
 
 	font-weight: 500;
 	text-decoration: none;
@@ -196,21 +196,21 @@
 }
 
 .uap .uap-review-banner__action--primary {
-	border-color: var(--uap-color-primary);
-	color: var(--uap-color-primary);
+	border-color: var(--uap-color-blue);
+	color: var(--uap-color-blue);
 }
 
 .uap .uap-review-banner__action--primary:hover {
-	background: var(--uap-color-primary);
-	border-color: var(--uap-color-primary);
+	background: var(--uap-color-blue);
+	border-color: var(--uap-color-blue);
 }
 
 .uap .uap-review-banner__action--primary.uap-review-banner__action--loading,
 .uap .uap-review-banner__action--primary.uap-review-banner__action--loading:hover,
 .uap .uap-review-banner__action--primary.uap-review-banner__action--loading:active,
 .uap .uap-review-banner__action--primary.uap-review-banner__action--loading:focus {
-	background: var(--uap-color-primary);
-	border-color: var(--uap-color-primary);
+	background: var(--uap-color-blue);
+	border-color: var(--uap-color-blue);
 }
 
 .uap .uap-review-banner__action--anchor {

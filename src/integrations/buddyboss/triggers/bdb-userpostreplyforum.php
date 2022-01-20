@@ -60,7 +60,7 @@ class BDB_USERPOSTREPLYFORUM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - bbPress */
-			'sentence'            => sprintf( __( 'A user replies to {{a topic:%1$s}} in {{a forum:%2$s}}', 'uncanny-automator' ), $this->trigger_meta, 'BDBFORUMS' ),
+			'sentence'            => sprintf( __( 'A user replies to {{a topic:%1$s}} in {{a forum:%2$s}}', 'uncanny-automator' ), $this->trigger_meta, 'BDBFORUMS:' . $this->trigger_meta ),
 			/* translators: Logged-in trigger - bbPress */
 			'select_option_name'  => __( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
 			'action'              => 'bbp_new_reply',

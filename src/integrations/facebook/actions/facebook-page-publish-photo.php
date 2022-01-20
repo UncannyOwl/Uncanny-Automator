@@ -46,6 +46,7 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 		$this->set_action_code( 'FACEBOOK_PAGE_PUBLISH_PHOTO' );
 		$this->set_action_meta( 'FACEBOOK_PAGE_PUBLISH_PHOTO_META' );
 		$this->set_is_pro( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/facebook/' ) );
 		$this->set_requires_user( false );
 
 		/* translators: Action - WordPress */
