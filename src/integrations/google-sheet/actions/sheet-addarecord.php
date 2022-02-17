@@ -87,14 +87,14 @@ class SHEET_ADDARECORD {
 						'required'          => true,
 						'fields'            => array(
 							array(
-								'option_code' => 'COLUMN_NAME',
+								'option_code' => 'GS_COLUMN_NAME',
 								'label'       => __( 'Column', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
 								'read_only'   => true,
 								'options'     => array(),
 							),
-							Automator()->helpers->recipe->field->text_field( 'COLUMN_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+							Automator()->helpers->recipe->field->text_field( 'GS_COLUMN_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
 						),
 						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
 						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
@@ -271,7 +271,7 @@ class SHEET_ADDARECORD {
 								jQuery.each(rows, function (index, row) {
 									// Add row
 									worksheetFields.addRow({
-										COLUMN_NAME: row.key
+										GS_COLUMN_NAME: row.key
 									}, false);
 								});
 
@@ -357,8 +357,8 @@ class SHEET_ADDARECORD {
 		}
 
 		for ( $i = 0; $i < count( $fields ); $i ++ ) {
-			$key                = $fields[ $i ]['COLUMN_NAME'];
-			$value              = Automator()->parse->text( $fields[ $i ]['COLUMN_VALUE'], $recipe_id, $user_id, $args );
+			$key                = $fields[ $i ]['GS_COLUMN_NAME'];
+			$value              = Automator()->parse->text( $fields[ $i ]['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
 			$key_values[ $key ] = $value;
 			if ( ! empty( $value ) ) {
 				$check_all_empty = false;

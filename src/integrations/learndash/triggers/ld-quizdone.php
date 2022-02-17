@@ -42,10 +42,10 @@ class LD_QUIZDONE {
 			'sentence'            => sprintf( esc_attr__( 'A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
 			'select_option_name'  => esc_attr__( 'A user attempts (passes or fails) {{a quiz}}', 'uncanny-automator' ),
-			'action'              => 'learndash_quiz_completed',
+			'action'              => 'learndash_quiz_submitted',
 			'priority'            => 15,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'learndash_quiz_completed' ),
+			'validation_function' => array( $this, 'learndash_quiz_submitted' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => array(
 				Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
@@ -63,7 +63,7 @@ class LD_QUIZDONE {
 	 *
 	 * @param $data
 	 */
-	public function learndash_quiz_completed( $data, $current_user ) {
+	public function learndash_quiz_submitted( $data, $current_user ) {
 
 		if ( empty( $data ) ) {
 			return;

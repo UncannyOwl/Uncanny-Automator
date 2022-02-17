@@ -41,10 +41,10 @@ class LD_QUIZPERCENT {
 			'sentence'            => sprintf( esc_attr__( 'A user achieves a percentage {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', 'QUIZPERCENT', $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
 			'select_option_name'  => esc_attr__( 'A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on {{a quiz}}', 'uncanny-automator' ),
-			'action'              => 'learndash_quiz_completed',
+			'action'              => 'learndash_quiz_submitted',
 			'priority'            => 15,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'learndash_quiz_completed' ),
+			'validation_function' => array( $this, 'learndash_quiz_submitted' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => array(
 				Automator()->helpers->recipe->field->less_or_greater_than(),
@@ -70,7 +70,7 @@ class LD_QUIZPERCENT {
 	 * @param $data
 	 * @param $current_user
 	 */
-	public function learndash_quiz_completed( $data, $current_user ) {
+	public function learndash_quiz_submitted( $data, $current_user ) {
 		if ( empty( $data ) ) {
 			return;
 		}

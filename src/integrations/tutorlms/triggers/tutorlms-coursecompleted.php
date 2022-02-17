@@ -2,8 +2,8 @@
 /**
  * Contains Course Completion Trigger.
  *
- * @version 2.4.0
  * @since 2.4.0
+ * @version 2.4.0
  */
 
 namespace Uncanny_Automator;
@@ -79,6 +79,19 @@ class TUTORLMS_COURSECOMPLETED {
 
 		// global post object.
 		global $post;
+
+		// Is valid post?
+		if ( ! is_object( $post ) ) {
+			if ( isset( $_POST['course_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$course_id = (int) $_POST['course_id']; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$post      = get_post( $course_id ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			}
+		}
+
+		// Is valid post?
+		if ( ! is_object( $post ) ) {
+			return;
+		}
 
 		// Is this the registered lesson post type
 		if ( tutor()->course_post_type !== $post->post_type ) {

@@ -1,0 +1,196 @@
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+
+namespace Uncanny_Automator;
+
+/**
+ * Class Ameliabooking_Helpers
+ *
+ * @package Uncanny_Automator
+ */
+class Ameliabooking_Helpers {
+
+
+	/**
+	 * The options.
+	 *
+	 * @var mixed The options.
+	 */
+	public $options;
+
+	/**
+	 * The settings tab.
+	 *
+	 * @var string The settings tab.
+	 */
+	public $setting_tab;
+
+	/**
+	 * The trigger options.
+	 *
+	 * @var mixed The trigger options.
+	 */
+	public $load_options;
+
+
+	public function __construct() {
+
+		global $wpdb;
+
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		add_action( 'wp_ajax_ameliabooking_service_category_endpoint', array( $this, 'ameliabooking_service_category_endpoint' ) );
+
+	}
+
+	/**
+	 * Set the options.
+	 *
+	 * @param Ameliabooking_Helpers $options
+	 */
+	public function setOptions( Ameliabooking_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		$this->options = $options;
+	}
+
+	public function get_option_fields( $trigger_code = '', $trigger_meta = '' ) {
+		return array(
+			$trigger_meta => array(
+				array(
+					'input_type'      => 'select',
+					'option_code'     => $trigger_code . '_SERVICES',
+					'required'        => true,
+					'label'           => esc_html__( 'Category', 'uncanny-automator' ),
+					'options'         => $this->get_services_categories(),
+					'is_ajax'         => true,
+					'endpoint'        => 'ameliabooking_service_category_endpoint',
+					'fill_values_in'  => $trigger_meta,
+					'relevant_tokens' => array(),
+				),
+				array(
+					'input_type'      => 'select',
+					'option_code'     => $trigger_meta,
+					'required'        => true,
+					'label'           => esc_html__( 'Service', 'uncanny-automator' ),
+					'relevant_tokens' => array(),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Callback method to wp_ajax_ameliabooking_service_category_endpoint.
+	 *
+	 * @return void
+	 */
+	public function ameliabooking_service_category_endpoint() {
+
+		Automator()->utilities->ajax_auth_check();
+
+		$category_id = absint( automator_filter_input( 'value', INPUT_POST ) );
+
+		$items = array(
+			array(
+				'text'  => esc_html__( 'Any service', 'uncanny-automator' ),
+				'value' => '-1',
+			),
+		);
+
+		$services = $this->get_services_by_category( $category_id );
+
+		if ( ! empty( $services ) ) {
+			foreach ( $services as $service ) {
+				$items[] = array(
+					'text'  => $service->name,
+					'value' => $service->id,
+				);
+			}
+		}
+
+		wp_send_json( $items );
+
+	}
+
+	/**
+	 * Get amelia services categories.
+	 *
+	 * @return array The amelia services categories.
+	 */
+	public function get_services_categories() {
+
+		global $wpdb;
+
+		$items = array();
+
+		$categories = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, name FROM {$wpdb->prefix}amelia_categories WHERE status = %s ORDER BY name ASC LIMIT 100",
+				'visible'
+			),
+			OBJECT
+		);
+
+		if ( ! empty( $categories ) ) {
+			foreach ( $categories as $category ) {
+				$items[ $category->id ] = $category->name;
+			}
+		}
+
+		return $items;
+
+	}
+
+	/**
+	 * Get all amelia services by category.
+	 *
+	 * @return array The wpdb query result.
+	 */
+	public function get_services_by_category( $category_id = 0 ) {
+
+		global $wpdb;
+
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, name FROM {$wpdb->prefix}amelia_services 
+				WHERE categoryId = %d AND status = %s 
+				ORDER BY name ASC LIMIT 100",
+				$category_id,
+				'visible'
+			),
+			OBJECT
+		);
+	}
+
+	/**
+	 * Get all amelia services.
+	 *
+	 * @return array The amelia services returned by wpdb get_results.
+	 */
+	public function get_services_all() {
+
+		global $wpdb;
+
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, name FROM {$wpdb->prefix}amelia_services WHERE status = %s ORDER BY name ASC LIMIT 100",
+				'visible'
+			),
+			OBJECT
+		);
+
+	}
+
+	/**
+	 * Validate trigger.
+	 *
+	 * @return boolean False if args is empty. Otherwise, True.
+	 */
+	public function validate_trigger( $args = array() ) {
+
+		// Bailout if args is empty.
+		if ( empty( $args ) || empty( array_shift( $args[0] ) ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+}

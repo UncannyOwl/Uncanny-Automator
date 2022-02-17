@@ -120,7 +120,7 @@ class SHEET_UPDATERECORD {
 						'required'          => true,
 						'fields'            => array(
 							array(
-								'option_code' => 'COLUMN_NAME',
+								'option_code' => 'GS_COLUMN_NAME',
 								'label'       => __( 'Column', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
@@ -135,7 +135,7 @@ class SHEET_UPDATERECORD {
 								'is_toggle'   => true,
 							),
 
-							Automator()->helpers->recipe->field->text_field( 'COLUMN_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+							Automator()->helpers->recipe->field->text_field( 'GS_COLUMN_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
 						),
 						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
 						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
@@ -181,10 +181,10 @@ class SHEET_UPDATERECORD {
 			table-layout: auto;
 		}
 
-		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-heading-cell[data-id="COLUMN_NAME"],
-		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-rows-cell[data-id="COLUMN_NAME"],
-		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-heading-cell[data-id="COLUMN_VALUE"],
-		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-rows-cell[data-id="COLUMN_VALUE"] {
+		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-heading-cell[data-id="GS_COLUMN_NAME"],
+		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-rows-cell[data-id="GS_COLUMN_NAME"],
+		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-heading-cell[data-id="GS_COLUMN_VALUE"],
+		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-rows-cell[data-id="GS_COLUMN_VALUE"] {
 			width: 50%;
 		}
 
@@ -219,7 +219,7 @@ class SHEET_UPDATERECORD {
 			border-bottom-left-radius: var(--uap-border-radius);
 		}
 
-		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-rows tr:last-child td[data-id="COLUMN_VALUE"] {
+		.uap-item[data-id="{{item_id}}"] .form-repeater-fields[data-id="WORKSHEET_FIELDS"] .form-repeater-fields__table-rows tr:last-child td[data-id="GS_COLUMN_VALUE"] {
 			border-bottom-right-radius: var(--uap-border-radius);
 		}
 
@@ -250,7 +250,7 @@ class SHEET_UPDATERECORD {
 				const $row = $checkbox.closest( 'tr' );
 
 				// Get the value field in the row
-				const $field = $row.querySelector( 'td[data-id="COLUMN_VALUE"] .form-element' );
+				const $field = $row.querySelector( 'td[data-id="GS_COLUMN_VALUE"] .form-element' );
 
 				// Set the visibility dynamically
 				if ( shouldUpdate ) {
@@ -459,8 +459,8 @@ class SHEET_UPDATERECORD {
 								jQuery.each(rows, function (index, row) {
 									// Add row
 									worksheetFields.addRow({
-										COLUMN_NAME: row.key,
-										COLUMN_VALUE: ''
+										GS_COLUMN_NAME: row.key,
+										GS_COLUMN_VALUE: ''
 									}, false );
 								});
 
@@ -560,8 +560,8 @@ class SHEET_UPDATERECORD {
 		$fields_count = count( $fields );
 
 		for ( $i = 0; $i < $fields_count; $i ++ ) {
-			$key                = $fields[ $i ]['COLUMN_NAME'];
-			$value              = Automator()->parse->text( $fields[ $i ]['COLUMN_VALUE'], $recipe_id, $user_id, $args );
+			$key                = $fields[ $i ]['GS_COLUMN_NAME'];
+			$value              = Automator()->parse->text( $fields[ $i ]['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
 			$key_values[ $key ] = $value;
 			if ( ! empty( $value ) ) {
 				$check_all_empty = false;
@@ -658,7 +658,7 @@ class SHEET_UPDATERECORD {
 				$cell_value = null; // Pass null to avoid overwriting the cell value.
 
 				if ( true === $field['COLUMN_UPDATE'] ) {
-					$cell_value = Automator()->parse->text( $field['COLUMN_VALUE'], $recipe_id, $user_id, $args );
+					$cell_value = Automator()->parse->text( $field['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
 				}
 
 				// Add the value to our request body.

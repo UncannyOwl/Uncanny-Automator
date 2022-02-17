@@ -127,6 +127,14 @@ class WP_CREATEPOST {
 					Automator()->helpers->recipe->field->text_field( 'WPCPOSTTITLE', esc_attr__( 'Title', 'uncanny-automator' ), true, 'text', '', true ),
 					Automator()->helpers->recipe->field->text_field( 'WPCPOSTSLUG', esc_attr__( 'Slug', 'uncanny-automator' ), true, 'text', '', false ),
 					Automator()->helpers->recipe->field->text_field( 'WPCPOSTCONTENT', esc_attr__( 'Content', 'uncanny-automator' ), true, 'textarea', '', false ),
+					array(
+						'option_code' => 'WPCPOSTEXCERPT',
+						/* translators: Post Excerpt field */
+						'label'       => esc_attr__( 'Excerpt', 'uncanny-automator' ),
+						'placeholder' => '',
+						'input_type'  => 'textarea',
+						'required'    => false,
+					),
 					// The photo url field.
 					array(
 						'option_code' => 'FEATURED_IMAGE_URL',
@@ -184,6 +192,7 @@ class WP_CREATEPOST {
 		$post_title   = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
 		$post_slug    = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
 		$post_content = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+		$post_excerpt = Automator()->parse->text( $action_data['meta']['WPCPOSTEXCERPT'], $recipe_id, $user_id, $args );
 		$post_fimage  = Automator()->parse->text( $action_data['meta']['FEATURED_IMAGE_URL'], $recipe_id, $user_id, $args );
 		$post_fimage  = filter_var( $post_fimage, FILTER_SANITIZE_URL );
 		$post_author  = Automator()->parse->text( $action_data['meta']['WPCPOSTAUTHOR'], $recipe_id, $user_id, $args );
@@ -194,6 +203,7 @@ class WP_CREATEPOST {
 		$post_args['post_title']   = sanitize_text_field( $post_title );
 		$post_args['post_name']    = sanitize_title( $post_slug );
 		$post_args['post_content'] = $post_content;
+		$post_args['post_excerpt'] = $post_excerpt;
 		$post_args['post_type']    = $post_type;
 		$post_args['post_status']  = $post_status;
 		$post_args['post_author']  = 0;

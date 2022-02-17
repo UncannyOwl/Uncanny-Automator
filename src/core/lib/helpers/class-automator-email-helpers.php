@@ -132,7 +132,7 @@ class Automator_Email_Helpers {
 			$attachments = array();
 		}
 
-		if ( ! empty( $error->get_messages() ) ) {
+		if ( ! empty( $error->get_messages( 'wp_mail_to' ) ) ) {
 			return $error;
 		}
 

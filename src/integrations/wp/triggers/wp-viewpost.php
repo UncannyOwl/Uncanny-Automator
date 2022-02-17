@@ -67,7 +67,7 @@ class WP_VIEWPOST {
 		if ( ! is_singular( $post->post_type ) && ! is_post_type_viewable( $post->post_type ) ) {
 			return;
 		}
-		
+
 		$user_id   = get_current_user_id();
 		$pass_args = array(
 			'code'    => $this->trigger_code,
@@ -96,7 +96,7 @@ class WP_VIEWPOST {
 					Automator()->insert_trigger_meta( $trigger_meta );
 
 					$trigger_meta['meta_key']   = 'WPPOST_URL';
-					$trigger_meta['meta_value'] = maybe_serialize( get_post_permalink( $post->ID ) );
+					$trigger_meta['meta_value'] = maybe_serialize( get_permalink( $post->ID ) );
 					Automator()->insert_trigger_meta( $trigger_meta );
 
 					Automator()->maybe_trigger_complete( $result['args'] );

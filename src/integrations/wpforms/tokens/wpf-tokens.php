@@ -58,12 +58,12 @@ class Wpf_Tokens {
 			'float',
 			'int',
 			'text',
+			'file-upload',
 		);
 		$disallowed_field_types = apply_filters(
 			'automator_wpforms_disallowed_fields',
 			array(
 				'pagebreak',
-				'file-upload',
 				'password',
 				'divider',
 				'entry-preview',

@@ -139,17 +139,23 @@ class Api_Server {
 
 		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
+		if ( ! is_array( $response_body ) ) {
+			automator_log( var_export( $response_body, true ), 'Invalid API response: ' );
+			throw new \Exception( 'Invalid API response' );
+		}
+
+		if ( isset( $response_body['error'] ) && isset( $response_body['error']['description'] ) ) {
+			$error = $response_body['error']['description'];
+			automator_log( $error, 'api_call returned an error: ' );
+			throw new \Exception( $error, $response_body['statusCode'] );
+		}
+
 		if ( 200 === $response_body['statusCode'] && isset( $response_body['data'] ) ) {
 			return $response_body['data'];
-		} else {
+		} 
 
-			if ( isset( $response_body['error'] ) && isset( $response_body['error']['description'] ) ) {
-				$error = $response_body['error']['description'];
-				automator_log( $error, 'api_call returned an error: ' );
-			}
-
-			return false;
-		}
+		automator_log( var_export( $response_body, true ), 'api_call returned an error: ' );
+		throw new \Exception( var_export( $response_body, true ) );
 	}
 	
 	/**

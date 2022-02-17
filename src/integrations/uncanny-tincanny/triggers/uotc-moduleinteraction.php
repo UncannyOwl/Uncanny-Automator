@@ -70,9 +70,11 @@ class UOTC_MODULEINTERACTION {
 				),
 				Automator()->helpers->recipe->field->select(
 					array(
-						'option_code' => 'TCVERB',
-						'label'       => esc_attr_x( 'Verb', 'Tin Can verb', 'uncanny-automator' ),
-						'options'     => array(
+						'option_code'           => 'TCVERB',
+						'supports_custom_value' => true,
+						'label'                 => esc_attr_x( 'Verb', 'Tin Can verb', 'uncanny-automator' ),
+						'options'               => array(
+							'-1'          => 'Any',
 							'completed'   => 'Completed',
 							'passed'      => 'Passed',
 							'failed'      => 'Failed',
@@ -122,7 +124,7 @@ class UOTC_MODULEINTERACTION {
 
 				$trigger_id = $trigger['ID'];
 
-				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === (int) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && $verbs[ $recipe_id ][ $trigger_id ] === $verb ) {
+				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === (int) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && ( strtolower( $verbs[ $recipe_id ][ $trigger_id ] ) === strtolower( $verb ) || '-1' == $verbs[ $recipe_id ][ $trigger_id ] ) ) {
 
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,

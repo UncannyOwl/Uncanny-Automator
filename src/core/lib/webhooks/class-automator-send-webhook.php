@@ -326,10 +326,10 @@ class Automator_Send_Webhook {
 	 */
 	public function get_url( $data, $legacy = false, $parsed_args = array() ) {
 		if ( $legacy ) {
-			return isset( $data['WEBHOOKURL'] ) ? $this->maybe_parse_tokens( esc_url_raw( $data['WEBHOOKURL'] ), $parsed_args ) : '';
+			return esc_url_raw( isset( $data['WEBHOOKURL'] ) ? $this->maybe_parse_tokens( $data['WEBHOOKURL'], $parsed_args ) : '' );
 		}
 
-		return isset( $data['WEBHOOK_URL'] ) ? $this->maybe_parse_tokens( esc_url_raw( $data['WEBHOOK_URL'] ), $parsed_args ) : '';
+		return esc_url_raw( isset( $data['WEBHOOK_URL'] ) ? $this->maybe_parse_tokens( $data['WEBHOOK_URL'], $parsed_args ) : '' );
 	}
 
 	/**

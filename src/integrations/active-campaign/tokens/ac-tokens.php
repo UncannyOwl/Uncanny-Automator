@@ -91,9 +91,6 @@ class AC_TOKENS {
 
 		$trigger_code = $args['entry_args']['code'];
 
-		// TODO: Remove debugging output
-		error_log( '$args: ' . var_export( $args, true ) ); 
-
 		if ( 'CONTACT_TAG_ADDED' === $trigger_code || 'CONTACT_TAG_REMOVED' === $trigger_code ) {
 			$ac_event = array_shift( $args['trigger_args'] );
 

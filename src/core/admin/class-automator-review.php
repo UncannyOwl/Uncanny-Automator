@@ -384,7 +384,7 @@ class Automator_Review {
 	 */
 	public function get_recipes_using_credits() {
 		global $wpdb;
-		$integration_codes = array( 'GOOGLESHEET', 'SLACK', 'MAILCHIMP', 'TWITTER', 'FACEBOOK', 'INSTAGRAM', 'HUBSPOT', 'ACTIVE_CAMPAIGN' );
+		$integration_codes = array( 'GOOGLESHEET', 'SLACK', 'MAILCHIMP', 'TWITTER', 'FACEBOOK', 'INSTAGRAM', 'HUBSPOT', 'ACTIVE_CAMPAIGN', 'TWILIO' );
 
 		$where_meta = array();
 		foreach ( $integration_codes as $code ) {

@@ -201,11 +201,11 @@ class Automator_Translations {
 				'actionWontRun' => esc_html__( "This action won't run", 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.actionWontRun
 
-				'actionsWontRun' => esc_html__( "These actions won't run", 'uncanny-automator' ),
+				'actionsWontRun'        => esc_html__( "These actions won't run", 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.actionsWontRun
 
 				/* translators: 1. Trademarked term. */
-				'actionWontRunContent' => esc_html__( 'Conditions/Filters are a feature of %1$s. Please re-activate Uncanny Automator Pro to enable this action.', 'uncanny-automator' ),
+				'actionWontRunContent'  => esc_html__( 'Conditions/Filters are a feature of %1$s. Please re-activate Uncanny Automator Pro to enable this action.', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.actionWontRunContent
 
 				/* translators: 1. Trademarked term. */
@@ -237,7 +237,7 @@ class Automator_Translations {
 						'otherOptions'     => esc_attr__( 'Other options', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.validation.field.select.otherOptions
 						/* translators: Non-personal infinitive verb */
-						'customValue'      => esc_attr__( 'Use a custom value', 'uncanny-automator' ),
+						'customValue'      => esc_attr__( 'Use a token/custom value', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.validation.field.select.customValue
 						'customValueToken' => esc_attr__( '%s (custom value)', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.validation.field.select.customValueToken
@@ -386,7 +386,7 @@ class Automator_Translations {
 					'userDisplay'         => esc_attr_x( 'User display name', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userDisplay
 					/* translators: Token name */
-					'userResetPassLink'   => esc_attr_x( 'User reset password URL', 'Token', 'uncanny-automator' ),
+					'userResetPassLink'   => esc_attr_x( 'User reset password link', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userDisplay
 					/* translators: Token name */
 					'adminEmail'          => esc_attr_x( 'Admin email', 'Token', 'uncanny-automator' ),
@@ -697,7 +697,7 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.userSelector.newUser.displayName
 					'password'                         => esc_attr__( 'Password', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.newUser.password
-					'passwordDescription'              => sprintf( esc_attr__( 'If left empty, the user will need to reset their password to log in. Send an email containing the %1$s token to simplify the process.', 'uncanny-automator' ), '<em>' . esc_attr__( 'User reset password URL', 'uncanny-automator' ) . '</em>' ),
+					'passwordDescription'              => sprintf( esc_attr__( 'If left empty, the user will need to reset their password to log in. Send an email containing the %1$s token to simplify the process.', 'uncanny-automator' ), '<em>' . esc_attr__( 'User reset password link', 'uncanny-automator' ) . '</em>' ),
 					// UncannyAutomator.i18n.userSelector.newUser.passwordDescription
 					/* translators: WordPress roles */
 					'roles'                            => esc_attr__( 'Roles', 'uncanny-automator' ),

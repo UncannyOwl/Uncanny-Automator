@@ -486,6 +486,10 @@ class Usage_Reports {
 	 */
 	public function count_integration( $meta, $type ) {
 
+		if ( empty( $meta['integration'] ) || empty( $meta['integration_name'] ) || empty( $meta['code'] ) ) {
+			return;
+		}
+
 		$integration_code = $meta['integration'];
 		$integration_name = $meta['integration_name'];
 		$item_code        = $meta['code'];

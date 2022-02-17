@@ -158,7 +158,7 @@ class ANON_WP_VIEWPOSTTYPE {
 							Automator()->insert_trigger_meta( $trigger_meta );
 
 							$trigger_meta['meta_key']   = 'WPPOST_URL';
-							$trigger_meta['meta_value'] = maybe_serialize( get_post_permalink( $post->ID ) );
+							$trigger_meta['meta_value'] = maybe_serialize( get_permalink( $post->ID ) );
 							Automator()->insert_trigger_meta( $trigger_meta );
 
 							// Post Featured Image URL

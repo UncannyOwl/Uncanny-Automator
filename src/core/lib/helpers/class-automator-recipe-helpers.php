@@ -214,6 +214,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $modern_events_calendar;
 	/**
+	 * @var Ameliabooking_Helpers;
+	 */
+	public $ameliabooking;
+	/**
 	 * @var Slack_Helpers
 	 */
 	public $slack;
@@ -249,6 +253,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Zoom_Webinar_Helpers;
 	 */
 	public $zoom_webinar;
+	/**
+	 * @var Twilio_Helpers;
+	 */
+	public $twilio;
 	/**
 	 * @var Automator_Helpers_Recipe
 	 */

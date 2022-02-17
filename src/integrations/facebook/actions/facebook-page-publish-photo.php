@@ -50,10 +50,10 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 		$this->set_requires_user( false );
 
 		/* translators: Action - WordPress */
-		$this->set_sentence( sprintf( esc_attr__( 'Share a photo to {{a Facebook page:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_attr__( 'Publish a post with an image to {{a Facebook page:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
 
 		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Share a photo to {{a Facebook page}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'Publish a post with an image to {{a Facebook page}}', 'uncanny-automator' ) );
 
 		$options_group = array(
 			$this->get_action_meta() => array(
@@ -97,6 +97,8 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 
 
 	/**
+	 * Process the action.
+	 *
 	 * @param $user_id
 	 * @param $action_data
 	 * @param $recipe_id
@@ -140,15 +142,35 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 
 			$response = json_decode( wp_remote_retrieve_body( $request ) );
 
-			if ( 200 !== $response->statusCode ) {
+			if ( 200 !== $response->statusCode ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 				$action_data['complete_with_errors'] = true;
 				// Log error if there are any error messages.
 				Automator()->complete->action( $user_id, $action_data, $recipe_id, $response->error->description );
 
 			} else {
+
+				// Check if there are any error message.
+
+				if ( isset( $response->data->error ) ) {
+
+					$action_data['complete_with_errors'] = true;
+					$error_message                       = esc_html__( "Unexpected error occured while posting to Facebook. If you're using tokens check if token values are empty or not.", 'uncanny-automator' );
+
+					if ( isset( $response->data->error->message ) ) {
+						$error_message = $response->data->error->message;
+					}
+
+					// Log error if there are any error messages.
+					Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+
+					return;
+
+				}
+
 				// Otherwise, complete the action.
 				Automator()->complete->action( $user_id, $action_data, $recipe_id );
+
 			}
 		} else {
 

@@ -88,6 +88,10 @@ class Google_Sheet_Helpers {
 	 * Googlesheet_Pro_Helpers constructor.
 	 */
 	public function __construct() {
+
+		// Migrate Google Sheets.
+		$this->maybe_migrate_googlesheets();
+
 		// Selectively load options
 		if ( method_exists( '\Uncanny_Automator\Automator_Helpers_Recipe', 'maybe_load_trigger_options' ) ) {
 			global $uncanny_automator;
@@ -489,7 +493,8 @@ class Google_Sheet_Helpers {
 			<div class="uo-google-user-info">
 				<?php if ( ! empty( $user['avatar_uri'] ) ) : ?>
 					<div class="uo-google-user-info__avatar">
-						<img width="32" src="<?php echo esc_url( $user['avatar_uri'] ); ?>" alt="<?php echo esc_attr( $user['name'] ); ?>"/>
+						<img width="32" src="<?php echo esc_url( $user['avatar_uri'] ); ?>"
+							 alt="<?php echo esc_attr( $user['name'] ); ?>"/>
 					</div>
 				<?php endif; ?>
 
@@ -540,7 +545,8 @@ class Google_Sheet_Helpers {
 			?>
 			<div class="uo-settings-content-form">
 
-				<a href="<?php echo esc_url_raw( $auth_url ); ?>" class="uo-settings-btn uo-settings-btn--primary <?php echo esc_attr( $button_class ); ?>">
+				<a href="<?php echo esc_url_raw( $auth_url ); ?>"
+				   class="uo-settings-btn uo-settings-btn--primary <?php echo esc_attr( $button_class ); ?>">
 					<?php echo esc_html( $button_text ); ?>
 				</a>
 
@@ -1111,7 +1117,7 @@ class Google_Sheet_Helpers {
 					},
 					// i18n
 					i18n: {
-						checkingHooks: "<?php printf( esc_html__( "We're checking for columns. We'll keep trying for %s seconds.", 'uncanny-automator' ), '{{time}}' ); ?>",
+						checkingHooks: "<?php /* translators: Non-personal infinitive verb */ printf( esc_html__( "We're checking for columns. We'll keep trying for %s seconds.", 'uncanny-automator' ), '{{time}}' ); ?>",
 						noResultsTrouble: "<?php esc_html_e( 'We had trouble finding columns.', 'uncanny-automator' ); ?>",
 						noResultsSupport: "<?php esc_html_e( 'See more details or get help', 'uncanny-automator' ); ?>",
 						samplesModalTitle: "<?php esc_html_e( "Here is the data we've collected", 'uncanny-automator' ); ?>",
@@ -1231,7 +1237,7 @@ class Google_Sheet_Helpers {
 								jQuery.each(rows, function (index, row) {
 									// Add row
 									worksheetFields.addRow({
-										COLUMN_NAME: row.key
+										GS_COLUMN_NAME: row.key
 									}, false);
 								});
 
@@ -1293,6 +1299,8 @@ class Google_Sheet_Helpers {
 	}
 
 	/**
+	 * Get all connected Google Sheet columns.
+	 *
 	 * @param $label
 	 * @param $option_code
 	 * @param $args
@@ -1348,6 +1356,7 @@ class Google_Sheet_Helpers {
 		for ( $r = ''; $n >= 0; $n = intval( $n / 26 ) - 1 ) {
 			$r = chr( $n % 26 + 0x41 ) . $r;
 		}
+
 		return $r;
 	}
 
@@ -1389,6 +1398,91 @@ class Google_Sheet_Helpers {
 		echo wp_json_encode( $fields );
 
 		die();
+
+	}
+
+	/**
+	 * Changes the COLUMN_NAME and COLUMN_VALUE to GS_COLUMN_NAME and GS_COLUMN_VALUE in the postmeta.
+	 *
+	 * @return void
+	 */
+	public function maybe_migrate_googlesheets() {
+
+		if ( 'yes' === get_option( 'uncanny_automator_google_sheets_migrated' ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		// Fetch all postmeta records where key is equal to "WORKSHEET_FIELDS".
+		// Only fetch meta_value that contains COLUMN_NAME and not GS_COLUMN_NAME.
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT post_id, meta_key, meta_value
+				FROM $wpdb->postmeta
+				WHERE meta_key = %s
+				AND meta_value LIKE %s
+				AND meta_value LIKE %s
+				AND meta_value NOT LIKE %s
+				AND meta_value NOT LIKE %s
+				",
+				'WORKSHEET_FIELDS',
+				'%%COLUMN_NAME%%',
+				'%%COLUMN_VALUE%%',
+				'%%GS_COLUMN_NAME%%',
+				'%%GS_COLUMN_VALUE%%'
+			),
+			OBJECT
+		);
+
+		if ( ! empty( $results ) ) {
+
+			// Get the old meta value.
+			foreach ( $results as $result ) {
+
+				// Initiate the new meta value as empty array.
+				$meta_value_new = array();
+
+				// Get the post id.
+				$post_id = $result->post_id;
+
+				// Decode the old meta value to make it array.
+				$meta_values = json_decode( $result->meta_value );
+
+				if ( ! empty( $meta_values ) ) {
+					// Iterate through each old value and construct new array with new keys.
+					foreach ( $meta_values as $meta_value ) {
+
+						$new_meta = array(
+							// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+							'GS_COLUMN_NAME'  => $meta_value->COLUMN_NAME,
+							// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+							'GS_COLUMN_VALUE' => $meta_value->COLUMN_VALUE,
+						);
+
+						// Add other meta keys and values if exists except for COLUMN_NAME and COLUMN_VALUE.
+						if ( isset( $meta_value->COLUMN_UPDATE ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+							$new_meta['COLUMN_UPDATE'] = $meta_value->COLUMN_UPDATE; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+						}
+
+						$meta_value_new[] = $new_meta;
+
+					}
+
+					// Don't escape unicode characters.
+					$new_meta_value = wp_json_encode( $meta_value_new, JSON_UNESCAPED_UNICODE );
+
+					// Update the post meta with the new array containing the new keys.
+					// Only update if $new_meta_value is not empty.
+					if ( ! empty( $new_meta_value ) ) {
+						update_post_meta( $post_id, 'WORKSHEET_FIELDS', $new_meta_value );
+					}
+				}
+			}
+		}
+
+		// Update the option 'uncanny_automator_google_sheets_migrated'.
+		update_option( 'uncanny_automator_google_sheets_migrated', 'yes', false );
 
 	}
 }

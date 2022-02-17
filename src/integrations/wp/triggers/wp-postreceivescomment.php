@@ -33,11 +33,11 @@ class WP_POSTRECEIVESCOMMENT {
 	public function __construct() {
 		$this->trigger_code = 'WPCOMMENTRECEIVED';
 		$this->trigger_meta = 'USERSPOSTCOMMENT';
-		if ( is_admin() ) {
-			add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 99 );
-		} else {
-			$this->define_trigger();
-		}
+//		if ( is_admin() ) {
+//			add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 99 );
+//		} else {
+		$this->define_trigger();
+//		}
 	}
 
 	/**
@@ -177,7 +177,7 @@ class WP_POSTRECEIVESCOMMENT {
 								Automator()->insert_trigger_meta( $trigger_meta );
 
 								$trigger_meta['meta_key']   = 'POSTURL';
-								$trigger_meta['meta_value'] = maybe_serialize( get_post_permalink( (int) $commentdata['comment_post_ID'] ) );
+								$trigger_meta['meta_value'] = maybe_serialize( get_permalink( (int) $commentdata['comment_post_ID'] ) );
 								Automator()->insert_trigger_meta( $trigger_meta );
 
 								$trigger_meta['meta_key']   = 'POSTAUTHORDN';

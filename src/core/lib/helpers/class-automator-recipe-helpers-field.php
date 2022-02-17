@@ -163,7 +163,9 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'required'    => true,
 			'tokens'      => true,
 			'default'     => null,
+			'supports_tinymce' => null
 		);
+
 		$args        = wp_parse_args( $args, $defaults );
 		$option_code = $args['option_code'];
 		$label       = $args['label'];
@@ -173,6 +175,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$type        = $args['input_type'];
 		$default     = $args['default'];
 		$required    = $args['required'];
+		$supports_tinymce    = $args['supports_tinymce'];
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -183,9 +186,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'supports_tokens' => $tokens,
 			'required'        => $required,
 			'default_value'   => $default,
+			'supports_tinymce'=> $supports_tinymce
 		);
 
-		if ( 'textarea' === $type ) {
+		// Enable TinyMCE by default for all textarea fields unless other specified
+		if ( is_null( $option['supports_tinymce'] ) && 'textarea' === $type ) {
 			$option['supports_tinymce'] = true;
 		}
 

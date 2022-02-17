@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use TEC\Tickets\Commerce\Module;
+use TEC\Tickets\Commerce\Order;
 use WP_Post;
 
 /**
@@ -75,16 +77,35 @@ class EC_REGISTER {
 
 		$event    = tribe_events_get_ticket_event( $product_id );
 		$event_id = ( $event instanceof WP_Post ) ? $event->ID : false;
+		$user_id  = get_current_user_id();
 
-		$user_id = get_current_user_id();
-
-		$args = array(
+		$pass_args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => $event_id,
 			'user_id' => $user_id,
 		);
 
-		Automator()->maybe_add_trigger_entry( $args );
+		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+
+		if ( $args ) {
+			foreach ( $args as $result ) {
+				if ( true === $result['result'] ) {
+
+					$trigger_meta = array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					);
+
+					$trigger_meta['meta_key']   = 'ec_order_id';
+					$trigger_meta['meta_value'] = $order_id;
+					Automator()->insert_trigger_meta( $trigger_meta );
+
+					Automator()->maybe_trigger_complete( $result['args'] );
+				}
+			}
+		}
 	}
 }

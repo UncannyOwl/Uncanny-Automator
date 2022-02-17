@@ -123,12 +123,12 @@ class Automator_DB_Handler_Triggers {
 
 			return null;
 		}
-
-		if ( null === $meta_value ) {
-			Automator()->error->add_error( 'insert_trigger_meta', 'ERROR: You are trying to insert trigger meta without providing a meta_value', $this );
-
-			return null;
-		}
+//      // Disabling this check to avoid unnecessary recipe issues
+//		if ( null === $meta_value ) {
+//			Automator()->error->add_error( 'insert_trigger_meta', 'ERROR: You are trying to insert trigger meta without providing a meta_value', $this );
+//
+//			return null;
+//		}
 
 		if ( 'sentence_human_readable' === $meta_key ) {
 			if ( ! empty( $this->get_sentence( $user_id, $trigger_log_id, $run_number, $meta_key ) ) ) {
