@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.7\n"
+"Project-Id-Version: Uncanny Automator 3.7.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-02-17T16:34:56+00:00\n"
+"POT-Creation-Date: 2022-02-18T02:56:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: uncanny-automator\n"
@@ -4511,7 +4511,7 @@ msgid "Webhook Actions"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:443
-#: src/integrations/twilio/helpers/twilio-helpers.php:203
+#: src/integrations/twilio/helpers/twilio-helpers.php:204
 msgid "Twilio"
 msgstr ""
 
@@ -8959,41 +8959,41 @@ msgstr ""
 msgid "Send an SMS message to {{a number:%1$s}}"
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:85
+#: src/integrations/twilio/helpers/twilio-helpers.php:86
 msgid "Twilio credentails are missing or expired."
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:94
+#: src/integrations/twilio/helpers/twilio-helpers.php:95
 msgid "Twilio number is missing."
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:103
+#: src/integrations/twilio/helpers/twilio-helpers.php:104
 msgid "To number is not valid."
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:204
+#: src/integrations/twilio/helpers/twilio-helpers.php:205
 msgid "Twilio API settings"
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:208
+#: src/integrations/twilio/helpers/twilio-helpers.php:209
 msgid "To view API credentials visit %1$s. It's really easy, we promise! Visit %2$s for simple instructions."
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:219
+#: src/integrations/twilio/helpers/twilio-helpers.php:220
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:432
 #: src/integrations/zoom/helpers/zoom-helpers.php:423
 msgid "Save API details"
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:222
+#: src/integrations/twilio/helpers/twilio-helpers.php:223
 msgid "Account SID:"
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:231
+#: src/integrations/twilio/helpers/twilio-helpers.php:232
 msgid "Auth token:"
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-helpers.php:240
+#: src/integrations/twilio/helpers/twilio-helpers.php:241
 msgid "Twilio number:"
 msgstr ""
 

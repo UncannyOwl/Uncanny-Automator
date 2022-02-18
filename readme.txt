@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9
 Requires PHP: 5.6
-Stable tag: 3.7
+Stable tag: 3.7.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -187,6 +187,11 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.7.0.1 [2022-02-17] =
+
+**Fixed:**
+* Twilio - Conflict related to moving integration out of Pro
 
 = 3.7 [2022-02-17] =
 

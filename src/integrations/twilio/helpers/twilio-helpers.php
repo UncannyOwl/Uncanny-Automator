@@ -3,6 +3,7 @@
 namespace Uncanny_Automator;
 
 use Uncanny_Automator\Api_Server;
+use Uncanny_Automator_Pro\Twilio_Pro_Helpers;
 
 /**
  * Class Twilio_Helpers
@@ -16,7 +17,7 @@ class Twilio_Helpers {
 	public $options;
 
 	/**
-	 * @var Twilio_Helpers
+	 * @var Twilio_Pro_Helpers
 	 */
 	public $pro;
 
@@ -61,7 +62,7 @@ class Twilio_Helpers {
 	/**
 	 * @param Twilio_Helpers $pro
 	 */
-	public function setPro( Twilio_Helpers $pro ) {
+	public function setPro( Twilio_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
@@ -107,7 +108,7 @@ class Twilio_Helpers {
 		$request['action'] = 'send_sms';
 		$request['account_sid'] = $client['account_sid'];
 		$request['auth_token'] = $client['auth_token'];
-		
+
 
 		$request['from'] = $from;
 		$request['to'] = $to;
@@ -203,15 +204,15 @@ class Twilio_Helpers {
 			'name'           => __( 'Twilio', 'uncanny-automator' ),
 			'title'          => __( 'Twilio API settings', 'uncanny-automator' ),
 			'description'    => sprintf(
-				'<p>%1$s</p>',
-				sprintf(
-					__( "To view API credentials visit %1\$s. It's really easy, we promise! Visit %2\$s for simple instructions.", 'uncanny-automator' ),
+									'<p>%1$s</p>',
+									sprintf(
+										__( "To view API credentials visit %1\$s. It's really easy, we promise! Visit %2\$s for simple instructions.", 'uncanny-automator' ),
 
-					'<a href="' . automator_utm_parameters( 'https://www.twilio.com/console/', 'settings', 'twilio-credentials' ) . '" target="_blank">https://www.twilio.com/console/</a>',
+										'<a href="' . automator_utm_parameters( 'https://www.twilio.com/console/', 'settings', 'twilio-credentials' ) . '" target="_blank">https://www.twilio.com/console/</a>',
 
-					'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twilio/', 'settings', 'twilio-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/twilio/</a>'
-				)
-			) . $this->get_user_info(),
+										'<a href="' . automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twilio/', 'settings', 'twilio-kb_article' ) . '" target="_blank">https://automatorplugin.com/knowledge-base/twilio/</a>'
+									)
+								) . $this->get_user_info(),
 			'is_pro'         => false,
 			'settings_field' => 'uap_automator_twilio_api_settings',
 			'wp_nonce_field' => 'uap_automator_twilio_api_nonce',
@@ -373,7 +374,7 @@ class Twilio_Helpers {
 
 		// Return the transient if its available.
 		$accounts_saved = get_transient( '_automator_twilio_account_info' );
-		
+
 		if ( false !== $accounts_saved ) {
 			return $accounts_saved;
 		}
@@ -381,7 +382,7 @@ class Twilio_Helpers {
 		$body['action'] = 'account_info';
 		$body['account_sid'] = $client['account_sid'];
 		$body['auth_token'] = $client['auth_token'];
-		
+
 		try {
 			$twillio_account = Api_Server::api_call( 'v2/twilio', $body );
 		} catch ( \Exception $th ) {
@@ -391,12 +392,12 @@ class Twilio_Helpers {
 		if ( empty( $twillio_account ) ) {
 			return array();
 		}
-		
+
 		// Update the transient.
 		set_transient( '_automator_twilio_account_info', $twillio_account, DAY_IN_SECONDS );
 
 		return $twillio_account;
-		
+
 	}
 
 	/**
