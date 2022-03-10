@@ -82,7 +82,7 @@ class MEC_USER_BOOKING_COMPLETED {
 			'code'                => $this->trigger_code,
 			'is_pro'              => false,
 			'sentence'            => sprintf(
-				/* translators: The Event or `Any Event` */
+			/* translators: The Event or `Any Event` */
 				esc_attr__( "A user's booking of {{an event:%1\$s}} is completed", 'uncanny-automator' ),
 				$this->trigger_code
 			),
@@ -142,7 +142,7 @@ class MEC_USER_BOOKING_COMPLETED {
 			}
 		}
 
-			// Run each trigger for each registered users.
+		// Run each trigger for each registered users.
 		foreach ( $attendees as $key => $attendee ) {
 
 			$user = get_user_by( 'email', $attendee['email'] );
@@ -160,6 +160,7 @@ class MEC_USER_BOOKING_COMPLETED {
 							'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 							'trigger_to_match' => $matched_recipe_id['trigger_id'],
 							'ignore_post_id'   => true,
+							'is_signed_in'     => true,
 						);
 
 						$args = Automator()->maybe_add_trigger_entry( $args, false );

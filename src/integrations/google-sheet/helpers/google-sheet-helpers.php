@@ -75,7 +75,7 @@ class Google_Sheet_Helpers {
 	 *
 	 * @var string
 	 */
-	private $client_scope;
+	public $client_scope;
 
 	/**
 	 * The hash string.
@@ -89,18 +89,15 @@ class Google_Sheet_Helpers {
 	 */
 	public function __construct() {
 
-		// Migrate Google Sheets.
-		$this->maybe_migrate_googlesheets();
-
-		// Selectively load options
+		// Selectively load options.
 		if ( method_exists( '\Uncanny_Automator\Automator_Helpers_Recipe', 'maybe_load_trigger_options' ) ) {
-			global $uncanny_automator;
-			$this->load_options = $uncanny_automator->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+			$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 		} else {
 			$this->load_options = true;
 		}
 
-		$this->setting_tab   = 'googlesheets_api';
+		$this->setting_tab = 'premium-integrations';
+
 		$this->automator_api = AUTOMATOR_API_URL . 'v2/google';
 
 		$this->client_scope = implode(
@@ -113,27 +110,18 @@ class Google_Sheet_Helpers {
 			)
 		);
 
-		add_filter( 'uap_settings_tabs', array( $this, 'add_google_api_settings' ), 15 );
 		add_action( 'init', array( $this, 'validate_oauth_tokens' ), 100, 3 );
-		add_filter( 'automator_after_settings_extra_content', array( $this, 'google_sheet_connect_html' ), 10, 3 );
 		add_action( 'wp_ajax_select_gsspreadsheet_from_gsdrive', array( $this, 'select_gsspreadsheet_from_gsdrive' ) );
-		add_action(
-			'wp_ajax_select_gsworksheet_from_gsspreadsheet',
-			array(
-				$this,
-				'select_gsworksheet_from_gsspreadsheet',
-			)
-		);
-		add_action(
-			'wp_ajax_select_gsworksheet_from_gsspreadsheet_columns',
-			array(
-				$this,
-				'select_gsworksheet_from_gsspreadsheet_columns',
-			)
-		);
+		add_action( 'wp_ajax_select_gsworksheet_from_gsspreadsheet', array( $this, 'select_gsworksheet_from_gsspreadsheet' ) );
+		add_action( 'wp_ajax_select_gsworksheet_from_gsspreadsheet_columns', array( $this, 'select_gsworksheet_from_gsspreadsheet_columns' ) );
 		add_action( 'wp_ajax_get_worksheet_ROWS_GOOGLESHEETS', array( $this, 'get_worksheet_rows_gsspreadsheet' ) );
-
 		add_action( 'wp_ajax_uo_google_disconnect_user', array( $this, 'disconnect_user' ) );
+
+		// Load the settings page.
+		require_once __DIR__ . '/../settings/settings-google-sheet.php';
+
+		new Google_Sheet_Settings( $this );
+
 	}
 
 	/**
@@ -164,12 +152,14 @@ class Google_Sheet_Helpers {
 	 * @return array|mixed|void
 	 */
 	public function get_google_drives( $label = null, $option_code = 'GSDRIVE', $args = array() ) {
+
+		global $uncanny_automator;
+
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
 			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
 		}
-		global $uncanny_automator;
 
 		if ( ! $label ) {
 			$label = __( 'Drive', 'uncanny-automator' );
@@ -225,10 +215,13 @@ class Google_Sheet_Helpers {
 	 * @return mixed
 	 */
 	public function get_google_spreadsheets( $label = null, $option_code = 'GSSPREADSHEET', $args = array() ) {
+
+		global $uncanny_automator;
+
 		if ( ! $this->load_options ) {
-			global $uncanny_automator;
 
 			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
+
 		}
 
 		if ( ! $label ) {
@@ -248,8 +241,6 @@ class Google_Sheet_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
-
-		global $uncanny_automator;
 
 		$option = array(
 			'option_code'              => $option_code,
@@ -274,6 +265,7 @@ class Google_Sheet_Helpers {
 	 * @return void
 	 */
 	public function select_gsspreadsheet_from_gsdrive() {
+
 		global $uncanny_automator;
 
 		// Nonce and post object validation
@@ -282,20 +274,29 @@ class Google_Sheet_Helpers {
 		$fields = array();
 
 		if ( ! automator_filter_has_var( 'values', INPUT_POST ) ) {
+
 			echo wp_json_encode( $fields );
+
 			die();
+
 		}
 
 		$values = automator_filter_input_array( 'values', INPUT_POST );
+
 		if ( ! isset( $values['GSDRIVE'] ) ) {
+
 			echo wp_json_encode( $fields );
+
 			die();
+
 		}
+
 		$gs_drive_id = sanitize_text_field( $values['GSDRIVE'] );
 
 		$fields = $this->api_get_spreadsheets_from_drive( $gs_drive_id );
 
 		echo wp_json_encode( $fields );
+
 		die();
 	}
 
@@ -435,179 +436,14 @@ class Google_Sheet_Helpers {
 	}
 
 	/**
-	 * The settings tab.
-	 *
-	 * @param $tabs
-	 *
-	 * @return mixed
-	 */
-	public function add_google_api_settings( $tabs ) {
-
-		if ( $this->display_settings_tab() ) {
-
-			$is_uncannyowl_google_sheet_settings_expired = get_option( '_uncannyowl_google_sheet_settings_expired', false );
-
-			$tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
-
-			$tabs[ $this->setting_tab ] = array(
-				'name'           => __( 'Google', 'uncanny-automator' ),
-				'title'          => __( 'Google account settings', 'uncanny-automator' ),
-				'description'    => $this->get_google_api_settings_description(),
-				'is_pro'         => false,
-				'is_expired'     => $is_uncannyowl_google_sheet_settings_expired,
-				'settings_field' => 'uap_automator_google_sheet_api_settings',
-				'wp_nonce_field' => 'uap_automator_google_sheet_api_nonce',
-				'save_btn_name'  => 'uap_automator_google_sheet_api_save',
-				'save_btn_title' => __( 'Connect Google Sheets', 'uncanny-automator' ),
-				'fields'         => array(),
-			);
-
-		}
-
-		return $tabs;
-	}
-
-	/**
-	 * Method get_google_api_settings_description
-	 *
-	 * @return void
-	 */
-	protected function get_google_api_settings_description() {
-
-		$description = __(
-			'Connecting to Google requires signing into your account to link it to Automator.
-			To get started, click the "Connect an account" button below or the "Change account" button if you need to connect a new account.
-			Uncanny Automator can only connect to a single Google account at one time. (It is not possible to set some recipes up under one
-			account and then switch accounts, all recipes are mapped to the account selected on this page and existing recipes may break if
-			they were set up under another account.)',
-			'uncanny-automator'
-		);
-		ob_start();
-		?>
-		<p>
-			<?php echo esc_html( $description ); ?>
-		</p>
-
-		<?php $user = $this->get_user_info(); ?>
-		<?php if ( ! empty( $user['name'] ) ) : ?>
-			<div class="uo-google-user-info">
-				<?php if ( ! empty( $user['avatar_uri'] ) ) : ?>
-					<div class="uo-google-user-info__avatar">
-						<img width="32" src="<?php echo esc_url( $user['avatar_uri'] ); ?>"
-							 alt="<?php echo esc_attr( $user['name'] ); ?>"/>
-					</div>
-				<?php endif; ?>
-
-				<?php if ( ! empty( $user['email'] ) ) : ?>
-					<div class="uo-google-user-info__email">
-						<?php echo esc_html( $user['email'] ); ?>
-					</div>
-				<?php endif; ?>
-
-				<?php if ( ! empty( $user['name'] ) ) : ?>
-					<div class="uo-google-user-info__name">
-						(<?php echo esc_html( $user['name'] ); ?>)
-					</div>
-				<?php endif; ?>
-			</div>
-		<?php endif; ?>
-		<?php
-		return ob_get_clean();
-	}
-
-	/**
-	 * The HTML for Google Sheet connect button.
-	 *
-	 * @param $content
-	 * @param $active
-	 * @param $tab
-	 *
-	 * @return mixed
-	 */
-	public function google_sheet_connect_html( $content, $active, $tab ) {
-
-		if ( 'googlesheets_api' === $active ) {
-			$action       = 'authorization_request';
-			$redirect_url = rawurlencode( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab );
-			$nonce        = wp_create_nonce( 'automator_api_google_authorize' );
-			set_transient( 'automator_api_google_authorize_nonce', $nonce, 3600 );
-			$automator_version = InitializePlugin::PLUGIN_VERSION;
-			$auth_url          = $this->automator_api . "?action={$action}&scope={$this->client_scope}&redirect_url={$redirect_url}&nonce={$nonce}&plugin_ver={$automator_version}&api_ver=1.0";
-
-			$gs_client    = $this->get_google_client();
-			$button_text  = __( 'Connect an account', 'uncanny-automator' );
-			$button_class = '';
-			if ( $gs_client ) {
-				$button_text  = __( 'Change account', 'uncanny-automator' );
-				$button_class = 'uo-connected-button';
-			}
-			ob_start();
-			?>
-			<div class="uo-settings-content-form">
-
-				<a href="<?php echo esc_url_raw( $auth_url ); ?>"
-				   class="uo-settings-btn uo-settings-btn--primary <?php echo esc_attr( $button_class ); ?>">
-					<?php echo esc_html( $button_text ); ?>
-				</a>
-
-				<?php if ( $gs_client ) : ?>
-					<?php
-					$disconnect_uri = add_query_arg(
-						array(
-							'action' => 'uo_google_disconnect_user',
-							'nonce'  => wp_create_nonce( 'uo-google-user-disconnect' ),
-						),
-						admin_url( 'admin-ajax.php' )
-					);
-					?>
-					<a href="<?php echo esc_url( $disconnect_uri ); ?>" class="uo-settings-btn uo-settings-btn--error ">
-						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
-					</a>
-				<?php endif; ?>
-
-			</div>
-			<style>
-				.uo-google-user-info {
-					display: flex;
-					align-items: center;
-					margin: 20px 0;
-				}
-
-				.uo-google-user-info__avatar {
-					display: inline-flex;
-					align-items: center;
-					overflow: hidden;
-					border-radius: 32px;
-					margin-right: 10px;
-				}
-
-				.uo-google-user-info__name {
-					margin-left: 5px;
-					opacity: 0.75;
-				}
-
-				.uo-connected-button {
-					color: #fff;
-					background-color: #0790e8;
-				}
-
-				.uo-settings-content-footer {
-					display: none !important;
-				}
-			</style>
-			<?php
-		}
-
-		return $content;
-	}
-
-	/**
 	 * Get Google Client object
 	 *
 	 * @return false|object
 	 */
 	public function get_google_client() {
+
 		$access_token = get_option( '_uncannyowl_google_sheet_settings', array() );
+
 		if ( empty( $access_token ) || ! isset( $access_token['access_token'] ) ) {
 			return false;
 		}
@@ -620,35 +456,51 @@ class Google_Sheet_Helpers {
 	 */
 	public function validate_oauth_tokens() {
 
-		if ( ! empty( automator_filter_input( 'automator_api_message' ) ) && automator_filter_has_var( 'tab' ) && automator_filter_input( 'tab' ) === $this->setting_tab ) {
-			try {
-				if ( ! empty( automator_filter_input( 'automator_api_message' ) ) ) {
-					global $uncanny_automator;
-					$secret = get_transient( 'automator_api_google_authorize_nonce' );
-					$tokens = Automator_Helpers_Recipe::automator_api_decode_message( automator_filter_input( 'automator_api_message' ), $secret );
-					if ( ! empty( $tokens['access_token'] ) ) {
-						// On success
-						update_option( '_uncannyowl_google_sheet_settings', $tokens );
-						delete_option( '_uncannyowl_google_sheet_settings_expired' );
-						//set the transient
-						set_transient( '_uncannyowl_google_sheet_settings', $tokens['access_token'] . '|' . $tokens['refresh_token'], 60 * 50 );
-						//Refresh the user info.
-						delete_transient( '_uncannyowl_google_user_info' );
-						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=1' ) );
-						die;
-
-					} else {
-						// On Error
-						wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=2' ) );
-						die;
-					}
-				}
-			} catch ( \Exception $e ) {
-				// On Error
-				wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab . '&connect=2' ) );
-				die;
-			}
+		// Bailout if integration is not google sheet.
+		if ( 'google-sheet' !== automator_filter_input( 'integration' ) ) {
+			return;
 		}
+
+		$api_message = automator_filter_input( 'automator_api_message' );
+
+		// Bailout if no message from api.
+		if ( empty( $api_message ) ) {
+			return;
+		}
+
+		$error_google_sheet_url = 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=' . $this->setting_tab . '&integration=google-sheet&connect=2';
+
+		$secret = get_transient( 'automator_api_google_authorize_nonce' );
+
+		$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, $secret );
+
+		if ( ! empty( $tokens['access_token'] ) ) {
+
+			// On success.
+			update_option( '_uncannyowl_google_sheet_settings', $tokens );
+
+			// Delete expired settings.
+			delete_option( '_uncannyowl_google_sheet_settings_expired' );
+
+			// Set the transient.
+			set_transient( '_uncannyowl_google_sheet_settings', $tokens['access_token'] . '|' . $tokens['refresh_token'], 60 * 50 );
+
+			// Refresh the user info.
+			delete_transient( '_uncannyowl_google_user_info' );
+
+			wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=' . $this->setting_tab . '&integration=google-sheet&connect=1' ) );
+
+			die;
+
+		} else {
+
+			// On Error.
+			wp_safe_redirect( admin_url( $error_google_sheet_url ) );
+
+			die;
+
+		}
+
 	}
 
 
@@ -805,7 +657,7 @@ class Google_Sheet_Helpers {
 		);
 
 		$fields[] = array(
-			'value' => '-1',
+			'value' => '',
 			'text'  => __( 'Select a worksheet', 'uncanny-automator' ),
 		);
 
@@ -960,6 +812,7 @@ class Google_Sheet_Helpers {
 		$user_info = array(
 			'avatar_uri' => '',
 			'name'       => '',
+			'email'      => '',
 		);
 
 		$transient_key = '_uncannyowl_google_user_info';
@@ -1007,9 +860,10 @@ class Google_Sheet_Helpers {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'post_type' => 'uo-recipe',
-					'page'      => 'uncanny-automator-settings',
-					'tab'       => 'googlesheets_api',
+					'post_type'   => 'uo-recipe',
+					'page'        => 'uncanny-automator-config',
+					'tab'         => 'premium-integrations',
+					'integration' => 'google-sheet',
 				),
 				admin_url( 'edit.php' )
 			)

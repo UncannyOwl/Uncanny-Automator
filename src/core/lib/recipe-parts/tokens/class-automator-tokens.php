@@ -27,7 +27,6 @@ class Automator_Tokens {
 	public static $instance;
 
 
-
 	/**
 	 * @return Automator_Tokens
 	 */
@@ -135,6 +134,10 @@ class Automator_Tokens {
 			}
 
 			if ( 'sentence_human_readable' === (string) $meta_key ) {
+				continue;
+			}
+
+			if ( 'add_action' === (string) $meta_key ) {
 				continue;
 			}
 

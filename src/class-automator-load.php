@@ -446,6 +446,7 @@ class Automator_Load {
 		$classes['Admin_Menu']        = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
 		$classes['Copy_Recipe_Parts'] = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
 		$classes['Prune_Logs']        = UA_ABSPATH . 'src/core/admin/class-prune-logs.php';
+		$classes['Admin_Settings']    = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
 
 		$classes['Add_User_Recipe_Type'] = UA_ABSPATH . 'src/core/classes/class-add-user-recipe-type.php';
 		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
@@ -563,6 +564,9 @@ class Automator_Load {
 	 */
 	public function load_traits() {
 		do_action( 'automator_before_traits' );
+
+		// Settings
+		$classes['Trait_Settings_Premium_Integrations'] = UA_ABSPATH . 'src/core/lib/settings/trait-premium-integrations.php';
 
 		// Integrations
 		$classes['Integrations'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-integrations.php';

@@ -3,7 +3,7 @@
 namespace Uncanny_Automator;
 
 /**
- * ActiveCampaign Tokens file
+ * Ameliabooking Tokens.
  */
 class AMELIABOOKING_TOKENS {
 
@@ -82,18 +82,33 @@ class AMELIABOOKING_TOKENS {
 			'AMELIA_USER_APPOINTMENT_BOOKED_SERVICE',
 		);
 
-		$booking_data_arr = array_shift( $args['trigger_args'] );
-
-		// Add the category name.
-		$booking_data_arr['category']['name'] = $this->fetch_category_name( absint( $booking_data_arr['appointment']['serviceId'] ) );
-
-		// Add the service name.
-		$booking_data_arr['service']['name'] = $this->fetch_service_name( absint( $booking_data_arr['appointment']['serviceId'] ) );
-
 		// Check if trigger code is for Amelia.
 		if ( in_array( $args['entry_args']['code'], $triggers, true ) ) {
+
+			$booking_data_arr = array_shift( $args['trigger_args'] );
+
+			// Add the category name.
+			$booking_data_arr['category']['name'] = $this->fetch_category_name( absint( $booking_data_arr['appointment']['serviceId'] ) );
+
+			// Add the service name.
+			$booking_data_arr['service']['name'] = $this->fetch_service_name( absint( $booking_data_arr['appointment']['serviceId'] ) );
+
+			// Add the customer WordPress user id.
+			$booking_data_arr['customer']['wpUserId'] = 0;
+
+			if ( isset( $booking_data_arr['customer']['email'] ) && ! empty( $booking_data_arr['customer']['email'] ) ) {
+
+				$wp_user = get_user_by( 'email', $booking_data_arr['customer']['email'] );
+
+				if ( false !== $wp_user ) {
+					$booking_data_arr['customer']['wpUserId'] = $wp_user->ID;
+				}
+			}
+
 			$booking_data = wp_json_encode( $booking_data_arr );
+
 			Automator()->db->token->save( 'AMELIA_BOOKING_DATA', $booking_data, $args['trigger_entry'] );
+
 		}
 
 	}
@@ -111,6 +126,23 @@ class AMELIABOOKING_TOKENS {
 	 */
 	public function parse_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
+		$trigger_code = '';
+
+		if ( isset( $trigger_data[0]['meta']['code'] ) ) {
+			$trigger_code = $trigger_data[0]['meta']['code'];
+		}
+
+		$triggers = array(
+			'AMELIA_APPOINTMENT_BOOKED',
+			'AMELIA_APPOINTMENT_BOOKED_SERVICE',
+			'AMELIA_USER_APPOINTMENT_BOOKED',
+			'AMELIA_USER_APPOINTMENT_BOOKED_SERVICE',
+		);
+
+		if ( empty( $trigger_code ) || ! in_array( $trigger_code, $triggers, true ) ) {
+			return $value;
+		}
+
 		if ( ! is_array( $pieces ) || ! isset( $pieces[1] ) || ! isset( $pieces[2] ) ) {
 			return $value;
 		}
@@ -121,9 +153,12 @@ class AMELIABOOKING_TOKENS {
 		// Get the meta from database record.
 		$booking_data = json_decode( Automator()->db->token->get( 'AMELIA_BOOKING_DATA', $replace_args ), true );
 
-		// Example: $booking_data['appointment']['id].
-		if ( isset( $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ] ) ) {
-			$value = $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ];
+		// Add a check to prevent notice.
+		if ( isset( $token_id_parts[0] ) && isset( $token_id_parts[1] ) ) {
+			// Example: $booking_data['appointment']['id].
+			if ( isset( $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ] ) ) {
+				$value = $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ];
+			}
 		}
 
 		return $value;
@@ -131,6 +166,8 @@ class AMELIABOOKING_TOKENS {
 	}
 
 	/**
+	 * Get appointment tokens.
+	 *
 	 * @return array[]
 	 */
 	public function get_appointment_tokens() {
@@ -155,18 +192,12 @@ class AMELIABOOKING_TOKENS {
 				'name' => esc_html__( 'Appointment status', 'uncanny-automator' ),
 				'id'   => 'appointment_status',
 			),
-			array(
-				'name' => esc_html__( 'Appointment status', 'uncanny-automator' ),
-				'id'   => 'service_name',
-			),
-			array(
-				'name' => esc_html__( 'Appointment status', 'uncanny-automator' ),
-				'id'   => 'appointment_status',
-			),
 		);
 	}
 
 	/**
+	 * Get booking tokens.
+	 *
 	 * @return array[]
 	 */
 	public function get_booking_tokens() {
@@ -196,6 +227,8 @@ class AMELIABOOKING_TOKENS {
 	}
 
 	/**
+	 * Get customer related tokens.
+	 *
 	 * @return array[]
 	 */
 	public function get_customer_tokens() {
@@ -213,7 +246,7 @@ class AMELIABOOKING_TOKENS {
 			),
 			array(
 				'name' => esc_html__( 'Customer ID', 'uncanny-automator' ),
-				'id'   => 'customer_id',
+				'id'   => 'customer_wpUserId',
 			),
 			array(
 				'name' => esc_html__( 'Customer email', 'uncanny-automator' ),
@@ -235,6 +268,8 @@ class AMELIABOOKING_TOKENS {
 	}
 
 	/**
+	 * Additional tokens.
+	 *
 	 * @return array[]
 	 */
 	public function get_additional_tokens() {
@@ -251,6 +286,8 @@ class AMELIABOOKING_TOKENS {
 	}
 
 	/**
+	 * Fetch the category name.
+	 *
 	 * @param $service_id
 	 *
 	 * @return string
@@ -263,8 +300,8 @@ class AMELIABOOKING_TOKENS {
 
 		$category = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT services.id as service_id, services.name as service_name,
-					services.categoryId as category_id, categories.name as category_name
+				"SELECT services.id as service_id, services.name as service_name, 
+				services.categoryId as category_id, categories.name as category_name
 				FROM {$wpdb->prefix}amelia_services as services
 				INNER JOIN {$wpdb->prefix}amelia_categories as categories
 				ON services.categoryId = categories.id
@@ -283,6 +320,8 @@ class AMELIABOOKING_TOKENS {
 	}
 
 	/**
+	 * Fetch the service name.
+	 *
 	 * @param $service_id
 	 *
 	 * @return string

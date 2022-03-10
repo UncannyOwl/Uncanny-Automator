@@ -94,7 +94,7 @@ class Add_Google_Sheet_Integration {
 				'name'         => 'Google Sheets',
 				'connected'    => $this->connected,
 				'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/google-sheet-icon.svg' ),
-				'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=googlesheets_api',
+				'settings_url' => automator_get_premium_integrations_settings_url( 'google-sheet' )
 			)
 		);
 

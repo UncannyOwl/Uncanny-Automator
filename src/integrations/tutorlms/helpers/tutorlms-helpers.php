@@ -28,11 +28,17 @@ class Tutorlms_Helpers {
 	public $load_options;
 
 	/**
+	 * @var bool
+	 */
+	public $load_any_options = true;
+
+	/**
 	 * Tutorlms_Helpers constructor.
 	 */
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		add_action( 'wp_ajax_select_lesson_from_course_LESSONCOMPLETED', array( $this, 'select_lesson_from_course_func' ) );
 	}
 
 	/**
@@ -234,5 +240,64 @@ class Tutorlms_Helpers {
 	 */
 	public function get_percentage_required( $attempt ) {
 		return (int) tutor_utils()->get_quiz_option( $attempt->quiz_id, 'passing_grade', 0 );
+	}
+
+	/**
+	 * Return all the specific fields of a form ID provided in ajax call
+	 *
+	 */
+	public function select_lesson_from_course_func() {
+
+		// Nonce and post object validation
+		Automator()->utilities->ajax_auth_check();
+
+		$fields = array();
+		if ( ! automator_filter_has_var( 'value', INPUT_POST ) ) {
+			echo wp_json_encode( $fields );
+			die();
+		}
+
+		$post_value  = automator_filter_input( 'value', INPUT_POST );
+		$post_values = automator_filter_input_array( 'values', INPUT_POST );
+
+		if ( 'automator_custom_value' === (string) $post_value && '-1' !== absint( $post_value ) ) {
+			$course_id = isset( $post_values['TUTORLMSCOURSE_custom'] ) ? absint( $post_values['TUTORLMSCOURSE_custom'] ) : 0;
+		} else {
+			$course_id = absint( $post_values['TUTORLMSCOURSE'] );
+		}
+
+		if ( absint( '-1' ) === absint( $course_id ) || true === (bool) $this->load_any_options ) {
+			$fields[] = array(
+				'value' => '-1',
+				'text'  => 'Any lesson',
+			);
+		}
+
+		if ( absint( '-1' ) !== absint( $course_id ) ) {
+			$lesson_ids = tutor_utils()->get_course_content_ids_by( tutor()->lesson_post_type, tutor()->course_post_type, $course_id );
+
+			if ( ! empty( $lesson_ids ) ) {
+				$args = array(
+					'post_type'      => tutor()->lesson_post_type,
+					'posts_per_page' => 999,
+					'orderby'        => 'title',
+					'order'          => 'ASC',
+					'post_status'    => 'publish',
+					'post__in'       => $lesson_ids,
+				);
+
+				$lessons = get_posts( $args );
+
+				foreach ( $lessons as $lesson ) {
+					$fields[] = array(
+						'value' => $lesson->ID,
+						'text'  => $lesson->post_title,
+					);
+				}
+			}
+		}
+
+		echo wp_json_encode( $fields );
+		die();
 	}
 }

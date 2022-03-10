@@ -63,10 +63,6 @@ class Admin_Menu {
 		$this->dashboard_inline_js_data();
 		$this->integrations_inline_js_data();
 
-		// Setup Theme Options Page Menu in Admin
-		add_action( 'admin_init', array( $this, 'plugins_loaded' ), 1 );
-		add_action( 'admin_menu', array( $this, 'register_options_menu_page' ) );
-
 		add_action( 'admin_enqueue_scripts', array( $this, 'reporting_assets' ) );
 		add_filter( 'admin_title', array( $this, 'modify_report_titles' ), 40, 2 );
 
@@ -76,6 +72,15 @@ class Admin_Menu {
 		// Auto opt-in users if they are connected.
 
 		add_action( 'admin_init', array( $this, 'auto_optin_users' ), 20 );
+
+		// Setup Theme Options Page Menu in Admin
+		add_action( 'admin_init', array( $this, 'plugins_loaded' ), 1 );
+		add_action( 'admin_menu', array( $this, 'register_options_menu_page' ) );
+
+		
+		add_action( 'admin_menu', array( $this, 'register_legacy_options_menu_page' ), 999 );
+		add_action( 'admin_init', array( $this, 'maybe_redirect_to_first_settings_tab' ), 1000 );
+		
 	}
 
 	/**
@@ -103,15 +108,7 @@ class Admin_Menu {
 	 *
 	 */
 	public function plugins_loaded() {
-		$tabs = array(
-			'settings' => array(
-				'name'        => esc_attr__( 'Settings', 'uncanny_automator' ),
-				'title'       => esc_attr__( 'Auto-prune activity logs', 'uncanny-automator' ),
-				'description' => esc_attr__( 'Enter a number of days below to have trigger and action log entries older than the specified number of days automatically deleted from your site daily. Trigger and action log entries will only be deleted for recipes with "Completed" status.', 'uncanny-automator' ),
-				'is_pro'      => true,
-				'fields'      => array( /* see implementation in pro*/ ),
-			),
-		);
+		$tabs = array();
 
 		$tabs       = apply_filters( 'uap_settings_tabs', $tabs );
 		self::$tabs = apply_filters( 'automator_settings_tabs', $tabs );
@@ -131,7 +128,6 @@ class Admin_Menu {
 			}
 		}
 	}
-
 
 	/**
 	 * @param $hook
@@ -224,16 +220,6 @@ class Admin_Menu {
 			)
 		);
 
-		/* translators: 1. Trademarked term */
-		$page_title               = sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' );
-		$capability               = 'manage_options';
-		$menu_title               = esc_attr__( 'Settings', 'uncanny-automator' );
-		$menu_slug                = 'uncanny-automator-settings';
-		$this->settings_page_slug = $menu_slug;
-		$function                 = array( $this, 'options_menu_settings_page_output' );
-
-		add_submenu_page( 'edit.php?post_type=uo-recipe', $page_title, $menu_title, $capability, $menu_slug, $function );
-
 		$function = array( $this, 'tools_menu_page_output' );
 		add_submenu_page( $parent_slug, esc_attr__( 'Tools', 'uncanny-automator' ), esc_attr__( 'Tools', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-tools', $function );
 		add_submenu_page(
@@ -247,7 +233,28 @@ class Admin_Menu {
 				'database_tools_menu_page_output',
 			)
 		);
+
 	}
+
+	/**
+	 * Create legacy options menu
+	 */
+	public function register_legacy_options_menu_page() {
+
+		if ( has_filter( 'uap_settings_tabs' ) ) {
+			/* translators: 1. Trademarked term */
+			$page_title               = sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' );
+			$capability               = 'manage_options';
+			$menu_title               = esc_attr__( 'Legacy Settings', 'uncanny-automator' );
+			$menu_slug                = 'uncanny-automator-settings';
+			$this->settings_page_slug = $menu_slug;
+			$function                 = array( $this, 'options_menu_settings_page_output' );
+
+			add_submenu_page( 'edit.php?post_type=uo-recipe', $page_title, $menu_title, $capability, $menu_slug, $function );
+		}
+		
+	}
+
 
 	/**
 	 * Create Page view
@@ -394,62 +401,130 @@ class Admin_Menu {
 
 		return apply_filters( 'automator_report_titles', $admin_title, $title );
 	}
+	
+	/**
+	 * is_pro_older_than_37
+	 * 
+	 * Returns false if Automator Pro is enabled and older than 3.8
+	 *
+	 * @return void
+	 */
+	public function is_pro_older_than_38() {
+
+		if (  defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+			return version_compare( AUTOMATOR_PRO_PLUGIN_VERSION, '3.8', '<' );
+		}
+
+		return false;
+	}
+
+	public function maybe_redirect_to_first_settings_tab() {
+
+		if ( $this->is_pro_older_than_38() ) {
+			return;
+		}
+
+		if ( ! automator_filter_has_var( 'post_type' ) ) {
+			return;
+		}
+
+		if ( 'uo-recipe' !== automator_filter_input( 'post_type' ) ) {
+			return;
+		}
+
+		if ( ! automator_filter_has_var( 'page' ) ) {
+			return;
+		}
+
+		if ( 'uncanny-automator-settings' !== automator_filter_input( 'page' ) ) {
+			return;
+		}
+
+		if ( automator_filter_has_var( 'tab' ) ) {
+			return;
+		}
+
+		if ( empty( self::$tabs ) ) {
+			return;
+		}
+
+		$tab_ids = array_keys( self::$tabs );
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'post_type'   => 'uo-recipe',
+					'page'        => 'uncanny-automator-settings',
+					'tab'         => array_shift( $tab_ids ),
+				),
+				admin_url( 'edit.php' )
+			)
+		);
+	}
 
 	/**
 	 *
 	 */
 	public function options_menu_settings_page_output() {
-		// Loading license and data tracking info
-		$active = automator_filter_has_var( 'tab' ) ? sanitize_text_field( automator_filter_input( 'tab' ) ) : 'settings';
-		if ( 'settings' === $active ) {
-			// Check connect and credits
-			$is_connected = self::is_automator_connected();
 
-			$website            = preg_replace( '(^https?://)', '', get_home_url() );
-			$redirect_url       = site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-settings' );
-			$connect_url        = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . urlencode( $redirect_url );
-			$disconnect_account = add_query_arg( array( 'action' => 'discount_automator_connect' ) );
+		if ( $this->is_pro_older_than_38() ) {
 
-			$license_data = false;
-			if ( $is_connected ) {
-				$license_data = get_option( 'uap_automator_free_license_data' );
-			}
+			$active = automator_filter_has_var( 'tab' ) ? sanitize_text_field( automator_filter_input( 'tab' ) ) : 'settings';
 
-			$is_pro_active = false;
+			if ( 'settings' === $active ) {
+				// Check connect and credits
+				$is_connected = self::is_automator_connected();
 
-			//if ( isset( $is_connected['item_name'] ) ) {
-			if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) {
-				$is_pro_active = true;
-			}
-			//}
+				$website            = preg_replace( '(^https?://)', '', get_home_url() );
+				$redirect_url       = site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-settings' );
+				$connect_url        = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . urlencode( $redirect_url );
+				$disconnect_account = add_query_arg( array( 'action' => 'discount_automator_connect' ) );
 
-			$uap_automator_allow_tracking = get_option( 'automator_reporting', false );
-
-			if ( $is_pro_active ) {
-				$license_data = $this->check_pro_license( true );
-
-				$license = get_option( 'uap_automator_pro_license_key' );
-				$status  = get_option( 'uap_automator_pro_license_status' ); // $license_data->license will be either "valid", "invalid", "expired", "disabled"
-
-				// Check license status
-				$license_is_active = ( 'valid' === $status ) ? true : false;
-
-				// CSS Classes
-				$license_css_classes = array();
-
-				if ( $license_is_active ) {
-					$license_css_classes[] = 'uo-license--active';
+				$license_data = false;
+				if ( $is_connected ) {
+					$license_data = get_option( 'uap_automator_free_license_data' );
 				}
 
-				// Set links. Add UTM parameters at the end of each URL
-				$where_to_get_my_license = 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=where_to_get_my_license';
-				$buy_new_license         = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=buy_new_license';
-				$knowledge_base          = 'https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=knowledge_base';
+				$is_pro_active = false;
 
+				//if ( isset( $is_connected['item_name'] ) ) {
+				if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) {
+					$is_pro_active = true;
+				}
+				//}
+
+				$uap_automator_allow_tracking = get_option( 'automator_reporting', false );
+
+				if ( $is_pro_active ) {
+					$license_data = $this->check_pro_license( true );
+
+					$license = get_option( 'uap_automator_pro_license_key' );
+					$status  = get_option( 'uap_automator_pro_license_status' ); // $license_data->license will be either "valid", "invalid", "expired", "disabled"
+
+					// Check license status
+					$license_is_active = ( 'valid' === $status ) ? true : false;
+
+					// CSS Classes
+					$license_css_classes = array();
+
+					if ( $license_is_active ) {
+						$license_css_classes[] = 'uo-license--active';
+					}
+
+					// Set links. Add UTM parameters at the end of each URL
+					$where_to_get_my_license = 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=where_to_get_my_license';
+					$buy_new_license         = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=buy_new_license';
+					$knowledge_base          = 'https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=knowledge_base';
+
+				}
 			}
-		}
+		} 
+
 		$this->settings_tabs();
 		include Utilities::automator_get_include( 'automator-settings.php' );
+		
+		
+		
 	}
 
 	/**
@@ -694,6 +769,7 @@ class Admin_Menu {
 			'post.php', // Has filter, check callback
 			'uncanny-automator-dashboard',
 			'uncanny-automator-integrations',
+			'uncanny-automator-config',
 		);
 
 		// Enqueue admin scripts
@@ -750,6 +826,10 @@ class Admin_Menu {
 	private function get_js_backend_inline_data( $hook ) {
 		// Set default data
 		$automator_backend_js = array(
+			'ajax'      => array(
+				'url'   => admin_url( 'admin-ajax.php' ),
+				'nonce' => \wp_create_nonce( 'uncanny_automator' ),
+			),
 			'rest'      => array(
 				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
@@ -789,6 +869,7 @@ class Admin_Menu {
 				'proLabel' => array(
 					'pro' => __( 'Pro', 'uncanny-automator' ),
 				),
+				'notSaved' => __( 'Changes you made may not be saved.', 'uncanny-automator' ),
 			),
 			'debugging' => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,

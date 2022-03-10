@@ -75,21 +75,21 @@ class MAILPOET_ADDUSER_A {
 			return;
 		}
 
-		$list_id = $action_data['meta'][ $this->action_meta ];
-
-		// add user to a list.
-		$mailpoet = \MailPoet\API\API::MP( 'v1' );
-
-		$userdata = get_userdata( $user_id );
-
-		$subscriber                 = $mailpoet->getSubscriber( $userdata->user_email );
-		$disable_confirmation_email = true;
-		if ( isset( $action_data['meta']['USERADDEDTOLIST_CONFIRMATIONEMAIL'] ) ) {
-			$disable_confirmation_email = Automator()->parse->text( $action_data['meta']['USERADDEDTOLIST_CONFIRMATIONEMAIL'], $recipe_id, $user_id, $args );
-			$disable_confirmation_email = 'true' === $disable_confirmation_email ? false : true;
-		}
-
 		try {
+			$list_id = $action_data['meta'][ $this->action_meta ];
+
+			// add user to a list.
+			$mailpoet = \MailPoet\API\API::MP( 'v1' );
+
+			$userdata = get_userdata( $user_id );
+
+			$subscriber                 = $mailpoet->getSubscriber( $userdata->user_email );
+			$disable_confirmation_email = true;
+			if ( isset( $action_data['meta']['USERADDEDTOLIST_CONFIRMATIONEMAIL'] ) ) {
+				$disable_confirmation_email = Automator()->parse->text( $action_data['meta']['USERADDEDTOLIST_CONFIRMATIONEMAIL'], $recipe_id, $user_id, $args );
+				$disable_confirmation_email = 'true' === $disable_confirmation_email ? false : true;
+			}
+
 			$mailpoet->subscribeToList( $subscriber['id'], $list_id, array( 'send_confirmation_email' => $disable_confirmation_email ) );
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {

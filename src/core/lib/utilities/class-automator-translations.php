@@ -362,70 +362,77 @@ class Automator_Translations {
 				),
 				'global'                         => array(
 					/* translators: Token category. It refers to common tokens. */
-					'common'              => esc_attr_x( 'Common', 'Token', 'uncanny-automator' ),
+					'common'                     => esc_attr_x( 'Common', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.common
 					/* translators: Token name */
-					'siteName'            => esc_attr_x( 'Site name', 'Token', 'uncanny-automator' ),
+					'siteName'                   => esc_attr_x( 'Site name', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.siteName
 					/* translators: Token name */
-					'userID'              => esc_attr_x( 'User ID', 'Token', 'uncanny-automator' ),
+					'userID'                     => esc_attr_x( 'User ID', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userId
 					/* translators: Token name */
-					'userUsername'        => esc_attr_x( 'User username', 'Token', 'uncanny-automator' ),
+					'userUsername'               => esc_attr_x( 'User username', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userUsername
 					/* translators: Token name */
-					'userFirstName'       => esc_attr_x( 'User first name', 'Token', 'uncanny-automator' ),
+					'userFirstName'              => esc_attr_x( 'User first name', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userFirstName
 					/* translators: Token name */
-					'userLastName'        => esc_attr_x( 'User last name', 'Token', 'uncanny-automator' ),
+					'userLastName'               => esc_attr_x( 'User last name', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userLastName
 					/* translators: Token name */
-					'userEmail'           => esc_attr_x( 'User email', 'Token', 'uncanny-automator' ),
+					'userEmail'                  => esc_attr_x( 'User email', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userEmail
 					/* translators: Token name */
-					'userDisplay'         => esc_attr_x( 'User display name', 'Token', 'uncanny-automator' ),
+					'userDisplay'                => esc_attr_x( 'User display name', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userDisplay
 					/* translators: Token name */
-					'userResetPassLink'   => esc_attr_x( 'User reset password link', 'Token', 'uncanny-automator' ),
+					'userResetPassLink'          => esc_attr_x( 'User reset password link', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userDisplay
 					/* translators: Token name */
-					'adminEmail'          => esc_attr_x( 'Admin email', 'Token', 'uncanny-automator' ),
+					'user_reset_pass_url'        => esc_attr_x( 'User reset password URL', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.user_reset_pass_url
+					/* translators: Token name */
+					'adminEmail'                 => esc_attr_x( 'Admin email', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.adminEmail
 					/* translators: Token name */
-					'siteUrl'             => esc_attr_x( 'Site URL', 'Token', 'uncanny-automator' ),
+					'siteUrl'                    => esc_attr_x( 'Site URL', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.siteUrl
 					/* translators: Token name */
-					'recipeName'          => esc_attr_x( 'Recipe name', 'Token', 'uncanny-automator' ),
+					'recipeName'                 => esc_attr_x( 'Recipe name', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.recipeName
-					'recipeRunToken'      => esc_attr_x( 'Recipe run #', 'Token', 'uncanny-automator' ),
+					'recipeRunToken'             => esc_attr_x( 'Recipe run #', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.recipeRunToken
-					'recipeTotalRunToken' => esc_attr_x( 'Recipe run # (total)', 'Token', 'uncanny-automator' ),
+					'recipeTotalRunToken'        => esc_attr_x( 'Recipe run # (total)', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.recipeTotalRunToken
-					'recipeId'            => esc_attr_x( 'Recipe ID', 'Token', 'uncanny-automator' ),
+					'recipeId'                   => esc_attr_x( 'Recipe ID', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.recipeId
-					'userRole'            => esc_attr_x( 'User role', 'Token', 'uncanny-automator' ),
+					'userRole'                   => esc_attr_x( 'User role', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userRole
 					/* translators: Token category. It refers to advanced tokens. */
-					'advanced'            => esc_attr_x( 'Advanced', 'Token', 'uncanny-automator' ),
+					'advanced'                   => esc_attr_x( 'Advanced', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.advanced
 					/* translators: Token name */
-					'userMetaKey'         => esc_attr_x( 'User meta', 'Token', 'uncanny-automator' ),
+					'userMetaKey'                => esc_attr_x( 'User meta', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userMetaKey
 					/* translators: 1. The user meta key */
-					'userMetaKeyTemplate' => esc_attr_x( 'User meta: %1$s', 'Token', 'uncanny-automator' ),
+					'userMetaKeyTemplate'        => esc_attr_x( 'User meta: %1$s', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userMetaKeyTemplate
 					/* translators: Token name */
-					'postMetaKey'         => esc_attr_x( 'Post meta', 'Token', 'uncanny-automator' ),
+					'postMetaKey'                => esc_attr_x( 'Post meta', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.postMetaKey
 					/* translators: 1. The post. 2. The meta key */
-					'postMetaKeyTemplate' => esc_attr_x( 'Post: %1$s meta: %2$s', 'Token', 'uncanny-automator' ),
+					'postMetaKeyTemplate'        => esc_attr_x( 'Post: %1$s meta: %2$s', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.postMetaKeyTemplate
-					/* translators: Token name */
-					'currentDate'         => esc_attr_x( 'Current date', 'Token', 'uncanny-automator' ),
+					'currentDate'                => esc_attr_x( 'Current date', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.currentDate
-					/* translators: Token name */
-					'currentTime'         => esc_attr_x( 'Current time', 'Token', 'uncanny-automator' ),
+					'currentTime'                => esc_attr_x( 'Current time', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.currentTime
+					'current_unix_timestamp'     => esc_attr_x( 'Current Unix timestamp', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.current_unix_timestamp
+					'currentdate_unix_timestamp' => esc_attr_x( 'Current date (Unix timestamp)', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.currentdate_unix_timestamp
+					'user_ip_address'            => esc_attr_x( 'User IP address', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.user_ip_address
 				),
 				'specialTokens'                  => array(
 					'userMeta' => array(

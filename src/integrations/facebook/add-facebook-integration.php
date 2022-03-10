@@ -61,7 +61,7 @@ class Add_Facebook_Integration {
 			'name'         => 'Facebook Pages',
 			'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/facebook-icon.svg' ),
 			'connected'    => $this->connected, //
-			'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=facebook_api',
+			'settings_url' => automator_get_premium_integrations_settings_url( 'facebook-pages' ),
 		);
 
 		// register integration into automator.

@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
-Tested up to: 5.9
+Tested up to: 5.9.1
 Requires PHP: 5.6
-Stable tag: 3.7.0.1
+Stable tag: 3.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,6 +51,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Forminator](https://automatorplugin.com/integration/forminator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GamiPress](https://automatorplugin.com/integration/gamipress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GiveWP](https://automatorplugin.com/integration/givewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Groundhogg](https://automatorplugin.com/integration/groundhogg/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [HappyForms](https://automatorplugin.com/integration/happyforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -65,6 +67,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [MailPoet 3](https://automatorplugin.com/integration/mailpoet-3/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [myCred](https://automatorplugin.com/integration/mycred/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -128,7 +131,7 @@ Here are some of the other really cool automations you can create with [Automato
 - Integrate with [Google Sheets](https://automatorplugin.com/integration/google-sheets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example). Add a row to a Google Sheet when a user makes a purchase, fills out a form, completes a course---the possibilities are endless! Say goodbye to per-transaction fees with Zapier.
 - Integrate with [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example). Integrate your WordPress site directly with Slack and get Slack notifications and direct messages when users make a purchase, cancel a subscription, or any other combination of triggers from any supported plugin.
 - Integrate with [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example). Add users to your Mailchimp audiences, add or remove tags and even send campaigns. Want to send new blog posts to your list automatically? Automator makes it simple.
-- Integrate with [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example), [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example), [GoToTraining](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example), [GoToWebinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example) to automatically enroll users in web conferencing sessions when they complete a recipe
+- Integrate with [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example), [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example), [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example), [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example) to automatically enroll users in web conferencing sessions when they complete a recipe
 - Integrate with [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example) to send users SMS messages when they complete a recipe
 - Run recipes for logged out users with [Everyone recipes](https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example); you can even create and update existing users.
 - Have 2 WordPress sites talk to each other. [Sell products on one site](https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example) while [Uncanny Automator creates users](https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example) and sets up access on another!
@@ -188,9 +191,72 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 3.8 [2022-03-10] =
+
+**New Integrations:**
+
+* [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1551
+* [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1551
+* [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1510
+
+**New Triggers:**
+
+* MemberPress Courses - A user completes a course #1624
+* MemberPress Courses - A user completes a lesson #1623
+* Uncanny Groups - A user redeems a Group Key #1476
+* Uncanny Groups - A user is registered using a Group Key #1475
+
+**New Actions:**
+
+* BuddyBoss - Set the user's status to a specific status #1547
+* GoTo Webinar - Add the user to a webinar (moved from Pro) #1551
+* GoTo Webinar - Remove the user from a webinar (moved from Pro) #1551
+* GoTo Training - Add the user to a training session (moved from Pro) #1551
+* GoTo Training - Remove the user from a training session (moved from Pro) #1551
+* MemberPress Courses - Mark a course complete #1622
+* MemberPress Courses - Mark a lesson complete #1621
+
+**Added:**
+
+* Much improved settings page design and layout #1144
+* Amelia - PHP notices when parsing tokens in some instances
+* Google Sheets - automator_google_sheets_disable_tokens_html filter to strip all HTML tags #1604
+* Advanced token - Current date (Unix timestamp) #1593
+* Advanced token - Current time (Unix timestamp) #1592
+* Common token: User reset password URL #1500
+* Common token: User IP address - Note: IP address is not stored, and will return "N/A" in scheduled actions #1456
+* LearnDash - New token "Passing score %" - Returns value of "Passing score" quiz setting  #1523
+* LearnDash - "A user completes a lesson" now fires when lesson manually completed by admin on edit user in /wp-admin #1492
+
+**Updated:**
+
+* Elementor - Improved performance of form queries #1590
+* Gravity Forms - Everyone trigger code update #1612
+* Gravity Forms - Logged-in trigger code update #1609
+* Instagram - "Publish a photo to an Instagram account" - Updated field labels
+* Modern Events Calendar - "A user's booking is completed" - Now fires when a user account is created at time of booking
+* Renamed GoToTraining/GoToWebinar to GoTo Training/GoTo Webinar
+
+**Fixed:**
+
+* Actions without conditions can now be dragged #1445
+* Scheduled/conditional actions - PHP error on PHP 8+ #1539
+* AffiliateWP - Tokens now appear in the Recipe UI #1582
+* Amelia - Removed duplicate tokens #1538
+* FluentCRM - Removed duplicate tokens #1626
+* Google Sheets - "Update a row" action - Now requires a value in the worksheet field #1630
+* Gravity Forms - Form ID token now works reliably #1598
+* Instagram - "Publish a photo to an Instagram account" - Recipe now runs if Description/Hashtags field is empty
+* Mailpoet action: "Add a subscriber to a list" - No longer indicates that user data is required #1605
+* Mailpoet action: "Add the user to the list" - No longer throws an exception on some sites #1548
+* Uncanny Codes - A user redeems a code from a batch - Now fires more reliably
+* WordPress Core - PHP Warning: Attempt to read property "post_type" on null in wp-viewpost.php #1567
+* Database error: Column meta_value cannot be null #1565
+
 = 3.7.0.1 [2022-02-17] =
 
 **Fixed:**
+
 * Twilio - Conflict related to moving integration out of Pro
 
 = 3.7 [2022-02-17] =
@@ -646,48 +712,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * LearnDash - Quiz score token now renders more reliably #695
 * When connecting third-party integrations, the second step action button is now disabled if the first step is not yet completed #614
 * Form field tokens no longer appear in token dropdown if the source form was deleted #205
-
-= 3.1.2 [2021-08-12] =
-
-**Added:**
-
-* WordPress Core - A user's post is set to a specific status - Added post type dropdown #687
-* Easy Digital Downloads - Trigger: A user's Stripe payment for an order is refunded #668
-* LearnDash Achievements - Action: Award an achievement #653
-
-**Fixed:**
-
-* Forminator - Token no longer shows "Array" instead of the value #655
-* Instagram - No longer automatically shows as connected after Facebook connected #627
-* Instagram - Removed account thumbnail to reduce API usage #494
-* Mailchimp - Groups now load consistently #683
-* LearnDash/Tin Canny Reporting - A Tin Can verb is recorded from a Tin Can module - Trigger not firing on some configurations #680
-* WordPress Core - Send an email - When multiple email addresses are entered in the To field the action fires as expected #666
-* WordPress Core - Send an email - Line breaks disappearing in Send an email action after action is reloaded #587
-* Integromat - Send data to Integromat webhook - Uncaught TypeError: Cannot read property 'ajax' of undefined #657
-* Plugin activation now works more consistently on subfolder sites #678
-* Add `plugin_active` override to all Free integrations for backwards compatibility with older Pro versions #662
-* Pro logged-in integrations no longer appear in anonymous recipes #586
-* PHP Notice: Undefined property: stdClass::$license_check on some sites #626
-
-= 3.1.1 [2021-07-29] =
-
-**Added:**
-
-* Filter `automator_is_integration_plugin_active` to override the active/inactive status of a plugin
-
-**Updated:**
-
-* Filter `automator_modify_plugin_path` to override the installed path of a plugin
-* Improved PHP 8.x compatibility
-* Improved UX when the process of authorizing Uncanny Automator for Facebook is cancelled before completion
-* Automator icon now appears on admin bar on front end
-
-**Fixed:**
-
-* PHP error on some sites when Modern Events Calendar Lite is activated
-* PHP error when Wishlist Member LTD version is installed
-* Automator dropdown menu no longer appears in the admin bar for non-logged in users when BuddyBoss Platform is installed
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

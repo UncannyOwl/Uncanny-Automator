@@ -53,8 +53,6 @@ class GF_SUBFORM {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -68,16 +66,58 @@ class GF_SUBFORM {
 		if ( empty( $entry ) ) {
 			return;
 		}
+		$recipes       = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_form = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		if ( empty( $recipes ) ) {
+			return;
+		}
+		if ( empty( $required_form ) ) {
+			return;
+		}
+		$form_id            = $form['id'];
+		$user_id            = get_current_user_id();
+		$matched_recipe_ids = array();
+		foreach ( $recipes as $recipe_id => $recipe ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id = absint( $trigger['ID'] );
+				if ( ! isset( $required_form[ $recipe_id ] ) ) {
+					continue;
+				}
+				if ( ! isset( $required_form[ $recipe_id ][ $trigger_id ] ) ) {
+					continue;
+				}
+				if ( intval( '-1' ) === intval( $required_form[ $recipe_id ][ $trigger_id ] ) || (int) $form_id === (int) $required_form[ $recipe_id ][ $trigger_id ] ) {
+					$matched_recipe_ids[ $recipe_id ] = array(
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+					);
+				}
+			}
+		}
 
-		$user_id = get_current_user_id();
+		if ( empty( $matched_recipe_ids ) ) {
+			return;
+		}
+		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+			$pass_args = array(
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'ignore_post_id'   => true,
+				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+				'trigger_to_match' => $matched_recipe_id['trigger_id'],
+				'user_id'          => $user_id,
+				'is_signed_in'     => true,
+			);
 
-		$args = array(
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => $form['id'],
-			'user_id' => $user_id,
-		);
+			$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
-		Automator()->maybe_add_trigger_entry( $args );
+			if ( ! empty( $args ) ) {
+				foreach ( $args as $result ) {
+					if ( true === $result['result'] ) {
+						Automator()->maybe_trigger_complete( $result['args'] );
+					}
+				}
+			}
+		}
 	}
 }

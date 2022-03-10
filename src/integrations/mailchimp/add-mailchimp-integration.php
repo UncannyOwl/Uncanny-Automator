@@ -100,7 +100,7 @@ class Add_Mailchimp_Integration {
 				'name'         => 'Mailchimp',
 				'connected'    => $this->connected,
 				'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/mailchimp-icon.svg' ),
-				'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=mailchimp_api',
+				'settings_url' => automator_get_premium_integrations_settings_url( 'mailchimp_api' ),
 			)
 		);
 

@@ -46,6 +46,26 @@ class TUTORLMS_LESSONCOMPLETED {
 
 		// global automator object.
 
+		$course_tokens = array();
+
+		$relevant_tokens = array(
+			$this->trigger_meta                => esc_attr__( 'Lesson title', 'uncanny-automator' ),
+			$this->trigger_meta . '_ID'        => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_URL'       => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_ID'  => esc_attr__( 'Lesson featured image ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
+		);
+
+		$args = array(
+			'post_type'      => tutor()->course_post_type,
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+		);
+
+		$courses = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
+
 		// setup trigger configuration.
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -62,8 +82,26 @@ class TUTORLMS_LESSONCOMPLETED {
 			'validation_function' => array( $this, 'complete' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options'             => array(
-				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_lessons( null, $this->trigger_meta, true ),
 				Automator()->helpers->recipe->options->number_of_times(),
+			),
+			'options_group'       => array(
+				$this->trigger_meta => array(
+					Automator()->helpers->recipe->field->select_field_ajax(
+						'TUTORLMSCOURSE',
+						esc_attr__( 'Course', 'uncanny-automator' ),
+						$courses,
+						'',
+						'',
+						false,
+						true,
+						array(
+							'target_field' => $this->trigger_meta,
+							'endpoint'     => 'select_lesson_from_course_LESSONCOMPLETED',
+						),
+						$course_tokens
+					),
+					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Lesson', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+				),
 			),
 		);
 

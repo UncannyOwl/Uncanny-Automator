@@ -254,9 +254,17 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $zoom_webinar;
 	/**
+	 * @var Gototraining_Helpers;
+	 */
+	public $gototraining;
+	/**
 	 * @var Twilio_Helpers;
 	 */
 	public $twilio;
+	/**
+	 * @var Uncanny_Groups_Helpers;
+	 */
+	public $uncanny_groups;
 	/**
 	 * @var Automator_Helpers_Recipe
 	 */

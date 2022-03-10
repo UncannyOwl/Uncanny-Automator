@@ -9,33 +9,33 @@ namespace Uncanny_Automator;
 class Facebook_Helpers {
 
 	/**
+	 * The options.
+	 *
 	 * @var $options
 	 */
 	public $options = '';
 
 	/**
-	 * @var $settings_tab
-	 */
-	public $setting_tab;
-
-	/**
+	 * Load options.
+	 *
 	 * @var mixed $load_options
 	 */
 	public $load_options;
 
 	/**
+	 * The endpoint uri.
+	 *
 	 * @var $fb_endpoint_uri
 	 */
 	public $fb_endpoint_uri = '';
 
 	/**
+	 * The option key.
 	 *
+	 * @var string
 	 */
 	const OPTION_KEY = '_uncannyowl_facebook_settings';
 
-	/**
-	 *
-	 */
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
@@ -45,17 +45,6 @@ class Facebook_Helpers {
 		$this->fb_endpoint_uri = AUTOMATOR_API_URL . 'v2/facebook';
 
 		$this->wp_ajax_action = 'automator_integration_facebook_capture_token';
-
-		// Allow overwrite in wp-config.php.
-		if ( DEFINED( 'UO_AUTOMATOR_DEV_FB_ENDPOINT_URL' ) ) {
-			$this->fb_endpoint_uri = UO_AUTOMATOR_DEV_FB_ENDPOINT_URL;
-		}
-
-		// Adds new section to tab.
-		add_filter( 'automator_settings_tabs', array( $this, 'add_facebook_api_settings' ), 15 );
-
-		// Adds new button to settings tab.
-		add_filter( 'automator_after_settings_extra_buttons', array( $this, 'facebook_connect_button_html' ), 10, 3 );
 
 		// Capturing the OAuth Token and user id.
 		add_action( "wp_ajax_{$this->wp_ajax_action}", array( $this, $this->wp_ajax_action ), 10 );
@@ -78,19 +67,28 @@ class Facebook_Helpers {
 			)
 		);
 
+		// Load the settings page.
+		require_once __DIR__ . '/../settings/settings-facebook.php';
+
+		new Facebook_Settings( $this );
+
 	}
 
 	/**
+	 * The facebook helper.
+	 *
 	 * @param Facebook_Helpers $options
 	 */
-	public function setOptions( Facebook_Helpers $options ) {
+	public function setOptions( Facebook_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
+	 * The facebook helpers pro.
+	 *
 	 * @param Facebook_Helpers $pro
 	 */
-	public function setPro( Facebook_Helpers $pro ) {
+	public function setPro( Facebook_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -130,141 +128,6 @@ class Facebook_Helpers {
 	}
 
 	/**
-	 * Callback method to `automator_settings_tabs` that displays our Facebook Settings.
-	 *
-	 * @return $tabs All existing tabs.
-	 */
-	public function add_facebook_api_settings( $tabs ) {
-
-		if ( $this->display_settings_tab() ) {
-
-			$tabs[ $this->setting_tab ] = array(
-				'name'           => __( 'Facebook Pages', 'uncanny-automator' ),
-				'title'          => __( 'Facebook Pages account settings', 'uncanny-automator' ),
-				'description'    => $this->get_tab_content(),
-				'settings_field' => 'uap_automator_facebook_api_settings',
-				'wp_nonce_field' => 'uap_automator_facebook_api_nonce',
-				'save_btn_name'  => 'uap_automator_facebook_api_save',
-				'save_btn_title' => __( 'Save settings', 'uncanny-automator' ),
-				'fields'         => array(),
-			);
-
-		}
-
-		return $tabs;
-
-	}
-
-	/**
-	 * Callback method to `automator_after_settings_extra_buttons`. Adds button to our newly created tab.
-	 *
-	 * @return string The button html.
-	 */
-	public function facebook_connect_button_html( $content, $active, $tab ) {
-
-		if ( $this->setting_tab === $active ) {
-			$content = $this->get_fb_settings_content();
-		}
-
-		return $content;
-
-	}
-
-	/**
-	 * The tab content.
-	 *
-	 * @return string the HTML content of the tab.
-	 */
-	public function get_tab_content() {
-
-		ob_start();
-
-		$message = '';
-
-		$message .= $this->get_inline_style();
-
-		$message .= sprintf(
-			'<p>%s</p><p>%s</p>',
-			__(
-				'Connecting to Automator Facebook API requires
-                    that you connect your existing Facebook Account with Automator App.
-                    You must grant Automator App an access to the Facebook Pages and the Instagram Business Account (if you need Instagram later)
-                    that you manage in order for Automator to work properly.',
-				'uncanny-automator'
-			),
-			__(
-				"Click the 'Connect Facebook Pages' to get started and click on the 'Disconnect Facebook Pages' to disconnect your Facebook account.",
-				'uncanny-automator'
-			)
-		);
-
-		$tab = filter_input( 1, 'tab', 513 );
-
-		if ( 'facebook_api' !== $tab ) {
-			return $message;
-		}
-
-		$error_status = filter_input( INPUT_GET, 'status', FILTER_DEFAULT );
-
-		if ( 'error' === $error_status ) {
-			$message .= '<div class="error error-message">' . __( 'An error was encountered while authenticating. Permission is denied.', 'uncanny-automator' ) . '</div>';
-		}
-
-		if ( $this->is_user_connected() ) : ?>
-
-			<?php $user = $this->get_user_connected(); ?>
-
-			<?php if ( isset( $user['user_id'] ) && ! empty( isset( $user['user_id'] ) ) ) : ?>
-
-				<h4>
-					<?php esc_html_e( 'Facebook Account', 'automator-pro' ); ?>
-				</h4>
-
-				<div class="uo-fb-connected-account">
-
-					<?php $fb_profile_link = '#'; // Dont show facebook profile. ?>
-
-					<a class="uo-fb-connected-account__user-card" href="<?php echo esc_url( $fb_profile_link ); ?>"
-					   title="<?php echo esc_attr( $user['name'] ); ?>">
-						<img alt="<?php echo esc_attr( $user['name'] ); ?>" width="24"
-							 src="<?php echo esc_url( $user['picture'] ); ?>"/>
-						<?php echo esc_html( $user['name'] ); ?>
-					</a>
-
-				</div>
-
-			<?php endif; ?>
-
-			<h4>
-				<?php esc_html_e( 'Linked pages', 'uncanny-automator' ); ?>
-			</h4>
-
-			<div id="uo-user-fb-pages">
-				<p>
-					<span class="dashicons dashicons-image-rotate uo-preloader-rotate"></span>
-					<?php esc_html_e( 'Please wait while we fetch the Facebook Pages that you have linked to Automator App...', 'uncanny-automator' ); ?>
-				</p>
-			</div>
-
-			<p>
-				<?php esc_html_e( 'Click on the Change Account Settings button to re-connect your Facebook Account and Facebook Pages.', 'uncanny-automator' ); ?>
-			</p>
-			<a title="<?php esc_attr_e( 'Change Account Settings', 'uncanny-automator' ); ?>"
-			   href="<?php echo esc_url( $this->get_login_dialog_uri() ); ?>"
-			   class="uo-settings-btn uo-settings-btn--secondary">
-				<?php esc_html_e( 'Change Account Settings', 'uncanny-automator' ); ?>
-			</a>
-
-			<?php
-			$this->get_inline_js();
-			$message .= ob_get_clean();
-
-		endif;
-
-		return $message;
-	}
-
-	/**
 	 * Capture the user token and id.
 	 */
 	public function automator_integration_facebook_capture_token() {
@@ -291,7 +154,7 @@ class Facebook_Helpers {
 			delete_option( '_uncannyowl_facebook_pages_settings' );
 		}
 
-		wp_safe_redirect( $this->get_settings_page_uri() );
+		wp_safe_redirect( $this->get_settings_page_uri() . '&connection=new' );
 
 		exit;
 
@@ -324,17 +187,24 @@ class Facebook_Helpers {
 	 */
 	public function automator_integration_facebook_capture_token_fetch_user_pages() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), self::OPTION_KEY ) ) {
+		if ( wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 
 			$existing_page_settings = get_option( '_uncannyowl_facebook_pages_settings' );
 
+			$error_message = '';
+
 			if ( false !== $existing_page_settings ) {
+
+				if ( empty( $existing_page_settings ) ) {
+					$error_message = esc_html__( 'There are no pages found.', 'uncanny-automator' );
+				}
 
 				wp_send_json(
 					array(
-						'status'  => 200,
-						'message' => __( 'Successful', 'automator-pro' ),
-						'pages'   => $existing_page_settings,
+						'status'        => 200,
+						'message'       => __( 'Successful', 'automator-pro' ),
+						'pages'         => $existing_page_settings,
+						'error_message' => $error_message,
 					)
 				);
 
@@ -348,11 +218,21 @@ class Facebook_Helpers {
 
 
 	/**
+	 * Retrieve the users pages.
+	 *
 	 * @return array
 	 */
 	public function fetch_pages_from_api() {
 
 		$settings = get_option( '_uncannyowl_facebook_settings' );
+
+		if ( ! isset( $settings['user']['token'] ) ) {
+			return array(
+				'status'  => 403,
+				'message' => esc_html__( 'Forbidden. User access token is required but empty.', 'uncanny-automator' ),
+				'pages'   => array(),
+			);
+		}
 
 		$remote = wp_remote_post(
 			$this->fb_endpoint_uri,
@@ -372,7 +252,7 @@ class Facebook_Helpers {
 
 			$response = json_decode( $response );
 
-			$status = isset( $response->statusCode ) ? $response->statusCode : '';
+			$status = isset( $response->statusCode ) ? $response->statusCode : ''; //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 			$message = isset( $response->data->error->message ) ? $response->data->error->message : '';
 
@@ -410,21 +290,26 @@ class Facebook_Helpers {
 	}
 
 	/**
+	 * Create and retrieve the settings page uri.
+	 *
 	 * @return string
 	 */
 	public function get_settings_page_uri() {
 
 		return add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
-				'page'      => 'uncanny-automator-settings',
-				'tab'       => 'facebook_api',
+				'post_type'   => 'uo-recipe',
+				'page'        => 'uncanny-automator-config',
+				'tab'         => 'premium-integrations',
+				'integration' => 'facebook-pages',
 			),
 			admin_url( 'edit.php' )
 		);
 	}
 
 	/**
+	 * Check if user is already connected or not.
+	 *
 	 * @return bool
 	 */
 	public function is_user_connected() {
@@ -439,29 +324,8 @@ class Facebook_Helpers {
 	}
 
 	/**
-	 * @return false|string
-	 */
-	private function get_fb_settings_content() {
-		ob_start();
-		?>
-		<?php if ( $this->is_user_connected() ) : ?>
-			<a href="<?php echo esc_url( $this->get_disconnect_url() ); ?>"
-			   class="uo-settings-btn uo-settings-btn--error">
-				<?php esc_html_e( 'Disconnect Facebook Pages' ); ?>
-			</a>
-		<?php else : ?>
-			<a href="<?php echo esc_url( $this->get_login_dialog_uri() ); ?>"
-			   class="uo-settings-btn uo-settings-btn--secondary facebook-setting-btn">
-				<span class="dashicons dashicons-facebook"></span>
-				<?php esc_html_e( 'Connect Facebook Pages' ); ?>
-			</a>
-		<?php endif; ?>
-
-		<?php
-		return ob_get_clean();
-	}
-
-	/**
+	 * Create and retrieve the disconnect url.
+	 *
 	 * @return string
 	 */
 	public function get_disconnect_url() {
@@ -477,9 +341,11 @@ class Facebook_Helpers {
 	}
 
 	/**
+	 * Create and retrieve a url that will be passed to API to create an OAuth url.
+	 *
 	 * @return string
 	 */
-	private function get_login_dialog_uri() {
+	public function get_login_dialog_uri() {
 
 		return add_query_arg(
 			array(
@@ -493,164 +359,11 @@ class Facebook_Helpers {
 	}
 
 	/**
-	 * @return false|string
-	 */
-	private function get_inline_style() {
-		ob_start();
-		?>
-		<style>
-			@keyframes uo-preloader-rotate {
-				to {
-					transform: rotate(-360deg);
-				}
-			}
-
-			.uo-preloader-rotate {
-				animation: uo-preloader-rotate 0.75s linear infinite;
-			}
-
-			span.dashicons-image-rotate {
-				color: #757575;
-				font-size: 14px;
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			button[name="uap_automator_facebook_api_save"] {
-				display: none;
-			}
-
-			.facebook-setting--user {
-				margin-right: 15px;
-			}
-
-			.facebook-setting-btn:hover,
-			.facebook-setting-btn {
-				background-color: #2d88ff;
-				color: #fff;
-				border: 0 none;
-				padding: 6px 15px 8px;
-				box-shadow: none;
-				font-weight: 600;
-			}
-
-			.facebook-setting-btn:hover {
-				outline: 1px dashed #7bb4fd;
-				outline-offset: 3px;
-				outline-width: 1px;
-			}
-
-			.facebook-setting-btn .dashicons-facebook {
-				position: relative;
-				top: -1px;
-				left: -6px;
-				font-size: 24px;
-				opacity: 0.95;
-			}
-
-			#uo-user-fb-pages > p.error {
-				color: #e94b35;
-			}
-
-			span.uo-fb-pages-item-id {
-				border-radius: 8px;
-				font-size: 14px;
-				padding: 2px 4px;
-				text-align: center;
-				display: inline-block;
-				border: 2px dashed #fff27d;
-				margin-right: 10px;
-				background: #fffce2;
-			}
-
-			span.uo-fb-pages-item-task {
-				color: #20831c;
-				position: relative;
-				top: 2.5px;
-			}
-			#uo-user-fb-pages > ul {
-				margin-left: 0;
-			}
-			#uo-user-fb-pages > ul > li {
-				list-style: none!important;
-				margin: 0 0 10px 0;
-			}
-			#uo-user-fb-pages > ul > li > a {
-				margin-right: 15px;
-			}
-
-			.uo-fb-connected-account .uo-fb-connected-account__user-card {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				max-width: 200px;
-			}
-
-			.uo-fb-connected-account .uo-fb-connected-account__user-card > img {
-				margin-right: 10px;
-				border-radius: 50px;
-			}
-		</style>
-		<?php
-		return ob_get_clean();
-	}
-
-	/**
+	 * Retrieve the connected user.
 	 *
-	 */
-	private function get_inline_js() {
-		?>
-		<script>
-			jQuery(document).ready(function ($) {
-				'use strict';
-				var url = "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>";
-				$.ajax({
-					dataType: 'json',
-					url: url,
-					data: {
-						action: '<?php echo esc_html( "{$this->wp_ajax_action}_fetch_user_pages" ); ?>',
-						nonce: '<?php echo esc_html( wp_create_nonce( self::OPTION_KEY ) ); ?>'
-					},
-					success: function (response) {
-
-						if (200 === response.status) {
-
-							var $li = "";
-
-							$.each(response.pages, function (i, page) {
-
-								$li += '<li>';
-								$li += '<span class="uo-fb-pages-item-id">' + page.value + '</span>';
-								$li += '<a href="https://facebook.com/' + page.value + '" target="_blank">' + page.text + '</a>';
-
-								/*$.each( page.tasks, function(i, task){
-									$li += '<span class="uo-fb-pages-item-task enabled">' + task + '</span>';
-								});*/
-								$li += '<span class="uo-fb-pages-item-task enabled"><span class="dashicons dashicons-yes"></span></span>';
-
-								$li += '</li>';
-							});
-
-							$('#uo-user-fb-pages').html('<ul>' + $li + '</ul>');
-						} else {
-							$('#uo-user-fb-pages > p').html(response.message).addClass('error');
-						}
-
-					},
-					error: function (e, message) {
-						$('#uo-user-fb-pages > p').html(message).addClass('error');
-					}
-				});
-			});
-		</script>
-		<?php
-	}
-
-	/**
 	 * @return array|mixed
 	 */
-	private function get_user_connected() {
+	public function get_user_connected() {
 
 		$graph = get_option( self::OPTION_KEY );
 
@@ -668,6 +381,8 @@ class Facebook_Helpers {
 	}
 
 	/**
+	 * Retrieve the connected user from the transient.
+	 *
 	 * @param $user_id
 	 * @param $token
 	 *
@@ -718,6 +433,8 @@ class Facebook_Helpers {
 
 
 	/**
+	 * Retrieve the users pages from wp_options table.
+	 *
 	 * @return array
 	 */
 	public function get_user_pages_from_options_table() {
@@ -758,6 +475,8 @@ class Facebook_Helpers {
 	}
 
 	/**
+	 * Get the endpoint url.
+	 *
 	 * @return string
 	 */
 	public function get_endpoint_url() {
@@ -765,5 +484,6 @@ class Facebook_Helpers {
 		return $this->fb_endpoint_uri;
 
 	}
+
 
 }

@@ -30,14 +30,20 @@ class Hubspot_Helpers {
 	 */
 	public function __construct() {
 
-		$this->setting_tab   = 'hubspot_api';
 		$this->automator_api = AUTOMATOR_API_URL . 'v2/hubspot';
 
-		add_filter( 'automator_settings_tabs', array( $this, 'add_hubspot_api_settings' ), 15 );
 		add_action( 'init', array( $this, 'capture_oauth_tokens' ), 100, 3 );
 		add_action( 'init', array( $this, 'disconnect' ), 100, 3 );
-		add_filter( 'automator_after_settings_extra_buttons', array( $this, 'hubspot_connect_html' ), 10, 3 );
 
+		$this->load_settings();
+
+	}
+
+	public function load_settings() {
+		$this->setting_tab   = 'hubspot-api';
+		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		include_once __DIR__ . '/../settings/settings-hubspot.php';
+		new Hubspot_Settings( $this );
 	}
 
 	/**
@@ -45,125 +51,6 @@ class Hubspot_Helpers {
 	 */
 	public function setOptions( Hubspot_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
-	}
-
-	/**
-	 * Check if the settings tab should display.
-	 *
-	 * @return boolean.
-	 */
-	public function display_settings_tab() {
-
-		if ( Automator()->utilities->has_valid_license() ) {
-			return true;
-		}
-
-		if ( Automator()->utilities->is_from_modal_action() ) {
-			return true;
-		}
-
-		return ! empty( $this->get_client() );
-	}
-
-	/**
-	 * @param $tabs
-	 *
-	 * @return mixed
-	 */
-	public function add_hubspot_api_settings( $tabs ) {
-
-		if ( $this->display_settings_tab() ) {
-
-			$tab_url                    = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
-			$tabs[ $this->setting_tab ] = array(
-				'name'           => __( 'HubSpot', 'uncanny-automator' ),
-				'title'          => __( 'HubSpot account settings', 'uncanny-automator' ),
-				'description'    => sprintf( '<p>%s</p>', __( 'Connecting to HubSpot requires signing into your account to link it to Automator. To get started, click the "Connect an account" button below or the "Disconnect account" button if you need to disconnect or connect a new account. Uncanny Automator can only connect to a single HubSpot account at one time. (It is not possible to set some recipes up under one account and then switch accounts, all recipes are mapped to the account selected on this page and existing recipes may break if they were set up under another account.)', 'uncanny-automator' ) ) . $this->user_info(),
-				'settings_field' => 'uap_automator_hubspot_api_settings',
-				'wp_nonce_field' => 'uap_automator_hubspot_api_nonce',
-				'save_btn_name'  => 'uap_automator_hubspot_api_save',
-				'save_btn_title' => __( 'Save settings', 'uncanny-automator' ),
-				'fields'         => array(),
-			);
-
-		}
-
-		return $tabs;
-	}
-
-	/**
-	 * @param $content
-	 * @param $active
-	 * @param $tab
-	 *
-	 * @return false|mixed|string
-	 */
-	public function hubspot_connect_html( $content, $active, $tab ) {
-
-		if ( 'hubspot_api' === $active ) {
-
-			$tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
-
-			$hubspot_client = $this->get_client();
-
-			if ( $hubspot_client ) {
-				$button_text  = __( 'Disconnect account', 'uncanny-automator' );
-				$button_class = 'uo-disconnect-button';
-				$button_url   = $tab_url . '&disconnect=1';
-			} else {
-				$nonce      = wp_create_nonce( 'automator_hubspot_api_authentication' );
-				$plugin_ver = AUTOMATOR_PLUGIN_VERSION;
-				$api_ver    = '1.0';
-
-				$action       = 'authorization_request';
-				$redirect_url = rawurlencode( $tab_url );
-				$button_url   = $this->automator_api . "?action={$action}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
-				$button_text  = __( 'Connect an account', 'uncanny-automator' );
-				$button_class = 'uo-connect-button';
-			}
-
-			ob_start();
-
-			?>
-
-			<a href="<?php echo esc_url( $button_url ); ?>" class="uo-settings-btn uo-settings-btn--secondary <?php echo esc_attr( $button_class ); ?>">
-			<?php
-			echo esc_attr( $button_text );
-			?>
-			</a>
-
-			<style>
-				.uo-hubspot-user-info {
-					display: flex;
-					align-items: center;
-					margin: 20px 0 0;
-				}
-
-				.uo-hubspot-user-info__handle {
-					font-weight: 700;
-					color: #212121;
-				}
-
-				button[name="uap_automator_hubspot_api_save"] {
-					display: none;
-				}
-
-				.uo-connect-button {
-					color: #fff;
-					background-color: #4fb840;
-				}
-
-				.uo-disconnect-button {
-					color: #fff;
-					background-color: #f58933;
-				}
-			</style>
-			<?php
-			$content = ob_get_contents();
-			ob_end_clean();
-		}
-
-		return $content;
 	}
 
 	/**
@@ -205,7 +92,7 @@ class Hubspot_Helpers {
 	 */
 	public function capture_oauth_tokens() {
 
-		if ( automator_filter_input( 'tab' ) !== $this->setting_tab ) {
+		if ( automator_filter_input( 'integration' ) !== $this->setting_tab ) {
 			return;
 		}
 
@@ -219,7 +106,7 @@ class Hubspot_Helpers {
 
 		$tokens = (array) Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, $nonce );
 
-		$redirect_url = admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab );
+		$redirect_url = $this->tab_url;
 
 		if ( $tokens ) {
 			$this->store_client( $tokens );
@@ -240,7 +127,7 @@ class Hubspot_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( automator_filter_input( 'tab' ) !== $this->setting_tab ) {
+		if ( automator_filter_input( 'integration' ) !== $this->setting_tab ) {
 			return;
 		}
 
@@ -251,7 +138,7 @@ class Hubspot_Helpers {
 		delete_transient( '_automator_hubspot_token_info' );
 		delete_option( '_automator_hubspot_settings' );
 
-		$redirect_url = admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab );
+		$redirect_url = $this->tab_url;
 
 		wp_safe_redirect( $redirect_url );
 
@@ -325,39 +212,6 @@ class Hubspot_Helpers {
 
 		return $tokens;
 
-	}
-
-	/**
-	 * Displays the hubspot handle of the user in settings description.
-	 *
-	 * @return string The hubspot handle html.
-	 */
-	public function user_info() {
-
-		if ( ! $this->get_client() ) {
-			return '';
-		}
-
-		$token_info = $this->api_token_info();
-
-		if ( ! $token_info ) {
-			return '';
-		}
-
-		ob_start();
-		?>
-
-		<div class="uo-hubspot-user-info">
-		<?php if ( isset( $token_info['user'] ) ) : ?>
-			<div class="uo-hubspot-user-info__handle">
-			<?php echo esc_html( $token_info['user'] ); ?>
-			</div>
-		<?php endif; ?>
-		</div>
-
-		<?php
-
-		return ob_get_clean();
 	}
 
 	/**
@@ -450,11 +304,11 @@ class Hubspot_Helpers {
 
 		$client = $this->get_client();
 
-		$client = $this->maybe_refresh_token( $client );
-
 		if ( ! $client ) {
 			return false;
 		}
+
+		$client = $this->maybe_refresh_token( $client );
 
 		$body = array(
 			'client'     => $client,
@@ -621,6 +475,23 @@ class Hubspot_Helpers {
 		$response = $this->api_request( $params );
 
 		return $response;
+	}
+
+	public function disconnect_url() {
+		return $this->tab_url . '&disconnect=1';
+	}
+
+	public function connect_url() {
+
+		$nonce      = wp_create_nonce( 'automator_hubspot_api_authentication' );
+		$plugin_ver = AUTOMATOR_PLUGIN_VERSION;
+		$api_ver    = '1.0';
+
+		$action       = 'authorization_request';
+		$redirect_url = rawurlencode( $this->tab_url );
+		$url   = $this->automator_api . "?action={$action}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
+
+		return $url;
 	}
 
 }

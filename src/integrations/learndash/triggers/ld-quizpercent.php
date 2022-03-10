@@ -137,6 +137,16 @@ class LD_QUIZPERCENT {
 				);
 				Automator()->insert_trigger_meta( $insert );
 
+				$insert = array(
+					'user_id'        => $user_id,
+					'trigger_id'     => $trigger_id,
+					'trigger_log_id' => $trigger_log_id,
+					'meta_key'       => 'LDQUIZ_quiz_passing_percentage',
+					'meta_value'     => (int) learndash_get_setting( $quiz_id, 'passingpercentage' ),
+					'run_number'     => $run_number,
+				);
+				Automator()->insert_trigger_meta( $insert );
+
 				$insert['meta_key']   = 'quiz_id';
 				$insert['meta_value'] = $quiz_id;
 				Automator()->insert_trigger_meta( $insert );

@@ -131,7 +131,7 @@ class TWITTER_POSTSTATUS_2 {
 		// Get twitter credentials.
 		$request_body = Automator()->helpers->recipe->twitter->get_client();
 
-		$url = Automator()->helpers->recipe->twitter->automator_api;
+		$url = Twitter_Helpers::$automator_api;
 
 		$request_body['action']    = 'statuses_update';
 		$request_body['status']    = $status;
@@ -177,7 +177,7 @@ class TWITTER_POSTSTATUS_2 {
 		// Get twitter credentials.
 		$request_body = Automator()->helpers->recipe->twitter->get_client();
 
-		$url = Automator()->helpers->recipe->twitter->automator_api;
+		$url = Twitter_Helpers::$automator_api;
 
 		$request_body['action'] = 'media_upload';
 		$request_body['media']  = $media;

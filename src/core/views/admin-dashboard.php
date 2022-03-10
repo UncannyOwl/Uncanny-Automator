@@ -130,14 +130,14 @@ if ( $dashboard->has_site_connected ) {
 									', ',
 									array(
 										// Integration names are not translatable
-										'<automator-icon id="slack"></automator-icon> <strong>Slack</strong>',
+										'<uo-icon id="slack"></uo-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<automator-icon id="google-sheet"></automator-icon> <strong>Google Sheets</strong>',
+										'<uo-icon id="google-sheet"></uo-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
-										'<automator-icon id="facebook"></automator-icon> <strong>Facebook</strong>',
+										'<uo-icon id="facebook"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <automator-icon id="external-link"></automator-icon></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
 							)
 						);
 					}
@@ -153,14 +153,14 @@ if ( $dashboard->has_site_connected ) {
 									', ',
 									array(
 										// Integration names are not translatable
-										'<automator-icon id="slack"></automator-icon> <strong>Slack</strong>',
+										'<uo-icon id="slack"></uo-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<automator-icon id="google-sheet"></automator-icon> <strong>Google Sheets</strong>',
+										'<uo-icon id="google-sheet"></uo-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
-										'<automator-icon id="facebook"></automator-icon> <strong>Facebook</strong>',
+										'<uo-icon id="facebook"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <automator-icon id="external-link"></automator-icon></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
 							)
 						);
 					}
@@ -178,20 +178,20 @@ if ( $dashboard->has_site_connected ) {
 						);
 						?>
 
-						<automator-button
+						<uo-button
 							href="<?php echo esc_url( $setup_wizard_link ) ?>"
 						>
 							<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
-						</automator-button>
+						</uo-button>
 
 					<?php } ?>
 					<?php if ( ! $dashboard->is_pro && $dashboard->is_pro_installed ) { ?>
 
-						<automator-button
+						<uo-button
 							href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
 						>
 							<?php esc_attr_e( 'Activate your license', 'uncanny-automator' ); ?>
-						</automator-button>
+						</uo-button>
 
 					<?php } ?>
 				</div>
@@ -464,13 +464,13 @@ if ( $dashboard->has_site_connected ) {
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gototraining/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'GoToTraining', 'uncanny-automator' ); ?>
+											   target="_blank"><?php esc_attr_e( 'GoTo Training', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gotowebinar/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'GoToWebinar', 'uncanny-automator' ); ?>
+											   target="_blank"><?php esc_attr_e( 'GoTo Webinar', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
@@ -693,7 +693,7 @@ if ( $dashboard->has_site_connected ) {
 								printf(
 								/* translators: 1. Pro label */
 									esc_attr__( 'with %1$s', 'uncanny-automator' ),
-									'<automator-pro-tag></automator-pro-tag>'
+									'<uo-pro-tag></uo-pro-tag>'
 								);
 
 								?>
@@ -741,11 +741,11 @@ if ( $dashboard->has_site_connected ) {
 						<?php if ( $dashboard->is_pro_installed ) { ?>
 							<div class="uap-dashboard-box-footer">
 
-								<automator-button
+								<uo-button
 									href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
 								>
 									<?php esc_attr_e( 'Activate Pro license', 'uncanny-automator' ); ?>
-								</automator-button>
+								</uo-button>
 
 							</div>
 						<?php } else { ?>
@@ -795,20 +795,20 @@ if ( $dashboard->has_site_connected ) {
 							);
 							?>
 
-							<automator-button
+							<uo-button
 								href="<?php echo esc_url( $setup_wizard_link ) ?>"
 							>
 								<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
-							</automator-button>
+							</uo-button>
 
 						<?php } ?>
 						<?php if ( ! $dashboard->is_pro && $dashboard->is_pro_installed ) { ?>
 
-							<automator-button
+							<uo-button
 								href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
 							>
 								<?php esc_attr_e( 'Activate your license', 'uncanny-automator' ); ?>
-							</automator-button>
+							</uo-button>
 
 						<?php } ?>
 					</div>

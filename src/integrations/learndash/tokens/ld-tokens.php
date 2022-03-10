@@ -63,6 +63,13 @@ class Ld_Tokens {
 				'tokenType'       => 'float',
 				'tokenIdentifier' => $trigger_meta,
 			);
+
+			$new_tokens[] = array(
+				'tokenId'         => $trigger_meta . '_quiz_passing_percentage',
+				'tokenName'       => __( 'Passing score %', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_meta,
+			);
 			$tokens       = array_merge( $tokens, $new_tokens );
 		}
 
@@ -204,6 +211,7 @@ class Ld_Tokens {
 				|| in_array( 'LDQUIZ_URL', $pieces, true )
 				|| in_array( 'TCMODULEINTERACTION', $pieces, true )
 				|| in_array( 'LDQUIZ_achieved_percent', $pieces, true )
+				|| in_array( 'LDQUIZ_quiz_passing_percentage', $pieces, true )
 				|| in_array( 'LDQUIZ_achieved_score', $pieces, true )
 				|| in_array( 'LDQUIZ_achieved_points', $pieces, true )
 			) {
@@ -299,6 +307,11 @@ class Ld_Tokens {
 				// User's QUIZPERCENT token
 				if ( in_array( 'LDQUIZ_achieved_percent', $pieces, true ) ) {
 					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ_achieved_percent', $user_id, $recipe_log_id );
+				}
+
+				// LD QUIZPERCENT token
+				if ( in_array( 'LDQUIZ_quiz_passing_percentage', $pieces, true ) ) {
+					return Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ_quiz_passing_percentage', $user_id, $recipe_log_id );
 				}
 
 				// User's QUIZSCORE token

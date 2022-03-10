@@ -65,6 +65,9 @@ class Learndash_Helpers {
 			15
 		);
 		add_action( 'wp_ajax_select_topic_from_lesson_LD_TOPICDONE', array( $this, 'topic_from_lesson_func' ), 15 );
+
+
+		add_action( 'learndash_update_user_activity', array( $this, 'learndash_update_user_activity_fund' ), 20, 1 );
 	}
 
 	/**
@@ -497,5 +500,100 @@ class Learndash_Helpers {
 
 		echo wp_json_encode( $fields );
 		die();
+	}
+
+	/**
+	 * Fallback code to fire course, lesson and topic complete actions if admin completes on edit-profile
+	 *
+	 * @param $args
+	 *
+	 * @return void
+	 */
+	public function learndash_update_user_activity_fund( $args ) {
+		// Bail early if args is empty
+		if ( empty( $args ) ) {
+			return;
+		}
+		// If it's not an admin (or ajax for quiz complete), bail
+		if ( ! is_admin() && ! is_ajax() ) {
+			return;
+		}
+		// activity status is empty or not completed, bail
+		if ( ! isset( $args['activity_status'] ) || 1 !== absint( $args['activity_status'] ) ) {
+			return;
+		}
+		// 'update' action is called when an activity is updated
+		$activity_action = $args['activity_action'];
+		if ( 'update' !== $activity_action && 'insert' !== $activity_action ) {
+			return;
+		}
+		// if activity_completed timestamp is empty, bail
+		if ( empty( $args['activity_completed'] ) ) {
+			return;
+		}
+		$user_id         = absint( $args['user_id'] );
+		$user            = get_user_by( 'ID', $user_id );
+		$post_id         = absint( $args['post_id'] ); //Course, lesson or topic ID
+		$course_id       = absint( $args['course_id'] ); // Linked Course ID
+		$activity_type   = $args['activity_type']; //course, lesson or topic
+		$course_progress = get_user_meta( $user_id, '_sfwd-course_progress', true ); // course progress
+		// Activity type is lesson, fire do_action
+		if ( 'lesson' === $activity_type ) {
+			do_action(
+				'learndash_lesson_completed',
+				array(
+					'user'     => $user,
+					'course'   => get_post( $course_id ),
+					'lesson'   => get_post( $post_id ),
+					'progress' => $course_progress,
+				)
+			);
+
+			return;
+		}
+
+		// Activity type is topic, fire do_action
+		if ( 'topic' === $activity_type ) {
+			$lesson_id = learndash_get_lesson_id( $post_id, $course_id );
+			do_action(
+				'learndash_topic_completed',
+				array(
+					'user'     => $user,
+					'course'   => get_post( $course_id ),
+					'lesson'   => get_post( $lesson_id ),
+					'topic'    => get_post( $post_id ),
+					'progress' => $course_progress,
+				)
+			);
+
+			return;
+		}
+
+		// Activity type is course, fire do_action
+		if ( 'course' === $activity_type ) {
+			do_action(
+				'learndash_course_completed',
+				array(
+					'user'             => $user,
+					'course'           => get_post( $course_id ),
+					'progress'         => $course_progress,
+					'course_completed' => $args['activity_completed'],
+				)
+			);
+
+			return;
+		}
+
+
+		// Activity type is quiz, fire do_action
+		if ( 'quiz' === $activity_type ) {
+			if ( empty( $args['activity_meta'] ) ) {
+				return;
+			}
+			$quizdata = $args['activity_meta'];
+			do_action( 'learndash_quiz_submitted', $quizdata, $user );
+
+			return;
+		}
 	}
 }

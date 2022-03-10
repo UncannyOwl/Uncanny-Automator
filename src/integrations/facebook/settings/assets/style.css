@@ -1,0 +1,20 @@
+#facebook-pages-list {
+	display: flex;
+	flex-direction: column;
+}
+
+	.uap-facebook-page {
+		padding: 10px;
+
+		border: 1px solid var(--uap-border-color-gray);
+		border-radius: var(--uap-border-radius);
+	}
+
+	.uap-facebook-page uo-icon {
+		font-size: var(--uap-font-size--body-xxsmall);
+		line-height: var(--uap-line-height--body-xsmall);
+	}
+
+	.uap-facebook-page a {
+		font-weight: 500;
+	}

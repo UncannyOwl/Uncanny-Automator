@@ -268,7 +268,7 @@ class Recipe_Post_Rest_Api {
 
 		$recipe_post = array(
 			'post_type'   => 'uo-recipe',
-			'post_author' => get_current_user_id()
+			'post_author' => get_current_user_id(),
 		);
 
 		if ( $request->has_param( 'recipeTitle' ) ) {
@@ -286,8 +286,8 @@ class Recipe_Post_Rest_Api {
 		$return                   = array();
 		$return['success']        = true;
 		$return['post_ID']        = $post_id;
-		$return['action']         = $action;
-		$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe->ID );
+		$return['action']         = 'create';
+		$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
 
 		return new WP_REST_Response( $return, 200 );
 

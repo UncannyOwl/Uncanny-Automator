@@ -357,9 +357,18 @@ class SHEET_ADDARECORD {
 		}
 
 		for ( $i = 0; $i < count( $fields ); $i ++ ) {
-			$key                = $fields[ $i ]['GS_COLUMN_NAME'];
-			$value              = Automator()->parse->text( $fields[ $i ]['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
+
+			$key = $fields[ $i ]['GS_COLUMN_NAME'];
+
+			$value = Automator()->parse->text( $fields[ $i ]['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
+
+			// Allow overwrite.
+			if ( true === apply_filters( 'automator_google_sheets_disable_tokens_html', true ) ) {
+				$value = wp_strip_all_tags( $value );
+			}
+
 			$key_values[ $key ] = $value;
+
 			if ( ! empty( $value ) ) {
 				$check_all_empty = false;
 			}

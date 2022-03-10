@@ -24,11 +24,12 @@ class Add_Active_Campaign_Integration {
 
 		$api_url = get_option( 'uap_active_campaign_api_url', '' );
 		$api_key = get_option( 'uap_active_campaign_api_key', '' );
-		$user    = get_option( 'ua_active_campaign_connected_user', '' );
+		$user    = get_transient( 'uap_active_campaign_connected_user' );
 
 		return ! empty( $user ) && ! empty( $api_url ) && ! empty( $api_key );
 
 	}
+	
 	/**
 	 * Integration Set-up.
 	 */
@@ -37,9 +38,7 @@ class Add_Active_Campaign_Integration {
 		$this->set_name( 'ActiveCampaign' );
 		$this->set_icon( __DIR__ . '/img/activecampaign-icon.svg' );
 		$this->set_connected( $this->is_connected() );
-		$this->set_settings_url(
-			admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=active-campaign'
-		);
+		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'active-campaign' ) );
 	}
 
 	/**

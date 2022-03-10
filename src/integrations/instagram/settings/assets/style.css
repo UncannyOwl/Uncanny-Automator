@@ -1,0 +1,59 @@
+#facebook-pages-list {
+	display: flex;
+	flex-direction: column;
+}
+
+	.uap-facebook-page {
+		border: 1px solid var(--uap-border-color-gray);
+		border-radius: var(--uap-border-radius);
+	}
+
+		.uap-instagram-account {
+			padding: 10px;
+		}
+
+			.uap-instagram-account-no-account {
+				color: var(--uap-font-color-secondary);
+				font-style: italic;
+			}
+
+			/* Instagram pill */
+			.uap-instagram-account-pill {
+				display: flex;
+				align-items: center;
+			}
+
+				.uap-instagram-account-pill-avatar {
+					width: 24px;
+					height: 24px;
+
+					border-radius: 50%;
+				}
+
+				.uap-instagram-account-pill-username {
+					margin-left: 8px;
+					margin-right: 8px;
+
+					font-weight: 500;
+
+					color: var(--uap-font-color);
+				}
+
+				.uap-instagram-account-pill uo-icon[id="instagram"] {
+					line-height: 1;
+					margin-top: 2px;
+				}
+
+		.uap-linked-account {
+			padding: 10px;
+
+			background: rgba( var(--uap-color-gray-rgb), .2 );
+
+			font-size: var(--uap-font-size--body-xxsmall);
+			line-height: var(--uap-line-height--body-xxsmall);
+			color: var(--uap-font-color-secondary);
+		}
+
+			.uap-linked-account uo-icon[id="facebook"] {
+				font-size: var(--uap-font-size--body-xxsmall);
+			}

@@ -63,7 +63,14 @@ class AMELIA_APPOINTMENT_BOOKED {
 	}
 
 	public function prepare_to_run( $data ) {
+
 		$appointment = $data[0];
+	}
+
+	public function do_continue_anon_trigger( ...$args ) {
+
+		return true;
+
 	}
 
 }

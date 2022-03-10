@@ -93,7 +93,7 @@ class Add_Twilio_Integration {
 				'name'         => 'Twilio',
 				'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/twilio-icon.svg' ),
 				'connected'    => $this->connected,
-				'settings_url' => admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=twilio_api',
+				'settings_url' => automator_get_premium_integrations_settings_url( 'twilio-api' ),
 			)
 		);
 

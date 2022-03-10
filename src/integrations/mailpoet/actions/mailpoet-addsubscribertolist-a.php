@@ -59,6 +59,7 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mailpoet/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
 			/* translators: Action - MailPoet */
 			'sentence'           => sprintf( esc_attr__( 'Add {{a subscriber:%1$s}} to {{a list:%2$s}}', 'uncanny-automator' ), 'ADDSUBSCRIBER', $this->action_meta ),
 			/* translators: Action - MailPoet */

@@ -400,7 +400,7 @@ function automator_utm_parameters( $url, $medium = '', $content = '' ) {
 	// utm_content=element-id+unique-id
 
 	$default_utm_parameters = array(
-		'source' => 'uncanny_automator_pro',
+		'source' => 'uncanny_automator',
 	);
 
 	try {

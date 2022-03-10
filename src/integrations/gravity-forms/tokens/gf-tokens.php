@@ -124,7 +124,8 @@ class Gf_Tokens {
 	 */
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true ) || in_array( 'SUBFIELD', $pieces, true ) ) {
+			if ( in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true )
+			     || in_array( 'ANONGFSUBFORM', $pieces, true ) || in_array( 'SUBFIELD', $pieces, true ) ) {
 				if ( isset( $pieces[2] ) && ( 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
 					$t_data   = array_shift( $trigger_data );
 					$form_id  = $t_data['meta'][ $pieces[2] ];

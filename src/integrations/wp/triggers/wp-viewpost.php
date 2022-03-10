@@ -54,8 +54,6 @@ class WP_VIEWPOST {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -63,6 +61,9 @@ class WP_VIEWPOST {
 	 */
 	public function view_post() {
 		global $post;
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
 
 		if ( ! is_singular( $post->post_type ) && ! is_post_type_viewable( $post->post_type ) ) {
 			return;

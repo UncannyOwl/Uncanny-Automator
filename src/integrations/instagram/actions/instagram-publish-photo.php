@@ -16,11 +16,6 @@ class INSTAGRAM_PUBLISH_PHOTO {
 
 		$this->fb_endpoint_uri = AUTOMATOR_API_URL . 'v2/facebook';
 
-		// Allow overwrite in wp-config.php.
-		if ( DEFINED( 'UO_AUTOMATOR_DEV_FB_ENDPOINT_URL' ) ) {
-			$this->fb_endpoint_uri = UO_AUTOMATOR_DEV_FB_ENDPOINT_URL;
-		}
-
 		add_action( "wp_ajax_{$this->ig_pages_wp_ajax_endpoint}", array( $this, $this->ig_pages_wp_ajax_endpoint ) );
 
 		$this->setup_action();
@@ -63,7 +58,7 @@ class INSTAGRAM_PUBLISH_PHOTO {
 				array(
 					'option_code'           => $this->get_action_meta(),
 					/* translators: Email field */
-					'label'                 => esc_attr__( 'Select an Instagram account', 'uncanny-automator' ),
+					'label'                 => esc_attr__( 'Instagram account', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'supports_custom_value' => false,
 					'required'              => true,
@@ -72,16 +67,16 @@ class INSTAGRAM_PUBLISH_PHOTO {
 				// The image url.
 				array(
 					'option_code' => 'INSTAGRAM_IMAGE_URL',
-					'label'       => esc_html__( 'Enter the image URI. The image must be JPEG or PNG.', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Image URL', 'uncanny-automator' ),
 					'input_type'  => 'url',
 					'required'    => true,
 					'placeholder' => esc_html__( 'https://pathtoimage/image.jpg', 'uncanny-automator' ),
-					'description' => esc_html__( 'Extended JPEG formats such as MPO and JPS are not supported.', 'uncanny-automator' ),
+					'description' => esc_html__( 'The image just be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported.', 'uncanny-automator' ),
 				),
 				// The hashtags.
 				array(
 					'option_code' => 'INSTAGRAM_HASHTAGS',
-					'label'       => esc_html__( 'Description/Hashtags', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Caption', 'uncanny-automator' ),
 					'input_type'  => 'textarea',
 					'required'    => false,
 					'placeholder' => esc_html__( 'My image #description', 'uncanny-automator' ),
@@ -98,6 +93,8 @@ class INSTAGRAM_PUBLISH_PHOTO {
 
 
 	/**
+	 * Process the Instagram action.
+	 *
 	 * @param $user_id
 	 * @param $action_data
 	 * @param $recipe_id
@@ -158,12 +155,12 @@ class INSTAGRAM_PUBLISH_PHOTO {
 			$response = json_decode( wp_remote_retrieve_body( $request ) );
 
 			// Bailout if statusCode is not set.
-			if ( ! isset( $response->statusCode ) ) {
+			if ( ! isset( $response->statusCode ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$action_data['complete_with_errors'] = true;
 				Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'There was an error in the response code.', 'uncanny-automator' ) );
 				return;
 			}
-			if ( 200 === $response->statusCode ) {
+			if ( 200 === $response->statusCode ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				// Otherwise, complete the action.
 				Automator()->complete->action( $user_id, $action_data, $recipe_id );
 			} else {

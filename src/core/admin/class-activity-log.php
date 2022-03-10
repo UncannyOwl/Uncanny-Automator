@@ -279,6 +279,10 @@ class Activity_Log {
 			.lity-iframe-container {
 				height: 100% !important;
 			}
+
+			#wpbody {
+				padding-top: 0 !important;
+			}
 		</style>
 		<?php
 		//  Escaping it would make html entities not render properly. Ignoring

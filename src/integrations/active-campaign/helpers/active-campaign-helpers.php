@@ -18,13 +18,6 @@ class Active_Campaign_Helpers {
 	public $options;
 
 	/**
-	 * The settings tab.
-	 *
-	 * @var string The settings tab.
-	 */
-	public $setting_tab;
-
-	/**
 	 * The trigger options.
 	 *
 	 * @var mixed The trigger options.
@@ -60,11 +53,7 @@ class Active_Campaign_Helpers {
 			$this->ac_endpoint_uri = UO_AUTOMATOR_DEV_AC_ENDPOINT_URL;
 		}
 
-		$this->setting_tab   = 'active-campaign';
 		$this->automator_api = AUTOMATOR_API_URL . 'v2/active-campaign';
-
-		add_filter( 'automator_settings_tabs', array( $this, 'add_active_campaign_api_settings' ), 15 );
-		add_filter( 'automator_after_settings_extra_buttons', array( $this, 'ac_connect_html' ), 10, 3 );
 
 		// Add the ajax endpoints.
 		add_action( 'wp_ajax_active-campaign-list-tags', array( $this, 'list_tags' ) );
@@ -75,14 +64,36 @@ class Active_Campaign_Helpers {
 		add_action( 'wp_ajax_active-campaign-regenerate-webhook-key', array( $this, 'regenerate_webhook_key_ajax' ) );
 		add_action( 'wp_ajax_active-campaign-sync-data', array( $this, 'ac_sync_data' ) );
 
-		add_action( 'admin_init', array( $this, 'save_settings' ) );
-
-		add_filter( 'automator_after_settings_extra_content', array( $this, 'after_settings' ), 10, 3 );
-
-		$this->webhook_enabled  = 'on' === get_option( 'uap_active_campaign_enable_webhook', false );
 		$this->webhook_endpoint = apply_filters( 'automator_active_campaign_webhook_endpoint', '/active-campaign', $this );
 
 		add_action( 'rest_api_init', array( $this, 'init_webhook' ) );
+
+		$this->load_settings_tab();
+	}
+
+
+	/**
+	 * Checks if webhook is enabled or not. We need to support both 'on' and 1 values for backwards compatibility.
+	 *
+	 * @return void
+	 */
+	public function is_webhook_enabled() {
+
+		$webhook_enabled_option = get_option( 'uap_active_campaign_enable_webhook', false );
+
+		// The get_option can return string or boolean sometimes.
+		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			return true;
+		}
+
+		return false;
+	}
+
+	public function load_settings_tab() {
+		// Load the settings page.
+		require_once __DIR__ . '/../settings/settings-active-campaign.php';
+
+		new Active_Campaign_Settings( $this );
 	}
 
 	/**
@@ -148,113 +159,6 @@ class Active_Campaign_Helpers {
 		}
 
 		return true;
-	}
-
-	/**
-	 * The AC Settings tab.
-	 *
-	 * @param $tabs
-	 *
-	 * @return mixed
-	 */
-	public function add_active_campaign_api_settings( $tabs ) {
-
-		if ( $this->has_valid_license() || $this->has_connection_data() || $this->is_from_modal_action() ) {
-			$tab_url                    = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=' . $this->setting_tab;
-			$tabs[ $this->setting_tab ] = array(
-				'name'           => __( 'ActiveCampaign', 'uncanny-automator' ),
-				'title'          => __( 'ActiveCampaign settings', 'uncanny-automator' ),
-				'description'    => sprintf( '<p>%s</p>', __( 'Please enter your API Access URL and Key to get started with ActiveCampaign. Go to your ActiveCampaign account settings, and under developer tab to see your unique url and key.', 'uncanny-automator' ) ) . $this->get_user_name(),
-				'settings_field' => 'uap_automator_active_campaign_api_settings',
-				'wp_nonce_field' => 'uap_automator_active_campaign_nonce',
-				'save_btn_name'  => 'uap_automator_active_campaign_save',
-				'save_btn_title' => __( 'Save settings', 'uncanny-automator' ),
-				'fields'         => array(
-					'uap_active_campaign_api_url' => array(
-						'title'       => __( 'Account url:', 'uncanny-automator' ),
-						'type'        => 'text',
-						'css_classes' => '',
-						'placeholder' => 'https://<account-name>.api-us1.com',
-						'default'     => '',
-						'required'    => false,
-					),
-					'uap_active_campaign_api_key' => array(
-						'title'       => __( 'API key:', 'uncanny-automator' ),
-						'type'        => 'text',
-						'css_classes' => '',
-						'placeholder' => 'Your API key',
-						'default'     => '',
-						'required'    => false,
-					),
-				),
-			);
-
-			if ( $this->has_connection_data() ) {
-				$tabs[ $this->setting_tab ]['fields']['uap_active_campaign_enable_webhook'] = array(
-					'title'       => __( 'Enable triggers:', 'uncanny-automator' ),
-					'type'        => 'checkbox',
-					'css_classes' => '',
-					'placeholder' => '',
-					'required'    => false,
-				);
-			}
-		}
-
-		return $tabs;
-	}
-
-	public function is_active_tab() {
-		return filter_has_var( INPUT_GET, 'tab' ) && $this->setting_tab === filter_input( INPUT_GET, 'tab' );
-	}
-
-	public function after_settings() {
-		if ( $this->is_active_tab() && $this->webhook_enabled && $this->has_connection_data() ) {
-			$webhook_url        = get_rest_url() . AUTOMATOR_REST_API_END_POINT . $this->get_webhook_url();
-			$regenerate_key_url = add_query_arg(
-				array(
-					'action' => 'active-campaign-regenerate-webhook-key',
-				),
-				admin_url( 'admin-ajax.php' )
-			);
-			$alert              = __( 'Regenerating the URL will prevent ActiveCampaign triggers from working until the new webhook URL is set in ActiveCampaign. Continue?', 'uncanny-automator' );
-			ob_start(); ?>
-			<div class="uo-settings-content-form">
-				<p>
-					<?php
-					echo wp_kses_post(
-						__(
-							"To enable ActiveCampaign triggers you'll need to set up a webhook in your ActiveCampaign account.
-							To do this, go to <strong>Settings</strong> > <strong>Developer</strong> > <strong>Manage Webhooks</strong>
-						 	and click <strong>Add</strong>.  Set up a webhook with the URL below and check the following types:",
-							'uncanny-automator'
-						)
-					);
-					?>
-				</p>
-				<ul style="font-size: 13px; line-height: 1.5; margin: 1em 0;list-style-type:disc; list-style-position: inside;">
-					<li><?php esc_attr_e( 'Contact Added', 'uncanny-automator' ); ?></li>
-					<li><?php esc_attr_e( 'Contact Tag Added', 'uncanny-automator' ); ?></li>
-					<li><?php esc_attr_e( 'Contact Tag Removed', 'uncanny-automator' ); ?></li>
-					<li><?php esc_attr_e( 'Contact Unsubscription', 'uncanny-automator' ); ?></li>
-				</ul>
-					
-				<p><?php echo wp_kses_post( 'Then check all boxes next to <strong>Initialize From</strong> and click <strong>Add</strong>.', 'uncanny-automator' ); ?></p>
-				<p><?php esc_attr_e( 'For more detailed instructions, ', 'uncanny-automator' ); ?>
-				<a target="_blank" href="<?php echo esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/activecampaign-triggers/', 'settings', 'active-campaign-triggers-kb_article' ) ); ?>" ><?php esc_attr_e( 'click here', 'uncanny-automator' ); ?></a>.</p>
-
-				<label for=""><?php esc_attr_e( 'Webhook URL:', 'uncanny-automator' ); ?></label>
-				<input type="text" class="uo-admin-input " value="<?php echo esc_url( $webhook_url ); ?>" placeholder="" readonly="">
-			</div>
-			<a     class="uo-settings-btn uo-settings-btn--secondary"
-				style="margin-top: 10px"
-				onclick="return confirm('<?php echo esc_html( $alert ); ?>');"
-				href="<?php echo esc_url( $regenerate_key_url ); ?>" title="<?php esc_attr_e( 'Regenerate the key', 'uncanny-automator' ); ?>">
-			<?php esc_attr_e( 'Regenerate webhook URL', 'uncanny-automator' ); ?>
-			</a>
-			<?php
-
-			return ob_get_clean();
-		}
 	}
 
 	public function list_retrieve() {
@@ -343,208 +247,19 @@ class Active_Campaign_Helpers {
 	}
 
 	/**
-	 * The connect button html.
-	 *
-	 * @param $content
-	 * @param $active
-	 * @param $tab
-	 *
-	 * @return false|mixed|string
-	 */
-	public function ac_connect_html( $content, $active, $tab ) {
-		return $content;
-	}
-
-	/**
-	 * Displays the twitter handle of the user in settings description..
-	 *
-	 * @return string The twitter handle html.
-	 */
-	public function get_user_name() {
-
-		ob_start();
-
-		$account_users = array();
-		$settings_url  = get_option( 'uap_active_campaign_api_url', '' );
-		$settings_key  = get_option( 'uap_active_campaign_api_key', '' );
-
-		$users = $this->get_connected_users();
-		?>
-
-		<?php if ( empty( $users ) ) : ?>
-			<p style="color: #656565;">
-			<?php esc_html_e( 'Status: Not connected', 'uncanny-automator' ); ?>
-			</p>
-		<?php endif; ?>
-
-		<?php
-		if ( ! empty( $settings_key ) && ! empty( $settings_url ) ) {
-
-			$url = sprintf( '%s/api/3/users', esc_url( $settings_url ) );
-
-			if ( ! empty( $users ) ) :
-				foreach ( $users as $user ) {
-					$account_users[] = $user->firstName . ' ' . $user->lastName . ' (' . $user->email . ')'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				}
-				?>
-				<p style="color: #0dba19;">
-				 <?php echo 'Connected as: '; ?>
-					<strong>
-				<?php echo esc_html( implode( ' ', $account_users ) ); ?>
-					</strong>
-				</p>
-				<style>
-					.uo-settings-content-description a#ac-dc-btn { color: #e94b35; }
-					.uo-settings-content-description a#ac-dc-btn:hover { color: #fff; }
-					@-moz-keyframes ac-spin {
-						from { -moz-transform: rotate(0deg); }
-						to { -moz-transform: rotate(360deg); }
-					}
-					@-webkit-keyframes ac-spin {
-						from { -webkit-transform: rotate(0deg); }
-						to { -webkit-transform: rotate(360deg); }
-					}
-					@keyframes ac-spin {
-						from {transform:rotate(0deg);}
-						to {transform:rotate(360deg);}
-					}
-					.ac-syncing {
-						animation-name: ac-spin;
-						animation-duration: 2000ms;
-						animation-iteration-count: infinite;
-						animation-timing-function: linear;
-					}
-					p.error {
-						color: #e94b35;
-					}
-				</style>
-				<p>
-					<?php
-						$dc_uri = add_query_arg(
-							array(
-								'action' => 'active-campaign-disconnect',
-							),
-							admin_url( 'admin-ajax.php' )
-						);
-					?>
-
-					<button type="button" id="ac-refresh-btn" href="#"
-						class="uo-settings-btn uo-settings-btn--primary">
-						<span style="position:relative; top: 1.5px; margin-left: -5px;" class="ac-sync-btn dashicons dashicons-update-alt"></span>
-						<span class="ac-refresh-btn-label">
-							<?php echo esc_html( $this->get_sync_btn_label()['default'] ); ?>
-						</span>
-					</button>
-
-					<a id="ac-dc-btn"
-						class="uo-settings-btn uo-settings-btn--error"
-							href="<?php echo esc_url( $dc_uri ); ?>" title="<?php esc_attr_e( 'Disconnect', 'uncanny-automator' ); ?>">
-				<?php esc_attr_e( 'Disconnect', 'uncanny-automator' ); ?>
-						</a>
-
-					<script>
-						jQuery(document).ready(function($){
-
-							'use strict';
-
-							$('#ac-refresh-btn').on('click', function(e){
-
-								var $targetElement = $(this);
-
-								$targetElement.attr('disabled','disabled');
-								$targetElement.find('.ac-sync-btn').addClass('ac-syncing');
-								$targetElement.find('.ac-refresh-btn-label').html('<?php echo esc_html( $this->get_sync_btn_label()['syncing'] ); ?>');
-
-								// Show some progress to the user after 2.5 seconds.
-								var timeOut = setTimeout( function(){
-									$targetElement.find('.ac-refresh-btn-label').html('<?php echo esc_html( $this->get_sync_btn_label()['working'] ); ?>');
-								}, 2500 );
-
-								$.ajax({
-									url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
-									data: {
-										action: 'active-campaign-sync-data',
-										nonce: '<?php echo esc_html( wp_create_nonce( 'ac_sync_data' ) ); ?>'
-									},
-									success: function( response ) {
-										clearTimeout( timeOut );
-										$targetElement.removeAttr('disabled');
-										$targetElement.find('.ac-sync-btn').removeClass('ac-syncing');
-										$targetElement.find('.ac-refresh-btn-label').html('<?php echo esc_html( $this->get_sync_btn_label()['complete'] ); ?>');
-									},
-									error: function( request, status, error ) {
-										clearTimeout( timeOut );
-										$targetElement.removeAttr('disabled');
-										$targetElement.find('.ac-sync-btn').removeClass('ac-syncing');
-										$targetElement.find('.ac-refresh-btn-label').html('<?php echo esc_html( $this->get_sync_btn_label()['default'] ); ?>');
-										// Show the error.
-										$('#ac-request-error').remove();
-										$targetElement.parent().after( '<p id="ac-request-error" class="error"><?php esc_html_e( 'Error fetching resource: ', 'uncanny-automator' ); ?>' + error + '</p>');
-									}
-								});
-							});
-						});
-					</script>
-				</p>
-				<?php
-			endif;
-		}
-		return ob_get_clean();
-	}
-
-	/**
 	 * Removes all option. Automatically disconnects the account.
 	 */
 	public function disconnect() {
 
-		update_option( 'uap_active_campaign_api_url', '' );
-		update_option( 'uap_active_campaign_api_key', '' );
-		update_option( 'ua_active_campaign_connected_user', '' );
-
+		delete_option( 'uap_active_campaign_api_url' );
+		delete_option( 'uap_active_campaign_api_key' );
+		delete_transient( 'uap_active_campaign_connected_user' );
 		delete_option( 'uap_active_campaign_enable_webhook' );
 
-		$uri = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=active-campaign';
+		$uri = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=active-campaign';
 		wp_safe_redirect( $uri );
 
 		exit;
-
-	}
-
-	/**
-	 * Save the user connection data.
-	 */
-	public function save_settings() {
-
-		$url   = filter_input( INPUT_POST, 'uap_active_campaign_api_url', FILTER_UNSAFE_RAW );
-		$key   = filter_input( INPUT_POST, 'uap_active_campaign_api_key', FILTER_UNSAFE_RAW );
-		$nonce = filter_input( INPUT_POST, 'uap_automator_active_campaign_nonce', FILTER_UNSAFE_RAW );
-
-		if ( ! empty( $nonce ) ) :
-			update_option( 'ua_active_campaign_connected_user', '' );
-		endif;
-
-		if ( ! empty( $url ) && ! empty( $key ) ) {
-
-			$response = wp_remote_get(
-				sprintf( '%s/api/3/users', esc_url( $url ) ),
-				array(
-					'headers' => array(
-						'Api-token' => $key,
-						'Accept'    => 'application/json',
-					),
-				)
-			);
-
-			if ( ! is_wp_error( $response ) ) {
-
-				$body  = wp_remote_retrieve_body( $response );
-				$users = json_decode( $body );
-				$users = isset( $users->users ) ? $users->users : '';
-
-				update_option( 'ua_active_campaign_connected_user', $users );
-
-			}
-		}
 
 	}
 
@@ -553,9 +268,41 @@ class Active_Campaign_Helpers {
 	 *
 	 * @return mixed the connection data.
 	 */
-	protected function get_connected_users() {
+	public function get_connected_users() {
 
-		return get_option( 'ua_active_campaign_connected_user' );
+		$users = get_transient( 'uap_active_campaign_connected_user' );
+
+		if ( ! $users ) {
+
+			$account_url = get_option( 'uap_active_campaign_api_url', false );
+			$api_key     = get_option( 'uap_active_campaign_api_key', false );
+
+			if ( ! empty( $account_url ) && ! empty( $api_key ) ) {
+
+				$response = wp_remote_get(
+					sprintf( '%s/api/3/users', esc_url( $account_url ) ),
+					array(
+						'headers' => array(
+							'Api-token' => $api_key,
+							'Accept'    => 'application/json',
+						),
+					)
+				);
+
+				if ( ! is_wp_error( $response ) ) {
+
+					$body  = wp_remote_retrieve_body( $response );
+					$users = json_decode( $body );
+
+					if ( ! empty( $users->users ) ) {
+						set_transient( 'uap_active_campaign_connected_user', $users->users, DAY_IN_SECONDS );
+						$users = $users->users;
+					}
+				}
+			}
+		}
+
+		return $users;
 
 	}
 
@@ -619,7 +366,7 @@ class Active_Campaign_Helpers {
 	 */
 	public function regenerate_webhook_key_ajax() {
 		$this->regenerate_webhook_key();
-		$uri = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=active-campaign';
+		$uri = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=active-campaign';
 		wp_safe_redirect( $uri );
 
 		exit;
@@ -627,20 +374,22 @@ class Active_Campaign_Helpers {
 	}
 
 	/**
-	 * refresh_webhook_key
+	 * Generate webhook key.
 	 *
 	 * @return void
 	 */
 	public function regenerate_webhook_key() {
-		$new_key = md5( uniqid( rand(), true ) );
+
+		$new_key = md5( uniqid( wp_rand(), true ) );
 
 		update_option( 'uap_active_campaign_webhook_key', $new_key );
 
 		return $new_key;
+
 	}
 
 	/**
-	 * get_webhook_key
+	 * Retrieve the webhook key.
 	 *
 	 * @return void
 	 */
@@ -656,7 +405,7 @@ class Active_Campaign_Helpers {
 	}
 
 	/**
-	 * get_webhook_url
+	 * Get the webhook uri.
 	 *
 	 * @return void
 	 */
@@ -677,16 +426,16 @@ class Active_Campaign_Helpers {
 
 		wp_send_json(
 			array(
-				'success'         => true,
-				'is_tags_synced'  => ( false !== $tags ),
-				'is_lists_synced' => ( false !== $lists ),
-				'is_lists_synced' => ( false !== $contact_fields ),
+				'success'                  => true,
+				'is_tags_synced'           => ( false !== $tags ),
+				'is_lists_synced'          => ( false !== $lists ),
+				'is_contact_fields_synced' => ( false !== $contact_fields ),
 			)
 		);
 	}
 
 	/**
-	 * get_tags
+	 * Get the tags.
 	 *
 	 * Warning! This function will return tag names as the option values, because the incoming webhooks return names and not ids as well.
 	 * It also doesn't cache the results, so it should only be used in postponed options load.
@@ -775,7 +524,7 @@ class Active_Campaign_Helpers {
 	 */
 	public function init_webhook() {
 
-		if ( $this->webhook_enabled && $this->has_connection_data() ) {
+		if ( $this->is_webhook_enabled() && $this->has_connection_data() ) {
 			register_rest_route(
 				AUTOMATOR_REST_API_END_POINT,
 				$this->webhook_endpoint,
@@ -837,7 +586,7 @@ class Active_Campaign_Helpers {
 	public function sync_tags( $should_verify_nonce = true ) {
 
 		if ( $should_verify_nonce ) {
-			if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'ac_sync_data' ) ) {
+			if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 				return false;
 			}
 		}
@@ -910,7 +659,7 @@ class Active_Campaign_Helpers {
 	public function sync_contact_fields( $should_verify_nonce = true ) {
 
 		if ( $should_verify_nonce ) {
-			if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'ac_sync_data' ) ) {
+			if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 				return false;
 			}
 		}
@@ -1014,7 +763,7 @@ class Active_Campaign_Helpers {
 	public function sync_lists( $should_verify_nonce = true ) {
 
 		if ( $should_verify_nonce ) {
-			if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'ac_sync_data' ) ) {
+			if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 				return false;
 			}
 		}

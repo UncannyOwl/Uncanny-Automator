@@ -46,6 +46,10 @@ class Automator_Input_Parser {
 				'user_role',
 				'current_date',
 				'current_time',
+				'current_unix_timestamp',
+				'currentdate_unix_timestamp',
+				'user_ip_address',
+				'user_reset_pass_url',
 			)
 		);
 		add_filter(
@@ -340,7 +344,14 @@ class Automator_Input_Parser {
 						} else {
 							$replaceable = date_i18n( get_option( 'time_format' ) );
 						}
+						break;
 
+					case 'current_unix_timestamp':
+						$replaceable = current_time( 'timestamp' );
+						break;
+
+					case 'currentdate_unix_timestamp':
+						$replaceable = strtotime( date( 'Y-m-d' ), current_time( 'timestamp' ) );
 						break;
 
 					case 'recipe_total_run':
@@ -362,6 +373,10 @@ class Automator_Input_Parser {
 						$replaceable = $recipe_id;
 						break;
 
+					case 'user_reset_pass_url':
+						$replaceable = $this->reset_password_url_token( $user_id );
+						break;
+
 					case 'user_role':
 						$roles = '';
 						if ( is_a( $current_user, 'WP_User' ) ) {
@@ -379,6 +394,16 @@ class Automator_Input_Parser {
 						}
 						$replaceable = $roles;
 						break;
+
+					case 'user_ip_address':
+						$replaceable = 'N/A';
+						if ( isset( $_SERVER['HTTP_X_REAL_IP'] ) ) {
+							$replaceable = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) );
+						} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+							$replaceable = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+						}
+						break;
+
 					default:
 						$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $current_user );
 						break;
@@ -583,6 +608,26 @@ class Automator_Input_Parser {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * @param $user_id
+	 *
+	 * @return bool|string
+	 */
+	public function reset_password_url_token( $user_id ) {
+
+		$user = get_user_by( 'ID', $user_id );
+		if ( $user ) {
+			$adt_rp_key = get_password_reset_key( $user );
+			$user_login = $user->user_login;
+			$rp_link    = network_site_url( "wp-login.php?action=rp&key=$adt_rp_key&login=" . rawurlencode( $user_login ), 'login' );
+		} else {
+			$rp_link = '';
+		}
+
+		return $rp_link;
+
 	}
 
 	/**

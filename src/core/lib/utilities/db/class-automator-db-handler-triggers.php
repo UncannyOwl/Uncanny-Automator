@@ -103,9 +103,9 @@ class Automator_DB_Handler_Triggers {
 	 * @return bool|int|null
 	 */
 	public function add_meta( $trigger_id, $trigger_log_id, $run_number, $args ) {
-		$user_id    = isset( $args['user_id'] ) ? absint( $args['user_id'] ) : null;
-		$meta_key   = isset( $args['meta_key'] ) ? esc_attr( $args['meta_key'] ) : null;
-		$meta_value = isset( $args['meta_value'] ) ? $args['meta_value'] : null;
+		$user_id    = isset( $args['user_id'] ) ? absint( $args['user_id'] ) : 0;
+		$meta_key   = isset( $args['meta_key'] ) ? esc_attr( $args['meta_key'] ) : '';
+		$meta_value = isset( $args['meta_value'] ) ? $args['meta_value'] : '';
 		$run_time   = isset( $args['run_time'] ) ? $args['run_time'] : current_time( 'mysql' );
 		// Set user ID
 		if ( is_null( $user_id ) ) {
@@ -171,10 +171,10 @@ class Automator_DB_Handler_Triggers {
 	 * @return bool|int|null
 	 */
 	public function add_token_meta( $meta_key, $meta_value, $args ) {
-		$trigger_id     = isset( $args['trigger_id'] ) ? absint( $args['trigger_id'] ) : null;
+		$trigger_id     = isset( $args['trigger_id'] ) ? absint( $args['trigger_id'] ) : 0;
 		$trigger_log_id = isset( $args['trigger_log_id'] ) ? absint( $args['trigger_log_id'] ) : null;
-		$run_number     = isset( $args['run_number'] ) ? absint( $args['run_number'] ) : null;
-		$user_id        = isset( $args['user_id'] ) ? absint( $args['user_id'] ) : null;
+		$run_number     = isset( $args['run_number'] ) ? absint( $args['run_number'] ) : 0;
+		$user_id        = isset( $args['user_id'] ) ? absint( $args['user_id'] ) : 0;
 		// Set user ID
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();

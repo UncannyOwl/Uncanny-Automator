@@ -277,9 +277,14 @@ class Automator_Recipe_Process_Complete {
 
 					$action = apply_filters( 'automator_before_action_executed', $action );
 
-					if ( isset( $action['process_further'] ) && false === $action['process_further'] ) {
-						Utilities::log( 'Action was skipped by uap_before_action_executed filter.' );
-						continue;
+					if ( isset( $action['process_further'] ) ){
+
+						if ( false === $action['process_further'] ) {
+							Utilities::log( 'Action was skipped by uap_before_action_executed filter.' );
+							continue;
+						}
+
+						unset( $action['process_further'] );
 					}
 
 					call_user_func_array( $action_execution_function, $action );

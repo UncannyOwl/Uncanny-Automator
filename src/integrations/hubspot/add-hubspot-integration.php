@@ -36,7 +36,7 @@ class Add_Hubspot_Integration {
 		$this->set_icon( 'hubspot-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( '' );
-		$this->set_settings_url( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings&tab=hubspot_api' );
+		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'hubspot-api' ) );
 		$this->set_connected( $this->is_connected() );
 	}
 
