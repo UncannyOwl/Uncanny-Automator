@@ -77,10 +77,10 @@ class Admin_Menu {
 		add_action( 'admin_init', array( $this, 'plugins_loaded' ), 1 );
 		add_action( 'admin_menu', array( $this, 'register_options_menu_page' ) );
 
-		
+
 		add_action( 'admin_menu', array( $this, 'register_legacy_options_menu_page' ), 999 );
 		add_action( 'admin_init', array( $this, 'maybe_redirect_to_first_settings_tab' ), 1000 );
-		
+
 	}
 
 	/**
@@ -245,14 +245,14 @@ class Admin_Menu {
 			/* translators: 1. Trademarked term */
 			$page_title               = sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' );
 			$capability               = 'manage_options';
-			$menu_title               = esc_attr__( 'Legacy Settings', 'uncanny-automator' );
+			$menu_title               = esc_attr__( 'Legacy settings', 'uncanny-automator' );
 			$menu_slug                = 'uncanny-automator-settings';
 			$this->settings_page_slug = $menu_slug;
 			$function                 = array( $this, 'options_menu_settings_page_output' );
 
 			add_submenu_page( 'edit.php?post_type=uo-recipe', $page_title, $menu_title, $capability, $menu_slug, $function );
 		}
-		
+
 	}
 
 
@@ -401,10 +401,10 @@ class Admin_Menu {
 
 		return apply_filters( 'automator_report_titles', $admin_title, $title );
 	}
-	
+
 	/**
 	 * is_pro_older_than_37
-	 * 
+	 *
 	 * Returns false if Automator Pro is enabled and older than 3.8
 	 *
 	 * @return void
@@ -518,13 +518,13 @@ class Admin_Menu {
 
 				}
 			}
-		} 
+		}
 
 		$this->settings_tabs();
 		include Utilities::automator_get_include( 'automator-settings.php' );
-		
-		
-		
+
+
+
 	}
 
 	/**

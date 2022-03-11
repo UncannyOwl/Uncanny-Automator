@@ -515,7 +515,7 @@ class Learndash_Helpers {
 			return;
 		}
 		// If it's not an admin (or ajax for quiz complete), bail
-		if ( ! is_admin() && ! is_ajax() ) {
+		if ( ( function_exists( 'is_admin' ) && ! is_admin() ) && ( function_exists( 'wp_doing_ajax' ) && ! wp_doing_ajax() ) ) {
 			return;
 		}
 		// activity status is empty or not completed, bail

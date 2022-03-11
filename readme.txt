@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9.1
 Requires PHP: 5.6
-Stable tag: 3.8
+Stable tag: 3.8.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -190,6 +190,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.8.0.1 [2022-03-10] =
+
+**Fixed:**
+
+* LearnDash - PHP Error `is_ajax()` not a function on some sites
 
 = 3.8 [2022-03-10] =
 
