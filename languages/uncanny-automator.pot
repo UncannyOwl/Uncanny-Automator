@@ -2,16 +2,16 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.8.0.2\n"
+"Project-Id-Version: Uncanny Automator 3.8.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-03-11T15:54:54+00:00\n"
+"POT-Creation-Date: 2022-03-15T16:40:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.5.0\n"
+"X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
 
 #. Plugin Name of the plugin
@@ -2352,7 +2352,7 @@ msgid "All downloads"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:797
-#: src/integrations/edd/helpers/edd-helpers.php:75
+#: src/integrations/edd/helpers/edd-helpers.php:83
 msgid "Any download"
 msgstr ""
 
@@ -6185,7 +6185,7 @@ msgid "Customer ID"
 msgstr ""
 
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:252
-#: src/integrations/edd/tokens/edd-tokens.php:70
+#: src/integrations/edd/tokens/edd-tokens.php:44
 msgid "Customer email"
 msgstr ""
 
@@ -6480,11 +6480,47 @@ msgstr ""
 msgid "Activity content"
 msgstr ""
 
-#: src/integrations/buddyboss/tokens/bdb-tokens.php:168
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:155
+#: src/integrations/buddypress/tokens/bp-tokens.php:145
+msgid "Friend ID"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:161
+#: src/integrations/buddypress/tokens/bp-tokens.php:151
+msgid "Friend first name"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:167
+#: src/integrations/buddypress/tokens/bp-tokens.php:157
+msgid "Friend last name"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:173
+#: src/integrations/buddypress/tokens/bp-tokens.php:163
+msgid "Friend email"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:181
+msgid "Follower ID"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:187
+msgid "Follower first name"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:193
+msgid "Follower last name"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:199
+msgid "Follower email"
+msgstr ""
+
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:223
 msgid "Reply content"
 msgstr ""
 
-#: src/integrations/buddyboss/tokens/bdb-tokens.php:327
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:385
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:53
 #: src/integrations/learndash/actions/ld-marktopicdone.php:111
 #: src/integrations/learndash/helpers/learndash-helpers.php:212
@@ -6495,7 +6531,7 @@ msgstr ""
 msgid "Topic ID"
 msgstr ""
 
-#: src/integrations/buddyboss/tokens/bdb-tokens.php:333
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:391
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:52
 #: src/integrations/learndash/helpers/learndash-helpers.php:211
 #: src/integrations/learndash/tokens/ld-tokens.php:159
@@ -6505,7 +6541,7 @@ msgstr ""
 msgid "Topic title"
 msgstr ""
 
-#: src/integrations/buddyboss/tokens/bdb-tokens.php:339
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:397
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:54
 #: src/integrations/learndash/helpers/learndash-helpers.php:213
 #: src/integrations/learndash/tokens/ld-tokens.php:171
@@ -6515,7 +6551,7 @@ msgstr ""
 msgid "Topic URL"
 msgstr ""
 
-#: src/integrations/buddyboss/tokens/bdb-tokens.php:345
+#: src/integrations/buddyboss/tokens/bdb-tokens.php:403
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:51
 msgid "Topic content"
 msgstr ""
@@ -6766,7 +6802,7 @@ msgstr ""
 msgid "A user submits {{a form:%1$s}}"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:64
+#: src/integrations/edd/helpers/edd-helpers.php:72
 #: src/integrations/edd/triggers/edd-productpurchase.php:49
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:66
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:117
@@ -6778,6 +6814,10 @@ msgstr ""
 #: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:48
 #: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:38
 msgid "Product"
+msgstr ""
+
+#: src/integrations/edd/helpers/edd-helpers.php:86
+msgid "Discount codes used"
 msgstr ""
 
 #: src/integrations/edd/helpers/edd-helpers.php:87
@@ -6800,25 +6840,57 @@ msgstr ""
 msgid "Download featured image URL"
 msgstr ""
 
-#: src/integrations/edd/tokens/edd-tokens.php:46
-#: src/integrations/wc-memberships/tokens/wcm-tokens.php:87
-#: src/integrations/woocommerce/tokens/wc-tokens.php:51
-msgid "Order ID"
+#: src/integrations/edd/helpers/edd-helpers.php:92
+#: src/integrations/edd/tokens/edd-tokens.php:103
+msgid "License key"
 msgstr ""
 
-#: src/integrations/edd/tokens/edd-tokens.php:52
-#: src/integrations/wc-memberships/tokens/wcm-tokens.php:89
-#: src/integrations/woocommerce/tokens/wc-tokens.php:53
-msgid "Order total"
+#: src/integrations/edd/helpers/edd-helpers.php:93
+#: src/integrations/edd/tokens/edd-tokens.php:62
+#: src/integrations/wc-memberships/tokens/wcm-tokens.php:93
+#: src/integrations/woocommerce/tokens/wc-tokens.php:60
+msgid "Order discounts"
 msgstr ""
 
-#: src/integrations/edd/tokens/edd-tokens.php:58
+#: src/integrations/edd/helpers/edd-helpers.php:94
+#: src/integrations/edd/tokens/edd-tokens.php:68
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:91
 #: src/integrations/woocommerce/tokens/wc-tokens.php:56
 msgid "Order subtotal"
 msgstr ""
 
-#: src/integrations/edd/tokens/edd-tokens.php:64
+#: src/integrations/edd/helpers/edd-helpers.php:95
+#: src/integrations/edd/tokens/edd-tokens.php:74
+#: src/integrations/wc-memberships/tokens/wcm-tokens.php:92
+#: src/integrations/woocommerce/tokens/wc-tokens.php:58
+msgid "Order tax"
+msgstr ""
+
+#: src/integrations/edd/helpers/edd-helpers.php:96
+#: src/integrations/edd/tokens/edd-tokens.php:80
+#: src/integrations/wc-memberships/tokens/wcm-tokens.php:89
+#: src/integrations/woocommerce/tokens/wc-tokens.php:53
+msgid "Order total"
+msgstr ""
+
+#: src/integrations/edd/helpers/edd-helpers.php:97
+#: src/integrations/edd/tokens/edd-tokens.php:92
+#: src/integrations/wc-memberships/tokens/wcm-tokens.php:97
+#: src/integrations/woocommerce/tokens/wc-tokens.php:66
+msgid "Payment method"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:50
+msgid "Discount codes"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:56
+#: src/integrations/wc-memberships/tokens/wcm-tokens.php:87
+#: src/integrations/woocommerce/tokens/wc-tokens.php:51
+msgid "Order ID"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:86
 msgid "Ordered items"
 msgstr ""
 
@@ -6833,8 +6905,8 @@ msgid "User completes {{an order}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Easy Digital Downloads
-#: src/integrations/edd/triggers/edd-orderrefunded.php:41
-#: src/integrations/edd/triggers/edd-orderrefunded.php:43
+#: src/integrations/edd/triggers/edd-orderrefunded.php:40
+#: src/integrations/edd/triggers/edd-orderrefunded.php:42
 msgid "A user's Stripe payment is refunded"
 msgstr ""
 
@@ -7980,6 +8052,10 @@ msgstr ""
 
 #: src/integrations/instagram/actions/instagram-publish-photo.php:160
 msgid "There was an error in the response code."
+msgstr ""
+
+#: src/integrations/instagram/actions/instagram-publish-photo.php:169
+msgid "Unexpected error occured. If you're using tokens, please check if token values are empty or not."
 msgstr ""
 
 #: src/integrations/instagram/settings/settings-instagram.php:119
@@ -10299,16 +10375,6 @@ msgstr ""
 msgid "Order status"
 msgstr ""
 
-#: src/integrations/wc-memberships/tokens/wcm-tokens.php:92
-#: src/integrations/woocommerce/tokens/wc-tokens.php:58
-msgid "Order tax"
-msgstr ""
-
-#: src/integrations/wc-memberships/tokens/wcm-tokens.php:93
-#: src/integrations/woocommerce/tokens/wc-tokens.php:60
-msgid "Order discounts"
-msgstr ""
-
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:94
 #: src/integrations/woocommerce/tokens/wc-tokens.php:62
 msgid "Order coupons"
@@ -10322,11 +10388,6 @@ msgstr ""
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:96
 #: src/integrations/woocommerce/tokens/wc-tokens.php:64
 msgid "Order products and quantity"
-msgstr ""
-
-#: src/integrations/wc-memberships/tokens/wcm-tokens.php:97
-#: src/integrations/woocommerce/tokens/wc-tokens.php:66
-msgid "Payment method"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:98

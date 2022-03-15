@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9.2
 Requires PHP: 5.6
-Stable tag: 3.8.0.2
+Stable tag: 3.8.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -190,6 +190,36 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.8.1 [2022-03-15] =
+
+**Added:**
+
+* BuddyBoss/BuddyPress - Several new tokens #1596
+	* Friendship trigger:
+		* Friend first name
+		* Friend last name
+		* Friend email
+		* Friend ID
+	* Follower trigger:
+		* Follower first name
+		* Follower last name
+		* Follower email
+		* Follower ID
+* Easy Digital Downloads - Several new tokens #1575
+	* Order subtotal
+	* Order tax
+	* Order total
+	* Order discounts
+	* Discount codes used
+	* License key (when software licensing is active)
+	* Payment method
+* WPLMS - Integration now works with v3.x and v4.x #1462
+
+**Fixed:**
+
+* GoTo Training and GoTo Webinar - PHP Error on some site configurations #1684
+* Instagram - Improved error messaging when posting an image fails #1682
 
 = 3.8.0.2 [2022-03-11] =
 
@@ -705,25 +735,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Google Sheets - Fixed notice and allowed token types #708
 * Added missing space to log sentence #277
 * Cloning a recipe - The clone no longer has the same creation date as the original #811
-
-= 3.1.3 [2021-08-20] =
-
-**Updated:**
-
-* Trigger messaging in "Everyone" recipes to reduce confusion #700
-* wpForo - Sentence "Add the user to a group" changed to "Set the user's primary group" for clarity #689
-
-**Fixed:**
-
-* AffiliateWP - "An affiliate makes a referral of a specific type" now fires more reliably #713
-* FluentCRM - "A tag is added to a user" now fires more reliably #712
-* Image no longer rotated 90 degrees on the dashboard in Safari #705
-* WooCommerce - A user completes, pays for, lands on a thank you page for an order with a product no longer fires multiple times with a single order #702
-* Duplicate recipe not duplicating all items when recipe contains more than 5 triggers or actions #701
-* WordPress Core - Send an email - BCC and CC now work as expected #697
-* LearnDash - Quiz score token now renders more reliably #695
-* When connecting third-party integrations, the second step action button is now disabled if the first step is not yet completed #614
-* Form field tokens no longer appear in token dropdown if the source form was deleted #205
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

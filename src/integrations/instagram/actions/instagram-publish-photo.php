@@ -160,13 +160,39 @@ class INSTAGRAM_PUBLISH_PHOTO {
 				Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'There was an error in the response code.', 'uncanny-automator' ) );
 				return;
 			}
+
+			// If Facebook Graph returned a 200 status.
 			if ( 200 === $response->statusCode ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+				if ( isset( $response->data->error ) ) {
+
+					$error_message = esc_html__( "Unexpected error occured. If you're using tokens, please check if token values are empty or not.", 'uncanny-automator' );
+
+					if ( isset( $response->data->error->message ) ) {
+
+						$error_message = $response->data->error->message;
+
+					}
+
+					$action_data['complete_with_errors'] = true;
+
+					// Log error if there are any error messages.
+					Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+
+					return;
+
+				}
+
 				// Otherwise, complete the action.
 				Automator()->complete->action( $user_id, $action_data, $recipe_id );
+
 			} else {
+
 				$action_data['complete_with_errors'] = true;
+
 				// Log error if there are any error messages.
 				Automator()->complete->action( $user_id, $action_data, $recipe_id, $response->error->description );
+
 			}
 		} else {
 

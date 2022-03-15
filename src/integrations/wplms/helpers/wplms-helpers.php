@@ -98,7 +98,7 @@ class Wplms_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool   $any_option
+	 * @param bool $any_option
 	 *
 	 * @return mixed
 	 */

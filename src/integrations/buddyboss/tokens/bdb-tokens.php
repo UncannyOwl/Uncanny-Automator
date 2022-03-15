@@ -78,7 +78,7 @@ class Bdb_Tokens {
 
 		$xprofile_fields = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY field_order ASC",
+				"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
 				0
 			)
 		);
@@ -88,7 +88,7 @@ class Bdb_Tokens {
 				if ( 'socialnetworks' === $field->type ) {
 					$child_fields = $wpdb->get_results(
 						$wpdb->prepare(
-							"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY field_order ASC",
+							"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
 							$field->id
 						)
 					);
@@ -147,6 +147,61 @@ class Bdb_Tokens {
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
 			);
 		}
+
+		if ( isset( $args['triggers_meta']['code'] ) && ( 'BDBUSERSENDSFRIENDREQUEST' === $args['triggers_meta']['code'] || 'BDBUSERACCEPTFRIENDREQUEST' === $args['triggers_meta']['code'] ) ) {
+			$trigger_code = $args['triggers_meta']['code'];
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_ID',
+				'tokenName'       => __( 'Friend ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_FIRSTNAME',
+				'tokenName'       => __( 'Friend first name', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_LASTNAME',
+				'tokenName'       => __( 'Friend last name', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_EMAIL',
+				'tokenName'       => __( 'Friend email', 'uncanny-automator' ),
+				'tokenType'       => 'email',
+				'tokenIdentifier' => $trigger_code,
+			);
+		} elseif ( isset( $args['triggers_meta']['code'] ) && 'BDBUSERNEWFOLLOWER' === $args['triggers_meta']['code'] ) {
+			$trigger_code = $args['triggers_meta']['code'];
+			$fields[]     = array(
+				'tokenId'         => 'FOLLOWER_ID',
+				'tokenName'       => __( 'Follower ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FOLLOWER_FIRSTNAME',
+				'tokenName'       => __( 'Follower first name', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FOLLOWER_LASTNAME',
+				'tokenName'       => __( 'Follower last name', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FOLLOWER_EMAIL',
+				'tokenName'       => __( 'Follower email', 'uncanny-automator' ),
+				'tokenType'       => 'email',
+				'tokenIdentifier' => $trigger_code,
+			);
+		}
+
 		$tokens = array_merge( $tokens, $fields );
 
 		return $tokens;
@@ -203,6 +258,9 @@ class Bdb_Tokens {
 
 				if ( isset( $pieces[2] ) && ! empty( $pieces[2] ) ) {
 					$value = $this->get_xprofile_data( $user_id, $pieces[2] );
+					if ( \DateTime::createFromFormat( 'Y-m-d H:i:s', $value ) !== false ) {
+						$value = date( 'Y-m-d', $value );
+					}
 				}
 			} elseif ( in_array( 'BDBTOPICREPLY', $pieces ) ) {
 				$piece = 'BDBTOPIC';
@@ -250,8 +308,8 @@ class Bdb_Tokens {
 						}
 					}
 				}
-			} elseif ( in_array( 'BDBUSERACTIVITY', $pieces ) ) {
-
+			} elseif ( in_array( 'BDBUSERACTIVITY', $pieces ) || in_array( 'BDBUSERSENDSFRIENDREQUEST', $pieces ) ||
+			           in_array( 'BDBUSERACCEPTFRIENDREQUEST', $pieces ) || in_array( 'BDBUSERNEWFOLLOWER', $pieces ) ) {
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
 						$trigger_id     = $trigger['ID'];
@@ -259,7 +317,7 @@ class Bdb_Tokens {
 						$meta_key       = $pieces[2];
 						$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 						if ( ! empty( $meta_value ) ) {
-							$value = $meta_value;
+							$value = maybe_unserialize( $meta_value );
 						}
 					}
 				}

@@ -68,7 +68,7 @@ class Bp_Tokens {
 
 		$xprofile_fields = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d  ORDER BY field_order ASC",
+				"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d  ORDER BY group_id ASC",
 				0
 			)
 		);
@@ -78,7 +78,7 @@ class Bp_Tokens {
 				if ( 'socialnetworks' === $field->type ) {
 					$child_fields = $wpdb->get_results(
 						$wpdb->prepare(
-							"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY field_order ASC",
+							"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
 							$field->id
 						)
 					);
@@ -138,6 +138,34 @@ class Bp_Tokens {
 			);
 		}//end if
 
+		if ( isset( $args['triggers_meta']['code'] ) && ( 'BPUSERSENDSFRIENDREQUEST' === $args['triggers_meta']['code'] || 'BPUSERACCEPTFRIENDREQUEST' === $args['triggers_meta']['code'] ) ) {
+			$trigger_code = $args['triggers_meta']['code'];
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_ID',
+				'tokenName'       => __( 'Friend ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_FIRSTNAME',
+				'tokenName'       => __( 'Friend first name', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_LASTNAME',
+				'tokenName'       => __( 'Friend last name', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			);
+			$fields[]     = array(
+				'tokenId'         => 'FRIEND_EMAIL',
+				'tokenName'       => __( 'Friend email', 'uncanny-automator' ),
+				'tokenType'       => 'email',
+				'tokenIdentifier' => $trigger_code,
+			);
+		}
+
 		$tokens = array_merge( $tokens, $fields );
 
 		return $tokens;
@@ -170,6 +198,9 @@ class Bp_Tokens {
 
 				if ( isset( $pieces[2] ) && ! empty( $pieces[2] ) ) {
 					$value = $this->get_xprofile_data( $user_id, $pieces[2] );
+					if ( \DateTime::createFromFormat( 'Y-m-d H:i:s', $value ) !== false ) {
+						$value = date( 'Y-m-d', $value );
+					}
 				}
 			} elseif ( in_array( 'BPUSERACTIVITY', $pieces ) ) {
 
@@ -181,6 +212,19 @@ class Bp_Tokens {
 						$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 						if ( ! empty( $meta_value ) ) {
 							$value = $meta_value;
+						}
+					}
+				}
+			} elseif ( in_array( 'BPUSERSENDSFRIENDREQUEST', $pieces ) || in_array( 'BPUSERACCEPTFRIENDREQUEST', $pieces ) ) {
+
+				if ( $trigger_data ) {
+					foreach ( $trigger_data as $trigger ) {
+						$trigger_id     = $trigger['ID'];
+						$trigger_log_id = $replace_args['trigger_log_id'];
+						$meta_key       = $pieces[2];
+						$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+						if ( ! empty( $meta_value ) ) {
+							$value = maybe_unserialize( $meta_value );
 						}
 					}
 				}

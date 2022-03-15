@@ -87,11 +87,11 @@ class Gotowebinar_Helpers {
 	/**
 	 * Set pro.
 	 *
-	 * @param Gotowebinar_Helpers $pro
+	 * @param Gotowebinar_Pro_Helpers $pro
 	 *
 	 * @return void.
 	 */
-	public function setPro( Gotowebinar_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( Gotowebinar_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 

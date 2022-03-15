@@ -43,7 +43,7 @@ class WPLMS_QUIZCOMPLETED {
 			/* translators: Logged-in trigger - WP LMS */
 			'select_option_name'  => esc_attr__( 'A user completes {{a quiz}}', 'uncanny-automator' ),
 			'action'              => 'wplms_submit_quiz',
-			'priority'            => 20,
+			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wplms_quiz_completed' ),
 			'options'             => array(
@@ -53,18 +53,16 @@ class WPLMS_QUIZCOMPLETED {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param integer $quiz_id
-	 * @param string $marks Can be a single number of a range separated by "-"
 	 * @param integer $user_id
+	 * @param string $questions
 	 */
-	public function wplms_quiz_completed( $quiz_id, $marks, $user_id ) {
+	public function wplms_quiz_completed( $quiz_id, $user_id, $questions ) {
 
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
@@ -73,14 +71,71 @@ class WPLMS_QUIZCOMPLETED {
 		if ( empty( $user_id ) ) {
 			return;
 		}
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_quiz      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
 
-		$args = array(
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => intval( $quiz_id ),
-			'user_id' => $user_id,
-		);
+		if ( empty( $recipes ) ) {
+			return;
+		}
 
-		Automator()->maybe_add_trigger_entry( $args );
+		if ( empty( $required_quiz ) ) {
+			return;
+		}
+
+		foreach ( $recipes as $recipe_id => $recipe ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$recipe_id  = absint( $recipe_id );
+				$trigger_id = absint( $trigger['ID'] );
+				if ( ! isset( $required_quiz[ $recipe_id ] ) ) {
+					continue;
+				}
+				if ( ! isset( $required_quiz[ $recipe_id ][ $trigger_id ] ) ) {
+					continue;
+				}
+				if (
+					( intval( '-1' ) === intval( $required_quiz[ $recipe_id ][ $trigger_id ] ) )
+					||
+					( absint( $quiz_id ) === absint( $required_quiz[ $recipe_id ][ $trigger_id ] ) )
+				) {
+					$matched_recipe_ids[ $recipe_id ] = array(
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+					);
+				}
+			}
+		}
+
+		if ( empty( $matched_recipe_ids ) ) {
+			return;
+		}
+		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+			$pass_args = array(
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'user_id'          => $user_id,
+				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+				'trigger_to_match' => $matched_recipe_id['trigger_id'],
+				'ignore_post_id'   => true,
+				'is_signed_in'     => true,
+			);
+
+			$arr = Automator()->maybe_add_trigger_entry( $pass_args, false );
+			if ( $arr ) {
+				foreach ( $arr as $result ) {
+					if ( true === $result['result'] ) {
+						$token_args = array(
+							'quiz_id'   => $quiz_id,
+							'user_id'   => $user_id,
+							'questions' => $questions,
+							'action'    => 'quiz_completed',
+						);
+						do_action( 'automator_wplms_save_tokens', $token_args, $result['args'] );
+
+						Automator()->maybe_trigger_complete( $result['args'] );
+					}
+				}
+			}
+		}
 	}
 }
