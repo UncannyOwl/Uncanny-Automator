@@ -91,7 +91,7 @@ class Gotowebinar_Helpers {
 	 *
 	 * @return void.
 	 */
-	public function setPro( Gotowebinar_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( \Uncanny_Automator_Pro\Gotowebinar_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 

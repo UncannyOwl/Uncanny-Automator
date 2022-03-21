@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9.2
 Requires PHP: 5.6
-Stable tag: 3.8.1
+Stable tag: 3.8.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -190,6 +190,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.8.1.1 [2022-03-21] =
+
+* GoTo Training and GoTo Webinar - PHP Error on some site configurations #1684
+
+**Fixed:**
 
 = 3.8.1 [2022-03-15] =
 

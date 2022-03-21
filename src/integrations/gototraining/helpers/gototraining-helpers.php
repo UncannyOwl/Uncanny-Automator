@@ -90,7 +90,7 @@ class Gototraining_Helpers {
 	 *
 	 * @param Gototraining_Pro_Helpers $pro
 	 */
-	public function setPro( Gototraining_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( \Uncanny_Automator_Pro\Gototraining_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
