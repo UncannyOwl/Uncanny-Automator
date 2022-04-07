@@ -52,8 +52,6 @@ class ANON_BB_NEWTOPIC {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -77,7 +75,7 @@ class ANON_BB_NEWTOPIC {
 				if ( isset( $required_forum[ $recipe_id ] ) && isset( $required_forum[ $recipe_id ][ $trigger_id ] ) ) {
 					//Add where option is set to Any Forum
 					if ( - 1 === intval( $required_forum[ $recipe_id ][ $trigger_id ] )
-						 || $required_forum[ $recipe_id ][ $trigger_id ] == $forum_id ) {
+					     || $required_forum[ $recipe_id ][ $trigger_id ] == $forum_id ) {
 						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,
@@ -113,6 +111,10 @@ class ANON_BB_NEWTOPIC {
 
 							$trigger_meta['meta_key']   = 'ANONYMOUS_EMAIL';
 							$trigger_meta['meta_value'] = maybe_serialize( $anonymous_data['bbp_anonymous_email'] );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							$trigger_meta['meta_key']   = 'BBTOPIC_ID';
+							$trigger_meta['meta_value'] = maybe_serialize( $topic_id );
 							Automator()->insert_trigger_meta( $trigger_meta );
 
 							Automator()->maybe_trigger_complete( $result['args'] );

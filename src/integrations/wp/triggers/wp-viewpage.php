@@ -51,13 +51,28 @@ class WP_VIEWPAGE {
 			'priority'            => 90,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_page' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wp->options->all_pages(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return array
+	 */
+	public function load_options() {
+		$options = Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp->options->all_pages(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
+
+		return $options;
 	}
 
 	/**

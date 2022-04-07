@@ -54,12 +54,21 @@ class Zoom_Settings {
         $this->register_option( 'uap_automator_zoom_api_consumer_key' );
 		$this->register_option( 'uap_automator_zoom_api_consumer_secret' );
 
-		$this->user = $this->helpers->api_get_user_info();
+		try {
+			$this->user = $this->helpers->api_get_user_info();
+			$this->is_connected = true;
 
-        $this->is_connected = false !== $this->user;
+			// Handle legacy transient
+			if ( is_object( $this->user ) ) {
+				$this->user = (array) $this->user;
+			}
+			
+		} catch ( \Exception $e ) {
+			$this->user = array();
+			$this->is_connected = false;
+		}
 		
 		$this->set_status( $this->is_connected ? 'success' : '' );
-
 	}
 
 	/**
@@ -72,8 +81,6 @@ class Zoom_Settings {
         $api_key = get_option( 'uap_automator_zoom_api_consumer_key', '' );
 
         $api_secret =  get_option( 'uap_automator_zoom_api_consumer_secret', '' );
-
-        $user = $this->helpers->api_get_user_info();
 
         $disconnect_url = $this->helpers->disconnect_url();
 

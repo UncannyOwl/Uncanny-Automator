@@ -107,10 +107,10 @@ class AUDIENCE_ADDAUSER {
 								),
 								array(
 									'value' => 'replace-matching',
-									'text'  => __( 'Replace matching', 'uncanny-automator' ),
+									'text'  => __( 'Remove matching', 'uncanny-automator' ),
 								),
 							),
-							'description' => __( "Add only: The group(s) specified below will be added to the subscriber's existing groups/interests. Replace All: All of the subscriber's existing groups will be cleared, and replaced with the groups selected below. Replace Matching: Clears any existing group selections only for the groups specified below.", 'uncanny-automator' ),
+							'description' => __( "Add only: The group(s) specified below will be added to the subscriber's existing groups/interests. Replace All: All of the subscriber's existing groups will be cleared, and replaced with the groups selected below. \n Remove Matching: Clears any existing group selections only for the groups specified below.", 'uncanny-automator' ),
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_list_groups(
@@ -363,150 +363,91 @@ class AUDIENCE_ADDAUSER {
 	 */
 	public function add_update_audience_member( $user_id, $action_data, $recipe_id, $args ) {
 
+		$helpers = Automator()->helpers->recipe->mailchimp->options;
+
 		try {
-			$mc_client = Automator()->helpers->recipe->mailchimp->options->get_mailchimp_client();
 
-			if ( $mc_client ) {
-				$list_id         = $action_data['meta']['MCLIST'];
-				$double_optin    = $action_data['meta']['MCDOUBLEOPTIN'];
-				$update_existing = $action_data['meta']['MCUPDATEEXISTING'];
-				$change_groups   = $action_data['meta']['MCCHANGEGROUPS'];
-				$list_groups     = json_decode( $action_data['meta']['MCLISTGROUPS'] );
-				$lang_code       = Automator()->parse->text( $action_data['meta']['MCLANGUAGECODE'], $recipe_id, $user_id, $args );
+			$list_id         = $action_data['meta']['MCLIST'];
+			$double_optin    = $action_data['meta']['MCDOUBLEOPTIN'];
+			$update_existing = $action_data['meta']['MCUPDATEEXISTING'];
+			$change_groups   = $action_data['meta']['MCCHANGEGROUPS'];
+			$groups_list     = json_decode( $action_data['meta']['MCLISTGROUPS'] );
+			$lang_code       = Automator()->parse->text( $action_data['meta']['MCLANGUAGECODE'], $recipe_id, $user_id, $args );
 
-				$merge_fields = $action_data['meta']['MERGE_FIELDS'];
-				$fields       = json_decode( $merge_fields, true );
-				$key_values   = array();
+			$merge_fields = $action_data['meta']['MERGE_FIELDS'];
+			$fields       = json_decode( $merge_fields, true );
+			$key_values   = array();
 
-				$field_count = count( $fields );
+			$field_count = count( $fields );
 
-				for ( $i = 0; $i < $field_count; $i ++ ) {
-					$key   = $fields[ $i ]['FIELD_NAME'];
-					$value = Automator()->parse->text( $fields[ $i ]['FIELD_VALUE'], $recipe_id, $user_id, $args );
-					if ( strpos( $key, '_addr1' ) || strpos( $key, '_addr2' ) || strpos( $key, '_city' ) || strpos( $key, '_state' ) || strpos( $key, '_zip' ) || strpos( $key, '_country' ) ) {
-						$key_split = explode( '_', $key, 2 );
-						if ( 2 === count( $key_split ) ) {
-							$key_values[ $key_split[0] ][ $key_split[1] ] = $value;
-						}
-					} else {
-						$key_values[ $key ] = $value;
+			for ( $i = 0; $i < $field_count; $i ++ ) {
+				$key   = $fields[ $i ]['FIELD_NAME'];
+				$value = Automator()->parse->text( $fields[ $i ]['FIELD_VALUE'], $recipe_id, $user_id, $args );
+				if ( strpos( $key, '_addr1' ) || strpos( $key, '_addr2' ) || strpos( $key, '_city' ) || strpos( $key, '_state' ) || strpos( $key, '_zip' ) || strpos( $key, '_country' ) ) {
+					$key_split = explode( '_', $key, 2 );
+					if ( 2 === count( $key_split ) ) {
+						$key_values[ $key_split[0] ][ $key_split[1] ] = $value;
 					}
+				} else {
+					$key_values[ $key ] = $value;
 				}
-
-				// get current user email
-				$user           = get_userdata( $user_id );
-				$user_hash      = md5( strtolower( trim( $user->user_email ) ) );
-				$user_interests = array();
-
-				if ( ! empty( $list_groups ) ) {
-					foreach ( $list_groups as $group_id ) {
-						$user_interests[ $group_id ] = true;
-					}
-				}
-
-				$request_params = array(
-					'action'    => 'get_subscriber',
-					'list_id'   => $list_id,
-					'user_hash' => $user_hash,
-				);
-
-				$response = Automator()->helpers->recipe->mailchimp->options->api_request( $request_params );
-
-				if ( 200 === $response->statusCode ) { // phpcs:ignore
-
-					if ( 'no' === $update_existing ) {
-						$error_msg                           = __( 'User already subscribed to the list.', 'uncanny-automator' );
-						$action_data['do-nothing']           = true;
-						$action_data['complete_with_errors'] = true;
-						Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-						return;
-					}
-					// Apply groups conditions
-					if ( ! empty( $response->data->interests ) ) {
-						// Replace All. All of the subscriber's existing groups will be cleared, and replaced with the groups selected below.
-						if ( 'replace-all' === $change_groups ) {
-							foreach ( $response->data->interests as $existing_group => $group_status ) {
-								if ( true === $group_status && ! key_exists( $existing_group, $user_interests ) ) {
-									$user_interests[ $existing_group ] = false;
-								}
-							}
-						} elseif ( 'replace-matching' === $change_groups ) {
-							//Replace Matching. Clears any existing group selections only for the groups specified below.
-							foreach ( $existing_sub['interests'] as $existing_group => $group_status ) {
-								if ( true === $group_status && key_exists( $existing_group, $user_interests ) ) {
-									$user_interests[ $existing_group ] = false;
-								}
-							}
-						}
-					}
-				}
-
-				// Now create an audience
-				$status = 'subscribed';
-				if ( 'yes' === $double_optin ) {
-					$status = 'pending';
-				}
-
-				$user_data = array(
-					'email_address' => $user->user_email,
-					'status'        => $status,
-					'merge_fields'  => $key_values,
-					'language'      => $lang_code,
-					'interests'     => $user_interests,
-				);
-
-				if ( 'yes' === $update_existing ) {
-					$user_data['status_if_new'] = $status;
-				}
-
-				if ( empty( $user_data['interests'] ) ) {
-					unset( $user_data['interests'] );
-				}
-
-				$request_params = array(
-					'action'    => 'add_subscriber',
-					'list_id'   => $list_id,
-					'user_hash' => $user_hash,
-					'user_data' => wp_json_encode( $user_data ),
-				);
-
-				$response = Automator()->helpers->recipe->mailchimp->options->api_request( $request_params );
-
-				// if add/update failed
-				if ( $response->statusCode !== 200 ) { // phpcs:ignore
-					Automator()->helpers->recipe->mailchimp->options->log_action_error( $response, $user_id, $action_data, $recipe_id );
-
-					return;
-				}
-
-				Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-				return;
-			} else {
-				// log error when no token found.
-				$error_msg                           = __( 'Mailchimp account is not connected.', 'uncanny-automator' );
-				$action_data['do-nothing']           = true;
-				$action_data['complete_with_errors'] = true;
-				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-				return;
-			}
-		} catch ( \Exception $e ) {
-			$error_msg = $e->getMessage();
-			$json      = json_decode( $error_msg );
-
-			if ( isset( $json->error ) && isset( $json->error->message ) ) {
-				$error_msg = $json->error->message;
 			}
 
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+			// get current user email
+			$user           = get_userdata( $user_id );
+			$user_hash      = md5( strtolower( trim( $user->user_email ) ) );
+			$user_interests = array();
+
+			$existing_user = $helpers->get_list_user( $list_id, $user_hash );
+
+			// If the user already exists in this list
+			if ( false !== $existing_user ) {
+
+				if ( 'no' === $update_existing ) {
+					throw new \Exception( __( 'User already subscribed to the list.', 'uncanny-automator' ) );
+				}
+
+				$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list ); 
+			}
+
+			// Now create an audience
+			$status = 'subscribed';
+
+			if ( 'yes' === $double_optin ) {
+				$status = 'pending';
+			}
+				
+			$user_data = array(
+				'email_address' => $user->user_email,
+				'status'        => $status,
+				'merge_fields'  => $key_values,
+				'language'      => $lang_code,
+				'interests'     => $user_interests,
+			);
+			
+			if ( 'yes' === $update_existing ) {
+				$user_data['status_if_new'] = $status;
+			}
+
+			if ( empty( $user_data['interests'] ) ) {
+				unset( $user_data['interests'] );
+			}
+
+			$request_params = array(
+				'action'    => 'add_subscriber',
+				'list_id'   => $list_id,
+				'user_hash' => $user_hash,
+				'user_data' => wp_json_encode( $user_data ),
+			);
+
+			$response = $helpers->api_request( $request_params, $action_data );
+
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 			return;
+			
+		} catch ( \Exception $e ) {
+			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
 		}
 	}
-
-
 }

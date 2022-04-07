@@ -59,6 +59,9 @@ class Wpjm_Tokens {
 	 * @return array
 	 */
 	function wpjm_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -168,6 +171,9 @@ class Wpjm_Tokens {
 	 * @return array
 	 */
 	function wpjm_jobapplication_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -301,6 +307,9 @@ class Wpjm_Tokens {
 	 * @return array
 	 */
 	function wpjm_resume_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['code'];

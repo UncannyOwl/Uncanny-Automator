@@ -34,6 +34,10 @@ class Affwp_Tokens {
 
 	function affwp_possible_affiliate_tokens( $tokens = array(), $args = array() ) {
 
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
+
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
@@ -121,6 +125,9 @@ class Affwp_Tokens {
 	}
 
 	function affwp_possible_affiliate_ref_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];

@@ -20,7 +20,7 @@ class Wp_Post_Tokens {
 	 * WP_Anon_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_wp_post_tokens' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_wp_post_tokens' ), 9000, 6 );
 		add_filter( 'automator_maybe_trigger_wp_userspost_tokens', array( $this, 'wp_possible_tokens' ), 20, 2 );
 	}
 
@@ -49,6 +49,9 @@ class Wp_Post_Tokens {
 	 * @return array
 	 */
 	public function wp_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
@@ -141,34 +144,57 @@ class Wp_Post_Tokens {
 			'WPPOST_ID',
 			'WPPOST_URL',
 		);
+		if ( empty( $pieces ) ) {
+			return $value;
+		}
+		if ( empty( $trigger_data ) ) {
+			return $value;
+		}
+		if ( ! isset( $pieces[2] ) ) {
+			return $value;
+		}
+		$token = (string) $pieces[2];
+		if ( empty( $token ) ) {
+			return $value;
+		}
 
-		if ( $pieces && isset( $pieces[2] ) ) {
-			$meta_field = $pieces[2];
+		if ( ! in_array( $token, $tokens, false ) ) {
+			return $value;
+		}
 
-			if ( ! empty( $meta_field ) && in_array( $meta_field, $tokens ) ) {
-				if ( $trigger_data ) {
-					foreach ( $trigger_data as $trigger ) {
-						switch ( $meta_field ) {
-							case 'WPTAXONOMIES':
-								$value = $trigger['meta']['WPTAXONOMIES_readable'];
-								break;
-							case 'SPECIFICTAXONOMY':
-								$value = $trigger['meta']['SPECIFICTAXONOMY_readable'];
-								break;
-							default:
-								global $wpdb;
-								$trigger_id = $trigger['ID'];
-								$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$meta_field", $trigger_id ) );
-								if ( ! empty( $meta_value ) ) {
-									$value = maybe_unserialize( $meta_value );
-								}
-						}
-					}
-				}
+		foreach ( $trigger_data as $trigger ) {
+			$trigger_id     = absint( $trigger['ID'] );
+			$trigger_log_id = absint( $replace_args['trigger_log_id'] );
+			$run_number     = absint( $replace_args['run_number'] );
+			$parse_tokens   = array(
+				'trigger_id'     => $trigger_id,
+				'trigger_log_id' => $trigger_log_id,
+				'user_id'        => $user_id,
+				'run_number'     => $run_number,
+			);
+			$entry          = '';
+			switch ( $token ) {
+				case 'WPTAXONOMIES':
+					$value    = $trigger['meta']['WPTAXONOMIES_readable'];
+					$meta_key = join( ':', $pieces );
+					$entry    = Automator()->db->trigger->get_token_meta( $meta_key, $parse_tokens );
+					break;
+				case 'SPECIFICTAXONOMY':
+					$value = $trigger['meta']['SPECIFICTAXONOMY_readable'];
+					break;
+				default:
+					global $wpdb;
+					$entry = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$token", $trigger_id ) );
+					break;
+			}
+
+			if ( ! empty( $entry ) && is_array( $entry ) ) {
+				$value = join( ', ', $entry );
+			} elseif ( ! empty( $entry ) ) {
+				$value = $entry;
 			}
 		}
 
 		return $value;
 	}
-
 }

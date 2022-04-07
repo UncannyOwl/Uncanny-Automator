@@ -25,6 +25,9 @@ class Wpff_Tokens {
 
 		add_filter( 'automator_maybe_trigger_wpff_wpffforms_tokens', array( $this, 'wpff_possible_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'wpff_token' ), 20, 6 );
+
+		add_filter( 'automator_maybe_trigger_wpff_tokens', array( $this, 'wpff_entry_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wpff_entry_tokens' ), 20, 6 );
 	}
 
 
@@ -38,6 +41,9 @@ class Wpff_Tokens {
 	 * @throws \WpFluent\Exception
 	 */
 	public function wpff_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
@@ -304,6 +310,72 @@ class Wpff_Tokens {
 					}
 				} else {
 					$value = '';
+				}
+			}
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|mixed|\string[][]
+	 */
+	public function wpff_entry_possible_tokens( $tokens = array(), $args = array() ) {
+		$fields = array(
+			array(
+				'tokenId'         => 'WPFFENTRYID',
+				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPFFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'WPFFENTRYIP',
+				'tokenName'       => __( 'User IP', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPFFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'WPFFENTRYSOURCEURL',
+				'tokenName'       => __( 'Entry source URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPFFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'WPFFENTRYDATE',
+				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPFFENTRYTOKENS',
+			),
+		);
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 *
+	 * @return string|null
+	 */
+	public function wpff_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( in_array( 'WPFFENTRYTOKENS', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
 				}
 			}
 		}

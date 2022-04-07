@@ -17,6 +17,9 @@ class Fi_Tokens {
 		add_filter( 'automator_maybe_trigger_fi_fiform_tokens', array( $this, 'fi_possible_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_trigger_fi_anonfiform_tokens', array( $this, 'fi_possible_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'fi_token' ), 20, 6 );
+		// Entry tokens
+		add_filter( 'automator_maybe_trigger_fi_tokens', array( $this, 'fi_entry_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'fi_entry_tokens' ), 20, 6 );
 	}
 
 	/**
@@ -28,6 +31,9 @@ class Fi_Tokens {
 	 * @return array
 	 */
 	public function fi_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -140,6 +146,73 @@ class Fi_Tokens {
 								break;
 							}
 						}
+					}
+				}
+			}
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|\string[][]
+	 */
+	public function fi_entry_possible_tokens( $tokens = array(), $args = array() ) {
+		$fields = array(
+			array(
+				'tokenId'         => 'FIENTRYID',
+				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'FIENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'FIUSERIP',
+				'tokenName'       => __( 'User IP', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'FIENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'FIENTRYDATE',
+				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'FIENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'FIENTRYSOURCEURL',
+				'tokenName'       => __( 'Entry source URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'FIENTRYTOKENS',
+			),
+		);
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return mixed|strings
+	 */
+	public function fi_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( in_array( 'FIENTRYTOKENS', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
 					}
 				}
 			}

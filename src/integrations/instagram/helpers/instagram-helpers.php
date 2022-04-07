@@ -285,8 +285,8 @@ class Instagram_Helpers {
 				'page'               => 'uncanny-automator-config',
 				'tab'                => 'premium-integrations',
 				'integration'        => 'facebook-pages',
-				'minimal'            => filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT ),
-				'hide_settings_tabs' => filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT ),
+				'automator_minimal'  => filter_input( INPUT_GET, 'automator_minimal', FILTER_DEFAULT ),
+				'automator_hide_settings_tabs' => filter_input( INPUT_GET, 'automator_hide_settings_tabs', FILTER_DEFAULT ),
 			),
 			admin_url( 'edit.php' )
 		);

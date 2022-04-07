@@ -23,6 +23,9 @@ class Mp_Tokens {
 	 * @return array
 	 */
 	public function mp_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_meta = $args['meta'];
 		$mepr_options = MeprOptions::fetch();
 		$fields       = array();

@@ -63,7 +63,7 @@ class Buddyboss_Helpers {
 			array(
 				'uo_include_any' => false,
 				'uo_any_label'   => esc_attr__( 'Any group', 'uncanny-automator' ),
-				'status'         => array( 'public' ),
+				'status'         => array( 'public', 'private', 'hidden' ),
 			)
 		);
 

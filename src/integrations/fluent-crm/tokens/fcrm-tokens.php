@@ -41,6 +41,9 @@ class Fcrm_Tokens {
 	 * @return array
 	 */
 	public function fcrm_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_meta = $args['meta'];
 
@@ -322,8 +325,8 @@ class Fcrm_Tokens {
 
 		$value = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT `value` 
-                FROM {$wpdb->prefix}fc_subscriber_meta 
+				"SELECT `value`
+                FROM {$wpdb->prefix}fc_subscriber_meta
                 WHERE subscriber_id = %d AND `key` = %s",
 				$subscriber_id,
 				$key

@@ -19,7 +19,48 @@ class Gf_Tokens {
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_gf_gfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'gf_token' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'gf_entry_tokens' ), 20, 6 );
 		add_filter( 'automator_maybe_trigger_gf_anongfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_gf_tokens', array( $this, 'gf_entry_possible_tokens' ), 20, 2 );
+	}
+
+	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|mixed|\string[][]
+	 */
+	public function gf_entry_possible_tokens( $tokens = array(), $args = array() ) {
+		$fields = array(
+			array(
+				'tokenId'         => 'GFENTRYID',
+				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'GFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'GFUSERIP',
+				'tokenName'       => __( 'User IP', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'GFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'GFENTRYDATE',
+				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'GFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'GFENTRYSOURCEURL',
+				'tokenName'       => __( 'Entry source URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'GFENTRYTOKENS',
+			),
+		);
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
 	}
 
 	/**
@@ -29,6 +70,9 @@ class Gf_Tokens {
 	 * @return array
 	 */
 	public function gf_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 
@@ -122,6 +166,34 @@ class Gf_Tokens {
 	 *
 	 * @return string|null
 	 */
+	public function gf_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( in_array( 'GFENTRYTOKENS', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return mixed|string|null
+	 */
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
 			if ( in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true )
@@ -156,6 +228,8 @@ class Gf_Tokens {
 
 					return $t_data['meta'][ $pieces[2] . '_readable' ];
 				}
+
+				// Entry tokens
 
 
 				$token_piece = $pieces[2];

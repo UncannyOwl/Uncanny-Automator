@@ -49,8 +49,16 @@ class Google_Sheet_Settings {
 		$this->set_icon( 'google' );
 
 		$this->set_name( 'Google' );
+		
+		$this->client = false;
 
-		$this->set_status( $this->get_helper()->get_google_client() ? 'success' : '' );
+		try {
+			$this->client = $this->helper->get_google_client();
+		} catch ( \Exception $e ) {
+			// Do nothing
+		}
+
+		$this->set_status( false === $this->client ? '' : 'success' );
 
 	}
 
@@ -128,8 +136,6 @@ class Google_Sheet_Settings {
 	public function output() {
 
 		$helper = $this->get_helper();
-
-		$gs_client = $helper->get_google_client();
 
 		$auth_url = $this->get_auth_url();
 

@@ -80,83 +80,34 @@ class GTW_UNREGISTERUSER {
 	 */
 	public function gtw_unregister_user( $user_id, $action_data, $recipe_id, $args ) {
 
-		// Complete with error if there's an issue with charge_credit.
-		if ( false === Api_Server::charge_credit() ) {
+		try {
 
-			$action_data['complete_with_errors'] = true;
+			if ( empty( $user_id ) ) {
+				throw new \Exception( __( 'User not found.', 'uncanny-automator' ) );
+			}
 
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, esc_html__( 'Unable to charge credits', 'uncanny-automator' ) );
-
-			return;
-
-		}
-
-		$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
-
-		if ( empty( $user_id ) ) {
-
-			$error_msg = __( 'User not found.', 'uncanny-automator' );
-
-			$action_data['do-nothing'] = true;
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		if ( empty( $webinar_key ) ) {
-
-			$error_msg = __( 'Webinar not found.', 'uncanny-automator' );
-
-			$action_data['do-nothing'] = true;
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		if ( ! empty( $webinar_key ) ) {
+			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
+			
+			if ( empty( $webinar_key ) ) {
+				throw new \Exception( __( 'Webinar not found.', 'uncanny-automator' ) );
+			}
 
 			$webinar_key = str_replace( '-objectkey', '', $webinar_key );
 
-		}
+			$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtw_webinar_' . $webinar_key . '_registrantKey', true );
 
-		$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtw_webinar_' . $webinar_key . '_registrantKey', true );
+			if ( empty( $user_registrant_key ) ) {
+				throw new \Exception( __( 'User was not registered for webinar.', 'uncanny-automator' ) );
+			}
 
-		if ( empty( $user_registrant_key ) ) {
+			$result = Automator()->helpers->recipe->gotowebinar->gtw_unregister_user( $user_id, $webinar_key, $action_data );
 
-			$error_msg = __( 'User was not registered for webinar.', 'uncanny-automator' );
-
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		} catch ( \Exception $e ) {
 			$action_data['do-nothing'] = true;
-
 			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
-
-		$result = Automator()->helpers->recipe->gotowebinar->gtw_unregister_user( $user_id, $webinar_key );
-
-		if ( ! $result['result'] ) {
-
-			$error_msg = $result['message'];
-
-			$action_data['do-nothing'] = true;
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 	}
 

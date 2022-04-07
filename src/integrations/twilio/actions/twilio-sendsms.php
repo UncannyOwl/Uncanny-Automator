@@ -99,7 +99,7 @@ class TWILIO_SENDSMS {
 			$is_error  = false;
 			$error_msg = '';
 			foreach ( $to_numbers as $to_num ) {
-				$result = Automator()->helpers->recipe->twilio->send_sms( $to_num, wp_strip_all_tags( $body ), $user_id );
+				$result = Automator()->helpers->recipe->twilio->send_sms( $to_num, wp_strip_all_tags( $body ), $user_id, $action_data );
 
 				if ( ! $result['result'] ) {
 					$error_msg = $result['message'];

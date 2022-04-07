@@ -60,9 +60,9 @@ class Automator_Cache_Handler {
 		add_action( 'automator_recipe_completed', array( $this, 'reset_recipes_after_completion' ), 99999, 4 );
 		add_action( 'activated_plugin', array( $this, 'reset_integrations_directory' ), 99999, 2 );
 		add_action( 'deactivated_plugin', array( $this, 'reset_integrations_directory' ), 99999, 2 );
-		add_action( 'transition_post_status', array( $this, 'recipe_post_status_changed' ), 99999, 3 );
 		add_action( 'delete_post', array( $this, 'recipe_post_deleted' ), 99999, 2 );
 
+		add_action( 'transition_post_status', array( $this, 'recipe_post_status_changed' ), 99999, 3 );
 		add_action( 'automator_recipe_action_created', array( $this, 'recipe_post_status_changed' ), 99999 );
 		add_action( 'automator_recipe_trigger_created', array( $this, 'recipe_post_status_changed' ), 99999 );
 		add_action( 'automator_recipe_closure_created', array( $this, 'recipe_post_status_changed' ), 99999 );
@@ -99,6 +99,8 @@ class Automator_Cache_Handler {
 		$transient_key .= md5( wp_json_encode( $post->post_type ) );
 
 		$this->remove( $transient_key );
+
+		do_action( 'automator_cache_maybe_clear_cache_for_posts', $post_id, $post, $update, $post_before );
 	}
 
 	/**
@@ -117,6 +119,7 @@ class Automator_Cache_Handler {
 		// Clear recipes data cache
 		$this->remove( $this->recipes_data );
 		$this->remove( 'automator_actionified_triggers' );
+		do_action( 'automator_cache_maybe_clear_cache_for_recipes', $post_id, $post, $update, $post_before );
 	}
 
 	/**
@@ -125,6 +128,7 @@ class Automator_Cache_Handler {
 	public function maybe_clear_user_cache() {
 		$transient_key = 'automator_transient_users';
 		$this->remove( $transient_key );
+		do_action( 'automator_cache_maybe_clear_user_cache' );
 	}
 
 	/**
@@ -139,6 +143,7 @@ class Automator_Cache_Handler {
 		$this->remove( $key );
 		// Clear recipes data cache
 		$this->remove( $this->recipes_data );
+		do_action( 'automator_cache_reset_recipes_after_completion', $recipe_id, $user_id, $recipe_log_id, $args );
 	}
 
 	/**
@@ -149,6 +154,7 @@ class Automator_Cache_Handler {
 		$this->remove( 'automator_integration_directories_loaded' );
 		$this->remove( 'automator_get_all_integrations' );
 		$this->remove( 'automator_actionified_triggers' );
+		do_action( 'automator_cache_reset_integrations_directory', $plugin, $network_wide );
 	}
 
 	/**
@@ -161,6 +167,7 @@ class Automator_Cache_Handler {
 		$key = 'automator_recipe_data_of_' . $post_id;
 		$this->remove( $key );
 		$this->remove( 'get_recipe_type' );
+		do_action( 'automator_cache_clear_automator_recipe_part_cache', $post_id );
 	}
 
 	/**
@@ -189,6 +196,8 @@ class Automator_Cache_Handler {
 		$this->remove( 'automator_integration_directories_loaded' );
 		$this->remove( 'automator_get_all_integrations' );
 		$this->remove( 'get_recipe_type' );
+
+		do_action( 'automator_cache_recipe_post_status_changed', $args );
 	}
 
 	/**
@@ -218,6 +227,7 @@ class Automator_Cache_Handler {
 		// Clear recipes data cache
 		$this->remove( $this->recipes_data );
 		$this->remove( 'automator_actionified_triggers' );
+		do_action( 'automator_cache_recipe_post_deleted', $args );
 	}
 
 	/**
@@ -271,6 +281,7 @@ class Automator_Cache_Handler {
 		$this->remove( 'automator_actionified_triggers' );
 		$this->remove( $this->recipes_data );
 		$this->remove( 'get_recipe_type' );
+		do_action( 'automator_cache_remove_all' );
 	}
 
 	/**
@@ -371,10 +382,9 @@ class Automator_Cache_Handler {
 	}
 
 	/**
-	 * @param $upgrader_object
-	 * @param $options
 	 */
 	public function upgrader_process_completed() {
 		$this->reset_integrations_directory( null, null );
+		do_action( 'automator_cache_upgrader_process_completed' );
 	}
 }

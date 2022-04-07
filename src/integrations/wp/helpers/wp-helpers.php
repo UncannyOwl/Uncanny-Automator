@@ -23,15 +23,9 @@ class Wp_Helpers {
 	public $pro;
 
 	/**
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * Wp_Helpers constructor.
 	 */
 	public function __construct() {
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
 		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
@@ -86,7 +80,11 @@ class Wp_Helpers {
 		$posts_list = Automator()->helpers->recipe->options->wp_query( $args );
 
 		if ( ! empty( $posts_list ) ) {
-
+			$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
+			$fields[]        = array(
+				'value' => '-1',
+				'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator-pro' ), strtolower( $post_type_label ) ),
+			);
 			foreach ( $posts_list as $post_id => $title ) {
 
 				$post_title = ! empty( $title ) ? $title : sprintf(
@@ -100,6 +98,17 @@ class Wp_Helpers {
 					'text'  => $post_title,
 				);
 			}
+		} else {
+			$post_type_label = 'post';
+
+			if ( intval( $post_type ) !== intval( '-1' ) ) {
+				$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
+			}
+
+			$fields[] = array(
+				'value' => '-1',
+				'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator-pro' ), strtolower( $post_type_label ) ),
+			);
 		}
 
 		echo wp_json_encode( $fields );
@@ -113,9 +122,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			/* translators: Noun */
@@ -159,11 +165,7 @@ class Wp_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function all_pages( $label = null, $option_code = 'WPPAGE', $any_option = false ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
+	public function all_pages( $label = null, $option_code = 'WPPAGE', $any_option = true ) {
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Page', 'uncanny-automator' );
@@ -206,9 +208,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE' ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			/* translators: WordPress role */
@@ -219,13 +218,12 @@ class Wp_Helpers {
 		$default_role           = get_option( 'default_role', 'subscriber' );
 		$roles[ $default_role ] = wp_roles()->roles[ $default_role ]['name'];
 
-		if ( Automator()->helpers->recipe->load_helpers ) {
-			foreach ( wp_roles()->roles as $role_name => $role_info ) {
-				if ( $role_name != $default_role ) {
-					$roles[ $role_name ] = $role_info['name'];
-				}
+		foreach ( wp_roles()->roles as $role_name => $role_info ) {
+			if ( $role_name != $default_role ) {
+				$roles[ $role_name ] = $role_info['name'];
 			}
 		}
+
 		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
@@ -245,9 +243,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Post type', 'uncanny-automator' );
@@ -259,22 +254,21 @@ class Wp_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		if ( Automator()->helpers->recipe->load_helpers ) {
-			$args = array(
-				'public'   => true,
-				'_builtin' => false,
-			);
+		$args = array(
+			'public'   => true,
+			'_builtin' => false,
+		);
 
-			$output   = 'object';
-			$operator = 'and';
+		$output   = 'object';
+		$operator = 'and';
 
-			$post_types = get_post_types( $args, $output, $operator );
-			if ( ! empty( $post_types ) ) {
-				foreach ( $post_types as $post_type ) {
-					$options[ $post_type->name ] = esc_html( $post_type->labels->singular_name );
-				}
+		$post_types = get_post_types( $args, $output, $operator );
+		if ( ! empty( $post_types ) ) {
+			foreach ( $post_types as $post_type ) {
+				$options[ $post_type->name ] = esc_html( $post_type->labels->singular_name );
 			}
 		}
+
 		$type = 'select';
 
 		$option = array(
@@ -434,7 +428,7 @@ class Wp_Helpers {
 		} else {
 			$post_type_label = 'post';
 
-			if ( $post_type != '- 1' ) {
+			if ( intval( $post_type ) !== intval( '-1' ) ) {
 				$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
 			}
 
@@ -456,11 +450,6 @@ class Wp_Helpers {
 	 * @return mixed|void
 	 */
 	public function all_wp_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-			global $uncanny_automator;
-
-			return $uncanny_automator->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = __( 'Post types', 'uncanny-automator' );

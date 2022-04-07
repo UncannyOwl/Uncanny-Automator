@@ -14,7 +14,7 @@
 
 			<div class="uap-settings-panel-content">
 
-                <?php if ( ! $is_connected ) { ?>
+                <?php if ( ! $this->is_connected ) { ?>
                     <div class="uap-settings-panel-content-subtitle">
 						<?php esc_html_e( 'Connect Uncanny Automator to Twilio', 'uncanny-automator' ); ?>
 					</div>
@@ -60,7 +60,7 @@
 
                     class="uap-spacing-top"
 
-                    <?php echo $is_connected ? 'hidden disabled' : ''; ?>
+                    <?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
                 ></uo-text-field>
 
                 <uo-text-field
@@ -72,7 +72,7 @@
 
                     class="uap-spacing-top"
 
-                    <?php echo $is_connected ? 'hidden disabled' : ''; ?>
+                    <?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
                 ></uo-text-field>
 
                 <?php 
@@ -108,21 +108,21 @@
 					<?php
 
                     // Check what button we have to add
-                    if ( $is_connected ) {
+                    if ( $this->is_connected ) {
 
                         // Check if we have the username and the ID
-                        if ( ! empty( $user['friendly_name'] ) ) {
+                        if ( ! empty( $this->user['friendly_name'] ) ) {
                             ?>
 
                             <div class="uap-settings-panel-user">
 
                                 <div class="uap-settings-panel-user__avatar">
-                                    <?php echo esc_html( strtoupper( $user['friendly_name'][0] ) ); ?>
+                                    <?php echo esc_html( strtoupper( $this->user['friendly_name'][0] ) ); ?>
                                 </div>
 
                                 <div class="uap-settings-panel-user-info">
                                     <div class="uap-settings-panel-user-info__main">
-                                        <?php echo esc_html( $user['friendly_name'] ); ?>
+                                        <?php echo esc_html( $this->user['friendly_name'] ); ?>
                                         <uo-icon id="twilio"></uo-icon>
                                     </div>
 
@@ -163,7 +163,7 @@
 
 				<div class="uap-settings-panel-bottom-right">
 
-                <?php if ( $is_connected ) { ?>
+                <?php if ( $this->is_connected ) { ?>
 
 					<uo-button
 						href="<?php echo esc_url( $disconnect_uri ); ?>"

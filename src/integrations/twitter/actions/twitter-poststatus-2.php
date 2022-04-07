@@ -103,7 +103,7 @@ class TWITTER_POSTSTATUS_2 {
 				$media_id = $this->media_upload( $media );
 			}
 
-			$response = $this->statuses_update( $status, $media_id );
+			$response = $this->statuses_update( $status, $media_id, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 			return;
@@ -126,43 +126,15 @@ class TWITTER_POSTSTATUS_2 {
 	 *
 	 * @return mixed
 	 */
-	public function statuses_update( $status, $media_id = '' ) {
+	public function statuses_update( $status, $media_id = '', $action_data = null ) {
 
-		// Get twitter credentials.
-		$request_body = Automator()->helpers->recipe->twitter->get_client();
+		$body['action']    = 'statuses_update';
+		$body['status']    = $status;
+		$body['media_ids'] = $media_id;
 
-		$url = Twitter_Helpers::$automator_api;
+		$response = Automator()->helpers->recipe->twitter->api_request( $body, $action_data );
 
-		$request_body['action']    = 'statuses_update';
-		$request_body['status']    = $status;
-		$request_body['media_ids'] = $media_id;
-
-		$args         = array();
-		$args['body'] = $request_body;
-
-		$response = wp_remote_post( $url, $args );
-
-		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-
-			$body = json_decode( wp_remote_retrieve_body( $response ) );
-
-			if ( ! isset( $body->error ) ) {
-
-				return $body->data;
-
-			} else {
-
-				throw new \Exception( $body->error->description );
-
-			}
-		} else {
-
-			$error_msg = $response->get_error_message();
-
-			throw new \Exception( $error_msg );
-
-		}
-
+		return $response;
 	}
 
 	/**
@@ -174,30 +146,17 @@ class TWITTER_POSTSTATUS_2 {
 	 */
 	public function media_upload( $media ) {
 
-		// Get twitter credentials.
-		$request_body = Automator()->helpers->recipe->twitter->get_client();
+		$body['action'] = 'media_upload';
+		$body['media']  = $media;
 
-		$url = Twitter_Helpers::$automator_api;
+		$timeout = 60;
 
-		$request_body['action'] = 'media_upload';
-		$request_body['media']  = $media;
-		$args                   = array();
-		$args['body']           = $request_body;
-		$args['timeout']        = 60;
+		$response = Automator()->helpers->recipe->twitter->api_request( $body, null, $timeout );
 
-		$response = wp_remote_post( $url, $args );
+		if ( empty( $response['data']['media_id'] ) ) {
+			throw new \Exception( __( "Media couldn't be uploded", "uncanny-automator" ) );
+		} 
 
-		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-			$body = json_decode( wp_remote_retrieve_body( $response ) );
-			if ( ! isset( $body->error ) && isset( $body->data->media_id ) ) {
-				return $body->data->media_id;
-			} else {
-				throw new \Exception( $body->error->description );
-			}
-		} else {
-			$error_msg = $response->get_error_message();
-			throw new \Exception( $error_msg );
-		}
-
+		return $response['data']['media_id'];
 	}
 }

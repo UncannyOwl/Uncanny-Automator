@@ -47,12 +47,27 @@ class WP_ADDROLE {
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'add_role' ),
-			'options'            => array(
-				Automator()->helpers->recipe->wp->options->wp_user_roles(),
-			),
+			'options_callback'	  => array( $this, 'load_options' ),
+			
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = Automator()->utilities->keep_order_of_options(
+			array(
+				'options'            => array(
+					Automator()->helpers->recipe->wp->options->wp_user_roles(),
+				),
+			)
+		);
+		return $options;
 	}
 
 	/**

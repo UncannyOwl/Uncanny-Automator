@@ -78,6 +78,9 @@ class Ut_Tokens {
 	 * @return array
 	 */
 	public function ut_utuserimported_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_meta = $args['meta'];
 		$new_tokens   = array();
 		foreach ( self::$user_import_tokens as $token_id => $token_name ) {
@@ -124,6 +127,9 @@ class Ut_Tokens {
 	 * @return array
 	 */
 	public function ut_utuserimportedincourse_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_meta = $args['meta'];
 		$new_tokens   = array();
 		foreach ( self::$user_import_tokens as $token_id => $token_name ) {
@@ -153,6 +159,9 @@ class Ut_Tokens {
 	 * @return array
 	 */
 	public function ut_utuserimportedingroup_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_meta = $args['meta'];
 		$new_tokens   = array();
 		foreach ( self::$user_import_tokens as $token_id => $token_name ) {

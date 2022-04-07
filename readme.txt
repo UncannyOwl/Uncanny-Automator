@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl
 Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
-Tested up to: 5.9.2
+Tested up to: 5.9.3
 Requires PHP: 5.6
-Stable tag: 3.8.1.1
+Stable tag: 3.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -72,6 +72,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [myCred](https://automatorplugin.com/integration/mycred/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -173,7 +174,7 @@ The best thing you can do is reach out to the creator of the plugin that you wan
 
 = How can I add an integration for my plugin? =
 
-Check out our developer documentation over at [https://automatorplugin.com/article-categories/developers/](https://automatorplugin.com/article-categories/developers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=code_integration). Also consider reaching out to our team, maybe we can help or even turn it into an official integration!
+Check out our developer documentation over at [https://developer.automatorplugin.com/](https://developer.automatorplugin.com/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=code_integration). Also consider reaching out to our team, maybe we can help or even turn it into an official integration!
 
 = Who is Uncanny Owl? =
 
@@ -190,6 +191,55 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.9 [2022-04-07] =
+
+**New Integration:**
+
+* [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1518
+
+**New Triggers:**
+
+* PeepSo - A user updates their avatar #1769
+* PeepSo - A user follows another PeepSo member #1768
+
+**New Actions:**
+
+* PeepSo - Follow a user #1767
+* Uncanny Groups - Remove a number of seats from an Uncanny group #1340
+* Uncanny Groups - Add a number of seats to an Uncanny group #1339
+
+**Added:**
+
+* Automator API - External integrations migrated to centralized communication class #1463
+* bbPress - Topic ID, Topic URL, Topic title and Topic content tokens #1709
+* Caldera Forms - Entry ID and Entry submission date tokens #1780
+* Fluent Forms - Entry ID, User IP, Entry submission date and Entry source URL tokens #1779
+* Formidable Forms - Entry ID, User IP, Entry submission date, Entry source URL tokens #1778
+* GiveWP - Form ID token #1762
+* Gravity Forms - Entry ID, User IP, Entry submission date and Entry source URL tokens #1777
+* MailChimp - Use a token/custom value option for tag-based actions #1695
+* WordPress Core - "Send an email" - Support for selecting HTML or plain text format #1729
+* WPForms - Entry ID, User IP and Entry submission date tokens #1781
+* Zoom Meetings & Webinars - Support for custom registration fields #1352
+
+**Updated:**
+
+* Easy Digital Downloads - Number formatting added to amount tokens #1738
+* WordPress Core - "A user views a custom post type" - "Any" option added to second dropdown #1749
+* Core - Several architectural performance updates #1736 #1721 #1405
+
+**Fixed:**
+
+* Recipe Logs - Moved `load_minimal_admin` from `admin_init` to `admin_head` to avoid conflicts #1693
+* BuddyBoss - "Send a notification to all members of a group" now lists private and hidden groups #1764
+* Easy Digital Downloads - Token "Discount codes" renamed to "Discount codes used" #1701
+* Google Sheets - Re-added migration script #1782
+* FluentCRM - Do not complete with errors if contact has existing tags #1756
+* FluentCRM - "A tag is added to a contact" now fires if the contact is not a WP user #1713
+* LearnDash - "A user passes a quiz": Quiz ID and Quiz URL now parse reliably #1692
+* LifterLMS - A user is added to a course now fires when a new user registers #1752
+* WordPress - "A user publishes a type of post with a taxonomy term in a taxonomy" now runs reliably #1674
 
 = 3.8.1.1 [2022-03-21] =
 

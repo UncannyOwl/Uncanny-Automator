@@ -16,7 +16,13 @@ class WC_VIEWPRODUCT {
 	 */
 	public static $integration = 'WC';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -46,16 +52,24 @@ class WC_VIEWPRODUCT {
 			'priority'            => 90,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_woo_product' ),
-			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		$options = array(
+			'options' => array(
 				Automator()->helpers->recipe->woocommerce->options->all_wc_products(),
 				Automator()->helpers->recipe->options->number_of_times(),
 			),
 		);
 
-		Automator()->register->trigger( $trigger );
-
-		return;
+		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**

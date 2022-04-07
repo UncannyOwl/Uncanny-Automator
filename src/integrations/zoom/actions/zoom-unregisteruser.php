@@ -73,55 +73,31 @@ class ZOOM_UNREGISTERUSER {
 	 */
 	public function zoom_unregister_user( $user_id, $action_data, $recipe_id, $args ) {
 
-		$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
+		try {
 
-		if ( empty( $user_id ) ) {
-			$error_msg                           = __( 'User not found.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+			if ( empty( $user_id ) ) {
+				throw new \Exception( __( 'User was not found.', 'uncanny-automator' ) );
+			}
 
-			return;
-		}
+			$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
-		$user  = get_userdata( $user_id );
-		$email = $user->user_email;
+			if ( empty( $meeting_key ) ) {
+				throw new \Exception( __( 'Meeting was not found.', 'uncanny-automator' ) );
+			}
 
-		if ( empty( $email ) || ! is_email( $email ) ) {
-			$error_msg                           = __( 'Email address is missing or invalid.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		if ( empty( $meeting_key ) ) {
-			$error_msg                           = __( 'Meeting not found.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		if ( ! empty( $meeting_key ) ) {
 			$meeting_key = str_replace( '-objectkey', '', $meeting_key );
-		}
+			
+			$user  = get_userdata( $user_id );
+			$email = $user->user_email;
 
-		$result = Automator()->helpers->recipe->zoom->unregister_user( $email, $meeting_key );
+			$result = Automator()->helpers->recipe->zoom->unregister_user( $email, $meeting_key, $action_data );
 
-		if ( ! $result['result'] ) {
-			$error_msg                           = $result['message'];
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+
+		} catch ( \Exception $e ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
-
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
 	}
-
 }

@@ -23,18 +23,9 @@ class Divi_Helpers {
 	public $pro;
 
 	/**
-	 * Validate if the options needs to be loaded
-	 *
-	 * @var bool
-	 */
-	public $load_options;
-
-	/**
 	 * Divi_Helpers constructor.
 	 */
 	public function __construct() {
-
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -65,10 +56,6 @@ class Divi_Helpers {
 	 * @return mixed
 	 */
 	public function all_divi_forms( $label = null, $option_code = 'DIVIMFORMS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		$label = null === $label ? esc_attr__( 'Form', 'uncanny-automator' ) : $label;
 

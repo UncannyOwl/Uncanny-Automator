@@ -12,13 +12,22 @@ use Firebase\JWT\JWT;
 class Zoom_Helpers {
 
 	/**
+	 * The API endpoint address.
+	 *
+	 * @var API_ENDPOINT The endpoint adress.
+	 */
+	const API_ENDPOINT = 'v2/zoom';
+
+	/**
 	 * @var Zoom_Helpers
 	 */
 	public $options;
+
 	/**
 	 * @var Zoom_Helpers
 	 */
 	public $pro;
+
 	/**
 	 * @var Zoom_Helpers
 	 */
@@ -44,15 +53,60 @@ class Zoom_Helpers {
 		// Disconnect wp-ajax action.
 		add_action( 'wp_ajax_uap_automator_zoom_api_disconnect', array( $this, 'disconnect' ), 10 );
 
+		add_action( 'wp_ajax_uap_zoom_api_get_meeting_questions', array( $this, 'api_get_meeting_questions' ) );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
+
 		$this->load_settings();
 
+		$this->default_questions = array(
+			'address',
+			'city',
+			'state',
+			'zip',
+			'country',
+			'phone',
+			'comments',
+			'industry',
+			'job_title',
+			'no_of_employees',
+			'org',
+			'purchasing_time_frame',
+			'role_in_purchase_process'
+		);
 	}
-
+	
+	/**
+	 * load_settings
+	 *
+	 * @return void
+	 */
 	public function load_settings() {
 		$this->setting_tab   = 'zoom-api';
 		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 		include_once __DIR__ . '/../settings/settings-zoom.php';
 		new Zoom_Settings( $this );
+	}
+	
+	/**
+	 * load_scripts
+	 *
+	 * @param  mixed $hook
+	 * @return void
+	 */
+	public function load_scripts( $hook ) {
+
+		if ( 'post.php' !== $hook ) {
+			return;
+		}
+
+		if ( 'uo-recipe' != get_current_screen()->post_type ) {
+			return;
+		}
+
+		$script_uri = plugin_dir_url( __FILE__ ) . '../scripts/zoom-meetings.js';
+
+		wp_enqueue_script( 'zoom-meetings', $script_uri, array ( 'jquery' ), InitializePlugin::PLUGIN_VERSION, true );
 	}
 
 	/**
@@ -96,45 +150,37 @@ class Zoom_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		$client = $this->get_client();
-
-		if ( ! $client || empty( $client['access_token'] ) ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
-		// API register call
-		$response = wp_remote_post(
-			$this->automator_api,
-			array(
-				'body' =>
-					array(
-						'action'       => 'get_meetings',
-						'access_token' => $client['access_token'],
-						'page_number'  => 1,
-						'page_size'    => 1000,
-						'type'         => 'upcoming',
-					),
-			)
+		$body = array(
+			'action'       => 'get_meetings',
+			'page_number'  => 1,
+			'page_size'    => 1000,
+			'type'         => 'upcoming',
 		);
 
-		if ( ! is_wp_error( $response ) ) {
-			$response_code = wp_remote_retrieve_response_code( $response );
+		try {
 
-			// prepare meeting lists
-			if ( $response_code === 200 ) {
+			$response = $this->api_request( $body );
 
-				$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-				if ( count( $response_body['data']['meetings'] ) > 0 ) {
-
-					foreach ( $response_body['data']['meetings'] as $meeting ) {
-						$options[] = array(
-							'value' => $meeting['id'],
-							'text'  => $meeting['topic'],
-						);
-					}
-				}
+			if ( 200 !== $response['statusCode'] ) {
+				throw new \Exception( __( 'Could not fetch meetngs from Zoom', 'uncanny-automator' ), $response['statusCode'] );
 			}
+
+			if ( empty( $response['data']['meetings'] ) || count( $response['data']['meetings'] ) < 1 ) {
+				throw new \Exception( __( 'No meetings were found in your account', 'uncanny-automator' ) );
+			}
+
+			foreach ( $response['data']['meetings'] as $meeting ) {
+				$options[] = array(
+					'value' => $meeting['id'],
+					'text'  => $meeting['topic'],
+				);
+			}
+			
+		} catch ( \Exception $e ) {
+			$options[] = array(
+				'value' => '',
+				'text'  => $e->getMessage()
+			);
 		}
 
 		$option = array(
@@ -151,169 +197,118 @@ class Zoom_Helpers {
 
 		return apply_filters( 'uap_option_zoom_get_meetings', $option );
 	}
-
+	
 	/**
-	 * For registering user to meeting action method.
+	 * get_meeting_questions_repeater
 	 *
-	 * @param string $user_id
-	 * @param string $meeting_key
-	 *
-	 * @return array
+	 * @param  mixed $label
+	 * @param  mixed $option_code
+	 * @param  mixed $args
+	 * @return void
 	 */
-	public function register_user( $user_id, $meeting_key ) {
-
-		$user = get_userdata( $user_id );
-
-		if ( is_wp_error( $user ) ) {
-			return array(
-				'result'  => false,
-				'message' => __( 'Zoom user not found.', 'uncanny-automator' ),
-			);
-		}
-
-		$customer_first_name = $user->first_name;
-		$customer_last_name  = $user->last_name;
-		$customer_email      = $user->user_email;
-
-		if ( ! empty( $customer_email ) ) {
-			$customer_email_parts = explode( '@', $customer_email );
-			$customer_first_name  = empty( $customer_first_name ) ? $customer_email_parts[0] : $customer_first_name;
-			$customer_last_name   = empty( $customer_last_name ) ? $customer_email_parts[0] : $customer_last_name;
-		}
-
-		$client = $this->get_client();
-
-		if ( ! $client || empty( $client['access_token'] ) ) {
-			return array(
-				'result'  => false,
-				'message' => __( 'Zoom credentials have expired.', 'uncanny-automator' ),
-			);
-		}
-
-		$response = wp_remote_post(
-			$this->automator_api,
-			array(
-				'body' =>
-					array(
-						'action'       => 'register_meeting_user',
-						'access_token' => $client['access_token'],
-						'meeting_key'  => $meeting_key,
-						'first_name'   => $customer_first_name,
-						'last_name'    => $customer_last_name,
-						'email'        => $customer_email,
-					),
-			)
-		);
-
-		if ( ! is_wp_error( $response ) ) {
-
-			$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( 201 === wp_remote_retrieve_response_code( $response ) ) {
-
-				if ( isset( $body['data']['join_url'] ) ) {
-					return array(
-						'result'  => true,
-						'message' => __( 'Successfully registered', 'uncanny-automator' ),
-					);
-				}
-			} else {
-
-				$error = '';
-
-				if ( isset( $body['data']['message'] ) ) {
-					$error = $body['data']['message'];
-				} elseif ( isset( $body['error']['description'] ) ) {
-					$error = $body['error']['description'];
-				}
-
-				return array(
-					'result'  => false,
-					'message' => __( $error, 'uncanny-automator' ),
-				);
-			}
-		}
+	public function get_meeting_questions_repeater() {
 
 		return array(
-			'result'  => false,
-			'message' => __( 'WordPress was not able to communicate with Zoom API.', 'uncanny-automator' ),
+			'option_code'       => 'MEETINGQUESTIONS',
+			'input_type'        => 'repeater',
+			'label'             => __( 'Meeting questions', 'uncanny-automator' ),
+			/* translators: 1. Button */
+			'description'       => '',
+			'required'          => false,
+			'default_value'     => array(
+				array(
+					'QUESTION_NAME'  => '',
+					'QUESTION_VALUE' => '',
+				),
+			),
+			'fields'            => array(
+				array(
+					'option_code' => 'QUESTION_NAME',
+					'label'       => __( 'Question', 'uncanny-automator' ),
+					'input_type'  => 'text',
+					'required'    => false,
+					'read_only'   => true,
+					'options'     => array(),
+				),
+				Automator()->helpers->recipe->field->text_field( 'QUESTION_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+			),
+			'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
+			'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+			'hide_actions'      => true,
 		);
 	}
-
+	
 	/**
-	 * For registering a user to meeting action method.
+	 * api_get_meeting_questions
 	 *
-	 * @param $user
-	 * @param $meeting_key
-	 *
-	 * @return array
+	 * @return void
 	 */
-	public function register_userless( $user, $meeting_key ) {
+	public function api_get_meeting_questions() {
 
-		$customer_email       = $user['EMAIL'];
-		$customer_email_parts = explode( '@', $customer_email );
+		// Nonce and post object validation
+		Automator()->utilities->ajax_auth_check();
 
-		$customer_first_name = empty( $user['FIRSTNAME'] ) ? $customer_email_parts[0] : $user['FIRSTNAME'];
-		$customer_last_name  = empty( $user['LASTNAME'] ) ? $customer_email_parts[0] : $user['LASTNAME'];
+		$meeting_id = automator_filter_input( 'meeting_id', INPUT_POST );
 
-		$client = $this->get_client();
+		try {
 
-		if ( ! $client || empty( $client['access_token'] ) ) {
-			return array(
-				'result'  => false,
-				'message' => __( 'Zoom credentials have expired.', 'uncanny-automator' ),
+			$body = array(
+				'action' => 'get_meeting_questions',
+				'meeting_id' => $meeting_id
 			);
-		}
 
-		$response = wp_remote_post(
-			$this->automator_api,
-			array(
-				'body' =>
-					array(
-						'action'       => 'register_meeting_user',
-						'access_token' => $client['access_token'],
-						'meeting_key'  => $meeting_key,
-						'first_name'   => $customer_first_name,
-						'last_name'    => $customer_last_name,
-						'email'        => $customer_email,
-					),
-			)
-		);
+			$response = $this->api_request( $body );
 
-		if ( ! is_wp_error( $response ) ) {
-
-			$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( 201 === wp_remote_retrieve_response_code( $response ) ) {
-
-				if ( isset( $body['data']['join_url'] ) ) {
-
-					return array(
-						'result'  => true,
-						'message' => __( 'Successfully registered', 'uncanny-automator' ),
-					);
-				}
-			} else {
-
-				$error = '';
-
-				if ( isset( $body['data']['message'] ) ) {
-					$error = $body['data']['message'];
-				} elseif ( isset( $body['error']['description'] ) ) {
-					$error = $body['error']['description'];
-				}
-
-				return array(
-					'result'  => false,
-					'message' => __( $error, 'uncanny-automator' ),
-				);
+			if ( 200 !== $response['statusCode'] ) {
+				throw new \Exception( __( 'Could not fetch meeting questions from Zoom', 'uncanny-automator' ), $response['statusCode'] );
 			}
+
+			wp_send_json_success( $response['data'], $response['statusCode'] );
+
+		} catch ( \Exception $e ) {
+			$error = new \WP_Error( $e->getCode(), $e->getMessage() );
+			wp_send_json_error( $error );
+		}
+		
+		die();
+	}
+	
+	/**
+	 * add_to_meeting
+	 *
+	 * @param  mixed $user
+	 * @param  mixed $meeting_key
+	 * @param  mixed $action_data
+	 * @return void
+	 */
+	public function add_to_meeting( $user, $meeting_key, $action_data ) {
+
+		if ( empty( $user['email'] ) || false === is_email( $user['email'] ) ) {
+			throw new \Exception(  __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
-		return array(
-			'result'  => false,
-			'message' => __( 'WordPress was not able to communicate with Zoom API.', 'uncanny-automator' ),
+		if ( empty( $user['first_name'] ) ) {
+			throw new \Exception( __( 'First name is missing', 'uncanny-automator' ) );
+		}
+
+		if ( empty( $meeting_key ) ) {
+			throw new \Exception( __( 'Meeting key is missing', 'uncanny-automator' ) );
+		}
+
+		$body = array(
+			'action'       => 'register_meeting_user',
+			'meeting_key'  => $meeting_key
 		);
+
+		$body = array_merge( $body, $user );
+
+		$response = $this->api_request( $body, $action_data );
+
+		if ( 201 !== $response['statusCode'] ) {
+			throw new \Exception( __( 'User could not be added to the meeting', 'uncanny-automator' ) );
+		}
+
+		return $response;
 	}
 
 	/**
@@ -324,62 +319,23 @@ class Zoom_Helpers {
 	 *
 	 * @return array
 	 */
-	public function unregister_user( $email, $meeting_key ) {
+	public function unregister_user( $email, $meeting_key, $action_data ) {
 
-		$client = $this->get_client();
-
-		if ( ! $client || empty( $client['access_token'] ) ) {
-			return array(
-				'result'  => false,
-				'message' => __( 'Zoom credentails have expired.', 'uncanny-automator' ),
-			);
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			throw new \Exception(  __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
-		$response = wp_remote_post(
-			$this->automator_api,
-			array(
-				'body' =>
-					array(
-						'action'       => 'unregister_meeting_user',
-						'access_token' => $client['access_token'],
-						'meeting_key'  => $meeting_key,
-						'email'        => $email,
-					),
-			)
+		$body = array(
+			'action'       => 'unregister_meeting_user',
+			'meeting_key'  => $meeting_key,
+			'email'        => $email,
 		);
+	
+		$response = $this->api_request( $body, $action_data );
 
-		if ( ! is_wp_error( $response ) ) {
-
-			if ( 201 === wp_remote_retrieve_response_code( $response ) || 204 === wp_remote_retrieve_response_code( $response ) ) {
-
-				return array(
-					'result'  => true,
-					'message' => __( 'Successfully unregistered', 'uncanny-automator' ),
-				);
-
-			} else {
-
-				$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-				$error = '';
-
-				if ( isset( $body['data']['message'] ) ) {
-					$error = $body['data']['message'];
-				} elseif ( isset( $body['error']['description'] ) ) {
-					$error = $body['error']['description'];
-				}
-
-				return array(
-					'result'  => false,
-					'message' => __( $error, 'uncanny-automator' ),
-				);
-			}
+		if ( 201 !== $response['statusCode'] && 204 !== $response['statusCode'] ) {
+			throw new \Exception( __( 'Could not unregister the user', 'uncanny-automator' ) );
 		}
-
-		return array(
-			'result'  => false,
-			'message' => __( 'WordPress was not able to communicate with Zoom API.', 'uncanny-automator' ),
-		);
 	}
 
 	public function disconnect_url() {
@@ -399,45 +355,30 @@ class Zoom_Helpers {
 	 */
 	public function api_get_user_info() {
 
+		$transient_key = 'uap_automator_zoom_api_user_info';
+
 		$saved_user_info = get_transient( 'uap_automator_zoom_api_user_info' );
 
 		if ( false !== $saved_user_info ) {
 			return $saved_user_info;
 		}
 
-		$client = $this->get_client();
-
-		if ( ! $client || empty( $client['access_token'] ) ) {
-			return false;
-		}
-
-		$response = wp_remote_post(
-			$this->automator_api,
-			array(
-				'body' =>
-					array(
-						'action'       => 'get_user',
-						'access_token' => $client['access_token'],
-					),
-			)
+		$body = array(
+			'action' => 'get_user',
 		);
 
-		if ( ! is_wp_error( $response ) ) {
+		$response = $this->api_request( $body );
 
-			$status_code = wp_remote_retrieve_response_code( $response );
-
-			if ( 200 === $status_code ) {
-				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
-				set_transient( 'uap_automator_zoom_api_user_info', $response_body->data, WEEK_IN_SECONDS );
-
-				return $response_body->data;
-			}
+		if ( 200 !== $response['statusCode'] ) {
+			throw new \Exception( __( 'Could not fetch user info', 'uncanny-automator' ) );
 		}
 
-		return false;
+		$user_info = $response['data'];
+		
+		set_transient( $transient_key, $user_info, WEEK_IN_SECONDS );
 
+		return $user_info;
 	}
-
 
 	/**
 	 * get_client
@@ -452,7 +393,8 @@ class Zoom_Helpers {
 			return $this->refresh_token();
 		}
 
-		if ( empty( $client['expires'] ) || $client['expires'] < time() ) {
+		// Refresh token 5 seconds before it expires
+		if ( empty( $client['expires'] ) || $client['expires'] - 5 < time() ) {
 			return $this->refresh_token();
 		}
 
@@ -476,7 +418,7 @@ class Zoom_Helpers {
 		$consumer_secret = trim( get_option( 'uap_automator_zoom_api_consumer_secret', '' ) );
 
 		if ( empty( $consumer_key ) || empty( $consumer_secret ) ) {
-			return false;
+			throw new \Exception( __( 'Zoom is not connected', 'uncanny-automator' ) );
 		}
 
 		// Set the token expiration to 1 minute as recommended in the docuemntation
@@ -523,10 +465,96 @@ class Zoom_Helpers {
 		exit;
 
 	}
-
+	
+	/**
+	 * zoom_settings_updated
+	 *
+	 * @param  mixed $old_value
+	 * @param  mixed $value
+	 * @param  mixed $option
+	 * @return void
+	 */
 	public function zoom_settings_updated( $old_value, $value, $option ) {
 		delete_option( '_uncannyowl_zoom_settings' );
 		delete_transient( 'uap_automator_zoom_api_user_info' );
+	}
+
+	/**
+	 * Method api_request
+	 *
+	 * @param $params
+	 *
+	 * @return void
+	 */
+	public function api_request( $body, $action_data = null ) {
+
+		$client = $this->get_client();
+
+		$body['access_token'] = $client['access_token'];
+
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body' => $body,
+			'action' => $action_data
+		);
+
+		$response = Api_Server::api_call( $params );
+
+		$this->check_for_errors( $response );
+
+		return $response;
+	}
+	
+	/**
+	 * check_for_errors
+	 *
+	 * @return void
+	 */
+	public function check_for_errors( $response ) {
+
+		$error = '';
+
+		if ( isset( $response['data']['message'] ) ) {
+			$error = $response['data']['message'];
+		}
+
+		if ( ! empty( $error ) ) {
+			throw new \Exception( $error, $response['statusCode'] );
+		}
+
+	}
+	
+	/**
+	 * add_custom_questions
+	 *
+	 * @param  mixed $user
+	 * @param  mixed $questions
+	 * @return void
+	 */
+	public function add_custom_questions( $user, $questions, $recipe_id, $user_id, $args ) {
+
+		$questions = json_decode( $questions, true );
+
+		foreach ( $questions as $question ) {
+
+			if ( empty( $question['QUESTION_VALUE'] ) ) {
+				continue;
+			}
+
+			$question_name = $question['QUESTION_NAME'];
+			$question_value = Automator()->parse->text( $question['QUESTION_VALUE'], $recipe_id, $user_id, $args );
+
+			if ( in_array( $question_name, $this->default_questions ) ) {  	// If it is one of the default questions
+				$user[$question_name] = $question_value;
+			} else { 															// If it's a custom question
+				$question_data = array();
+				$question_data['title'] = $question_name;
+				$question_data['value'] = $question_value;
+				$user['custom_questions'][] = $question_data;
+			}
+		}
+
+		return $user;
 	}
 }
 

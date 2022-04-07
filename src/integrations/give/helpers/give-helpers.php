@@ -72,7 +72,8 @@ class Give_Helpers {
 			'options'         => $options,
 			'relevant_tokens' => array(
 				'ACTUALDONATEDAMOUNT' => esc_attr__( 'Donated amount', 'uncanny-automator' ),
-				$option_code          => esc_attr__( 'Form', 'uncanny-automator' ),
+				$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
 			),
 		);
 

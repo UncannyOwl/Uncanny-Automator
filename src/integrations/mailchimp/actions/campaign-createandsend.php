@@ -109,6 +109,8 @@ class CAMPAIGN_CREATEANDSEND {
 	 */
 	public function create_send_campaign( $user_id, $action_data, $recipe_id, $args ) {
 
+		$helpers = Automator()->helpers->recipe->mailchimp->options;
+
 		try {
 
 			// Here campaign info.
@@ -150,87 +152,42 @@ class CAMPAIGN_CREATEANDSEND {
 				$campaign_schema['content_type'] = 'multichannel';
 			}
 
-			$mc_client = Automator()->helpers->recipe->mailchimp->options->get_mailchimp_client();
+			$request_params = array(
+				'action'          => 'add_campaign',
+				'campaign_schema' => wp_json_encode( $campaign_schema ),
+			);
 
-			if ( $mc_client ) {
+			$add_campaign_response = $helpers->api_request( $request_params );
 
-				$request_params = array(
-					'action'          => 'add_campaign',
-					'campaign_schema' => wp_json_encode( $campaign_schema ),
+			$campaign_id = $add_campaign_response['data']['id'];
+
+			// Put content if template was not set.
+			if ( empty( $template_id ) || '-1' === $template_id ) {
+				$campaign_content = array(
+					'html' => $email_content,
 				);
 
-				$add_campaign_response = Automator()->helpers->recipe->mailchimp->options->api_request( $request_params );
-
-				// if campaign creation failed
-				if ( 200 !== intval( $add_campaign_response->statusCode ) ) { // phpcs:ignore
-					Automator()->helpers->recipe->mailchimp->options->log_action_error( $add_campaign_response, $user_id, $action_data, $recipe_id );
-
-					return;
-				}
-
-				$campaign_id = $add_campaign_response->data->id;
-
-				// Put content if template was not set.
-				if ( empty( $template_id ) || '-1' === $template_id ) {
-					$campaign_content = array(
-						'html' => $email_content,
-					);
-
-					$request_params = array(
-						'action'           => 'update_campaign_content',
-						'campaign_content' => wp_json_encode( $campaign_content ),
-						'campaign_id'      => $campaign_id,
-					);
-
-					$update_campaign_content_response = Automator()->helpers->recipe->mailchimp->options->api_request( $request_params );
-
-					if ( 200 !== intval( $update_campaign_content_response->statusCode ) ) { // phpcs:ignore
-						Automator()->helpers->recipe->mailchimp->options->log_action_error( $update_campaign_content_response, $user_id, $action_data, $recipe_id );
-
-						return;
-					}
-				}
-
 				$request_params = array(
-					'action'      => 'send_campaign',
-					'campaign_id' => $campaign_id,
+					'action'           => 'update_campaign_content',
+					'campaign_content' => wp_json_encode( $campaign_content ),
+					'campaign_id'      => $campaign_id,
 				);
 
-				// Now all set so send campaign.
-				$send_campaign_response = Automator()->helpers->recipe->mailchimp->options->api_request( $request_params );
-
-				// NULL is the expected response in this case
-				if ( null !== $send_campaign_response ) {
-					Automator()->helpers->recipe->mailchimp->options->log_action_error( $send_campaign_response, $user_id, $action_data, $recipe_id );
-					return;
-				}
-
-				Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-				return;
-
-			} else {
-				// log error when no token found.
-				$error_msg                           = __( 'Mailchimp account is not connected.', 'uncanny-automator' );
-				$action_data['do-nothing']           = true;
-				$action_data['complete_with_errors'] = true;
-				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-				return;
+				$update_campaign_content_response = $helpers->api_request( $request_params );
 			}
+
+			$request_params = array(
+				'action'      => 'send_campaign',
+				'campaign_id' => $campaign_id,
+			);
+
+			// Now all set so send campaign.
+			$send_campaign_response = $helpers->api_request( $request_params, $action_data );
+
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+
 		} catch ( \Exception $e ) {
-			$error_msg = $e->getMessage();
-			$json      = json_decode( $error_msg );
-
-			if ( isset( $json->error ) && isset( $json->error->message ) ) {
-				$error_msg = $json->error->message;
-			}
-
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
+			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
 		}
 	}
 

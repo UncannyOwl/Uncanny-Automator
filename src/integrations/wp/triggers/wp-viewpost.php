@@ -46,14 +46,28 @@ class WP_VIEWPOST {
 			'priority'            => 90,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_post' ),
+			'options_callback'    => array( $this, 'load_options' ),
 			// very last call in WP, we need to make sure they viewed the post and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->wp->options->all_posts(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp->options->all_posts(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
+		return $options;
 	}
 
 	/**

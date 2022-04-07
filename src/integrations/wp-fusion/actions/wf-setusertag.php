@@ -45,12 +45,24 @@ class WF_SETUSERTAG {
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'set_user_tag' ),
-			'options'            => array(
+			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->action( $action );
+
+	}
+
+	public function load_options() {
+
+		$options = array(
+			'options' => array(
 				Wp_Fusion_Helpers::fusion_tags( '', $this->action_meta ),
 			),
 		);
 
-		Automator()->register->action( $action );
+		$options = Automator()->utilities->keep_order_of_options( $options );
+
+		return $options;
 	}
 
 	/**

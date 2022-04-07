@@ -29,6 +29,9 @@ class Wpf_Tokens {
 		add_filter( 'automator_maybe_parse_token', array( $this, 'wpf_token' ), 20, 6 );
 		add_action( 'automator_save_wp_form', array( $this, 'wpf_form_save_entry' ), 20, 4 );
 		add_action( 'automator_save_anon_wp_form', array( $this, 'wpf_form_save_entry' ), 20, 4 );
+		// Entry tokens
+		add_filter( 'automator_maybe_trigger_wpf_tokens', array( $this, 'wpf_entry_possible_tokens' ), 20, 2 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wpf_entry_tokens' ), 20, 6 );
 	}
 
 	/**
@@ -38,6 +41,9 @@ class Wpf_Tokens {
 	 * @return array
 	 */
 	public function wpf_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 		$form_ids     = array();
@@ -238,5 +244,65 @@ class Wpf_Tokens {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|mixed|\string[][]
+	 */
+	public function wpf_entry_possible_tokens( $tokens = array(), $args = array() ) {
+		$fields = array(
+			array(
+				'tokenId'         => 'WPFENTRYID',
+				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'WPFENTRYIP',
+				'tokenName'       => __( 'User IP', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPFENTRYTOKENS',
+			),
+			array(
+				'tokenId'         => 'WPFENTRYDATE',
+				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPFENTRYTOKENS',
+			),
+		);
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 *
+	 * @return string|null
+	 */
+	public function wpf_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( in_array( 'WPFENTRYTOKENS', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
+		return $value;
 	}
 }

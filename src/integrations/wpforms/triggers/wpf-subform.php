@@ -19,10 +19,16 @@ class WPF_SUBFORM {
 	public static $integration = 'WPF';
 
 	/**
+	 * The trigger code.
+	 *
 	 * @var string
 	 */
+
 	private $trigger_code;
+
 	/**
+	 * The trigger meta.
+	 *
 	 * @var string
 	 */
 	private $trigger_meta;
@@ -39,6 +45,8 @@ class WPF_SUBFORM {
 	}
 
 	/**
+	 * Define the trigger.
+	 *
 	 * @throws Exception
 	 */
 	public function define_trigger() {
@@ -56,23 +64,36 @@ class WPF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'wpform_submit' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wpforms->options->list_wp_forms(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
 	}
 
+	public function load_options() {
+
+		$options = array(
+			'options' => array(
+				Automator()->helpers->recipe->wpforms->options->list_wp_forms(),
+				Automator()->helpers->recipe->options->number_of_times(),
+			),
+		);
+
+		$options = Automator()->utilities->keep_order_of_options( $options );
+
+		return $options;
+
+	}
+
 	/**
+	 * Validation callback method.
+	 *
 	 * @param $fields
 	 * @param $entry
 	 * @param $form_data
 	 * @param $entry_id
 	 */
 	public function wpform_submit( $fields, $entry, $form_data, $entry_id ) {
-
 		if ( empty( $form_data ) ) {
 			return;
 		}
@@ -92,9 +113,30 @@ class WPF_SUBFORM {
 		do_action( 'automator_save_wp_form', $fields, $form_data, $recipes, $args );
 
 		if ( $args ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] ) {
-					Automator()->process->user->maybe_trigger_complete( $result['args'] );
+			foreach ( $args as $r ) {
+				if ( true === $r['result'] ) {
+					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
+						$entry_details = wpforms()->entry->get( $entry_id, array( 'cap' => false ) );
+						//Saving form values in trigger log meta for token parsing!
+						$wpf_args               = array(
+							'trigger_id'     => (int) $r['args']['trigger_id'],
+							'user_id'        => $user_id,
+							'trigger_log_id' => $r['args']['get_trigger_id'],
+							'run_number'     => $r['args']['run_number'],
+						);
+						$wpf_args['meta_key']   = 'WPFENTRYID';
+						$wpf_args['meta_value'] = $entry_details->entry_id;
+						Automator()->insert_trigger_meta( $wpf_args );
+
+						$wpf_args['meta_key']   = 'WPFENTRYIP';
+						$wpf_args['meta_value'] = $entry_details->ip_address;
+						Automator()->insert_trigger_meta( $wpf_args );
+
+						$wpf_args['meta_key']   = 'WPFENTRYDATE';
+						$wpf_args['meta_value'] = maybe_serialize( Automator()->helpers->recipe->wpforms->options->get_entry_date( strtotime( $entry_details->date ) ) );
+						Automator()->insert_trigger_meta( $wpf_args );
+					}
+					Automator()->process->user->maybe_trigger_complete( $r['args'] );
 				}
 			}
 		}

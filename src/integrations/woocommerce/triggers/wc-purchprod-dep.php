@@ -18,7 +18,13 @@ class WC_PURCHPROD_DEP {
 	 */
 	public static $integration = 'WC';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -34,10 +40,6 @@ class WC_PURCHPROD_DEP {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-		$options = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_attr__( 'Product', 'uncanny-automator' ) );
-
-		$options['options'] = array( '-1' => esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -57,15 +59,27 @@ class WC_PURCHPROD_DEP {
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'payment_completed' ),
-			'options'             => array(
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		$options = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_attr__( 'Product', 'uncanny-automator' ) );
+
+		$options['options'] = array( '-1' => esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
+		$options_array      = array(
+			'options' => array(
 				Automator()->helpers->recipe->options->number_of_times(),
 				$options,
 			),
 		);
 
-		Automator()->register->trigger( $trigger );
-
-		return;
+		return Automator()->utilities->keep_order_of_options( $options_array );
 	}
 
 	/**

@@ -42,6 +42,9 @@ class Ld_Tokens {
 	 * @return array
 	 */
 	public function possible_tokens_quiz_score_percent( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		if ( ! isset( $args['value'] ) || ! isset( $args['meta'] ) ) {
 			return $tokens;
 		}
@@ -103,6 +106,9 @@ class Ld_Tokens {
 	 * @return array
 	 */
 	public function possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		if ( ! isset( $args['value'] ) || ! isset( $args['meta'] ) ) {
 			return $tokens;

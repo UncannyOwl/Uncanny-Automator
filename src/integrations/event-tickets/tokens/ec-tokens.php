@@ -28,6 +28,9 @@ class Ec_Tokens {
 	 * @return array
 	 */
 	public function ec_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$event_id     = $args['value'];
 		$trigger_meta = $args['meta'];

@@ -33,7 +33,8 @@ class Edd_Helpers {
 
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
+
 	}
 
 	/**
@@ -98,8 +99,8 @@ class Edd_Helpers {
 		);
 
 		// Disable the token if software licensing plugin is not active.
-		if ( ! class_exists( '\EDD_Software_Licensing') ) {
-			unset( $relevant_tokens[$option_code . '_LICENSE_KEY'] );
+		if ( ! class_exists( '\EDD_Software_Licensing' ) ) {
+			unset( $relevant_tokens[ $option_code . '_LICENSE_KEY' ] );
 		}
 
 		$option = array(

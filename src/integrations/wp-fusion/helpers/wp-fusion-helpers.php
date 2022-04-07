@@ -11,22 +11,31 @@ use Uncanny_Automator_Pro\Wp_Fusion_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Wp_Fusion_Helpers {
+
 	/**
+	 * The options.
+	 *
 	 * @var Wp_Fusion_Helpers
 	 */
 	public $options;
 
 	/**
+	 * Pro helper.
+	 *
 	 * @var Wp_Fusion_Pro_Helpers
 	 */
 	public $pro;
 
 	/**
+	 * Load options.
+	 *
 	 * @var bool
 	 */
 	public $load_options;
 
 	/**
+	 * Load any options.
+	 *
 	 * @var bool
 	 */
 	public $load_any_options = true;
@@ -36,10 +45,13 @@ class Wp_Fusion_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
+
 	}
 
 	/**
+	 * Fusion tags.
+	 *
 	 * @param string $label
 	 * @param string $trigger_meta
 	 *
@@ -75,16 +87,20 @@ class Wp_Fusion_Helpers {
 	}
 
 	/**
+	 * Set options.
+	 *
 	 * @param Wp_Fusion_Helpers $options
 	 */
-	public function setOptions( Wp_Fusion_Helpers $options ) {
+	public function setOptions( Wp_Fusion_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
+	 * Set pro.
+	 *
 	 * @param Wp_Fusion_Pro_Helpers $pro
 	 */
-	public function setPro( Wp_Fusion_Pro_Helpers $pro ) {
+	public function setPro( Wp_Fusion_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 

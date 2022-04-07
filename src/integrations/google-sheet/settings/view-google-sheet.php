@@ -31,17 +31,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-content">
 
-				<?php if ( $gs_client && ! empty( $connect ) && 1 === $connect ) { ?>
+				<?php if ( $this->client && ! empty( $connect ) && 1 === $connect ) { ?>
 					<?php /* translators: Success message */ ?>
 					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
 				<?php } ?>
 
 				<?php // Show some error message in case there is an error. ?>
-				<?php if ( $gs_client && ! empty( $connect ) && 1 !== $connect ) { ?>
+				<?php if ( $this->client && ! empty( $connect ) && 1 !== $connect ) { ?>
 					<uo-alert heading="<?php esc_attr_e( 'An error has occured while connecting to Google API. Please try again later.', 'uncanny-automator' ); ?>" type="error" class="uap-spacing-bottom"></uo-alert>
 				<?php } ?>
 
-				<?php if ( ! $gs_client ) { ?>
+				<?php if ( ! $this->client ) { ?>
 
 					<div class="uap-settings-panel-content-subtitle">
 						<?php esc_html_e( 'Connect Uncanny Automator to Google', 'uncanny-automator' ); ?>
@@ -78,7 +78,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="uap-settings-panel-bottom">
 
-				<?php if ( ! $gs_client ) { ?>
+				<?php if ( ! $this->client ) { ?>
 
 					<div class="uap-settings-panel-bottom-left">
 

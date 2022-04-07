@@ -47,6 +47,7 @@ class Give_Tokens {
 	public function parse_give_donation_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		$tokens = array(
 			'GIVEWPMAKEDONATION',
+			'GIVEWPMAKEDONATION_ID',
 			'ACTUALDONATEDAMOUNT',
 			'DONATIONFORM',
 		);
@@ -120,6 +121,9 @@ class Give_Tokens {
 	 * @return array
 	 */
 	public function givewp_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id = absint( $args['value'] );
 
 		if ( empty( $form_id ) ) {

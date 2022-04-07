@@ -9,6 +9,12 @@ namespace Uncanny_Automator;
  */
 class Hubspot_Helpers {
 
+	/**
+	 * The API endpoint address.
+	 *
+	 * @var API_ENDPOINT The endpoint adress.
+	 */
+	const API_ENDPOINT = 'v2/hubspot';
 
 	/**
 	 * @var Hubspot_Helpers
@@ -62,8 +68,10 @@ class Hubspot_Helpers {
 		$tokens = get_option( '_automator_hubspot_settings', array() );
 
 		if ( empty( $tokens['access_token'] ) || empty( $tokens['refresh_token'] ) ) {
-			return false;
+			throw new \Exception( __( "HubSpot is not connected", 'uncanny-automator' ) );
 		}
+
+		$tokens = $this->maybe_refresh_token( $tokens );
 
 		return $tokens;
 	}
@@ -165,27 +173,6 @@ class Hubspot_Helpers {
 	}
 
 	/**
-	 * extract_data
-	 *
-	 * @param  mixed $response
-	 * @return void
-	 */
-	public function extract_data( $response ) {
-
-		if ( is_wp_error( $response ) ) {
-			return false;
-		}
-
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-		if ( empty( $body['data'] ) ) {
-			return false;
-		}
-
-		return $body['data'];
-	}
-
-	/**
 	 * api_refresh_token
 	 *
 	 * @param  mixed $tokens
@@ -193,22 +180,37 @@ class Hubspot_Helpers {
 	 */
 	public function api_refresh_token( $tokens ) {
 
-		$args = array(
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
 			'body' => array(
 				'action' => 'refresh_token',
 				'client' => wp_json_encode( $tokens ),
 			),
 		);
 
-		$response = wp_remote_post( $this->automator_api, $args );
+		$last_call = get_option( '_automator_hubspot_last_refresh_token_call', 0 );
 
-		$data = $this->extract_data( $response );
-
-		if ( empty( $data['access_token'] ) ) {
-			return false;
+		// Rate limit token refresh calls if they fail
+		if ( time() - $last_call < 10 ) {
+			throw new \Exception( __( 'HubSpot token refresh timeout, please try to reconnect HubSpot from settings', 'uncanny-automator' ) );
 		}
 
-		$tokens = $this->store_client( $data );
+		$response = Api_Server::api_call( $params );
+
+		if ( empty( $response['data']['access_token'] ) ) {
+
+			update_option( '_automator_hubspot_last_refresh_token_call', time() );
+
+			$error_msg = __( 'Could not refresh HubSpot token.', 'uncanny-automator' );
+
+			if ( ! empty( $response['data']['message'] ) ) {
+				$error_msg = $response['data']['message'];
+			}
+
+			throw new \Exception( $error_msg, $response['statusCode'] );
+		}
+
+		$tokens = $this->store_client( $response['data'] );
 
 		return $tokens;
 
@@ -229,15 +231,17 @@ class Hubspot_Helpers {
 				'action' => 'access_token_info',
 			);
 
-			$response = $this->api_request( $params );
+			try {
 
-			$token_info = $this->extract_data( $response );
+				$response = $this->api_request( $params );
 
-			if ( ! $token_info ) {
-				return false;
+				$token_info = $response['data'];
+
+				set_transient( '_automator_hubspot_token_info', $token_info, DAY_IN_SECONDS );
+
+			} catch ( \Exception $e ) {
+				$token_info = false;
 			}
-
-			set_transient( '_automator_hubspot_token_info', $token_info, DAY_IN_SECONDS );
 		}
 
 		return $token_info;
@@ -249,7 +253,7 @@ class Hubspot_Helpers {
 	 * @param  mixed $email
 	 * @return void
 	 */
-	public function create_contact( $properties, $update = true ) {
+	public function create_contact( $properties, $update = true, $action_data = null ) {
 
 		$action = 'create_contact';
 
@@ -262,9 +266,30 @@ class Hubspot_Helpers {
 			'properties' => wp_json_encode( $properties ),
 		);
 
-		$response = $this->api_request( $params );
+		$response = $this->api_request( $params, $action_data );
 
 		return $response;
+	}
+
+	/**
+	 * Method extract_error
+	 *
+	 * @param $response
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 *
+	 * @return void
+	 */
+	public function check_for_errors( $response ) {
+
+		if ( 200 !== intval( $response['statusCode'] ) ) {		
+			throw new \Exception( __( 'API returned an error: ', 'uncanny-automator' ) . $response['statusCode'], $response['statusCode'] );
+		}
+
+		if ( isset( $response['data']['status'] ) && 'error' === $response['data']['status'] ) {
+			throw new \Exception( $response['data']['message'] );
+		}
 	}
 
 	/**
@@ -277,18 +302,11 @@ class Hubspot_Helpers {
 	 *
 	 * @return void
 	 */
-	public function log_action_error( $response, $user_id, $action_data, $recipe_id ) {
-
-		// log error when no token found.
-		$error_msg = __( 'API error: ', 'uncanny-automator' );
-
-		if ( isset( $response['data']['status'] ) && 'error' === $response['data']['status'] ) {
-			$error_msg .= ' ' . $response['data']['message'];
-		}
+	public function log_action_error( $error, $user_id, $action_data, $recipe_id ) {
 
 		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
-		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error );
 	}
 
 	/**
@@ -298,36 +316,29 @@ class Hubspot_Helpers {
 	 *
 	 * @return void
 	 */
-	public function api_request( $params ) {
+	public function api_request( $body, $action_data = null, $timeout = null ) {
 
-		$params = apply_filters( 'automator_hubspot_api_request_params', $params );
+		$body = apply_filters( 'automator_hubspot_api_request_params', $body );
 
 		$client = $this->get_client();
 
-		if ( ! $client ) {
-			return false;
+		$body['client'] = $client;
+
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body' => $body,
+			'action' => $action_data
+		);
+
+		if ( null !== $timeout ) {
+			$params['timeout'] = $timeout;
 		}
 
-		$client = $this->maybe_refresh_token( $client );
-
-		$body = array(
-			'client'     => $client,
-			'api_ver'    => '2.0',
-			'plugin_ver' => InitializePlugin::PLUGIN_VERSION,
-		);
-
-		$body = array_merge( $body, $params );
-
-		$response = wp_remote_post(
-			$this->automator_api,
-			array(
-				'method'  => 'POST',
-				'body'    => $body,
-				'timeout' => 15,
-			)
-		);
+		$response = Api_Server::api_call( $params );
 
 		$response = apply_filters( 'automator_hubspot_api_response', $response );
+
+		$this->check_for_errors( $response );
 
 		return $response;
 	}
@@ -339,55 +350,45 @@ class Hubspot_Helpers {
 	 */
 	public function get_fields( $exclude = array() ) {
 
-		$fields = array(
-			array(
-				'value' => '',
-				'text'  => __( 'Select a field', 'uncanny-automator' ),
-			),
-		);
+		$fields = array();
 
 		$request_params = array(
 			'action' => 'get_fields',
 		);
 
-		$response = $this->api_request( $request_params );
+		try {
+			$response = $this->api_request( $request_params );
 
-		if ( is_wp_error( $response ) ) {
+			$fields[] = array(
+						'value' => '',
+						'text'  => __( 'Select a field', 'uncanny-automator' ),
+			);
 
-			$error_msg = implode( ', ', $response->get_error_messages() );
-			automator_log( 'WordPress was unable to communicate with HubSpot and returned an error: ' . $error_msg );
+			foreach ( $response['data'] as $field ) {
 
-			return $fields;
-
-		} else {
-
-			$json_data = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( $json_data && 200 === intval( $json_data['statusCode'] ) ) {
-				foreach ( $json_data['data'] as $field ) {
-
-					if ( in_array( $field['name'], $exclude, true ) ) {
-						continue;
-					}
-
-					if ( $field['readOnlyValue'] ) {
-						continue;
-					}
-
-					$fields[] = array(
-						'value' => $field['name'],
-						'text'  => $field['label'],
-					);
+				if ( in_array( $field['name'], $exclude, true ) ) {
+					continue;
 				}
-			} else {
-				automator_log( $json_data );
+
+				if ( $field['readOnlyValue'] ) {
+					continue;
+				}
+
+				$fields[] = array(
+					'value' => $field['name'],
+					'text'  => $field['label'],
+				);
 			}
+
+		} catch ( \Exception $e ) {
+			$fields[] = array(
+				'value' => '',
+				'text'  => $e->getMessage(),
+			);
 		}
 
 		return $fields;
 	}
-
-
 
 	/**
 	 * get_lists
@@ -396,44 +397,37 @@ class Hubspot_Helpers {
 	 */
 	public function get_lists() {
 
-		$options[] = array(
-			'value' => '',
-			'text'  => __( 'Select a list', 'uncanny-automator' ),
-		);
+		$options = array();
 
 		$params = array(
 			'action' => 'get_lists',
 		);
 
-		$response = $this->api_request( $params );
+		try {
+			$response = $this->api_request( $params );
 
-		if ( is_wp_error( $response ) ) {
+			$options[] = array(
+				'value' => '',
+				'text'  => __( 'Select a list', 'uncanny-automator' ),
+			);
 
-			$error_msg = implode( ', ', $response->get_error_messages() );
-			automator_log( 'WordPress was unable to communicate with HubSpot and returned an error: ' . $error_msg );
+			foreach ( $response['data']['lists'] as $list ) {
 
-			return $options;
-
-		} else {
-
-			$json_data = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( $json_data && 200 === intval( $json_data['statusCode'] ) ) {
-
-				foreach ( $json_data['data']['lists'] as $list ) {
-
-					if ( 'STATIC' !== $list['listType'] ) {
-						continue;
-					}
-
-					$options[] = array(
-						'value' => $list['listId'],
-						'text'  => $list['name'],
-					);
+				if ( 'STATIC' !== $list['listType'] ) {
+					continue;
 				}
-			} else {
-				automator_log( $json_data );
+
+				$options[] = array(
+					'value' => $list['listId'],
+					'text'  => $list['name'],
+				);
 			}
+
+		} catch ( \Exception $e ) {
+			$options[] = array(
+				'value' => '',
+				'text'  => $e->getMessage(),
+			);
 		}
 
 		return apply_filters( 'automator_hubspot_options_get_lists', $options );
@@ -445,7 +439,15 @@ class Hubspot_Helpers {
 	 * @param  mixed $email
 	 * @return void
 	 */
-	public function add_contact_to_list( $list, $email ) {
+	public function add_contact_to_list( $list, $email, $action_data ) {
+
+		if ( empty( $email ) ) {
+			throw new \Exception( __( 'Email is missing', 'uncanny-automator' ) );
+		}
+
+		if ( empty( $list ) ) {
+			throw new \Exception( __( 'List is missing', 'uncanny-automator' ) );
+		}
 
 		$params = array(
 			'action' => 'add_contact_to_list',
@@ -453,7 +455,17 @@ class Hubspot_Helpers {
 			'list'   => $list,
 		);
 
-		$response = $this->api_request( $params );
+		$response = $this->api_request( $params, $action_data );
+
+		// If the email was already in the list
+		if ( ! empty( $response['data']['discarded'] ) ) {
+			throw new \Exception( __( 'Contact with such email address was already in the list', 'uncanny-automator' ) );
+		}
+
+		// If the email was not found in contacts
+		if ( ! empty( $response['data']['invalidEmails'] ) ) {
+			throw new \Exception( __( 'Contact with such email address was not found', 'uncanny-automator' ) );
+		}
 
 		return $response;
 	}
@@ -465,14 +477,28 @@ class Hubspot_Helpers {
 	 * @param  mixed $email
 	 * @return void
 	 */
-	public function remove_contact_from_list( $list, $email ) {
+	public function remove_contact_from_list( $list, $email, $action_data ) {
+
+		if ( empty( $email ) ) {
+			throw new \Exception( __( 'Email is missing', 'uncanny-automator' ) );
+		}
+
+		if ( empty( $list ) ) {
+			throw new \Exception( __( 'List is missing', 'uncanny-automator' ) );
+		}
+
 		$params = array(
 			'action' => 'remove_contact_from_list',
 			'email'  => $email,
 			'list'   => $list,
 		);
 
-		$response = $this->api_request( $params );
+		$response = $this->api_request( $params, $action_data );
+
+		// If the email was not found in contacts
+		if ( ! empty( $response['data']['discarded'] ) ) {
+			throw new \Exception( __( 'Contact with such email address was not found in the list', 'uncanny-automator' ) );
+		}
 
 		return $response;
 	}

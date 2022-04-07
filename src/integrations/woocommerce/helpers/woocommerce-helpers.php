@@ -21,14 +21,7 @@ class Woocommerce_Helpers {
 	 */
 	public $pro;
 
-	/**
-	 * @var bool
-	 */
-	public $load_options;
-
 	public function __construct() {
-
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 	}
 
 	/**
@@ -52,10 +45,6 @@ class Woocommerce_Helpers {
 	 * @return mixed
 	 */
 	public function all_wc_products( $label = null, $option_code = 'WOOPRODUCT' ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Product', 'uncanny-automator' );
@@ -97,11 +86,6 @@ class Woocommerce_Helpers {
 	 * @return mixed
 	 */
 	public function wc_order_statuses( $label = null, $option_code = 'WCORDERSTATUS' ) {
-
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = 'Status';

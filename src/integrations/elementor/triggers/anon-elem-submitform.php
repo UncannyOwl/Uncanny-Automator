@@ -53,12 +53,23 @@ class ANON_ELEM_SUBMITFORM {
 			'type'                => 'anonymous',
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'elem_submit_form' ),
-			'options'             => array(
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		$options = array(
+			'options' => array(
 				Automator()->helpers->recipe->elementor->options->all_elementor_forms( null, $this->trigger_meta ),
 			),
 		);
 
-		Automator()->register->trigger( $trigger );
+		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**

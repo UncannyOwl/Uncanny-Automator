@@ -277,7 +277,7 @@ class Automator_Recipe_Process_Complete {
 
 					$action = apply_filters( 'automator_before_action_executed', $action );
 
-					if ( isset( $action['process_further'] ) ){
+					if ( isset( $action['process_further'] ) ) {
 
 						if ( false === $action['process_further'] ) {
 							Utilities::log( 'Action was skipped by uap_before_action_executed filter.' );
@@ -630,7 +630,6 @@ class Automator_Recipe_Process_Complete {
 
 				return null;
 			}
-			
 			$recipe_log_id = Automator()->db->recipe->add( $user_id, $recipe_id, $completed, $run_number );
 		} else {
 			Automator()->db->recipe->mark_complete( $recipe_log_id, $completed );

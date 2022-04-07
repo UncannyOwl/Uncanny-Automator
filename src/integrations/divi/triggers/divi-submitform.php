@@ -55,14 +55,24 @@ class DIVI_SUBMITFORM {
 			'priority'            => 100,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'divi_form_handler' ),
-			'options'             => array(
-				Automator()->helpers->recipe->divi->options->all_divi_forms( null, $this->trigger_meta, array( 'uo_include_any' => true ) ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
 	}
 
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		$options = array(
+			'options' => array(
+				Automator()->helpers->recipe->divi->options->all_divi_forms( null, $this->trigger_meta, array( 'uo_include_any' => true ) ),
+			),
+		);
+
+		return Automator()->utilities->keep_order_of_options( $options );
+	}
 
 	/**
 	 * Trigger handler function

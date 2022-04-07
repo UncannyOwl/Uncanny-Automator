@@ -53,13 +53,26 @@ class WP_USERROLEADDED {
 			'priority'            => 90,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'add_user_role' ),
-			'options_group'       => array(),
-			'options'             => array(
-				Automator()->helpers->recipe->wp->options->wp_user_roles(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp->options->wp_user_roles(),
+				),
+			)
+		);
+		return $options;
 	}
 
 	/**

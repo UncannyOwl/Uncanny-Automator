@@ -100,48 +100,42 @@ class Automator_Tokens {
 
 		$tokens = apply_filters( 'automator_maybe_trigger_pre_tokens', array(), $triggers_meta, $recipe_id );
 		//Only load these when on edit recipe page or is automator ajax is happening!
-		if ( ! Automator()->helpers->recipe->is_edit_page() && ! Automator()->helpers->recipe->is_rest() && ! Automator()->helpers->recipe->is_ajax() ) {
+		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
+//		if ( ! Automator()->helpers->recipe->is_edit_page() && ! Automator()->helpers->recipe->is_rest() && ! Automator()->helpers->recipe->is_ajax() ) {
+//			return $tokens;
+//		}
 		if ( empty( $triggers_meta ) ) {
 			return $tokens;
 		}
 
 		//Add custom tokens regardless of integration / trigger code
-		$filters             = array();
-		$trigger_integration = '';
-		$trigger_meta        = '';
-		$trigger_value       = '';
+		$filters                 = array();
+		$trigger_integration     = '';
+		$trigger_meta            = '';
+		$trigger_value           = '';
+		$ignore_metas_for_tokens = apply_filters(
+			'automator_ignore_tokenify_meta',
+			array(
+				'INTEGRATION_NAME',
+				'NUMBERCOND',
+				'uap_trigger_version',
+				'sentence',
+				'sentence_human_readable',
+				'add_action',
+			)
+		);
 		foreach ( $triggers_meta as $meta_key => $meta_value ) {
 			if ( empty( $meta_value ) ) {
 				continue;
 			}
 
-			if ( 'INTEGRATION_NAME' === (string) strtoupper( $meta_key ) ) {
+			if ( in_array( $meta_key, $ignore_metas_for_tokens, false ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				continue;
 			}
 
-			if ( 'NUMBERCOND' === (string) strtoupper( $meta_key ) ) {
-				continue;
-			}
-
-			if ( 'uap_trigger_version' === (string) $meta_key ) {
-				continue;
-			}
-
-			if ( 'sentence' === (string) $meta_key ) {
-				continue;
-			}
-
-			if ( 'sentence_human_readable' === (string) $meta_key ) {
-				continue;
-			}
-
-			if ( 'add_action' === (string) $meta_key ) {
-				continue;
-			}
-
-			if ( strpos( $meta_key, 'readable' ) ) {
+			if ( in_array( strtoupper( $meta_key ), $ignore_metas_for_tokens, false ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				continue;
 			}
 

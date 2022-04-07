@@ -58,7 +58,7 @@ namespace Uncanny_Automator;
 				<?php 
 
 				// Check if Slack is NOT connected
-				if ( ! $slack_is_connected ) {
+				if ( !  $this->is_connected ) {
 
 					?>
 
@@ -91,7 +91,7 @@ namespace Uncanny_Automator;
 				}
 
 				// Check what button we have to add
-				if ( $slack_is_connected ) {
+				if ( $this->is_connected ) {
 
 					?>
 
@@ -206,7 +206,7 @@ namespace Uncanny_Automator;
 			<?php
 
 			// Check what button we have to add
-			if ( $slack_is_connected ) {
+			if ( $this->is_connected ) {
 
 				?>
 

@@ -63,53 +63,67 @@ class WP_CREATEUSER {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'create_user' ),
+			'options_callback'	  => array( $this, 'load_options' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options_group'      => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->field->text_field( 'USERNAME', esc_attr__( 'Username', 'uncanny-automator' ), true, 'text', '', true, esc_attr__( 'Only alphanumeric, _, space, ., -, @', 'uncanny-automator' ) ),
-
-					Automator()->helpers->recipe->field->text_field( 'EMAIL', esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
-
-					Automator()->helpers->recipe->field->text_field( 'FIRSTNAME', esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-
-					Automator()->helpers->recipe->field->text_field( 'LASTNAME', esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-
-					Automator()->helpers->recipe->field->text_field( 'WEBSITE', esc_attr__( 'Website', 'uncanny-automator' ), true, 'text', '', false, '' ),
-
-					Automator()->helpers->recipe->field->text_field( 'PASSWORD', esc_attr__( 'Password', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Leave blank to automatically generate a password', 'uncanny-automator' ) ),
-
-					Automator()->helpers->recipe->wp->options->wp_user_roles(),
-
-					Automator()->helpers->recipe->field->text_field( 'SENDREGEMAIL', esc_attr__( 'Send user notification', 'uncanny-automator' ), true, 'checkbox', '', false, esc_attr__( 'Send the new user an email about their account.', 'uncanny-automator' ) ),
-					array(
-						'input_type'        => 'repeater',
-						'option_code'       => 'USERMETA_PAIRS',
-						'label'             => esc_attr__( 'Meta', 'uncanny-automator' ),
-						'required'          => false,
-						'fields'            => array(
-							array(
-								'input_type'      => 'text',
-								'option_code'     => 'meta_key',
-								'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
-								'supports_tokens' => true,
-								'required'        => true,
-							),
-							array(
-								'input_type'      => 'text',
-								'option_code'     => 'meta_value',
-								'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
-								'supports_tokens' => true,
-								'required'        => true,
-							),
-						),
-						'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
-					),
-				),
-			),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group'      => array(
+					$this->action_meta => array(
+						Automator()->helpers->recipe->field->text_field( 'USERNAME', esc_attr__( 'Username', 'uncanny-automator' ), true, 'text', '', true, esc_attr__( 'Only alphanumeric, _, space, ., -, @', 'uncanny-automator' ) ),
+	
+						Automator()->helpers->recipe->field->text_field( 'EMAIL', esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
+	
+						Automator()->helpers->recipe->field->text_field( 'FIRSTNAME', esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+	
+						Automator()->helpers->recipe->field->text_field( 'LASTNAME', esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+	
+						Automator()->helpers->recipe->field->text_field( 'WEBSITE', esc_attr__( 'Website', 'uncanny-automator' ), true, 'text', '', false, '' ),
+	
+						Automator()->helpers->recipe->field->text_field( 'PASSWORD', esc_attr__( 'Password', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Leave blank to automatically generate a password', 'uncanny-automator' ) ),
+	
+						Automator()->helpers->recipe->wp->options->wp_user_roles(),
+	
+						Automator()->helpers->recipe->field->text_field( 'SENDREGEMAIL', esc_attr__( 'Send user notification', 'uncanny-automator' ), true, 'checkbox', '', false, esc_attr__( 'Send the new user an email about their account.', 'uncanny-automator' ) ),
+						array(
+							'input_type'        => 'repeater',
+							'option_code'       => 'USERMETA_PAIRS',
+							'label'             => esc_attr__( 'Meta', 'uncanny-automator' ),
+							'required'          => false,
+							'fields'            => array(
+								array(
+									'input_type'      => 'text',
+									'option_code'     => 'meta_key',
+									'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
+									'supports_tokens' => true,
+									'required'        => true,
+								),
+								array(
+									'input_type'      => 'text',
+									'option_code'     => 'meta_value',
+									'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
+									'supports_tokens' => true,
+									'required'        => true,
+								),
+							),
+							'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
+							'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
+						),
+					),
+				),
+			)
+		);
+		return $options;
 	}
 
 	/**

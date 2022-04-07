@@ -8,6 +8,10 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Actionify_Triggers {
+	/**
+	 * @var array
+	 */
+	private $recipes = array();
 
 	/**
 	 * Constructor
@@ -38,12 +42,15 @@ class Actionify_Triggers {
 			return;
 		}
 		// Get all published recipes
-		$recipes = Automator()->get_recipes_data( true );
-		if ( empty( $recipes ) ) {
+		if ( empty( $this->recipes ) ) {
+			$this->recipes = Automator()->get_recipes_data( true );
+		}
+
+		if ( empty( $this->recipes ) ) {
 			return;
 		}
 
-		foreach ( $recipes as $recipe ) {
+		foreach ( $this->recipes as $recipe ) {
 
 			// Only actionify published recipes
 			if ( 'publish' !== $recipe['post_status'] ) {
@@ -124,6 +131,5 @@ class Actionify_Triggers {
 				add_action( $trigger_actions, $trigger_validation_function, $trigger_priority, $trigger_accepted_args );
 			}
 		}
-
 	}
 }

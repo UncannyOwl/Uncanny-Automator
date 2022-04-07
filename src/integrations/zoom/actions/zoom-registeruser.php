@@ -46,6 +46,15 @@ class ZOOM_REGISTERUSER {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'zoom_register_user' ),
 			'options_callback'   => array( $this, 'load_options' ),
+			'buttons'            => array(
+				array(
+					'show_in'     => $this->action_meta,
+					'text'        => __( 'Get meeting questions', 'uncanny-automator' ),
+					'css_classes' => 'uap-btn uap-btn--red',
+					'on_click'    => 'uap_zoom_get_meeting_questions',
+					'modules'     => array( 'modal', 'markdown' ),
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -58,8 +67,11 @@ class ZOOM_REGISTERUSER {
 	 */
 	public function load_options() {
 		return array(
-			'options' => array(
-				Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
+			'options_group' => array(
+				$this->action_meta => array(
+					Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
+					Automator()->helpers->recipe->zoom->get_meeting_questions_repeater(),
+				),
 			),
 		);
 	}
@@ -73,42 +85,48 @@ class ZOOM_REGISTERUSER {
 	 */
 	public function zoom_register_user( $user_id, $action_data, $recipe_id, $args ) {
 
-		$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
-		if ( empty( $user_id ) ) {
-			$error_msg                           = __( 'User not found.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+		$helpers = Automator()->helpers->recipe->zoom;
 
-			return;
-		}
+		try {
 
-		if ( empty( $meeting_key ) ) {
-			$error_msg                           = __( 'Meeting not found.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+			$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
-			return;
-		}
+			if ( empty( $user_id ) ) {
+				throw new \Exception( __( 'User was not found.', 'uncanny-automator' ) );
+			}
 
-		if ( ! empty( $meeting_key ) ) {
+			if ( empty( $meeting_key ) ) {
+				throw new \Exception( __( 'Meeting was not found.', 'uncanny-automator' ) );
+			}
+
 			$meeting_key = str_replace( '-objectkey', '', $meeting_key );
-		}
+			$user = get_userdata( $user_id );
 
-		$result = Automator()->helpers->recipe->zoom->register_user( $user_id, $meeting_key );
+			if ( is_wp_error( $user ) ) {
+				throw new \Exception( __( 'User was not found.', 'uncanny-automator' ) );
+			}
 
-		if ( ! $result['result'] ) {
-			$error_msg                           = $result['message'];
+			$meeting_user = array();
+			$meeting_user['email'] = $user->user_email;
+
+			$meeting_user['first_name'] = $user->first_name;
+			$meeting_user['last_name'] = $user->last_name;
+
+			$email_parts = explode( '@', $meeting_user['email'] );
+			$meeting_user['first_name']  = empty( $meeting_user['first_name'] ) ? $email_parts[0] : $meeting_user['first_name'];
+
+			if ( ! empty( $action_data['meta'][ 'MEETINGQUESTIONS' ] ) ) {
+				$meeting_user = $helpers->add_custom_questions( $meeting_user, $action_data['meta'][ 'MEETINGQUESTIONS' ], $recipe_id, $user_id, $args );
+			}
+
+			$response = Automator()->helpers->recipe->zoom->add_to_meeting( $meeting_user, $meeting_key, $action_data );
+
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		
+		} catch ( \Exception $e ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
-
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
 	}
-
 }

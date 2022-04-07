@@ -58,8 +58,24 @@ class ANON_WP_VIEWPOSTTYPE {
 			'accepted_args'       => 1,
 			'type'                => 'anonymous',
 			'validation_function' => array( $this, 'view_post_type' ),
+			'options_callback'    => array( $this, 'load_options' ),
 			// very last call in WP, we need to make sure they viewed the post and didn't skip before is was fully viewable
-			'options'             => array(
+		);
+
+		Automator()->register->trigger( $trigger );
+
+		return;
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+
+		$options = array(
+			'options' => array(
 				Automator()->helpers->recipe->wp->options->all_wp_post_types(
 					null,
 					$this->trigger_meta,
@@ -78,9 +94,8 @@ class ANON_WP_VIEWPOSTTYPE {
 			),
 		);
 
-		Automator()->register->trigger( $trigger );
-
-		return;
+		$options = Automator()->utilities->keep_order_of_options( $options );
+		return $options;
 	}
 
 	/**
@@ -108,7 +123,7 @@ class ANON_WP_VIEWPOSTTYPE {
 
 				//Add where option is set to Any post type
 				if ( - 1 === intval( $required_post_type[ $recipe_id ][ $trigger_id ] )
-				     || $required_post_type[ $recipe_id ][ $trigger_id ] === $post->post_type ) {
+					 || $required_post_type[ $recipe_id ][ $trigger_id ] === $post->post_type ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,

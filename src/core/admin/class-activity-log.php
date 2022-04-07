@@ -20,10 +20,9 @@ class Activity_Log {
 	 */
 	public $settings_page_slug;
 
-	/*
-	 * Activity Log Data
-	 */
 	/**
+	 * Activity Log Data
+	 *
 	 * @var array
 	 */
 	public $log_data = array();
@@ -38,7 +37,7 @@ class Activity_Log {
 		add_action( 'wp_ajax_nopriv_recipe-triggers', array( $this, 'load_recipe_triggers' ), 50 );
 		add_action( 'wp_ajax_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
 		add_action( 'wp_ajax_nopriv_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
-		add_action( 'admin_init', array( $this, 'load_minimal_admin' ) );
+		add_action( 'admin_head', array( $this, 'load_minimal_admin' ) );
 		add_action( 'admin_init', array( $this, 'close_window_on_load' ) );
 		// Remove all admin notices in recipe details log modal.
 		add_action( 'in_admin_header', array( $this, 'recipe_logs_notices_remove' ), 99 );
@@ -170,7 +169,7 @@ class Activity_Log {
 		if ( ! $can_edit_post ) {
 			return $actions;
 		}
-		$delete_url                   = sprintf( '%s?post_type=%s&recipe_id=%d&clear_recipe_activity=1&wpnonce=%s', admin_url( 'edit.php' ), 'uo-recipe', $post->ID, wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ) );
+		$delete_url                         = sprintf( '%s?post_type=%s&recipe_id=%d&clear_recipe_activity=1&wpnonce=%s', admin_url( 'edit.php' ), 'uo-recipe', $post->ID, wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ) );
 		$actions['clear_recipe_runs trash'] = sprintf( '<a href="%s" class="submitdelete" onclick="javascript: return confirm(\'%s\')">%s</a>', $delete_url, esc_attr__( 'Are you sure you want to delete all run data associated with this recipe? This will reset recipe runs to zero for all users. This action is irreversible.', 'uncanny-automator' ), esc_attr__( 'Clear activity logs', 'uncanny-automator' ) );
 
 		return $actions;
@@ -205,6 +204,8 @@ class Activity_Log {
 	}
 
 	/**
+	 * Close the window on load.
+	 *
 	 * @return void
 	 */
 	public function close_window_on_load() {
@@ -228,69 +229,51 @@ class Activity_Log {
 	}
 
 	/**
+	 * Adds inline style to admin head.
+	 *
 	 * @return void
 	 */
 	public function load_minimal_admin() {
-		if ( automator_filter_has_var( 'hide_settings_tabs' ) ) {
-			ob_start();
-			?>
-			<style>
-				.nav-tab-wrapper {
-					display: none !important;
-				}
-			</style>
-			<?php
-			//  Escaping it would make html entities not render properly. Ignoring
-			echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		// Early bail if query string param `automator_minimal` and `automator_hide_settings_tabs` is not set.
+		if ( ! automator_filter_has_var( 'automator_minimal' ) || ! automator_filter_has_var( 'automator_hide_settings_tabs' ) ) {
+
+			// Bail if page is not recipe log details.
+			if ( 'uncanny-automator-recipe-activity-details' !== automator_filter_input( 'page' ) ) {
+				return;
+			}
 		}
 
-		if ( ! automator_filter_has_var( 'minimal' ) ) {
-			return;
-		}
-		ob_start();
 		?>
 		<style>
+			.nav-tab-wrapper {
+				display : none !important ;
+			}
 			html.wp-toolbar {
-				padding-top: 0 !important;
+				padding-top : 0 !important ;
 			}
-
-			.wrap.uap .uap-nav-tab-wrapper,
-			.uap-logs .tablenav.top,
-			#wpadminbar,
-			#wpfooter,
-			#uap-review-banner,
-			#lity-container,
-			.notice,
-			.uap .uap-review-banner,
-			div.uap-log-table-container div.error,
-			#adminmenumain {
-				display: none !important;
+			.wrap.uap .uap-nav-tab-wrapper, .uap-logs .tablenav.top, #wpadminbar, #wpfooter, #uap-review-banner, #lity-container, .notice, .uap .uap-review-banner, div.uap-log-table-container div.error, #adminmenumain {
+				display : none !important ;
 			}
-
 			#wpcontent, #wpfooter {
-				margin-left: 0 !important;
+				margin-left : 0 !important ;
 			}
-
 			.lity-container {
-				height: 80% !important;
+				height : 80% !important ;
 			}
-
-			.lity-content,
-			.lity-iframe-container {
-				height: 100% !important;
+			.lity-content, .lity-iframe-container {
+				height : 100% !important ;
 			}
-
 			#wpbody {
-				padding-top: 0 !important;
+				padding-top : 0 !important ;
 			}
 		</style>
 		<?php
-		//  Escaping it would make html entities not render properly. Ignoring
-		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
 	}
 
 	/**
-	 *
+	 * Add log scripts.
 	 */
 	public function add_log_scripts() {
 		if ( ! automator_filter_has_var( 'post_type' ) && 'uo-recipe' !== automator_filter_input( 'post_type' ) ) {

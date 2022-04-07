@@ -52,7 +52,7 @@ namespace Uncanny_Automator;
 			<?php
 
 			// Check if Twitter is connected
-			if ( $twitter_is_connected ) {
+			if ( $this->is_connected ) {
 
 				?>
 
@@ -69,7 +69,7 @@ namespace Uncanny_Automator;
 			<?php
 
 			// Check if Twitter is not connected
-			if ( ! $twitter_is_connected ) {
+			if ( ! $this->is_connected ) {
 
 				?>
 
@@ -107,7 +107,7 @@ namespace Uncanny_Automator;
 		<?php 
 
 		// Check if we have to add the arrow
-		if ( ! $twitter_is_connected ) {
+		if ( ! $this->is_connected ) {
 			// echo 'has-arrow';
 		}
 
@@ -117,7 +117,7 @@ namespace Uncanny_Automator;
 		<?php
 
 		// Check what button we have to add
-		if ( $twitter_is_connected ) {
+		if ( $this->is_connected ) {
 
 			?>
 

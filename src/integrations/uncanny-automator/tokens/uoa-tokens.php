@@ -60,6 +60,9 @@ class Uoa_Tokens {
 	 * @return array
 	 */
 	public function possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$new_tokens = array();
 
@@ -287,6 +290,9 @@ class Uoa_Tokens {
 	 * @return array
 	 */
 	public function possible_recipe_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$new_tokens = array();
 
@@ -342,6 +348,9 @@ class Uoa_Tokens {
 	 * @return array
 	 */
 	public function possible_anon_recipe_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];

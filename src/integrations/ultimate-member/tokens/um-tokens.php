@@ -26,6 +26,9 @@ class Um_Tokens {
 	 * @return array
 	 */
 	public function um_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id      = absint( $args['value'] );
 		$trigger_meta = $args['meta'];
 		if ( function_exists( 'UM' ) ) {
@@ -142,7 +145,7 @@ class Um_Tokens {
 								if ( automator_filter_has_var( $meta_key, INPUT_POST ) && ! is_array( automator_filter_input( $meta_key, INPUT_POST ) ) ) {
 									$value = sanitize_text_field( automator_filter_input( $meta_key, INPUT_POST ) );
 									// Apply a fix to the issue of multiple fields returning blank.
-									if ( isset( $_POST[ $meta_key ] ) && is_array( $_POST[ $meta_key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing 
+									if ( isset( $_POST[ $meta_key ] ) && is_array( $_POST[ $meta_key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 										$value = sanitize_text_field( implode( ', ', automator_filter_input_array( $meta_key, INPUT_POST ) ) );
 									}
 								} elseif ( automator_filter_has_var( $meta_key, INPUT_POST ) && is_array( automator_filter_input( $meta_key, INPUT_POST ) ) ) {

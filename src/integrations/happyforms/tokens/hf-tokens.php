@@ -24,6 +24,9 @@ class Hf_Tokens {
 	 * @return array
 	 */
 	public function hf_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];

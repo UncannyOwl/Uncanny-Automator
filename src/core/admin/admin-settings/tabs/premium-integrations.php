@@ -90,7 +90,7 @@ class Admin_Settings_Premium_Integrations {
 		);
 
 		// Check if the user is requesting the focus version
-		$layout_version = automator_filter_has_var( 'hide_settings_tabs' ) ? 'focus' : 'default';
+		$layout_version = automator_filter_has_var( 'automator_hide_settings_tabs' ) ? 'focus' : 'default';
 
 		// Add the actions and get the selected tab
 		foreach ( $integrations_tabs as $tab_key => $tab ) {

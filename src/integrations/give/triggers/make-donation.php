@@ -154,6 +154,10 @@ class MAKE_DONATION {
 							'run_number'     => $result['args']['run_number'],
 						);
 
+						$trigger_meta['meta_key']   = $this->trigger_meta . '_ID';
+						$trigger_meta['meta_value'] = maybe_serialize( $give_form_id );
+						Automator()->insert_trigger_meta( $trigger_meta );
+
 						$trigger_meta['meta_key']   = $this->trigger_meta;
 						$trigger_meta['meta_value'] = maybe_serialize( $payment_data['give_form_title'] );
 						Automator()->insert_trigger_meta( $trigger_meta );

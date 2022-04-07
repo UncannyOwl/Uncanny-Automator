@@ -21,7 +21,7 @@
 					   class="uap-track-banner__action uap-review-banner__action--primary" data-action="allow-tracking">
 						<?php
 						/* translators: Non-personal infinitive verb */
-						echo esc_attr_x( 'I\'m in!', 'Reviews banner', 'uncanny-automator' );
+						echo esc_attr_x( "'I'm in!'", 'Reviews banner', 'uncanny-automator' );
 						?>
 					</a>
 

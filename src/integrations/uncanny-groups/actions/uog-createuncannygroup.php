@@ -15,8 +15,17 @@ class UOG_CREATEUNCANNYGROUP {
 	 * @var string
 	 */
 	public static $integration = 'UOG';
+	/**
+	 * @var
+	 */
 	public static $number_of_keys;
+	/**
+	 * @var string
+	 */
 	private $action_code;
+	/**
+	 * @var string
+	 */
 	private $action_meta;
 
 	/**
@@ -33,6 +42,29 @@ class UOG_CREATEUNCANNYGROUP {
 	 */
 	public function define_action() {
 
+		$action = array(
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/uncanny-groups/' ),
+			'integration'        => self::$integration,
+			'code'               => $this->action_code,
+			/* translators: Logged-in trigger - Uncanny Groups */
+			'sentence'           => sprintf( esc_attr__( 'Create {{an Uncanny group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Logged-in trigger - Uncanny Groups */
+			'select_option_name' => esc_attr__( 'Create {{an Uncanny group}}', 'uncanny-automator' ),
+			'priority'           => 10,
+			'accepted_args'      => 1,
+			'execution_function' => array( $this, 'create_uncanny_group' ),
+			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+
 		$args = array(
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => 999,
@@ -48,20 +80,8 @@ class UOG_CREATEUNCANNYGROUP {
 			esc_attr__( 'Only users with the Group Leader role can be made the leader of a group.', 'uncanny-automator' ),
 			esc_attr__( 'This action will not alter the roles of Admin users.', 'uncanny-automator' )
 		);
-
-		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/uncanny-groups/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			/* translators: Logged-in trigger - Uncanny Groups */
-			'sentence'           => sprintf( esc_attr__( 'Create {{an Uncanny group:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			/* translators: Logged-in trigger - Uncanny Groups */
-			'select_option_name' => esc_attr__( 'Create {{an Uncanny group}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'create_uncanny_group' ),
-			'options_group'      =>
+		$options      = array(
+			'options_group' =>
 				array(
 					$this->action_meta =>
 						array(
@@ -106,7 +126,7 @@ class UOG_CREATEUNCANNYGROUP {
 				),
 		);
 
-		Automator()->register->action( $action );
+		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**

@@ -90,7 +90,7 @@ class AC_CONTACT_TAG_REMOVED {
 			return false;
 		}
 
-		return false !== Api_Server::charge_credit();
+		return Automator()->helpers->recipe->active_campaign->options->validate_trigger();
 	}
 
 	/**

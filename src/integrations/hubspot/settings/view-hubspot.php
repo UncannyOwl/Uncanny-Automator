@@ -12,7 +12,7 @@
 
             <?php
 
-            if ( ! $is_connected ) { ?>
+            if ( ! $this->is_connected ) { ?>
 
                 <div class="uap-settings-panel-content-subtitle">
                     <?php esc_html_e( 'Connect Uncanny Automator to HubSpot', 'uncanny-automator' ); ?>
@@ -31,7 +31,7 @@
                         <uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add a HubSpot contact to a static list', 'uncanny-automator' ); ?>
                     </li>
                     <li>
-                        <uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add the user\'s HubSpot contact to a static list', 'uncanny-automator' ); ?>
+                        <uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( "Add the user's HubSpot contact to a static list", 'uncanny-automator' ); ?>
                     </li>
                     <li>
                         <uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add/Update the user in HubSpot', 'uncanny-automator' ); ?>
@@ -43,7 +43,7 @@
                         <uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove a HubSpot contact from a static list', 'uncanny-automator' ); ?>
                     </li>
                     <li>
-                        <uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove the user\'s HubSpot contact from a static list', 'uncanny-automator' ); ?>
+                        <uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( "Remove the user's HubSpot contact from a static list", 'uncanny-automator' ); ?>
                     </li>
                 </ul>
 
@@ -51,7 +51,7 @@
 
             } else {
 
-                if ( $just_connected && ! empty( $token_info['user'] ) ) { 
+                if ( $just_connected && ! empty( $token_info['user'] ) ) {
 
 					// Alert title
 					$alert_title = sprintf(
@@ -80,7 +80,7 @@
             }
 
             ?>
-                
+
         </div>
 
     </div>
@@ -92,7 +92,7 @@
                 <?php
 
                 // Check what button we have to add
-                if ( $is_connected ) {
+                if ( $this->is_connected ) {
 
                     // Check if we have the username and the ID
                     if ( ! empty( $token_info['user'] ) ) { ?>
@@ -148,7 +148,7 @@
 
             <div class="uap-settings-panel-bottom-right">
 
-                <?php if ( $is_connected ) { ?>
+                <?php if ( $this->is_connected ) { ?>
 
                     <uo-button
                         href="<?php echo esc_url( $disconnect_url ); ?>"

@@ -37,6 +37,33 @@ class WP_CREATEPOST {
 	 */
 	public function define_action() {
 
+		$action = array(
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
+			'integration'        => self::$integration,
+			'code'               => $this->action_code,
+			'requires_user'      => false,
+			/* translators: Action - WordPress Core */
+			'sentence'           => sprintf( esc_attr__( 'Create {{a post:%1$s}}', 'uncanny-automator' ), $this->action_code ),
+			/* translators: Action - WordPress Core */
+			'select_option_name' => esc_attr__( 'Create {{a post}}', 'uncanny-automator' ),
+			'priority'           => 11,
+			'accepted_args'      => 3,
+			'execution_function' => array( $this, 'create_post' ),
+			'options_callback'	  => array( $this, 'load_options' ),
+			
+		);
+
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		
 		$custom_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			esc_attr__( 'Type', 'uncanny-automator' ),
 			$this->action_code,
@@ -106,74 +133,63 @@ class WP_CREATEPOST {
 
 		$post_status_field = Automator()->helpers->recipe->field->select_field( 'WPCPOSTSTATUS', esc_attr__( 'Status', 'uncanny-automator' ), $status_options );
 
-		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wordpress-core/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
-			/* translators: Action - WordPress Core */
-			'sentence'           => sprintf( esc_attr__( 'Create {{a post:%1$s}}', 'uncanny-automator' ), $this->action_code ),
-			/* translators: Action - WordPress Core */
-			'select_option_name' => esc_attr__( 'Create {{a post}}', 'uncanny-automator' ),
-			'priority'           => 11,
-			'accepted_args'      => 3,
-			'execution_function' => array( $this, 'create_post' ),
-			'options_group'      => array(
-				$this->action_code => array(
-					$custom_post_types,
-					$post_status_field,
-					Automator()->helpers->recipe->field->text_field( 'WPCPOSTAUTHOR', esc_attr__( 'Author', 'uncanny-automator' ), true, 'text', '{{admin_email}}', true, esc_attr__( 'Accepts user ID, email or username', 'uncanny-automator' ) ),
-					Automator()->helpers->recipe->field->text_field( 'WPCPOSTTITLE', esc_attr__( 'Title', 'uncanny-automator' ), true, 'text', '', true ),
-					Automator()->helpers->recipe->field->text_field( 'WPCPOSTSLUG', esc_attr__( 'Slug', 'uncanny-automator' ), true, 'text', '', false ),
-					Automator()->helpers->recipe->field->text_field( 'WPCPOSTCONTENT', esc_attr__( 'Content', 'uncanny-automator' ), true, 'textarea', '', false ),
-					array(
-						'option_code' => 'WPCPOSTEXCERPT',
-						/* translators: Post Excerpt field */
-						'label'       => esc_attr__( 'Excerpt', 'uncanny-automator' ),
-						'placeholder' => '',
-						'input_type'  => 'textarea',
-						'required'    => false,
-					),
-					// The photo url field.
-					array(
-						'option_code' => 'FEATURED_IMAGE_URL',
-						/* translators: Email field */
-						'label'       => esc_attr__( 'Featured image URL', 'uncanny-automator' ),
-						'placeholder' => esc_attr__( 'https://examplewebsite.com/path/to/image.jpg', 'uncanny-automator' ),
-						'input_type'  => 'url',
-						'required'    => false,
-						'description' => esc_attr__( 'The URL must include a supported image file extension (e.g. .jpg, .png, .svg, etc.). Some sites may block remote image download.', 'uncanny-automator' ),
-					),
-					array(
-						'input_type'        => 'repeater',
-						'option_code'       => 'CPMETA_PAIRS',
-						'label'             => esc_attr__( 'Meta', 'uncanny-automator' ),
-						'required'          => false,
-						'fields'            => array(
+		$options = Automator()->utilities->keep_order_of_options(
+				array(
+					'options_group'      => array(
+						$this->action_code => array(
+							$custom_post_types,
+							$post_status_field,
+							Automator()->helpers->recipe->field->text_field( 'WPCPOSTAUTHOR', esc_attr__( 'Author', 'uncanny-automator' ), true, 'text', '{{admin_email}}', true, esc_attr__( 'Accepts user ID, email or username', 'uncanny-automator' ) ),
+							Automator()->helpers->recipe->field->text_field( 'WPCPOSTTITLE', esc_attr__( 'Title', 'uncanny-automator' ), true, 'text', '', true ),
+							Automator()->helpers->recipe->field->text_field( 'WPCPOSTSLUG', esc_attr__( 'Slug', 'uncanny-automator' ), true, 'text', '', false ),
+							Automator()->helpers->recipe->field->text_field( 'WPCPOSTCONTENT', esc_attr__( 'Content', 'uncanny-automator' ), true, 'textarea', '', false ),
 							array(
-								'input_type'      => 'text',
-								'option_code'     => 'KEY',
-								'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
-								'supports_tokens' => true,
-								'required'        => true,
+								'option_code' => 'WPCPOSTEXCERPT',
+								/* translators: Post Excerpt field */
+								'label'       => esc_attr__( 'Excerpt', 'uncanny-automator' ),
+								'placeholder' => '',
+								'input_type'  => 'textarea',
+								'required'    => false,
+							),
+							// The photo url field.
+							array(
+								'option_code' => 'FEATURED_IMAGE_URL',
+								/* translators: Email field */
+								'label'       => esc_attr__( 'Featured image URL', 'uncanny-automator' ),
+								'placeholder' => esc_attr__( 'https://examplewebsite.com/path/to/image.jpg', 'uncanny-automator' ),
+								'input_type'  => 'url',
+								'required'    => false,
+								'description' => esc_attr__( 'The URL must include a supported image file extension (e.g. .jpg, .png, .svg, etc.). Some sites may block remote image download.', 'uncanny-automator' ),
 							),
 							array(
-								'input_type'      => 'text',
-								'option_code'     => 'VALUE',
-								'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
-								'supports_tokens' => true,
-								'required'        => true,
+								'input_type'        => 'repeater',
+								'option_code'       => 'CPMETA_PAIRS',
+								'label'             => esc_attr__( 'Meta', 'uncanny-automator' ),
+								'required'          => false,
+								'fields'            => array(
+									array(
+										'input_type'      => 'text',
+										'option_code'     => 'KEY',
+										'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
+										'supports_tokens' => true,
+										'required'        => true,
+									),
+									array(
+										'input_type'      => 'text',
+										'option_code'     => 'VALUE',
+										'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
+										'supports_tokens' => true,
+										'required'        => true,
+									),
+								),
+								'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
+								'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
 							),
 						),
-						'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
 					),
-				),
-			),
+			)
 		);
-
-		Automator()->register->action( $action );
+		return $options;
 	}
 
 	public function plugins_loaded() {

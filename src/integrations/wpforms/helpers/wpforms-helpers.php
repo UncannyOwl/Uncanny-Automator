@@ -11,17 +11,24 @@ use WPForms_Form_Handler;
  * @package Uncanny_Automator
  */
 class Wpforms_Helpers {
+
 	/**
+	 * Options.
+	 *
 	 * @var Wpforms_Helpers
 	 */
 	public $options;
 
 	/**
+	 * Pro helpers.
+	 *
 	 * @var Wpforms_Pro_Helpers
 	 */
 	public $pro;
 
 	/**
+	 * Load options.
+	 *
 	 * @var bool
 	 */
 	public $load_options;
@@ -31,10 +38,13 @@ class Wpforms_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
+
 	}
 
 	/**
+	 * Set options.
+	 *
 	 * @param Wpforms_Helpers $options
 	 */
 	public function setOptions( Wpforms_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
@@ -42,6 +52,8 @@ class Wpforms_Helpers {
 	}
 
 	/**
+	 * Set pro.
+	 *
 	 * @param Wpforms_Pro_Helpers $pro
 	 */
 	public function setPro( Wpforms_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
@@ -49,6 +61,8 @@ class Wpforms_Helpers {
 	}
 
 	/**
+	 * List wp_forms.
+	 *
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -57,6 +71,7 @@ class Wpforms_Helpers {
 	 */
 
 	public function list_wp_forms( $label = null, $option_code = 'WPFFORMS', $args = array() ) {
+
 		if ( ! $this->load_options ) {
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -95,11 +110,26 @@ class Wpforms_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
 			),
 		);
 
 		return apply_filters( 'uap_option_list_wp_forms', $option );
+	}
+
+	/**
+	 * @param $date
+	 *
+	 * @return string
+	 */
+	public function get_entry_date( $date ) {
+		$datetime_offset = get_option( 'gmt_offset' ) * 3600;
+
+		return sprintf( /* translators: %1$s - date for the entry; %2$s - time for the entry. */
+			esc_html__( '%1$s at %2$s', 'wpforms' ),
+			date_i18n( 'M j, Y', $date + $datetime_offset ),
+			date_i18n( get_option( 'time_format' ), $date + $datetime_offset )
+		);
 	}
 }

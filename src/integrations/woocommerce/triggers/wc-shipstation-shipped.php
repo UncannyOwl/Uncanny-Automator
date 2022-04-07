@@ -53,8 +53,6 @@ class WC_SHIPSTATION_SHIPPED {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**

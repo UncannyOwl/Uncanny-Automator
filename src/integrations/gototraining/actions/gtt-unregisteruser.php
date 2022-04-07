@@ -89,85 +89,37 @@ class GTT_UNREGISTERUSER {
 	 */
 	public function gtt_unregister_user( $user_id, $action_data, $recipe_id, $args ) {
 
-		// Complete with error if there's an issue with charge_credit.
-		if ( false === Api_Server::charge_credit() ) {
+		try {
 
-			$action_data['complete_with_errors'] = true;
+			$training_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, esc_html__( 'Unable to charge credits', 'uncanny-automator' ) );
+			if ( empty( $user_id ) ) {
+				throw new \Exception( __( 'User not found.', 'uncanny-automator' ) );
+			}
 
-			return;
-
-		}
-
-		$training_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
-
-		if ( empty( $user_id ) ) {
-
-			$error_msg = __( 'User not found.', 'uncanny-automator' );
-
-			$action_data['do-nothing'] = true;
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-
-		}
-
-		if ( empty( $training_key ) ) {
-
-			$error_msg = __( 'Training not found.', 'uncanny-automator' );
-
-			$action_data['do-nothing'] = true;
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		if ( ! empty( $training_key ) ) {
+			if ( empty( $training_key ) ) {
+				throw new \Exception( __( 'Training not found.', 'uncanny-automator' ) );
+			}
 
 			$training_key = str_replace( '-objectkey', '', $training_key );
 
-		}
+			$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', true );
 
-		$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', true );
+			if ( empty( $user_registrant_key ) ) {
+				throw new \Exception( __( 'User was not registered for training session.', 'uncanny-automator' ) );
+			}
 
-		if ( empty( $user_registrant_key ) ) {
+			$result = Automator()->helpers->recipe->gototraining->gtt_unregister_user( $user_id, $training_key, $action_data );
 
-			$error_msg = __( 'User was not registered for training session.', 'uncanny-automator' );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
-			$action_data['do-nothing'] = true;
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		$result = Automator()->helpers->recipe->gototraining->gtt_unregister_user( $user_id, $training_key );
-
-		if ( ! $result['result'] ) {
-
-			$error_msg = $result['message'];
+		} catch ( \Exception $e ) {
 
 			$action_data['do-nothing'] = true;
-
+	
 			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-
+	
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
-
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-	}
-
+	}		
 }

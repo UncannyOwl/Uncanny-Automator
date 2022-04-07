@@ -51,6 +51,28 @@ class SHEET_ADDARECORD {
 			'accepted_args'      => 1,
 			'requires_user'      => false,
 			'execution_function' => array( $this, 'add_row_google_sheet' ),
+			'options_callback'	 => array( $this, 'load_options' ),
+			'buttons'            => array(
+				array(
+					'show_in'     => $this->action_meta,
+					'text'        => __( 'Get columns', 'uncanny-automator' ),
+					'css_classes' => 'uap-btn uap-btn--red',
+					'on_click'    => $this->get_samples_js(),
+					'modules'     => array( 'modal', 'markdown' ),
+				),
+			),
+		);
+
+		Automator()->register->action( $action );
+	}
+	
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = array(
 			'options_group'      => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->google_sheet->options->get_google_drives(
@@ -85,6 +107,12 @@ class SHEET_ADDARECORD {
 						/* translators: 1. Button */
 						'description'       => __( '', 'uncanny-automator' ),
 						'required'          => true,
+						'default_value'     => array(
+							array(
+								'FIELD_NAME'  => '',
+								'FIELD_VALUE' => '',
+							),
+						),
 						'fields'            => array(
 							array(
 								'option_code' => 'GS_COLUMN_NAME',
@@ -102,18 +130,9 @@ class SHEET_ADDARECORD {
 					),
 				),
 			),
-			'buttons'            => array(
-				array(
-					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get columns', 'uncanny-automator' ),
-					'css_classes' => 'uap-btn uap-btn--red',
-					'on_click'    => $this->get_samples_js(),
-					'modules'     => array( 'modal', 'markdown' ),
-				),
-			),
 		);
 
-		Automator()->register->action( $action );
+		return $options;
 	}
 
 	/**
@@ -385,27 +404,7 @@ class SHEET_ADDARECORD {
 		}
 
 		try {
-			$response = Automator()->helpers->recipe->google_sheet->api_append_row( $gs_spreadsheet, $gs_worksheet, $key_values );
-
-			if ( is_wp_error( $response ) ) {
-				$error_msg                           = implode( "\n", $response->get_error_messages() );
-				$action_data['do-nothing']           = true;
-				$action_data['complete_with_errors'] = true;
-				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-				return;
-			}
-
-			$body = json_decode( wp_remote_retrieve_body( $response ) );
-
-			if ( isset( $body->error ) ) {
-				$error_msg                           = $body->error->description;
-				$action_data['do-nothing']           = true;
-				$action_data['complete_with_errors'] = true;
-				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-				return;
-			}
+			$response = Automator()->helpers->recipe->google_sheet->api_append_row( $gs_spreadsheet, $gs_worksheet, $key_values, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
@@ -413,11 +412,6 @@ class SHEET_ADDARECORD {
 
 		} catch ( \Exception $e ) {
 			$error_msg = $e->getMessage();
-			if ( $json = json_decode( $error_msg ) ) {
-				if ( isset( $json->error ) && isset( $json->error->message ) ) {
-					$error_msg = $json->error->message;
-				}
-			}
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );

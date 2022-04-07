@@ -68,6 +68,29 @@ class SHEET_UPDATERECORD {
 			'accepted_args'      => 1,
 			'requires_user'      => false,
 			'execution_function' => array( $this, 'update_row_google_sheet' ),
+			'options_callback'	 => array( $this, 'load_options' ),
+			'custom_html'        => $this->custom_html(),
+			'buttons'            => array(
+				array(
+					'show_in'     => $this->action_meta,
+					'text'        => __( 'Get columns', 'uncanny-automator' ),
+					'css_classes' => 'uap-btn uap-btn--red',
+					'on_click'    => $this->get_samples_js(),
+					'modules'     => array( 'modal', 'markdown' ),
+				),
+			),
+		);
+
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = array(
 			'options_group'      => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->google_sheet->options->get_google_drives(
@@ -144,19 +167,9 @@ class SHEET_UPDATERECORD {
 					),
 				),
 			),
-			'custom_html'        => $this->custom_html(),
-			'buttons'            => array(
-				array(
-					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get columns', 'uncanny-automator' ),
-					'css_classes' => 'uap-btn uap-btn--red',
-					'on_click'    => $this->get_samples_js(),
-					'modules'     => array( 'modal', 'markdown' ),
-				),
-			),
 		);
 
-		Automator()->register->action( $action );
+		return $options;
 	}
 
 	/**
@@ -577,79 +590,17 @@ class SHEET_UPDATERECORD {
 
 		$helper = Automator()->helpers->recipe->google_sheet->options;
 
-		$client = $helper->get_google_client();
+		try {
 
-		$endpoint = $this->endpoint_url . 'v2/google';
-
-		$response = wp_remote_post(
-			$endpoint,
-			array(
-				'body' => array(
-					'access_token'   => $client,
-					'action'         => 'get_column_rows',
-					'range'          => $selected_column_range,
-					'spreadsheet_id' => $gs_spreadsheet,
-				),
-			)
-		);
-
-		if ( ! is_wp_error( $response ) ) {
-
-			$response_body = wp_remote_retrieve_body( $response );
-
-			$response_status = $this->get_response_status( $response_body );
-
-			// Bail out with error message if there is an error.
-			if ( $response_status['error'] ) {
-				return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $response_status['message'] );
-			}
-
-			$result = json_decode( $response_body );
+			$range_values = $helper->api_get_range_values( $gs_spreadsheet, $selected_column_range );
 
 			$existing_rows = array();
 
-			if ( isset( $result->data->values ) && isset( $result->data->range ) ) {
-				$existing_rows[ $result->data->range ] = $result->data->values;
+			if ( isset( $range_values['data']['values'] ) && isset( $range_values['data']['range'] ) ) {
+				$existing_rows[ $range_values['data']['range'] ] = $range_values['data']['values'];
 			}
 
-			$i = 0;
-
-			// Copy the existing rows.
-			$updated_rows  = $existing_rows;
-			$done_lookup   = false;
-			$matched_range = false;
-
-			// Look for the range that matches the value.
-			foreach ( $existing_rows as $range => $sheet_rows ) {
-				$j = 1;
-				foreach ( $sheet_rows as $existing_row_value ) {
-					$value = array_shift( $existing_row_value );
-					// The field value that we are matching against.
-
-					if ( $lookup_field_value === $value ) {
-						$done_lookup = true;
-						break;
-					}
-					$j ++;
-				}
-				$i ++;
-				if ( $done_lookup ) {
-					// Range starts at "A".
-					$matched_range = $sheet . '!A' . ( $j + 1 );
-					break;
-				}
-			}
-
-			if ( empty( $matched_range ) ) {
-				// Complete with error if no cell value matches the lookup value.
-				$error_message = sprintf(
-					esc_html__( "Notice: No cell values matches with '%1\$s' under '%2\$s' column in Sheet: '%3\$s'.", 'uncanny-automator' ),
-					$lookup_field_value,
-					$selected_column_range,
-					$sheet
-				);
-				return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $error_message );
-			}
+			$matched_range = $this->match_range( $existing_rows, $sheet, $selected_column_range, $lookup_field_value );
 
 			$row_values = array();
 
@@ -666,42 +617,69 @@ class SHEET_UPDATERECORD {
 
 			}
 
-			$response = wp_remote_post(
-				$endpoint,
-				array(
-					'body' => array(
-						'values'         => wp_json_encode( array( $row_values ) ),
-						'access_token'   => $helper->get_google_client(),
-						'action'         => 'update_row',
-						'range'          => $matched_range,
-						'spreadsheet_id' => $gs_spreadsheet,
-					),
-				)
-			);
+			$response = $helper->api_update_row( $gs_spreadsheet, $matched_range, $row_values, $action_data );
 
-			if ( ! is_wp_error( $response ) ) {
+			// Complete the action if there are no issues.
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
-				$response_status = $this->get_response_status( wp_remote_retrieve_body( $response ) );
+			return;
 
-				if ( $response_status['error'] ) {
-					return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $response_status['message'] );
+		} catch ( \Exception $e ) {
+			return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
+		}
+		
+	}
+	
+	/**
+	 * match_range
+	 * 
+	 * Look for the range that matches the value.
+	 * 
+	 * @param  mixed $existing_rows
+	 * @param  mixed $sheet
+	 * @param  mixed $selected_column_range
+	 * @param  mixed $lookup_field_value
+	 * @return void
+	 */
+	public function match_range( $existing_rows, $sheet, $selected_column_range, $lookup_field_value ) {
+
+		$done_lookup   = false;
+		$matched_range = false;
+		$i = 0;
+
+		foreach ( $existing_rows as $range => $sheet_rows ) {
+			$j = 1;
+			foreach ( $sheet_rows as $existing_row_value ) {
+				$value = array_shift( $existing_row_value );
+				// The field value that we are matching against.
+
+				if ( $lookup_field_value === $value ) {
+					$done_lookup = true;
+					break;
 				}
-
-				// Complete the action if there are no issues.
-				Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-				return;
-
-			} else {
-				// WordPress threw an error while updating the Spreadsheet.
-				return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $response->get_error_message() );
+				$j ++;
 			}
-		} else {
-			// WordPress threw an error while fetching the Spreadsheet.
-			return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $response->get_error_message() );
-
+			$i ++;
+			if ( $done_lookup ) {
+				// Range starts at "A".
+				$matched_range = $sheet . '!A' . ( $j + 1 );
+				break;
+			}
 		}
 
+		if ( empty( $matched_range ) ) {
+			// Complete with error if no cell value matches the lookup value.
+			$error_message = sprintf(
+				esc_html__( "Notice: No cell values matches with '%1\$s' under '%2\$s' column in Sheet: '%3\$s'.", 'uncanny-automator' ),
+				$lookup_field_value,
+				$selected_column_range,
+				$sheet
+			);
+
+			throw new \Exception( $error_message );
+		}
+
+		return $matched_range;
 	}
 
 	/**

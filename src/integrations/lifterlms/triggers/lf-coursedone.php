@@ -31,8 +31,6 @@ class LF_COURSEDONE {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/lifterlms/' ),
@@ -46,15 +44,13 @@ class LF_COURSEDONE {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'lf_course_done' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->lifterlms->options->all_lf_courses(),
 				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -69,14 +65,13 @@ class LF_COURSEDONE {
 			return;
 		}
 
-
-
-		$args = [
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => intval( $course_id ),
-			'user_id' => $user_id,
-		];
+		$args = array(
+			'code'         => $this->trigger_code,
+			'meta'         => $this->trigger_meta,
+			'post_id'      => intval( $course_id ),
+			'user_id'      => $user_id,
+			'is_signed_in' => true,
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}

@@ -120,28 +120,38 @@ class Api_Server {
 	 * @param  array $body
 	 * @return void
 	 */
-	public static function api_call( $endpoint, $body ) {
+	public static function api_call( $params ) {
 
 		if ( null !== self::$mock_response ) {
 			return self::$mock_response;
 		}
 
-		$response = wp_remote_post(
-			self::$url . $endpoint,
-			array(
-				'body'      => $body,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return false;
+		if ( empty( $params['endpoint'] ) ) {
+			throw new \Exception( 'Endpoint is required', 500 );
 		}
+
+		if ( empty( $params['body'] ) ) {
+			throw new \Exception( 'Request body is required', 500 );
+		}
+
+		$params['method'] = 'POST';
+		$params['url'] = self::$url . $params['endpoint'];
+		$params['body']['plugin_ver'] = InitializePlugin::PLUGIN_VERSION;
+
+		$response = self::call( $params );
+
+		$code = wp_remote_retrieve_response_code( $response );
 
 		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
+		//Some endpoints like Mailchimp send a NULL as the reponse with a code in case of success.
+		if ( empty( $response_body ) && ! empty( $code ) ) {
+			$response_body = self::create_payload( null, $code );
+		}
+
 		if ( ! is_array( $response_body ) ) {
 			automator_log( var_export( $response_body, true ), 'Invalid API response: ' );
-			throw new \Exception( 'Invalid API response' );
+			throw new \Exception( 'Invalid API response', 500 );
 		}
 
 		if ( isset( $response_body['error'] ) && isset( $response_body['error']['description'] ) ) {
@@ -150,12 +160,76 @@ class Api_Server {
 			throw new \Exception( $error, $response_body['statusCode'] );
 		}
 
-		if ( 200 === $response_body['statusCode'] && isset( $response_body['data'] ) ) {
-			return $response_body['data'];
-		} 
+		if ( isset( $response_body['statusCode'] ) && array_key_exists( 'data', $response_body ) ) {
+			return $response_body;
+		}
 
-		automator_log( var_export( $response_body, true ), 'api_call returned an error: ' );
-		throw new \Exception( var_export( $response_body, true ) );
+		automator_log( var_export( $response_body, true ), 'Unrecognized API response: ' );
+
+		throw new \Exception( 'Unrecognized API response', 500 );
+	}
+	
+	/**
+	 * call
+	 *
+	 * @param  string $method
+	 * @param  string $url
+	 * @param  array $body
+	 * @param  array $action
+	 * @return mixed $response
+	 */
+	public static function call( $params ) {
+
+		if ( empty( $params['method'] ) ) {
+			throw new \Exception( 'Request method is required', 500 );
+		}
+
+		if ( empty( $params['url'] ) ) {
+			throw new \Exception( 'URL is required', 500 );
+		}
+
+		// TODO: Remove debugging output
+		//error_log('URL: ' . var_export( $params['url'], true ) ); 
+
+		//We will log all requests here in the future
+
+		$request = array();
+
+		$request = self::maybe_add_optional_params( $request, $params );
+		
+		$response = wp_remote_request(
+			$params['url'],
+			$request
+		);
+
+		// TODO: Remove debugging output
+		//error_log('Response code: ' . var_export( wp_remote_retrieve_response_code( $response ), true ) );
+
+		if ( is_wp_error( $response ) ) {
+			throw new \Exception( 'WordPress was not able to make a request: ' . $response->get_error_message(), 500 );
+		}
+
+		return $response;
+	}
+	
+	/**
+	 * maybe_add_optional_params
+	 *
+	 * @param  mixed $request
+	 * @param  mixed $params
+	 * @return void
+	 */
+	public static function maybe_add_optional_params( $request, $params ) {
+
+		$optional_params = array( 'method', 'body', 'timeout', 'redirection', 'httpversion', 'blocking', 'headers', 'cookies' );
+
+		foreach ( $optional_params as $optional_param ) {
+			if ( ! empty( $params[$optional_param] ) ) {
+				$request[$optional_param] = $params[$optional_param];
+			}
+		}
+		
+		return $request;
 	}
 	
 	/**
@@ -171,17 +245,20 @@ class Api_Server {
 			return $cached_license;
 		}
 
-		$request_body = array(
-			'action'  => 'get_credits'
+		$params = array(
+			'endpoint' => 'v2/credits',
+			'body' => array(
+				'action'  => 'get_credits'
+			)	
 		);
-
-		$license = self::api_call( 'v2/credits', $request_body );
-
-		if ( false !== $license) {
-			set_transient( 'automator_api_license', $license, HOUR_IN_SECONDS );
+		
+		try {
+			$license = self::api_call( $params );
+			set_transient( 'automator_api_license', $license['data'], HOUR_IN_SECONDS );
+			return $license['data'];
+		} catch ( \Exception $e ) {
+			throw new \Exception( __( 'Unable to fetch the license: ', 'uncanny-automator' ) . $e->getMessage() );
 		}
-
-		return $license;
 	}
 	
 	/**
@@ -193,12 +270,8 @@ class Api_Server {
 
 		$license = self::get_license();
 		
-		if ( ! $license ) {
-			return false;
-		}
-		
 		if ( ! isset( $license['license'] ) || 'valid' !== $license['license'] ) {
-			return false;
+			throw new \Exception( __( 'License is not valid', 'uncanny-automator' ) );
 		}
 
 		return $license;
@@ -213,20 +286,15 @@ class Api_Server {
 
 		$license = self::has_valid_license();
 		
-		if ( ! $license ) {
-			return false;
-		}
-
 		if ( 'Uncanny Automator Pro' === $license['item_name'] ) {
 			return true;
 		}
 
 		if ( intval( $license['paid_usage_count'] ) >= intval( $license['usage_limit'] ) ) {
-			return false;
+			throw new \Exception( __( 'Not enough credits', 'uncanny-automator' ) );
 		}
 
 		return true;
-
 	}
 	
 	/**
@@ -236,17 +304,37 @@ class Api_Server {
 	 */
 	public static function charge_credit() {
 
-		if ( ! self::has_credits() ) {
-			return false;
-		}
+		self::has_credits();
 
-		$body = array(
-			'action'  => 'reduce_credits',
+		$params = array(
+			'endpoint' => 'v2/credits',
+			'body' => array(
+				'action'  => 'reduce_credits'
+			)	
+		);
+		
+		$license = self::api_call( $params );
+
+		set_transient( 'automator_api_license', $license['data'], HOUR_IN_SECONDS );
+		
+		return $license['data'];
+
+	}
+	
+	/**
+	 * create_payload
+	 *
+	 * @param  mixed $body
+	 * @param  mixed $code
+	 * @return void
+	 */
+	public static function create_payload( $body, $code ) {
+
+		$payload = array(
+			'statusCode' => $code,
+			'data' => $body
 		);
 
-		$license = self::api_call( 'v2/credits', $body );
-
-		return $license;
-
+		return $payload;
 	}
 }

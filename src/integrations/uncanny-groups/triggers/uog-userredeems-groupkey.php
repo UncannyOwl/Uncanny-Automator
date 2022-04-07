@@ -16,7 +16,13 @@ class UOG_USERREDEEMS_GROUPKEY {
 	 */
 	public static $integration = 'UOG';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -47,12 +53,23 @@ class UOG_USERREDEEMS_GROUPKEY {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'user_redeems' ),
-			'options'             => array(
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		$options = array(
+			'options' => array(
 				Automator()->helpers->recipe->uncanny_groups->options->all_ld_groups( null, $this->trigger_meta ),
 			),
 		);
 
-		Automator()->register->trigger( $trigger );
+		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**

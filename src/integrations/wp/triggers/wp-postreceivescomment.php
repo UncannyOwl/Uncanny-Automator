@@ -33,11 +33,11 @@ class WP_POSTRECEIVESCOMMENT {
 	public function __construct() {
 		$this->trigger_code = 'WPCOMMENTRECEIVED';
 		$this->trigger_meta = 'USERSPOSTCOMMENT';
-//		if ( is_admin() ) {
-//			add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 99 );
-//		} else {
+		//      if ( is_admin() ) {
+		//          add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 99 );
+		//      } else {
 		$this->define_trigger();
-//		}
+		//      }
 	}
 
 	/**
@@ -48,6 +48,32 @@ class WP_POSTRECEIVESCOMMENT {
 	}
 
 	public function define_trigger() {
+
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - WordPress */
+			'sentence'            => sprintf( esc_attr__( "{{A user's post:%1\$s}} receives a comment", 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - WordPress */
+			'select_option_name'  => esc_attr__( "{{A user's post}} receives a comment", 'uncanny-automator' ),
+			'action'              => 'comment_post',
+			'priority'            => 90,
+			'accepted_args'       => 3,
+			'validation_function' => array( $this, 'post_receives_comment' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+
 		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			null,
 			'WPPOSTTYPES',
@@ -77,21 +103,9 @@ class WP_POSTRECEIVESCOMMENT {
 		}
 		$options                   = array_merge( $options, $all_post_types['options'] );
 		$all_post_types['options'] = $options;
-		$trigger                   = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf( esc_attr__( "{{A user's post:%1\$s}} receives a comment", 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => esc_attr__( "{{A user's post}} receives a comment", 'uncanny-automator' ),
-			'action'              => 'comment_post',
-			'priority'            => 90,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'post_receives_comment' ),
-			'options'             => array(),
-			'options_group'       => array(
+
+		$temp = array(
+			'options_group' => array(
 				$this->trigger_meta => array(
 					$all_post_types,
 					Automator()->helpers->recipe->field->select_field(
@@ -116,7 +130,11 @@ class WP_POSTRECEIVESCOMMENT {
 				),
 			),
 		);
-		Automator()->register->trigger( $trigger );
+
+		$temp = Automator()->utilities->keep_order_of_options( $temp );
+
+		return $temp;
+
 	}
 
 	/**
@@ -136,7 +154,7 @@ class WP_POSTRECEIVESCOMMENT {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( - 1 === intval( $required_post[ $recipe_id ][ $trigger_id ] ) ||
-				     $required_post[ $recipe_id ][ $trigger_id ] == $commentdata['comment_post_ID'] ) {
+					 $required_post[ $recipe_id ][ $trigger_id ] == $commentdata['comment_post_ID'] ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,

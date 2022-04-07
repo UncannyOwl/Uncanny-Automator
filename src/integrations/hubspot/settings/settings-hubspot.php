@@ -51,7 +51,15 @@ class Hubspot_Settings {
 
 		$this->set_name( 'Hubspot' );
 
-		$this->set_status( false === $this->helpers->get_client() ? '' : 'success' );
+		try {
+			$this->client = $this->helpers->get_client();
+			$this->is_connected = true;
+		} catch ( \Exception $e ) {
+			$this->client = false;
+			$this->is_connected = false;
+		}
+
+		$this->set_status( false === $this->is_connected ? '' : 'success' );
 
 	}
 
@@ -61,11 +69,6 @@ class Hubspot_Settings {
 	 * @return void.
 	 */
 	public function output() {
-
-        $client = $this->helpers->get_client();
-
-		// Check if Hubspot is connected
-		$is_connected = false !== $client;
 
         $connect_url = $this->helpers->connect_url();
 

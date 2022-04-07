@@ -70,7 +70,7 @@ class WPFF_SUBFORM {
 	 * @param $data
 	 * @param $form
 	 */
-	public function wpffform_submit( $inser_data, $data, $form ) {
+	public function wpffform_submit( $insert_data, $data, $form ) {
 
 		$user_id = get_current_user_id();
 
@@ -81,6 +81,7 @@ class WPFF_SUBFORM {
 		if ( empty( $form ) ) {
 			return;
 		}
+
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$matches = $this->match_condition( $form, $data, $recipes );
 
@@ -109,12 +110,30 @@ class WPFF_SUBFORM {
 									//Saving form values in trigger log meta for token parsing!
 									$wp_ff_args = array(
 										'trigger_id'     => (int) $r['args']['trigger_id'],
-										'meta_key'       => $this->trigger_meta,
 										'user_id'        => $user_id,
 										'trigger_log_id' => $r['args']['get_trigger_id'],
 										'run_number'     => $r['args']['run_number'],
 									);
+
+									$wp_ff_args['meta_key'] = $this->trigger_meta;
 									Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
+
+									$wp_ff_args['meta_key']   = 'WPFFENTRYID';
+									$wp_ff_args['meta_value'] = $insert_data['serial_number'];
+									Automator()->insert_trigger_meta( $wp_ff_args );
+
+									$wp_ff_args['meta_key']   = 'WPFFENTRYIP';
+									$wp_ff_args['meta_value'] = $insert_data['ip'];
+									Automator()->insert_trigger_meta( $wp_ff_args );
+
+									$wp_ff_args['meta_key']   = 'WPFFENTRYSOURCEURL';
+									$wp_ff_args['meta_value'] = $insert_data['source_url'];
+									Automator()->insert_trigger_meta( $wp_ff_args );
+
+									$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
+									$wp_ff_args['meta_value'] = maybe_serialize( date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
+									Automator()->insert_trigger_meta( $wp_ff_args );
+
 									Automator()->maybe_add_trigger_entry( $args );
 								}
 							}

@@ -12,6 +12,13 @@ use Uncanny_Automator_Pro\Twilio_Pro_Helpers;
 class Twilio_Helpers {
 
 	/**
+	 * The API endpoint address.
+	 *
+	 * @var API_ENDPOINT The endpoint adress.
+	 */
+	const API_ENDPOINT = 'v2/twilio';
+
+	/**
 	 * @var Twilio_Helpers
 	 */
 	public $options;
@@ -87,16 +94,7 @@ class Twilio_Helpers {
 	 * @throws ConfigurationException
 	 * @throws TwilioException
 	 */
-	public function send_sms( $to, $body, $user_id ) {
-
-		$client = $this->get_client();
-
-		if ( ! $client ) {
-			return array(
-				'result'  => false,
-				'message' => __( 'Twilio credentails are missing or expired.', 'uncanny-automator' ),
-			);
-		}
+	public function send_sms( $to, $body, $user_id, $action = null ) {
 
 		$from = trim( get_option( 'uap_automator_twilio_api_phone_number', '' ) );
 
@@ -117,20 +115,16 @@ class Twilio_Helpers {
 		}
 
 		$request['action'] = 'send_sms';
-		$request['account_sid'] = $client['account_sid'];
-		$request['auth_token'] = $client['auth_token'];
-
-
 		$request['from'] = $from;
 		$request['to'] = $to;
 		$request['body'] = $body;
 
 		try {
-			$response = Api_Server::api_call( 'v2/twilio', $request );
-		} catch ( \Exception $th ) {
+			$response = $this->api_call( $request, $action );
+		} catch ( \Exception $e ) {
 			return array(
 				'result'  => false,
-				'message' => $th->getMessage(),
+				'message' => $e->getMessage(),
 			);
 		}
 
@@ -174,7 +168,7 @@ class Twilio_Helpers {
 		$token    = get_option( 'uap_automator_twilio_api_auth_token' );
 
 		if ( empty( $sid ) || empty( $token ) ) {
-			return false;
+			throw new \Exception( 'Twilio is not connected' );
 		}
 
 		return array('account_sid' => $sid, 'auth_token' => $token );
@@ -189,12 +183,6 @@ class Twilio_Helpers {
 	 */
 	public function get_twilio_accounts_connected() {
 
-		$client = $this->get_client();
-
-		if ( empty( $client ) ) {
-			return array();
-		}
-
 		// Return the transient if its available.
 		$accounts_saved = get_transient( '_automator_twilio_account_info' );
 
@@ -203,12 +191,10 @@ class Twilio_Helpers {
 		}
 
 		$body['action'] = 'account_info';
-		$body['account_sid'] = $client['account_sid'];
-		$body['auth_token'] = $client['auth_token'];
 
 		try {
-			$twilio_account = Api_Server::api_call( 'v2/twilio', $body );
-		} catch ( \Exception $th ) {
+			$twilio_account = $this->api_call( $body );
+		} catch ( \Exception $e ) {
 			return array();
 		}
 
@@ -272,8 +258,43 @@ class Twilio_Helpers {
 
 		exit;
 	}
-
+	
+	/**
+	 * twilio_setting_update
+	 *
+	 * @return void
+	 */
 	public function twilio_setting_update() {
 		delete_transient( '_automator_twilio_account_info' );
+	}
+
+	/**
+	 * api_call
+	 *
+	 * @param  mixed $body
+	 * @param  mixed $action
+	 * @return void
+	 */
+	public function api_call( $body, $action = null ) {
+
+		$client = $this->get_client();
+
+		$body['account_sid'] = $client['account_sid'];
+		$body['auth_token'] = $client['auth_token'];
+		
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body' => $body,
+			'action' => $action
+		);
+
+		$response = Api_Server::api_call( $params );
+
+		if ( 200 !== $response['statusCode'] ) {
+			throw new \Exception( $params['endpoint'] . ' failed' );
+		}
+
+		return $response['data'];
+	
 	}
 }

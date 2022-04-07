@@ -41,7 +41,22 @@ class WP_SUBMITPOST {
 			'code'                => $this->trigger_code,
 			'action'              => 'shutdown',
 			'validation_function' => array( $this, 'submit_post' ),
-			'options'             => array(
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+
+		return;
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = array(
+			'options' => array(
 				array(
 					'option_code'        => 'NUMTIMES',
 					'label'              => 'Number of Times',
@@ -54,9 +69,6 @@ class WP_SUBMITPOST {
 				),
 			),
 		);
-
-		Automator()->register->trigger( $trigger );
-
-		return;
+		return $options;
 	}
 }

@@ -61,6 +61,9 @@ class Wcm_Tokens {
 	 * @return array
 	 */
 	public function wcm_possible_order_tokens( $tokens = array(), $args = array(), $type = 'order' ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$fields          = array();
 		$trigger_meta    = $args['meta'];
 		$possible_tokens = array(

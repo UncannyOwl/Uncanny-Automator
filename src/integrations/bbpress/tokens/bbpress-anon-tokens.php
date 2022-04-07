@@ -69,6 +69,9 @@ LIMIT 0,1",
 	 * @return array
 	 */
 	public function bb_possible_anonymous_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_meta        = $args['meta'];
 

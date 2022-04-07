@@ -46,6 +46,15 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'zoom_webinar_register_user' ),
 			'options_callback'   => array( $this, 'load_options' ),
+			'buttons'            => array(
+				array(
+					'show_in'     => $this->action_meta,
+					'text'        => __( 'Get webinar questions', 'uncanny-automator' ),
+					'css_classes' => 'uap-btn uap-btn--red',
+					'on_click'    => 'uap_zoom_get_webinar_questions',
+					'modules'     => array( 'modal', 'markdown' ),
+				),
+			),
 		);
 
 		Automator()->register->action( $action );
@@ -104,6 +113,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 					$first_name_field,
 					$last_name_field,
 					Automator()->helpers->recipe->zoom_webinar->get_webinars( null, $this->action_meta ),
+					Automator()->helpers->recipe->zoom_webinar->get_webinar_questions_repeater(),
 				),
 			),
 		);
@@ -118,59 +128,47 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 	 */
 	public function zoom_webinar_register_user( $user_id, $action_data, $recipe_id, $args ) {
 
-		$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
+		$helpers = Automator()->helpers->recipe->zoom_webinar;
 
-		$user = array();
+		try {
 
-		$user['EMAIL'] = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
+			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
-		if ( ! is_email( $user['EMAIL'] ) ) {
-			$error_msg                           = __( 'Invalid email address.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+			if ( empty( $webinar_key ) ) {
+				throw new \Exception( __( 'Webinar was not found.', 'uncanny-automator' ) );
+			}
 
-			return;
-		}
-
-		$user['FIRSTNAME'] = Automator()->parse->text( $action_data['meta']['FIRSTNAME'], $recipe_id, $user_id, $args );
-		$user['LASTNAME']  = Automator()->parse->text( $action_data['meta']['LASTNAME'], $recipe_id, $user_id, $args );
-
-		if ( empty( $user['EMAIL'] ) ) {
-			$error_msg                           = __( 'Email address is missing.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		if ( empty( $webinar_key ) ) {
-			$error_msg                           = __( 'Webinar not found.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
-
-		if ( ! empty( $webinar_key ) ) {
 			$webinar_key = str_replace( '-objectkey', '', $webinar_key );
-		}
+			$webinar_user = array();
 
-		$result = Automator()->helpers->recipe->zoom_webinar->register_userless( $user, $webinar_key );
+			$webinar_user['email'] = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
 
-		if ( ! $result['result'] ) {
-			$error_msg                           = $result['message'];
+			if ( empty( $webinar_user['email'] ) ) {
+				throw new \Exception( __( 'Email address is missing.', 'uncanny-automator' ) );
+			}
+
+			if ( false === is_email( $webinar_user['email'] ) ) {
+				throw new \Exception( __( 'Invalid email address.', 'uncanny-automator' ) );
+			}
+
+			$webinar_user['first_name'] = Automator()->parse->text( $action_data['meta']['FIRSTNAME'], $recipe_id, $user_id, $args );
+			$webinar_user['last_name'] = Automator()->parse->text( $action_data['meta']['LASTNAME'], $recipe_id, $user_id, $args );
+
+			$email_parts = explode( '@', $webinar_user['email'] );
+			$webinar_user['first_name']  = empty( $webinar_user['first_name'] ) ? $email_parts[0] : $webinar_user['first_name'];
+
+			if ( ! empty( $action_data['meta'][ 'WEBINARQUESTIONS' ] ) ) {
+				$webinar_user = $helpers->add_custom_questions( $webinar_user, $action_data['meta'][ 'WEBINARQUESTIONS' ], $recipe_id, $user_id, $args );
+			}
+
+			$response = $helpers->add_to_webinar( $webinar_user, $webinar_key, $action_data );
+
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		
+		} catch ( \Exception $e ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
-
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
 	}
-
 }

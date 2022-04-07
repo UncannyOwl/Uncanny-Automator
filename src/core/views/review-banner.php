@@ -47,7 +47,7 @@
 						class="uap-review-banner__action uap-review-banner__action--anchor uap-review-banner__action--no-margin-right"
 						data-action="hide-forever">
 						<a href="<?php echo esc_url_raw( $url_hide_forever ); ?>"
-						   class="uap-review-banner__action--anchor-border"><?php echo esc_html_x( 'Nah, a robot doesn\'t have feelings anyway', 'Reviews banner', 'uncanny-automator' ); ?></a>
+						   class="uap-review-banner__action--anchor-border"><?php echo esc_html_x( "Nah, a robot doesn't have feelings anyway", 'Reviews banner', 'uncanny-automator' ); ?></a>
 						<span
 							class="uap-review-banner__disclaimer"><?php echo esc_html_x( '(Plot twist, it does)', 'Reviews banner', 'uncanny-automator' ); ?></span>
 					</div>

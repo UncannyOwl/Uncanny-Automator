@@ -57,36 +57,59 @@ class WP_VIEWCUSTOMPOST {
 			'priority'            => 90,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'view_post' ),
-			'options'             => array(
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
-			'options_group'       => array(
-				$this->trigger_meta => array(
-					Automator()->helpers->recipe->wp->options->all_post_types(
-						null,
-						'WPPOSTTYPES',
-						array(
-							'token'        => false,
-							'is_ajax'      => true,
-							'target_field' => $this->trigger_meta,
-							'endpoint'     => 'select_custom_post_by_type',
-						)
-					),
-					/* translators: Noun */
-					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Post', 'uncanny-automator' ), array(), null, false, '', array(
-						$this->trigger_meta              => esc_attr__( 'Post title', 'uncanny-automator' ),
-						$this->trigger_meta . '_ID'      => esc_attr__( 'Post ID', 'uncanny-automator' ),
-						$this->trigger_meta . '_URL'     => esc_attr__( 'Post URL', 'uncanny-automator' ),
-						$this->trigger_meta . '_EXCERPT' => __( 'Post excerpt', 'uncanny-automator' ),
-						'POSTIMAGEURL'                   => __( 'Post featured image URL', 'uncanny-automator' ),
-						'POSTIMAGEID'                    => __( 'Post featured image ID', 'uncanny-automator' ),
-					) ),
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
+
 		Automator()->register->trigger( $trigger );
 
 		return;
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => array(
+					$this->trigger_meta => array(
+						Automator()->helpers->recipe->wp->options->all_post_types(
+							null,
+							'WPPOSTTYPES',
+							array(
+								'token'        => false,
+								'is_ajax'      => true,
+								'target_field' => $this->trigger_meta,
+								'endpoint'     => 'select_custom_post_by_type',
+							)
+						),
+						/* translators: Noun */
+						Automator()->helpers->recipe->field->select_field(
+							$this->trigger_meta,
+							esc_attr__( 'Post', 'uncanny-automator' ),
+							array(),
+							null,
+							false,
+							'',
+							array(
+								$this->trigger_meta => esc_attr__( 'Post title', 'uncanny-automator' ),
+								$this->trigger_meta . '_ID' => esc_attr__( 'Post ID', 'uncanny-automator' ),
+								$this->trigger_meta . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
+								$this->trigger_meta . '_EXCERPT' => __( 'Post excerpt', 'uncanny-automator' ),
+								'POSTIMAGEURL'      => __( 'Post featured image URL', 'uncanny-automator' ),
+								'POSTIMAGEID'       => __( 'Post featured image ID', 'uncanny-automator' ),
+							)
+						),
+					),
+				),
+				'options'       => array(
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
+		return $options;
 	}
 
 	/**

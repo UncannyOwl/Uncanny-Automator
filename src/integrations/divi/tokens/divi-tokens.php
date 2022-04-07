@@ -25,6 +25,9 @@ class Divi_Tokens {
 	 * @return array
 	 */
 	public function divi_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 		$form_fields  = array(

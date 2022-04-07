@@ -17,7 +17,7 @@ class Uncanny_Groups_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Uncanny_Groups_Helpers constructor.
@@ -40,6 +40,7 @@ class Uncanny_Groups_Helpers {
 	 * @return mixed
 	 */
 	public function all_ld_groups( $label = null, $option_code = 'UOGROUP', $any_option = true ) {
+
 		if ( ! $label ) {
 			$label = esc_attr__( 'Group', 'uncanny-automator' );
 		}
@@ -72,5 +73,4 @@ class Uncanny_Groups_Helpers {
 
 		return apply_filters( 'uap_option_all_ld_groups', $option );
 	}
-
 }

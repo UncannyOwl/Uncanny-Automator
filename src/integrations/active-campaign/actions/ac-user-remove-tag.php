@@ -88,97 +88,29 @@ class AC_USER_REMOVE_TAG {
 
 		// Get the contact id of the user connected to ActiveCampaign.
 		$user    = get_user_by( 'ID', $user_id );
-		$contact = $ac_helper->get_user_by_email( $user->data->user_email );
 
-		if ( true === $contact['error'] ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $contact['message'] );
-		}
+		try {
 
-		$contact_id = isset( $contact['message']->id ) ? $contact['message']->id : 0;
+			$contact_id = $ac_helper->get_email_id( $user->data->user_email );
 
-		// Form data.
-		$form_data = array(
-			'action'    => 'get_contact_tags',
-			'url'       => get_option( 'uap_active_campaign_api_url', '' ),
-			'token'     => get_option( 'uap_active_campaign_api_key', '' ),
-			'contactId' => $contact_id,
-		);
+			$contact_tag_id = $ac_helper->get_tag_id( $contact_id, $tag_id );
 
-		$response = wp_remote_post(
-			$this->ac_endpoint_uri,
-			array(
-				'body' => $form_data,
-			)
-		);
+			// Delete the tag.
+			$body = array(
+				'action'       => 'delete_contact_tag',
+				'contactTagId' => $contact_tag_id,
+			);
 
-		if ( is_wp_error( $response ) ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $response->get_error_message() );
+			$response = $ac_helper->api_request( $body, $action_data );
 
-			return;
-		}
-
-		$body = json_decode( wp_remote_retrieve_body( $response ) );
-
-		$contact_tags = isset( $body->data->contactTags ) ? $body->data->contactTags : '';
-
-		$contact_tag_id = 0;
-
-		if ( ! empty( $contact_tags ) ) {
-
-			foreach ( $contact_tags as $contact_tag ) {
-				if ( $tag_id === $contact_tag->tag ) {
-					$contact_tag_id = $contact_tag->id;
-				}
+			if ( ! empty( $response['data']['message'] ) ) {
+				throw new \Exception( $response['data']['message'], $response['statusCode'] );
 			}
+
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
+			
+		} catch ( \Exception $e ) {
+			$ac_helper->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
-
-		// Delete the tag.
-		$form_data = array(
-			'action'       => 'delete_contact_tag',
-			'url'          => get_option( 'uap_active_campaign_api_url', '' ),
-			'token'        => get_option( 'uap_active_campaign_api_key', '' ),
-			'contactTagId' => $contact_tag_id,
-		);
-
-		$response = wp_remote_post(
-			$this->ac_endpoint_uri,
-			array(
-				'body' => $form_data,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $response->get_error_message() );
-
-			return;
-		}
-
-		$body = json_decode( wp_remote_retrieve_body( $response ) );
-
-		$message = isset( $body->data->message ) ? $body->data->message : '';
-
-		if ( 0 === $contact_tag_id ) {
-
-			$action_data['complete_with_errors'] = true;
-			/* translators: The error message */
-			$message = sprintf( __( 'The contact %s does not contain the specified tag.', 'uncanny-automator' ), $user->data->user_email );
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
-
-			return;
-
-		}
-
-		if ( ! empty( $message ) ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
-
-			return;
-		}
-
-		Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
 	}
 }

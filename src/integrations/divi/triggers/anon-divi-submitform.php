@@ -54,15 +54,24 @@ class ANON_DIVI_SUBMITFORM {
 			'priority'            => 100,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'divi_form_handler' ),
-			'options'             => array(
-				Automator()->helpers->recipe->divi->options->all_divi_forms( null, $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
 	}
 
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		$options = array(
+			'options' => array(
+				Automator()->helpers->recipe->divi->options->all_divi_forms( null, $this->trigger_meta ),
+			),
+		);
 
+		return Automator()->utilities->keep_order_of_options( $options );
+	}
 	/**
 	 * Trigger handler function
 	 *

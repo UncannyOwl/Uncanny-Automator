@@ -74,7 +74,7 @@ class Admin_Settings_General {
 		$current_general_tab = automator_filter_has_var( 'general' ) ? sanitize_text_field( automator_filter_input( 'general' ) ) : 'license';
 
 		// Check if the user is requesting the focus version
-		$layout_version = automator_filter_has_var( 'hide_settings_tabs' ) ? 'focus' : 'default';
+		$layout_version = automator_filter_has_var( 'automator_hide_settings_tabs' ) ? 'focus' : 'default';
 
 		// Add the actions and get the selected tab
 		foreach ( $general_tabs as $tab_key => $tab ) {

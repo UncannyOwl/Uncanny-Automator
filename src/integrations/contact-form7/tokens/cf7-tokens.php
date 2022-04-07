@@ -141,6 +141,9 @@ class Cf7_Tokens {
 	 * @return array
 	 */
 	public function cf7_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id      = absint( $args['value'] );
 		$trigger_meta = $args['meta'];
 

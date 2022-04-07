@@ -453,7 +453,7 @@ class Recipe_Post_Rest_Api {
 			 */
 			do_action( 'automator_recipe_closure_created', $post_id, $item_code, $request );
 		}
-
+		
 		if ( $request->has_param( 'default_meta' ) ) {
 			if ( is_array( $request->get_param( 'default_meta' ) ) ) {
 				$meta_values = (array) Automator()->utilities->automator_sanitize( $request->get_param( 'default_meta' ), 'mixed' );

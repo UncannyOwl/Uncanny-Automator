@@ -31,6 +31,9 @@ class AMELIABOOKING_TOKENS {
 	 * @return void
 	 */
 	public function register_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_integration = $args['integration'];
 
@@ -300,7 +303,7 @@ class AMELIABOOKING_TOKENS {
 
 		$category = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT services.id as service_id, services.name as service_name, 
+				"SELECT services.id as service_id, services.name as service_name,
 				services.categoryId as category_id, categories.name as category_name
 				FROM {$wpdb->prefix}amelia_services as services
 				INNER JOIN {$wpdb->prefix}amelia_categories as categories

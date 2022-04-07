@@ -164,6 +164,9 @@ class Wc_Tokens {
 	 * @return array
 	 */
 	public function wc_ordertotal_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		return $this->wc_possible_tokens( $tokens, $args, 'order' );
 	}
@@ -176,6 +179,9 @@ class Wc_Tokens {
 	 * @return array
 	 */
 	public function wc_possible_tokens( $tokens = array(), $args = array(), $type = 'order' ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$fields          = array();
 		$trigger_meta    = $args['meta'];
@@ -207,6 +213,9 @@ class Wc_Tokens {
 	 * @return array
 	 */
 	public function wc_wooproduct_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		return $this->wc_possible_tokens( $tokens, $args, 'product' );
 	}
@@ -696,6 +705,9 @@ class Wc_Tokens {
 	 * @return array
 	 */
 	public function wc_order_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$args['meta'] = 'WCSHIPSTATIONSHIPPED';
 		$fields       = array();
 		$fields[]     = array(

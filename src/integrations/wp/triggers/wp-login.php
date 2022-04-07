@@ -46,15 +46,29 @@ class WP_LOGIN {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wp_login' ),
+			'options_callback'    => array( $this, 'load_options' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
 		);
 
 		Automator()->register->trigger( $trigger );
 
 		return;
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
+		$options = Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
+		return $options;
 	}
 
 	/**

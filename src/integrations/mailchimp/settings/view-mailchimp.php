@@ -28,33 +28,76 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="mailchimp"></uo-icon> 
+				<uo-icon id="mailchimp"></uo-icon>
+
 				<?php esc_html_e( 'Mailchimp', 'uncanny-automator' ); ?>
 
 			</div>
 
 			<div class="uap-settings-panel-content">
 
-				<?php if ( 1 === $connect_code && false !== $client ) { ?>
+				<?php if ( 1 === $connect_code && $this->is_connected ) { ?>
 					<?php /* translators: Success message */ ?>
-					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php echo esc_attr( sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client->login->login_name ) ); ?>"></uo-alert>
+					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php echo esc_attr( sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $this->client->login->login_name ) ); ?>"></uo-alert>
 				<?php } ?>
-				
+
 				<?php if ( 2 === $connect_code ) { ?>
+
 					<uo-alert type="error" class="uap-spacing-bottom">
 						<?php esc_html_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator' ); ?>
 					</uo-alert>
+
 				<?php } ?>
 
-				<?php if ( $client ) { ?>
+				<?php if ( $this->is_connected ) { ?>
 
 					<uo-alert
 						heading="<?php esc_html_e( 'Uncanny Automator only supports connecting to one Mailchimp account at a time.', 'uncanny-automator' ); ?>"
 					></uo-alert>
 
+					<!--<div class="uap-settings-panel-content-separator"></div> -->
+
+					<!-- <uo-switch id="uap_mailchimp_enable_webhook" <?php echo esc_attr( $enable_triggers ); ?> label="<?php esc_attr_e( 'Enable triggers', 'uncanny-automator' ); ?>"></uo-switch> -->
+
+					<div id="uap-mailchimp-webhook" style="display:none;">
+						<uo-alert
+							heading="<?php esc_attr_e( 'Setup instructions', 'uncanny-automator' ); ?>"
+							class="uap-spacing-top"
+						>
+
+							<p>
+								<?php
+									echo sprintf(
+										esc_html__( "Enabling MailChimp triggers requires setting up a webhook in your MailChimp account using the URL below. A few steps and you'll be up and running in no time. Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
+										'<a href="' . esc_url( $kb_link ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+									);
+								?>
+							</p>
+
+							<uo-text-field
+								value="<?php echo esc_url( $webhook_url ); ?>"
+								label="<?php esc_attr_e( 'Webhook URL', 'uncanny-automator' ); ?>"
+								helper="<?php esc_attr_e( "You'll be asked to enter a webhook URL. Copy and paste this URL into each of the MailChimp Audience webhook settings.", 'uncanny-automator' ); ?>"
+
+								disabled
+							></uo-text-field>
+
+							<uo-button
+								onclick="return confirm('<?php echo esc_html( $regenerate_alert ); ?>');"
+								href="<?php echo esc_url( $regenerate_key_url ); ?>"
+								size="small"
+								color="secondary"
+								class="uap-spacing-top"
+							>
+								<uo-icon id="sync"></uo-icon> 
+								<?php esc_attr_e( 'Regenerate webhook URL', 'uncanny-automator' ); ?>
+							</uo-button>
+
+						</uo-alert>
+					</div>
 				<?php } ?>
 
-				<?php if ( false === $client ) { ?>
+				<?php if ( ! $this->is_connected ) { ?>
 
 					<div class="uap-settings-panel-content-subtitle">
 						<?php esc_html_e( 'Connect Uncanny Automator to Mailchimp', 'uncanny-automator' ); ?>
@@ -69,6 +112,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</p>
 
 					<ul>
+						<!--<li>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact email is changed', 'uncanny-automator' ); ?>
+						</li>
+						<li>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact is added to an audience', 'uncanny-automator' ); ?>
+						</li>
+						<li>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact is unsubscribed from an audience', 'uncanny-automator' ); ?>
+						</li>-->
 						<li>
 							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add a note to the user', 'uncanny-automator' ); ?>
 						</li>
@@ -97,9 +149,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="uap-settings-panel-bottom">
 
-				<?php if ( false === $client ) { ?>
+				<?php if ( ! $this->is_connected ) { ?>
 
-					<uo-button href="<?php echo esc_url( $auth_uri ); ?>">
+					<uo-button href="<?php echo esc_url( $connect_uri ); ?>">
 						<?php esc_html_e( 'Connect Mailchimp account', 'uncanny-automator' ); ?>
 					</uo-button>
 
@@ -111,13 +163,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 							<div class="uap-settings-panel-user__avatar">
 
-								<?php if ( isset( $client->login->avatar ) ) { ?>
+								<?php if ( isset( $this->client->login->avatar ) ) { ?>
 
-									<img src="<?php echo esc_url( $client->login->avatar ); ?>" alt="<?php echo esc_url( $client->login->login_name ); ?>" />
+									<img src="<?php echo esc_url( $this->client->login->avatar ); ?>" alt="<?php echo esc_url( $this->client->login->login_name ); ?>" />
 							   
 								<?php } else { ?>
 
-									<?php echo esc_html( strtoupper( $client->login->login_name[0] ) ); ?>
+									<?php echo esc_html( strtoupper( $this->client->login->login_name[0] ) ); ?>
 
 								<?php } ?>
 
@@ -126,14 +178,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="uap-settings-panel-user-info">
 
 								<div class="uap-settings-panel-user-info__main">
-									<?php echo esc_html( $client->login->login_name ); ?>
+									<?php echo esc_html( $this->client->login->login_name ); ?>
 
 									<uo-icon id="mailchimp"></uo-icon>
 
 								</div>
 
 								<div class="uap-settings-panel-user-info__additional">
-									<?php echo esc_html( $client->login->email ); ?>
+									<?php echo esc_html( $this->client->login->email ); ?>
 								</div>
 
 							</div>
@@ -151,6 +203,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 
 						</uo-button>
+
+						<!--<uo-button type="submit">
+
+							<?php //esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
+
+						</uo-button>-->
 
 					</div>
 

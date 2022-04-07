@@ -114,6 +114,8 @@ class HUBSPOT_ADDUSER {
 	 */
 	public function add_contact( $user_id, $action_data, $recipe_id, $args ) {
 
+		$helpers = Automator()->helpers->recipe->hubspot->options;
+
 		$user_data = get_userdata( $user_id );
 
 		$email      = $user_data->user_email;
@@ -178,22 +180,11 @@ class HUBSPOT_ADDUSER {
 			)
 		);
 
-		$response = Automator()->helpers->recipe->hubspot->options->create_contact( $properties, $update );
-
-		if ( is_wp_error( $response ) ) {
-			$error_message                       = $response->get_error_message();
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-			return;
+		try {
+			$response = $helpers->create_contact( $properties, $update, $action_data );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		} catch ( \Exception $e ) {
+			$helpers->log_action_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
 		}
-
-		$json_data = json_decode( wp_remote_retrieve_body( $response ), true );
-
-		if ( 200 !== intval( $json_data['statusCode'] ) ) {
-			Automator()->helpers->recipe->hubspot->options->log_action_error( $json_data, $user_id, $action_data, $recipe_id );
-			return;
-		}
-
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 }

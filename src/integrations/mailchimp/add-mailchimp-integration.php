@@ -74,7 +74,9 @@ class Add_Mailchimp_Integration {
 	public function add_integration_directory_func( $directory ) {
 
 		$directory[] = dirname( __FILE__ ) . '/helpers';
+		$directory[] = dirname( __FILE__ ) . '/tokens';
 		$directory[] = dirname( __FILE__ ) . '/actions';
+		$directory[] = dirname( __FILE__ ) . '/triggers';
 
 		return $directory;
 

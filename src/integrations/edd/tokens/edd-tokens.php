@@ -34,6 +34,9 @@ class Edd_Tokens {
 	 * @return array
 	 */
 	public function edd_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -47,7 +50,7 @@ class Edd_Tokens {
 			),
 			array(
 				'tokenId'         => 'EDDPRODUCT_DISCOUNT_CODES',
-				'tokenName'       => __( 'Discount codes', 'uncanny-automator' ),
+				'tokenName'       => __( 'Discount codes used', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
@@ -184,6 +187,13 @@ class Edd_Tokens {
 				);
 
 				$value = maybe_unserialize( $entry );
+
+				// Format if its a numeric value.
+				if ( is_numeric( $value ) && in_array( $pieces[2], array( 'EDDORDER_SUBTOTAL', 'EDDORDER_TOTAL' ), true ) ) {
+
+					$value = number_format( $value, 2 );
+
+				}
 			}
 		}//end if
 
@@ -221,10 +231,10 @@ class Edd_Tokens {
 
 		$meta = array(
 			'EDDPRODUCT_DISCOUNT_CODES'  => $object->discount_codes,
-			'EDDPRODUCT_ORDER_DISCOUNTS' => $object->order_discounts,
-			'EDDPRODUCT_ORDER_SUBTOTAL'  => $object->order_subtotal,
-			'EDDPRODUCT_ORDER_TAX'       => $object->order_tax,
-			'EDDPRODUCT_ORDER_TOTAL'     => $object->order_total,
+			'EDDPRODUCT_ORDER_DISCOUNTS' => number_format( $object->order_discounts, 2 ),
+			'EDDPRODUCT_ORDER_SUBTOTAL'  => number_format( $object->order_subtotal, 2 ),
+			'EDDPRODUCT_ORDER_TAX'       => number_format( $object->order_tax, 2 ),
+			'EDDPRODUCT_ORDER_TOTAL'     => number_format( $object->order_total, 2 ),
 			'EDDPRODUCT_PAYMENT_METHOD'  => $object->payment_method,
 			'EDDPRODUCT_LICENSE_KEY'     => $object->license_key,
 		);

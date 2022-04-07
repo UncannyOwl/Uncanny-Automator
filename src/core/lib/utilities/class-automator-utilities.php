@@ -472,9 +472,9 @@ class Automator_Utilities {
 	 */
 	public function is_from_modal_action() {
 
-		$minimal = filter_input( INPUT_GET, 'minimal', FILTER_DEFAULT );
+		$minimal = filter_input( INPUT_GET, 'automator_minimal', FILTER_DEFAULT );
 
-		$hide_settings_tabs = filter_input( INPUT_GET, 'hide_settings_tabs', FILTER_DEFAULT );
+		$hide_settings_tabs = filter_input( INPUT_GET, 'automator_hide_settings_tabs', FILTER_DEFAULT );
 
 		return ! empty( $minimal ) && ! empty( $hide_settings_tabs );
 	}

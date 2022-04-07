@@ -1,10 +1,11 @@
 <?php
-
 namespace Uncanny_Automator;
 
 global $mailchimp_meeting_token_renew;
 
 use Uncanny_Automator_Pro\Mailchimp_Pro_Helpers;
+
+use Uncanny_Automator\Api_Server;
 
 /**
  * Class Mailchimp_Helpers
@@ -12,6 +13,13 @@ use Uncanny_Automator_Pro\Mailchimp_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Mailchimp_Helpers {
+
+	/**
+	 * The API endpoint address.
+	 *
+	 * @var API_ENDPOINT The endpoint adress.
+	 */
+	const API_ENDPOINT = 'v2/mailchimp';
 
 	/**
 	 * Maichimp Helpers.
@@ -43,6 +51,13 @@ class Mailchimp_Helpers {
 	private $mailchimp_endpoint;
 
 	/**
+	 * The webhook endpoint url.
+	 *
+	 * @var string
+	 */
+	public $webhook_endpoint = '';
+
+	/**
 	 * The Hash String.
 	 *
 	 * @var string
@@ -51,17 +66,30 @@ class Mailchimp_Helpers {
 
 	public function __construct() {
 
-		$this->automator_api = AUTOMATOR_API_URL . 'v2/mailchimp';
+		$this->settings_tab = 'mailchimp_api';
 
 		add_action( 'init', array( $this, 'validate_oauth_tokens' ), 100, 3 );
 
 		add_action( 'wp_ajax_select_mcgroupslist_from_mclist', array( $this, 'select_mcgroupslist_from_mclist' ) );
+
 		add_action( 'wp_ajax_select_mctagslist_from_mclist', array( $this, 'select_mctagslist_from_mclist' ) );
 
 		add_action( 'wp_ajax_select_segments_from_list', array( $this, 'select_segments_from_list' ) );
 
 		add_action( 'wp_ajax_get_mailchimp_audience_fields', array( $this, 'get_mailchimp_audience_fields' ) );
+
 		add_action( 'wp_ajax_uo_mailchimp_disconnect', array( $this, 'uo_mailchimp_disconnect' ) );
+
+		add_action( 'wp_ajax_mailchimp-regenerate-webhook-key', array( $this, 'regenerate_webhook_key_ajax' ) );
+
+		// Load webhook method once webhook option is enabled.
+		if ( $this->is_webhook_enabled() ) {
+
+			$this->webhook_endpoint = apply_filters( 'automator_mailchimp_webhook_endpoint', '/mailchimp', $this );
+
+			$this->define_webhook_listener();
+
+		}
 
 		// Load the settings page.
 		require_once __DIR__ . '/../settings/settings-mailchimp.php';
@@ -103,14 +131,6 @@ class Mailchimp_Helpers {
 			$label = __( 'Audience', 'uncanny-automator' );
 		}
 
-		$args = wp_parse_args(
-			$args,
-			array(
-				'uo_include_any' => false,
-				'uo_any_label'   => __( 'All', 'uncanny-automator' ),
-			)
-		);
-
 		$is_ajax                  = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
@@ -119,27 +139,38 @@ class Mailchimp_Helpers {
 		$supports_custom_value    = key_exists( 'supports_custom_value', $args ) ? $args['supports_custom_value'] : false;
 		$supports_tokens          = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
 		$placeholder              = key_exists( 'placeholder', $args ) ? $args['placeholder'] : null;
+		$has_any                  = key_exists( 'has_any', $args ) ? $args['has_any'] : null;
 		$options                  = array();
 
-		$request_params = array(
-			'action' => 'get_lists',
-		);
-
 		try {
-			$response = $this->api_request( $request_params );
-			// prepare lists
-			if ( 200 === intval( $response->statusCode ) ) { // phpcs:ignore
-				if ( ! empty( $response->data->lists ) ) {
-					foreach ( $response->data->lists as $list ) {
+
+			$body = array(
+				'action' => 'get_lists',
+			);
+
+			$response = $this->api_request( $body );
+
+			if ( 200 === intval( $response['statusCode'] ) ) {
+				if ( ! empty( $response['data']['lists'] ) ) {
+					if ( ! empty( $has_any ) && true === $has_any ) {
 						$options[] = array(
-							'value' => $list->id,
-							'text'  => $list->name,
+							'value' => '-1',
+							'text'  => __( 'Any audience', 'uncanny-automator' ),
+						);
+					}
+					foreach ( $response['data']['lists'] as $list ) {
+						$options[] = array(
+							'value' => $list['id'],
+							'text'  => $list['name'],
 						);
 					}
 				}
 			}
 		} catch ( \Exception $e ) {
-			automator_log( $e->getMessage() );
+			$options[] = array(
+				'value' => '',
+				'text'  => $e->getMessage(),
+			);
 		}
 
 		$option = array(
@@ -157,6 +188,7 @@ class Mailchimp_Helpers {
 			'supports_custom_value'    => $supports_custom_value,
 			'placeholder'              => $placeholder,
 			'integration'              => 'MAILCHIMP',
+			'relevant_tokens'          => array(),
 		);
 
 		return apply_filters( 'uap_option_get_all_lists', $option );
@@ -235,37 +267,38 @@ class Mailchimp_Helpers {
 		);
 
 		try {
-			$categories_response = $this->api_request( $request_params );
+			$response = $this->api_request( $request_params );
 
-			if ( 200 !== intval( $categories_response->statusCode ) || empty( $categories_response->data->categories ) ) { // phpcs:ignore
-				echo wp_json_encode( $fields );
-				die();
+			if ( 200 !== intval( $response['statusCode'] ) || empty( $response['data']['categories'] ) ) { // phpcs:ignore
+				throw new \Exception( __( 'Could not fetch categories.', 'uncanny-automator' ) );
 			}
 
-			foreach ( $categories_response->data->categories as $category ) {
+			foreach ( $response['data']['categories'] as $category ) {
 
 				$request_params = array(
 					'action'      => 'get_interests',
 					'list_id'     => $list_id,
-					'category_id' => $category->id,
+					'category_id' => $category['id'],
 				);
 
 				$interests_response = $this->api_request( $request_params );
 
-				if ( 200 === intval( $interests_response->statusCode ) ) { // phpcs:ignore
-
-					if ( ! empty( $interests_response->data->interests ) ) {
-						foreach ( $interests_response->data->interests as $interest ) {
+				if ( 200 === intval( $interests_response['statusCode'] ) ) {
+					if ( ! empty( $interests_response['data']['interests'] ) ) {
+						foreach ( $interests_response['data']['interests'] as $interest ) {
 							$fields[] = array(
-								'value' => $interest->id,
-								'text'  => $category->title . ' > ' . $interest->name,
+								'value' => $interest['id'],
+								'text'  => $category['title'] . ' > ' . $interest['name'],
 							);
 						}
 					}
 				}
 			}
 		} catch ( \Exception $e ) {
-			automator_log( $e->getMessage() );
+			$fields[] = array(
+				'value' => '',
+				'text'  => $e->getMessage(),
+			);
 		}
 
 		echo wp_json_encode( $fields );
@@ -301,6 +334,7 @@ class Mailchimp_Helpers {
 		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$supports_multiple_values = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
+		$custom_value_description = key_exists( 'custom_value_description', $args ) ? $args['custom_value_description'] : '';
 		$required                 = key_exists( 'required', $args ) ? $args['required'] : true;
 		$options                  = array();
 
@@ -313,8 +347,8 @@ class Mailchimp_Helpers {
 			'is_ajax'                  => $is_ajax,
 			'fill_values_in'           => $target_field,
 			'endpoint'                 => $end_point,
-			'custom_value_description' => '',
-			'supports_custom_value'    => false,
+			'custom_value_description' => $custom_value_description,
+			'supports_custom_value'    => true,
 			'supports_multiple_values' => $supports_multiple_values,
 			'options'                  => $options,
 			'hide_actions'             => isset( $args['hide_actions'] ) ? $args['hide_actions'] : false,
@@ -354,19 +388,22 @@ class Mailchimp_Helpers {
 		try {
 			$response = $this->api_request( $request_params );
 
-			if ( 200 !== intval( $response->statusCode ) || empty( $response->data->segments ) ) { // phpcs:ignore
+			if ( 200 !== intval( $response['statusCode'] ) || empty( $response['data']['segments'] ) ) { // phpcs:ignore
 				echo wp_json_encode( $fields );
 				die();
 			}
 
-			foreach ( $response->data->segments as $segment ) {
+			foreach ( $response['data']['segments'] as $segment ) {
 				$fields[] = array(
-					'value' => $segment->name,
-					'text'  => $segment->name,
+					'value' => $segment['name'],
+					'text'  => $segment['name'],
 				);
 			}
 		} catch ( \Exception $e ) {
-			automator_log( $e->getMessage() );
+			$fields[] = array(
+				'value' => '',
+				'text'  => $e->getMessage(),
+			);
 		}
 
 		echo wp_json_encode( $fields );
@@ -411,20 +448,23 @@ class Mailchimp_Helpers {
 		try {
 			$response = $this->api_request( $request_params );
 
-			// prepare lists
-			if ( 200 === intval( $response->statusCode ) ) { // phpcs:ignore
+			if ( 200 !== intval( $response['statusCode'] ) ) {
+				throw new \Exception( __( 'Could not fetch segments.', 'uncanny-automator' ) );
+			}
 
-				if ( ! empty( $response->data->segments ) ) {
-					foreach ( $response->data->segments as $segment ) {
-						$fields[] = array(
-							'value' => $segment->id,
-							'text'  => $segment->name,
-						);
-					}
+			if ( ! empty( $response['data']['segments'] ) ) {
+				foreach ( $response['data']['segments'] as $segment ) {
+					$fields[] = array(
+						'value' => $segment['id'],
+						'text'  => $segment['name'],
+					);
 				}
 			}
 		} catch ( \Exception $e ) {
-			automator_log( $e->getMessage() );
+			$fields[] = array(
+				'value' => '',
+				'text'  => $e->getMessage(),
+			);
 		}
 
 		echo wp_json_encode( $fields );
@@ -519,63 +559,63 @@ class Mailchimp_Helpers {
 		try {
 			$response = $this->api_request( $request_params );
 
-			// prepare meeting lists
-			if ( 200 === intval( $response->statusCode ) ) { // phpcs:ignore
+			if ( 200 !== intval( $response['statusCode'] ) ) { 
+				throw new \Exception( __( 'Could not fetch fields', 'uncanny-automator' ) );
+			}
 
-				if ( ! empty( $response->data->merge_fields ) ) {
-					foreach ( $response->data->merge_fields as $field ) {
-						$merge_order = $field->display_order * 10;
-						if ( 'address' === $field->type ) {
-							++ $merge_order;
-							$fields[ $merge_order ] = array(
-								'key'  => $field->tag . '_addr1',
-								'type' => 'text',
-								'data' => $field->name,
-							);
-							++ $merge_order;
-							$fields[ $merge_order ] = array(
-								'key'  => $field->tag . '_addr2',
-								'type' => 'text',
-								'data' => $field->name,
-							);
-							++ $merge_order;
-							$fields[ $merge_order ] = array(
-								'key'  => $field->tag . '_city',
-								'type' => 'text',
-								'data' => $field->name,
-							);
-							++ $merge_order;
-							$fields[ $merge_order ] = array(
-								'key'  => $field->tag . '_state',
-								'type' => 'text',
-								'data' => $field->name,
-							);
-							++ $merge_order;
-							$fields[ $merge_order ] = array(
-								'key'  => $field->tag . '_zip',
-								'type' => 'text',
-								'data' => $field->name,
-							);
-							++ $merge_order;
-							$fields[ $merge_order ] = array(
-								'key'  => $field->tag . '_country',
-								'type' => 'text',
-								'data' => $field->name,
-							);
-						} else {
-							$fields[ $merge_order ] = array(
-								'key'  => $field->tag,
-								'type' => 'text',
-								'data' => $field->name,
-							);
-						}
+			if ( ! empty( $response['data']['merge_fields'] ) ) {
+				foreach ( $response['data']['merge_fields'] as $field ) {
+					$merge_order = $field['display_order'] * 10;
+					if ( 'address' === $field['type'] ) {
+						++ $merge_order;
+						$fields[ $merge_order ] = array(
+							'key'  => $field['tag'] . '_addr1',
+							'type' => 'text',
+							'data' => $field['name'],
+						);
+						++ $merge_order;
+						$fields[ $merge_order ] = array(
+							'key'  => $field['tag'] . '_addr2',
+							'type' => 'text',
+							'data' => $field['name'],
+						);
+						++ $merge_order;
+						$fields[ $merge_order ] = array(
+							'key'  => $field['tag'] . '_city',
+							'type' => 'text',
+							'data' => $field['name'],
+						);
+						++ $merge_order;
+						$fields[ $merge_order ] = array(
+							'key'  => $field['tag'] . '_state',
+							'type' => 'text',
+							'data' => $field['name'],
+						);
+						++ $merge_order;
+						$fields[ $merge_order ] = array(
+							'key'  => $field['tag'] . '_zip',
+							'type' => 'text',
+							'data' => $field['name'],
+						);
+						++ $merge_order;
+						$fields[ $merge_order ] = array(
+							'key'  => $field['tag'] . '_country',
+							'type' => 'text',
+							'data' => $field['name'],
+						);
+					} else {
+						$fields[ $merge_order ] = array(
+							'key'  => $field['tag'],
+							'type' => 'text',
+							'data' => $field['name'],
+						);
 					}
-					ksort( $fields );
-					$ajax_response = (object) array(
-						'success' => true,
-						'samples' => array( $fields ),
-					);
 				}
+				ksort( $fields );
+				$ajax_response = (object) array(
+					'success' => true,
+					'samples' => array( $fields ),
+				);
 			}
 		} catch ( \Exception $e ) {
 			$ajax_response = (object) array(
@@ -637,19 +677,23 @@ class Mailchimp_Helpers {
 			try {
 				$response = $this->api_request( $request_params );
 
-				if ( 200 === intval( $response->statusCode ) ) { // phpcs:ignore
+				if ( 200 !== intval( $response['statusCode'] ) ) {
+					throw new \Exception( __( 'Could not fetch templates.', 'uncanny-automator' ) );
+				}
 
-					if ( ! empty( $response->data->templates ) ) {
-						foreach ( $response->data->templates as $template ) {
-							$options[] = array(
-								'value' => $template->id,
-								'text'  => $template->name,
-							);
-						}
+				if ( ! empty( $response['data']['templates'] ) ) {
+					foreach ( $response['data']['templates'] as $template ) {
+						$options[] = array(
+							'value' => $template['id'],
+							'text'  => $template['name'],
+						);
 					}
 				}
 			} catch ( \Exception $e ) {
-				automator_log( $e->getMessage() );
+				$options[] = array(
+					'value' => '',
+					'text'  => $e->getMessage(),
+				);
 			}
 		}
 
@@ -702,7 +746,7 @@ class Mailchimp_Helpers {
 		$client = get_option( '_uncannyowl_mailchimp_settings', array() );
 
 		if ( empty( $client ) || ! isset( $client['access_token'] ) ) {
-			return false;
+			throw new \Exception( __( 'Mailchimp account not found.', 'uncanny-automator' ) );
 		}
 
 		return (object) $client;
@@ -810,37 +854,24 @@ class Mailchimp_Helpers {
 	 *
 	 * @return void
 	 */
-	public function api_request( $params ) {
+	public function api_request( $body, $action = null ) {
 
 		$client = $this->get_mailchimp_client();
 
-		if ( ! $client ) {
-			throw new \Exception( __( 'Mailchimp account not found.', 'uncanny-automator' ) );
-		}
+		$body['client'] = $client;
 
-		$body = array(
-			'client'     => $client,
-			'api_ver'    => '2.0',
-			'plugin_ver' => InitializePlugin::PLUGIN_VERSION,
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body'     => $body,
+			'action'   => $action,
 		);
 
-		$body = array_merge( $body, $params );
+		$response = Api_Server::api_call( $params );
 
-		$response = wp_remote_post(
-			$this->automator_api,
-			array(
-				'method' => 'POST',
-				'body'   => $body,
-			)
-		);
+		$this->check_for_errors( $response );
 
-		if ( is_wp_error( $response ) ) {
-			throw new \Exception( $response->get_error_message() );
-		}
+		return $response;
 
-		$json_data = json_decode( wp_remote_retrieve_body( $response ) );
-
-		return $json_data;
 	}
 
 	/**
@@ -853,37 +884,437 @@ class Mailchimp_Helpers {
 	 *
 	 * @return void
 	 */
-	public function log_action_error( $response, $user_id, $action_data, $recipe_id ) {
-
-		// log error when no token found.
-		$error_msg = __( 'API error: ', 'uncanny-automator' );
-
-		if ( isset( $response->data->title ) ) {
-			$error_msg .= ' ' . $response->data->title;
-		}
-
-		if ( isset( $response->data->detail ) ) {
-			$error_msg .= ' ' . $response->data->detail;
-		}
-
-		if ( isset( $response->data->errors ) ) {
-			foreach ( $response->data->errors as $error ) {
-				$error_msg .= ' ' . $error->field;
-				$error_msg .= ' ' . $error->message;
-			}
-		}
-
-		if ( isset( $response->error->type ) ) {
-			$error_msg .= ' ' . $response->error->type;
-		}
-
-		if ( isset( $response->error->description ) ) {
-			$error_msg .= ' ' . $response->error->description;
-		}
-
+	public function complete_with_error( $error_msg, $user_id, $action_data, $recipe_id ) {
 		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
 		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+	}
+
+	/**
+	 * Get the Mailchimp OAuth URI.
+	 *
+	 * @return string The Mailchimp OAuth URI.
+	 */
+	public function get_connect_uri() {
+
+		$action       = '';
+		$redirect_url = rawurlencode( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->settings_tab );
+
+		return add_query_arg(
+			array(
+				'action'       => 'mailchimp_authorization_request',
+				'scope'        => '1',
+				'redirect_url' => $redirect_url,
+				'nonce'        => wp_create_nonce( 'automator_api_mailchimp_authorize' ),
+				'plugin_ver'   => InitializePlugin::PLUGIN_VERSION,
+				'api_ver'      => '2.0',
+			),
+			AUTOMATOR_API_URL . self::API_ENDPOINT
+		);
+	}
+
+	public function get_disconnect_uri() {
+		return add_query_arg(
+			array(
+				'action' => 'uo_mailchimp_disconnect',
+				'nonce'  => wp_create_nonce( 'uo-mailchimp-disconnect' ),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+	}
+
+	/**
+	 * check_for_errors
+	 *
+	 * @param  mixed $response
+	 * @return void
+	 */
+	public function check_for_errors( $response ) {
+
+		$expected_codes = array( 200, 204 );
+
+		if ( in_array( $response['statusCode'], $expected_codes ) ) {
+			return $response;
+		}
+
+		$error_msg = '';
+
+		if ( isset( $response['data']['title'] ) ) {
+			$error_msg .= $response['data']['title'];
+		}
+
+		if ( isset( $response['data']['detail'] ) ) {
+			$error_msg .= ': ' . $response['data']['detail'];
+		}
+
+		if ( isset( $respons['data']['errors'] ) ) {
+			foreach ( $response['data']['errors'] as $error ) {
+				$error_msg .= ' ' . $error['field'];
+				$error_msg .= ' ' . $error['message'];
+			}
+		}
+
+		if ( ! empty( $error_msg ) ) {
+			if ( isset( $response['status'] )) {
+				$error_msg = '(' . $response['status'] . ') ' . $error_msg;
+			}
+
+			throw new \Exception( $error_msg, $response['status'] );
+		}	
+	}
+	
+	/**
+	 * get_user
+	 *
+	 * @return void
+	 */
+	public function get_list_user( $list_id, $user_hash ) {
+
+		$request_params = array(
+			'action'    => 'get_subscriber',
+			'list_id'   => $list_id,
+			'user_hash' => $user_hash,
+		);
+
+		try {
+			return $this->api_request( $request_params );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+	}
+	
+	/**
+	 * compile_user_interests
+	 *
+	 * @param  mixed $existing_user
+	 * @param  mixed $change_groups
+	 * @param  mixed $check_interests
+	 * @return void
+	 */
+	public function compile_user_interests( $existing_user, $change_groups, $groups_list ) {
+
+		// Only add new interests
+		if ( 'add-only' === $change_groups ) {
+
+			if ( empty( $groups_list ) ) {
+				// No interests to add
+				return array();
+			}
+
+			$add_interests = array();
+
+			foreach ( $groups_list as $interest_id ) {
+				$add_interests[$interest_id] = true;
+			}
+
+			return $add_interests;
+		}
+
+		// Remove any matching interests
+		if ( 'replace-matching' === $change_groups ) {
+
+			if ( empty( $groups_list ) ) {
+				// No interests to remove
+				return array();
+			}
+			
+			$remove_interests = array();
+
+			foreach ( $groups_list as $interest_id ) {
+				$remove_interests[$interest_id] = false;
+			}
+
+			return $remove_interests;
+		}
+
+		// Replace All. All of the subscriber's existing groups will be cleared, and replaced with the groups selected below.
+		if ( 'replace-all' === $change_groups ) {
+
+			$new_interests = array();
+
+			if ( ! empty( $existing_user['data']['interests'] ) ) {
+				// First remove all interests
+				foreach ( $existing_user['data']['interests'] as $interest_id => $status ) {
+					$new_interests[ $interest_id ] = false;
+				}
+			}
+			
+			// Then add the new ones
+			foreach ( $groups_list as $interest_id ) {
+				$new_interests[$interest_id] = true;
+			}
+
+			return $new_interests;
+		}
+
+		return array();
+	}
+	
+	/**
+	 * Defines our webhook listener.
+	 *
+	 * @return void
+	 */
+	public function define_webhook_listener() {
+
+		add_action( 'rest_api_init', array( $this, 'init_webhook' ) );
+
+	}
+
+	/**
+	 * Checks if webhook is enabled or not.
+	 *
+	 * @return boolean True if webhook is enabled. Otherwise, false.
+	 */
+	public function is_webhook_enabled() {
+
+		/*$webhook_enabled_option = get_option( 'uap_mailchimp_enable_webhook', false );
+
+		// The get_option can return string or boolean sometimes.
+		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+
+			return true;
+
+		}*/
+
+		return false;
+
+	}
+
+	/**
+	 * Check if has connection data.
+	 *
+	 * @return boolean True if has connection data. Otherwise, false.
+	 */
+	public function has_connection_data() {
+
+		$has_connection = true;
+
+		try {
+
+			$this->get_mailchimp_client();
+
+		} catch ( \Exception $e ) {
+
+			$has_connection = false;
+
+		}
+
+		return $has_connection;
+
+	}
+
+	/**
+	 * Validates the webhook.
+	 *
+	 * @return boolean True if okay. Otherwise, false.
+	 */
+	public function validate_webhook( $request ) {
+
+		// Don't process any GET request. Just return true if its a GET statement.
+		if ( 'GET' === $request->get_method() ) {
+
+			return true;
+
+		}
+
+		$query_params = $request->get_query_params();
+
+		$headers = $request->get_headers();
+
+		// Mailchimp sets user agent to MailChimp if its coming from their webhook.
+		$user_agent = isset( $headers['user_agent'] ) ? $headers['user_agent'] : '';
+
+		if ( empty( $user_agent ) ) {
+
+			return false;
+
+		}
+
+		$user_agent_values = array_values( $user_agent );
+
+		if ( 'MailChimp' !== array_shift( $user_agent_values ) ) {
+
+			return false;
+
+		}
+
+		if ( ! isset( $query_params['key'] ) ) {
+
+			return false;
+
+		}
+
+		$actual_key = $this->get_webhook_key();
+
+		if ( $actual_key !== $query_params['key'] ) {
+
+			return false;
+
+		}
+
+		return true;
+
+	}
+
+	/**
+	 * Initialize the webhook rest api endpoint.
+	 *
+	 * @return void.
+	 */
+	public function init_webhook() {
+
+		if ( $this->is_webhook_enabled() && $this->has_connection_data() ) {
+
+			register_rest_route(
+				AUTOMATOR_REST_API_END_POINT,
+				$this->webhook_endpoint,
+				array(
+					'methods'             => array( 'POST', 'GET' ),
+					'callback'            => array( $this, 'webhook_callback' ),
+					'permission_callback' => array( $this, 'validate_webhook' ),
+				)
+			);
+
+		}
+
+	}
+
+	/**
+	 * This function will fire for valid incoming webhook calls
+	 *
+	 * @param  mixed $request
+	 * @return void
+	 */
+	public function webhook_callback( $request ) {
+
+		$body = $request->get_body_params();
+
+		$type = isset( $body['type'] ) ? $body['type'] : '';
+
+		$registered_trigger_types = array( 'unsubscribe', 'subscribe', 'upemail' );
+
+		if ( empty( $type ) ) {
+
+			$this->log( '[1/3. Event received - 400]. MailChimp has sent data but `type` is missing.' );
+
+			return;
+
+		}
+
+		if ( ! in_array( $type, $registered_trigger_types, true ) ) {
+
+			$this->log( '[1/3. Event received - 400]. Automator received webhook data from MailChimp of type: ' . $type . '. But no registered Triggers that will handle this event.' );
+
+			return;
+
+		}
+
+		$this->log( '[1/3. Event received - 200]. Automator received webhook data from MailChimp of type: ' . $type );
+
+		do_action( 'automator_mailchimp_webhook_received_' . $type, $body );
+
+		exit;
+
+	}
+
+	/**
+	 * Get the webhook uri.
+	 *
+	 * @return void
+	 */
+	public function get_webhook_url() {
+
+		return $this->webhook_endpoint . '?key=' . $this->get_webhook_key();
+
+	}
+
+	/**
+	 * Retrieve the webhook key.
+	 *
+	 * @return void
+	 */
+	public function get_webhook_key() {
+
+		$webhook_key = get_option( 'uap_mailchimp_webhook_key', false );
+
+		if ( false === $webhook_key ) {
+
+			$webhook_key = $this->regenerate_webhook_key();
+
+		}
+
+		return $webhook_key;
+
+	}
+
+	/**
+	 * Generate webhook key.
+	 *
+	 * @return void
+	 */
+	public function regenerate_webhook_key() {
+
+		$new_key = md5( uniqid( wp_rand(), true ) );
+
+		update_option( 'uap_mailchimp_webhook_key', $new_key );
+
+		return $new_key;
+
+	}
+
+	/**
+	 * Regenerate the webhook key via Ajax.
+	 *
+	 * @return void
+	 */
+	public function regenerate_webhook_key_ajax() {
+
+		$this->regenerate_webhook_key();
+
+		$uri = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=mailchimp_api';
+
+		wp_safe_redirect( $uri );
+
+		exit;
+
+	}
+
+	/**
+	 * Log the MailChimp webhook and trigger events.
+	 *
+	 * @return mixed The automator_log.
+	 */
+	public function log( $message = '' ) {
+
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		$force_debug = true;
+
+		return automator_log( $message, 'MailChimp Webhook Trigger Entry', $force_debug, 'mailchimp-webhook' );
+
+	}
+	
+	/**
+	 * validate_trigger
+	 *
+	 * @return void
+	 */
+	public function validate_trigger() {
+
+		$msg = 'true';
+
+		try {
+			Api_Server::charge_credit();
+		} catch ( \Exception $e ) {
+			$msg = $e->getMessage();
+		}
+
+		$this->log( '[2/3. Validating found trigger]. Result: ' . $msg );
+
+		return 'true' === $msg;
 	}
 
 }

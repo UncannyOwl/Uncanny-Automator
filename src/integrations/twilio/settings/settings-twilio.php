@@ -55,7 +55,17 @@ class Twilio_Settings {
 		$this->register_option( 'uap_automator_twilio_api_auth_token' );
         $this->register_option( 'uap_automator_twilio_api_phone_number' );
 
-		$this->set_status( empty( $this->helpers->get_twilio_accounts_connected() ) ? '' : 'success' );
+		try {
+			$this->user = (array) $this->helpers->get_twilio_accounts_connected();
+			$this->client = $this->helpers->get_client();
+			$this->is_connected = true;
+		} catch ( \Exception $e) {
+			$this->user = array();
+			$this->client = array();
+			$this->is_connected = false;
+		}
+
+		$this->set_status( $this->is_connected ? 'success' : '' );
 
 	}
 
@@ -66,16 +76,8 @@ class Twilio_Settings {
 	 */
 	public function output() {
 
-        // Get data about the connected Twilio
-		$user = $this->helpers->get_twilio_accounts_connected();
-
-        $client = $this->helpers->get_client();
-
-		// Check if Twilio is connected
-		$is_connected = false !== $client;
-
-		$account_sid = ! empty( $client['account_sid'] ) ? $client['account_sid'] : '';
-		$auth_token = ! empty( $client['auth_token'] ) ? $client['auth_token'] : '';
+		$account_sid = ! empty( $this->client['account_sid'] ) ? $this->client['account_sid'] : '';
+		$auth_token = ! empty( $this->client['auth_token'] ) ? $this->client['auth_token'] : '';
         $phone_number = get_option( 'uap_automator_twilio_api_phone_number', '' );
 
         $disconnect_uri = add_query_arg(
@@ -87,8 +89,6 @@ class Twilio_Settings {
         );
 
 		include_once 'view-twilio.php';
-
 	}
-
 }
 

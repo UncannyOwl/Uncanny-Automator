@@ -84,66 +84,23 @@ class AC_USER_LIST_ADD {
 
 		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
 		$list_id   = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
-		$user      = get_user_by( 'ID', $user_id );
-		$contact   = $ac_helper->get_user_by_email( $user->data->user_email );
+		$user      = get_user_by( 'ID', $user_id );	
+		
+		try {
 
-		if ( true === $contact['error'] ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $contact['message'] );
-		}
+			$contact_id = $ac_helper->get_email_id( $user->data->user_email );
 
-		$contact_id = isset( $contact['message']->id ) ? $contact['message']->id : 0;
+			$body = array(
+				'action'    => 'list_update_contact',
+				'listId'    => $list_id,
+				'contactId' => $contact_id,
+				'status'    => 1,
+			);
 
-		$form_data = array(
-			'action'    => 'list_update_contact',
-			'url'       => get_option( 'uap_active_campaign_api_url', '' ),
-			'token'     => get_option( 'uap_active_campaign_api_key', '' ),
-			'listId'    => $list_id,
-			'contactId' => $contact_id,
-			'status'    => 1,
-		);
-
-		$response = wp_remote_post(
-			$this->ac_endpoint_uri,
-			array(
-				'body' => $form_data,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-
-			// Something happened with the response.
-			// Or, there's an error with with WordPress. etc.
-			$error_message                       = $response->get_error_message();
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
-		} else {
-			// Decode the response, if everythins is fine.
-			$body = json_decode( wp_remote_retrieve_body( $response ) );
-
-			if ( 200 === $body->statusCode ) {
-				// If there are any errors.
-				$errors = isset( $body->data->errors ) ? $body->data->errors : '';
-				if ( ! empty( $errors ) ) {
-					$error_message = array();
-					foreach ( $errors as $error ) {
-						$error_message[] = $error->title;
-					}
-					$action_data['complete_with_errors'] = true;
-					Automator()->complete->action( $user_id, $action_data, $recipe_id, implode( ',', $error_message ) );
-				} else {
-					// All good. Complete the action.
-					Automator()->complete->action( $user_id, $action_data, $recipe_id );
-				}
-			} else {
-				// If status code is not 200.
-				/* translators: The error message */
-				$error_message = sprintf( esc_html__( 'Request to ActiveCampaign returned with status: %s', 'uncanny-automator' ), $body->statusCode );
-
-				$action_data['complete_with_errors'] = true;
-				Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-			}
+			$response = $ac_helper->api_request( $body, $action_data );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
+		} catch ( \Exception $e ) {
+			$ac_helper->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
 	}
 }

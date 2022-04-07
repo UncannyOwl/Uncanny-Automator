@@ -43,6 +43,9 @@ class Wp_Tokens {
 	 * @return array
 	 */
 	public function wp_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 

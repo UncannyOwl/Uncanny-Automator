@@ -81,14 +81,34 @@ class LD_PASSQUIZ {
 				$user = wp_get_current_user();
 			}
 
-			$args = array(
+			$pass_args = array(
 				'code'    => $this->trigger_code,
 				'meta'    => $this->trigger_meta,
 				'post_id' => (int) $post_id,
 				'user_id' => $user->ID,
 			);
 
-			Automator()->maybe_add_trigger_entry( $args );
+			$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+
+			if ( $args ) {
+				foreach ( $args as $result ) {
+					if ( true === $result['result'] ) {
+						$insert = array(
+							'user_id'        => (int) $result['args']['user_id'],
+							'trigger_id'     => (int) $result['args']['trigger_id'],
+							'trigger_log_id' => (int) $result['args']['trigger_log_id'],
+							'run_number'     => (int) $result['args']['run_number'],
+						);
+
+						$insert['meta_key']   = 'quiz_id';
+						$insert['meta_value'] = $post_id;
+						Automator()->insert_trigger_meta( $insert );
+
+						Automator()->maybe_trigger_complete( $result['args'] );
+
+					}
+				}
+			}
 		}
 	}
 }

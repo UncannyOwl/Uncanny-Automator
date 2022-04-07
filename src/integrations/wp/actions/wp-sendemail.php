@@ -49,9 +49,37 @@ class WP_SENDEMAIL {
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Send an {{email}}', 'uncanny-automator' ) );
 
+		
+		
+		$this->set_options_callback( array( $this, 'load_options' ) );
+
+		$this->register_action();
+
+	}
+
+	/**
+	 * load_options
+	 *
+	 * @return void
+	 */
+	public function load_options() {
 		$options_group = array(
 
 			$this->get_action_meta() => array(
+
+				Automator()->helpers->recipe->field->select(
+					array(
+						'option_code'           => 'EMAILCONTENTTYPE',
+						'label'                 => esc_attr__( 'Content type', 'uncanny-automator' ),
+						'input_type'            => 'select',
+						'required'              => false,
+						'supports_custom_value' => false,
+						'options'               => array(
+							'html'  => 'HTML',
+							'plain' => 'Plain text',
+						),
+					)
+				),
 
 				// Email From Field.
 				Automator()->helpers->recipe->field->text(
@@ -130,10 +158,13 @@ class WP_SENDEMAIL {
 			),
 		);
 
-		$this->set_options_group( $options_group );
-
-		$this->register_action();
-
+		$options = Automator()->utilities->keep_order_of_options(
+				array(
+				'options_group' => $options_group
+			)
+		);
+		
+		return $options;
 	}
 
 
@@ -148,7 +179,8 @@ class WP_SENDEMAIL {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$body_text = isset( $parsed['EMAILBODY'] ) ? $parsed['EMAILBODY'] : '';
+		$body_text    = isset( $parsed['EMAILBODY'] ) ? $parsed['EMAILBODY'] : '';
+		$content_type = isset( $parsed['EMAILCONTENTTYPE'] ) ? $parsed['EMAILCONTENTTYPE'] : 'text/html';
 
 		if ( false !== strpos( $body_text, '{{reset_pass_link}}' ) ) {
 			$reset_pass = ! is_null( $this->key ) ? $this->key : Automator()->parse->generate_reset_token( $user_id );
@@ -157,6 +189,16 @@ class WP_SENDEMAIL {
 			$body = $body_text;
 		}
 
+		if ( 'plain' === (string) $content_type ) {
+			$content_type = 'text/plain';
+			$body         = preg_replace( '/<br\s*\/?>/', PHP_EOL, $body );
+			$body         = wp_strip_all_tags( $body );
+			$this->set_is_html( false );
+		} else {
+			$content_type = 'text/html';
+		}
+
+		$this->set_content_type( $content_type );
 		$data = array(
 			'to'        => isset( $parsed['EMAILTO'] ) ? $parsed['EMAILTO'] : '',
 			'from'      => isset( $parsed['EMAILFROM'] ) ? $parsed['EMAILFROM'] : '',
@@ -170,7 +212,6 @@ class WP_SENDEMAIL {
 		);
 
 		$this->set_mail_values( $data );
-
 		$mailed = $this->send_email();
 
 		// Set $this->set_error_message(); and complete the action automatically. May be use return true / false.

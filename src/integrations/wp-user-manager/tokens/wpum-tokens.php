@@ -53,6 +53,9 @@ class Wpum_Tokens {
 	 * @return array
 	 */
 	public function wpum_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$form_id      = absint( $args['value'] );
 		$trigger_meta = $args['meta'];
 
@@ -97,6 +100,9 @@ class Wpum_Tokens {
 	 * @return array
 	 */
 	public function wpum_profile_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_meta = $args['meta'];
 
 		$account_fields = WPUM()->fields->get_fields(
@@ -139,6 +145,9 @@ class Wpum_Tokens {
 	 * @return array
 	 */
 	public function wpum_fields_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
 		$trigger_meta = $args['meta'];
 
 		$all_fields = WPUM()->fields->get_fields(

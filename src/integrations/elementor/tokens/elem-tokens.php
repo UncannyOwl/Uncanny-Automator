@@ -31,19 +31,13 @@ class Elem_Tokens {
 	 */
 	public function elem_possible_tokens( $tokens = array(), $args = array() ) {
 
-		if ( isset( $_REQUEST['action'] ) && ( 'heartbeat' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) || 'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			// if it's heartbeat, post lock actions bail
+		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
 
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 		if ( empty( $form_id ) ) {
-			return $tokens;
-		}
-
-		if ( ! Automator()->helpers->recipe->is_edit_page() && ! Automator()->helpers->recipe->is_rest() ) {
-			// If not automator edit page or rest call, bail
 			return $tokens;
 		}
 

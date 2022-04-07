@@ -125,18 +125,18 @@
                             <div class="uap-settings-panel-user">
 
                                 <div class="uap-settings-panel-user__avatar">
-                                    <?php echo esc_html( strtoupper( $this->user->first_name[0] ) ); ?>
+                                    <?php echo esc_html( strtoupper( $this->user['first_name'][0] ) ); ?>
                                 </div>
 
                                 <div class="uap-settings-panel-user-info">
                                     <div class="uap-settings-panel-user-info__main">
-                                        <?php echo esc_html( $this->user->first_name . ' ' . $this->user->last_name ); ?>
+                                        <?php echo esc_html( $this->user['first_name'] . ' ' . $this->user['last_name'] ); ?>
                                         <uo-icon id="zoom"></uo-icon>
                                     </div>
                                     <div class="uap-settings-panel-user-info__additional">
                                         <?php
   
-                                            echo esc_html( $this->user->email );
+                                            echo esc_html( $this->user['email'] );
                                         
                                         ?>
                                     </div>

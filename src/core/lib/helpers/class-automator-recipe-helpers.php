@@ -269,6 +269,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Automator_Helpers_Recipe
 	 */
 	public $options;
+	/**
+	 * @var PeepSo_Helpers
+	 */
+	public $peepso;
 	/*
 	 * Check for loading options.
 	 */

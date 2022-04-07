@@ -83,6 +83,8 @@ class AUDIENCE_ADDUSERNOTE {
 	 */
 	public function add_note_audience_member( $user_id, $action_data, $recipe_id, $args ) {
 
+		$helpers = Automator()->helpers->recipe->mailchimp->options;
+
 		try {
 			// Here add note
 			$list_id = $action_data['meta']['MCLIST'];
@@ -92,56 +94,23 @@ class AUDIENCE_ADDUSERNOTE {
 			$user      = get_userdata( $user_id );
 			$user_hash = md5( strtolower( trim( $user->user_email ) ) );
 
-			$mc_client = Automator()->helpers->recipe->mailchimp->options->get_mailchimp_client();
+			$note_body = array(
+				'note' => substr( wp_strip_all_tags( $note ), 0, 1000 ),
+			);
 
-			if ( $mc_client ) {
+			$request_params = array(
+				'action'    => 'add_subscriber_note',
+				'list_id'   => $list_id,
+				'user_hash' => $user_hash,
+				'note'      => wp_json_encode( $note_body ),
+			);
 
-				$note_body = array(
-					'note' => substr( wp_strip_all_tags( $note ), 0, 1000 ),
-				);
+			$response = $helpers->api_request( $request_params, $action_data );
 
-				$request_params = array(
-					'action'    => 'add_subscriber_note',
-					'list_id'   => $list_id,
-					'user_hash' => $user_hash,
-					'note'      => wp_json_encode( $note_body ),
-				);
+			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
-				$response = Automator()->helpers->recipe->mailchimp->options->api_request( $request_params );
-
-				// prepare meeting lists
-				if ( 200 === intval( $response->statusCode ) ) { // phpcs:ignore
-
-					Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-					return;
-				} else {
-					Automator()->helpers->recipe->mailchimp->options->log_action_error( $response, $user_id, $action_data, $recipe_id );
-
-					return;
-				}
-			} else {
-				// log error when no token found.
-				$error_msg                           = __( 'Mailchimp account is not connected.', 'uncanny-automator' );
-				$action_data['do-nothing']           = true;
-				$action_data['complete_with_errors'] = true;
-				Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-				return;
-			}
 		} catch ( \Exception $e ) {
-			$error_msg = $e->getMessage();
-			$json      = json_decode( $error_msg );
-
-			if ( isset( $json->error ) && isset( $json->error->message ) ) {
-				$error_msg = $json->error->message;
-			}
-
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
+			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
 		}
 	}
 }
