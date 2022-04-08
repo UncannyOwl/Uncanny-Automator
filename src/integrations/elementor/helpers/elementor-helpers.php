@@ -21,6 +21,8 @@ class Elementor_Helpers {
 	 */
 	public $pro;
 
+	public $load_options = true;
+
 	/**
 	 * Elementor_Helpers constructor.
 	 */

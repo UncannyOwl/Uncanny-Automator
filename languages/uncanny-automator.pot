@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.9\n"
+"Project-Id-Version: Uncanny Automator 3.9.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-04-07T16:45:31+00:00\n"
+"POT-Creation-Date: 2022-04-08T13:59:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
@@ -282,9 +282,9 @@ msgstr ""
 #: src/core/admin/class-logs-list-table.php:561
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:698
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:130
-#: src/integrations/wp/helpers/wp-helpers.php:92
-#: src/integrations/wp/helpers/wp-helpers.php:369
-#: src/integrations/wp/helpers/wp-helpers.php:421
+#: src/integrations/wp/helpers/wp-helpers.php:94
+#: src/integrations/wp/helpers/wp-helpers.php:371
+#: src/integrations/wp/helpers/wp-helpers.php:423
 msgid "ID: %1$s (no title)"
 msgstr ""
 
@@ -2298,7 +2298,7 @@ msgid "Any page"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:743
-#: src/integrations/wp/helpers/wp-helpers.php:183
+#: src/integrations/wp/helpers/wp-helpers.php:185
 msgid "All pages"
 msgstr ""
 
@@ -2307,8 +2307,8 @@ msgid "All posts"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:753
-#: src/integrations/wp/helpers/wp-helpers.php:140
-#: src/integrations/wp/helpers/wp-helpers.php:409
+#: src/integrations/wp/helpers/wp-helpers.php:142
+#: src/integrations/wp/helpers/wp-helpers.php:411
 msgid "Any post"
 msgstr ""
 
@@ -2425,7 +2425,7 @@ msgstr ""
 #: src/integrations/formidable/helpers/formidable-helpers.php:74
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:73
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:76
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:61
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:63
 #: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:77
 #: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:74
 msgid "Any product"
@@ -3170,8 +3170,8 @@ msgid "Token data"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:456
-#: src/integrations/wp/helpers/wp-helpers.php:150
-#: src/integrations/wp/helpers/wp-helpers.php:467
+#: src/integrations/wp/helpers/wp-helpers.php:152
+#: src/integrations/wp/helpers/wp-helpers.php:469
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:85
 #: src/integrations/wp/triggers/wp-submitcomment.php:116
 #: src/integrations/wp/triggers/wp-viewcustompost.php:98
@@ -6654,8 +6654,8 @@ msgstr ""
 
 #: src/integrations/caldera-forms/helpers/caldera-helpers.php:65
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:64
-#: src/integrations/divi/helpers/divi-helpers.php:60
-#: src/integrations/elementor/helpers/elementor-helpers.php:54
+#: src/integrations/divi/helpers/divi-helpers.php:62
+#: src/integrations/elementor/helpers/elementor-helpers.php:56
 #: src/integrations/formidable/helpers/formidable-helpers.php:68
 #: src/integrations/forminator/helpers/forminator-helpers.php:66
 #: src/integrations/give/helpers/give-helpers.php:46
@@ -6671,7 +6671,7 @@ msgstr ""
 #: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:66
 #: src/integrations/wp-user-manager/helpers/wp-user-manager-helpers.php:65
 #: src/integrations/wp-user-manager/triggers/wpum-userregister.php:59
-#: src/integrations/wpforms/helpers/wpforms-helpers.php:80
+#: src/integrations/wpforms/helpers/wpforms-helpers.php:78
 msgid "Form"
 msgstr ""
 
@@ -6784,7 +6784,7 @@ msgstr ""
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:119
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:102
 #: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:96
-#: src/integrations/wpforms/helpers/wpforms-helpers.php:113
+#: src/integrations/wpforms/helpers/wpforms-helpers.php:111
 msgid "Form title"
 msgstr ""
 
@@ -6798,7 +6798,7 @@ msgstr ""
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:120
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:103
 #: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:97
-#: src/integrations/wpforms/helpers/wpforms-helpers.php:114
+#: src/integrations/wpforms/helpers/wpforms-helpers.php:112
 msgid "Form ID"
 msgstr ""
 
@@ -6807,8 +6807,8 @@ msgstr ""
 msgid "Form URL"
 msgstr ""
 
-#: src/integrations/divi/helpers/divi-helpers.php:66
-#: src/integrations/elementor/helpers/elementor-helpers.php:61
+#: src/integrations/divi/helpers/divi-helpers.php:68
+#: src/integrations/elementor/helpers/elementor-helpers.php:63
 #: src/integrations/forminator/helpers/forminator-helpers.php:73
 #: src/integrations/give/helpers/give-helpers.php:60
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:73
@@ -6821,11 +6821,11 @@ msgstr ""
 msgid "Any form"
 msgstr ""
 
-#: src/integrations/divi/helpers/divi-helpers.php:176
+#: src/integrations/divi/helpers/divi-helpers.php:178
 msgid "No form title"
 msgstr ""
 
-#: src/integrations/divi/helpers/divi-helpers.php:212
+#: src/integrations/divi/helpers/divi-helpers.php:214
 msgid "No title"
 msgstr ""
 
@@ -6860,7 +6860,7 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:181
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:65
 #: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:50
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:50
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:52
 #: src/integrations/woocommerce/tokens/wc-tokens.php:767
 #: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:76
 #: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:72
@@ -9318,7 +9318,7 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:156
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:219
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:85
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:70
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:72
 msgid "Product title"
 msgstr ""
 
@@ -9326,7 +9326,7 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:157
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:220
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:86
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:71
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:73
 msgid "Product ID"
 msgstr ""
 
@@ -9334,21 +9334,21 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:158
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:221
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:87
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:72
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:74
 msgid "Product URL"
 msgstr ""
 
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:95
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:159
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:88
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:73
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:75
 msgid "Product featured image ID"
 msgstr ""
 
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:96
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:160
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:89
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:74
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:76
 msgid "Product featured image URL"
 msgstr ""
 
@@ -10777,26 +10777,26 @@ msgstr ""
 msgid "A user is removed from {{a membership level}}"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:75
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:77
 msgid "Product quantity"
 msgstr ""
 
 #. translators: Noun
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:114
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:116
 msgid "Trigger condition"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:138
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:140
 msgctxt "WooCommerce"
 msgid "pays for"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:139
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:141
 msgctxt "WooCommerce"
 msgid "completes"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:140
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:142
 msgctxt "WooCommerce"
 msgid "lands on a thank you page for"
 msgstr ""
@@ -11338,15 +11338,15 @@ msgid "Redirect to {{a link:%1$s}} when recipe is completed"
 msgstr ""
 
 #. translators: Noun
-#: src/integrations/wp/helpers/wp-helpers.php:128
+#: src/integrations/wp/helpers/wp-helpers.php:130
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:113
 #: src/integrations/wp/triggers/wp-submitcomment.php:108
 #: src/integrations/wp/triggers/wp-viewcustompost.php:91
 msgid "Post"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:149
-#: src/integrations/wp/helpers/wp-helpers.php:466
+#: src/integrations/wp/helpers/wp-helpers.php:151
+#: src/integrations/wp/helpers/wp-helpers.php:468
 #: src/integrations/wp/tokens/wp-post-tokens.php:61
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:84
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:119
@@ -11355,8 +11355,8 @@ msgstr ""
 msgid "Post title"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:151
-#: src/integrations/wp/helpers/wp-helpers.php:468
+#: src/integrations/wp/helpers/wp-helpers.php:153
+#: src/integrations/wp/helpers/wp-helpers.php:470
 #: src/integrations/wp/tokens/wp-post-tokens.php:73
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:86
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:120
@@ -11365,8 +11365,8 @@ msgstr ""
 msgid "Post URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:152
-#: src/integrations/wp/helpers/wp-helpers.php:469
+#: src/integrations/wp/helpers/wp-helpers.php:154
+#: src/integrations/wp/helpers/wp-helpers.php:471
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:90
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:122
 #: src/integrations/wp/triggers/wp-submitcomment.php:115
@@ -11374,16 +11374,16 @@ msgstr ""
 msgid "Post excerpt"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:153
-#: src/integrations/wp/helpers/wp-helpers.php:470
+#: src/integrations/wp/helpers/wp-helpers.php:155
+#: src/integrations/wp/helpers/wp-helpers.php:472
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:87
 #: src/integrations/wp/triggers/wp-submitcomment.php:118
 #: src/integrations/wp/triggers/wp-viewcustompost.php:102
 msgid "Post featured image ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:154
-#: src/integrations/wp/helpers/wp-helpers.php:471
+#: src/integrations/wp/helpers/wp-helpers.php:156
+#: src/integrations/wp/helpers/wp-helpers.php:473
 #: src/integrations/wp/tokens/wp-post-tokens.php:91
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:88
 #: src/integrations/wp/triggers/wp-submitcomment.php:119
@@ -11391,67 +11391,67 @@ msgstr ""
 msgid "Post featured image URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:171
+#: src/integrations/wp/helpers/wp-helpers.php:173
 msgid "Page"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:192
+#: src/integrations/wp/helpers/wp-helpers.php:194
 msgid "Page title"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:193
+#: src/integrations/wp/helpers/wp-helpers.php:195
 msgid "Page ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:194
+#: src/integrations/wp/helpers/wp-helpers.php:196
 msgid "Page URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:195
+#: src/integrations/wp/helpers/wp-helpers.php:197
 msgid "Page excerpt"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:196
+#: src/integrations/wp/helpers/wp-helpers.php:198
 msgid "Page featured image ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:197
+#: src/integrations/wp/helpers/wp-helpers.php:199
 msgid "Page featured image URL"
 msgstr ""
 
 #. translators: WordPress role
-#: src/integrations/wp/helpers/wp-helpers.php:214
+#: src/integrations/wp/helpers/wp-helpers.php:216
 msgid "Role"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:233
+#: src/integrations/wp/helpers/wp-helpers.php:235
 msgid "Role slug"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:248
+#: src/integrations/wp/helpers/wp-helpers.php:250
 #: src/integrations/wp/triggers/anon-wp-viewposttype.php:89
 msgid "Post type"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:307
+#: src/integrations/wp/helpers/wp-helpers.php:309
 msgid "Any taxonomy"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:349
+#: src/integrations/wp/helpers/wp-helpers.php:351
 msgid "Any taxonomy term"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:417
-#: src/integrations/wp/helpers/wp-helpers.php:437
+#: src/integrations/wp/helpers/wp-helpers.php:419
+#: src/integrations/wp/helpers/wp-helpers.php:439
 msgctxt "WordPress post type"
 msgid "Any %s"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:455
+#: src/integrations/wp/helpers/wp-helpers.php:457
 msgid "Post types"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:478
+#: src/integrations/wp/helpers/wp-helpers.php:480
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:97
 #: src/integrations/wp/triggers/wp-submitcomment.php:88
 #: src/integrations/wp/triggers/wp-usercreatespost.php:121

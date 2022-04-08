@@ -21,6 +21,8 @@ class Woocommerce_Helpers {
 	 */
 	public $pro;
 
+	public $load_options = true;
+
 	public function __construct() {
 	}
 

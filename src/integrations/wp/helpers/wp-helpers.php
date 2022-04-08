@@ -22,6 +22,8 @@ class Wp_Helpers {
 	 */
 	public $pro;
 
+	public $load_options = true;
+
 	/**
 	 * Wp_Helpers constructor.
 	 */

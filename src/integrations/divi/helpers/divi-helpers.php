@@ -15,6 +15,8 @@ class Divi_Helpers {
 	 */
 	public $options;
 
+	public $load_options = true;
+
 	/**
 	 * Store Divi Pro Helper instance
 	 *
