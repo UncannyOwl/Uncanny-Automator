@@ -66,6 +66,9 @@ class ANON_WPF_SUBFORM {
 		Automator()->register->trigger( $trigger );
 	}
 
+	/**
+	 * @return array
+	 */
 	public function load_options() {
 
 		$options = array(
@@ -112,7 +115,9 @@ class ANON_WPF_SUBFORM {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
 					if ( isset( $result['args'] ) && isset( $result['args']['get_trigger_id'] ) ) {
-						$entry_details = wpforms()->entry->get( $entry_id, array( 'cap' => false ) );
+						$user_ip    = Automator()->helpers->recipe->wpforms->options->get_entry_user_ip_address( $entry_id );
+						$entry_date = Automator()->helpers->recipe->wpforms->options->get_entry_entry_date( $entry_id );
+						$entry_id   = Automator()->helpers->recipe->wpforms->options->get_entry_entry_id( $entry_id );
 						//Saving form values in trigger log meta for token parsing!
 						$wpf_args               = array(
 							'trigger_id'     => (int) $result['args']['trigger_id'],
@@ -121,15 +126,15 @@ class ANON_WPF_SUBFORM {
 							'run_number'     => $result['args']['run_number'],
 						);
 						$wpf_args['meta_key']   = 'WPFENTRYID';
-						$wpf_args['meta_value'] = $entry_details->entry_id;
+						$wpf_args['meta_value'] = $entry_id;
 						Automator()->insert_trigger_meta( $wpf_args );
 
 						$wpf_args['meta_key']   = 'WPFENTRYIP';
-						$wpf_args['meta_value'] = $entry_details->ip_address;
+						$wpf_args['meta_value'] = $user_ip;
 						Automator()->insert_trigger_meta( $wpf_args );
 
 						$wpf_args['meta_key']   = 'WPFENTRYDATE';
-						$wpf_args['meta_value'] = maybe_serialize( Automator()->helpers->recipe->wpforms->options->get_entry_date( strtotime( $entry_details->date ) ) );
+						$wpf_args['meta_value'] = maybe_serialize( Automator()->helpers->recipe->wpforms->options->get_entry_date( $entry_date ) );
 						Automator()->insert_trigger_meta( $wpf_args );
 					}
 					Automator()->process->user->maybe_trigger_complete( $result['args'] );

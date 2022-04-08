@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9.3
 Requires PHP: 5.6
-Stable tag: 3.9.0.1
+Stable tag: 3.9.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -192,11 +192,17 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 3.9.0.2 [2022-04-08] =
+
+**Fixed:**
+
+* WPForms - PHP error on some sites when a form is submitted with WP Forms lite using Automator 3.9 or 3.9.0.1 #1821
+
 = 3.9.0.1 [2022-04-08] =
 
 **Fixed:**
 
-* WooCommerce - Payment methods do not load when using Uncanny Automator Pro in some situations
+* WooCommerce - Payment methods do not load when using Uncanny Automator Pro in some situations #1811
 
 = 3.9 [2022-04-07] =
 

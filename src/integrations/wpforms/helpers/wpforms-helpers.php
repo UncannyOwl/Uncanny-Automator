@@ -130,4 +130,52 @@ class Wpforms_Helpers {
 			date_i18n( get_option( 'time_format' ), $date + $datetime_offset )
 		);
 	}
+
+	/**
+	 * @param $entry_id
+	 *
+	 * @return string
+	 */
+	public function get_entry_user_ip_address( $entry_id ) {
+		$user_ip = 'N/A';
+		if ( wpforms()->entry && method_exists( wpforms()->entry, 'get' ) ) {
+			$entry_details = wpforms()->entry->get( $entry_id, array( 'cap' => false ) );
+			$user_ip       = $entry_details->ip_address;
+		} elseif ( isset( $_SERVER['HTTP_X_REAL_IP'] ) ) {
+			$user_ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) );
+		} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			$user_ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+		}
+
+		return $user_ip;
+	}
+
+	/**
+	 * @param $entry_id
+	 *
+	 * @return false|int|string
+	 */
+	public function get_entry_entry_date( $entry_id ) {
+		$entry_date = current_time( 'timestamp' ); //phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+		if ( wpforms()->entry && method_exists( wpforms()->entry, 'get' ) ) {
+			$entry_details = wpforms()->entry->get( $entry_id, array( 'cap' => false ) );
+			$entry_date    = strtotime( $entry_details->date );
+		}
+
+		return $entry_date;
+	}
+
+	/**
+	 * @param $entry_id
+	 *
+	 * @return mixed
+	 */
+	public function get_entry_entry_id( $entry_id ) {
+		if ( wpforms()->entry && method_exists( wpforms()->entry, 'get' ) ) {
+			$entry_details = wpforms()->entry->get( $entry_id, array( 'cap' => false ) );
+			$entry_id      = $entry_details->entry_id;
+		}
+
+		return $entry_id;
+	}
 }
