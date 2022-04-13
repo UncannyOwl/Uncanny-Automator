@@ -62,6 +62,8 @@ class WC_VIEWPRODUCT {
 	 * @return array
 	 */
 	public function load_options() {
+		Automator()->helpers->recipe->woocommerce->options->load_options = true;
+
 		$options = array(
 			'options' => array(
 				Automator()->helpers->recipe->woocommerce->options->all_wc_products(),

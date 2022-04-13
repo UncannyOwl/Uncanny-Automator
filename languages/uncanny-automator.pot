@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 3.9.0.2\n"
+"Project-Id-Version: Uncanny Automator 3.9.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-04-08T20:36:57+00:00\n"
+"POT-Creation-Date: 2022-04-13T15:39:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
@@ -282,9 +282,9 @@ msgstr ""
 #: src/core/admin/class-logs-list-table.php:561
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:698
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:130
-#: src/integrations/wp/helpers/wp-helpers.php:94
-#: src/integrations/wp/helpers/wp-helpers.php:371
-#: src/integrations/wp/helpers/wp-helpers.php:423
+#: src/integrations/wp/helpers/wp-helpers.php:95
+#: src/integrations/wp/helpers/wp-helpers.php:384
+#: src/integrations/wp/helpers/wp-helpers.php:436
 msgid "ID: %1$s (no title)"
 msgstr ""
 
@@ -870,15 +870,15 @@ msgstr ""
 msgid "Tags"
 msgstr ""
 
-#: src/core/classes/class-api-server.php:260
+#: src/core/classes/class-api-server.php:254
 msgid "Unable to fetch the license: "
 msgstr ""
 
-#: src/core/classes/class-api-server.php:274
+#: src/core/classes/class-api-server.php:268
 msgid "License is not valid"
 msgstr ""
 
-#: src/core/classes/class-api-server.php:294
+#: src/core/classes/class-api-server.php:288
 msgid "Not enough credits"
 msgstr ""
 
@@ -898,7 +898,7 @@ msgstr ""
 msgid "Learn More"
 msgstr ""
 
-#: src/core/classes/class-usage-reports.php:283
+#: src/core/classes/class-usage-reports.php:284
 #: src/integrations/wp-polls/tokens/wpp-tokens.php:96
 #: src/integrations/wp-polls/tokens/wpp-tokens.php:108
 msgid "Not set"
@@ -2122,10 +2122,11 @@ msgstr ""
 #: src/core/includes/recipe-logs-view.php:186
 #: src/core/views/admin-tools-header.php:5
 #: src/integrations/buddyboss/actions/bdb-setuserstatus.php:51
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:209
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:60
 #: src/integrations/twitter/actions/twitter-poststatus.php:61
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:57
-#: src/integrations/wp/actions/wp-createpost.php:134
+#: src/integrations/wp/actions/wp-createpost.php:136
 msgid "Status"
 msgstr ""
 
@@ -2298,7 +2299,7 @@ msgid "Any page"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:743
-#: src/integrations/wp/helpers/wp-helpers.php:185
+#: src/integrations/wp/helpers/wp-helpers.php:192
 msgid "All pages"
 msgstr ""
 
@@ -2307,8 +2308,8 @@ msgid "All posts"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:753
-#: src/integrations/wp/helpers/wp-helpers.php:142
-#: src/integrations/wp/helpers/wp-helpers.php:411
+#: src/integrations/wp/helpers/wp-helpers.php:146
+#: src/integrations/wp/helpers/wp-helpers.php:424
 msgid "Any post"
 msgstr ""
 
@@ -2425,9 +2426,9 @@ msgstr ""
 #: src/integrations/formidable/helpers/formidable-helpers.php:74
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:73
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:76
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:63
-#: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:77
-#: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:74
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:73
+#: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:79
+#: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:76
 msgid "Any product"
 msgstr ""
 
@@ -3170,11 +3171,11 @@ msgid "Token data"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:456
-#: src/integrations/wp/helpers/wp-helpers.php:152
-#: src/integrations/wp/helpers/wp-helpers.php:469
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:85
-#: src/integrations/wp/triggers/wp-submitcomment.php:116
-#: src/integrations/wp/triggers/wp-viewcustompost.php:98
+#: src/integrations/wp/helpers/wp-helpers.php:156
+#: src/integrations/wp/helpers/wp-helpers.php:485
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:87
+#: src/integrations/wp/triggers/wp-submitcomment.php:118
+#: src/integrations/wp/triggers/wp-viewcustompost.php:101
 msgid "Post ID"
 msgstr ""
 
@@ -3372,7 +3373,7 @@ msgid "Refresh this page and add your %1$s action."
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:599
-#: src/integrations/active-campaign/settings/view-active-campaign.php:132
+#: src/integrations/active-campaign/settings/view-active-campaign.php:162
 msgid "Refresh"
 msgstr ""
 
@@ -3496,10 +3497,11 @@ msgstr ""
 #: src/integrations/active-campaign/actions/ac-annon-list-add.php:59
 #: src/integrations/active-campaign/actions/ac-annon-listremove.php:60
 #: src/integrations/active-campaign/actions/ac-annon-removetag.php:73
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:141
 #: src/integrations/give/helpers/give-helpers.php:112
 #: src/integrations/mailchimp/tokens/mailchimp-tokens.php:153
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:75
-#: src/integrations/wp/actions/wp-createuser.php:85
+#: src/integrations/wp/actions/wp-createuser.php:88
 msgid "Email"
 msgstr ""
 
@@ -3511,7 +3513,7 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:701
 #: src/integrations/peepso/tokens/peepso-tokens.php:139
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:367
-#: src/integrations/wp/actions/wp-createuser.php:83
+#: src/integrations/wp/actions/wp-createuser.php:86
 msgid "Username"
 msgstr ""
 
@@ -3523,10 +3525,10 @@ msgstr ""
 #: src/integrations/hubspot/actions/hubspot-adduser.php:90
 #: src/integrations/hubspot/actions/hubspot-createcontact.php:99
 #: src/integrations/mailchimp/actions/audience-addauser.php:140
-#: src/integrations/wp/actions/wp-createpost.php:180
-#: src/integrations/wp/actions/wp-createuser.php:114
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:495
-#: src/integrations/zoom/helpers/zoom-helpers.php:233
+#: src/integrations/wp/actions/wp-createpost.php:182
+#: src/integrations/wp/actions/wp-createuser.php:117
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:476
+#: src/integrations/zoom/helpers/zoom-helpers.php:231
 msgid "Value"
 msgstr ""
 
@@ -3562,11 +3564,12 @@ msgstr ""
 #. translators: First name
 #: src/core/lib/utilities/class-automator-translations.php:695
 #: src/integrations/active-campaign/actions/ac-annon-add.php:121
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:125
 #: src/integrations/give/helpers/give-helpers.php:100
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:76
 #: src/integrations/memberpress-courses/tokens/mpc-tokens.php:34
 #: src/integrations/memberpress/tokens/mp-tokens.php:35
-#: src/integrations/wp/actions/wp-createuser.php:87
+#: src/integrations/wp/actions/wp-createuser.php:90
 #: src/integrations/zoom-webinar/actions/zoom-webinar-registeruserless.php:86
 #: src/integrations/zoom/actions/zoom-registeruserless.php:86
 msgid "First name"
@@ -3576,11 +3579,12 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:697
 #: src/integrations/active-campaign/actions/ac-annon-add.php:128
 #: src/integrations/active-campaign/tokens/ac-tokens.php:62
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:133
 #: src/integrations/give/helpers/give-helpers.php:106
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:77
 #: src/integrations/memberpress-courses/tokens/mpc-tokens.php:40
 #: src/integrations/memberpress/tokens/mp-tokens.php:41
-#: src/integrations/wp/actions/wp-createuser.php:89
+#: src/integrations/wp/actions/wp-createuser.php:92
 #: src/integrations/zoom-webinar/actions/zoom-webinar-registeruserless.php:99
 #: src/integrations/zoom/actions/zoom-registeruserless.php:99
 msgid "Last name"
@@ -3591,7 +3595,7 @@ msgid "Display name"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:705
-#: src/integrations/wp/actions/wp-createuser.php:93
+#: src/integrations/wp/actions/wp-createuser.php:96
 msgid "Password"
 msgstr ""
 
@@ -4267,8 +4271,8 @@ msgid "Body"
 msgstr ""
 
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:167
-#: src/integrations/wp/actions/wp-createpost.php:173
-#: src/integrations/wp/actions/wp-createuser.php:107
+#: src/integrations/wp/actions/wp-createpost.php:175
+#: src/integrations/wp/actions/wp-createuser.php:110
 msgid "Key"
 msgstr ""
 
@@ -4285,10 +4289,10 @@ msgstr ""
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:127
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:163
 #: src/integrations/mailchimp/actions/audience-addauser.php:142
-#: src/integrations/wp/actions/wp-createpost.php:185
-#: src/integrations/wp/actions/wp-createuser.php:119
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:497
-#: src/integrations/zoom/helpers/zoom-helpers.php:235
+#: src/integrations/wp/actions/wp-createpost.php:187
+#: src/integrations/wp/actions/wp-createuser.php:122
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:478
+#: src/integrations/zoom/helpers/zoom-helpers.php:233
 msgid "Add pair"
 msgstr ""
 
@@ -4297,10 +4301,10 @@ msgstr ""
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:128
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:164
 #: src/integrations/mailchimp/actions/audience-addauser.php:143
-#: src/integrations/wp/actions/wp-createpost.php:186
-#: src/integrations/wp/actions/wp-createuser.php:120
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:498
-#: src/integrations/zoom/helpers/zoom-helpers.php:236
+#: src/integrations/wp/actions/wp-createpost.php:188
+#: src/integrations/wp/actions/wp-createuser.php:123
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:479
+#: src/integrations/zoom/helpers/zoom-helpers.php:234
 msgid "Remove pair"
 msgstr ""
 
@@ -5619,7 +5623,7 @@ msgstr ""
 #: src/integrations/active-campaign/actions/ac-annon-removetag.php:61
 #: src/integrations/active-campaign/actions/ac-user-add-tag.php:53
 #: src/integrations/active-campaign/actions/ac-user-remove-tag.php:55
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:479
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:481
 #: src/integrations/wp-fusion/helpers/wp-fusion-helpers.php:63
 msgid "Tag"
 msgstr ""
@@ -5740,45 +5744,61 @@ msgstr ""
 msgid "Remove {{a tag:%1$s}} from the user"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:324
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:275
+msgid "ActiveCampaign is not connected"
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:279
+msgid "The account URL is not a valid URL"
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:294
+msgid "Error validating the credentials"
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:300
+msgid "User was not found"
+msgstr ""
+
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:326
 msgid "The contact %s does not exist in ActiveCampaign."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:471
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:473
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:328
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:493
 msgid "Any tag"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:814
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:816
 msgid "Refresh available tags, lists, and custom fields"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:815
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:817
 msgid "Connecting"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:816
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:818
 msgid "Syncing tags, lists, and custom fields"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:817
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:819
 msgid "Complete"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:847
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:849
 msgid "mm/dd/yyyy hh:mm"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1022
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1024
 msgid "The contact has no tags."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1033
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1035
 msgid "The contact doesn't have the given tag."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/settings-active-campaign.php:106
+#: src/integrations/active-campaign/settings/settings-active-campaign.php:114
 msgid "Regenerating the URL will prevent ActiveCampaign triggers from working until the new webhook URL is set in ActiveCampaign. Continue?"
 msgstr ""
 
@@ -5786,15 +5806,30 @@ msgstr ""
 msgid "ActiveCampaign"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:23
-msgid "Connect Uncanny Automator to ActiveCampaign"
+#: src/integrations/active-campaign/settings/view-active-campaign.php:26
+msgid "There was an error connecting your ActiveCampaign account. Please try again or contact support."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:27
-msgid "Connect Uncanny Automator to ActiveCampaign to better segment and engage with your customers.  Add and update contacts and add/remove tags based on a user's activity on your WordPress site, or automatically perform actions on your users when tags are added or removed in ActiveCampaign."
+#: src/integrations/active-campaign/settings/view-active-campaign.php:28
+#: src/integrations/twilio/settings/view-twilio.php:25
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:25
+#: src/integrations/zoom/settings/view-zoom.php:25
+msgid "Error: "
 msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:31
+msgid "You have successfully connected your ActiveCampaign account"
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:53
+msgid "Connect Uncanny Automator to ActiveCampaign"
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:57
+msgid "Connect Uncanny Automator to ActiveCampaign to better segment and engage with your customers.  Add and update contacts and add/remove tags based on a user's activity on your WordPress site, or automatically perform actions on your users when tags are added or removed in ActiveCampaign."
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:61
 #: src/integrations/facebook/settings/view-facebook.php:52
 #: src/integrations/google-sheet/settings/view-google-sheet.php:55
 #: src/integrations/gototraining/settings/view-gototraining.php:61
@@ -5803,39 +5838,39 @@ msgstr ""
 #: src/integrations/instagram/settings/view-instagram.php:46
 #: src/integrations/mailchimp/settings/view-mailchimp.php:111
 #: src/integrations/slack/settings/view-slack.php:74
-#: src/integrations/twilio/settings/view-twilio.php:27
+#: src/integrations/twilio/settings/view-twilio.php:57
 #: src/integrations/twitter/settings/view-twitter.php:85
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:32
-#: src/integrations/zoom/settings/view-zoom.php:33
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:62
+#: src/integrations/zoom/settings/view-zoom.php:63
 msgid "Activating this integration will enable the following for use in your recipes:"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:36
-#: src/integrations/active-campaign/settings/view-active-campaign.php:40
+#: src/integrations/active-campaign/settings/view-active-campaign.php:66
+#: src/integrations/active-campaign/settings/view-active-campaign.php:70
 #: src/integrations/mailchimp/settings/view-mailchimp.php:116
 #: src/integrations/mailchimp/settings/view-mailchimp.php:119
 #: src/integrations/mailchimp/settings/view-mailchimp.php:122
 msgid "Trigger:"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:36
+#: src/integrations/active-campaign/settings/view-active-campaign.php:66
 msgid "A tag is added to a contact"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:40
+#: src/integrations/active-campaign/settings/view-active-campaign.php:70
 msgid "A tag is removed from a contact"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:44
-#: src/integrations/active-campaign/settings/view-active-campaign.php:48
-#: src/integrations/active-campaign/settings/view-active-campaign.php:52
-#: src/integrations/active-campaign/settings/view-active-campaign.php:56
-#: src/integrations/active-campaign/settings/view-active-campaign.php:60
-#: src/integrations/active-campaign/settings/view-active-campaign.php:64
-#: src/integrations/active-campaign/settings/view-active-campaign.php:68
-#: src/integrations/active-campaign/settings/view-active-campaign.php:72
-#: src/integrations/active-campaign/settings/view-active-campaign.php:76
-#: src/integrations/active-campaign/settings/view-active-campaign.php:80
+#: src/integrations/active-campaign/settings/view-active-campaign.php:74
+#: src/integrations/active-campaign/settings/view-active-campaign.php:78
+#: src/integrations/active-campaign/settings/view-active-campaign.php:82
+#: src/integrations/active-campaign/settings/view-active-campaign.php:86
+#: src/integrations/active-campaign/settings/view-active-campaign.php:90
+#: src/integrations/active-campaign/settings/view-active-campaign.php:94
+#: src/integrations/active-campaign/settings/view-active-campaign.php:98
+#: src/integrations/active-campaign/settings/view-active-campaign.php:102
+#: src/integrations/active-campaign/settings/view-active-campaign.php:106
+#: src/integrations/active-campaign/settings/view-active-campaign.php:110
 #: src/integrations/facebook/settings/view-facebook.php:57
 #: src/integrations/facebook/settings/view-facebook.php:60
 #: src/integrations/facebook/settings/view-facebook.php:63
@@ -5861,132 +5896,132 @@ msgstr ""
 #: src/integrations/slack/settings/view-slack.php:79
 #: src/integrations/slack/settings/view-slack.php:82
 #: src/integrations/slack/settings/view-slack.php:85
-#: src/integrations/twilio/settings/view-twilio.php:32
+#: src/integrations/twilio/settings/view-twilio.php:62
 #: src/integrations/twitter/settings/view-twitter.php:90
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:37
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:40
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:43
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:46
-#: src/integrations/zoom/settings/view-zoom.php:38
-#: src/integrations/zoom/settings/view-zoom.php:41
-#: src/integrations/zoom/settings/view-zoom.php:44
-#: src/integrations/zoom/settings/view-zoom.php:47
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:67
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:70
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:73
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:76
+#: src/integrations/zoom/settings/view-zoom.php:68
+#: src/integrations/zoom/settings/view-zoom.php:71
+#: src/integrations/zoom/settings/view-zoom.php:74
+#: src/integrations/zoom/settings/view-zoom.php:77
 msgid "Action:"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:44
+#: src/integrations/active-campaign/settings/view-active-campaign.php:74
 msgid "Add a contact to a list"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:48
+#: src/integrations/active-campaign/settings/view-active-campaign.php:78
 msgid "Add a contact to Active Campaign"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:52
+#: src/integrations/active-campaign/settings/view-active-campaign.php:82
 msgid "Add a tag to a contact"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:56
+#: src/integrations/active-campaign/settings/view-active-campaign.php:86
 #: src/integrations/mailchimp/settings/view-mailchimp.php:128
 msgid "Add a tag to the user"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:60
+#: src/integrations/active-campaign/settings/view-active-campaign.php:90
 msgid "Add the user to a list"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:64
+#: src/integrations/active-campaign/settings/view-active-campaign.php:94
 msgid "Add the user to Active Campaign"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:68
+#: src/integrations/active-campaign/settings/view-active-campaign.php:98
 msgid "Remove a contact from a list"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:72
+#: src/integrations/active-campaign/settings/view-active-campaign.php:102
 msgid "Remove a tag from a contact"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:76
+#: src/integrations/active-campaign/settings/view-active-campaign.php:106
 #: src/integrations/mailchimp/settings/view-mailchimp.php:137
 msgid "Remove a tag from the user"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:80
+#: src/integrations/active-campaign/settings/view-active-campaign.php:110
 msgid "Remove the user from a list"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:86
-#: src/integrations/active-campaign/settings/view-active-campaign.php:144
+#: src/integrations/active-campaign/settings/view-active-campaign.php:116
+#: src/integrations/active-campaign/settings/view-active-campaign.php:174
 #: src/integrations/gototraining/settings/view-gototraining.php:76
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:76
 #: src/integrations/mailchimp/settings/view-mailchimp.php:64
-#: src/integrations/twilio/settings/view-twilio.php:39
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:53
-#: src/integrations/zoom/settings/view-zoom.php:54
+#: src/integrations/twilio/settings/view-twilio.php:69
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:83
+#: src/integrations/zoom/settings/view-zoom.php:84
 msgid "Setup instructions"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:88
+#: src/integrations/active-campaign/settings/view-active-campaign.php:118
 msgid "To obtain your ActiveCampaign API URL and Key, follow these steps in your ActiveCampaign account:"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:91
+#: src/integrations/active-campaign/settings/view-active-campaign.php:121
 msgid "Click the \"Settings\" option located in the left side navigation menu."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:92
+#: src/integrations/active-campaign/settings/view-active-campaign.php:122
 msgid "The Account Settings menu will appear. Click the \"Developer\" option."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:93
+#: src/integrations/active-campaign/settings/view-active-campaign.php:123
 msgid "The Developer Settings page will load and will display your ActiveCampaign API URL and Key."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:104
+#: src/integrations/active-campaign/settings/view-active-campaign.php:134
 msgid "Account URL"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:116
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:75
-#: src/integrations/zoom/settings/view-zoom.php:76
+#: src/integrations/active-campaign/settings/view-active-campaign.php:146
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:105
+#: src/integrations/zoom/settings/view-zoom.php:106
 msgid "API key"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:139
+#: src/integrations/active-campaign/settings/view-active-campaign.php:169
 #: src/integrations/mailchimp/settings/view-mailchimp.php:60
 msgid "Enable triggers"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:153
+#: src/integrations/active-campaign/settings/view-active-campaign.php:183
 #: src/integrations/gototraining/settings/view-gototraining.php:84
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:84
 #: src/integrations/mailchimp/settings/view-mailchimp.php:72
-#: src/integrations/twilio/settings/view-twilio.php:46
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:59
-#: src/integrations/zoom/settings/view-zoom.php:60
+#: src/integrations/twilio/settings/view-twilio.php:76
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:89
+#: src/integrations/zoom/settings/view-zoom.php:90
 msgid "Knowledge Base article"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:161
+#: src/integrations/active-campaign/settings/view-active-campaign.php:191
 #: src/integrations/mailchimp/settings/view-mailchimp.php:79
 msgid "Webhook URL"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:162
+#: src/integrations/active-campaign/settings/view-active-campaign.php:192
 msgid "You'll be asked to enter a webhook URL."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:175
+#: src/integrations/active-campaign/settings/view-active-campaign.php:204
 #: src/integrations/mailchimp/settings/view-mailchimp.php:93
 msgid "Regenerate webhook URL"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:237
+#: src/integrations/active-campaign/settings/view-active-campaign.php:253
 msgid "Connect ActiveCampaign account"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:258
+#: src/integrations/active-campaign/settings/view-active-campaign.php:274
 #: src/integrations/facebook/settings/view-facebook.php:157
 #: src/integrations/google-sheet/settings/view-google-sheet.php:130
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:164
@@ -5994,16 +6029,16 @@ msgstr ""
 #: src/integrations/instagram/settings/view-instagram.php:158
 #: src/integrations/mailchimp/settings/view-mailchimp.php:203
 #: src/integrations/slack/settings/view-slack.php:272
-#: src/integrations/twilio/settings/view-twilio.php:174
+#: src/integrations/twilio/settings/view-twilio.php:204
 #: src/integrations/twitter/settings/view-twitter.php:175
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:177
-#: src/integrations/zoom/settings/view-zoom.php:174
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:207
+#: src/integrations/zoom/settings/view-zoom.php:204
 msgid "Disconnect"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:264
+#: src/integrations/active-campaign/settings/view-active-campaign.php:280
 #: src/integrations/slack/settings/view-slack.php:278
-#: src/integrations/twilio/settings/view-twilio.php:180
+#: src/integrations/twilio/settings/view-twilio.php:210
 msgid "Save settings"
 msgstr ""
 
@@ -6016,6 +6051,7 @@ msgid "First Name"
 msgstr ""
 
 #: src/integrations/active-campaign/tokens/ac-tokens.php:69
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:149
 msgid "Phone"
 msgstr ""
 
@@ -6056,7 +6092,7 @@ msgstr ""
 #: src/integrations/affiliate-wp/tokens/affwp-tokens.php:162
 #: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:132
 #: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:268
-#: src/integrations/wp/actions/wp-createuser.php:91
+#: src/integrations/wp/actions/wp-createuser.php:94
 msgid "Website"
 msgstr ""
 
@@ -6860,10 +6896,10 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:181
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:65
 #: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:50
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:52
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:62
 #: src/integrations/woocommerce/tokens/wc-tokens.php:767
-#: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:76
-#: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:72
+#: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:78
+#: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:74
 msgid "Product"
 msgstr ""
 
@@ -7089,7 +7125,7 @@ msgid "Image URL"
 msgstr ""
 
 #: src/integrations/facebook/actions/facebook-page-publish-photo.php:76
-#: src/integrations/wp/actions/wp-createpost.php:159
+#: src/integrations/wp/actions/wp-createpost.php:161
 msgid "https://examplewebsite.com/path/to/image.jpg"
 msgstr ""
 
@@ -7182,6 +7218,60 @@ msgstr ""
 msgid "ID: %1$d"
 msgstr ""
 
+#. translators: Action - FluentCRM
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:38
+msgid "Add {{a contact:%1$s}}"
+msgstr ""
+
+#. translators: Action - FluentCRM
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:40
+msgid "Add {{a contact}}"
+msgstr ""
+
+#. translators: Subscriber email
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:66
+msgid "Duplicate email: %s, please use different email address."
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:157
+msgid "Date of birth"
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:166
+#: src/integrations/give/helpers/give-helpers.php:124
+msgid "Address line 1"
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:173
+#: src/integrations/give/helpers/give-helpers.php:130
+msgid "Address line 2"
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:180
+#: src/integrations/give/helpers/give-helpers.php:136
+msgid "City"
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:187
+#: src/integrations/give/helpers/give-helpers.php:142
+msgid "State"
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:194
+msgid "Postal code"
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:201
+#: src/integrations/give/helpers/give-helpers.php:154
+msgid "Country"
+msgstr ""
+
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:215
+#: src/integrations/fluent-crm/actions/fcrm-user-to-list.php:52
+msgctxt "Fluent Forms"
+msgid "Lists"
+msgstr ""
+
 #. translators: Action - LearnDash
 #: src/integrations/fluent-crm/actions/fcrm-tag-to-user.php:44
 msgctxt "Fluent Forms"
@@ -7218,59 +7308,58 @@ msgctxt "Fluent Forms"
 msgid "Add the user to {{lists}}"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-user-to-list.php:52
-msgctxt "Fluent Forms"
-msgid "Lists"
-msgstr ""
-
 #. translators: 1. List of lists the user is in.
 #: src/integrations/fluent-crm/actions/fcrm-user-to-list.php:127
 msgctxt "FluentCRM"
 msgid "User was already a member of %1$s"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:99
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:102
 msgctxt "FluentCRM"
 msgid "List"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:112
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:116
 msgctxt "FluentCRM"
 msgid "Any list"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:160
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:164
 msgctxt "FluentCRM"
 msgid "Tag"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:171
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:178
 msgctxt "FluentCRM"
 msgid "Any tag"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:410
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:418
 msgid "Subscribed"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:411
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:419
 msgid "Pending"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:412
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:420
 msgid "Unsubscribed"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:413
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:421
 msgid "Bounced"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:414
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:422
 msgid "Complained"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:417
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:426
 msgid "Any status"
+msgstr ""
+
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:494
+msgid "yyyy-mm-dd hh:mm:ss"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Forms
@@ -7411,28 +7500,8 @@ msgstr ""
 msgid "Donation amount"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:124
-msgid "Address line 1"
-msgstr ""
-
-#: src/integrations/give/helpers/give-helpers.php:130
-msgid "Address line 2"
-msgstr ""
-
-#: src/integrations/give/helpers/give-helpers.php:136
-msgid "City"
-msgstr ""
-
-#: src/integrations/give/helpers/give-helpers.php:142
-msgid "State"
-msgstr ""
-
 #: src/integrations/give/helpers/give-helpers.php:148
 msgid "Zip"
-msgstr ""
-
-#: src/integrations/give/helpers/give-helpers.php:154
-msgid "Country"
 msgstr ""
 
 #. translators: Logged-in trigger - GiveWP
@@ -7838,12 +7907,12 @@ msgid "Automatically register users for GoTo Webinar sessions when they complete
 msgstr ""
 
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:66
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:40
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:70
 msgid "Add the user to a webinar"
 msgstr ""
 
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:69
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:46
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:76
 msgid "Remove the user from a webinar"
 msgstr ""
 
@@ -9318,7 +9387,7 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:156
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:219
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:85
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:72
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:82
 msgid "Product title"
 msgstr ""
 
@@ -9326,7 +9395,7 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:157
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:220
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:86
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:73
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:83
 msgid "Product ID"
 msgstr ""
 
@@ -9334,21 +9403,21 @@ msgstr ""
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:158
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:221
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:87
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:74
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:84
 msgid "Product URL"
 msgstr ""
 
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:95
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:159
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:88
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:75
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:85
 msgid "Product featured image ID"
 msgstr ""
 
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:96
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:160
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:89
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:76
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:86
 msgid "Product featured image URL"
 msgstr ""
 
@@ -9975,45 +10044,57 @@ msgstr ""
 msgid "To number is not valid."
 msgstr ""
 
-#: src/integrations/twilio/settings/view-twilio.php:19
-msgid "Connect Uncanny Automator to Twilio"
+#: src/integrations/twilio/settings/settings-twilio.php:67
+msgid "User account error"
 msgstr ""
 
 #: src/integrations/twilio/settings/view-twilio.php:23
+msgid "There was an error connecting your Twilio account. Please try again or contact support."
+msgstr ""
+
+#: src/integrations/twilio/settings/view-twilio.php:28
+msgid "You have successfully connected your Twilio account"
+msgstr ""
+
+#: src/integrations/twilio/settings/view-twilio.php:49
+msgid "Connect Uncanny Automator to Twilio"
+msgstr ""
+
+#: src/integrations/twilio/settings/view-twilio.php:53
 msgid "Integrate your WordPress site directly with Twilio. Send SMS messages to users when they make a purchase, fill out a form, complete a course, or complete any combination of supported triggers."
 msgstr ""
 
-#: src/integrations/twilio/settings/view-twilio.php:32
+#: src/integrations/twilio/settings/view-twilio.php:62
 msgid "Send an SMS message to a number"
 msgstr ""
 
-#: src/integrations/twilio/settings/view-twilio.php:59
+#: src/integrations/twilio/settings/view-twilio.php:89
 msgid "Account SID"
 msgstr ""
 
-#: src/integrations/twilio/settings/view-twilio.php:71
+#: src/integrations/twilio/settings/view-twilio.php:101
 msgid "Auth token"
 msgstr ""
 
 #. translators: 1. URL
-#: src/integrations/twilio/settings/view-twilio.php:82
+#: src/integrations/twilio/settings/view-twilio.php:112
 msgid "See your list of active phone numbers on the %1$s page."
 msgstr ""
 
-#: src/integrations/twilio/settings/view-twilio.php:83
+#: src/integrations/twilio/settings/view-twilio.php:113
 msgid "Active numbers"
 msgstr ""
 
-#: src/integrations/twilio/settings/view-twilio.php:94
+#: src/integrations/twilio/settings/view-twilio.php:124
 msgid "Active number"
 msgstr ""
 
 #. translators: 1. Phone number
-#: src/integrations/twilio/settings/view-twilio.php:134
+#: src/integrations/twilio/settings/view-twilio.php:164
 msgid "Active number: %1$s"
 msgstr ""
 
-#: src/integrations/twilio/settings/view-twilio.php:153
+#: src/integrations/twilio/settings/view-twilio.php:183
 msgid "Connect Twilio account"
 msgstr ""
 
@@ -10777,26 +10858,26 @@ msgstr ""
 msgid "A user is removed from {{a membership level}}"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:77
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:87
 msgid "Product quantity"
 msgstr ""
 
 #. translators: Noun
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:116
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:129
 msgid "Trigger condition"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:140
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:153
 msgctxt "WooCommerce"
 msgid "pays for"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:141
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:154
 msgctxt "WooCommerce"
 msgid "completes"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:142
+#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:155
 msgctxt "WooCommerce"
 msgid "lands on a thank you page for"
 msgstr ""
@@ -11195,46 +11276,46 @@ msgstr ""
 msgid "Create {{a post}}"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:68
+#: src/integrations/wp/actions/wp-createpost.php:70
 msgid "Type"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:142
+#: src/integrations/wp/actions/wp-createpost.php:144
 msgid "Author"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:142
+#: src/integrations/wp/actions/wp-createpost.php:144
 msgid "Accepts user ID, email or username"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:143
+#: src/integrations/wp/actions/wp-createpost.php:145
 msgid "Title"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:144
+#: src/integrations/wp/actions/wp-createpost.php:146
 msgid "Slug"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:145
+#: src/integrations/wp/actions/wp-createpost.php:147
 msgid "Content"
 msgstr ""
 
 #. translators: Post Excerpt field
-#: src/integrations/wp/actions/wp-createpost.php:149
+#: src/integrations/wp/actions/wp-createpost.php:151
 msgid "Excerpt"
 msgstr ""
 
 #. translators: Email field
-#: src/integrations/wp/actions/wp-createpost.php:158
+#: src/integrations/wp/actions/wp-createpost.php:160
 msgid "Featured image URL"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:162
+#: src/integrations/wp/actions/wp-createpost.php:164
 msgid "The URL must include a supported image file extension (e.g. .jpg, .png, .svg, etc.). Some sites may block remote image download."
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:167
-#: src/integrations/wp/actions/wp-createuser.php:101
+#: src/integrations/wp/actions/wp-createpost.php:169
+#: src/integrations/wp/actions/wp-createuser.php:104
 msgid "Meta"
 msgstr ""
 
@@ -11243,44 +11324,44 @@ msgstr ""
 msgid "Create the user {{username:%1$s}}"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:83
+#: src/integrations/wp/actions/wp-createuser.php:86
 msgid "Only alphanumeric, _, space, ., -, @"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:93
+#: src/integrations/wp/actions/wp-createuser.php:96
 msgid "Leave blank to automatically generate a password"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:97
+#: src/integrations/wp/actions/wp-createuser.php:100
 msgid "Send user notification"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:97
+#: src/integrations/wp/actions/wp-createuser.php:100
 msgid "Send the new user an email about their account."
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:145
+#: src/integrations/wp/actions/wp-createuser.php:148
 msgid "Invalid username: %1$s"
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:152
-#: src/integrations/wp/actions/wp-createuser.php:169
+#: src/integrations/wp/actions/wp-createuser.php:155
+#: src/integrations/wp/actions/wp-createuser.php:172
 msgid "Username was not set"
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:163
+#: src/integrations/wp/actions/wp-createuser.php:166
 msgid "Invalid email: %1$s"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createuser.php:219
+#: src/integrations/wp/actions/wp-createuser.php:222
 msgid "Failed to create a user"
 msgstr ""
 
 #. translators: Create a {{user}} - Error while creating a new user
-#: src/integrations/wp/actions/wp-createuser.php:247
+#: src/integrations/wp/actions/wp-createuser.php:250
 msgid "Meta keys failed to update: %1$s"
 msgstr ""
 
@@ -11328,7 +11409,7 @@ msgstr ""
 msgid "Change the user's role to {{a new role}}"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-userrole.php:89
+#: src/integrations/wp/actions/wp-userrole.php:92
 msgid "For security, the change role action cannot be applied to administrators."
 msgstr ""
 
@@ -11338,123 +11419,123 @@ msgid "Redirect to {{a link:%1$s}} when recipe is completed"
 msgstr ""
 
 #. translators: Noun
-#: src/integrations/wp/helpers/wp-helpers.php:130
-#: src/integrations/wp/triggers/wp-postreceivescomment.php:113
-#: src/integrations/wp/triggers/wp-submitcomment.php:108
-#: src/integrations/wp/triggers/wp-viewcustompost.php:91
+#: src/integrations/wp/helpers/wp-helpers.php:134
+#: src/integrations/wp/triggers/wp-postreceivescomment.php:115
+#: src/integrations/wp/triggers/wp-submitcomment.php:110
+#: src/integrations/wp/triggers/wp-viewcustompost.php:94
 msgid "Post"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:151
-#: src/integrations/wp/helpers/wp-helpers.php:468
+#: src/integrations/wp/helpers/wp-helpers.php:155
+#: src/integrations/wp/helpers/wp-helpers.php:484
 #: src/integrations/wp/tokens/wp-post-tokens.php:61
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:84
-#: src/integrations/wp/triggers/wp-postreceivescomment.php:119
-#: src/integrations/wp/triggers/wp-submitcomment.php:114
-#: src/integrations/wp/triggers/wp-viewcustompost.php:97
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:86
+#: src/integrations/wp/triggers/wp-postreceivescomment.php:121
+#: src/integrations/wp/triggers/wp-submitcomment.php:116
+#: src/integrations/wp/triggers/wp-viewcustompost.php:100
 msgid "Post title"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:153
-#: src/integrations/wp/helpers/wp-helpers.php:470
+#: src/integrations/wp/helpers/wp-helpers.php:157
+#: src/integrations/wp/helpers/wp-helpers.php:486
 #: src/integrations/wp/tokens/wp-post-tokens.php:73
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:86
-#: src/integrations/wp/triggers/wp-postreceivescomment.php:120
-#: src/integrations/wp/triggers/wp-submitcomment.php:117
-#: src/integrations/wp/triggers/wp-viewcustompost.php:99
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:88
+#: src/integrations/wp/triggers/wp-postreceivescomment.php:122
+#: src/integrations/wp/triggers/wp-submitcomment.php:119
+#: src/integrations/wp/triggers/wp-viewcustompost.php:102
 msgid "Post URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:154
-#: src/integrations/wp/helpers/wp-helpers.php:471
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:90
-#: src/integrations/wp/triggers/wp-postreceivescomment.php:122
-#: src/integrations/wp/triggers/wp-submitcomment.php:115
-#: src/integrations/wp/triggers/wp-viewcustompost.php:100
+#: src/integrations/wp/helpers/wp-helpers.php:158
+#: src/integrations/wp/helpers/wp-helpers.php:487
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:92
+#: src/integrations/wp/triggers/wp-postreceivescomment.php:124
+#: src/integrations/wp/triggers/wp-submitcomment.php:117
+#: src/integrations/wp/triggers/wp-viewcustompost.php:103
 msgid "Post excerpt"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:155
-#: src/integrations/wp/helpers/wp-helpers.php:472
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:87
-#: src/integrations/wp/triggers/wp-submitcomment.php:118
-#: src/integrations/wp/triggers/wp-viewcustompost.php:102
+#: src/integrations/wp/helpers/wp-helpers.php:159
+#: src/integrations/wp/helpers/wp-helpers.php:488
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:89
+#: src/integrations/wp/triggers/wp-submitcomment.php:120
+#: src/integrations/wp/triggers/wp-viewcustompost.php:105
 msgid "Post featured image ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:156
-#: src/integrations/wp/helpers/wp-helpers.php:473
+#: src/integrations/wp/helpers/wp-helpers.php:160
+#: src/integrations/wp/helpers/wp-helpers.php:489
 #: src/integrations/wp/tokens/wp-post-tokens.php:91
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:88
-#: src/integrations/wp/triggers/wp-submitcomment.php:119
-#: src/integrations/wp/triggers/wp-viewcustompost.php:101
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:90
+#: src/integrations/wp/triggers/wp-submitcomment.php:121
+#: src/integrations/wp/triggers/wp-viewcustompost.php:104
 msgid "Post featured image URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:173
+#: src/integrations/wp/helpers/wp-helpers.php:180
 msgid "Page"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:194
+#: src/integrations/wp/helpers/wp-helpers.php:201
 msgid "Page title"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:195
+#: src/integrations/wp/helpers/wp-helpers.php:202
 msgid "Page ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:196
+#: src/integrations/wp/helpers/wp-helpers.php:203
 msgid "Page URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:197
+#: src/integrations/wp/helpers/wp-helpers.php:204
 msgid "Page excerpt"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:198
+#: src/integrations/wp/helpers/wp-helpers.php:205
 msgid "Page featured image ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:199
+#: src/integrations/wp/helpers/wp-helpers.php:206
 msgid "Page featured image URL"
 msgstr ""
 
 #. translators: WordPress role
-#: src/integrations/wp/helpers/wp-helpers.php:216
+#: src/integrations/wp/helpers/wp-helpers.php:226
 msgid "Role"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:235
+#: src/integrations/wp/helpers/wp-helpers.php:245
 msgid "Role slug"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:250
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:89
+#: src/integrations/wp/helpers/wp-helpers.php:263
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:91
 msgid "Post type"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:309
+#: src/integrations/wp/helpers/wp-helpers.php:322
 msgid "Any taxonomy"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:351
+#: src/integrations/wp/helpers/wp-helpers.php:364
 msgid "Any taxonomy term"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:419
-#: src/integrations/wp/helpers/wp-helpers.php:439
+#: src/integrations/wp/helpers/wp-helpers.php:432
+#: src/integrations/wp/helpers/wp-helpers.php:452
 msgctxt "WordPress post type"
 msgid "Any %s"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:457
+#: src/integrations/wp/helpers/wp-helpers.php:473
 msgid "Post types"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers.php:480
-#: src/integrations/wp/triggers/wp-postreceivescomment.php:97
-#: src/integrations/wp/triggers/wp-submitcomment.php:88
-#: src/integrations/wp/triggers/wp-usercreatespost.php:121
+#: src/integrations/wp/helpers/wp-helpers.php:496
+#: src/integrations/wp/triggers/wp-postreceivescomment.php:99
+#: src/integrations/wp/triggers/wp-submitcomment.php:90
+#: src/integrations/wp/triggers/wp-usercreatespost.php:123
 msgid "Any post type"
 msgstr ""
 
@@ -11492,32 +11573,32 @@ msgstr ""
 msgid "{{A user's post}} receives a comment"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-postreceivescomment.php:121
-msgid "Post author"
-msgstr ""
-
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:123
-#: src/integrations/wp/triggers/wp-submitcomment.php:120
-msgid "Comment"
-msgstr ""
-
-#: src/integrations/wp/triggers/wp-postreceivescomment.php:124
-#: src/integrations/wp/triggers/wp-submitcomment.php:121
-msgid "Comment date"
+msgid "Post author"
 msgstr ""
 
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:125
 #: src/integrations/wp/triggers/wp-submitcomment.php:122
-msgid "Commenter email"
+msgid "Comment"
 msgstr ""
 
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:126
 #: src/integrations/wp/triggers/wp-submitcomment.php:123
-msgid "Commenter name"
+msgid "Comment date"
 msgstr ""
 
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:127
 #: src/integrations/wp/triggers/wp-submitcomment.php:124
+msgid "Commenter email"
+msgstr ""
+
+#: src/integrations/wp/triggers/wp-postreceivescomment.php:128
+#: src/integrations/wp/triggers/wp-submitcomment.php:125
+msgid "Commenter name"
+msgstr ""
+
+#: src/integrations/wp/triggers/wp-postreceivescomment.php:129
+#: src/integrations/wp/triggers/wp-submitcomment.php:126
 msgid "Commenter status"
 msgstr ""
 
@@ -11541,11 +11622,11 @@ msgstr ""
 msgid "A user publishes a {{type of}} post with {{a taxonomy term}} in {{a taxonomy}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-usercreatespost.php:139
+#: src/integrations/wp/triggers/wp-usercreatespost.php:141
 msgid "Taxonomy"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-usercreatespost.php:150
+#: src/integrations/wp/triggers/wp-usercreatespost.php:152
 msgid "Taxonomy term"
 msgstr ""
 
@@ -11724,13 +11805,13 @@ msgstr ""
 
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:217
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:255
-#: src/integrations/zoom/helpers/zoom-helpers.php:287
-#: src/integrations/zoom/helpers/zoom-helpers.php:325
+#: src/integrations/zoom/helpers/zoom-helpers.php:285
+#: src/integrations/zoom/helpers/zoom-helpers.php:323
 msgid "Email address is missing or invalid."
 msgstr ""
 
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:221
-#: src/integrations/zoom/helpers/zoom-helpers.php:291
+#: src/integrations/zoom/helpers/zoom-helpers.php:289
 msgid "First name is missing"
 msgstr ""
 
@@ -11743,29 +11824,29 @@ msgid "User could not be added to the webinar"
 msgstr ""
 
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:267
-#: src/integrations/zoom/helpers/zoom-helpers.php:337
+#: src/integrations/zoom/helpers/zoom-helpers.php:335
 msgid "Could not unregister the user"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:293
-#: src/integrations/zoom/helpers/zoom-helpers.php:373
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:285
+#: src/integrations/zoom/helpers/zoom-helpers.php:363
 msgid "Could not fetch user info"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:341
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:333
 msgid "Zoom Webinars is not connected"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:476
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:457
 msgid "Webinar questions"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:489
-#: src/integrations/zoom/helpers/zoom-helpers.php:227
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:470
+#: src/integrations/zoom/helpers/zoom-helpers.php:225
 msgid "Question"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:525
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:506
 msgid "Could not fetch webinar questions from Zoom"
 msgstr ""
 
@@ -11773,32 +11854,40 @@ msgstr ""
 msgid "Zoom Webinars"
 msgstr ""
 
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:24
-msgid "Connect Uncanny Automator to Zoom Webinars"
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:23
+msgid "There was an error connecting your Zoom Webinars account. Please try again or contact support."
 msgstr ""
 
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:28
+msgid "You have successfully connected your Zoom Webinars account"
+msgstr ""
+
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:54
+msgid "Connect Uncanny Automator to Zoom Webinars"
+msgstr ""
+
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:58
 msgid "Automatically register users for Zoom Webinars when they complete actions on your site, such as completing a course, filling out a form, or even simply clicking a button!"
 msgstr ""
 
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:37
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:67
 msgid "Add an attendee to a webinar"
 msgstr ""
 
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:43
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:73
 msgid "Remove an attendee to a webinar"
 msgstr ""
 
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:87
-#: src/integrations/zoom/settings/view-zoom.php:88
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:117
+#: src/integrations/zoom/settings/view-zoom.php:118
 msgid "API secret"
 msgstr ""
 
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:102
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:132
 msgid "Uncanny Automator only supports connecting to one Zoom Webinars account."
 msgstr ""
 
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:156
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar.php:186
 msgid "Connect Zoom Webinars account"
 msgstr ""
 
@@ -11846,39 +11935,39 @@ msgstr ""
 msgid "Remove an attendee from {{a meeting}}"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:136
+#: src/integrations/zoom/helpers/zoom-helpers.php:134
 msgid "Meeting"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:143
+#: src/integrations/zoom/helpers/zoom-helpers.php:141
 msgid "Any Meeting"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:165
+#: src/integrations/zoom/helpers/zoom-helpers.php:163
 msgid "Could not fetch meetngs from Zoom"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:169
+#: src/integrations/zoom/helpers/zoom-helpers.php:167
 msgid "No meetings were found in your account"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:214
+#: src/integrations/zoom/helpers/zoom-helpers.php:212
 msgid "Meeting questions"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:263
+#: src/integrations/zoom/helpers/zoom-helpers.php:261
 msgid "Could not fetch meeting questions from Zoom"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:295
+#: src/integrations/zoom/helpers/zoom-helpers.php:293
 msgid "Meeting key is missing"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:308
+#: src/integrations/zoom/helpers/zoom-helpers.php:306
 msgid "User could not be added to the meeting"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-helpers.php:421
+#: src/integrations/zoom/helpers/zoom-helpers.php:411
 msgid "Zoom is not connected"
 msgstr ""
 
@@ -11886,34 +11975,42 @@ msgstr ""
 msgid "Zoom Meetings"
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:25
+#: src/integrations/zoom/settings/view-zoom.php:23
+msgid "There was an error connecting your Zoom Meetings account. Please try again or contact support."
+msgstr ""
+
+#: src/integrations/zoom/settings/view-zoom.php:28
+msgid "You have successfully connected your Zoom Meetings account"
+msgstr ""
+
+#: src/integrations/zoom/settings/view-zoom.php:55
 msgid "Connect Uncanny Automator to Zoom Meetings"
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:29
+#: src/integrations/zoom/settings/view-zoom.php:59
 msgid "Automatically register users for Zoom Meetings when they complete actions on your site, such as completing a course, filling out a form, or even simply clicking a button!"
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:38
+#: src/integrations/zoom/settings/view-zoom.php:68
 msgid "Add an attendee to a meeting"
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:41
+#: src/integrations/zoom/settings/view-zoom.php:71
 msgid "Add the user to a meeting"
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:44
+#: src/integrations/zoom/settings/view-zoom.php:74
 msgid "Remove an attendee to a meeting"
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:47
+#: src/integrations/zoom/settings/view-zoom.php:77
 msgid "Remove the user from a meeting"
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:103
+#: src/integrations/zoom/settings/view-zoom.php:133
 msgid "Uncanny Automator only supports connecting to one Zoom Meetings account."
 msgstr ""
 
-#: src/integrations/zoom/settings/view-zoom.php:153
+#: src/integrations/zoom/settings/view-zoom.php:183
 msgid "Connect Zoom Meetings account"
 msgstr ""

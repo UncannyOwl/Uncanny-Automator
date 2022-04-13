@@ -53,15 +53,8 @@ class Active_Campaign_Helpers {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		$this->prefix          = 'AC_ANNON_ADD';
-		$this->ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
-
-		// Allow overwrite in wp-config.php.
-		if ( DEFINED( 'UO_AUTOMATOR_DEV_AC_ENDPOINT_URL' ) ) {
-			$this->ac_endpoint_uri = UO_AUTOMATOR_DEV_AC_ENDPOINT_URL;
-		}
-
-		$this->automator_api = AUTOMATOR_API_URL . 'v2/active-campaign';
+		$this->setting_tab = 'active-campaign';
+		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 
 		// Add the ajax endpoints.
 		add_action( 'wp_ajax_active-campaign-list-tags', array( $this, 'list_tags' ) );
@@ -75,6 +68,9 @@ class Active_Campaign_Helpers {
 		$this->webhook_endpoint = apply_filters( 'automator_active_campaign_webhook_endpoint', '/active-campaign', $this );
 
 		add_action( 'rest_api_init', array( $this, 'init_webhook' ) );
+
+		add_action( 'add_option_uap_active_campaign_settings_timestamp', array( $this, 'settings_updated' ), 9999 );
+		add_action( 'update_option_uap_active_campaign_settings_timestamp', array( $this, 'settings_updated' ), 9999 );
 
 		$this->load_settings_tab();
 	}
@@ -250,7 +246,9 @@ class Active_Campaign_Helpers {
 
 		delete_option( 'uap_active_campaign_api_url' );
 		delete_option( 'uap_active_campaign_api_key' );
+		delete_option( 'uap_active_campaign_settings_timestamp' );
 		delete_transient( 'uap_active_campaign_connected_user' );
+		delete_option( 'uap_active_campaign_connected_user' );
 		delete_option( 'uap_active_campaign_enable_webhook' );
 		delete_option( 'uap_active_campaign_webhook_key' );
 
@@ -268,39 +266,43 @@ class Active_Campaign_Helpers {
 	 */
 	public function get_connected_users() {
 
-		$users = get_transient( 'uap_active_campaign_connected_user' );
+		$account_url = get_option( 'uap_active_campaign_api_url', false );
+		$api_key     = get_option( 'uap_active_campaign_api_key', false );
+		$users = false;
 
-		if ( ! $users ) {
 
-			$account_url = get_option( 'uap_active_campaign_api_url', false );
-			$api_key     = get_option( 'uap_active_campaign_api_key', false );
-
-			if ( ! empty( $account_url ) && ! empty( $api_key ) ) {
-
-				$response = wp_remote_get(
-					sprintf( '%s/api/3/users', esc_url( $account_url ) ),
-					array(
-						'headers' => array(
-							'Api-token' => $api_key,
-							'Accept'    => 'application/json',
-						),
-					)
-				);
-
-				if ( ! is_wp_error( $response ) ) {
-
-					$body  = wp_remote_retrieve_body( $response );
-					$users = json_decode( $body );
-
-					if ( ! empty( $users->users ) ) {
-						set_transient( 'uap_active_campaign_connected_user', $users->users, DAY_IN_SECONDS );
-						$users = $users->users;
-					}
-				}
-			}
+		if ( empty( $account_url ) || empty( $api_key ) ) {
+			throw new \Exception( __( 'ActiveCampaign is not connected', 'uncanny-automator' ) );
 		}
 
-		return $users;
+		if ( ! wp_http_validate_url( $account_url ) ) {
+			throw new \Exception( __( 'The account URL is not a valid URL', 'uncanny-automator' ) );
+		}
+
+		$params = array(
+			'method' => 'GET',
+			'url' => sprintf( '%s/api/3/users', esc_url( $account_url ) ),
+			'headers' => array(
+				'Api-token' => $api_key,
+				'Accept'    => 'application/json',
+			)
+		);
+
+		$response = Api_Server::call( $params );
+
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			throw new \Exception( __( 'Error validating the credentials', 'uncanny-automator' ) );
+		}
+
+		$response = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( empty( $response['users'] ) ) {
+			throw new \Exception( __( 'User was not found', 'uncanny-automator' ) );
+		}
+
+		update_option( 'uap_active_campaign_connected_user', $response['users'] );
+
+		return $response['users'];
 
 	}
 
@@ -1047,5 +1049,94 @@ class Active_Campaign_Helpers {
 		} catch ( \Exception $e ) {
 			return false;
 		}
+	}
+	
+	/**
+	 * settings_updated
+	 *
+	 * @return void
+	 */
+	public function settings_updated() {
+
+		$redirect_url = $this->tab_url;
+
+		if ( $this->credentials_updated() ) {
+			
+			$result = 1;
+
+			try {
+				$this->get_connected_users();
+			} catch ( \Exception $e ) { 
+				delete_option( 'uap_active_campaign_connected_user' );
+				$result = $e->getMessage();
+			}
+
+			$redirect_url .= '&connect=' . $result;
+		}
+
+		$this->maybe_handle_switch();
+
+		wp_safe_redirect( $redirect_url );
+
+		exit;
+	}
+	
+	/**
+	 * maybe_handle_switch
+	 *
+	 * @return void
+	 */
+	public function maybe_handle_switch() {
+
+		if ( ! automator_filter_has_var( 'uap_active_campaign_enable_webhook', INPUT_POST ) ) {
+			return;
+		}
+
+		$switch_value = automator_filter_input( 'uap_active_campaign_enable_webhook', INPUT_POST );
+
+		update_option( 'uap_active_campaign_enable_webhook', $switch_value );
+
+	}
+	
+	/**
+	 * credentials_updated
+	 *
+	 * @return void
+	 */
+	public function credentials_updated() {
+
+		$account_credentials = get_option( 'uap_active_campaign_api_url', '' ) . ':' . get_option( 'uap_active_campaign_api_key', '' );
+		$new_credentials_hash = base64_encode( $account_credentials );		
+		$old_credentials_hash = get_option( 'uap_active_campaign_credentials_hash', time() );
+
+		if ( $new_credentials_hash !== $old_credentials_hash ) {
+			update_option( 'uap_active_campaign_credentials_hash', $new_credentials_hash );
+			return true;
+		}
+
+		return false;
+	}
+	
+	/**
+	 * get_users
+	 *
+	 * @return void
+	 */
+	public function get_users() {
+
+		$users_option_exist = get_option( 'uap_active_campaign_connected_user', 'no' );
+
+		if ( 'no' !== $users_option_exist ) {
+			return $users_option_exist;
+		}
+
+		try {
+			$users = $this->get_connected_users();
+		} catch ( \Exception $e ) {
+			$users = false;
+		}
+		
+		return $users;
+		
 	}
 }

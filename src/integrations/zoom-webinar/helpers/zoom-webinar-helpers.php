@@ -54,8 +54,8 @@ class Zoom_Webinar_Helpers {
 
 		$this->automator_api = AUTOMATOR_API_URL . 'v2/zoom';
 
-		add_action( 'update_option_uap_automator_zoom_webinar_api_consumer_key', array( $this, 'zoom_webinar_settings_updated' ), 10, 3 );
-		add_action( 'update_option_uap_automator_zoom_webinar_api_consumer_secret', array( $this, 'zoom_webinar_settings_updated' ), 10, 3 );
+		add_action( 'update_option_uap_automator_zoom_webinar_api_settings_timestamp', array( $this, 'settings_updated' ) );
+		add_action( 'add_option_uap_automator_zoom_webinar_api_settings_timestamp', array( $this, 'settings_updated' ) );
 
 		// Disconnect wp-ajax action.
 		add_action( 'wp_ajax_uap_automator_zoom_webinar_api_disconnect', array( $this, 'disconnect' ), 10 );
@@ -275,14 +275,6 @@ class Zoom_Webinar_Helpers {
 	 */
 	public function api_get_user_info() {
 
-		$transient_key = 'uap_automator_zoom_webinar_api_user_info';
-
-		$saved_user_info = get_transient( $transient_key );
-
-		if ( false !== $saved_user_info ) {
-			return $saved_user_info;
-		}
-
 		$body = array(
 			'action' => 'get_user',
 		);
@@ -294,8 +286,8 @@ class Zoom_Webinar_Helpers {
 		}
 
 		$user_info = $response['data'];
-		
-		set_transient( $transient_key, $user_info, WEEK_IN_SECONDS );
+
+		update_option( 'uap_zoom_webinar_api_connected_user', $user_info );
 
 		return $user_info;
 	}
@@ -376,6 +368,8 @@ class Zoom_Webinar_Helpers {
 			delete_option( '_uncannyowl_zoom_webinar_settings_version' );
 			delete_option( '_uncannyowl_zoom_webinar_settings' );
 
+			delete_option( 'uap_zoom_webinar_api_connected_user' );
+
 			delete_transient( '_uncannyowl_zoom_webinar_settings' );
 			delete_transient( 'uap_automator_zoom_webinar_api_user_info' );
 
@@ -385,19 +379,6 @@ class Zoom_Webinar_Helpers {
 
 		exit;
 
-	}
-	
-	/**
-	 * zoom_webinar_settings_updated
-	 *
-	 * @param  mixed $old_value
-	 * @param  mixed $value
-	 * @param  mixed $option
-	 * @return void
-	 */
-	public function zoom_webinar_settings_updated( $old_value, $value, $option ) {
-		delete_option( '_uncannyowl_zoom_webinar_settings' );
-		delete_transient( 'uap_automator_zoom_webinar_api_user_info' );
 	}
 	
 	/**
@@ -563,6 +544,54 @@ class Zoom_Webinar_Helpers {
 				$question_data['value'] = $question_value;
 				$user['custom_questions'][] = $question_data;
 			}
+		}
+
+		return $user;
+	}
+
+	/**
+	 * settings_updated
+	 *
+	 * @return void
+	 */
+	public function settings_updated() {
+
+		$redirect_url = $this->tab_url;
+	
+		delete_option( '_uncannyowl_zoom_webinar_settings' );
+
+		$result = 1;
+
+		try {
+			$this->api_get_user_info();
+		} catch ( \Exception $e ) { 
+			delete_option( 'uap_zoom_webinar_api_connected_user' );
+			$result = $e->getMessage();
+		}
+
+		$redirect_url .= '&connect=' . $result;
+		
+		wp_safe_redirect( $redirect_url );
+
+		exit;
+	}
+	
+	/**
+	 * get_user
+	 *
+	 * @return void
+	 */
+	public function get_user() {
+		$users_option_exist = get_option( 'uap_zoom_webinar_api_connected_user', 'no' );
+
+		if ( 'no' !== $users_option_exist ) {
+			return $users_option_exist;
+		}
+				
+		try {
+			$user = $this->api_get_user_info(); 
+		} catch ( \Exception $e ) {
+			$user = false;
 		}
 
 		return $user;

@@ -78,14 +78,15 @@ class Usage_Reports {
 	 */
 	public function initialize_report() {
 		return array(
-			'server'         => array(),
-			'wp'             => array(),
-			'automator'      => array(),
-			'license'        => array(),
-			'active_plugins' => array(),
-			'theme'          => array(),
-			'integrations'   => array(),
-			'recipes'        => array(
+			'server'         		=> array(),
+			'wp'             		=> array(),
+			'automator'      		=> array(),
+			'license'        		=> array(),
+			'active_plugins' 		=> array(),
+			'theme'          		=> array(),
+			'integrations'   		=> array(),
+			'integrations_array' 	=> array(),
+			'recipes'        		=> array(
 				'live_recipes_count'        => 0,
 				'user_recipes_count'        => 0,
 				'everyone_recipes_count'    => 0,
@@ -400,7 +401,7 @@ class Usage_Reports {
 		}
 
 		$this->report['integrations_array'] = array_values( $this->report['integrations_array'] );
-
+		
 		$this->report['recipes']['total_integrations_used'] = count( $this->report['integrations'] );
 
 		$this->report['recipes']['completed_recipes'] = Automator()->get->total_completed_runs();

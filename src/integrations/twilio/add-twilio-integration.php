@@ -82,8 +82,9 @@ class Add_Twilio_Integration {
 
 		$sid      = get_option( 'uap_automator_twilio_api_account_sid', '' );
 		$token    = get_option( 'uap_automator_twilio_api_auth_token', '' );
+		$user     = get_option( 'uap_twilio_connected_user', '' );
 
-		if ( ! empty( $sid ) && ! empty( $token ) ) {
+		if ( ! empty( $sid ) && ! empty( $token ) && ! empty( $user ) ) {
 			$this->connected = true;
 		}
 

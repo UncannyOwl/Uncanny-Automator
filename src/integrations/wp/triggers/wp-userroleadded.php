@@ -65,6 +65,9 @@ class WP_USERROLEADDED {
 	 * @return void
 	 */
 	public function load_options() {
+		
+		Automator()->helpers->recipe->wp->options->load_options = true;
+		
 		$options = Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(

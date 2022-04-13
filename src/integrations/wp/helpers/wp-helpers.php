@@ -22,12 +22,13 @@ class Wp_Helpers {
 	 */
 	public $pro;
 
-	public $load_options = true;
+	public $load_options;
 
 	/**
 	 * Wp_Helpers constructor.
 	 */
 	public function __construct() {
+		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
 		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
@@ -124,6 +125,9 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
+		if ( ! $this->load_options ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			/* translators: Noun */
@@ -168,6 +172,9 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_pages( $label = null, $option_code = 'WPPAGE', $any_option = true ) {
+		if ( ! $this->load_options ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Page', 'uncanny-automator' );
@@ -210,6 +217,9 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE' ) {
+		if ( ! $this->load_options ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			/* translators: WordPress role */
@@ -245,6 +255,9 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
+		if ( ! $this->load_options ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Post type', 'uncanny-automator' );
@@ -452,6 +465,9 @@ class Wp_Helpers {
 	 * @return mixed|void
 	 */
 	public function all_wp_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
+		if ( ! $this->load_options ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
 
 		if ( ! $label ) {
 			$label = __( 'Post types', 'uncanny-automator' );

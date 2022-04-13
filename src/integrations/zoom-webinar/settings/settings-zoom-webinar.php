@@ -53,19 +53,21 @@ class Zoom_Webinar_Settings {
 
         $this->register_option( 'uap_automator_zoom_webinar_api_consumer_key' );
 		$this->register_option( 'uap_automator_zoom_webinar_api_consumer_secret' );
+		$this->register_option( 'uap_automator_zoom_webinar_api_settings_timestamp' );
 
-		try {
-			$this->user = $this->helpers->api_get_user_info();
+		$this->api_key    = trim( get_option( 'uap_automator_zoom_webinar_api_consumer_key', '' ) );
+		$this->api_secret = trim( get_option( 'uap_automator_zoom_webinar_api_consumer_secret', '' ) );
+
+		$this->user = false;
+
+		if ( ! empty( $this->api_key ) && ! empty( $this->api_secret ) ) {
+			$this->user = $this->helpers->get_user();
+		}
+
+		$this->is_connected = false;
+
+		if ( ! empty( $this->user['email'] ) ) {
 			$this->is_connected = true;
-
-			// Handle legacy transient
-			if ( is_object( $this->user ) ) {
-				$this->user = (array) $this->user;
-			}
-			
-		} catch ( \Exception $e ) {
-			$this->user = array();
-			$this->is_connected = false;
 		}
 		
 		$this->set_status( $this->is_connected ? 'success' : '' );
@@ -79,9 +81,19 @@ class Zoom_Webinar_Settings {
 	 */
 	public function output() {
 
-        $api_key = get_option( 'uap_automator_zoom_webinar_api_consumer_key', '' );
+		try {
+			$this->user = $this->helpers->api_get_user_info();
 
-        $api_secret =  get_option( 'uap_automator_zoom_webinar_api_consumer_secret', '' );
+			// Handle legacy transient
+			if ( is_object( $this->user ) ) {
+				$this->user = (array) $this->user;
+			}
+			
+		} catch ( \Exception $e ) {
+			update_option( 'uap_automator_zoom_webinar_api_settings_expired', true );
+			$this->user = array();
+			$this->is_connected = false;
+		}
 
         $disconnect_url = $this->helpers->disconnect_url();
 

@@ -14,6 +14,36 @@
 
             <div class="uap-settings-panel-content">
 
+                    <?php 
+                        
+                        if ( automator_filter_has_var( 'connect' ) ) {
+
+                            $connect = automator_filter_input( 'connect' );
+
+                            $alert_heading = __( "There was an error connecting your Zoom Webinars account. Please try again or contact support.", 'uncanny-automator' );
+                            $alert_type = 'error';
+                            $alert_content = __( "Error: ", 'uncanny-automator' ) . $connect;
+
+                            if ( 1 == $connect ) { 
+                                $alert_heading = __( 'You have successfully connected your Zoom Webinars account', 'uncanny-automator' );
+                                $alert_type = 'success';
+                                $alert_content = '';
+                            }
+
+                            ?>
+
+                            <uo-alert
+                                type="<?php echo esc_attr( $alert_type ); ?>"
+                                heading="<?php echo esc_attr( $alert_heading ); ?>"
+                                class="uap-spacing-bottom uap-spacing-top"
+                            ><?php echo esc_attr( $alert_content ); ?></uo-alert>
+
+                            <?php
+
+                        }
+
+                    ?>
+
                 <?php 
 
                 if ( ! $this->is_connected ) {
@@ -70,7 +100,7 @@
 
                 <uo-text-field
                     id="uap_automator_zoom_webinar_api_consumer_key"
-                    value="<?php echo esc_attr( $api_key ); ?>"
+                    value="<?php echo esc_attr( $this->api_key ); ?>"
 
                     label="<?php esc_attr_e( 'API key', 'uncanny-automator' ); ?>"
                     required
@@ -82,7 +112,7 @@
 
                 <uo-text-field
                     id="uap_automator_zoom_webinar_api_consumer_secret"
-                    value="<?php echo esc_attr( $api_secret ); ?>"
+                    value="<?php echo esc_attr( $this->api_secret ); ?>"
 
                     label="<?php esc_attr_e( 'API secret', 'uncanny-automator' ); ?>"
                     required
@@ -182,5 +212,5 @@
         </div>
 
     </div>
-
+    <input type="hidden" name="uap_automator_zoom_webinar_api_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
 </form>

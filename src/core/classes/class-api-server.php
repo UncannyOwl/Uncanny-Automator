@@ -188,9 +188,6 @@ class Api_Server {
 			throw new \Exception( 'URL is required', 500 );
 		}
 
-		// TODO: Remove debugging output
-		//error_log('URL: ' . var_export( $params['url'], true ) ); 
-
 		//We will log all requests here in the future
 
 		$request = array();
@@ -201,9 +198,6 @@ class Api_Server {
 			$params['url'],
 			$request
 		);
-
-		// TODO: Remove debugging output
-		//error_log('Response code: ' . var_export( wp_remote_retrieve_response_code( $response ), true ) );
 
 		if ( is_wp_error( $response ) ) {
 			throw new \Exception( 'WordPress was not able to make a request: ' . $response->get_error_message(), 500 );

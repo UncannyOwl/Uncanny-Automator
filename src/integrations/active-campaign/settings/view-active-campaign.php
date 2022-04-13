@@ -17,6 +17,36 @@
 
 			<div class="uap-settings-panel-content">
 
+                     <?php 
+                        
+                        if ( automator_filter_has_var( 'connect' ) ) {
+
+                            $connect = automator_filter_input( 'connect' );
+
+                            $alert_heading = __( "There was an error connecting your ActiveCampaign account. Please try again or contact support.", 'uncanny-automator' );
+                            $alert_type = 'error';
+                            $alert_content = __( "Error: ", 'uncanny-automator' ) . $connect;
+
+                            if ( 1 == $connect ) { 
+                                $alert_heading = __( 'You have successfully connected your ActiveCampaign account', 'uncanny-automator' );
+                                $alert_type = 'success';
+                                $alert_content = '';
+                            }
+
+                            ?>
+
+                            <uo-alert
+                                type="<?php echo esc_attr( $alert_type ); ?>"
+                                heading="<?php echo esc_attr( $alert_heading ); ?>"
+                                class="uap-spacing-bottom uap-spacing-top"
+                            ><?php echo esc_attr( $alert_content ); ?></uo-alert>
+
+                            <?php
+
+                        }
+
+                    ?>
+
                 <?php if ( ! $this->is_connected ) { ?>
 
                     <div class="uap-settings-panel-content-subtitle">
@@ -160,7 +190,6 @@
                                 value="<?php echo esc_url( $this->webhook_url ); ?>"
                                 label="<?php esc_attr_e( 'Webhook URL', 'uncanny-automator' ); ?>"
                                 helper="<?php esc_attr_e( "You'll be asked to enter a webhook URL.", 'uncanny-automator' ); ?>"
-
                                 disabled
                             ></uo-text-field>
 
@@ -180,7 +209,6 @@
                     </div>
 
                 <?php } ?> 
-              
                     
 			</div>
 
@@ -193,39 +221,27 @@
 					<?php
 
                     if ( $this->is_connected ) {
-                        foreach ( $this->users as $user ) {
-                            $account_users[] = (object) array(
-                                'full_name' => $user->firstName . ' ' . $user->lastName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-                                'email'     => $user->email
-                            ); 
-                        }
-                            
-                        // Check if we have the username and the ID
-                        if ( ! empty( $account_users ) ) {
-                            $user = array_shift( $account_users );
+                        $user = array_shift( $this->users );
+                        ?>
 
-                            ?>
+                        <div class="uap-settings-panel-user">
 
-                            <div class="uap-settings-panel-user">
-
-                                <div class="uap-settings-panel-user__avatar">
-                                    <?php echo esc_html( strtoupper( $user->full_name[0] ) ); ?>
-                                </div>
-
-                                <div class="uap-settings-panel-user-info">
-                                    <div class="uap-settings-panel-user-info__main">
-                                        <?php echo esc_html( $user->full_name ); ?>
-                                        <uo-icon id="active-campaign"></uo-icon>
-                                    </div>
-                                    <div class="uap-settings-panel-user-info__additional">
-                                        <?php echo esc_html( $user->email ); ?>
-                                    </div>
-                                </div>
+                            <div class="uap-settings-panel-user__avatar">
+                                <?php echo esc_html( strtoupper( $user['firstName'][0] ) ); ?>
                             </div>
 
-                            <?php
+                            <div class="uap-settings-panel-user-info">
+                                <div class="uap-settings-panel-user-info__main">
+                                    <?php echo esc_html( $user['firstName'] . ' ' . $user['lastName'] ); ?>
+                                    <uo-icon id="active-campaign"></uo-icon>
+                                </div>
+                                <div class="uap-settings-panel-user-info__additional">
+                                    <?php echo esc_html( $user['email'] ); ?>
+                                </div>
+                            </div>
+                        </div>
 
-                        }
+                        <?php
 
                     } else {
 
@@ -271,4 +287,5 @@
 		</div>
 
 	</div>
+    <input type="hidden" name="uap_active_campaign_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
 </form>

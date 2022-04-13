@@ -74,6 +74,8 @@ class ANON_WP_VIEWPOSTTYPE {
 	 */
 	public function load_options() {
 
+		Automator()->helpers->recipe->wp->options->load_options = true;
+
 		$options = array(
 			'options' => array(
 				Automator()->helpers->recipe->wp->options->all_wp_post_types(

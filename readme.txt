@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9.3
 Requires PHP: 5.6
-Stable tag: 3.9.0.2
+Stable tag: 3.9.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -191,6 +191,21 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 3.9.1 [2022-04-13] =
+
+**New Actions:**
+
+* FluentCRM - Add a contact #1573
+
+**Updated:**
+
+* Improved performance with Uncanny Automator Pro < 3.9 #1835
+
+**Fixed:**
+
+* PHP Notice: array_values() expects parameter 1 to be array on some sites with no live recipes #1825
+* HTTP request on every page load when a premium integration credential expires or is invalid #1804
 
 = 3.9.0.2 [2022-04-08] =
 

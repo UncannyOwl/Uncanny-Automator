@@ -13,6 +13,36 @@
 			</div>
 
 			<div class="uap-settings-panel-content">
+				
+					<?php 
+                        
+                        if ( automator_filter_has_var( 'connect' ) ) {
+
+                            $connect = automator_filter_input( 'connect' );
+
+                            $alert_heading = __( "There was an error connecting your Twilio account. Please try again or contact support.", 'uncanny-automator' );
+                            $alert_type = 'error';
+                            $alert_content = __( "Error: ", 'uncanny-automator' ) . $connect;
+
+                            if ( 1 == $connect ) { 
+                                $alert_heading = __( 'You have successfully connected your Twilio account', 'uncanny-automator' );
+                                $alert_type = 'success';
+                                $alert_content = '';
+                            }
+
+                            ?>
+
+                            <uo-alert
+                                type="<?php echo esc_attr( $alert_type ); ?>"
+                                heading="<?php echo esc_attr( $alert_heading ); ?>"
+                                class="uap-spacing-bottom uap-spacing-top"
+                            ><?php echo esc_attr( $alert_content ); ?></uo-alert>
+
+                            <?php
+
+                        }
+
+                    ?>
 
                 <?php if ( ! $this->is_connected ) { ?>
                     <div class="uap-settings-panel-content-subtitle">
@@ -189,4 +219,5 @@
 		</div>
 
 	</div>
+	<input type="hidden" name="uap_automator_twilio_api_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
 </form>

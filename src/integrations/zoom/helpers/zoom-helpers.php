@@ -45,10 +45,8 @@ class Zoom_Helpers {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		$this->automator_api = AUTOMATOR_API_URL . 'v2/zoom';
-
-		add_action( 'update_option_uap_automator_zoom_api_consumer_key', array( $this, 'zoom_settings_updated' ), 10, 3 );
-		add_action( 'update_option_uap_automator_zoom_api_consumer_secret', array( $this, 'zoom_settings_updated' ), 10, 3 );
+		add_action( 'update_option_uap_automator_zoom_api_settings_timestamp', array( $this, 'settings_updated' ) );
+		add_action( 'add_option_uap_automator_zoom_api_settings_timestamp', array( $this, 'settings_updated' ) );
 
 		// Disconnect wp-ajax action.
 		add_action( 'wp_ajax_uap_automator_zoom_api_disconnect', array( $this, 'disconnect' ), 10 );
@@ -355,14 +353,6 @@ class Zoom_Helpers {
 	 */
 	public function api_get_user_info() {
 
-		$transient_key = 'uap_automator_zoom_api_user_info';
-
-		$saved_user_info = get_transient( 'uap_automator_zoom_api_user_info' );
-
-		if ( false !== $saved_user_info ) {
-			return $saved_user_info;
-		}
-
 		$body = array(
 			'action' => 'get_user',
 		);
@@ -374,8 +364,8 @@ class Zoom_Helpers {
 		}
 
 		$user_info = $response['data'];
-		
-		set_transient( $transient_key, $user_info, WEEK_IN_SECONDS );
+
+		update_option( 'uap_zoom_api_connected_user', $user_info );
 
 		return $user_info;
 	}
@@ -456,6 +446,8 @@ class Zoom_Helpers {
 			delete_option( '_uncannyowl_zoom_settings_version' );
 			delete_option( '_uncannyowl_zoom_settings' );
 
+			delete_option( 'uap_zoom_api_connected_user' );
+
 			delete_transient( 'uap_automator_zoom_api_user_info' );
 
 		}
@@ -466,19 +458,6 @@ class Zoom_Helpers {
 
 	}
 	
-	/**
-	 * zoom_settings_updated
-	 *
-	 * @param  mixed $old_value
-	 * @param  mixed $value
-	 * @param  mixed $option
-	 * @return void
-	 */
-	public function zoom_settings_updated( $old_value, $value, $option ) {
-		delete_option( '_uncannyowl_zoom_settings' );
-		delete_transient( 'uap_automator_zoom_api_user_info' );
-	}
-
 	/**
 	 * Method api_request
 	 *
@@ -552,6 +531,55 @@ class Zoom_Helpers {
 				$question_data['value'] = $question_value;
 				$user['custom_questions'][] = $question_data;
 			}
+		}
+
+		return $user;
+	}
+	
+
+	/**
+	 * settings_updated
+	 *
+	 * @return void
+	 */
+	public function settings_updated() {
+
+		$redirect_url = $this->tab_url;
+	
+		delete_option( '_uncannyowl_zoom_settings' );
+
+		$result = 1;
+
+		try {
+			$this->api_get_user_info();
+		} catch ( \Exception $e ) { 
+			delete_option( 'uap_zoom_api_connected_user' );
+			$result = $e->getMessage();
+		}
+
+		$redirect_url .= '&connect=' . $result;
+		
+		wp_safe_redirect( $redirect_url );
+
+		exit;
+	}
+
+	/**
+	 * get_user
+	 *
+	 * @return void
+	 */
+	public function get_user() {
+		$users_option_exist = get_option( 'uap_zoom_api_connected_user', 'no' );
+
+		if ( 'no' !== $users_option_exist ) {
+			return $users_option_exist;
+		}
+
+		try {
+			$user = $this->api_get_user_info(); 
+		} catch ( \Exception $e ) {
+			$user = false;
 		}
 
 		return $user;

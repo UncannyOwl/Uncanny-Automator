@@ -73,6 +73,8 @@ class WP_POSTRECEIVESCOMMENT {
 	 * @return void
 	 */
 	public function load_options() {
+		
+		Automator()->helpers->recipe->wp->options->load_options = true;
 
 		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			null,

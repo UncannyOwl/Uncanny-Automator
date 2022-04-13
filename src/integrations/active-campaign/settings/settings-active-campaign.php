@@ -65,13 +65,25 @@ class Active_Campaign_Settings {
 
 		$this->register_option( 'uap_active_campaign_api_key' );
 
+		$this->register_option( 'uap_active_campaign_settings_timestamp' );
+
 		$this->register_option( 'uap_active_campaign_enable_webhook' );
 
 		$this->set_js( '/active-campaign/settings/assets/script.js' );
 
-		$this->users = $this->helpers->get_connected_users();
+		$this->account_url = get_option( 'uap_active_campaign_api_url', '' );
 
-		$this->is_connected = ! empty( $this->users );
+		$this->api_key = get_option( 'uap_active_campaign_api_key', '' );
+
+		$this->users = false;
+
+		if ( ! empty( $this->api_key ) && ! empty( $this->account_url ) ) {
+
+			$this->users = $this->helpers->get_users(); 
+
+		}
+		
+		$this->is_connected = ! empty( $this->users[0]['email'] );
 
 		$this->set_status( $this->is_connected ? 'success' : '' );
 
@@ -83,11 +95,7 @@ class Active_Campaign_Settings {
 	 * @return void.
 	 */
 	public function output() {
-
-		$this->account_url = get_option( 'uap_active_campaign_api_url', '' );
-
-		$this->api_key = get_option( 'uap_active_campaign_api_key', '' );
-
+		
 		$this->enable_triggers = $this->helpers->is_webhook_enabled() ? 'checked' : '';
 
 		$this->kb_link = automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/activecampaign-triggers/', 'settings', 'active-campaign-triggers-kb_article' );

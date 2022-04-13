@@ -63,6 +63,8 @@ class WP_CREATEPOST {
 	 * @return void
 	 */
 	public function load_options() {
+
+		Automator()->helpers->recipe->wp->options->load_options = true;
 		
 		$custom_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			esc_attr__( 'Type', 'uncanny-automator' ),
