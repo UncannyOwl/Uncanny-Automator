@@ -52,10 +52,11 @@ class FCRM_ADD_CONTACT {
 	 * @param $action_data
 	 * @param $recipe_id
 	 * @param $args
+	 * @param $parsed
 	 *
 	 * @return void
 	 */
-	protected function process_action( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 		$data['email'] = Automator()->parse->text( $action_data['meta']['FCRMUSEREMAIL'], $recipe_id, $user_id, $args );
 		$subscriber    = Subscriber::where( 'email', $data['email'] )->first();
 
