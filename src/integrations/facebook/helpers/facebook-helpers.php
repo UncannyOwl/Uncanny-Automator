@@ -9,6 +9,13 @@ namespace Uncanny_Automator;
 class Facebook_Helpers {
 
 	/**
+	 * The API endpoint address.
+	 *
+	 * @var API_ENDPOINT The endpoint adress.
+	 */
+	const API_ENDPOINT = 'v2/facebook';
+
+	/**
 	 * The options.
 	 *
 	 * @var $options
@@ -117,7 +124,7 @@ class Facebook_Helpers {
 	 */
 	public function has_connection_data() {
 
-		$facebook_options_user  = get_option( '_uncannyowl_facebook_settings', array() );
+		$facebook_options_user  = get_option( self::OPTION_KEY, array() );
 		$facebook_options_pages = get_option( '_uncannyowl_facebook_pages_settings', array() );
 
 		if ( ! empty( $facebook_options_user ) && ! empty( $facebook_options_pages ) ) {
@@ -224,59 +231,54 @@ class Facebook_Helpers {
 	 */
 	public function fetch_pages_from_api() {
 
-		$settings = get_option( '_uncannyowl_facebook_settings' );
+		$settings = get_option( self::OPTION_KEY );
 
-		if ( ! isset( $settings['user']['token'] ) ) {
-			return array(
-				'status'  => 403,
-				'message' => esc_html__( 'Forbidden. User access token is required but empty.', 'uncanny-automator' ),
-				'pages'   => array(),
-			);
-		}
-
-		$remote = wp_remote_post(
-			$this->fb_endpoint_uri,
-			array(
-				'body' => array(
-					'action'       => 'list-user-pages',
-					'access_token' => $settings['user']['token'],
-				),
-			)
-		);
+		$message = '';
 
 		$pages = array();
 
-		if ( ! is_wp_error( $remote ) ) {
+		try {
 
-			$response = wp_remote_retrieve_body( $remote );
-
-			$response = json_decode( $response );
-
-			$status = isset( $response->statusCode ) ? $response->statusCode : ''; //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-
-			$message = isset( $response->data->error->message ) ? $response->data->error->message : '';
-
-			if ( 200 === $status ) {
-
-				foreach ( $response->data->data as $page ) {
-
-					$pages[] = array(
-						'value'             => $page->id,
-						'text'              => $page->name,
-						'tasks'             => $page->tasks,
-						'page_access_token' => $page->access_token,
-					);
-				}
-
-				$message = esc_html__( 'Pages are fetched successfully', 'automator-pro' );
-
-				// Save the pages.
-				update_option( '_uncannyowl_facebook_pages_settings', $pages );
-
+			// Throw error if access token is empty.
+			if ( ! isset( $settings['user']['token'] ) ) {
+				// Invoke 403 status code.
+				throw new \Exception( esc_html__( 'Forbidden. User access token is required but empty.', 'uncanny-automator' ), 403 );
 			}
-		} else {
-			$message = $remote->get_error_message();
-			$status  = 500;
+
+			// Request from API.
+			$request = $this->api_request_null(
+				array(
+					'action'       => 'list-user-pages',
+					'access_token' => $settings['user']['token'],
+				)
+			);
+
+			// Throw error if status code is invalid.
+			if ( 200 !== $request['statusCode'] ) {
+				throw new \Exception( esc_html__( 'Invalid status code.', 'uncanny-automator' ), $request['statusCode'] );
+			}
+
+			foreach ( $request['data']['data'] as $page ) {
+				$pages[] = array(
+					'value'             => $page['id'],
+					'text'              => $page['name'],
+					'tasks'             => $page['tasks'],
+					'page_access_token' => $page['access_token'],
+				);
+			}
+
+			$message = esc_html__( 'Pages are fetched successfully', 'uncanny-automator' );
+
+			// Save the option.
+			update_option( '_uncannyowl_facebook_pages_settings', $pages );
+
+		} catch ( \Exception $e ) {
+
+			// Assign the exception code as status code.
+			$status = $e->getCode();
+			// Assign the exception message as the message.
+			$message = $e->getMessage();
+
 		}
 
 		$response = array(
@@ -471,7 +473,7 @@ class Facebook_Helpers {
 			}
 		}
 
-		return '';
+		throw new \Exception( __( 'Facebook is not connected', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -483,6 +485,76 @@ class Facebook_Helpers {
 
 		return $this->fb_endpoint_uri;
 
+	}
+
+	/**
+	 * Method api_request
+	 *
+	 * @param $params
+	 *
+	 * @return void
+	 */
+	public function api_request( $page_id, $body, $action_data = null ) {
+
+		$access_token = $this->get_user_page_access_token( $page_id );
+
+		$body['access_token'] = $access_token;
+
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body'     => $body,
+			'action'   => $action_data,
+			'timeout'  => 10,
+		);
+
+		$response = Api_Server::api_call( $params );
+
+		$this->check_for_errors( $response );
+
+		return $response;
+
+	}
+
+	/**
+	 * Method api_request_null.
+	 *
+	 * @param $body
+	 *
+	 * @return void
+	 */
+	public function api_request_null( $body = array() ) {
+
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body'     => $body,
+			'action'   => null,
+			'timeout'  => 10,
+		);
+
+		return Api_Server::api_call( $params );
+	}
+
+	public function check_for_errors( $response ) {
+
+		if ( isset( $response['data']['error']['message'] ) ) {
+			throw new \Exception( $response['data']['error']['message'], $response['statusCode'] );
+		}
+	}
+
+	/**
+	 * Method log_action_error
+	 *
+	 * @param $response
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 *
+	 * @return void
+	 */
+	public function complete_with_error( $error_msg, $user_id, $action_data, $recipe_id ) {
+		$action_data['do-nothing']           = true;
+		$action_data['complete_with_errors'] = true;
+		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 	}
 
 

@@ -18,18 +18,14 @@ namespace Uncanny_Automator;
 
 ?>
 
-<div 
-	id="uap-settings"
-	class="uap uap-settings"
->
+<div  id="uap-settings" class="uap uap-settings" >
 
 	<?php
 
 	// Hide the header in the "Focus" UI version
 	if ( $layout_version !== 'focus' ) {
-
-		?> 
-
+		?>
+		 
 		<div id="uap-settings-header" class="uap-settings-header">
 			<div class="uap-settings-header__title">
 				<?php esc_html_e( 'Settings', 'uncanny-automator' ); ?>
@@ -37,8 +33,9 @@ namespace Uncanny_Automator;
 		</div>
 
 		<?php
-
 	}
+
+	do_action( 'automator_settings_header_after' );
 
 	?>
 
@@ -91,7 +88,6 @@ namespace Uncanny_Automator;
 					<?php
 
 				}
-
 			}
 
 			// Add tab panels

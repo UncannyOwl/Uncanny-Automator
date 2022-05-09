@@ -550,6 +550,7 @@ class Automator_Load {
 		$classes['Api_Server']                          = UA_ABSPATH . 'src/core/classes/class-api-server.php';
 		$classes['Usage_Reports']                       = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 		$classes['Set_Up_Automator']                    = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
+		$classes['Automator_Notifications']             = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
 
 		//$classes['Import_Recipe'] = UA_ABSPATH . 'src/core/classes/class-import-recipe.php';
 
@@ -686,10 +687,13 @@ class Automator_Load {
 		if ( defined( 'DOING_AJAX' ) ) {
 			// Add the ajax listener.
 			include_once UA_ABSPATH . 'src/core/admin/setup-wizard/setup-wizard.php';
-			add_action( 'wp_ajax_uo_setup_wizard_set_tried_connecting', array(
-				'\Uncanny_Automator\Setup_Wizard',
-				'set_tried_connecting',
-			) );
+			add_action(
+				'wp_ajax_uo_setup_wizard_set_tried_connecting',
+				array(
+					'\Uncanny_Automator\Setup_Wizard',
+					'set_tried_connecting',
+				)
+			);
 		}
 	}
 }

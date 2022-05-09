@@ -840,6 +840,11 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Action - Gravity Forms */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Create an entry for {{a form}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Gravity Forms */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Register a new user", 'uncanny-automator' ),
 				),
 			),
@@ -1206,6 +1211,12 @@ function automator_pro_items_list() {
 					/* translators: Logged-in trigger - MemberPress */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user's membership to {{a specific product}} is paused", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - MemberPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A sub account is added to {{a parent account}}", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
@@ -1830,6 +1841,11 @@ function automator_pro_items_list() {
 					'name' => __( "Generate and email a coupon {{code}} to the user", 'uncanny-automator' ),
 				),
 				array(
+					/* translators: Action - WooCommerce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Set {{a specific order}} to {{a specific status}}", 'uncanny-automator' ),
+				),
+				array(
 					/* translators: Action - WooCommerce Memberships */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Remove the user from {{a membership plan}}", 'uncanny-automator' ),
@@ -1900,6 +1916,12 @@ function automator_pro_items_list() {
 					/* translators: Logged-in trigger - WordPress Core */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user updates a post not in {{a specific}} status", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - WordPress Core */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user updates {{a specific meta key}} of a {{specific type of post}} to {{a specific value}}", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(

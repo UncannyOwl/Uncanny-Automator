@@ -58,7 +58,7 @@ class Gamipress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -125,7 +125,7 @@ class Gamipress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -187,7 +187,7 @@ class Gamipress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -262,7 +262,7 @@ class Gamipress_Helpers {
 				'post_status'    => 'publish',
 			);
 
-			$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any awards', 'uncanny-automator' ) );
+			$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any achievement', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = array(

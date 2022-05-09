@@ -16,6 +16,9 @@ if ( filter_has_var( INPUT_GET, 'page' ) ) {
 		<h2 class="tools-header">
 			<?php esc_html_e( 'Automator Tools', 'uncanny-automator' ); ?>
 		</h2>
+
+		<?php do_action( 'automator_tools_header_after' ); ?>
+
 		<nav class="nav-tab-wrapper uap-nav-tab-wrapper">
 			<?php
 			foreach ( $available_tabs as $tab => $tab_name ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited

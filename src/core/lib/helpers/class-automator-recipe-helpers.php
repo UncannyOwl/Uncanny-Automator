@@ -226,6 +226,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $facebook;
 	/**
+	 * @var Facebook_Groups_Helpers;
+	 */
+	public $facebook_groups;
+	/**
 	 * @var Instagram_Helpers;
 	 */
 	public $instagram;
@@ -273,6 +277,14 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var PeepSo_Helpers
 	 */
 	public $peepso;
+	/**
+	 * @var Optinmonster_Helpers
+	 */
+	public $optinmonster;
+	/**
+	 * @var Advanced_Coupons_Helpers
+	 */
+	public $advanced_coupons;
 	/*
 	 * Check for loading options.
 	 */
@@ -648,6 +660,15 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 						case 'ID':
 							$order_by = 'p.ID';
 							break;
+						case 'parent_id':
+							$order_by = 'p.parent_id';
+							break;
+						case 'post_date':
+							$order_by = 'p.post_date';
+							break;
+						case 'post_type':
+							$order_by = 'p.post_type';
+							break;
 						case 'title':
 						default:
 							$order_by = 'p.post_title';
@@ -659,7 +680,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 					$query .= ' ORDER BY p.post_title';
 				}
 
-				if ( isset( $order ) && empty( $order ) ) {
+				if ( isset( $order ) && ! empty( $order ) ) {
 					$query .= " $order";
 				} else {
 					$query .= ' ASC';

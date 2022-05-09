@@ -104,6 +104,12 @@ class Wpjm_Tokens {
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
+				'tokenId'         => 'WPJMJOBID',
+				'tokenName'       => __( 'Job ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPJMSUBMITJOB',
+			),
+			array(
 				'tokenId'         => 'WPJMJOBLOCATION',
 				'tokenName'       => __( 'Location', 'uncanny-automator' ),
 				'tokenType'       => 'text',
@@ -233,12 +239,18 @@ class Wpjm_Tokens {
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
-			array(
-				'tokenId'         => 'WPJMJOBTITLE',
-				'tokenName'       => __( 'Job title', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			),
+//			array(
+//				'tokenId'         => 'WPJMJOBTITLE',
+//				'tokenName'       => __( 'Job title', 'uncanny-automator' ),
+//				'tokenType'       => 'text',
+//				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
+//			),
+//			array(
+//				'tokenId'         => 'WPJMJOBID',
+//				'tokenName'       => __( 'Job ID', 'uncanny-automator' ),
+//				'tokenType'       => 'text',
+//				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
+//			),
 			array(
 				'tokenId'         => 'WPJMJOBLOCATION',
 				'tokenName'       => __( 'Location', 'uncanny-automator' ),
@@ -461,6 +473,9 @@ LIMIT 0,1",
 				} elseif ( $pieces[2] === 'WPJMJOBTITLE' || 'WPJMJOBAPPLICATION' === $pieces[2] ) {
 					$job   = get_post( $entry );
 					$value = $job->post_title;
+				} elseif ( $pieces[2] === 'WPJMJOBID' ) {
+					$job   = get_post( $entry );
+					$value = $job->ID;
 				} elseif ( $pieces[2] === 'WPJMJOBLOCATION' ) {
 					$job   = get_post( $entry );
 					$value = get_the_job_location( $job );

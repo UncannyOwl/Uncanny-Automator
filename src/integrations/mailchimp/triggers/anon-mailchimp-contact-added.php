@@ -31,7 +31,7 @@ class ANON_MAILCHIMP_CONTACT_ADDED {
 	 */
 	public function __construct() {
 
-		// $this->setup_trigger();
+		$this->setup_trigger();
 
 	}
 

@@ -64,9 +64,9 @@ class GP_AWARDACHIEVEMENT_A {
 							'option_code'              => $this->action_meta,
 							'options'                  => array(),
 							/* translators: Noun */
-							'label'                    => esc_attr__( 'Award', 'uncanny-automator' ),
+							'label'                    => esc_attr__( 'Achievement', 'uncanny-automator' ),
 							'required'                 => true,
-							'custom_value_description' => esc_attr__( 'Award ID', 'uncanny-automator' ),
+							'custom_value_description' => esc_attr__( 'Achievement ID', 'uncanny-automator' ),
 						)
 					),
 				),

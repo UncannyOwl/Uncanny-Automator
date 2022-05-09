@@ -117,6 +117,7 @@ class WPJM_JOBAPPLICATION {
 							$trigger_meta['meta_key']   = 'WPJMJOBAPPLICATIONID';
 							$trigger_meta['meta_value'] = $application_id;
 							Automator()->insert_trigger_meta( $trigger_meta );
+
 							Automator()->maybe_trigger_complete( $result['args'] );
 							break;
 						}

@@ -45,21 +45,37 @@ class Events_Manager_Helpers {
 		$this->pro = $pro;
 	}
 
+	/**
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
+	 *
+	 * @return mixed|void
+	 */
 	public function all_em_events( $label = null, $option_code = 'EMALLEVENTS', $args = array() ) {
 		if ( ! $label ) {
-			$label = __( 'Event', 'uncanny-automator' );
+			$label = esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
-		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
-		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
-		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
-		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$any_option   = key_exists( 'any_option', $args ) ? $args['any_option'] : false;
-		$options      = array();
+		$token           = key_exists( 'token', $args ) ? $args['token'] : false;
+		$is_ajax         = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$target_field    = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
+		$end_point       = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$any_option      = key_exists( 'any_option', $args ) ? $args['any_option'] : false;
+		$relevant_tokens = key_exists( 'relevant_tokens', $args ) ? $args['relevant_tokens'] : '';
+		$options         = array();
 
 		if ( isset( $any_option ) && $any_option == true ) {
-			$options['-1'] = __( 'Any event', 'uncanny-automator' );
+			$options['-1'] = esc_attr__( 'Any event', 'uncanny-automator' );
 		}
+
+		$default_tokens = array(
+			$option_code                => esc_attr__( 'Event title', 'uncanny-automator' ),
+			$option_code . '_ID'        => esc_attr__( 'Event ID', 'uncanny-automator' ),
+			$option_code . '_URL'       => esc_attr__( 'Event URL', 'uncanny-automator' ),
+			$option_code . '_THUMB_ID'  => esc_attr__( 'Event featured image ID', 'uncanny-automator' ),
+			$option_code . '_THUMB_URL' => esc_attr__( 'Event featured image URL', 'uncanny-automator' ),
+		);
 
 		global $wpdb;
 
@@ -73,9 +89,13 @@ class Events_Manager_Helpers {
 		foreach ( $all_events as $event ) {
 			$title = $event->event_name;
 			if ( empty( $title ) ) {
-				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $event->event_id );
+				$title = sprintf( esc_attr__( 'ID: %s (no title)', 'uncanny-automator' ), $event->event_id );
 			}
 			$options[ $event->event_id ] = $title;
+		}
+
+		if ( ! empty( $relevant_tokens ) ) {
+			$default_tokens = array_merge( $default_tokens, $relevant_tokens );
 		}
 
 		$option = array(
@@ -88,13 +108,7 @@ class Events_Manager_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code                => __( 'Event title', 'uncanny-automator' ),
-				$option_code . '_ID'        => __( 'Event ID', 'uncanny-automator' ),
-				$option_code . '_URL'       => __( 'Event URL', 'uncanny-automator' ),
-				$option_code . '_THUMB_ID'  => __( 'Event featured image ID', 'uncanny-automator' ),
-				$option_code . '_THUMB_URL' => __( 'Event featured image URL', 'uncanny-automator' ),
-			),
+			'relevant_tokens' => $default_tokens,
 		);
 
 		return apply_filters( 'uap_option_all_em_events', $option );

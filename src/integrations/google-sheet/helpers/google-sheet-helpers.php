@@ -483,25 +483,25 @@ class Google_Sheet_Helpers {
 		try {
 
 			$body = array(
-				'action'         => 'list_drives'
+				'action' => 'list_drives',
 			);
-				
+
 			$response = $this->api_call( $body );
 
 			$options = array();
 
 			$options[] = array(
 				'value' => '-1',
-				'text' 	=> __( 'My google drive', 'uncanny-automator' )
+				'text'  => __( 'My google drive', 'uncanny-automator' ),
 			);
 
 			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {
 				foreach ( $response['data'] as $drive ) {
 					$options[] = array(
 						'value' => $drive->id,
-						'text' 	=> $drive->name
+						'text'  => $drive->name,
 					);
-					
+
 				}
 			}
 
@@ -512,7 +512,7 @@ class Google_Sheet_Helpers {
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
 		}
-		
+
 	}
 
 
@@ -525,24 +525,24 @@ class Google_Sheet_Helpers {
 	 */
 	public function api_get_spreadsheets_from_drive( $drive_id ) {
 
-		$options   = array();
+		$options = array();
 
 		try {
 
 			$body = array(
-				'action'	=> 'list_files',
-				'drive_id'	=> $drive_id,
+				'action'   => 'list_files',
+				'drive_id' => $drive_id,
 			);
-				
+
 			$response = $this->api_call( $body );
-			
+
 			$options[] = array(
 				'value' => '-1',
 				'text'  => __( 'Select a Speadsheet', 'uncanny-automator' ),
 			);
 
-			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {	
-			
+			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {
+
 				foreach ( $response['data'] as $item ) {
 					$options[] = array(
 						'value' => $item['id'],
@@ -550,14 +550,13 @@ class Google_Sheet_Helpers {
 					);
 				}
 			}
-
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '-1',
 				'text'  => __( 'Google returned an error. Please try again in a few minutes.', 'uncanny-automator' ),
 			);
 		}
-		
+
 		return $options;
 
 	}
@@ -586,13 +585,13 @@ class Google_Sheet_Helpers {
 
 			$body = array(
 				'action'         => 'get_worksheets',
-				'spreadsheet_id' => $spreadsheet_id
+				'spreadsheet_id' => $spreadsheet_id,
 			);
-				
+
 			$response = $this->api_call( $body );
 
-			if ( is_array( $response['data'] ) ) {	
-			
+			if ( is_array( $response['data'] ) ) {
+
 				foreach ( $response['data'] as $worksheet ) {
 
 					if ( ! isset( $worksheet['properties'] ) ) {
@@ -607,24 +606,23 @@ class Google_Sheet_Helpers {
 
 					$options[] = array(
 						'value' => $this->maybe_generate_sheet_id( $properties['sheetId'] ),
-						'text'  => $properties['title']
+						'text'  => $properties['title'],
 					);
 				}
 			}
-
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '-1',
 				'text'  => __( 'Google returned an error. Please try again in a few minutes.', 'uncanny-automator' ),
 			);
 		}
-		
+
 		return $options;
 
 	}
-	
+
 	/**
-	 * maybe_generate_sheet_id
+	 * Method maybe_generate_sheet_id
 	 *
 	 * @param  mixed $id
 	 * @return void
@@ -632,10 +630,10 @@ class Google_Sheet_Helpers {
 	public function maybe_generate_sheet_id( $id ) {
 
 		if ( 0 === (int) $id ) {
-			$hashed   = sha1( self::$hash_string );
-			$id = substr( $hashed, 0, 9 );
+			$hashed = sha1( self::$hash_string );
+			$id     = substr( $hashed, 0, 9 );
 		}
-		
+
 		return $id;
 	}
 
@@ -650,19 +648,19 @@ class Google_Sheet_Helpers {
 	public function api_get_rows( $spreadsheet_id, $worksheet_id ) {
 
 		$options = array();
-		
+
 		try {
 
 			$body = array(
 				'action'         => 'get_rows',
 				'spreadsheet_id' => $spreadsheet_id,
-				'worksheet_id'   => $worksheet_id
+				'worksheet_id'   => $worksheet_id,
 			);
-				
+
 			$api_response = $this->api_call( $body );
 
-			if ( is_array( $api_response['data'] ) ) {	
-			
+			if ( is_array( $api_response['data'] ) ) {
+
 				$alphas = range( 'A', 'Z' );
 
 				if ( ! empty( $api_response['data'][0] ) ) {
@@ -684,9 +682,7 @@ class Google_Sheet_Helpers {
 					);
 
 				}
-
 			}
-
 		} catch ( \Exception $e ) {
 			$response = (object) array(
 				'success' => false,
@@ -713,9 +709,9 @@ class Google_Sheet_Helpers {
 			'action'         => 'append_row',
 			'spreadsheet_id' => $spreadsheet_id,
 			'worksheet_id'   => $worksheet_id,
-			'key_values'     => $key_values
+			'key_values'     => $key_values,
 		);
-			
+
 		$response = $this->api_call( $body, $action );
 
 		return $response;
@@ -754,9 +750,9 @@ class Google_Sheet_Helpers {
 			$user_info['email']      = $user['data']['email'];
 			set_transient( $transient_key, $user_info, DAY_IN_SECONDS );
 		} catch ( \Exception $e ) {
-			// Do nothing
+			return $user_info;
 		}
-		
+
 		return $user_info;
 	}
 
@@ -802,17 +798,17 @@ class Google_Sheet_Helpers {
 		try {
 
 			$body = array(
-				'action'         => 'revoke_access'
+				'action' => 'revoke_access',
 			);
-				
+
 			$response = $this->api_call( $body );
-	
+
 			delete_option( '_uncannyowl_google_sheet_settings' );
 
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
 		}
-		
+
 	}
 
 	/**
@@ -833,11 +829,11 @@ class Google_Sheet_Helpers {
 		if ( ! ( strpos( $scope, self::SCOPE_USERINFO ) || strpos( $scope, self::SCOPE_USER_EMAIL ) ) ) {
 			return;
 		}
-		
+
 		$body = array(
-			'action'	=> 'user_info'
+			'action' => 'user_info',
 		);
-			
+
 		$response = $this->api_call( $body );
 
 		return $response;
@@ -1128,9 +1124,9 @@ class Google_Sheet_Helpers {
 			die();
 		}
 
-		$worksheet_id      = sanitize_text_field( $values['GSWORKSHEET'] );
-		$hashed            = sha1( self::$hash_string );
-		$sheet_id          = substr( $hashed, 0, 9 );
+		$worksheet_id = sanitize_text_field( $values['GSWORKSHEET'] );
+		$hashed       = sha1( self::$hash_string );
+		$sheet_id     = substr( $hashed, 0, 9 );
 
 		if ( (string) $worksheet_id === (string) $sheet_id || intval( '-1' ) === intval( $worksheet_id ) ) {
 			$worksheet_id = 0;
@@ -1241,9 +1237,9 @@ class Google_Sheet_Helpers {
 		update_option( 'uncanny_automator_google_sheets_migrated', 'yes', false );
 
 	}
-	
+
 	/**
-	 * api_get_range_values
+	 * Method api_get_range_values
 	 *
 	 * @param  mixed $spreadsheet_id
 	 * @param  mixed $range
@@ -1254,17 +1250,17 @@ class Google_Sheet_Helpers {
 		$body = array(
 			'action'         => 'get_column_rows',
 			'spreadsheet_id' => $spreadsheet_id,
-			'range'          => $range
+			'range'          => $range,
 		);
-			
+
 		$response = $this->api_call( $body );
 
 		return $response;
 
 	}
-	
+
 	/**
-	 * api_update_row
+	 * Method api_update_row
 	 *
 	 * @param  mixed $spreadsheet_id
 	 * @param  mixed $range
@@ -1279,16 +1275,16 @@ class Google_Sheet_Helpers {
 			'action'         => 'update_row',
 			'range'          => $range,
 			'spreadsheet_id' => $spreadsheet_id,
-			'values'         => $values
+			'values'         => $values,
 		);
-			
+
 		$response = $this->api_call( $body, $action );
 
 		return $response;
 	}
-	
+
 	/**
-	 * api_call
+	 * Method api_call
 	 *
 	 * @param  mixed $body
 	 * @param  mixed $action
@@ -1300,8 +1296,9 @@ class Google_Sheet_Helpers {
 
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => $body,
-			'action' => $action
+			'body'     => $body,
+			'action'   => $action,
+			'timeout'  => 10,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -1311,6 +1308,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return $response;
-	
+
 	}
 }

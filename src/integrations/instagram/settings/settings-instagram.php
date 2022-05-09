@@ -85,7 +85,9 @@ class Instagram_Settings {
 		$fb_helper = null;
 
 		if ( isset( Automator()->helpers->recipe->facebook->options ) ) {
+
 			$fb_helper = Automator()->helpers->recipe->facebook->options;
+
 		}
 
 		$is_user_connected = $this->get_helper()->is_user_connected();

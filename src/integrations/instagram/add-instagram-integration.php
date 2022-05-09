@@ -35,14 +35,6 @@ class Add_Instagram_Integration {
 	public $connected = false;
 
 	/**
-	 * Constructs the class.
-	 *
-	 * @since 2.4.0
-	 */
-	public function __construct() {
-	}
-
-	/**
 	 * Registers Integration.
 	 *
 	 * @since 2.4.0
@@ -52,7 +44,9 @@ class Add_Instagram_Integration {
 		$ig_account_connected_count = $this->get_total_ig_accounts_connected();
 
 		if ( $ig_account_connected_count >= 1 ) {
+
 			$this->connected = true;
+
 		}
 
 		// Set up integration configuration.
@@ -93,7 +87,9 @@ class Add_Instagram_Integration {
 	 * @return bool
 	 */
 	public function plugin_active( $status, $code ) {
+
 		return true;
+
 	}
 
 	/**
@@ -109,9 +105,10 @@ class Add_Instagram_Integration {
 
 		foreach ( $options_facebook_pages as $page ) {
 
-			$ig_account = isset( $page['ig_account']->data ) ? $page['ig_account']->data : '';
+			$ig_account = isset( $page['ig_account'] ) ? $page['ig_account'] : '';
 
 			if ( ! empty( $ig_account ) ) {
+
 				$total ++;
 			}
 		}

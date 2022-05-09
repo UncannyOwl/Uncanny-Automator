@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9.3
 Requires PHP: 5.6
-Stable tag: 3.9.1.1
+Stable tag: 4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -31,6 +31,7 @@ If you've used Zapier or Integromat before, setting things up will be intuitive.
 The free version of Automator is incredibly powerful and comes with built-in automation support for all of these popular WordPress plugins and apps:
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Advanced Coupons](https://automatorplugin.com/integration/advanced-coupons/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -44,7 +45,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Elementor](https://automatorplugin.com/integration/elementor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Facebook](https://automatorplugin.com/integration/facebook?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [FluentCRM](https://automatorplugin.com/integration/fluentcrm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -57,8 +59,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Groundhogg](https://automatorplugin.com/integration/groundhogg/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [HappyForms](https://automatorplugin.com/integration/happyforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [HubSpot](https://automatorplugin.com/integration/hubspot/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [IFTTT](https://automatorplugin.com/integration/ifttt?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Instagram](https://automatorplugin.com/integration/instagram?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [IFTTT](https://automatorplugin.com/integration/ifttt/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Instagram](https://automatorplugin.com/integration/instagram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Integrately](https://automatorplugin.com/integration/integrately/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Integromat](https://automatorplugin.com/integration/integromat/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnDash](https://automatorplugin.com/integration/learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -192,11 +194,68 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 4.0 [2022-05-09] =
+
+**New integrations:**
+
+* [Advanced Coupons](https://automatorplugin.com/integration/advanced-coupons/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1884 #1885
+* [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1174
+
+**New Triggers:**
+
+* Advanced Coupons - A user spends {greater than, less than, or equal to} {a specific amount} of store credit #1885
+* Advanced Coupons - A user receives {greater than, less than, or equal to} {a specific amount} of store credit #1884
+* Events Manager - An attendee registers for an event #1858
+* Events Manager - A user registers for an event #1866
+* Gravity Forms - A user submits a form with a code from a specific batch (Uncanny Codes required) #1878
+* Mailchimp - A contact is added to an audience #1785
+* Mailchimp - A contact email is changed #1788
+* Mailchimp - A contact is unsubscribed from an audience #1786
+* PeepSo - A user updates a specific field in their profile #1766
+
+**New Actions:**
+
+* Facebook Groups - Publish a post to a Facebook group #1174
+* Facebook Groups - Publish a post with an image to a Facebook group #1174
+* Facebook Groups - Share a link with a message to a Facebook group #1174
+* Optinmonster - Show a campaign #1864
+
+**Added:**
+
+* Events Manager - Several new tokens added  #1857
+* WP Job Manager - "Job ID" token added in triggers #1807
+* Mailchimp - Webhooks settings page #1791, #1815
+* In-plugin notifications #1715
+* Support for integration-specific conditions in Uncanny Automator Pro 4.0 #1415
+
+**Updated:**
+
+* Events Manager - "A user registers for an event" renamed to "A user's booking for an event is approved" #1867
+* Instagram - "Publish a photo to an Instagram Business account" now accepts Media Library ID in addition to the media URL #1852
+* Instagram, Facebook - Converted to use the API class #1795
+* Convert Facebook integration to use the API class #1794
+* Improved navigation through fields using tab and shift+tab #274
+* Automator Core - Set user signed in flag true for all logged-in type triggers  #1817
+
+**Fixed:**
+
+* GamiPress - Field label renamed from "Award" to "Achievement" #1652
+* GamiPress - Renamed "Any awards" to "All achievements" #1534
+* Events Manager - "A user's booking for an event is approved" now runs reliably with auto approval #1874
+* Wishlist Member - Sentence case fix, Membership Level renamed to Membership level #1869
+* Wishlist Member - "A user is added to a membership level" now fires with ThriveCart checkout #1808
+* Recipe Tags/Categories - Yoast SEO erroneously enables archives on frontend #1850
+* Internal query now sorts the result set reliably #1913
+* WordPress - A user views a page -  "All pages" option renamed to "Any page" #1914
+* Automator Core - Number of times token now parses reliably in certain situations #1918
+* Automator Core - Option to define alternate label for a token added in Automator fields #1919
+* Automator API - API request timeout for Facebook Pages and Google Sheets changed from 5 to 10 seconds #1921
+
 = 3.9.1.1 [2022-04-14] =
 
 **Fixed:**
 
-* FluentCRM - PHP error in Add a contact action on PHP 8.x+
+* FluentCRM - PHP error in Add a contact action on PHP 8.x+ #1840
 
 = 3.9.1 [2022-04-13] =
 
@@ -786,44 +845,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WooCommerce - Filter `automator_woocommerce_custom_item_meta_token_parser` to parse custom item meta #921
 * WooCommerce - Filter `automator_woocommerce_custom_order_meta_token_parser` to parse custom order meta #920
 * WooCommerce - filter `automator_woocommerce_token_parser` to allow custom order meta parsing #918
-
-= 3.1.4.1 [2021-09-08] =
-
-**Fixed:**
-
-* File name change causing fatal error on sites when LearnDash and object caching are enabled #824
-
-= 3.1.4 [2021-09-08] =
-
-**New Triggers:**
-
-* Automator Core - A recipe completes with errors a number of times #754
-* Automator Core - A recipe completes a number of times #752
-* Automator Core - A recipe runs a number of times #751
-* Automator Core - A recipe completes with a specific status #726
-
-**Added:**
-
-* LearnDash - A user achieves a percentage greater than, less than or equal to a value on a quiz: "User's quiz percentage" token #809
-* LearnDash - A user achieves a score greater than, less than or equal to a value on a quiz: "User's quiz score" token #808
-* WooCommerce - "Order quantity" token for triggers that support order tokens #733
-* WooCommerce - `automator_woo_multi_item_separator` filter to specify separator for multiple items in a token #790
-
-**Fixed:**
-
-* WooCommerce - Order coupon token no longer includes HTML #784
-* WooCommerce ⁃ Token no longer returns "Any" instead of value #741
-* Woocommerce Memberships - A user is added to a membership trigger now fires more consistently #736
-* WordPress Core - Fixed argument count for delete_post action #783
-* wpForo - Fixed unescaped sprintf token #817 
-* Uncanny Continuing Education Credits - Invalid field types #781
-* AffiliateWP - "A new affiliate is approved" now fires reliably for automatic approvals #773
-* AffiliateWP - "An affiliate makes a referral of a specific type" now fires more consistently #713
-* Slack - Channel limit increased from 100 to 1000 #772
-* MailChimp - Segments now displayed more consistently in the "Create and send a campaign" action #738
-* Google Sheets - Fixed notice and allowed token types #708
-* Added missing space to log sentence #277
-* Cloning a recipe - The clone no longer has the same creation date as the original #811
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

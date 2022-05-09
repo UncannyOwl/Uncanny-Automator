@@ -3,7 +3,10 @@
 namespace Uncanny_Automator;
 
 /**
- * Class Development_Ready_functions
+ * Class Automator_Functions
+ * 
+ * Development ready functions.
+ *
  * @package Uncanny_Automator
  */
 class Automator_Functions {
@@ -1306,10 +1309,17 @@ WHERE pm.post_id
 	 *
 	 * @return bool
 	 */
-	public function is_user_signed_in( $args, $check = true ) {
+	public function is_user_signed_in( $args ) {
 		$is_signed_in = array_key_exists( 'is_signed_in', $args ) ? $args['is_signed_in'] : false;
+		/**
+		 * v3.9.1 or 3.10.
+		 * Globally set `is_signed_in` to true if trigger type is "user"
+		 */
+		if ( isset( $args['code'] ) && false === $is_signed_in ) {
+			$is_signed_in = Automator()->is_trigger_type_user( $args['code'] );
+		}
 
-		return true === $is_signed_in ? $is_signed_in : true === $check && is_user_logged_in();
+		return true === $is_signed_in ? true : is_user_logged_in();
 	}
 
 	/**
@@ -1404,4 +1414,75 @@ WHERE pm.post_id
 
 		return $this->register->integration( $integration_code, $integration );
 	}
+
+	/**
+	 * @param $trigger_code
+	 *
+	 * @return false|string
+	 */
+	public function get_trigger_type( $trigger_code = null ) {
+		if ( null === $trigger_code ) {
+			return false;
+		}
+		$triggers = $this->get_triggers();
+		if ( empty( $triggers ) ) {
+			return false;
+		}
+		foreach ( $triggers as $trigger ) {
+			if ( ! isset( $trigger['code'] ) ) {
+				continue;
+			}
+			if ( (string) $trigger_code !== (string) $trigger['code'] ) {
+				continue;
+			}
+			if ( ! isset( $trigger['type'] ) ) {
+				return 'anonymous';
+			}
+
+			return (string) $trigger['type'];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determines whether the trigger type is a user.
+	 * 
+	 * @param string $trigger_code The trigger code.
+	 *
+	 * @return bool True if the trigger type is 'user'. Otherwise, false.
+	 */
+	public function is_trigger_type_user( $trigger_code = '' ) {
+
+		return $this->is_trigger_type( 'user', $trigger_code );
+
+	}
+
+	/**
+	 * Determines whether the trigger type is an anonymous.
+	 * 
+	 * @param string $trigger_code The trigger code.
+	 * 
+	 * @return bool True if the trigger type is 'anonymous'. Otherwise, false.
+	 */
+	public function is_trigger_type_anonymous( $trigger_code = '' ) {
+
+		return $this->is_trigger_type( 'anonymous', $trigger_code );
+
+	}
+
+	/**
+	 * Determines if the trigger type is equal to the given type.
+	 * 
+	 * @param string $type The type (anonymous, user) you want to compare against the trigger.
+	 * @param string $trigger_code The trigger code of the trigger.
+	 * 
+	 * @return bool True if given type is equal to the type of the trigger. Otherwise, false.
+	 */
+	public function is_trigger_type( $type = '', $trigger_code = '' ) {
+
+		return (string) $type === (string) $this->get_trigger_type( $trigger_code );
+
+	}
+
 }

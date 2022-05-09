@@ -68,7 +68,15 @@ class Wc_Tokens {
 			'order_summary'        => esc_attr__( 'Order summary', 'uncanny-automator' ),
 		);
 
-		add_action( 'uap_wc_trigger_save_meta', array( $this, 'uap_wc_trigger_save_meta_func' ), 20, 4 );
+		add_action(
+			'uap_wc_trigger_save_meta',
+			array(
+				$this,
+				'uap_wc_trigger_save_meta_func',
+			),
+			20,
+			4
+		);
 
 		//Adding WC tokens
 		add_filter(
@@ -102,7 +110,15 @@ class Wc_Tokens {
 		);
 
 		//Parsing data
-		add_filter( 'automator_maybe_parse_token', array( $this, 'wc_ordertotal_tokens' ), 20, 6 );
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'wc_ordertotal_tokens',
+			),
+			20,
+			6
+		);
 
 		//Adding WC tokens
 		add_filter(
@@ -221,7 +237,8 @@ class Wc_Tokens {
 	}
 
 	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
+	 * Only load this integration and its triggers and actions if the related
+	 * plugin is active
 	 *
 	 * @param $status
 	 * @param $plugin
@@ -858,4 +875,5 @@ class Wc_Tokens {
 
 		return implode( PHP_EOL, $html );
 	}
+
 }

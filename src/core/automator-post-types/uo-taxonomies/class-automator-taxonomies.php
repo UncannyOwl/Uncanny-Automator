@@ -38,18 +38,21 @@ class Automator_Taxonomies {
 			'recipe_category', // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
 			'uo-recipe', // post type name
 			array(
-				'hierarchical'      => true,
-				'label'             => esc_attr__( 'Recipe category', 'uncanny-automator' ), // display name
-				'labels'            => array(
+				'public'             => false,
+				'publicly_queryable' => false,
+				'show_ui'            => true,
+				'hierarchical'       => true,
+				'label'              => esc_attr__( 'Recipe category', 'uncanny-automator' ), // display name
+				'labels'             => array(
 					'menu_name' => esc_attr__( 'Categories', 'uncanny-automator' ),
 				),
-				'query_var'         => true,
-				'rewrite'           => array(
+				'query_var'          => true,
+				'rewrite'            => array(
 					'slug'       => 'uo-recipe', // This controls the base slug that will display before each term
 					'with_front' => false, // Don't display the category base before
 				),
-				'show_in_nav_menus' => false,
-				'capabilities'      => array(
+				'show_in_nav_menus'  => false,
+				'capabilities'       => array(
 					'manage_terms' => 'manage_options',
 					'edit_terms'   => 'manage_options',
 					'delete_terms' => 'manage_options',
@@ -63,18 +66,21 @@ class Automator_Taxonomies {
 			'recipe_tag', // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
 			'uo-recipe', // post type name
 			array(
-				'hierarchical'      => false,
-				'label'             => esc_attr__( 'Recipe tag', 'uncanny-automator' ), // display name
-				'labels'            => array(
+				'public'             => false,
+				'publicly_queryable' => false,
+				'show_ui'            => true,
+				'hierarchical'       => false,
+				'label'              => esc_attr__( 'Recipe tag', 'uncanny-automator' ), // display name
+				'labels'             => array(
 					'menu_name' => esc_attr__( 'Tags', 'uncanny-automator' ),
 				),
-				'query_var'         => true,
-				'rewrite'           => array(
+				'query_var'          => true,
+				'rewrite'            => array(
 					'slug'       => 'uo-recipe', // This controls the base slug that will display before each term
 					'with_front' => false, // Don't display the category base before
 				),
-				'show_in_nav_menus' => false,
-				'capabilities'      => array(
+				'show_in_nav_menus'  => false,
+				'capabilities'       => array(
 					'manage_terms' => 'manage_options',
 					'edit_terms'   => 'manage_options',
 					'delete_terms' => 'manage_options',

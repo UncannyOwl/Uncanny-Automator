@@ -77,7 +77,6 @@ class Admin_Menu {
 		add_action( 'admin_init', array( $this, 'plugins_loaded' ), 1 );
 		add_action( 'admin_menu', array( $this, 'register_options_menu_page' ) );
 
-
 		add_action( 'admin_menu', array( $this, 'register_legacy_options_menu_page' ), 999 );
 		add_action( 'admin_init', array( $this, 'maybe_redirect_to_first_settings_tab' ), 1000 );
 
@@ -411,7 +410,7 @@ class Admin_Menu {
 	 */
 	public function is_pro_older_than_38() {
 
-		if (  defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+		if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
 			return version_compare( AUTOMATOR_PRO_PLUGIN_VERSION, '3.8', '<' );
 		}
 
@@ -453,9 +452,9 @@ class Admin_Menu {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'post_type'   => 'uo-recipe',
-					'page'        => 'uncanny-automator-settings',
-					'tab'         => array_shift( $tab_ids ),
+					'post_type' => 'uo-recipe',
+					'page'      => 'uncanny-automator-settings',
+					'tab'       => array_shift( $tab_ids ),
 				),
 				admin_url( 'edit.php' )
 			)
@@ -522,8 +521,6 @@ class Admin_Menu {
 
 		$this->settings_tabs();
 		include Utilities::automator_get_include( 'automator-settings.php' );
-
-
 
 	}
 
@@ -761,7 +758,6 @@ class Admin_Menu {
 
 	/**
 	 * Enqueues global assets in the Automator pages
-	 *
 	 */
 	private function enqueue_global_assets() {
 		// List of page where we have to add the assets
@@ -770,6 +766,8 @@ class Admin_Menu {
 			'uncanny-automator-dashboard',
 			'uncanny-automator-integrations',
 			'uncanny-automator-config',
+			'uncanny-automator-tools',
+			'edit.php',
 		);
 
 		// Enqueue admin scripts
@@ -777,7 +775,7 @@ class Admin_Menu {
 			'admin_enqueue_scripts',
 			function ( $hook ) {
 				// Add exception for the "post.php" hook
-				if ( 'post.php' === $hook ) {
+				if ( 'post.php' === $hook || 'edit.php' === $hook ) {
 					if ( 'uo-recipe' !== (string) get_post_type() ) {
 						return;
 					}
@@ -837,7 +835,7 @@ class Admin_Menu {
 			'i18n'      => array(
 				'error'    => array(
 					'request' => array(
-						'badRequest' => array(
+						'badRequest'   => array(
 							'title' => __( 'Bad request', 'uncanny-automator' ),
 						),
 
@@ -845,23 +843,23 @@ class Admin_Menu {
 							'title' => __( 'Access denied', 'uncanny-automator' ),
 						),
 
-						'notFound' => array(
+						'notFound'     => array(
 							'title' => __( 'Not found', 'uncanny-automator' ),
 						),
 
-						'timeout' => array(
+						'timeout'      => array(
 							'title' => __( 'Request timeout', 'uncanny-automator' ),
 						),
 
-						'serverError' => array(
+						'serverError'  => array(
 							'title' => __( 'Internal error', 'uncanny-automator' ),
 						),
 
-						'parserError' => array(
+						'parserError'  => array(
 							'title' => __( 'Parser error', 'uncanny-automator' ),
 						),
 
-						'generic' => array(
+						'generic'      => array(
 							'title' => __( 'Unknown error', 'uncanny-automator' ),
 						),
 					),
@@ -891,7 +889,6 @@ class Admin_Menu {
 	 * the current page is indeed the Dashboard page.
 	 * This uses the filter "automator_assets_backend_js_data". If the page is not
 	 * the targeted page, it just returns the data unmodified.
-	 *
 	 */
 	private function dashboard_inline_js_data() {
 		// Filter inline data
@@ -948,7 +945,6 @@ class Admin_Menu {
 	 * the current page is indeed the Integrations page.
 	 * This uses the filter "automator_assets_backend_js_data". If the page is not
 	 * the targeted page, it just returns the data unmodified.
-	 *
 	 */
 	private function integrations_inline_js_data() {
 		// Filter inline data
@@ -1174,9 +1170,12 @@ class Admin_Menu {
 		}
 
 		// Filter them to get only the installed ones
-		$installed_integrations = array_filter( $integrations, function ( $integration ) {
-			return $integration->is_installed;
-		} );
+		$installed_integrations = array_filter(
+			$integrations,
+			function ( $integration ) {
+				return $integration->is_installed;
+			}
+		);
 
 		// Create collection data
 		return array_keys( $installed_integrations );

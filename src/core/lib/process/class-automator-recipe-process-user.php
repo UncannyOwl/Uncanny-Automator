@@ -763,7 +763,6 @@ class Automator_Recipe_Process_User {
 		$user_id        = key_exists( 'user_id', $option_meta ) ? absint( $option_meta['user_id'] ) : null;
 		$trigger_log_id = key_exists( 'trigger_log_id', $option_meta ) ? absint( $option_meta['trigger_log_id'] ) : null;
 		$post_id        = key_exists( 'post_id', $option_meta ) ? $option_meta['post_id'] : null;
-		$is_signed_in   = Automator()->is_user_signed_in( $option_meta );
 		$run_number     = Automator()->get->next_run_number( $option_meta['recipe_id'], $user_id, true );
 		$trigger        = key_exists( 'trigger', $option_meta ) ? $option_meta['trigger'] : null;
 		$trigger_meta   = ! empty( $save_for_option ) ? $save_for_option : null;

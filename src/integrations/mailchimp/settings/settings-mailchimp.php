@@ -94,7 +94,7 @@ class Mailchimp_Settings {
 
 		$kb_link = automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/mailchimp-wordpress-triggers/', 'settings', 'mailchimp-triggers-kb_article' );
 
-		$regenerate_alert = esc_html__( 'Regenerating the URL will prevent MailChimp triggers from working until the new webhook URL is set in MailChimp. Continue?', 'uncanny-automator' );
+		$regenerate_alert = esc_html__( 'Regenerating the URL will prevent Mailchimp triggers from working until the new webhook URL is set in Mailchimp. Continue?', 'uncanny-automator' );
 
 		$regenerate_key_url = add_query_arg(
 			array(

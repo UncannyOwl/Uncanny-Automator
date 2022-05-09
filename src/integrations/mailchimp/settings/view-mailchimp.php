@@ -55,9 +55,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 						heading="<?php esc_html_e( 'Uncanny Automator only supports connecting to one Mailchimp account at a time.', 'uncanny-automator' ); ?>"
 					></uo-alert>
 
-					<!--<div class="uap-settings-panel-content-separator"></div> -->
+					<div class="uap-settings-panel-content-separator"></div>
 
-					<!-- <uo-switch id="uap_mailchimp_enable_webhook" <?php echo esc_attr( $enable_triggers ); ?> label="<?php esc_attr_e( 'Enable triggers', 'uncanny-automator' ); ?>"></uo-switch> -->
+					<uo-switch id="uap_mailchimp_enable_webhook" <?php echo esc_attr( $enable_triggers ); ?> label="<?php esc_attr_e( 'Enable triggers', 'uncanny-automator' ); ?>"></uo-switch>
 
 					<div id="uap-mailchimp-webhook" style="display:none;">
 						<uo-alert
@@ -68,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<p>
 								<?php
 									echo sprintf(
-										esc_html__( "Enabling MailChimp triggers requires setting up a webhook in your MailChimp account using the URL below. A few steps and you'll be up and running in no time. Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
+										esc_html__( "Enabling Mailchimp triggers requires setting up a webhook in your Mailchimp account using the URL below. A few steps and you'll be up and running in no time. Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
 										'<a href="' . esc_url( $kb_link ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 									);
 								?>
@@ -77,8 +77,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<uo-text-field
 								value="<?php echo esc_url( $webhook_url ); ?>"
 								label="<?php esc_attr_e( 'Webhook URL', 'uncanny-automator' ); ?>"
-								helper="<?php esc_attr_e( "You'll be asked to enter a webhook URL. Copy and paste this URL into each of the MailChimp Audience webhook settings.", 'uncanny-automator' ); ?>"
-
+								helper="
+								<?php
+									echo esc_attr(
+										sprintf(
+											/* translators: Settings field description */
+											__( 'Use this URL to create a webhook in %s of the audiences that you want to trigger recipes.', 'uncanny-automator' ),
+											'<strong>' . _x( 'each', 'Refers to the individual audience', 'uncanny-automator' ) . '</strong>'
+										)
+									);
+								?>
+								"
 								disabled
 							></uo-text-field>
 
@@ -112,7 +121,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</p>
 
 					<ul>
-						<!--<li>
+						<li>
 							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact email is changed', 'uncanny-automator' ); ?>
 						</li>
 						<li>
@@ -120,7 +129,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</li>
 						<li>
 							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact is unsubscribed from an audience', 'uncanny-automator' ); ?>
-						</li>-->
+						</li>
 						<li>
 							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add a note to the user', 'uncanny-automator' ); ?>
 						</li>
@@ -204,11 +213,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 						</uo-button>
 
-						<!--<uo-button type="submit">
+						<uo-button type="submit">
 
-							<?php //esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
+							<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
 
-						</uo-button>-->
+						</uo-button>
 
 					</div>
 

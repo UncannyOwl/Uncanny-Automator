@@ -18,13 +18,61 @@ class Gf_Tokens {
 	 */
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_gf_gfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_gf_' . strtolower( 'GF_SUBFORM_CODES_METADATA' ) . '_tokens',
+			array(
+				$this,
+				'gf_possible_tokens',
+			),
+			20,
+			2
+		);
 		add_filter( 'automator_maybe_parse_token', array( $this, 'gf_token' ), 20, 6 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'gf_entry_tokens' ), 20, 6 );
 		add_filter( 'automator_maybe_trigger_gf_anongfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_trigger_gf_tokens', array( $this, 'gf_entry_possible_tokens' ), 20, 2 );
+
+		// Save GF entry tokens, for v3 trigger.
+		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
 	}
 
 	/**
+	 * @param $args
+	 * @param $trigger
+	 *
+	 * @return void
+	 */
+	public function save_token_data( $args, $trigger ) {
+
+		if ( ! isset( $args['trigger_args'] ) || ! isset( $args['entry_args']['code'] ) ) {
+			return;
+		}
+
+		$triggers = array( 'GF_SUBFORM_CODES' );
+
+		if ( in_array( $args['entry_args']['code'], $triggers, true ) ) {
+
+			list( $entry, $form ) = $args['trigger_args'];
+			$code_fields = Gravity_Forms_Helpers::get_code_fields( $entry, $form );
+			if ( ! empty( $code_fields ) ) {
+				$code_field = array_shift( $code_fields );
+				if ( ! empty( $code_field ) && null !== $code_field ) {
+					$batch = Gravity_Forms_Helpers::get_batch_by_value( $code_field, $entry );
+					Automator()->db->token->save( 'UCBATCH', absint( $batch->code_group ), $args['trigger_entry'] );
+				}
+			}
+			Automator()->db->token->save( 'GFENTRYID', $entry['id'], $args['trigger_entry'] );
+			Automator()->db->token->save( 'GFUSERIP', maybe_serialize( $entry['ip'] ), $args['trigger_entry'] );
+			Automator()->db->token->save( 'GFENTRYDATE', maybe_serialize( \GFCommon::format_date( $entry['date_created'], false, 'Y/m/d' ) ), $args['trigger_entry'] );
+			Automator()->db->token->save( 'GFENTRYSOURCEURL', maybe_serialize( $entry['source_url'] ), $args['trigger_entry'] );
+
+		}
+
+	}
+
+	/**
+	 * Gravity forms entry possible tokens.
+	 *
 	 * @param $tokens
 	 * @param $args
 	 *
@@ -64,6 +112,8 @@ class Gf_Tokens {
 	}
 
 	/**
+	 * Gravity forms possible tokens.
+	 *
 	 * @param array $tokens
 	 * @param array $args
 	 *
@@ -130,6 +180,8 @@ class Gf_Tokens {
 	}
 
 	/**
+	 * Determine the field type.
+	 *
 	 * @param $field
 	 *
 	 * @return string
@@ -158,6 +210,8 @@ class Gf_Tokens {
 	}
 
 	/**
+	 * Gravity forms entry tokens.
+	 *
 	 * @param $value
 	 * @param $pieces
 	 * @param $recipe_id
@@ -167,7 +221,7 @@ class Gf_Tokens {
 	 * @return string|null
 	 */
 	public function gf_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		if ( in_array( 'GFENTRYTOKENS', $pieces ) ) {
+		if ( in_array( 'GFENTRYTOKENS', $pieces, true ) ) {
 			if ( $trigger_data ) {
 				foreach ( $trigger_data as $trigger ) {
 					$trigger_id     = $trigger['ID'];
@@ -185,6 +239,8 @@ class Gf_Tokens {
 	}
 
 	/**
+	 * Parse Gravity Forms tokens.
+	 *
 	 * @param $value
 	 * @param $pieces
 	 * @param $recipe_id
@@ -195,10 +251,12 @@ class Gf_Tokens {
 	 * @return mixed|string|null
 	 */
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+
 		if ( $pieces ) {
-			if ( in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true )
-			     || in_array( 'ANONGFSUBFORM', $pieces, true ) || in_array( 'SUBFIELD', $pieces, true ) ) {
-				if ( isset( $pieces[2] ) && ( 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
+
+			if ( in_array( 'GF_SUBFORM_CODES', $pieces, true ) || in_array( 'GF_SUBFORM_CODES_METADATA', $pieces, true ) || in_array( 'GFFORMSCODES', $pieces, true ) || in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true ) || in_array( 'ANONGFSUBFORM', $pieces, true ) || in_array( 'SUBFIELD', $pieces, true ) ) {
+
+				if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_CODES_METADATA' === $pieces[2] || 'GFFORMSCODES' === $pieces[2] || 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
 					$t_data   = array_shift( $trigger_data );
 					$form_id  = $t_data['meta'][ $pieces[2] ];
 					$forminfo = RGFormsModel::get_form( $form_id );
@@ -212,6 +270,12 @@ class Gf_Tokens {
 					return $t_data['meta']['GFFORMS'];
 				}
 
+				if ( isset( $pieces[2] ) && 'GF_SUBFORM_CODES_METADATA_ID' === $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+
+					return $t_data['meta']['GF_SUBFORM_CODES_METADATA'];
+				}
+
 				if ( isset( $pieces[2] ) && 'ANONGFFORMS_ID' === $pieces[2] ) {
 					$t_data = array_shift( $trigger_data );
 
@@ -223,20 +287,52 @@ class Gf_Tokens {
 
 					return $t_data['meta'][ $pieces[2] ];
 				}
+
 				if ( isset( $pieces[2] ) && 'SUBFIELD' === $pieces[2] ) {
 					$t_data = array_shift( $trigger_data );
 
 					return $t_data['meta'][ $pieces[2] . '_readable' ];
 				}
 
+				if ( isset( $pieces[2] ) && 'GF_SUBFORM_CODES_METADATA_CODES' === (string) $pieces[2] ) {
+					$t_data = array_shift( $trigger_data );
+
+					global $wpdb;
+					$batch_id = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
+
+					return $wpdb->get_var( $wpdb->prepare( "SELECT name FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
+				}
+
+				if ( isset( $pieces[2] ) && 'UNCANNYCODESBATCHEXPIRY' === (string) $pieces[2] ) {
+
+					global $wpdb;
+
+					$t_data = array_shift( $trigger_data );
+
+					$batch_id = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
+
+					$expiry_date = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
+
+					$expiry_timestamp = strtotime( $expiry_date );
+
+					// Check if the date is in future to filter out empty dates
+					if ( $expiry_timestamp > time() ) {
+						// Get the format selected in general WP settings
+						$date_format = get_option( 'date_format' );
+						$time_format = get_option( 'time_format' );
+
+						// Return the formattted time according to the selected time zone
+						$value = date_i18n( "$date_format $time_format", strtotime( $expiry_date ) );
+					}
+				}
+
 				// Entry tokens
-
-
 				$token_piece = $pieces[2];
 				global $wpdb;
+
 				$token_info = explode( '|', $token_piece );
 				$form_id    = $token_info[0];
-				$meta_key   = $token_info[1];
+				$meta_key   = isset( $token_info[1] ) ? $token_info[1] : '';
 
 				if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
 					$table_name = RGFormsModel::get_entry_table_name();

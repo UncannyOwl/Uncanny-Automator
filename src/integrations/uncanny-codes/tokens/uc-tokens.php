@@ -67,7 +67,7 @@ class Uc_Tokens {
 						switch ( $meta_field ) {
 							case 'UNCANNYCODESBATCHEXPIRY':
 								global $wpdb;
-								$batch_id         = $trigger['meta']['UNCANNYCODESBATCH'];
+								$batch_id         = isset( $trigger['meta']['UNCANNYCODESBATCH'] ) && intval( '-1' ) !== intval( $trigger['meta']['UNCANNYCODESBATCH'] ) ? $trigger['meta']['UNCANNYCODESBATCH'] : absint( Automator()->db->token->get( 'UNCANNYCODESBATCH', $replace_args ) ); // Fix warning in error log.
 								$expiry_date      = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
 								$expiry_timestamp = strtotime( $expiry_date );
 
@@ -76,9 +76,10 @@ class Uc_Tokens {
 
 									// Get the format selected in general WP settings
 									$date_format = get_option( 'date_format' );
+									$time_format = get_option( 'time_format' );
 
 									// Get the formattted time according to the selected time zone
-									$value = date_i18n( $date_format, strtotime( $expiry_date ) );
+									$value = date_i18n( "$date_format $time_format", strtotime( $expiry_date ) );
 								}
 								break;
 							case 'UNCANNYCODESBATCH':
@@ -88,7 +89,6 @@ class Uc_Tokens {
 								$value = isset( $trigger['meta'][ $meta_field ] ) ? $trigger['meta'][ $meta_field ] : '';
 								break;
 						}
-						break;
 					}
 				}
 			}

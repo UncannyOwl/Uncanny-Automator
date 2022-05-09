@@ -10,21 +10,11 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 	use \Uncanny_Automator\Recipe\Actions;
 
-
-	public $fb_endpoint_uri = '';
+	const AJAX_ENDPOINT = 'fb_pages_wp_ajax_endpoint_post_page';
 
 	public function __construct() {
 
-		$this->fb_pages_wp_ajax_endpoint = 'fb_pages_wp_ajax_endpoint_post_page';
-
-		$this->fb_endpoint_uri = AUTOMATOR_API_URL . 'v2/facebook';
-
-		// Allow overwrite in wp-config.php.
-		if ( DEFINED( 'UO_AUTOMATOR_DEV_FB_ENDPOINT_URL' ) ) {
-			$this->fb_endpoint_uri = UO_AUTOMATOR_DEV_FB_ENDPOINT_URL;
-		}
-
-		add_action( "wp_ajax_{$this->fb_pages_wp_ajax_endpoint}", array( $this, $this->fb_pages_wp_ajax_endpoint ) );
+		add_action( 'wp_ajax_' . self::AJAX_ENDPOINT, array( $this, self::AJAX_ENDPOINT ) );
 
 		$this->setup_action();
 
@@ -64,10 +54,10 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 				array(
 					'option_code'           => $this->get_action_meta(),
 					/* translators: Email field */
-					'label'                 => esc_attr__( 'Select a Facebook Page', 'uncanny-automator' ),
+					'label'                 => esc_attr__( 'Facebook Page', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'is_ajax'               => true,
-					'endpoint'              => $this->fb_pages_wp_ajax_endpoint,
+					'endpoint'              => self::AJAX_ENDPOINT,
 					'supports_custom_value' => false,
 					'required'              => true,
 				),
@@ -90,6 +80,8 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 
 	/**
+	 * Process the action.
+	 *
 	 * @param $user_id
 	 * @param $action_data
 	 * @param $recipe_id
@@ -106,40 +98,24 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		$message = sanitize_textarea_field( $parsed['FACEBOOK_PAGE_MESSAGE'] );
 
-		$access_token = $facebook->get_user_page_access_token( $page_id );
-
-		$request = wp_remote_post(
-			$facebook->get_endpoint_url(),
-			array(
-				'body' => array(
-					'action'       => 'post-to-page',
-					'access_token' => $access_token,
-					'message'      => $message,
-					'page_id'      => $page_id,
-				),
-			)
+		$body = array(
+			'action'  => 'post-to-page',
+			'message' => $message,
+			'page_id' => $page_id,
 		);
 
-		// Check to see if there are any errors regarding our request to the api.
-		if ( ! is_wp_error( $request ) ) {
+		try {
 
-			$response = json_decode( wp_remote_retrieve_body( $request ) );
+			$facebook->api_request( $page_id, $body, $action_data );
 
-			if ( 200 !== $response->statusCode ) {
-				$action_data['complete_with_errors'] = true;
-				// Log error if there are any error messages.
-				Automator()->complete->action( $user_id, $action_data, $recipe_id, $response->error->description );
-			} else {
-				// Otherwise, complete the action.
-				Automator()->complete->action( $user_id, $action_data, $recipe_id );
-			}
-		} else {
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
-			// Log if there are any http errors.
+		} catch ( \Exception $e ) {
 
 			$action_data['complete_with_errors'] = true;
 
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $request->get_error_message() );
+			// Log error if there are any error messages.
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}
 	}

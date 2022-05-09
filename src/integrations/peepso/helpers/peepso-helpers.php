@@ -3,6 +3,11 @@
 
 namespace Uncanny_Automator;
 
+use PeepSoUser;
+use PeepSoProfile;
+use PeepSoProfileFields;
+use PeepSoNotificationsIntensity;
+
 use Uncanny_Automator_Pro\PeepSo_Pro_Helpers;
 
 /**
@@ -52,7 +57,6 @@ class PeepSo_Helpers {
 	 * @param Get gender of the follower
 	 *
 	 * @param $user_id
-	 *
 	 */
 	public function get_gender( $user_id ) {
 		if ( empty( $user_id ) ) {
@@ -72,7 +76,6 @@ class PeepSo_Helpers {
 	 * @param Get name of the follower
 	 *
 	 * @param $user_id
-	 *
 	 */
 	public function get_name( $name, $type = 'full' ) {
 		if ( empty( $name ) ) {
@@ -97,7 +100,6 @@ class PeepSo_Helpers {
 	 * @param Get gender of the follower
 	 *
 	 * @param $user_id
-	 *
 	 */
 	public function get_birthdate( $user_id ) {
 		if ( empty( $user_id ) ) {
@@ -115,7 +117,6 @@ class PeepSo_Helpers {
 	 * @param Get bio of the follower
 	 *
 	 * @param $user_id
-	 *
 	 */
 	public function get_bio( $user_id ) {
 		if ( empty( $user_id ) ) {
@@ -133,7 +134,6 @@ class PeepSo_Helpers {
 	 * @param Get bio of the follower
 	 *
 	 * @param $user_id
-	 *
 	 */
 	public function get_website( $user_id ) {
 		if ( empty( $user_id ) ) {
@@ -148,7 +148,6 @@ class PeepSo_Helpers {
 
 	/**
 	 * @param Get peepso users
-	 *
 	 */
 	public function get_users( $label = null, $option_code = 'PPUSERS', $args = array(), $bynames = false ) {
 
@@ -200,5 +199,144 @@ class PeepSo_Helpers {
 		return apply_filters( 'uap_option_peepso_all_users', $option );
 	}
 
+	/**
+	 * @param Get profile fields
+	 */
+	public function get_profile_fields( $label = null, $option_code = 'PPPROFILEFIELDS', $args = array(), $bynames = false ) {
+
+		if ( ! $this->load_options ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
+		if ( ! $label ) {
+			$label = esc_attr__( 'Profile fields', 'uncanny-automator' );
+		}
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'uo_include_any' => ( true === $args['uo_include_any'] ) ? true : false,
+				'uo_any_label'   => esc_attr__( 'Any field', 'uncanny-automator' ),
+			)
+		);
+
+		$options = array();
+		$options = $this->get_user_fields( 0, $args['uo_include_any'], $args );
+
+		$option = array(
+			'option_code'     => $option_code,
+			'label'           => $label,
+			'input_type'      => 'select',
+			'required'        => true,
+			'options'         => $options,
+			'relevant_tokens' => array(),
+		);
+
+		return apply_filters( 'uap_option_peepso_users_profile_fields', $option );
+	}
+
+	public function get_user_fields( $user_id = 0, $any = false, $args = array() ) {
+		$options    = array();
+		$PeepSoUser = PeepSoUser::get_instance( $user_id );
+		$PeepSoUser->profile_fields->load_fields();
+		$fields = $PeepSoUser->profile_fields->get_fields();
+
+		if ( true === $any ) {
+			$options[- 1] = $args['uo_any_label'];
+		}
+
+		foreach ( $fields as $field ) {
+			if ( 1 == $field->prop( 'published' ) ) {
+				$options[ $field->prop( 'id' ) ] = $field->prop( 'title' );
+			}
+		};
+
+		$options['peepso_is_profile_likable'] = __( 'Allow others to "like" my profile', 'uncanny-automator' );
+		$options['peepso_hide_birthday_year'] = __( 'Hide my birthday year', 'uncanny-automator' );
+		$options['usr_profile_acc']           = __( 'Who can see my profile', 'uncanny-automator' );
+		$options['peepso_profile_post_acc']   = __( 'Who can post on my profile', 'uncanny-automator' );
+		$options['peepso_hide_online_status'] = __( "Don't show my online status", 'uncanny-automator' );
+		$options['peepso_gmt_offset']         = __( 'My timezone', 'uncanny-automator' );
+
+		return $options;
+	}
+
+	public function get_gmt_value( $gmt_time ) {
+		$offset_range = array(
+			- 12,
+			- 11.5,
+			- 11,
+			- 10.5,
+			- 10,
+			- 9.5,
+			- 9,
+			- 8.5,
+			- 8,
+			- 7.5,
+			- 7,
+			- 6.5,
+			- 6,
+			- 5.5,
+			- 5,
+			- 4.5,
+			- 4,
+			- 3.5,
+			- 3,
+			- 2.5,
+			- 2,
+			- 1.5,
+			- 1,
+			- 0.5,
+			0,
+			0.5,
+			1,
+			1.5,
+			2,
+			2.5,
+			3,
+			3.5,
+			4,
+			4.5,
+			5,
+			5.5,
+			5.75,
+			6,
+			6.5,
+			7,
+			7.5,
+			8,
+			8.5,
+			8.75,
+			9,
+			9.5,
+			10,
+			10.5,
+			11,
+			11.5,
+			12,
+			12.75,
+			13,
+			13.75,
+			14,
+		);
+		foreach ( $offset_range as $offset ) {
+			$offset_label = (string) $offset;
+			if ( 0 <= $offset ) {
+				$offset_label = '+' . $offset_label;
+			}
+			$offset_label = 'UTC' . str_replace(
+				array(
+					'.25',
+					'.5',
+					'.75',
+				),
+				array( ':15', ':30', ':45' ),
+				$offset_label
+			);
+			if ( (string) $gmt_time === (string) $offset ) {
+				return $offset_label;
+			}
+		}
+	}
 
 }

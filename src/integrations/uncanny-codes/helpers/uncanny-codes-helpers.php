@@ -35,6 +35,12 @@ class Uncanny_Codes_Helpers {
 		$this->options = $options;
 	}
 
+	/**
+	 * @param $label
+	 * @param $option_code
+	 *
+	 * @return array|mixed|void
+	 */
 	public function get_all_codes( $label = null, $option_code = 'UNCANNYCODES' ) {
 		if ( ! $this->load_options ) {
 
@@ -70,6 +76,12 @@ class Uncanny_Codes_Helpers {
 		return apply_filters( 'uap_option_get_all_codes', $option );
 	}
 
+	/**
+	 * @param $label
+	 * @param $option_code
+	 *
+	 * @return array|mixed|void
+	 */
 	public function get_all_code_prefix( $label = null, $option_code = 'UCPREFIX' ) {
 		if ( ! $this->load_options ) {
 
@@ -109,6 +121,12 @@ class Uncanny_Codes_Helpers {
 		return apply_filters( 'uap_option_get_all_code_prefix', $option );
 	}
 
+	/**
+	 * @param $label
+	 * @param $option_code
+	 *
+	 * @return array|mixed|void
+	 */
 	public function get_all_code_suffix( $label = null, $option_code = 'UCSUFFIX' ) {
 		if ( ! $this->load_options ) {
 
@@ -149,7 +167,14 @@ class Uncanny_Codes_Helpers {
 		return apply_filters( 'uap_option_get_all_code_suffix', $option );
 	}
 
-	public function get_all_code_batch( $label = null, $option_code = 'UCBATCH' ) {
+	/**
+	 * @param null $label
+	 * @param string $option_code
+	 * @param bool $is_any
+	 *
+	 * @return array|mixed|void
+	 */
+	public function get_all_code_batch( $label = null, $option_code = 'UCBATCH', $is_any = false ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -162,11 +187,24 @@ class Uncanny_Codes_Helpers {
 		global $wpdb;
 
 		$options = array();
-
+		if ( $is_any ) {
+			$options['-1'] = __( 'Any batch', 'uncanny-automator' );
+		}
+		$option      = array(
+			'option_code'     => $option_code,
+			'label'           => $label,
+			'input_type'      => 'select',
+			'required'        => true,
+			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code              => esc_attr__( 'Batch', 'uncanny-automator' ),
+				'UNCANNYCODESBATCHEXPIRY' => esc_attr__( 'Batch expiry date', 'uncanny-automator' ),
+			),
+		);
 		$all_batches = $wpdb->get_results( 'SELECT DISTINCT id, name FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
 
-		if ( ! $all_batches ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		if ( empty( $all_batches ) ) {
+			return apply_filters( 'uap_option_get_all_code_batch', $option );
 		}
 		foreach ( $all_batches as $batch ) {
 			if ( ! empty( $batch['name'] ) ) {
@@ -175,18 +213,7 @@ class Uncanny_Codes_Helpers {
 		}
 
 		natcasesort( $options );
-
-		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => 'select',
-			'required'        => true,
-			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code              => esc_attr__( 'Batch', 'uncanny-automator' ),
-				'UNCANNYCODESBATCHEXPIRY' => esc_attr__( 'Batch Expiry date', 'uncanny-automator' ),
-			),
-		);
+		$option['options'] = $options;
 
 		return apply_filters( 'uap_option_get_all_code_batch', $option );
 	}

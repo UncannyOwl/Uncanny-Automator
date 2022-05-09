@@ -215,6 +215,9 @@ KEY meta_key (meta_key(15))
 	 * @author   Saad
 	 */
 	public static function activation() {
+
+		update_option( 'automator_over_time', array( 'installed_date' => time() ) );
+
 		$db_version = get_option( 'uap_database_version', null );
 		if ( null !== $db_version && (string) AUTOMATOR_DATABASE_VERSION === (string) $db_version ) {
 			// bail. No db upgrade needed!

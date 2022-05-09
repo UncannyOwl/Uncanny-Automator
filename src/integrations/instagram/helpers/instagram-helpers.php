@@ -9,6 +9,12 @@ namespace Uncanny_Automator;
  */
 class Instagram_Helpers {
 
+	/**
+	 * The API endpoint address. Instagram is using Facebook Endpoint.
+	 *
+	 * @var API_ENDPOINT The endpoint adress.
+	 */
+	const API_ENDPOINT = 'v2/facebook';
 
 	/**
 	 * Instagram Pro Helpers.
@@ -38,8 +44,6 @@ class Instagram_Helpers {
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-
-		$this->fb_endpoint_uri = AUTOMATOR_API_URL . 'v2/facebook';
 
 		$this->wp_ajax_action = 'automator_integration_instagram_capture_token';
 
@@ -122,11 +126,9 @@ class Instagram_Helpers {
 
 		if ( wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 
-			$options_fb_pages_key = '_uncannyowl_facebook_pages_settings';
-
 			$page_id = automator_filter_input( 'page_id', INPUT_POST );
 
-			$facebook_pages = get_option( $options_fb_pages_key );
+			$facebook_pages = get_option( self::FB_OPTIONS_KEY );
 
 			$access_token = '';
 
@@ -136,33 +138,42 @@ class Instagram_Helpers {
 				}
 			}
 
-			$remote = wp_remote_post(
-				$this->fb_endpoint_uri,
-				array(
-					'body' => array(
-						'action'       => 'page-list-ig-account',
-						'access_token' => $access_token,
-						'page_id'      => $page_id,
-					),
-				)
-			);
+			try {
 
-			if ( ! is_wp_error( $remote ) ) {
+				$body = array(
+					'action'       => 'page-list-ig-account',
+					'access_token' => $access_token,
+					'page_id'      => $page_id,
+				);
 
-				$ig_response = json_decode( wp_remote_retrieve_body( $remote ) );
+				$ig_response = $this->api_request( $body, null );
 
 				foreach ( $facebook_pages as $key => $page ) {
+
 					if ( $page['value'] === $page_id ) {
-						if ( isset( $ig_response->data ) ) {
-							$facebook_pages[ $key ]['ig_account'] = $ig_response->data;
+
+						if ( isset( $ig_response['data'] ) ) {
+							// Convert $ig_response['data'] to make sure existing integrations don't break.
+							$facebook_pages[ $key ]['ig_account'] = json_decode( wp_json_encode( $ig_response['data'] ) );
+
 						}
 					}
 				}
 
 				// Update the option.
-				update_option( $options_fb_pages_key, $facebook_pages );
+				update_option( self::FB_OPTIONS_KEY, $facebook_pages );
 
 				wp_send_json( $ig_response );
+
+			} catch ( \Exception $e ) {
+
+				wp_send_json(
+					array(
+						'status'  => 400,
+						'message' => $e->getMessage(),
+					)
+				);
+
 			}
 		}
 
@@ -172,14 +183,22 @@ class Instagram_Helpers {
 
 	public function get_ig_accounts() {
 
-		$ig_accounts      = array();
+		$ig_accounts = array();
+
 		$fb_options_pages = get_option( self::FB_OPTIONS_KEY );
 
 		if ( is_array( $fb_options_pages ) ) {
+
 			foreach ( $fb_options_pages as $page ) {
-				if ( isset( $page['ig_account']->data ) && is_array( $page['ig_account']->data ) ) {
-					foreach ( $page['ig_account']->data as $ig_account ) {
-						$ig_accounts[ $page['value'] ] = $ig_account->username;
+
+				if ( isset( $page['ig_account'] ) && ! empty( $page['ig_account'] ) ) {
+
+					foreach ( $page['ig_account'] as $ig_account ) {
+
+						$ig_account = (array) end( $ig_account );
+
+						$ig_accounts[ $page['value'] ] = $ig_account['username'];
+
 					}
 				}
 			}
@@ -191,12 +210,16 @@ class Instagram_Helpers {
 
 	public function get_user_page_connected_ig( $page_id = 0 ) {
 
-		$options_pages = get_option( '_uncannyowl_facebook_pages_settings' );
+		$options_pages = get_option( self::FB_OPTIONS_KEY );
 
 		if ( ! empty( $options_pages ) ) {
+
 			foreach ( $options_pages as $page ) {
+
 				if ( $page['value'] === $page_id ) {
+
 					return $page;
+
 				}
 			}
 		}
@@ -209,47 +232,53 @@ class Instagram_Helpers {
 
 		$settings = get_option( '_uncannyowl_facebook_settings' );
 
-		$remote = wp_remote_post(
-			$this->fb_endpoint_uri,
-			array(
-				'body' => array(
-					'action'       => 'list-user-pages',
-					'access_token' => $settings['user']['token'],
-				),
-			)
+		$body = array(
+			'action'       => 'list-user-pages',
+			'access_token' => $settings['user']['token'],
 		);
 
-		$pages = array();
+		$status = 200;
 
-		if ( ! is_wp_error( $remote ) ) {
+		try {
 
-			$response = wp_remote_retrieve_body( $remote );
+			$request = $this->api_request( $body, null );
 
-			$response = json_decode( $response );
-
-			$status = isset( $response->response ) ? $response->response : '';
-
-			$message = isset( $response->message ) ? $response->message : '';
-
-			if ( 200 === $status ) {
-
-				foreach ( $response->pages as $page ) {
-					$pages[] = array(
-						'value'             => $page->id,
-						'text'              => $page->name,
-						'tasks'             => $page->tasks,
-						'page_access_token' => $page->page_access_token,
-					);
-				}
-
-				$message = esc_html__( 'Pages are fetched successfully', 'automator-pro' );
-
-				// Save the pages.
-				update_option( '_uncannyowl_facebook_pages_settings', $pages );
+			if ( 200 !== $request['statusCode'] ) {
+				throw new \Exception(
+					esc_html__( 'Error fetching pages.', 'uncanny-automator' ),
+					absint( $request['statusCode'] ) // Pass the status code.
+				);
 			}
-		} else {
-			$message = $remote->get_error_message();
-			$status  = 500;
+
+			if ( ! isset( $request['data']['data'] ) || empty( $request['data']['data'] ) ) {
+				throw new \Exception(
+					esc_html__( 'No data found.', 'uncanny-automator' ),
+					404 // Invoke 404 status code.
+				);
+			}
+
+			foreach ( $request['data']['data'] as $page ) {
+
+				$pages[] = array(
+					'value'             => $page['id'],
+					'text'              => $page['name'],
+					'tasks'             => $page['tasks'],
+					'page_access_token' => $page['access_token'],
+				);
+
+			}
+
+			$message = esc_html__( 'Pages are fetched successfully', 'automator-pro' );
+
+			// Save the pages.
+			update_option( '_uncannyowl_facebook_pages_settings', $pages );
+
+		} catch ( \Exception $e ) {
+
+			$message = $e->getMessage();
+
+			$status = $e->getCode();
+
 		}
 
 		$response = array(
@@ -306,6 +335,28 @@ class Instagram_Helpers {
 			),
 			AUTOMATOR_API_URL . 'v2/facebook'
 		);
+	}
+
+	/**
+	 * Method api_request
+	 *
+	 * @param $params
+	 *
+	 * @return void
+	 */
+	public function api_request( $body = array(), $action = null ) {
+
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body'     => $body,
+			'action'   => $action,
+			'timeout'  => 60, // Add generous timeout limit for slow Instagram endpoint.
+		);
+
+		$response = Api_Server::api_call( $params );
+
+		return $response;
+
 	}
 
 }

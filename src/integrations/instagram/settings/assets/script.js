@@ -11,10 +11,10 @@ class AutomatorInstagramSettings {
      */
     retrievePages() {
         // Set the loading status of the button
-        this.$updateListButton.setAttribute( 'loading', '' );
+        this.$updateListButton.setAttribute('loading', '');
 
         // Hide error, if visible
-        this.setError( '' );
+        this.setError('');
 
         // Fetch data
         _uo.utility.fetchData({
@@ -23,31 +23,31 @@ class AutomatorInstagramSettings {
                 action: 'automator_integration_instagram_capture_token_fetch_user_pages',
                 nonce: UncannyAutomatorBackend.ajax.nonce
             },
-            onSuccess: ( response ) => {
+            onSuccess: (response) => {
                 // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute( 'loading' );
+                this.$updateListButton.removeAttribute('loading');
 
                 // Check if there are pages
-                if ( ! _uo.utility.isEmpty( response.pages ) ) {
+                if (!_uo.utility.isEmpty(response.pages)) {
                     // Set pages
-                    this.createList( response.pages );
+                    this.createList(response.pages);
                 } else {
                     // Check if there is an error defined
                     if (
-                        _uo.utility.isDefined( response.error )
-                        && ! _uo.utility.isEmpty( response.error_message )
+                        _uo.utility.isDefined(response.error)
+                        && !_uo.utility.isEmpty(response.error_message)
                     ) {
-                       // Set error
-                       this.setError( response.error_message ); 
+                        // Set error
+                        this.setError(response.error_message);
                     }
                 }
             },
-            onFail: ( response, message ) => {
+            onFail: (response, message) => {
                 // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute( 'loading' );
+                this.$updateListButton.removeAttribute('loading');
 
                 // Show error
-                this.setError( message.error );
+                this.setError(message.error);
             },
         });
     }
@@ -58,15 +58,15 @@ class AutomatorInstagramSettings {
      * @param  {Array}  pages An array with the Facebook pages
      * @return {undefined}       
      */
-    createList( pages = [] ) {
+    createList(pages = []) {
         // Remove the current content
         this.$listWrapper.innerHTML = '';
 
         // Iterate list
-        pages.forEach( ( page ) => {
+        pages.forEach((page) => {
             // Create Facebook page element
-            const $facebookPage = document.createElement( 'div' );
-            $facebookPage.classList.add( 'uap-facebook-account' );
+            const $facebookPage = document.createElement('div');
+            $facebookPage.classList.add('uap-facebook-account');
 
             // Add inner elements
             $facebookPage.innerHTML = `
@@ -75,20 +75,20 @@ class AutomatorInstagramSettings {
                         <span class="uap-placeholder-text" data-placeholder="Icon"></span> <span class="uap-placeholder-text" data-placeholder="account name"></span> <span class="uap-placeholder-text" data-placeholder="followers"></span>
                     </div>
                     <div class="uap-linked-account">
-                        ${ UncannyAutomatorBackend.i18n.settingsInstagram.linkedFacebookPage }
+                        ${UncannyAutomatorBackend.i18n.settingsInstagram.linkedFacebookPage}
 
                         <a 
-                            href="https://facebook.com/${ page.value }"
+                            href="https://facebook.com/${page.value}"
                             target="_blank"
                         >
-                            ${ page.text }
+                            ${page.text}
                         </a>
                     </div>
                 </div>
             `;
 
             // Get the element used to show the Instagram account data
-            const $instagramWrapper = $facebookPage.querySelector( '.uap-instagram-account' );
+            const $instagramWrapper = $facebookPage.querySelector('.uap-instagram-account');
 
             // Append page
             this.$listWrapper.insertAdjacentElement(
@@ -97,7 +97,7 @@ class AutomatorInstagramSettings {
             );
 
             // Check if there is an Instagram page connected already
-            if ( _uo.utility.isDefined( page.ig_account ) && _uo.utility.isDefined( page.ig_account.data ) && _uo.utility.isDefined( page.ig_account.data[0] ) ) {
+            if (_uo.utility.isDefined(page.ig_account) && _uo.utility.isDefined(page.ig_account.data) && _uo.utility.isDefined(page.ig_account.data[0])) {
 
                 // Get data
                 const instagramAccountData = page.ig_account.data[0];
@@ -108,27 +108,27 @@ class AutomatorInstagramSettings {
                 // Append Instagram data
                 $instagramWrapper
                     .appendChild(
-                        this.$createInstagramPill( {
+                        this.$createInstagramPill({
                             name: instagramAccountData.username,
                             profilePicture: instagramAccountData.profile_pic
-                        } )
+                        })
                     );
 
             } else {
 
                 // Get Instagram page
-                this.getInstagramAccount( {
+                this.getInstagramAccount({
                     facebookPageId: page.value,
-                    onSuccess: ( response ) => {
+                    onSuccess: (response) => {
 
                         // Check if we found an account
-                        if ( response.statusCode == '200' ) {
+                        if (response.statusCode == '200') {
 
                             // Check if the required data is defined
                             if (
-                                _uo.utility.isDefined( response.data )
-                                && _uo.utility.isDefined( response.data.data )
-                                && _uo.utility.isDefined( response.data.data[0] )
+                                _uo.utility.isDefined(response.data)
+                                && _uo.utility.isDefined(response.data.data)
+                                && _uo.utility.isDefined(response.data.data[0])
                             ) {
                                 // Get data
                                 const instagramAccountData = response.data.data[0];
@@ -139,10 +139,10 @@ class AutomatorInstagramSettings {
                                 // Append Instagram data
                                 $instagramWrapper
                                     .appendChild(
-                                        this.$createInstagramPill( {
+                                        this.$createInstagramPill({
                                             name: instagramAccountData.username,
                                             profilePicture: instagramAccountData.profile_pic
-                                        } )
+                                        })
                                     );
                             }
 
@@ -152,16 +152,16 @@ class AutomatorInstagramSettings {
                             // Add message
                             $instagramWrapper.innerHTML = `
                                 <span class="uap-instagram-account-no-account">
-                                    ${ UncannyAutomatorBackend.i18n.settingsInstagram.noInstagram }
+                                    ${UncannyAutomatorBackend.i18n.settingsInstagram.noInstagram}
                                 </span>
                             `;
 
                         }
                     }
-                } );
+                });
 
             }
-        } );
+        });
     }
 
     /**
@@ -169,9 +169,9 @@ class AutomatorInstagramSettings {
      * 
      * @param {String} error The error
      */
-    setError( error = '' ) {
+    setError(error = '') {
         // Check if there is an error defined
-        if ( ! _uo.utility.isEmpty( error ) ) {
+        if (!_uo.utility.isEmpty(error)) {
 
         } else {
             // Remove the current error, and hide the notice
@@ -187,7 +187,7 @@ class AutomatorInstagramSettings {
      * @param  {String} options.facebookPageId The ID of the page
      * @return {undefined}                       
      */
-    getInstagramAccount( { facebookPageId = '', onSuccess } ) {
+    getInstagramAccount({ facebookPageId = '', onSuccess }) {
         // Fetch data
         _uo.utility.fetchData({
             url: UncannyAutomatorBackend.ajax.url,
@@ -196,11 +196,11 @@ class AutomatorInstagramSettings {
                 nonce: UncannyAutomatorBackend.ajax.nonce,
                 page_id: facebookPageId
             },
-            onSuccess: ( response ) => {
+            onSuccess: (response) => {
                 // Try to invoke the callback
                 try {
-                    onSuccess( response );
-                } catch ( e ) {}
+                    onSuccess(response);
+                } catch (e) { }
             }
         });
     }
@@ -213,20 +213,21 @@ class AutomatorInstagramSettings {
      * @param  {String} account.profilePicture The URL of the avatar
      * @return {Node}                          A node with the data
      */
-    $createInstagramPill( { name = '', profilePicture = '' } ) {
+    $createInstagramPill({ name = '', profilePicture = '' }) {
         // Create element
-        const $instagramAccount = document.createElement( 'div' );
-        $instagramAccount.classList.add( 'uap-instagram-account-pill' );
+        const $instagramAccount = document.createElement('div');
+        $instagramAccount.classList.add('uap-instagram-account-pill');
 
         // Add data
         $instagramAccount.innerHTML = `
             <img 
+                onerror="this.remove()"
                 class="uap-instagram-account-pill-avatar"
-                src="${ profilePicture }"
+                src="${profilePicture}"
             >
 
             <span class="uap-instagram-account-pill-username">
-                ${ name }
+                ${name}
             </span>
 
             <uo-icon id="instagram"></uo-icon>
@@ -242,7 +243,7 @@ class AutomatorInstagramSettings {
      * @return {Node} The button
      */
     get $updateListButton() {
-        return document.getElementById( 'facebook-pages-update-button' );
+        return document.getElementById('facebook-pages-update-button');
     }
 
     /**
@@ -251,7 +252,7 @@ class AutomatorInstagramSettings {
      * @return {Node} The wrapper
      */
     get $listWrapper() {
-        return document.getElementById( 'facebook-pages-list' );
+        return document.getElementById('facebook-pages-list');
     }
 
     /**
@@ -260,7 +261,7 @@ class AutomatorInstagramSettings {
      * @return {Node} The wrapper
      */
     get $errorWrapper() {
-        return document.getElementById( 'facebook-pages-errors' );
+        return document.getElementById('facebook-pages-errors');
     }
 }
 

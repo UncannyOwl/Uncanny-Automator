@@ -444,10 +444,10 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false ||
-			     strpos( $piece, '_URL' ) !== false ||
-			     strpos( $piece, '_EXCERPT' ) !== false ||
-			     strpos( $piece, '_THUMB_URL' ) !== false ||
-			     strpos( $piece, '_THUMB_ID' ) !== false ) {
+				 strpos( $piece, '_URL' ) !== false ||
+				 strpos( $piece, '_EXCERPT' ) !== false ||
+				 strpos( $piece, '_THUMB_URL' ) !== false ||
+				 strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -456,10 +456,17 @@ class Automator_Input_Parser {
 			if ( ! isset( $trigger['meta'] ) ) {
 				continue;
 			}
-			if ( ! key_exists( $piece, $trigger['meta'] ) ) {
+			if ( ! key_exists( $piece, $trigger['meta'] ) && 'NUMTIMES' !== $piece ) {
 				continue;
 			}
-			if ( is_numeric( $trigger['meta'][ $piece ] ) ) {
+			/**
+			 * Added fallback 1 if NUMTIMES is not set.
+			 * See issue #1914 any page and any post trigger
+			 * @updated v4.0 by Saad
+			 */
+			if ( 'NUMTIMES' === (string) $piece ) {
+				$return = isset( $trigger['meta'][ $piece ] ) && ! empty( $trigger['meta'][ $piece ] ) ? $trigger['meta'][ $piece ] : 1;
+			} elseif ( is_numeric( $trigger['meta'][ $piece ] ) ) {
 
 				if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
 					$post_id = Automator()->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
@@ -487,7 +494,12 @@ class Automator_Input_Parser {
 						}
 						break;
 					case 'NUMTIMES':
-						$return = $trigger['meta'][ $piece ];
+						/**
+						 * Added fallback 1 if NUMTIMES is not set.
+						 * See issue #1914 any page and any post trigger
+						 * @updated v4.0 by Saad
+						 */
+						$return = isset( $trigger['meta'][ $piece ] ) && ! empty( $trigger['meta'][ $piece ] ) ? $trigger['meta'][ $piece ] : 1;
 						break;
 					case 'WPUSER':
 						$user_id = absint( $trigger['meta'][ $piece ] );

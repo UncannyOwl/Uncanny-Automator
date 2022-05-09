@@ -57,8 +57,6 @@ class WM_USERADDED {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -83,7 +81,7 @@ class WM_USERADDED {
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
-				if ( in_array( $required_level[ $recipe_id ][ $trigger_id ], $new_levels ) ) {
+				if ( in_array( $required_level[ $recipe_id ][ $trigger_id ], $new_levels ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
@@ -101,6 +99,7 @@ class WM_USERADDED {
 					'recipe_to_match'  => $matched_recipe_id['recipe_id'],
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
+					'is_signed_in'     => true,
 				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
@@ -114,8 +113,5 @@ class WM_USERADDED {
 				}
 			}
 		}
-
-		return;
-
 	}
 }

@@ -98,6 +98,8 @@ if ( $dashboard->has_site_connected ) {
 		</div>
 	</div>
 
+	<?php do_action( 'automator_dashboard_header_after' ); ?>
+
 	<?php
 
 	// If a user is NOT connected, add the notice to connect the site
@@ -179,7 +181,7 @@ if ( $dashboard->has_site_connected ) {
 						?>
 
 						<uo-button
-							href="<?php echo esc_url( $setup_wizard_link ) ?>"
+							href="<?php echo esc_url( $setup_wizard_link ); ?>"
 						>
 							<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
 						</uo-button>
@@ -796,7 +798,7 @@ if ( $dashboard->has_site_connected ) {
 							?>
 
 							<uo-button
-								href="<?php echo esc_url( $setup_wizard_link ) ?>"
+								href="<?php echo esc_url( $setup_wizard_link ); ?>"
 							>
 								<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
 							</uo-button>

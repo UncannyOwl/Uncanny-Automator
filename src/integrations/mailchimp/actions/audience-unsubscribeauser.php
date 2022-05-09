@@ -65,10 +65,10 @@ class AUDIENCE_UNSUBSCRIBEAUSER {
 						'MCLIST'
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						__( 'Delete subscriber from MailChimp?', 'uncanny-automator' ),
+						__( 'Delete subscriber from Mailchimp?', 'uncanny-automator' ),
 						'MCDELETEMEMBER',
 						array(
-							'description' => __( 'Yes, delete from MailChimp, No, only unsubscribe from audience', 'uncanny-automator' ),
+							'description' => __( 'Yes, delete from Mailchimp, No, only unsubscribe from audience', 'uncanny-automator' ),
 						)
 					),
 				),

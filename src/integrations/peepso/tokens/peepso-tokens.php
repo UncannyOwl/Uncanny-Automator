@@ -336,6 +336,80 @@ class PeepSo_Tokens {
 			$tokens = array_merge( $tokens, $fields );
 		}
 
+		if ( isset( $args['triggers_meta']['code'] ) && 'PPUSERUPDATESPECIFICFIELD' === $args['triggers_meta']['code'] ) {
+
+			$fields = array(
+				array(
+					'tokenId'         => 'PPFIELD_NAME',
+					'tokenName'       => __( 'Updated field name', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPFIELD_NAME',
+				),
+				array(
+					'tokenId'         => 'PPFIELD_VALUE',
+					'tokenName'       => __( 'Updated field value', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPFIELD_VALUE',
+				),
+				array(
+					'tokenId'         => 'USR_AVATARURL',
+					'tokenName'       => __( 'User avatar URL', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSERAVATARURL',
+				),
+				array(
+					'tokenId'         => 'USR_GENDER',
+					'tokenName'       => __( 'User gender', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_GENDER',
+				),
+				array(
+					'tokenId'         => 'USR_BIRTHDATE',
+					'tokenName'       => __( 'User birthdate', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_BIRTHDATE',
+				),
+				array(
+					'tokenId'         => 'USR_FOLLOWERS',
+					'tokenName'       => __( 'User total number of followers', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_FOLLOWERS',
+				),
+				array(
+					'tokenId'         => 'USR_FOLLOWING',
+					'tokenName'       => __( 'User total following count of followers', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_FOLLOWING',
+				),
+				array(
+					'tokenId'         => 'USR_PROFILEURL',
+					'tokenName'       => __( 'User profile URL', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_PROFILEURL',
+				),
+				array(
+					'tokenId'         => 'USR_ABOUTME',
+					'tokenName'       => __( 'User bio', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_ABOUTME',
+				),
+				array(
+					'tokenId'         => 'USR_WEBSITE',
+					'tokenName'       => __( 'User website address', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_WEBSITE',
+				),
+				array(
+					'tokenId'         => 'USR_USERROLE',
+					'tokenName'       => __( 'User PeepSo role', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'PPUSR_USERROLE',
+				),
+			);
+
+			$tokens = array_merge( $tokens, $fields );
+		}
+
 		return $tokens;
 	}
 
@@ -424,11 +498,11 @@ class PeepSo_Tokens {
 			}
 
 			if ( in_array( 'USR_FOLLOWERS', $pieces, true ) ) {
-				return $this->get_token_value( $pieces );
+				return ( $this->get_token_value( $pieces ) ) ? $this->get_token_value( $pieces ) : 0;
 			}
 
 			if ( in_array( 'USR_FOLLOWING', $pieces, true ) ) {
-				return $this->get_token_value( $pieces );
+				return ( $this->get_token_value( $pieces ) ) ? $this->get_token_value( $pieces ) : 0;
 			}
 
 			if ( in_array( 'USR_PROFILEURL', $pieces, true ) ) {
@@ -444,6 +518,14 @@ class PeepSo_Tokens {
 			}
 
 			if ( in_array( 'USR_USERROLE', $pieces, true ) ) {
+				return $this->get_token_value( $pieces );
+			}
+
+			if ( in_array( 'PPFIELD_NAME', $pieces, true ) ) {
+				return $this->get_token_value( $pieces );
+			}
+
+			if ( in_array( 'PPFIELD_VALUE', $pieces, true ) ) {
 				return $this->get_token_value( $pieces );
 			}
 		}

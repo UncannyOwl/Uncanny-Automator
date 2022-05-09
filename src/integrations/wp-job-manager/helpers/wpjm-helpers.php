@@ -51,7 +51,7 @@ class Wpjm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -111,7 +111,7 @@ class Wpjm_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -164,6 +164,10 @@ class Wpjm_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code         => __( 'Job title', 'uncanny-automator' ),
+				$option_code . '_ID' => __( 'Job ID', 'uncanny-automator' ),
+			)
 		);
 
 		return apply_filters( 'uap_option_list_wpjm_jobs', $option );

@@ -184,12 +184,12 @@ class Wp_Helpers {
 			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page' => apply_filters( 'automator_select_all_pages_limit', 999, 'page' ),
 			'orderby'        => 'title',
-			'order'          => 'DESC',
+			'order'          => 'ASC',
 			'post_type'      => 'page',
 			'post_status'    => 'publish',
 		);
 
-		$all_pages = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'All pages', 'uncanny-automator' ) );
+		$all_pages = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any page', 'uncanny-automator' ) );
 
 		$option = array(
 			'option_code'     => $option_code,
