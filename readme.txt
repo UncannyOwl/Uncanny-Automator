@@ -234,7 +234,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Instagram - "Publish a photo to an Instagram Business account" now accepts Media Library ID in addition to the media URL #1852
 * Instagram, Facebook - Converted to use the API class #1795
 * Convert Facebook integration to use the API class #1794
-* Improved navigation through fields using tab and shift+tab #274
 * Automator Core - Set user signed in flag true for all logged-in type triggers  #1817
 
 **Fixed:**
