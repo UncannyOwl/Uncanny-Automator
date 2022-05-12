@@ -529,7 +529,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$supports_tokens          = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
 		$supports_tokens          = apply_filters_deprecated( 'uap_option_' . $option_code . '_select_field', array( $supports_tokens ), '3.0', 'automator_option_' . $option_code . '_select_field' );
 		$supports_tokens          = apply_filters( 'automator_option_' . $option_code . '_select_field', $supports_tokens );
-		$token_name               = apply_filters( 'automator_option_' . $option_code . '_select_field_token_name', $args );
+		$token_name               = apply_filters( 'automator_option_' . $option_code . '_select_field_token_name', '', $args );
 		$option                   = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,

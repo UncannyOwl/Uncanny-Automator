@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 5.9.3
 Requires PHP: 5.6
-Stable tag: 4.0
+Stable tag: 4.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.0.1 [2022-05-12] =
+
+**Fixed:**
+
+* Recipe UI - "A user publishes a type of post with a taxonomy term in a taxonomy" - Token issue prevented some action fields from rendering #1968
 
 = 4.0 [2022-05-09] =
 
