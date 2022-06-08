@@ -97,7 +97,11 @@ trait Action_Helpers_Email {
 		$content    = sanitize_text_field( $data['content'] );
 		$charset    = sanitize_text_field( $data['charset'] );
 		$subject    = sanitize_text_field( stripslashes( $data['subject'] ) );
-		$body       = wp_filter_post_kses( stripslashes( $data['body'] ) );
+		if ( 'text/html' !== $this->get_content_type() ) {
+			$body = wp_filter_post_kses( stripslashes( $data['body'] ) );
+		} else {
+			$body = stripslashes( $data['body'] );
+		}
 		// Resetting to array
 		$this->to = array();
 

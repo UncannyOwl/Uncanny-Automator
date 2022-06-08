@@ -78,7 +78,10 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Show a notice if the Pro is < 3.0
+	 *
 	 * @since 3.0.4
+	 * @deprecated @4.1
 	 */
 	public function automator_pro_configure() {
 		if ( ! class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
@@ -127,6 +130,8 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Recursively read all integration directories
+	 *
 	 * @param      $directory
 	 * @param bool $recursive
 	 *
@@ -162,7 +167,7 @@ class Set_Up_Automator {
 					if ( 'php' !== (string) $ext ) {
 						continue;
 					}
-					if ( preg_match( '/(add-)/', $item ) ) {
+					if ( preg_match( '/(add\-(.+)\-integration)/', $item ) ) {
 						$integration_files['main'] = $directory . DIRECTORY_SEPARATOR . $item;
 					} else {
 						// Avoid Integromat fatal error if Pro < 3.0 and Free is >= 3.0
@@ -187,6 +192,8 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Get all integration folders after read directory
+	 *
 	 * @param $integrations
 	 * @param $directory
 	 *
@@ -206,7 +213,7 @@ class Set_Up_Automator {
 	}
 
 	/**
-	 * Hook Here
+	 * Configure Automator
 	 *
 	 * @throws Exception
 	 */
@@ -228,6 +235,7 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Once Automator configure is completed
 	 *
 	 * @throws Exception
 	 */
@@ -272,6 +280,7 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Initialize integrations
 	 *
 	 * @throws Exception
 	 */
@@ -356,6 +365,8 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Filename to class name
+	 *
 	 * @param $file
 	 *
 	 * @return string
@@ -467,6 +478,8 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Get a class name based on file name
+	 *
 	 * @param $file
 	 *
 	 * @return mixed|void
@@ -482,6 +495,8 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Validate namespace
+	 *
 	 * @param $class_name
 	 * @param $file_name
 	 * @param $file

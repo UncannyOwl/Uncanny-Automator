@@ -56,6 +56,8 @@ class Bdb_Tokens {
 	}
 
 	/**
+	 * Possible tokens.
+	 *
 	 * @param array $tokens
 	 * @param array $args
 	 *
@@ -88,6 +90,7 @@ class Bdb_Tokens {
 
 		if ( ! empty( $xprofile_fields ) ) {
 			foreach ( $xprofile_fields as $field ) {
+
 				if ( 'socialnetworks' === $field->type ) {
 					$child_fields = $wpdb->get_results(
 						$wpdb->prepare(
@@ -211,6 +214,8 @@ class Bdb_Tokens {
 	}
 
 	/**
+	 * Topic possible tokens.
+	 *
 	 * @param array $tokens
 	 * @param array $args
 	 *
@@ -238,6 +243,8 @@ class Bdb_Tokens {
 	}
 
 	/**
+	 * Parse tokens.
+	 *
 	 * @param $value
 	 * @param $pieces
 	 * @param $recipe_id
@@ -247,28 +254,38 @@ class Bdb_Tokens {
 	 */
 	public function parse_bp_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'BDBUSERS', $pieces ) ) {
+			if ( in_array( 'BDBUSERS', $pieces, true ) ) {
 				// Get user id from meta log
 				if ( $trigger_data ) {
+
 					foreach ( $trigger_data as $trigger ) {
+
 						$token_value = $trigger['meta']['BDBUSERS'];
-						$value       = ( intval( $token_value ) == - 1 ) ? $user_id : $token_value;
+
+						$value = ( intval( $token_value ) === - 1 ) ? $user_id : $token_value;
+
 					}
 				}
-			} elseif ( in_array( 'BDBUSERAVATAR', $pieces ) ) {
+			} elseif ( in_array( 'BDBUSERAVATAR', $pieces, true ) ) {
 				// Get Group id from meta log
 				if ( function_exists( 'get_avatar_url' ) ) {
 					$value = get_avatar_url( $user_id );
 				}
-			} elseif ( in_array( 'BDBXPROFILE', $pieces ) ) {
+			} elseif ( in_array( 'BDBXPROFILE', $pieces, true ) ) {
 
 				if ( isset( $pieces[2] ) && ! empty( $pieces[2] ) ) {
-					$value = $this->get_xprofile_data( $user_id, $pieces[2] );
-					if ( \DateTime::createFromFormat( 'Y-m-d H:i:s', $value ) !== false ) {
-						$value = date( 'Y-m-d', $value );
+
+					// The function bp_get_profile_field_data() already formats the value.
+					if ( function_exists( 'bp_get_profile_field_data' ) ) {
+						$value = bp_get_profile_field_data(
+							array(
+								'field'   => absint( $pieces[2] ),
+								'user_id' => $user_id,
+							)
+						);
 					}
 				}
-			} elseif ( in_array( 'BDBTOPICREPLY', $pieces ) ) {
+			} elseif ( in_array( 'BDBTOPICREPLY', $pieces, true ) ) {
 				$piece = 'BDBTOPIC';
 
 				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
@@ -286,7 +303,7 @@ class Bdb_Tokens {
 						}
 					}
 				}
-			} elseif ( in_array( 'BDBNEWTOPIC', $pieces ) ) {
+			} elseif ( in_array( 'BDBNEWTOPIC', $pieces, true ) ) {
 				$piece = 'BDBFORUMSTOPIC';
 
 				$recipe_log_id = Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
@@ -314,8 +331,8 @@ class Bdb_Tokens {
 						}
 					}
 				}
-			} elseif ( in_array( 'BDBUSERACTIVITY', $pieces ) || in_array( 'BDBUSERSENDSFRIENDREQUEST', $pieces ) ||
-			           in_array( 'BDBUSERACCEPTFRIENDREQUEST', $pieces ) || in_array( 'BDBUSERNEWFOLLOWER', $pieces ) ) {
+			} elseif ( in_array( 'BDBUSERACTIVITY', $pieces, true ) || in_array( 'BDBUSERSENDSFRIENDREQUEST', $pieces, true ) ||
+				in_array( 'BDBUSERACCEPTFRIENDREQUEST', $pieces, true ) || in_array( 'BDBUSERNEWFOLLOWER', $pieces, true ) ) {
 				if ( $trigger_data ) {
 					foreach ( $trigger_data as $trigger ) {
 						$trigger_id     = $trigger['ID'];
@@ -327,6 +344,23 @@ class Bdb_Tokens {
 						}
 					}
 				}
+			} elseif ( in_array( 'BDBUSERPOSTREPLYFORUM', $pieces ) ) {
+				foreach ( $trigger_data as $trigger ) {
+					if ( in_array( $pieces[2], array( 'BDBFORUMS_ID', 'BDBFORUMS_URL', 'BDBFORUMS' ), true ) ) {
+						$trigger_id     = $trigger['ID'];
+						$trigger_log_id = $replace_args['trigger_log_id'];
+						$topic_id       = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'BDBTOPIC', $trigger_id, $trigger_log_id, $user_id );
+						$forum_id       = bbp_get_topic_forum_id( $topic_id );
+
+						if ( 'BDBFORUMS_ID' === $pieces[2] ) {
+							$value = $forum_id;
+						} elseif ( 'BDBFORUMS_URL' === $pieces[2] ) {
+							$value = get_permalink( $forum_id );
+						} elseif ( 'BDBFORUMS' === $pieces[2] ) {
+							$value = get_the_title( $forum_id );
+						}
+					}
+				}
 			}
 		}
 
@@ -334,6 +368,9 @@ class Bdb_Tokens {
 	}
 
 	/**
+	 * Get xprofile data.
+	 *
+	 * @deprecated 3.1.2 No longer used by parse_bp_token method.
 	 * @param $user_id
 	 * @param $field_id
 	 *
@@ -376,6 +413,8 @@ class Bdb_Tokens {
 	}
 
 	/**
+	 * Possible tokens.
+	 *
 	 * @param array $tokens
 	 * @param array $args
 	 *

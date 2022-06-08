@@ -474,7 +474,7 @@ class Google_Sheet_Helpers {
 	 */
 	public function api_get_google_drives() {
 
-		$options = get_transient( 'automator_api_get_google_drives' );
+		$options = get_transient( 'automator_api_get_google_shared_drives' );
 
 		if ( false !== $options ) {
 			return $options;
@@ -497,15 +497,16 @@ class Google_Sheet_Helpers {
 
 			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {
 				foreach ( $response['data'] as $drive ) {
-					$options[] = array(
-						'value' => $drive->id,
-						'text'  => $drive->name,
-					);
-
+					if ( ! empty( $drive['id'] ) && ! empty( $drive['name'] ) ) {
+						$options[] = array(
+							'value' => $drive['id'],
+							'text'  => $drive['name'],
+						);
+					}
 				}
 			}
 
-			set_transient( 'automator_api_get_google_drives', $options, 60 );
+			set_transient( 'automator_api_get_google_shared_drives', $options, 60 );
 
 			return $options;
 

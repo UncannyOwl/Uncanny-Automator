@@ -114,6 +114,10 @@ WHERE p.post_type IS NOT NULL
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code         => __( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => __( 'Form ID', 'uncanny-automator' ),
+			),
 		);
 
 		//      Automator()->cache->set( 'uap_option_all_elementor_forms', $option );

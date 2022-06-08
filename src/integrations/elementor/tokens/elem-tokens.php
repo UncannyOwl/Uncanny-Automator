@@ -130,8 +130,19 @@ WHERE p.post_type IS NOT NULL
 			return $value;
 		}
 		$piece = 'ELEMFORM';
-		if ( ! in_array( $piece, $pieces, false ) ) {
+		if ( ! in_array( $piece, $pieces ) && ! in_array( $piece . '_ID', $pieces ) ) {
 			return $value;
+		}
+
+		if ( $piece . '_ID' === $pieces[2] ) {
+			foreach ( $trigger_data as $t_d ) {
+				if ( empty( $t_d ) ) {
+					continue;
+				}
+				if ( isset( $t_d['meta'][ $piece ] ) ) {
+					return $t_d['meta'][ $piece ];
+				}
+			}
 		}
 
 		foreach ( $trigger_data as $trigger ) {
@@ -205,22 +216,22 @@ WHERE p.post_type IS NOT NULL
 											$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 											$run_number     = (int) $trigger_result['args']['run_number'];
 											$args           = array(
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'ELEMFORM_' . $form_id,
-												'meta_value'     => $data,
-												'run_number'     => $run_number,
+												'user_id'  => $user_id,
+												'trigger_id' => $trigger_id,
+												'meta_key' => 'ELEMFORM_' . $form_id,
+												'meta_value' => $data,
+												'run_number' => $run_number,
 												// get run number
 												'trigger_log_id' => $trigger_log_id,
 											);
 											Automator()->insert_trigger_meta( $args );
 											// For form name
 											$args = array(
-												'user_id'        => $user_id,
-												'trigger_id'     => $trigger_id,
-												'meta_key'       => 'ELEMFORM_ELEMFORM',
-												'meta_value'     => $form_name,
-												'run_number'     => $run_number,
+												'user_id'  => $user_id,
+												'trigger_id' => $trigger_id,
+												'meta_key' => 'ELEMFORM_ELEMFORM',
+												'meta_value' => $form_name,
+												'run_number' => $run_number,
 												// get run number
 												'trigger_log_id' => $trigger_log_id,
 											);

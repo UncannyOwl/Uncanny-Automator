@@ -68,7 +68,7 @@ class SHEET_UPDATERECORD {
 			'accepted_args'      => 1,
 			'requires_user'      => false,
 			'execution_function' => array( $this, 'update_row_google_sheet' ),
-			'options_callback'	 => array( $this, 'load_options' ),
+			'options_callback'   => array( $this, 'load_options' ),
 			'custom_html'        => $this->custom_html(),
 			'buttons'            => array(
 				array(
@@ -91,7 +91,7 @@ class SHEET_UPDATERECORD {
 	 */
 	public function load_options() {
 		$options = array(
-			'options_group'      => array(
+			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->google_sheet->options->get_google_drives(
 						__( 'Drive', 'uncanny-automator' ),
@@ -627,14 +627,14 @@ class SHEET_UPDATERECORD {
 		} catch ( \Exception $e ) {
 			return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
-		
+
 	}
-	
+
 	/**
 	 * match_range
-	 * 
+	 *
 	 * Look for the range that matches the value.
-	 * 
+	 *
 	 * @param  mixed $existing_rows
 	 * @param  mixed $sheet
 	 * @param  mixed $selected_column_range
@@ -645,7 +645,7 @@ class SHEET_UPDATERECORD {
 
 		$done_lookup   = false;
 		$matched_range = false;
-		$i = 0;
+		$i             = 0;
 
 		foreach ( $existing_rows as $range => $sheet_rows ) {
 			$j = 1;

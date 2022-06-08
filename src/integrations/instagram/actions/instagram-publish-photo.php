@@ -114,7 +114,7 @@ class INSTAGRAM_PUBLISH_PHOTO {
 
 		$image_uri = sanitize_text_field( $parsed['INSTAGRAM_IMAGE_URL'] );
 
-		$hashtags = sanitize_text_field( $parsed['INSTAGRAM_HASHTAGS'] );
+		$hashtags = sanitize_textarea_field( $parsed['INSTAGRAM_HASHTAGS'] );
 
 		$page_props = $instagram->get_user_page_connected_ig( $page_id );
 

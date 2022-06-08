@@ -49,8 +49,6 @@ class WP_SENDEMAIL {
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Send an {{email}}', 'uncanny-automator' ) );
 
-		
-		
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
 		$this->register_action();
@@ -148,10 +146,11 @@ class WP_SENDEMAIL {
 				// Email Content Field.
 				Automator()->helpers->recipe->field->text(
 					array(
-						'option_code' => 'EMAILBODY',
+						'option_code'               => 'EMAILBODY',
 						/* translators: Email field */
-						'label'       => esc_attr__( 'Body', 'uncanny-automator' ),
-						'input_type'  => 'textarea',
+						'label'                     => esc_attr__( 'Body', 'uncanny-automator' ),
+						'input_type'                => 'textarea',
+						'supports_fullpage_editing' => true,
 					)
 				),
 
@@ -159,11 +158,11 @@ class WP_SENDEMAIL {
 		);
 
 		$options = Automator()->utilities->keep_order_of_options(
-				array(
-				'options_group' => $options_group
+			array(
+				'options_group' => $options_group,
 			)
 		);
-		
+
 		return $options;
 	}
 

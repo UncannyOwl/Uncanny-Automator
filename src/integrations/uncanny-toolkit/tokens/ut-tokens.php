@@ -29,7 +29,15 @@ class Ut_Tokens {
 			'wp_role'      => __( 'Imported user WordPress role', 'uncanny-automator' ),
 		);
 
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_uncanny_toolkit_token' ), 20, 6 );
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'parse_uncanny_toolkit_token',
+			),
+			20,
+			6
+		);
 
 		add_filter(
 			'automator_maybe_trigger_uncannytoolkit_utuserimported_tokens',
@@ -67,6 +75,7 @@ class Ut_Tokens {
 			20,
 			2
 		);
+
 	}
 
 	/**
@@ -200,7 +209,10 @@ class Ut_Tokens {
 			'UTUSERIMPORTEDCOURSE',
 			'UTUSERIMPORTEDGROUP',
 			'UTGROUPLEADERIMPORTED',
+			'UTUSERSTIMEINCOURSEEXCEEDS',
+			'UOUSERSTIMEINCOURSEEXCEEDS',
 		);
+
 		if ( empty( $pieces ) ) {
 			return $value;
 		}
@@ -238,6 +250,26 @@ class Ut_Tokens {
 			return get_the_title( $token_meta['learndash_group_id'] );
 		}
 
+		if ( 'UOUSERSTIMEINCOURSEEXCEEDS' === $token ) {
+			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS', $token_args ) );
+		}
+		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_ID' === $token ) {
+			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_ID', $token_args ) );
+		}
+		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_COURSEMINUTES' === $token ) {
+			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_COURSEMINUTES', $token_args ) );
+		}
+		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_URL' === $token ) {
+			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_URL', $token_args ) );
+		}
+		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_ID' === $token ) {
+			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_ID', $token_args ) );
+		}
+		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_URL' === $token ) {
+			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_URL', $token_args ) );
+		}
+
 		return $value;
 	}
+
 }

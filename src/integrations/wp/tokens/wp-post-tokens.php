@@ -158,11 +158,14 @@ class Wp_Post_Tokens {
 			return $value;
 		}
 
-		if ( ! in_array( $token, $tokens, false ) ) {
+		if ( ! in_array( $token, $tokens, false ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 			return $value;
 		}
 
 		foreach ( $trigger_data as $trigger ) {
+			if ( empty( $trigger ) ) {
+				continue;
+			}
 			$trigger_id     = absint( $trigger['ID'] );
 			$trigger_log_id = absint( $replace_args['trigger_log_id'] );
 			$run_number     = absint( $replace_args['run_number'] );

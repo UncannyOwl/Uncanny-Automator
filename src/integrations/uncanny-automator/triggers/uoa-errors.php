@@ -69,9 +69,19 @@ class UOA_ERRORS {
 	public function error( $recipe_id, $user_id, $recipe_log_id, $args ) {
 
 		global $wpdb;
-		// get recipe actions
-		$table_name = $wpdb->prefix . Automator()->db->tables->action;
-		$errors     = $wpdb->get_results( $wpdb->prepare( "SELECT automator_action_id FROM $table_name WHERE automator_recipe_log_id = %d AND error_message != %s", $recipe_log_id, '' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		/**
+		 * Only look at the status #2, which is set only when there's an error
+		 */
+		$errors = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT automator_action_id
+FROM {$wpdb->prefix}uap_action_log
+WHERE automator_recipe_log_id = %d
+  AND completed = %d",
+				$recipe_log_id,
+				2
+			)
+		);
 
 		if ( empty( $errors ) ) {
 			// bail early
@@ -149,26 +159,7 @@ class UOA_ERRORS {
 					'run_number'     => $result['args']['run_number'],
 				)
 			);
-			// FUTURE USE STORE THE ACTION ID OR OTHER INFORMATION ABOUT THE ACTION THAT ERRORED OUT
-			//				foreach ( $errors as $error ) {
-			//					$automator_action_id = $error->automator_action_id;
-			//					$action = get_post($automator_action_id);
-			//					Automator()->insert_trigger_meta(
-			//						[
-			//							'user_id'        => $user_id,
-			//							'trigger_id'     => $args['trigger_id'],
-			//							'meta_key'       => 'UOAERRORS_action_id',
-			//							'meta_value'     => $action->ID,
-			//							'trigger_log_id' => $args['get_trigger_id'],
-			//							'run_number'     => $args['run_number'],
-			//						]
-			//					);
-			//
-			//
-			//				}
-
 			Automator()->maybe_trigger_complete( $result['args'] );
-
 		}
 	}
 }

@@ -559,7 +559,7 @@ class Mailchimp_Helpers {
 		try {
 			$response = $this->api_request( $request_params );
 
-			if ( 200 !== intval( $response['statusCode'] ) ) { 
+			if ( 200 !== intval( $response['statusCode'] ) ) {
 				throw new \Exception( __( 'Could not fetch fields', 'uncanny-automator' ) );
 			}
 
@@ -864,6 +864,7 @@ class Mailchimp_Helpers {
 			'endpoint' => self::API_ENDPOINT,
 			'body'     => $body,
 			'action'   => $action,
+			'timeout'  => 10, // Add generous timeout.
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -933,7 +934,7 @@ class Mailchimp_Helpers {
 
 		$expected_codes = array( 200, 204 );
 
-		if ( in_array( $response['statusCode'], $expected_codes ) ) {
+		if ( in_array( $response['statusCode'], $expected_codes, true ) ) {
 			return $response;
 		}
 
@@ -955,14 +956,14 @@ class Mailchimp_Helpers {
 		}
 
 		if ( ! empty( $error_msg ) ) {
-			if ( isset( $response['status'] )) {
-				$error_msg = '(' . $response['status'] . ') ' . $error_msg;
+			if ( isset( $response['statusCode'] ) ) {
+				$error_msg = '(' . $response['statusCode'] . ') ' . $error_msg;
 			}
 
-			throw new \Exception( $error_msg, $response['status'] );
-		}	
+			throw new \Exception( $error_msg, $response['statusCode'] );
+		}
 	}
-	
+
 	/**
 	 * get_user
 	 *
@@ -982,7 +983,7 @@ class Mailchimp_Helpers {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * compile_user_interests
 	 *
@@ -1004,7 +1005,7 @@ class Mailchimp_Helpers {
 			$add_interests = array();
 
 			foreach ( $groups_list as $interest_id ) {
-				$add_interests[$interest_id] = true;
+				$add_interests[ $interest_id ] = true;
 			}
 
 			return $add_interests;
@@ -1017,11 +1018,11 @@ class Mailchimp_Helpers {
 				// No interests to remove
 				return array();
 			}
-			
+
 			$remove_interests = array();
 
 			foreach ( $groups_list as $interest_id ) {
-				$remove_interests[$interest_id] = false;
+				$remove_interests[ $interest_id ] = false;
 			}
 
 			return $remove_interests;
@@ -1038,10 +1039,10 @@ class Mailchimp_Helpers {
 					$new_interests[ $interest_id ] = false;
 				}
 			}
-			
+
 			// Then add the new ones
 			foreach ( $groups_list as $interest_id ) {
-				$new_interests[$interest_id] = true;
+				$new_interests[ $interest_id ] = true;
 			}
 
 			return $new_interests;
@@ -1049,7 +1050,7 @@ class Mailchimp_Helpers {
 
 		return array();
 	}
-	
+
 	/**
 	 * Defines our webhook listener.
 	 *
@@ -1296,7 +1297,7 @@ class Mailchimp_Helpers {
 		return automator_log( $message, 'MailChimp Webhook Trigger Entry', $force_debug, 'mailchimp-webhook' );
 
 	}
-	
+
 	/**
 	 * validate_trigger
 	 *

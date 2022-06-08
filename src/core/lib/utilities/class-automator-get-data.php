@@ -1039,7 +1039,7 @@ class Automator_Get_Data {
 					if ( 'automator_custom_value' === $value ) {
 						$value = $trigger['meta'][ $trigger_meta . '_custom' ];
 					}
-					
+
 					$metas[ $recipe_id ][ $trigger['ID'] ] = $value;
 				}
 			}
@@ -1349,4 +1349,42 @@ WHERE t.automator_trigger_id = %d
 
 		return is_numeric( $count ) ? $count : 0;
 	}
+
+	/**
+	 * Return all integration published actions.
+	 *
+	 * @param  mixed $integration The integration.
+	 * @return array The recipe data.
+	 */
+	public function get_integration_publish_actions( $integration = '' ) {
+
+		// Get all published recipes.
+		$published_recipes = array_filter(
+			Automator()->get_recipes_data(),
+			function( $recipe ) {
+				return 'publish' === $recipe['post_status'];
+			}
+		);
+
+		// Map all published integration actions.
+		$published_actions = array_map(
+			function( $published_recipe ) use ( $integration ) {
+				// Filter the actions by integration and publish staus.
+				$published_actions = array_filter(
+					$published_recipe['actions'],
+					function( $action ) use ( $integration ) {
+						return 'publish' === $action['post_status'] && $integration === $action['meta']['integration'];
+					}
+				);
+				// Return the specific integration actions that are published.
+				return $published_actions;
+			},
+			$published_recipes
+		);
+
+		// Automatically remove empty elements.
+		return array_filter( $published_actions );
+
+	}
+
 }

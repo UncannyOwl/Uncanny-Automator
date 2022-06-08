@@ -46,10 +46,10 @@ class Google_Sheet_Settings {
 
 		$this->set_id( 'google-sheet' );
 
-		$this->set_icon( 'google' );
+		$this->set_icon( 'google-sheets' );
 
-		$this->set_name( 'Google' );
-		
+		$this->set_name( 'Google Sheets' );
+
 		$this->client = false;
 
 		try {

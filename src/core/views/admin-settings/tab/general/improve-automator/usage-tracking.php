@@ -33,7 +33,7 @@ namespace Uncanny_Automator;
 	<div class="uap-field uap-spacing-top--small">
 
 		<uo-switch
-			id="uap_automator_allow_tracking"
+			id="automator_reporting"
 			<?php echo $is_usage_tracking_enabled ? 'checked' : ''; ?>
 
 			status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"

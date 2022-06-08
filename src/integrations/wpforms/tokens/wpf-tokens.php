@@ -126,7 +126,7 @@ class Wpf_Tokens {
 			return $value;
 		}
 		if ( ! in_array( 'WPFFORMS', $pieces, true ) && ! in_array( 'ANONWPFFORMS', $pieces, true )
-		     && ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
+			 && ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -296,6 +296,9 @@ class Wpf_Tokens {
 					$trigger_log_id = $replace_args['trigger_log_id'];
 					$meta_key       = $pieces[2];
 					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( class_exists( 'WPForms_Lite' ) ) {
+						$meta_value = __( 'This token requires WPForms Pro', 'uncanny-automator' );
+					}
 					if ( ! empty( $meta_value ) ) {
 						$value = maybe_unserialize( $meta_value );
 					}

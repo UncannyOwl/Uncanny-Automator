@@ -16,7 +16,7 @@ class Automator_Notifications {
 	 *
 	 * @var string
 	 */
-	const SOURCE_URL = 'https://autonotifs-cdn.automatorplugin.com/wp-content/notifications.json';
+	public $source_url = 'https://autonotifs-cdn.automatorplugin.com/wp-content/notifications.json';
 
 	/**
 	 * Option value.
@@ -35,7 +35,15 @@ class Automator_Notifications {
 	public $option_name = 'automator_notifications';
 
 	public function __construct() {
+
+		if ( defined( 'AUTOMATOR_NOTIFICATIONS_SOURCE_URL' ) ) {
+
+			$this->source_url = AUTOMATOR_NOTIFICATIONS_SOURCE_URL;
+
+		}
+
 		$this->init();
+
 	}
 
 	/**
@@ -46,6 +54,7 @@ class Automator_Notifications {
 	public function init() {
 
 		$this->hooks();
+
 	}
 
 	/**
@@ -59,8 +68,6 @@ class Automator_Notifications {
 
 		add_action( 'automator_admin_notifications_update', array( $this, 'update' ) );
 
-		add_action( 'automator_settings_header_after', array( $this, 'show_notifications' ) );
-
 		add_action( 'automator_dashboard_header_after', array( $this, 'show_notifications' ) );
 
 		add_action( 'automator_tools_header_after', array( $this, 'show_notifications' ) );
@@ -71,14 +78,24 @@ class Automator_Notifications {
 				function() {
 					$screen = get_current_screen();
 					if ( 'edit-uo-recipe' === $screen->id ) {
+						// Enqueue the style incase it wasnt called.
+						wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ), array(), Utilities::automator_get_version() );
+						// Register main JS in case it wasnt registered.
+						wp_register_script(
+							'uap-admin',
+							Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
+							array(),
+							Utilities::automator_get_version(),
+							true
+						);
+						// Enqueue uap-admin.
+						wp_enqueue_script( 'uap-admin' );
 						add_action( 'admin_notices', array( $this, 'show_notifications' ) );
 					}
 				},
 				10
 			);
-
 		}
-
 	}
 
 
@@ -133,7 +150,7 @@ class Automator_Notifications {
 	 */
 	public function fetch_feed() {
 
-		$res = wp_remote_get( self::SOURCE_URL );
+		$res = wp_remote_get( $this->source_url );
 
 		if ( is_wp_error( $res ) ) {
 
@@ -602,6 +619,33 @@ class Automator_Notifications {
 	public function get_license_type() {
 
 		return Api_Server::get_license_type();
+
+	}
+
+
+	/**
+	 * Add UTM parameters to any links.
+	 *
+	 * @param  mixed $url The url of the button.
+	 * @param  mixed $campaign The title of the button. Urlencoded with spaces replaced by dash.
+	 * @param  mixed $content The button tex. Urlencoded with spaces replaced by dash.
+	 * @return string The link with utm specified parameters.
+	 */
+	public function url_add_utm( $url = '', $campaign = '', $content = '' ) {
+
+		if ( empty( $url ) ) {
+			return '';
+		}
+
+		return add_query_arg(
+			array(
+				'utm_medium'   => 'notification',
+				'utm_campaign' => str_replace( ' ', '-', $campaign ),
+				'utm_content'  => str_replace( ' ', '-', $content ),
+				'utm_source'   => 'uncanny_automator',
+			),
+			$url
+		);
 
 	}
 

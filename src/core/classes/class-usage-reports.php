@@ -11,12 +11,14 @@ use Uncanny_Automator\Automator_System_Report;
  */
 class Usage_Reports {
 
+	const   RECIPE_COUNT_OPTION    = 'automator_completed_recipes';
+	const   LAST_REPORT_OPTION     = 'automator_last_json_report';
+	const   REPORT_SCHEDULE_OPTION = 'automator_reporting_daytime';
+	const   ONGOING_REPORT_OPTION  = 'automator_report_is_ongoing';
 	public $system_report;
 	public $recipes_data;
 	public $report;
-	public $nonce = 'automator_report_nonce';
-
-	public $retry_interval = DAY_IN_SECONDS;
+	private $forced = false;
 
 	/**
 	 * __construct
@@ -25,50 +27,59 @@ class Usage_Reports {
 	 */
 	public function __construct() {
 
-		$this->report = $this->initialize_report();
+		$this->report            = $this->initialize_report();
+		$this->current_hourstamp = $this->hourstamp();
+		$this->current_weekstamp = $this->weekstamp();
 
 		add_action( 'rest_api_init', array( $this, 'rest_api_endpoint' ) );
 
 		add_action( 'shutdown', array( $this, 'maybe_report' ) );
 
+		add_action( 'automator_recipe_completed', array( $this, 'count_recipe_completion' ) );
+
 	}
 
+
 	/**
-	 * rest_api_endpoint
-	 * Create an endpoint so that the process can run at background
-	 * https://site_domain/wp-json/uap/v2/async_report/
+	 * weekstamp
+	 *
+	 * Will return an integer weekstamp like 202201 for the first week in 2022 and 202252 for the last one
 	 *
 	 * @return void
 	 */
-	public function rest_api_endpoint() {
-		register_rest_route(
-			AUTOMATOR_REST_API_END_POINT,
-			'/async_report/',
-			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'call_api' ),
-				'permission_callback' => array( $this, 'validate_rest_call' ),
-			)
-		);
+	public function weekstamp() {
+
+		$year = gmdate( 'o' );
+		$week = $this->leading_zeros( gmdate( 'W' ) );
+
+		return absint( $year . $week );
 	}
 
 	/**
-	 * validate_rest_call
+	 * hourstamp
 	 *
-	 * @param  mixed $request
+	 * Will return an integer hourstamp like 202201307 for 7 am on Wednesday of the first week in 2022
+	 * or 2022520522 for 10PM Friday, last week of 2022
+	 *
 	 * @return void
 	 */
-	public function validate_rest_call( $request ) {
+	public function hourstamp() {
 
-		$next_report = get_option( 'automator_next_report', 0 );
+		$day  = gmdate( 'N' );
+		$hour = gmdate( 'H' );
 
-		parse_str( $request->get_body(), $result );
+		return absint( $this->weekstamp() . $day . $hour );
+	}
 
-		if ( empty( $result['next_report'] ) ) {
-			return false;
-		}
-
-		return $next_report == $result['next_report'];
+	/**
+	 * leading_zeros
+	 *
+	 * @param  mixed $value
+	 * @param  mixed $length
+	 * @return void
+	 */
+	public function leading_zeros( $value, $length = 2 ) {
+		return str_pad( $value, $length, '0', STR_PAD_LEFT );
 	}
 
 	/**
@@ -78,15 +89,15 @@ class Usage_Reports {
 	 */
 	public function initialize_report() {
 		return array(
-			'server'         		=> array(),
-			'wp'             		=> array(),
-			'automator'      		=> array(),
-			'license'        		=> array(),
-			'active_plugins' 		=> array(),
-			'theme'          		=> array(),
-			'integrations'   		=> array(),
-			'integrations_array' 	=> array(),
-			'recipes'        		=> array(
+			'server'             => array(),
+			'wp'                 => array(),
+			'automator'          => array(),
+			'license'            => array(),
+			'active_plugins'     => array(),
+			'theme'              => array(),
+			'integrations'       => array(),
+			'integrations_array' => array(),
+			'recipes'            => array(
 				'live_recipes_count'        => 0,
 				'user_recipes_count'        => 0,
 				'everyone_recipes_count'    => 0,
@@ -101,13 +112,21 @@ class Usage_Reports {
 	}
 
 	/**
-	 * maybe_report
+	 * Method maybe_report
 	 *
 	 * @return bool
 	 */
 	public function maybe_report() {
 
+		if ( $this->is_forced() ) {
+			return $this->async_report();
+		}
+
 		if ( ! $this->reporting_enabled() ) {
+			return false;
+		}
+
+		if ( $this->report_is_ongoing() ) {
 			return false;
 		}
 
@@ -117,6 +136,32 @@ class Usage_Reports {
 
 		return $this->async_report();
 
+	}
+
+	/**
+	 * is_forced
+	 *
+	 * @return void
+	 */
+	public function is_forced() {
+
+		if ( is_admin() && automator_filter_has_var( 'automator_force_report' ) && '42' === automator_filter_input( 'automator_force_report' ) ) {
+			$this->forced = true;
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * report_is_ongoing
+	 *
+	 * Prevents duplicated reports or sending a report when another one failed recently
+	 *
+	 * @return bool
+	 */
+	public function report_is_ongoing() {
+		return get_transient( self::ONGOING_REPORT_OPTION );
 	}
 
 	/**
@@ -150,42 +195,97 @@ class Usage_Reports {
 	 */
 	public function time_to_report() {
 
-		$next_report = get_option( 'automator_next_report', 0 );
+		$last_report_weekstamp = $this->get_last_report();
 
-		if ( $next_report < time() ) {
+		$schedule_day_hour = $this->get_schedule();
+
+		$last_report_hourstamp = absint( $last_report_weekstamp . $schedule_day_hour );
+
+		return $this->week_passed_since_last_report( $last_report_hourstamp );
+	}
+
+	/**
+	 * week_passed
+	 *
+	 * An hourstamp has a format of 202233417
+	 * Where 2022 is the year
+	 * 33 is the week number in that year
+	 * 4 stands for Thursday
+	 * 17 stands for hours, or 5PM
+	 *
+	 * Therefore, each week adds 1000 to the hourstamp
+	 *
+	 * @return void
+	 */
+	public function week_passed_since_last_report( $hourstamp ) {
+
+		if ( $this->current_hourstamp - $hourstamp >= 1000 ) {
 			return true;
 		}
 
 		return false;
+
 	}
 
 	/**
-	 * async_report
+	 * get_last_report
 	 *
-	 * @return string
+	 * @return void
 	 */
-	public function async_report() {
+	public function get_last_report() {
 
-		$next_report = time() + $this->retry_interval;
-		// Update the option early to prevent multiple simultaneous calls
-		update_option( 'automator_next_report', $next_report );
+		$last_report = get_option( self::LAST_REPORT_OPTION, 0 );
 
-		$url = get_rest_url() . 'uap/v2/async_report/';
+		if ( 0 === $last_report ) {
 
-		// Call the endpoint to make sure that the process runs at the background
-		$response = wp_remote_post(
-			$url,
-			array(
-				'timeout'  => 0.01,
-				'blocking' => false,
-				'body'     => array(
-					'next_report' => $next_report,
-				),
+			$last_report = $this->current_weekstamp - 1;
+			// Pretend that the last report was sent last week
+			$this->schedule_next_report( $last_report );
 
-			)
-		);
+		}
 
-		return $url;
+		return $last_report;
+
+	}
+
+	/**
+	 * get_schedule
+	 *
+	 * @return void
+	 */
+	public function get_schedule() {
+
+		$schedule = get_option( self::REPORT_SCHEDULE_OPTION, 0 );
+
+		if ( 0 === $schedule ) {
+
+			$schedule = $this->generate_report_schedule();
+
+			update_option( self::REPORT_SCHEDULE_OPTION, $schedule );
+
+		}
+
+		return absint( $schedule );
+	}
+
+	/**
+	 * generate_report_schedule
+	 *
+	 * Will return an integer from 100 (Monday midnight) to 723 (Sunday 11PM)
+	 *
+	 * If too many sites will report at the same time, the API may be overloaded.
+	 * Therefore we need to make sure the reports are sent at random times to distribute the load evenly across the week.
+	 *
+	 * @return void
+	 */
+	public function generate_report_schedule() {
+
+		$random_day  = wp_rand( 1, 7 );
+		$random_hour = wp_rand( 0, 23 );
+
+		$report_day_hour = absint( $random_day . $this->leading_zeros( $random_hour ) );
+
+		return $report_day_hour;
 	}
 
 	/**
@@ -197,11 +297,12 @@ class Usage_Reports {
 
 		$started_at = microtime( true );
 
-		$Automator_System_Report = Automator_System_Report::get_instance();
+		$automator_system_report = Automator_System_Report::get_instance();
 
-		$this->system_report = $Automator_System_Report->get();
+		$this->system_report = $automator_system_report->get();
 		$this->recipes_data  = Automator()->get_recipes_data( false );
 
+		$this->get_unique_site_hash();
 		$this->get_server_info();
 		$this->get_wp_info();
 		$this->get_theme_info();
@@ -209,12 +310,30 @@ class Usage_Reports {
 		$this->report['active_plugins'] = $this->get_plugins_info( $this->system_report['active_plugins'] );
 		$this->get_automator_info();
 		$this->get_recipes_info();
+		$this->get_date();
 
 		$finished_at = microtime( true );
 
 		$this->report['get_data_took'] = round( ( $finished_at - $started_at ) * 1000 );
 
+		$this->report['forced'] = $this->forced;
+
 		return $this->report;
+	}
+
+	/**
+	 * get_unique_site_hash
+	 *
+	 * Generate a unique site hash. We can't send the site URL without owner's consent due to GDPR.
+	 *
+	 * @return void
+	 */
+	public function get_unique_site_hash() {
+
+		$site_url                  = get_site_url();
+		$site_hash                 = md5( $site_url );
+		$this->report['site_hash'] = $site_hash;
+
 	}
 
 	/**
@@ -267,7 +386,7 @@ class Usage_Reports {
 		$wp['multisite']       = $this->system_report['environment']['wp_multisite'];
 		$wp['sites']           = $wp['multisite'] ? $this->sites_count() : 1;
 		$wp['user_count']      = $this->get_user_count();
-		$wp['timezone_offset'] = date( 'P' );
+		$wp['timezone_offset'] = wp_timezone_string();
 		$wp['locale']          = get_locale();
 
 		$this->report['wp'] = $wp;
@@ -383,13 +502,17 @@ class Usage_Reports {
 	 */
 	public function get_recipes_info() {
 
+		$this->report['recipes']['completed_recipes'] = $this->get_completed_runs();
+
+		$this->report['recipes']['completed_recipes_last_week'] = Automator()->get->completed_runs( WEEK_IN_SECONDS );
+
 		if ( empty( $this->recipes_data ) ) {
 			return;
 		}
 
 		foreach ( $this->recipes_data as $recipe_data ) {
 
-			if ( $recipe_data['post_status'] !== 'publish' ) {
+			if ( 'publish' !== $recipe_data['post_status'] ) {
 				$this->report['recipes']['unpublished_recipes_count'] ++;
 				continue;
 			}
@@ -401,14 +524,28 @@ class Usage_Reports {
 		}
 
 		$this->report['integrations_array'] = array_values( $this->report['integrations_array'] );
-		
+
 		$this->report['recipes']['total_integrations_used'] = count( $this->report['integrations'] );
 
-		$this->report['recipes']['completed_recipes'] = Automator()->get->total_completed_runs();
+	}
 
-		$report_frequency                                       = get_option( 'automator_report_frequency', WEEK_IN_SECONDS );
-		$this->report['recipes']['completed_recipes_last_week'] = Automator()->get->completed_runs( $report_frequency );
+	/**
+	 * get_completed_runs
+	 *
+	 * @return void
+	 */
+	public function get_completed_runs() {
+		return absint( get_option( self::RECIPE_COUNT_OPTION, Automator()->get->total_completed_runs() ) );
+	}
 
+	/**
+	 * count_recipe_completion
+	 *
+	 * @return void
+	 */
+	public function count_recipe_completion() {
+		$completed_runs = absint( get_option( self::RECIPE_COUNT_OPTION, Automator()->get->total_completed_runs() - 1 ) );
+		update_option( self::RECIPE_COUNT_OPTION, ++$completed_runs );
 	}
 
 	/**
@@ -422,9 +559,9 @@ class Usage_Reports {
 
 		$this->report['recipes']['live_recipes_count'] ++;
 
-		if ( $recipe_data['recipe_type'] === 'user' ) {
+		if ( 'user' === $recipe_data['recipe_type'] ) {
 			$this->report['recipes']['user_recipes_count'] ++;
-		} elseif ( $recipe_data['recipe_type'] === 'anonymous' ) {
+		} elseif ( 'anonymous' === $recipe_data['recipe_type'] ) {
 			$this->report['recipes']['everyone_recipes_count'] ++;
 		}
 
@@ -443,7 +580,7 @@ class Usage_Reports {
 
 		foreach ( $recipe_data[ $type ] as $data ) {
 
-			if ( $data['post_status'] !== 'publish' ) {
+			if ( 'publish' !== $data['post_status'] ) {
 				continue;
 			}
 
@@ -466,9 +603,9 @@ class Usage_Reports {
 
 		if ( isset( $data['meta']['async_mode'] ) ) {
 			$this->report['recipes']['async_actions_count'] ++;
-			if ( $data['meta']['async_mode'] == 'delay' ) {
+			if ( 'delay' === $data['meta']['async_mode'] ) {
 				$this->report['recipes']['delayed_actions_count'] ++;
-			} elseif ( $data['meta']['async_mode'] == 'schedule' ) {
+			} elseif ( 'schedule' === $data['meta']['async_mode'] ) {
 				$this->report['recipes']['scheduled_actions_count'] ++;
 			}
 		}
@@ -517,50 +654,122 @@ class Usage_Reports {
 	}
 
 	/**
-	 * call_api
+	 * get_date
 	 *
 	 * @return void
 	 */
-	public function call_api() {
+	public function get_date() {
+		$this->report['week']    = gmdate( 'W' );
+		$this->report['year']    = gmdate( 'o' );
+		$this->report['month']   = gmdate( 'n' );
+		$this->report['day']     = gmdate( 'z' );
+		$this->report['weekday'] = gmdate( 'N' );
+	}
 
-		$api_url = apply_filters( 'automator_api_url', AUTOMATOR_API_URL ) . 'v2/report';
+	/**
+	 * async_report
+	 *
+	 * @return string
+	 */
+	public function async_report() {
 
-		$data = $this->get_data();
+		// Block any subsequent report attempts for the next hour
+		set_transient( self::ONGOING_REPORT_OPTION, true, HOUR_IN_SECONDS );
 
+		$url = get_rest_url() . AUTOMATOR_REST_API_END_POINT . '/async_report/';
+
+		// Call the endpoint to make sure that the process runs at the background
 		$response = wp_remote_post(
-			$api_url,
+			$url,
 			array(
-				'method' => 'POST',
-				'body'   => array(
-					'action' => 'save',
-					'data'   => $data,
+				'blocking' => false,
+				'body'     => array(
+					'forced' => $this->forced,
 				),
 			)
 		);
 
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		return $url;
+	}
 
-		$this->schedule_next_report( $body );
+	/**
+	 * rest_api_endpoint
+	 * Create an endpoint so that the process can run at background
+	 * https://site_domain/wp-json/uap/v2/async_report/
+	 *
+	 * @return void
+	 */
+	public function rest_api_endpoint() {
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/async_report/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'call_api' ),
+				'permission_callback' => array( $this, 'validate_rest_call' ),
+			)
+		);
+	}
 
-		return;
+	/**
+	 * validate_rest_call
+	 *
+	 * @param  mixed $request
+	 * @return void
+	 */
+	public function validate_rest_call( $request ) {
+		return get_transient( self::ONGOING_REPORT_OPTION );
+	}
+
+	/**
+	 * call_api
+	 *
+	 * @return void
+	 */
+	public function call_api( $request ) {
+
+		try {
+
+			$incoming_params = $request->get_body_params();
+
+			if ( ! empty( $incoming_params['forced'] ) ) {
+				$this->forced = true;
+			}
+
+			$body = array(
+				'data'   => wp_json_encode( $this->get_data() ),
+				'action' => 'save_json',
+			);
+
+			$params = array(
+				'endpoint' => 'v2/report',
+				'body'     => $body,
+				'timeout'  => 10,
+			);
+
+			$response = Api_Server::api_call( $params );
+
+			if ( 201 !== $response['statusCode'] ) {
+				throw new \Exception( __( 'Something went wrong', 'uncanny-automator' ) );
+			}
+
+			$this->schedule_next_report( $this->current_weekstamp );
+
+		} catch ( \Exception $e ) {
+			// Return without deleting the transient
+			return;
+		}
+
+		delete_transient( self::ONGOING_REPORT_OPTION );
 
 	}
 
 	/**
 	 * schedule_next_report
 	 *
-	 * @param mixed $body
-	 *
 	 * @return void
 	 */
-	public function schedule_next_report( $body ) {
-
-		if ( ! is_wp_error( $body ) && is_array( $body ) && isset( $body['data']['report_frequency'] ) ) {
-			$frequency = (int) $body['data']['report_frequency'];
-			update_option( 'automator_next_report', time() + $frequency );
-			update_option( 'automator_report_frequency', $frequency );
-			return;
-		}
-
+	public function schedule_next_report( $datestamp ) {
+		update_option( self::LAST_REPORT_OPTION, $datestamp );
 	}
 }

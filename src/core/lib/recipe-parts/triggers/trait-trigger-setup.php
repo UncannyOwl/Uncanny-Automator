@@ -164,7 +164,7 @@ trait Trigger_Setup {
 	/**
 	 * @param $author
 	 */
-	protected function set_author( $author ) {
+	public function set_author( $author ) {
 		if ( empty( $author ) ) {
 			$this->author = Automator()->get_author_name( $this->trigger_code );
 		} else {
@@ -175,7 +175,7 @@ trait Trigger_Setup {
 	/**
 	 * @param $link
 	 */
-	protected function set_support_link( $link ) {
+	public function set_support_link( $link ) {
 		if ( empty( $link ) ) {
 			$this->support_link = Automator()->get_author_support_link( $this->trigger_code );
 		} else {
@@ -221,7 +221,7 @@ trait Trigger_Setup {
 	/**
 	 * @param $arg_count
 	 */
-	protected function set_action_args_count( $arg_count = 1 ) {
+	public function set_action_args_count( $arg_count = 1 ) {
 		$this->action_args_count = $arg_count;
 	}
 
@@ -260,49 +260,49 @@ trait Trigger_Setup {
 	/**
 	 * @return mixed
 	 */
-	protected function get_action() {
+	public function get_action() {
 		return $this->action_hook;
 	}
 
 	/**
 	 * @return int
 	 */
-	protected function get_action_priority() {
+	public function get_action_priority() {
 		return $this->action_priority;
 	}
 
 	/**
 	 * @return int
 	 */
-	protected function get_action_args_count() {
+	public function get_action_args_count() {
 		return $this->action_args_count;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	protected function get_integration() {
+	public function get_integration() {
 		return $this->integration;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	protected function get_code() {
+	public function get_code() {
 		return $this->trigger_code;
 	}
 
 	/**
 	 * @return string
 	 */
-	protected function get_author() {
+	public function get_author() {
 		return $this->author;
 	}
 
 	/**
 	 * @return string
 	 */
-	protected function get_support_link() {
+	public function get_support_link() {
 		return $this->support_link;
 	}
 
@@ -358,7 +358,7 @@ trait Trigger_Setup {
 	/**
 	 * @return mixed
 	 */
-	protected function get_readable_sentence() {
+	public function get_readable_sentence() {
 		return $this->readable_sentence;
 	}
 

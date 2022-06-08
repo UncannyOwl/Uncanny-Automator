@@ -315,7 +315,7 @@ class Admin_Menu {
 			'is_pro'             => $is_pro_active,
 			// Is Pro connected
 			'is_pro_installed'   => defined( 'AUTOMATOR_PRO_FILE' ) ? true : false,
-			'pro_activate_link'  => site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-license-activation' ),
+			'pro_activate_link'  => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
 			// Check if this site is connected to an automatorplugin.com account
 			'has_site_connected' => $is_connected ? true : false,
 			// Get data about the CONNECTED user (automatorplugin.com)

@@ -44,14 +44,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 								);
 							?>
 						</div>
+
 						<div class="uap-notifications-list__item-actions">
+
 							<div class="uap-notifications-list__item-actions__links">
-								<uo-button target="_blank" href="<?php echo esc_url( $notification['btns']['main']['url'] ); ?>">
-									<?php echo esc_html( $notification['btns']['main']['text'] ); ?>
-								</uo-button>
-								<uo-button color="secondary" target="_blank" href="<?php echo esc_url( $notification['btns']['alt']['url'] ); ?>">
-									<?php echo esc_html( $notification['btns']['alt']['text'] ); ?>
-								</uo-button>
+
+								<?php
+								if ( isset( $notification['btns']['main']['url'] ) && isset( $notification['btns']['main']['text'] )
+										&& ! empty( $notification['btns']['main']['url'] ) && ! empty( $notification['btns']['main']['text'] ) ) {
+									?>
+
+										<uo-button target="_blank" href="<?php echo esc_url( $this->url_add_utm( $notification['btns']['main']['url'], $notification['title'], $notification['btns']['main']['text'] ) ); ?>">
+											<?php echo esc_html( $notification['btns']['main']['text'] ); ?>
+										</uo-button>
+
+								<?php } ?>
+
+								<?php
+								if ( isset( $notification['btns']['alt']['url'] ) && isset( $notification['btns']['alt']['text'] )
+										&& ! empty( $notification['btns']['alt']['url'] ) && ! empty( $notification['btns']['alt']['text'] ) ) {
+									?>
+										<uo-button color="secondary" target="_blank" href="<?php echo esc_url( $this->url_add_utm( $notification['btns']['alt']['url'], $notification['title'], $notification['btns']['alt']['text'] ) ); ?>">
+											<?php echo esc_html( $notification['btns']['alt']['text'] ); ?>
+										</uo-button>
+
+								<?php } ?>
 							</div>
 							<?php if ( count( $notifications ) >= 2 ) { ?>
 								<div class="uap-notifications-list__item-actions__controls">

@@ -40,6 +40,24 @@ class Gamipress_Tokens {
 	 */
 	public function parse_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
+		if ( in_array( 'GPSPECIFICPOINTS', $pieces, true ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					if ( 'NUMBERCOND' === $meta_key ) {
+						$meta_value = $trigger['meta']['NUMBERCOND_readable'];
+					} else {
+						$meta_value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					}
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
 		$award_type = isset( $trigger_data[0]['meta']['GPAWARDTYPES'] ) ? $trigger_data[0]['meta']['GPAWARDTYPES'] : '';
 
 		$token = isset( $pieces[2] ) ? $pieces[2] : '';
@@ -47,7 +65,7 @@ class Gamipress_Tokens {
 		if ( ! empty( $token ) && ! empty( $award_type ) ) {
 
 			if ( 'GPAWARDTYPES' === $token ) {
-				if ( $award_type != '-1' ) {
+				if ( '-1' !== $award_type ) {
 					$value = isset( $trigger_data[0]['meta']['GPAWARDTYPES_readable'] ) ? $trigger_data[0]['meta']['GPAWARDTYPES_readable'] : '';
 				} else {
 					global $wpdb;

@@ -59,7 +59,7 @@ class Admin_Settings_General_Improve_Automator {
 
 	/**
 	 * Adds the option to enable usage tracking
-	 * 
+	 *
 	 * @return undefined
 	 */
 	private function allow_usage_tracking_setting() {
@@ -74,46 +74,61 @@ class Admin_Settings_General_Improve_Automator {
 			&& ! Admin_Menu::is_automator_connected()
 		) {
 			// Register the setting
-			add_action( 'admin_init', function() {
-				// Allow usage tracking switch
-				register_setting( 'uncanny_automator_improve_automator_usage_tracking', 'uap_automator_allow_tracking' );
-			} );
+			add_action(
+				'admin_init',
+				function() {
+					// Allow usage tracking switch
+					register_setting( 'uncanny_automator_improve_automator_usage_tracking', 'automator_reporting' );
+				}
+			);
 
 			// Add the switch
-			add_action( 'automator_settings_general_improve_automator_content', function() {
-				// Check if the setting is enabled
-				$is_usage_tracking_enabled = get_option( 'automator_reporting', false );
+			add_action(
+				'automator_settings_general_improve_automator_content',
+				function() {
+					// Check if the setting is enabled
+					$is_usage_tracking_enabled = get_option( 'automator_reporting', false );
 
-				// Load the view
-				include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/usage-tracking.php' );
-			}, 10 );
+					// Load the view
+					include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/usage-tracking.php' );
+				},
+				10
+			);
 		}
 	}
 
 	/**
 	 * Adds the feedback section
-	 * 
+	 *
 	 * @return undefined
 	 */
 	private function send_feedback_section() {
 		// Add the section
-		add_action( 'automator_settings_general_improve_automator_content', function() {
-			// Load the view
-			include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/feedback.php' );
-		}, 15 );
+		add_action(
+			'automator_settings_general_improve_automator_content',
+			function() {
+				// Load the view
+				include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/feedback.php' );
+			},
+			15
+		);
 	}
 
 	/**
 	 * Adds the review section
-	 * 
+	 *
 	 * @return undefined
 	 */
 	private function add_review_section() {
 		// Add the section
-		add_action( 'automator_settings_general_improve_automator_content', function() {
-			// Load the view
-			include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/review.php' );
-		}, 20 );
+		add_action(
+			'automator_settings_general_improve_automator_content',
+			function() {
+				// Load the view
+				include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/review.php' );
+			},
+			20
+		);
 	}
 }
 

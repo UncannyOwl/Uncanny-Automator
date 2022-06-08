@@ -89,7 +89,7 @@ class UOA_RECIPECOMPLETED {
 		global $wpdb;
 		// get recipe actions
 		$table_name = $wpdb->prefix . Automator()->db->tables->action;
-		$errors     = $wpdb->get_results( $wpdb->prepare( "SELECT automator_action_id FROM $table_name WHERE automator_recipe_log_id = %d AND error_message != %s", $recipe_log_id, '' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$errors     = $wpdb->get_results( $wpdb->prepare( "SELECT automator_action_id FROM $table_name WHERE automator_recipe_log_id = %d AND completed <> %d", $recipe_log_id, 2 ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! empty( $errors ) ) {
 			// bail early

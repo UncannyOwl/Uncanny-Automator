@@ -228,11 +228,21 @@ trait Triggers {
 						'entry_args'    => $pass_args,
 						'trigger_args'  => $args,
 					);
+
 					do_action( 'automator_before_trigger_completed', $do_action, $this );
 
 					Automator()->process->user->maybe_trigger_complete( $result_args );
 
-					do_action( 'automator_after_trigger_completed', $do_action, $this );
+					do_action_deprecated(
+						'automator_after_trigger_completed',
+						array(
+							$do_action,
+							$this,
+						),
+						'4.1',
+						'automator_after_maybe_trigger_complete'
+					);
+					do_action( 'automator_after_maybe_trigger_complete', $do_action, $this );
 				}
 			}
 		}

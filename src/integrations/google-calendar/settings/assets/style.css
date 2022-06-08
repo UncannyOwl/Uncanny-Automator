@@ -1,0 +1,27 @@
+#google-calendar-list {
+
+}
+
+	.uap-google-calendar {
+		padding: 10px;
+
+		border: 1px solid var(--uap-border-color-gray);
+		border-radius: var(--uap-border-radius);
+	}
+
+	.uap-google-calendar uo-icon {
+		font-size: var(--uap-font-size--body-xxsmall);
+		line-height: var(--uap-line-height--body-xsmall);
+    }
+    
+    .uap-google-calendar__marker {
+        height: 12px;
+        width: 12px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .uap-google-calendar__meta {
+        display: block;
+        font-size: var(--uap-font-size--body-xsmall);
+    }

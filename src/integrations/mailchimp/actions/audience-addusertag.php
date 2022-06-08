@@ -118,10 +118,11 @@ class AUDIENCE_ADDUSERTAG {
 			);
 
 			$request_params = array(
-				'action'    => 'update_subscriber_tags',
-				'list_id'   => $list_id,
-				'user_hash' => $user_hash,
-				'tags'      => wp_json_encode( $tags_body ),
+				'action'     => 'update_subscriber_tags_add_list',
+				'list_id'    => $list_id,
+				'user_hash'  => $user_hash,
+				'user_email' => $user->user_email,
+				'tags'       => wp_json_encode( $tags_body ),
 			);
 
 			$response = $helpers->api_request( $request_params, $action_data );

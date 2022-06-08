@@ -81,7 +81,11 @@ class Facebook_Group_Settings {
 	 */
 	public function output() {
 
-		$error_status = automator_filter_input( 'status' );
+		$status = automator_filter_input( 'status' );
+
+		$error_code = automator_filter_input( 'error_code' );
+
+		$error_message = automator_filter_input( 'error_message' );
 
 		$connection = automator_filter_input( 'connection' );
 
@@ -93,6 +97,8 @@ class Facebook_Group_Settings {
 
 		$disconnect_uri = $this->get_helper()->get_disconnect_url();
 
+		$is_credentials_valid = $this->get_helper()->is_credentials_valid();
+
 		include_once 'view-facebook-groups.php';
 
 	}
@@ -103,6 +109,8 @@ class Facebook_Group_Settings {
 	 * @return array The connected user.
 	 */
 	public function get_user() {
+
 		return (object) $this->get_helper()->get_user_connected();
+
 	}
 }

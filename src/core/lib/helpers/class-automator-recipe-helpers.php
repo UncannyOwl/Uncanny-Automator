@@ -266,6 +266,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $twilio;
 	/**
+	 * @var Google_Calendar_Helpers
+	 */
+	public $google_calendar;
+	/**
 	 * @var Uncanny_Groups_Helpers;
 	 */
 	public $uncanny_groups;

@@ -170,11 +170,49 @@ class Ameliabooking_Helpers {
 
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, name FROM {$wpdb->prefix}amelia_services WHERE status = %s ORDER BY name ASC LIMIT 100",
+				"SELECT id, name FROM {$wpdb->prefix}amelia_services WHERE status = %s ORDER BY name ASC LIMIT 999",
 				'visible'
 			),
 			OBJECT
 		);
+
+	}
+
+	public function get_events_dropdown() {
+
+		$events = $this->get_events();
+
+		$options = array(
+			'-1' => esc_attr__( 'Any event', 'uncanny-automator' ),
+		);
+
+		if ( ! empty( $events ) ) {
+			foreach ( $events as $event ) {
+				if ( ! empty( $event->name ) && ! empty( $event->id ) ) {
+					$options[ $event->id ] = $event->name;
+				}
+			}
+		}
+
+		return $options;
+
+	}
+
+	public function get_events() {
+
+		global $wpdb;
+
+		$options = array();
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, name from {$wpdb->prefix}amelia_events WHERE status = %s ORDER BY name ASC LIMIT 999",
+				'approved'
+			),
+			OBJECT
+		);
+
+		return $results;
 
 	}
 
@@ -186,11 +224,142 @@ class Ameliabooking_Helpers {
 	public function validate_trigger( $args = array() ) {
 
 		// Bailout if args is empty.
-		if ( empty( $args ) || empty( array_shift( $args[0] ) ) ) {
+		if ( empty( $args ) ) {
 			return false;
 		}
 
-		return true;
+		$booking = array_shift( $args[0] );
+
+		if ( empty( $booking['type'] ) ) {
+			return false;
+		}
+
+		// Only run for appointments. Dont run for events.
+		if ( 'appointment' === $booking['type'] ) {
+			return true;
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * Method get_event_date.
+	 *
+	 * @param array $reservation The reservation array from Amelia hook.
+	 *
+	 * @return string The event date.
+	 */
+	public function get_event_date( $reservation = array() ) {
+
+		$reservation_periods = isset( $reservation['event']['periods'][0] ) ? $reservation['event']['periods'][0] : '';
+
+		$period_end = isset( $reservation_periods['periodEnd'] ) ? $reservation_periods['periodEnd'] : '';
+
+		$period_start = isset( $reservation_periods['periodStart'] ) ? $reservation_periods['periodStart'] : '';
+
+		return $period_start . ' - ' . $period_end;
+
+	}
+
+	/**
+	 * Method get_event_organizer.
+	 *
+	 * @param  int $organizer_id The organizer|staff|employee id.
+	 *
+	 * @return string The organizer.
+	 */
+	public function get_event_organizer( $organizer_id = 0 ) {
+
+		$organizer = $this->get_organizer( $organizer_id );
+
+		if ( ! empty( $organizer ) ) {
+
+			return implode(
+				' ',
+				array(
+					$organizer->firstName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$organizer->lastName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				)
+			);
+
+		}
+
+	}
+
+	/**
+	 * Method get_event_tags.
+	 *
+	 * @param  array $reservation The reservation array from Amelia Hook.
+	 *
+	 * @return string The tag [name] from tags array.
+	 */
+	public function get_event_tags( $reservation = array() ) {
+
+		$tag_string = '';
+
+		if ( isset( $reservation['event']['tags'] ) ) {
+
+			$tags = array_shift( $reservation['event']['tags'] );
+
+			$tag_string = isset( $tags['name'] ) ? $tags['name'] : '';
+
+		}
+
+		return $tag_string;
+
+	}
+
+	/**
+	 * Method get_event_staff.
+	 *
+	 * @param  array $reservation The reservation array from Amelia Hook.
+	 *
+	 * @return string The provider name.
+	 */
+	public function get_event_staff( $reservation = array() ) {
+
+		$providers = array();
+
+		if ( ! empty( $reservation['event']['providers'] ) ) {
+
+			foreach ( $reservation['event']['providers'] as $provider ) {
+
+				$providers[] = implode(
+					' ',
+					array(
+						$provider['firstName'],
+						$provider['lastName'],
+					)
+				);
+
+			}
+
+			return implode( ', ', $providers );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Method get_organizer.
+	 *
+	 * @param  mixed $organizer_id
+	 *
+	 * @return object WPDB get row result.
+	 */
+	public function get_organizer( $organizer_id = 0 ) {
+
+		global $wpdb;
+
+		$results = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}amelia_users WHERE id = %d",
+				$organizer_id
+			)
+		);
+
+		return $results;
 	}
 
 }

@@ -70,10 +70,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php esc_attr_e( 'Your Facebook groups have been connected successfully.', 'uncanny-automator' ); ?>"></uo-alert>
 				<?php } ?>
 
-				<?php if ( 'error' === $error_status ) { ?>
+				<?php if ( 'error' === $status ) { ?>
 
-					<uo-alert type="error" heading="<?php esc_attr_e( 'Error', 'uncanny-automator' ); ?>">
-						<?php esc_html_e( 'An error was encountered while authenticating. Permission is denied.', 'uncanny-automator' ); ?>
+					<?php if ( ! empty( $error_message ) ) { ?>
+
+						<?php /* translators: Error code */ ?>
+						<uo-alert class="uap-spacing-bottom" type="error" heading="<?php echo sprintf( esc_attr__( 'Error %s', 'uncanny-automator' ), absint( $error_code ) ); ?>">
+							<?php echo esc_html( $error_message ); ?>
+						</uo-alert>
+
+					<?php } else { ?>
+
+						<uo-alert class="uap-spacing-bottom" type="error" heading="<?php esc_attr_e( 'Error 403', 'uncanny-automator' ); ?>">
+
+							<?php esc_html_e( 'An unexpected error was encountered while authenticating. Permission is denied.', 'uncanny-automator' ); ?>
+
+						</uo-alert>
+
+					<?php } ?>
+
+				<?php } ?>	
+
+				<?php if ( ! $is_credentials_valid && $is_user_connected && 'new' !== $connection ) { ?>
+
+					<uo-alert type="warning" class="uap-spacing-bottom uap-spacing-bottom--big" heading="<?php esc_html_e( 'Warning: Your Facebook authentication has expired!', 'uncanny-automator' ); ?>">
+
+						<?php esc_html_e( 'Due to limitations in the Facebook Groups API, your authentication must be renewed every 60 days. To reauthenticate, click "Reconnect account" below.', 'uncanny-automator' ); ?>
+
 					</uo-alert>
 
 				<?php } ?>
@@ -94,7 +117,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</button>
 					</div>
 
-					<uo-alert style="display:none;" id="facebook-groups-errors" class="uap-spacing-bottom uap-spacing-bottom--big" type="error" heading="<?php esc_html_e( 'An unexpected error has occurred', 'uncanny-automator' ); ?>"></uo-alert>
+					<uo-alert style="display:none;" id="facebook-groups-errors" class="uap-spacing-top uap-spacing-bottom uap-spacing-bottom--big" type="error" heading="<?php esc_html_e( 'An unexpected error has occurred', 'uncanny-automator' ); ?>"></uo-alert>
 
 					<div id="facebook-groups-list"></div>
 
@@ -117,6 +140,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php } else { ?>
 
 				<div class="uap-settings-panel-bottom-left">
+
+				<?php if ( ! $is_credentials_valid && 'new' !== $connection ) { ?>
+
+					<uo-button color="primary" href="<?php echo esc_url( $login_dialog_uri ); ?>">
+
+						<uo-icon id="exchange"></uo-icon>
+
+						<?php esc_html_e( 'Reconnect account', 'uncanny-automator' ); ?>
+
+					</uo-button>
+
+				<?php } else { ?>
 
 					<div class="uap-settings-panel-user">
 
@@ -152,6 +187,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</div>
 
 					</div>
+
+				<?php } ?>
 
 				</div>
 

@@ -66,7 +66,6 @@ class Learndash_Helpers {
 		);
 		add_action( 'wp_ajax_select_topic_from_lesson_LD_TOPICDONE', array( $this, 'topic_from_lesson_func' ), 15 );
 
-
 		add_action( 'learndash_update_user_activity', array( $this, 'learndash_update_user_activity_func' ), 20, 1 );
 	}
 
@@ -128,6 +127,18 @@ class Learndash_Helpers {
 		);
 
 		return apply_filters( 'uap_option_all_ld_courses', $option );
+	}
+
+	/**
+	 * @param string $label
+	 * @param string $option_code
+	 * @param bool $any_option
+	 *
+	 * @return mixed
+	 */
+	public function get_all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true ) {
+		$this->load_options = true;
+		return $this->all_ld_courses( $label, $option_code, $any_option );
 	}
 
 	/**
@@ -569,30 +580,30 @@ class Learndash_Helpers {
 			return;
 		}
 
-//		// Activity type is course, fire do_action
-//		if ( 'course' === $activity_type ) {
-//			do_action(
-//				'learndash_course_completed',
-//				array(
-//					'user'             => $user,
-//					'course'           => get_post( $course_id ),
-//					'progress'         => $course_progress,
-//					'course_completed' => $args['activity_completed'],
-//				)
-//			);
-//
-//			return;
-//		}
+		//      // Activity type is course, fire do_action
+		//      if ( 'course' === $activity_type ) {
+		//          do_action(
+		//              'learndash_course_completed',
+		//              array(
+		//                  'user'             => $user,
+		//                  'course'           => get_post( $course_id ),
+		//                  'progress'         => $course_progress,
+		//                  'course_completed' => $args['activity_completed'],
+		//              )
+		//          );
+		//
+		//          return;
+		//      }
 
-//		// Activity type is quiz, fire do_action
-//		if ( 'quiz' === $activity_type ) {
-//			if ( empty( $args['activity_meta'] ) ) {
-//				return;
-//			}
-//			$quizdata = $args['activity_meta'];
-//			do_action( 'learndash_quiz_submitted', $quizdata, $user );
-//
-//			return;
-//		}
+		//      // Activity type is quiz, fire do_action
+		//      if ( 'quiz' === $activity_type ) {
+		//          if ( empty( $args['activity_meta'] ) ) {
+		//              return;
+		//          }
+		//          $quizdata = $args['activity_meta'];
+		//          do_action( 'learndash_quiz_submitted', $quizdata, $user );
+		//
+		//          return;
+		//      }
 	}
 }

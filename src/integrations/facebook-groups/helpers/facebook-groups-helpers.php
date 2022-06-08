@@ -37,6 +37,11 @@ class Facebook_Groups_Helpers {
 	const OPTION_KEY = '_uncannyowl_facebook_group_settings';
 
 	/**
+	 * The wp_options table key for checking the user token info.
+	 */
+	const TOKEN_INFO = 'automator_facebook_group_token_info';
+
+	/**
 	 * The public API edge.
 	 *
 	 * @var string
@@ -72,10 +77,73 @@ class Facebook_Groups_Helpers {
 		// Add an ajax endpoint for listing groups.
 		add_action( 'wp_ajax_ua_facebook_group_list_groups', array( $this, 'list_groups' ) );
 
+		// Check if token is still valid or not.
+		add_action( 'admin_init', array( $this, 'maybe_add_admin_notice' ) );
+
 		require_once __DIR__ . '/../settings/settings-facebook-groups.php';
 
 		new Facebook_Group_Settings( $this );
 
+	}
+
+	/**
+	 * Check if there is a live FACEBOOK_GROUPS integration.
+	 *
+	 * @return boolean True if if there is. Otherwise, false.
+	 */
+	public function has_live_integration() {
+
+		return ! empty( Automator()->get->get_integration_publish_actions( 'FACEBOOK_GROUPS' ) );
+
+	}
+
+	/**
+	 * Shows  admin notice depending on number of days
+	 *
+	 * Return void.
+	 */
+	public function maybe_add_admin_notice() {
+
+		$token_info = get_option( self::TOKEN_INFO );
+
+		$n_days = $this->get_token_days_remaining( $this->get_token_info() );
+
+		$token_notice_n_days = apply_filters( 'automator_facebook_group_token_notice_n_days', 14 );
+
+		if ( $n_days <= $token_notice_n_days && $this->has_live_integration() ) {
+
+			add_action( 'admin_notices', array( $this, 'admin_notice_template' ) );
+
+		}
+
+	}
+
+	/**
+	 * The template of admin notice.
+	 *
+	 * @return void
+	 */
+	public function admin_notice_template() {
+
+		$days = $this->get_token_days_remaining( $this->get_token_info() );
+
+		printf(
+			'<div class="notice notice-warning"><p>%1$s <a href="%2$s">%3$s</a></p></div>',
+			esc_html(
+				sprintf(
+					/* Translators: Admin notice */
+					_n(
+						'Warning: Due to limitations in the Facebook Group API, your Facebook authorization will need to be refreshed within the next %s day or your Facebook Groups action will stop working.  To hide this message, set all Facebook Groups actions to draft or',
+						'Warning: Due to limitations in the Facebook Group API, your Facebook authorization will need to be refreshed within the next %s days or your Facebook Groups action will stop working.  To hide this message, set all Facebook Groups actions to draft or',
+						$days,
+						'uncanny-automator'
+					),
+					number_format_i18n( $days )
+				)
+			),
+			esc_url( $this->get_settings_page_url() ),
+			esc_html__( 'refresh your authorization.' )
+		);
 	}
 
 	/**
@@ -143,7 +211,7 @@ class Facebook_Groups_Helpers {
 			$response = $this->api_request( $body, null );
 
 			if ( ! isset( $response['data']['data'] ) ) {
-				throw new \Exception( 'Facebook API has responded with empty data', 400 );
+				throw new \Exception( 'Facebook API has responded with empty data', 404 );
 			}
 
 			$items = array();
@@ -207,6 +275,8 @@ class Facebook_Groups_Helpers {
 
 		delete_transient( 'uo-fb-group-transient-user-connected' );
 
+		delete_transient( 'ua_facebook_group_items' );
+
 		// Only update the record when there is a valid user.
 		if ( isset( $settings['user']['id'] ) && isset( $settings['user']['token'] ) ) {
 			// Updates the option value to settings.
@@ -222,23 +292,87 @@ class Facebook_Groups_Helpers {
 	/**
 	 * WordPress ajax endpoint for disconnecting the Facebook User.
 	 *
+	 * @throws \Exception
 	 * @return void wp_die with error message if there is an error. Otherwise, redirects to the settings page.
 	 */
 	public function automator_integration_facebook_group_capture_token_disconnect() {
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), self::OPTION_KEY ) ) {
 
-			delete_option( self::OPTION_KEY );
+			try {
 
-			delete_transient( 'uo-fb-group-transient-user-connected' );
+				$this->deauthorized_app( get_option( self::OPTION_KEY, false ) );
 
-			wp_safe_redirect( $this->get_settings_page_url() );
+				// Delete the option key.
+				delete_option( self::OPTION_KEY );
+
+				// Delete the token info.
+				delete_option( self::TOKEN_INFO );
+
+				// Delete transients.
+				delete_transient( self::TOKEN_INFO );
+
+				delete_transient( 'uo-fb-group-transient-user-connected' );
+
+				delete_transient( 'ua_facebook_group_items' );
+
+				// Redirect.
+				wp_safe_redirect( $this->get_settings_page_url() );
+
+				exit;
+
+			} catch ( \Exception $e ) {
+
+				// Otherwise, redirect with an error message.
+				wp_safe_redirect(
+					add_query_arg(
+						array(
+							'error_message' => rawurlencode( $e->getMessage() ),
+							'error_code'    => $e->getCode(),
+							'status'        => 'error',
+						),
+						$this->get_settings_page_url()
+					)
+				);
+
+				exit;
+			}
 
 			exit;
 
 		}
 
 		wp_die( esc_html__( 'Nonce Verification Failed', 'uncanny-automator' ) );
+
+	}
+
+	/**
+	 * De-authorized the app.
+	 *
+	 * @param array $connection The connection stored in wp_options table.
+	 *
+	 * @throws \Exception
+	 *
+	 * @return boolean True if user has successfully de-authorized the application.
+	 */
+	public function deauthorized_app( $connection = array() ) {
+
+		try {
+			$response = $this->api_request(
+				array(
+					'user_id' => isset( $connection['user']['id'] ) ? absint( $connection['user']['id'] ) : 0,
+					'action'  => 'deauthorize_application',
+				),
+				null
+			);
+
+		} catch ( \Exception $e ) {
+
+			throw new \Exception( $e->getMessage(), $e->getCode() );
+
+		}
+
+		return true;
 
 	}
 
@@ -553,6 +687,114 @@ class Facebook_Groups_Helpers {
 			throw new \Exception( $response['data']['error']['message'], $response['statusCode'] );
 
 		}
+	}
+
+	/**
+	 * Check if the user credentials is valid or not.
+	 *
+	 * @return boolean True if credentials are valid. Otherwise, false.
+	 */
+	public function is_credentials_valid() {
+
+		if ( false === $this->is_user_connected() ) {
+			return false;
+		}
+
+		// Check credentials if token is empty.
+		if ( false === get_option( self::TOKEN_INFO ) ) {
+			$this->check_credentials();
+		}
+
+		$token_info = get_transient( self::TOKEN_INFO );
+
+		if ( false !== $token_info ) {
+			if ( isset( $token_info['is_valid'] ) && true === $token_info['is_valid']
+				&& isset( $token_info['expires_at'] ) && $this->get_token_days_remaining( $token_info ) ) {
+				return true;
+			}
+		}
+
+		return $this->check_credentials();
+
+	}
+
+	/**
+	 * Check if credentials is valid or not.
+	 *
+	 * @return void
+	 */
+	public function check_credentials() {
+
+		try {
+
+			$response = $this->api_request(
+				array(
+					'action'       => 'verify_user_credentials',
+					'access_token' => $this->get_user_access_token(),
+				)
+			);
+
+			if ( isset( $response['data']['data']['is_valid'] ) && true === $response['data']['data']['is_valid'] ) {
+
+				set_transient( self::TOKEN_INFO, $response['data']['data'], 5 * MINUTE_IN_SECONDS ); // Only make a HTTP Request call once every 5 minutes.
+
+				update_option( self::TOKEN_INFO, $response['data']['data'] );
+
+				return true;
+
+			}
+
+			return false;
+
+		} catch ( \Exception $e ) {
+
+			delete_option( self::TOKEN_INFO );
+
+			return false;
+
+		}
+
+	}
+
+	/**
+	 * Get token info.
+	 *
+	 * @return mixed array|boolean False if no token info. Otherwise, the token info.
+	 */
+	public function get_token_info() {
+
+		return get_option( self::TOKEN_INFO, false );
+
+	}
+
+	/**
+	 * Get token days remaining.
+	 *
+	 * @param  string $token The user access token.
+	 *
+	 * @return mixed int|boolean False if no token info is found, or if token is already expired. Otherwise, the remaining number of days until the token expires.
+	 */
+	public function get_token_days_remaining( $token = '' ) {
+
+		if ( false === $token ) {
+			return false;
+		}
+
+		$time_remaining = false;
+
+		if ( isset( $token['expires_at'] ) ) {
+
+			$expires_at = absint( $token['expires_at'] );
+
+			if ( $expires_at > time() ) {
+
+				$time_remaining = ceil( $expires_at - time() ) / DAY_IN_SECONDS;
+
+			}
+		}
+
+		return ceil( $time_remaining );
+
 	}
 
 }

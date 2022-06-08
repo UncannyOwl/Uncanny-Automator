@@ -23,9 +23,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="google"></uo-icon> 
+				<uo-icon id="google-sheets"></uo-icon>
 
-				<?php esc_html_e( 'Google', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'Google Sheets', 'uncanny-automator' ); ?>
 
 			</div>
 
@@ -44,11 +44,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( ! $this->client ) { ?>
 
 					<div class="uap-settings-panel-content-subtitle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Google', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Connect Uncanny Automator to Google Sheets', 'uncanny-automator' ); ?>
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Google to automatically send data to Google Sheets when users perform actions like submitting forms, making purchases or completing courses on your site. Turn Google Sheets into a powerful reporting tool for your WordPress site.', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Connect Uncanny Automator to Google Sheets to automatically send data to Google Sheets when users perform actions like submitting forms, making purchases or completing courses on your site. Turn Google Sheets into a powerful reporting tool for your WordPress site.', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
@@ -60,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Create a row in a Google Sheet', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Update a row in a Google sheet', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Update a row in a Google Sheet', 'uncanny-automator' ); ?>
 						</li>
 					</ul>
 
@@ -70,7 +70,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php esc_html_e( 'If you create recipes and then change the connected Google account, your previous recipes may no longer work.', 'uncanny-automator' ); ?>
 					</uo-alert>
 
-				<?php }?>
+				<?php } ?>
 
 			</div>
 

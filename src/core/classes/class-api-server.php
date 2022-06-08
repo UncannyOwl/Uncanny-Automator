@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-//http_request_args
-
 /**
  * Class Api.
  *
@@ -14,6 +12,8 @@ class Api_Server {
 	public static $url;
 
 	public static $mock_response = null;
+
+	private static $instance = null;
 
 	/**
 	 * __construct
@@ -29,7 +29,22 @@ class Api_Server {
 	}
 
 	/**
-	 * add_api_headers
+	 * get_instance
+	 *
+	 * @return void
+	 */
+	private static function get_instance() {
+
+		if ( null === self::$instance ) {
+			self::$instance = new Api_server();
+		}
+
+		return self::$instance;
+
+	}
+
+	/**
+	 * Method add_api_headers
 	 *
 	 * @param array $args
 	 * @param string $request_url
@@ -55,7 +70,7 @@ class Api_Server {
 	}
 
 	/**
-	 * get_license_type
+	 * Method get_license_type
 	 *
 	 * @return string
 	 */
@@ -70,7 +85,7 @@ class Api_Server {
 	}
 
 	/**
-	 * get_license_key
+	 * Method get_license_key
 	 *
 	 * @return string
 	 */
@@ -81,7 +96,7 @@ class Api_Server {
 	}
 
 	/**
-	 * get_item_name
+	 * Method get_item_name
 	 *
 	 * @return string
 	 */
@@ -105,14 +120,53 @@ class Api_Server {
 	}
 
 	/**
-	 * get_site_name
+	 * Method get_site_name
 	 *
 	 * @return string
 	 */
 	public static function get_site_name() {
 		return preg_replace( '(^https?://)', '', get_home_url() );
 	}
-	
+
+	/**
+	 * Method add_endpoint_parts
+	 *
+	 * @param  array $params
+	 * @return array $params
+	 */
+	public function add_endpoint_parts( $params ) {
+
+		$endpoint_parts = explode( '/', $params['endpoint'] );
+
+		if ( 2 === count( $endpoint_parts ) ) {
+			$params['api_version'] = array_shift( $endpoint_parts );
+			$params['integration'] = array_shift( $endpoint_parts );
+		}
+
+		return $params;
+	}
+
+	/**
+	 * Method filter_params
+	 *
+	 * @param  array $params
+	 * @return array $params
+	 */
+	public function filter_params( $params ) {
+
+		$params = apply_filters( 'automator_api_call', $params );
+
+		if ( ! empty( $params['integration'] ) ) {
+			$params = apply_filters( 'automator_' . $params['integration'] . '_api_call', $params );
+
+			if ( ! empty( $params['body']['action'] ) ) {
+				$params = apply_filters( 'automator_' . $params['integration'] . '_' . $params['body']['action'] . '_api_call', $params );
+			}
+		}
+
+		return $params;
+	}
+
 	/**
 	 * api_call
 	 *
@@ -121,6 +175,8 @@ class Api_Server {
 	 * @return void
 	 */
 	public static function api_call( $params ) {
+
+		$api = self::get_instance();
 
 		if ( null !== self::$mock_response ) {
 			return self::$mock_response;
@@ -134,9 +190,13 @@ class Api_Server {
 			throw new \Exception( 'Request body is required', 500 );
 		}
 
-		$params['method'] = 'POST';
-		$params['url'] = self::$url . $params['endpoint'];
+		$params = $api->add_endpoint_parts( $params );
+
+		$params['method']             = 'POST';
+		$params['url']                = self::$url . $params['endpoint'];
 		$params['body']['plugin_ver'] = InitializePlugin::PLUGIN_VERSION;
+
+		$params = $api->filter_params( $params );
 
 		$response = self::call( $params );
 
@@ -146,11 +206,11 @@ class Api_Server {
 
 		//Some endpoints like Mailchimp send a NULL as the reponse with a code in case of success.
 		if ( empty( $response_body ) && ! empty( $code ) ) {
-			$response_body = self::create_payload( null, $code );
+			$response_body = $api->create_payload( null, $code );
 		}
 
 		if ( ! is_array( $response_body ) ) {
-			automator_log( var_export( $response_body, true ), 'Invalid API response: ' );
+			automator_log( var_export( $response_body, true ), 'Invalid API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 			throw new \Exception( 'Invalid API response', 500 );
 		}
 
@@ -160,15 +220,20 @@ class Api_Server {
 			throw new \Exception( $error, $response_body['statusCode'] );
 		}
 
+		// Handle response body that has [data][error][message] (e.g. Instagram user media publish limit exceeded).
+		if ( isset( $response_body['data']['error'] ) && isset( $response_body['data']['error']['message'] ) ) {
+			throw new \Exception( 'API has responded with an error message: ' . $response_body['data']['error']['message'], $response_body['statusCode'] );
+		}
+
 		if ( isset( $response_body['statusCode'] ) && array_key_exists( 'data', $response_body ) ) {
 			return $response_body;
 		}
 
-		automator_log( var_export( $response_body, true ), 'Unrecognized API response: ' );
+		automator_log( var_export( $response_body, true ), 'Unrecognized API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 
 		throw new \Exception( 'Unrecognized API response', 500 );
 	}
-	
+
 	/**
 	 * call
 	 *
@@ -179,6 +244,8 @@ class Api_Server {
 	 * @return mixed $response
 	 */
 	public static function call( $params ) {
+
+		$api = self::get_instance();
 
 		if ( empty( $params['method'] ) ) {
 			throw new \Exception( 'Request method is required', 500 );
@@ -192,8 +259,10 @@ class Api_Server {
 
 		$request = array();
 
-		$request = self::maybe_add_optional_params( $request, $params );
-		
+		$request = $api->maybe_add_optional_params( $request, $params );
+
+		$request = apply_filters( 'automator_call', $request, $params );
+
 		$response = wp_remote_request(
 			$params['url'],
 			$request
@@ -205,7 +274,7 @@ class Api_Server {
 
 		return $response;
 	}
-	
+
 	/**
 	 * maybe_add_optional_params
 	 *
@@ -213,19 +282,19 @@ class Api_Server {
 	 * @param  mixed $params
 	 * @return void
 	 */
-	public static function maybe_add_optional_params( $request, $params ) {
+	public function maybe_add_optional_params( $request, $params ) {
 
 		$optional_params = array( 'method', 'body', 'timeout', 'redirection', 'httpversion', 'blocking', 'headers', 'cookies' );
 
 		foreach ( $optional_params as $optional_param ) {
-			if ( ! empty( $params[$optional_param] ) ) {
-				$request[$optional_param] = $params[$optional_param];
+			if ( ! empty( $params[ $optional_param ] ) ) {
+				$request[ $optional_param ] = $params[ $optional_param ];
 			}
 		}
-		
+
 		return $request;
 	}
-	
+
 	/**
 	 * get_license
 	 *
@@ -241,11 +310,11 @@ class Api_Server {
 
 		$params = array(
 			'endpoint' => 'v2/credits',
-			'body' => array(
-				'action'  => 'get_credits'
-			)	
+			'body'     => array(
+				'action' => 'get_credits',
+			),
 		);
-		
+
 		try {
 			$license = self::api_call( $params );
 			set_transient( 'automator_api_license', $license['data'], HOUR_IN_SECONDS );
@@ -254,7 +323,7 @@ class Api_Server {
 			throw new \Exception( __( 'Unable to fetch the license: ', 'uncanny-automator' ) . $e->getMessage() );
 		}
 	}
-	
+
 	/**
 	 * has_valid_license
 	 *
@@ -263,14 +332,14 @@ class Api_Server {
 	public static function has_valid_license() {
 
 		$license = self::get_license();
-		
+
 		if ( ! isset( $license['license'] ) || 'valid' !== $license['license'] ) {
 			throw new \Exception( __( 'License is not valid', 'uncanny-automator' ) );
 		}
 
 		return $license;
 	}
-	
+
 	/**
 	 * has_credits
 	 *
@@ -279,7 +348,7 @@ class Api_Server {
 	public static function has_credits() {
 
 		$license = self::has_valid_license();
-		
+
 		if ( 'Uncanny Automator Pro' === $license['item_name'] ) {
 			return true;
 		}
@@ -290,11 +359,11 @@ class Api_Server {
 
 		return true;
 	}
-	
+
 	/**
 	 * charge_credit
 	 *
-	 * @return mixed false||array 
+	 * @return mixed false||array
 	 */
 	public static function charge_credit() {
 
@@ -302,19 +371,19 @@ class Api_Server {
 
 		$params = array(
 			'endpoint' => 'v2/credits',
-			'body' => array(
-				'action'  => 'reduce_credits'
-			)	
+			'body'     => array(
+				'action' => 'reduce_credits',
+			),
 		);
-		
+
 		$license = self::api_call( $params );
 
 		set_transient( 'automator_api_license', $license['data'], HOUR_IN_SECONDS );
-		
+
 		return $license['data'];
 
 	}
-	
+
 	/**
 	 * create_payload
 	 *
@@ -322,11 +391,11 @@ class Api_Server {
 	 * @param  mixed $code
 	 * @return void
 	 */
-	public static function create_payload( $body, $code ) {
+	public function create_payload( $body, $code ) {
 
 		$payload = array(
 			'statusCode' => $code,
-			'data' => $body
+			'data'       => $body,
 		);
 
 		return $payload;

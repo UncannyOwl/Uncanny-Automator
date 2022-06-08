@@ -45,6 +45,8 @@ class Bp_Tokens {
 	}
 
 	/**
+	 * BuddyPress possible tokens.
+	 *
 	 * @param array $tokens
 	 * @param array $args
 	 *
@@ -175,6 +177,8 @@ class Bp_Tokens {
 	}
 
 	/**
+	 * Parse BuddyPress Token.
+	 *
 	 * @param $value
 	 * @param $pieces
 	 * @param $recipe_id
@@ -200,9 +204,15 @@ class Bp_Tokens {
 			} elseif ( in_array( 'BPXPROFILE', $pieces ) ) {
 
 				if ( isset( $pieces[2] ) && ! empty( $pieces[2] ) ) {
-					$value = $this->get_xprofile_data( $user_id, $pieces[2] );
-					if ( \DateTime::createFromFormat( 'Y-m-d H:i:s', $value ) !== false ) {
-						$value = date( 'Y-m-d', $value );
+
+					// The function bp_get_profile_field_data() already formats the value.
+					if ( function_exists( 'bp_get_profile_field_data' ) ) {
+						$value = bp_get_profile_field_data(
+							array(
+								'field'   => absint( $pieces[2] ),
+								'user_id' => $user_id,
+							)
+						);
 					}
 				}
 			} elseif ( in_array( 'BPUSERACTIVITY', $pieces ) ) {
@@ -238,6 +248,8 @@ class Bp_Tokens {
 	}
 
 	/**
+	 * Get xprofile data.
+	 *
 	 * @param $user_id
 	 * @param $field_id
 	 *

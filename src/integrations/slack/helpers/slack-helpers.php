@@ -17,34 +17,10 @@ class Slack_Helpers {
 	 * @var API_ENDPOINT The endpoint adress.
 	 */
 	const API_ENDPOINT = 'v2/slack';
-
-	/**
-	 * @var Slack_Helpers
-	 */
 	public $options;
-
-	/**
-	 * @var Slack_Helpers
-	 */
 	public $pro;
-
-	/**
-	 * @var bool
-	 */
 	public $load_options;
-
-	/**
-	 * The URL of the API for this integration
-	 *
-	 * @var String
-	 */
 	public $api_integration_url;
-
-	/**
-	 * The Slack scope
-	 *
-	 * @var String
-	 */
 	public $scope;
 
 	/**
@@ -80,13 +56,13 @@ class Slack_Helpers {
 
 		add_action( 'init', array( $this, 'capture_oauth_tokens' ) );
 		add_action( 'init', array( $this, 'disconnect' ) );
-		
+
 		$this->load_settings();
 	}
 
 	/**
 	 * Load the settings
-	 * 
+	 *
 	 * @return void
 	 */
 	private function load_settings() {
@@ -95,13 +71,18 @@ class Slack_Helpers {
 	}
 
 	/**
-	 * @param Slack_Helpers $options
+	 * Method setOptions
+	 *
+	 * @param  Slack_Helpers $options
+	 * @return void
 	 */
 	public function setOptions( Slack_Helpers $options ) { // phpcs:ignore
 		$this->options = $options;
 	}
 
 	/**
+	 * Method setPro
+	 *
 	 * @param Slack_Helpers $pro
 	 */
 	public function setPro( \Uncanny_Automator_Pro\Slack_Pro_Helpers $pro ) { // phpcs:ignore
@@ -109,6 +90,7 @@ class Slack_Helpers {
 	}
 
 	/**
+	 * Method get_slack_client
 	 *
 	 * @return array $tokens
 	 */
@@ -124,8 +106,9 @@ class Slack_Helpers {
 	}
 
 	/**
-	 * @param array $mesage
+	 * Method maybe_customize_bot
 	 *
+	 * @param array $mesage
 	 * @return array $mesage
 	 */
 	public function maybe_customize_bot( $message ) {
@@ -146,6 +129,8 @@ class Slack_Helpers {
 	}
 
 	/**
+	 * Method get_slack_channels
+	 *
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -188,6 +173,8 @@ class Slack_Helpers {
 	}
 
 	/**
+	 * Method get_slack_users
+	 *
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -230,6 +217,8 @@ class Slack_Helpers {
 	}
 
 	/**
+	 * Method chat_post_message
+	 *
 	 * @param $message
 	 *
 	 * @return array|\WP_Error
@@ -249,6 +238,8 @@ class Slack_Helpers {
 	}
 
 	/**
+	 * Method conversations_create
+	 *
 	 * @param $channel
 	 *
 	 * @return array|\WP_Error
@@ -257,7 +248,7 @@ class Slack_Helpers {
 
 		$body = array(
 			'action' => 'create_conversation',
-			'name'   => substr( sanitize_title( $channel_name ), 0, 79 )
+			'name'   => substr( sanitize_title( $channel_name ), 0, 79 ),
 		);
 
 		$body = apply_filters( 'uap_slack_conversations_create', $body );
@@ -268,6 +259,8 @@ class Slack_Helpers {
 	}
 
 	/**
+	 * Method textarea_field
+	 *
 	 * @param string $option_code
 	 * @param string $label
 	 * @param bool $tokens
@@ -307,26 +300,19 @@ class Slack_Helpers {
 
 		return apply_filters( 'uap_option_text_field', $option );
 	}
-	
+
 	/**
-	 * api_get_channels
+	 * Method api_get_channels
 	 *
 	 * @return void
 	 */
 	public function api_get_channels() {
 
-		$transient_name = 'automator_get_slack_channels';
-		$options = get_transient( $transient_name );
-
-		if ( false !== $options ) {
-			return $options;
-		}
-
 		try {
 
 			$body = array(
-				'action' 	=> 'get_conversations',
-				'types' 	=> 'public_channel,private_channel'
+				'action' => 'get_users_conversations',
+				'types'  => 'public_channel,private_channel',
 			);
 
 			$response = $this->api_call( $body );
@@ -344,46 +330,36 @@ class Slack_Helpers {
 				if ( $channel['is_private'] ) {
 					$options[] = array(
 						'value' => $channel['id'],
-						'text'  => 'Private: ' . $channel['name']
+						'text'  => 'Private: ' . $channel['name'],
 					);
 				} else {
 					$options[] = array(
 						'value' => $channel['id'],
-						'text'  => $channel['name']
+						'text'  => $channel['name'],
 					);
 				}
 			}
-
-			set_transient( $transient_name, $options, 60 );
-			
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => __( 'Something went wrong when fetching channels. Please try again later.', 'uncanny-automator' )
+				'text'  => __( 'Something went wrong when fetching channels. Please try again later.', 'uncanny-automator' ),
 			);
 		}
-		
+
 		return $options;
 	}
-	
+
 	/**
-	 * api_get_users
+	 * Method api_get_users
 	 *
 	 * @return void
 	 */
 	public function api_get_users() {
 
-		$transient_name = 'automator_get_slack_users';
-		$options = get_transient( $transient_name );
-
-		if ( false !== $options ) {
-			return $options;
-		}
-
 		try {
 
 			$body = array(
-				'action' 	=> 'get_users',
+				'action' => 'get_users',
 			);
 
 			$response = $this->api_call( $body );
@@ -403,13 +379,10 @@ class Slack_Helpers {
 					'text'  => $member['name'],
 				);
 			}
-
-			set_transient( $transient_name, $options, 60 );
-
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => __( 'Something went wrong when fetching users. Please try again later.', 'uncanny-automator' )
+				'text'  => __( 'Something went wrong when fetching users. Please try again later.', 'uncanny-automator' ),
 			);
 		}
 
@@ -460,9 +433,9 @@ class Slack_Helpers {
 			$this->settings_page_url
 		);
 	}
-	
+
 	/**
-	 * is_current_settings_tab
+	 * Method is_current_settings_tab
 	 *
 	 * @return void
 	 */
@@ -480,7 +453,7 @@ class Slack_Helpers {
 			return false;
 		}
 
-		if ( $this->setting_tab !== automator_filter_input( 'integration' ) ) {
+		if ( automator_filter_input( 'integration' ) !== $this->setting_tab ) {
 			return;
 		}
 
@@ -495,7 +468,7 @@ class Slack_Helpers {
 		if ( ! $this->is_current_settings_tab() ) {
 			return;
 		}
-	
+
 		// Check if the API returned the tokens
 		// If this exists, then we can assume the user is trying to connect his account
 		$automator_api_response = automator_filter_input( 'automator_api_message' );
@@ -530,9 +503,9 @@ class Slack_Helpers {
 
 		die;
 	}
-	
+
 	/**
-	 * disconnect
+	 * Method disconnect
 	 *
 	 * @return void
 	 */
@@ -552,7 +525,7 @@ class Slack_Helpers {
 	}
 
 	/**
-	 * api_call
+	 * Method api_call
 	 *
 	 * @param  mixed $body
 	 * @param  mixed $action
@@ -562,12 +535,13 @@ class Slack_Helpers {
 
 		$client = $this->get_slack_client();
 
-		$body['token'] = $client->access_token;
-		
+		$body['token']  = $client->access_token;
+		$body['client'] = $client;
+
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => $body,
-			'action' => $action
+			'body'     => $body,
+			'action'   => $action,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -577,6 +551,6 @@ class Slack_Helpers {
 		}
 
 		return $response;
-	
+
 	}
 }

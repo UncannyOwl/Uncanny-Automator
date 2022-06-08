@@ -93,10 +93,9 @@ class Automator_Send_Webhook_Ajax_Handler {
 		}
 
 		$args = array(
-			'method'   => $request_type,
-			'body'     => $fields,
-			'timeout'  => '30',
-			'blocking' => false,
+			'method'  => $request_type,
+			'body'    => $fields,
+			'timeout' => '30',
 		);
 
 		if ( ! empty( $headers ) ) {
@@ -106,8 +105,10 @@ class Automator_Send_Webhook_Ajax_Handler {
 		$response = Automator_Send_Webhook::call_webhook( $webhook_url, $args, $request_type );
 		if ( $response instanceof WP_Error ) {
 			/* translators: 1. Webhook URL */
-			/* translators: 2. Error message */
-			$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response. Message returned: %2$s', 'uncanny-automator' ), $webhook_url, $response->get_error_message() );
+			$error_message = esc_attr__( 'There was an issue sending data to:', 'uncanny-automator' );
+			$error_message .= sprintf( ' %s', $webhook_url );
+			$error_message .= '<h5>' . esc_attr__( 'Response:', 'uncanny-automator' ) . '</h5>';
+			$error_message .= sprintf( '%s', join( '- <br />', $response->get_error_messages() ) );
 			wp_send_json(
 				array(
 					'type'    => 'error',
@@ -116,7 +117,15 @@ class Automator_Send_Webhook_Ajax_Handler {
 			);
 		}
 		/* translators: 1. Webhook URL */
-		$success_message = sprintf( esc_attr__( 'Successfully sent data on %1$s.', 'uncanny-automator' ), $webhook_url );
+		//      $body            = wp_remote_retrieve_body( $response );
+		//      $msg             = wp_remote_retrieve_response_message( $response );
+		//      $type            = wp_remote_retrieve_header( $response, 'content-type' );
+		$success_message = esc_attr__( 'Data successfully sent to:', 'uncanny-automator' );
+		$success_message .= sprintf( ' %s', $webhook_url );
+		//      $success_message .= '<h5>' . esc_attr__( 'Response:', 'uncanny-automator' ) . '</h5>';
+		//      $success_message .= "<strong>Message:</strong> $msg";
+		//      $success_message .= "<br /><strong>Contet-Type:</strong> $type";
+		//      $success_message .= "<br /><strong>Body:</strong><pre>$body</pre>";
 
 		wp_send_json(
 			array(

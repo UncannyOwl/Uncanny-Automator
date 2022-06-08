@@ -48,6 +48,7 @@ class Automator_Input_Parser {
 				'current_time',
 				'current_unix_timestamp',
 				'currentdate_unix_timestamp',
+				'current_blog_id',
 				'user_ip_address',
 				'user_reset_pass_url',
 			)
@@ -354,6 +355,13 @@ class Automator_Input_Parser {
 						$replaceable = strtotime( date( 'Y-m-d' ), current_time( 'timestamp' ) );
 						break;
 
+					case 'current_blog_id':
+						$replaceable = get_current_blog_id();
+						if ( ! is_multisite() ) {
+							$replaceable = __( 'N/A', 'uncanny-automator' );
+						}
+						break;
+
 					case 'recipe_total_run':
 						$replaceable = Automator()->get->recipe_completed_times( $recipe_id );
 						break;
@@ -462,6 +470,7 @@ class Automator_Input_Parser {
 			/**
 			 * Added fallback 1 if NUMTIMES is not set.
 			 * See issue #1914 any page and any post trigger
+			 *
 			 * @updated v4.0 by Saad
 			 */
 			if ( 'NUMTIMES' === (string) $piece ) {
@@ -497,6 +506,7 @@ class Automator_Input_Parser {
 						/**
 						 * Added fallback 1 if NUMTIMES is not set.
 						 * See issue #1914 any page and any post trigger
+						 *
 						 * @updated v4.0 by Saad
 						 */
 						$return = isset( $trigger['meta'][ $piece ] ) && ! empty( $trigger['meta'][ $piece ] ) ? $trigger['meta'][ $piece ] : 1;
@@ -711,7 +721,8 @@ class Automator_Input_Parser {
 	}
 
 	/**
-	 * This function parses inner token(s) {{POSTMETA:[[TOKEN]]:meta_key}} and replace its value in actual token
+	 * This function parses inner token(s) {{POSTMETA:[[TOKEN]]:meta_key}} and
+	 * replace its value in actual token
 	 *
 	 * @param $pieces
 	 * @param $args
@@ -730,7 +741,9 @@ class Automator_Input_Parser {
 	}
 
 	/**
-	 * This function parses "post ID" part of inner token {{POSTMETA:[[TOKEN]]:[[meta_key]]}} and replace its value in actual token
+	 * This function parses "post ID" part of inner token
+	 * {{POSTMETA:[[TOKEN]]:[[meta_key]]}} and replace its value in actual
+	 * token
 	 *
 	 * @param $pieces
 	 * @param $args
@@ -748,7 +761,15 @@ class Automator_Input_Parser {
 		$user_id      = $args['user_id'];
 		$trigger_args = $args;
 		unset( $trigger_args['pieces'] );
-		$token     = str_replace( array( '[', ']', ';' ), array( '{', '}', ':' ), $arr[0] );
+		$token     = str_replace(
+			array( '[', ']', ';' ),
+			array(
+				'{',
+				'}',
+				':',
+			),
+			$arr[0]
+		);
 		$parsed    = $this->text( $token, $recipe_id, $user_id, $trigger_args );
 		$pieces[1] = apply_filters( 'automator_parse_inner_token', $parsed, $token, $pieces, $args );
 
@@ -756,7 +777,9 @@ class Automator_Input_Parser {
 	}
 
 	/**
-	 * This function parses "meta_key" part of inner token {{POSTMETA:[[TOKEN]]:[[meta_key]]}} and replace its value in actual token
+	 * This function parses "meta_key" part of inner token
+	 * {{POSTMETA:[[TOKEN]]:[[meta_key]]}} and replace its value in actual
+	 * token
 	 *
 	 * @param $pieces
 	 * @param $args
@@ -774,7 +797,15 @@ class Automator_Input_Parser {
 		$user_id      = $args['user_id'];
 		$trigger_args = $args;
 		unset( $trigger_args['pieces'] );
-		$token     = str_replace( array( '[', ']', ';' ), array( '{', '}', ':' ), $arr[0] );
+		$token     = str_replace(
+			array( '[', ']', ';' ),
+			array(
+				'{',
+				'}',
+				':',
+			),
+			$arr[0]
+		);
 		$parsed    = $this->text( $token, $recipe_id, $user_id, $trigger_args );
 		$pieces[2] = apply_filters( 'automator_parse_inner_token', $parsed, $token, $pieces, $args );
 
@@ -803,9 +834,22 @@ class Automator_Input_Parser {
 		$meta_key = sanitize_text_field( $pieces[2] );
 		$value    = get_post_meta( $post_id, $meta_key, true );
 		if ( is_array( $value ) ) {
-			return join( ', ', $value );
+			$value = join( ', ', $value );
 		}
 
-		return $value;
+		return apply_filters(
+			'automator_postmeta_token_parsed',
+			$value,
+			$post_id,
+			$meta_key,
+			array(
+				'value'        => $value,
+				'pieces'       => $pieces,
+				'recipe_id'    => $recipe_id,
+				'trigger_data' => $trigger_data,
+				'user_id'      => $user_id,
+				'replace_args' => $replace_args,
+			)
+		);
 	}
 }

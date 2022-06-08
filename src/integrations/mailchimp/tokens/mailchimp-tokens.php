@@ -17,7 +17,7 @@ class MAILCHIMP_TOKENS {
 	 */
 	public function __construct() {
 
-		add_filter( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
+		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
 
 		add_filter( 'automator_maybe_trigger_mailchimp_tokens', array( $this, 'register_tokens' ), 20, 2 );
 
@@ -29,6 +29,12 @@ class MAILCHIMP_TOKENS {
 
 	}
 
+	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|mixed
+	 */
 	public function audience_field_possible_tokens( $tokens = array(), $args = array() ) {
 
 		// If its from heartbeat, or if its not from recipe edit page, or if not from automator rest, bail out.

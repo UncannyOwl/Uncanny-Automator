@@ -75,12 +75,15 @@ if ( $dashboard->has_site_connected ) {
 							<?php esc_attr_e( 'Manage sites', 'uncanny-automator' ); ?> <span
 								class="uap-icon uap-icon--external-link-alt"></span>
 						</a>
-						<a
-							class="uap-dropdown-item"
-							href="<?php echo esc_url_raw( $dashboard->connected_user->url->disconnect_account ); ?>"
-						>
-							<?php esc_attr_e( 'Disconnect account', 'uncanny-automator' ); ?>
-						</a>
+						<?php if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) { ?>
+							<a class="uap-dropdown-item" href="<?php echo esc_url( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ) ); ?>">
+								<?php esc_html_e( 'Manage license', 'uncanny-automator' ); ?>
+							</a>
+						<?php } else { ?>
+							<a class="uap-dropdown-item" href="<?php echo esc_url_raw( $dashboard->connected_user->url->disconnect_account ); ?>">
+								<?php esc_html_e( 'Disconnect account', 'uncanny-automator' ); ?>
+							</a>
+						<?php } ?>
 					</div>
 				</div>
 
@@ -134,7 +137,7 @@ if ( $dashboard->has_site_connected ) {
 										// Integration names are not translatable
 										'<uo-icon id="slack"></uo-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<uo-icon id="google-sheet"></uo-icon> <strong>Google Sheets</strong>',
+										'<uo-icon id="google-sheets"></uo-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
 										'<uo-icon id="facebook"></uo-icon> <strong>Facebook</strong>',
 									)
@@ -157,7 +160,7 @@ if ( $dashboard->has_site_connected ) {
 										// Integration names are not translatable
 										'<uo-icon id="slack"></uo-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<uo-icon id="google-sheet"></uo-icon> <strong>Google Sheets</strong>',
+										'<uo-icon id="google-sheets"></uo-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
 										'<uo-icon id="facebook"></uo-icon> <strong>Facebook</strong>',
 									)
@@ -213,7 +216,7 @@ if ( $dashboard->has_site_connected ) {
 		</div>
 		<div class="uap-dashboard-section__content">
 			<div id="uap-dashboard-learn-featured-integrations"
-				 class="uap-dashboard-box uap-dashboard-learn-featured-integrations">
+				class="uap-dashboard-box uap-dashboard-learn-featured-integrations">
 				<div class="uap-dashboard-box-header">
 					<div class="uap-dashboard-box-header__title">
 						<?php esc_attr_e( 'Start here', 'uncanny-automator' ); ?>
@@ -250,55 +253,55 @@ if ( $dashboard->has_site_connected ) {
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/what-is-uncanny-automator/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'What is Uncanny Automator?', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'What is Uncanny Automator?', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Creating a Recipe', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Creating a Recipe', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Recipes for Everyone', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Recipes for Everyone', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/managing-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Managing Triggers', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Managing Triggers', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/managing-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Managing Actions', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Managing Actions', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Scheduled Actions', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Scheduled Actions', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'What are credits?', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'What are credits?', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-redirects/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Working with Redirects', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Working with Redirects', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Where can I find my license key?', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Where can I find my license key?', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 									</ul>
@@ -317,32 +320,32 @@ if ( $dashboard->has_site_connected ) {
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Uncanny Automator Changelog', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Uncanny Automator Changelog', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/uncanny-automator-pro-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Uncanny Automator Pro Changelog', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Uncanny Automator Pro Changelog', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/important-notes-troubleshooting/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Having trouble? Read this', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Having trouble? Read this', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/using-automator-logs/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Using Automator Logs', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Using Automator Logs', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/developer-resources/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Developer Resources', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Developer Resources', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Upgrading to Uncanny Automator 3.0+', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Upgrading to Uncanny Automator 3.0+', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 									</ul>
@@ -361,17 +364,17 @@ if ( $dashboard->has_site_connected ) {
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/contact-form-7/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq"
-											   target="_blank"><?php esc_attr_e( 'Contact Form 7', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'Contact Form 7', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gravity-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq"
-											   target="_blank"><?php esc_attr_e( 'Gravity Forms', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Gravity Forms', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/woocommerce/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq"
-											   target="_blank"><?php esc_attr_e( 'WooCommerce', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'WooCommerce', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
@@ -391,12 +394,12 @@ if ( $dashboard->has_site_connected ) {
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers"
-											   target="_blank"><?php esc_attr_e( 'Webhook Triggers', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Webhook Triggers', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/magic-button/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers"
-											   target="_blank"><?php esc_attr_e( 'Magic Button', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Magic Button', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
@@ -416,39 +419,39 @@ if ( $dashboard->has_site_connected ) {
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/google-sheets/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Google Sheets', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Google Sheets', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/mailchimp/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Mailchimp', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Mailchimp', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-zapier-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Zapier Actions', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Zapier Actions', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/zoom/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Zoom', 'uncanny-automator' ); ?> <span
+												   target="_blank"><?php esc_attr_e( 'Zoom', 'uncanny-automator' ); ?> <span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Webhook Actions', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Webhook Actions', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/twilio/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Twilio', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Twilio', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/slack/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Slack', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Slack', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
@@ -460,47 +463,47 @@ if ( $dashboard->has_site_connected ) {
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/instagram/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Instagram', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Instagram', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gototraining/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'GoTo Training', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'GoTo Training', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gotowebinar/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'GoTo Webinar', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'GoTo Webinar', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-popup-maker-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Popup Maker', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Popup Maker', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-integromat-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Integromat', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Integromat', 'uncanny-automator' ); ?>
 												<span
 													class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/generate-an-email-a-certificate-to-the-user/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Send a certificate', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Send a certificate', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/uncanny-continuing-education-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Uncanny Continuing Education Credits', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Uncanny Continuing Education Credits', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Run a WordPress hook', 'uncanny-automator' ); ?>
+												   target="_blank"><?php esc_attr_e( 'Run a WordPress hook', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 									</ul>

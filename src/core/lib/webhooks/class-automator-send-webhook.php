@@ -100,17 +100,11 @@ class Automator_Send_Webhook {
 						if (typeof response.message !== 'undefined') {
 							// Get notice type
 							let noticeType = typeof response.type !== 'undefined' ? response.type : 'gray';
-
-							// Parse message using markdown
-							let markdown = new modules.Markdown(response.message);
-
+							let $message = response.message;
 							// Create notice
 							let $notice = jQuery('<div/>', {
 								'class': 'item-options__notice item-options__notice--' + noticeType
 							});
-
-							// Get markdown HTML
-							let $message = markdown.getHTML();
 
 							// Add message to the notice container
 							$notice.html($message);
@@ -180,7 +174,6 @@ class Automator_Send_Webhook {
 					success: function (response) {
 						// Remove loading animation from the button
 						$button.removeClass('uap-btn--loading uap-btn--disabled');
-
 						// Create notice
 						// But first check if the message is defined
 						if (typeof response.message !== 'undefined') {
@@ -197,8 +190,7 @@ class Automator_Send_Webhook {
 							// Get markdown HTML
 							//let $message = response.message;
 							let $message = markdown.getHTML();
-							//$message = $message.replaceAll('\n', '<br>');
-							//let $message = response.message;
+
 							// Add message to the notice container
 							$notice.html("<pre>" + $message + "<pre>");
 
@@ -681,7 +673,7 @@ class Automator_Send_Webhook {
 	 * @return array|mixed|void|\WP_Error
 	 */
 	public static function call_webhook( $webhook_url, $args, $request_type = 'POST' ) {
-		switch ( $request_type ) {
+		switch ( sanitize_text_field( wp_unslash( $request_type ) ) ) {
 			case 'PUT':
 			case 'POST':
 			case 'DELETE':

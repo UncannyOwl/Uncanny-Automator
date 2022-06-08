@@ -73,9 +73,9 @@ class Automator_Recipe_Process_Complete {
 			'uap_before_trigger_completed',
 			array( $user_id, $trigger_id, $recipe_id, $trigger_log_id, $args ),
 			'3.0',
-			'automator_before_trigger_completed'
+			'automator_before_trigger_is_completed'
 		);
-		do_action( 'automator_before_trigger_completed', $user_id, $trigger_id, $recipe_id, $trigger_log_id, $args );
+		do_action( 'automator_before_trigger_is_completed', $user_id, $trigger_id, $recipe_id, $trigger_log_id, $args );
 
 		$trigger_code        = get_post_meta( $trigger_id, 'code', true );
 		$trigger_integration = Automator()->get->trigger_integration_from_trigger_code( $trigger_code );

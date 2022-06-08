@@ -165,41 +165,44 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	 */
 	public function text( $args = array() ) {
 		$defaults = array(
-			'option_code'      => 'TEXT',
-			'input_type'       => 'text',
-			'label'            => esc_attr__( 'Text', 'uncanny-automator' ),
-			'placeholder'      => '',
-			'description'      => '',
-			'required'         => true,
-			'tokens'           => true,
-			'default'          => null,
-			'supports_tinymce' => null,
-			'token_name'       => '',
+			'option_code'               => 'TEXT',
+			'input_type'                => 'text',
+			'label'                     => esc_attr__( 'Text', 'uncanny-automator' ),
+			'placeholder'               => '',
+			'description'               => '',
+			'required'                  => true,
+			'tokens'                    => true,
+			'default'                   => null,
+			'supports_tinymce'          => null,
+			'supports_fullpage_editing' => null,
+			'token_name'                => '',
 		);
 
-		$args             = wp_parse_args( $args, $defaults );
-		$option_code      = $args['option_code'];
-		$label            = $args['label'];
-		$description      = $args['description'];
-		$placeholder      = $args['placeholder'];
-		$tokens           = $args['tokens'];
-		$type             = $args['input_type'];
-		$default          = $args['default'];
-		$required         = $args['required'];
-		$supports_tinymce = $args['supports_tinymce'];
-		$token_name       = $args['token_name'];
+		$args                      = wp_parse_args( $args, $defaults );
+		$option_code               = $args['option_code'];
+		$label                     = $args['label'];
+		$description               = $args['description'];
+		$placeholder               = $args['placeholder'];
+		$tokens                    = $args['tokens'];
+		$type                      = $args['input_type'];
+		$default                   = $args['default'];
+		$required                  = $args['required'];
+		$supports_tinymce          = $args['supports_tinymce'];
+		$supports_fullpage_editing = $args['supports_fullpage_editing'];
+		$token_name                = $args['token_name'];
 
 		$option = array(
-			'option_code'      => $option_code,
-			'label'            => $label,
-			'description'      => $description,
-			'placeholder'      => $placeholder,
-			'input_type'       => $type,
-			'supports_tokens'  => $tokens,
-			'required'         => $required,
-			'default_value'    => $default,
-			'supports_tinymce' => $supports_tinymce,
-			'token_name'       => $token_name,
+			'option_code'               => $option_code,
+			'label'                     => $label,
+			'description'               => $description,
+			'placeholder'               => $placeholder,
+			'input_type'                => $type,
+			'supports_tokens'           => $tokens,
+			'required'                  => $required,
+			'default_value'             => $default,
+			'supports_tinymce'          => $supports_tinymce,
+			'supports_fullpage_editing' => $supports_fullpage_editing,
+			'token_name'                => $token_name,
 		);
 
 		// Enable TinyMCE by default for all textarea fields unless other specified

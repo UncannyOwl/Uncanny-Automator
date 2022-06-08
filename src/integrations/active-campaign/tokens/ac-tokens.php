@@ -14,7 +14,7 @@ class AC_TOKENS {
 	 * @return void
 	 */
 	public function __construct() {
-		add_filter( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
+		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
 		add_filter( 'automator_maybe_trigger_active_campaign_tag_tokens', array( $this, 'register_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_tokens' ), 20, 6 );
 	}
@@ -31,7 +31,6 @@ class AC_TOKENS {
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
-
 
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -89,6 +88,10 @@ class AC_TOKENS {
 	 * @return void
 	 */
 	public function save_token_data( $args, $trigger ) {
+
+		if ( 'ACTIVE_CAMPAIGN' !== $trigger->get_integration() ) {
+			return;
+		}
 
 		if ( ! isset( $args['trigger_args'] ) || ! isset( $args['entry_args']['code'] ) ) {
 			return;

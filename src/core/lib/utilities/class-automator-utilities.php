@@ -478,4 +478,23 @@ class Automator_Utilities {
 
 		return ! empty( $minimal ) && ! empty( $hide_settings_tabs );
 	}
+
+	/**
+	 * @param $tokens
+	 *
+	 * @return array|mixed
+	 */
+	public function remove_duplicate_token_ids( $tokens ) {
+		$new_tokens = array();
+		if ( empty( $tokens ) ) {
+			return $tokens;
+		}
+		foreach ( $tokens as $token ) {
+			if ( ! array_key_exists( $token['tokenId'], $new_tokens ) ) {
+				$new_tokens[ $token['tokenId'] ] = $token;
+			}
+		}
+
+		return array_values( $new_tokens );
+	}
 }

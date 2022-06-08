@@ -53,7 +53,7 @@ class Gf_Tokens {
 		if ( in_array( $args['entry_args']['code'], $triggers, true ) ) {
 
 			list( $entry, $form ) = $args['trigger_args'];
-			$code_fields = Gravity_Forms_Helpers::get_code_fields( $entry, $form );
+			$code_fields          = Gravity_Forms_Helpers::get_code_fields( $entry, $form );
 			if ( ! empty( $code_fields ) ) {
 				$code_field = array_shift( $code_fields );
 				if ( ! empty( $code_field ) && null !== $code_field ) {
@@ -252,95 +252,175 @@ class Gf_Tokens {
 	 */
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
-		if ( $pieces ) {
+		if ( empty( $pieces ) ) {
+			return $value;
+		}
+		$trigger_meta_validations = apply_filters(
+			'automator_gravity_forms_validate_trigger_meta_pieces',
+			array(
+				'GF_SUBFORM_CODES',
+				'GF_SUBFORM_CODES_METADATA',
+				'GFFORMSCODES',
+				'GFFORMS',
+				'ANONGFFORMS',
+				'ANONGFSUBFORM',
+				'SUBFIELD',
+			),
+			array(
+				'pieces'       => $pieces,
+				'recipe_id'    => $recipe_id,
+				'trigger_data' => $trigger_data,
+				'user_id'      => $user_id,
+				'replace_args' => $replace_args,
+			)
+		);
+		if ( ! array_intersect( $trigger_meta_validations, $pieces ) ) {
+			return $value;
+		}
 
-			if ( in_array( 'GF_SUBFORM_CODES', $pieces, true ) || in_array( 'GF_SUBFORM_CODES_METADATA', $pieces, true ) || in_array( 'GFFORMSCODES', $pieces, true ) || in_array( 'GFFORMS', $pieces, true ) || in_array( 'ANONGFFORMS', $pieces, true ) || in_array( 'ANONGFSUBFORM', $pieces, true ) || in_array( 'SUBFIELD', $pieces, true ) ) {
+		if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_CODES_METADATA' === $pieces[2] || 'GFFORMSCODES' === $pieces[2] || 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
+			$t_data   = array_shift( $trigger_data );
+			$form_id  = $t_data['meta'][ $pieces[2] ];
+			$forminfo = RGFormsModel::get_form( $form_id );
 
-				if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_CODES_METADATA' === $pieces[2] || 'GFFORMSCODES' === $pieces[2] || 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
-					$t_data   = array_shift( $trigger_data );
-					$form_id  = $t_data['meta'][ $pieces[2] ];
-					$forminfo = RGFormsModel::get_form( $form_id );
+			return $forminfo->title;
+		}
 
-					return $forminfo->title;
+		if ( isset( $pieces[2] ) && 'GFFORMS_ID' === $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			return $t_data['meta']['GFFORMS'];
+		}
+
+		if ( isset( $pieces[2] ) && 'GF_SUBFORM_CODES_METADATA_ID' === $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			return $t_data['meta']['GF_SUBFORM_CODES_METADATA'];
+		}
+
+		if ( isset( $pieces[2] ) && 'ANONGFFORMS_ID' === $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			return $t_data['meta']['ANONGFFORMS'];
+		}
+
+		if ( isset( $pieces[2] ) && 'SUBVALUE' === $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			return $t_data['meta'][ $pieces[2] ];
+		}
+
+		if ( isset( $pieces[2] ) && 'SUBFIELD' === $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			return $t_data['meta'][ $pieces[2] . '_readable' ];
+		}
+
+		if ( isset( $pieces[2] ) && 'GF_SUBFORM_CODES_METADATA_CODES' === (string) $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			global $wpdb;
+			$batch_id = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
+
+			return $wpdb->get_var( $wpdb->prepare( "SELECT name FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
+		}
+
+		if ( isset( $pieces[2] ) && 'UNCANNYCODESBATCHEXPIRY' === (string) $pieces[2] ) {
+
+			global $wpdb;
+
+			$t_data = array_shift( $trigger_data );
+
+			$batch_id = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
+
+			$expiry_date = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
+
+			$expiry_timestamp = strtotime( $expiry_date );
+
+			// Check if the date is in future to filter out empty dates
+			if ( $expiry_timestamp > time() ) {
+				// Get the format selected in general WP settings
+				$date_format = get_option( 'date_format' );
+				$time_format = get_option( 'time_format' );
+
+				// Return the formattted time according to the selected time zone
+				$value = date_i18n( "$date_format $time_format", strtotime( $expiry_date ) );
+			}
+		}
+
+		// Entry tokens
+		$token_piece = $pieces[2];
+		global $wpdb;
+
+		$token_info = explode( '|', $token_piece );
+		$form_id    = $token_info[0];
+		$meta_key   = isset( $token_info[1] ) ? $token_info[1] : '';
+
+		if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
+			$table_name = RGFormsModel::get_entry_table_name();
+		} else {
+			$table_name = RGFormsModel::get_lead_table_name();
+		}
+
+		$where_user_id = 0 === absint( $user_id ) ? 'created_by IS NULL' : 'created_by=' . $user_id;
+
+		$lead_id = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
+				$form_id
+			)
+		);
+
+		if ( $lead_id ) {
+
+			if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
+				$table_name = RGFormsModel::get_entry_meta_table_name();
+			} else {
+				$table_name = RGFormsModel::get_lead_meta_table_name();
+			}
+
+			$value = $wpdb->get_var( $wpdb->prepare( 'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s', $form_id, $lead_id, $meta_key ) );
+
+			return $value;
+		}
+		if ( 0 !== (int) $user_id && is_user_logged_in() ) {
+			//fallback.. ... attempt to find them by email??
+			if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
+				$table_name = RGFormsModel::get_entry_meta_table_name();
+			} else {
+				$table_name = RGFormsModel::get_lead_meta_table_name();
+			}
+			$where_user_email = get_user_by( 'ID', $user_id )->user_email;
+
+			$lead_id = $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT entry_id FROM ' . esc_sql( $table_name ) . " WHERE meta_value LIKE '" . esc_sql( $where_user_email ) . "' AND form_id = %d ORDER BY entry_id DESC LIMIT 0,1",
+					$form_id
+				)
+			);
+			if ( $lead_id ) {
+				if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
+					$table_name = RGFormsModel::get_entry_meta_table_name();
+				} else {
+					$table_name = RGFormsModel::get_lead_meta_table_name();
 				}
 
-				if ( isset( $pieces[2] ) && 'GFFORMS_ID' === $pieces[2] ) {
-					$t_data = array_shift( $trigger_data );
-
-					return $t_data['meta']['GFFORMS'];
-				}
-
-				if ( isset( $pieces[2] ) && 'GF_SUBFORM_CODES_METADATA_ID' === $pieces[2] ) {
-					$t_data = array_shift( $trigger_data );
-
-					return $t_data['meta']['GF_SUBFORM_CODES_METADATA'];
-				}
-
-				if ( isset( $pieces[2] ) && 'ANONGFFORMS_ID' === $pieces[2] ) {
-					$t_data = array_shift( $trigger_data );
-
-					return $t_data['meta']['ANONGFFORMS'];
-				}
-
-				if ( isset( $pieces[2] ) && 'SUBVALUE' === $pieces[2] ) {
-					$t_data = array_shift( $trigger_data );
-
-					return $t_data['meta'][ $pieces[2] ];
-				}
-
-				if ( isset( $pieces[2] ) && 'SUBFIELD' === $pieces[2] ) {
-					$t_data = array_shift( $trigger_data );
-
-					return $t_data['meta'][ $pieces[2] . '_readable' ];
-				}
-
-				if ( isset( $pieces[2] ) && 'GF_SUBFORM_CODES_METADATA_CODES' === (string) $pieces[2] ) {
-					$t_data = array_shift( $trigger_data );
-
-					global $wpdb;
-					$batch_id = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
-
-					return $wpdb->get_var( $wpdb->prepare( "SELECT name FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
-				}
-
-				if ( isset( $pieces[2] ) && 'UNCANNYCODESBATCHEXPIRY' === (string) $pieces[2] ) {
-
-					global $wpdb;
-
-					$t_data = array_shift( $trigger_data );
-
-					$batch_id = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
-
-					$expiry_date = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
-
-					$expiry_timestamp = strtotime( $expiry_date );
-
-					// Check if the date is in future to filter out empty dates
-					if ( $expiry_timestamp > time() ) {
-						// Get the format selected in general WP settings
-						$date_format = get_option( 'date_format' );
-						$time_format = get_option( 'time_format' );
-
-						// Return the formattted time according to the selected time zone
-						$value = date_i18n( "$date_format $time_format", strtotime( $expiry_date ) );
-					}
-				}
-
-				// Entry tokens
-				$token_piece = $pieces[2];
-				global $wpdb;
-
-				$token_info = explode( '|', $token_piece );
-				$form_id    = $token_info[0];
-				$meta_key   = isset( $token_info[1] ) ? $token_info[1] : '';
-
+				$value = $wpdb->get_var(
+					$wpdb->prepare(
+						'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
+						$form_id,
+						$lead_id,
+						$meta_key
+					)
+				);
+			} else {
+				// Try again for anonymous user when its using a different email address
 				if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
 					$table_name = RGFormsModel::get_entry_table_name();
 				} else {
 					$table_name = RGFormsModel::get_lead_table_name();
 				}
-
-				$where_user_id = 0 === absint( $user_id ) ? 'created_by IS NULL' : 'created_by=' . $user_id;
+				$where_user_id = 'created_by IS NULL';
 
 				$lead_id = (int) $wpdb->get_var(
 					$wpdb->prepare(
@@ -350,115 +430,56 @@ class Gf_Tokens {
 				);
 
 				if ( $lead_id ) {
-
 					if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
 						$table_name = RGFormsModel::get_entry_meta_table_name();
 					} else {
 						$table_name = RGFormsModel::get_lead_meta_table_name();
 					}
 
-					$value = $wpdb->get_var( $wpdb->prepare( 'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s', $form_id, $lead_id, $meta_key ) );
-				} else {
-					if ( 0 !== (int) $user_id && is_user_logged_in() ) {
-						//fallback.. ... attempt to find them by email??
-						if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-							$table_name = RGFormsModel::get_entry_meta_table_name();
-						} else {
-							$table_name = RGFormsModel::get_lead_meta_table_name();
-						}
-						$where_user_email = get_user_by( 'ID', $user_id )->user_email;
+					$value = $wpdb->get_var(
+						$wpdb->prepare(
+							'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
+							$form_id,
+							$lead_id,
+							$meta_key
+						)
+					);
 
-						$lead_id = $wpdb->get_var(
-							$wpdb->prepare(
-								'SELECT entry_id FROM ' . esc_sql( $table_name ) . " WHERE meta_value LIKE '" . esc_sql( $where_user_email ) . "' AND form_id = %d ORDER BY entry_id DESC LIMIT 0,1",
-								$form_id
-							)
-						);
-						if ( $lead_id ) {
-							if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-								$table_name = RGFormsModel::get_entry_meta_table_name();
-							} else {
-								$table_name = RGFormsModel::get_lead_meta_table_name();
-							}
-
-							$value = $wpdb->get_var(
-								$wpdb->prepare(
-									'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
-									$form_id,
-									$lead_id,
-									$meta_key
-								)
-							);
-						} else {
-							// Try again for anonymous user when its using a different email address
-							if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
-								$table_name = RGFormsModel::get_entry_table_name();
-							} else {
-								$table_name = RGFormsModel::get_lead_table_name();
-							}
-							$where_user_id = 'created_by IS NULL';
-
-							$lead_id = (int) $wpdb->get_var(
-								$wpdb->prepare(
-									'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
-									$form_id
-								)
-							);
-
-							if ( $lead_id ) {
-								if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-									$table_name = RGFormsModel::get_entry_meta_table_name();
-								} else {
-									$table_name = RGFormsModel::get_lead_meta_table_name();
-								}
-
-								$value = $wpdb->get_var(
-									$wpdb->prepare(
-										'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
-										$form_id,
-										$lead_id,
-										$meta_key
-									)
-								);
-
-							}
-						}
-					} elseif ( 0 !== (int) $user_id && ! is_user_logged_in() ) {
-						// Try again for anonymous user when its using a different email address
-						if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
-							$table_name = RGFormsModel::get_entry_table_name();
-						} else {
-							$table_name = RGFormsModel::get_lead_table_name();
-						}
-						$where_user_id = 'created_by IS NULL';
-
-						$lead_id = (int) $wpdb->get_var(
-							$wpdb->prepare(
-								'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
-								$form_id
-							)
-						);
-						if ( $lead_id ) {
-							if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-								$table_name = RGFormsModel::get_entry_meta_table_name();
-							} else {
-								$table_name = RGFormsModel::get_lead_meta_table_name();
-							}
-
-							$value = $wpdb->get_var(
-								$wpdb->prepare(
-									'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
-									$form_id,
-									$lead_id,
-									$meta_key
-								)
-							);
-						}
-					} else {
-						$value = '';
-					}
 				}
 			}
+		} elseif ( 0 !== (int) $user_id && ! is_user_logged_in() ) {
+			// Try again for anonymous user when its using a different email address
+			if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
+				$table_name = RGFormsModel::get_entry_table_name();
+			} else {
+				$table_name = RGFormsModel::get_lead_table_name();
+			}
+			$where_user_id = 'created_by IS NULL';
+
+			$lead_id = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
+					$form_id
+				)
+			);
+			if ( $lead_id ) {
+				if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
+					$table_name = RGFormsModel::get_entry_meta_table_name();
+				} else {
+					$table_name = RGFormsModel::get_lead_meta_table_name();
+				}
+
+				$value = $wpdb->get_var(
+					$wpdb->prepare(
+						'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
+						$form_id,
+						$lead_id,
+						$meta_key
+					)
+				);
+			}
+		} else {
+			$value = '';
 		}
 
 		return $value;
