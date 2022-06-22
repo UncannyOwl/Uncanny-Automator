@@ -470,6 +470,24 @@ function is_automator_pro_license_valid() {
 	return false;
 }
 
+
+/**
+ * automator_pro_older_than
+ *
+ * Returns true if Automator Pro is enabled and older than the $version
+ *
+ * @param  mixed $version
+ * @return void
+ */
+function automator_pro_older_than( $version ) {
+
+	if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+		return version_compare( AUTOMATOR_PRO_PLUGIN_VERSION, $version, '<' );
+	}
+
+	return false;
+}
+
 /**
  * Clear all recipe activity
  *

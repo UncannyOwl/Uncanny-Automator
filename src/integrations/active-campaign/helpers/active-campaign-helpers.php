@@ -54,7 +54,7 @@ class Active_Campaign_Helpers {
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
 		$this->setting_tab = 'active-campaign';
-		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 
 		// Add the ajax endpoints.
 		add_action( 'wp_ajax_active-campaign-list-tags', array( $this, 'list_tags' ) );
@@ -206,7 +206,7 @@ class Active_Campaign_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( empty( $response['data']['contacts'] ) ) {
-				throw new \Exception( "The account has no contacts" );
+				throw new \Exception( 'The account has no contacts' );
 			}
 
 			$contact_items = array();
@@ -268,8 +268,7 @@ class Active_Campaign_Helpers {
 
 		$account_url = get_option( 'uap_active_campaign_api_url', false );
 		$api_key     = get_option( 'uap_active_campaign_api_key', false );
-		$users = false;
-
+		$users       = false;
 
 		if ( empty( $account_url ) || empty( $api_key ) ) {
 			throw new \Exception( __( 'ActiveCampaign is not connected', 'uncanny-automator' ) );
@@ -280,12 +279,12 @@ class Active_Campaign_Helpers {
 		}
 
 		$params = array(
-			'method' => 'GET',
-			'url' => sprintf( '%s/api/3/users', esc_url( $account_url ) ),
+			'method'  => 'GET',
+			'url'     => sprintf( '%s/api/3/users', esc_url( $account_url ) ),
 			'headers' => array(
 				'Api-token' => $api_key,
 				'Accept'    => 'application/json',
-			)
+			),
 		);
 
 		$response = Api_Server::call( $params );
@@ -962,13 +961,13 @@ class Active_Campaign_Helpers {
 	 */
 	public function api_request( $body, $action = null ) {
 
-		$body['url'] 	= get_option( 'uap_active_campaign_api_url', '' );
-		$body['token']  = get_option( 'uap_active_campaign_api_key', '' );
+		$body['url']   = get_option( 'uap_active_campaign_api_url', '' );
+		$body['token'] = get_option( 'uap_active_campaign_api_key', '' );
 
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => $body,
-			'action' => $action
+			'body'     => $body,
+			'action'   => $action,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -982,7 +981,7 @@ class Active_Campaign_Helpers {
 	public function check_for_errors( $response ) {
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( "Request to ActiveCampaign returned with status: " . $response['statusCode'] , $response['statusCode'] );
+			throw new \Exception( 'Request to ActiveCampaign returned with status: ' . $response['statusCode'], $response['statusCode'] );
 		}
 
 		$errors = isset( $response['data']['errors'] ) ? $response['data']['errors'] : '';
@@ -1050,7 +1049,7 @@ class Active_Campaign_Helpers {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * settings_updated
 	 *
@@ -1060,19 +1059,16 @@ class Active_Campaign_Helpers {
 
 		$redirect_url = $this->tab_url;
 
-		if ( $this->credentials_updated() ) {
-			
-			$result = 1;
+		$result = 1;
 
-			try {
-				$this->get_connected_users();
-			} catch ( \Exception $e ) { 
-				delete_option( 'uap_active_campaign_connected_user' );
-				$result = $e->getMessage();
-			}
-
-			$redirect_url .= '&connect=' . $result;
+		try {
+			$this->get_connected_users();
+		} catch ( \Exception $e ) {
+			delete_option( 'uap_active_campaign_connected_user' );
+			$result = $e->getMessage();
 		}
+
+		$redirect_url .= '&connect=' . $result;
 
 		$this->maybe_handle_switch();
 
@@ -1080,7 +1076,7 @@ class Active_Campaign_Helpers {
 
 		exit;
 	}
-	
+
 	/**
 	 * maybe_handle_switch
 	 *
@@ -1097,26 +1093,7 @@ class Active_Campaign_Helpers {
 		update_option( 'uap_active_campaign_enable_webhook', $switch_value );
 
 	}
-	
-	/**
-	 * credentials_updated
-	 *
-	 * @return void
-	 */
-	public function credentials_updated() {
 
-		$account_credentials = get_option( 'uap_active_campaign_api_url', '' ) . ':' . get_option( 'uap_active_campaign_api_key', '' );
-		$new_credentials_hash = base64_encode( $account_credentials );		
-		$old_credentials_hash = get_option( 'uap_active_campaign_credentials_hash', time() );
-
-		if ( $new_credentials_hash !== $old_credentials_hash ) {
-			update_option( 'uap_active_campaign_credentials_hash', $new_credentials_hash );
-			return true;
-		}
-
-		return false;
-	}
-	
 	/**
 	 * get_users
 	 *
@@ -1133,10 +1110,11 @@ class Active_Campaign_Helpers {
 		try {
 			$users = $this->get_connected_users();
 		} catch ( \Exception $e ) {
-			$users = false;
+			$users = array();
+			update_option( 'uap_active_campaign_connected_user', $users );
 		}
-		
+
 		return $users;
-		
+
 	}
 }

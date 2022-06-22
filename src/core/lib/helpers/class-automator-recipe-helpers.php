@@ -390,10 +390,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			return true;
 		}
 		// (#3)
-		global $wp_rewrite;
-		if ( null === $wp_rewrite ) {
-			$wp_rewrite = new \WP_Rewrite(); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		}
+		//global $wp_rewrite;
+		//if ( null === $wp_rewrite ) {
+			//$wp_rewrite = new \WP_Rewrite(); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		//}
 
 		// (#4)
 		$current_url = wp_parse_url( add_query_arg( array() ) );

@@ -441,7 +441,7 @@ class Google_Calendar_Helpers {
 		$has_missing_scope = false;
 
 		foreach ( $scopes as $scope ) {
-			if ( ! str_contains( $token['scope'], $scope ) ) {
+			if ( false === strpos( $token['scope'], $scope ) ) {
 				$has_missing_scope = true;
 			}
 		}

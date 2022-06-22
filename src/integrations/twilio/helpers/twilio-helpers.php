@@ -48,7 +48,7 @@ class Twilio_Helpers {
 		}
 
 		$this->setting_tab = 'twilio-api';
-		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 
 		add_action( 'update_option_uap_automator_twilio_api_settings_timestamp', array( $this, 'settings_updated' ), 100, 3 );
 		add_action( 'add_option_uap_automator_twilio_api_settings_timestamp', array( $this, 'settings_updated' ), 100, 3 );
@@ -62,7 +62,7 @@ class Twilio_Helpers {
 
 	/**
 	 * Load the settings
-	 * 
+	 *
 	 * @return void
 	 */
 	private function load_settings() {
@@ -115,9 +115,9 @@ class Twilio_Helpers {
 		}
 
 		$request['action'] = 'send_sms';
-		$request['from'] = $from;
-		$request['to'] = $to;
-		$request['body'] = $body;
+		$request['from']   = $from;
+		$request['to']     = $to;
+		$request['body']   = $body;
 
 		try {
 			$response = $this->api_call( $request, $action );
@@ -164,14 +164,17 @@ class Twilio_Helpers {
 	 */
 	public function get_client() {
 
-		$sid      = get_option( 'uap_automator_twilio_api_account_sid' );
-		$token    = get_option( 'uap_automator_twilio_api_auth_token' );
+		$sid   = get_option( 'uap_automator_twilio_api_account_sid' );
+		$token = get_option( 'uap_automator_twilio_api_auth_token' );
 
 		if ( empty( $sid ) || empty( $token ) ) {
 			throw new \Exception( 'Twilio is not connected' );
 		}
 
-		return array('account_sid' => $sid, 'auth_token' => $token );
+		return array(
+			'account_sid' => $sid,
+			'auth_token'  => $token,
+		);
 
 	}
 
@@ -190,7 +193,7 @@ class Twilio_Helpers {
 		update_option( 'uap_twilio_connected_user', $twilio_account );
 
 		return $twilio_account;
-		
+
 	}
 
 	/**
@@ -221,7 +224,7 @@ class Twilio_Helpers {
 			$transient_keys = array(
 				'_uncannyowl_twilio_settings',
 				'_automator_twilio_account_info',
-				'uap_automator_twilio_api_accounts_response'
+				'uap_automator_twilio_api_accounts_response',
 			);
 
 			foreach ( $transient_keys as $transient_key ) {
@@ -232,10 +235,10 @@ class Twilio_Helpers {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'post_type' 	=> 'uo-recipe',
-					'page'      	=> 'uncanny-automator-config',
-					'tab'       	=> 'premium-integrations',
-					'integration' 	=> 'twilio-api'
+					'post_type'   => 'uo-recipe',
+					'page'        => 'uncanny-automator-config',
+					'tab'         => 'premium-integrations',
+					'integration' => 'twilio-api',
 				),
 				admin_url( 'edit.php' )
 			)
@@ -256,12 +259,12 @@ class Twilio_Helpers {
 		$client = $this->get_client();
 
 		$body['account_sid'] = $client['account_sid'];
-		$body['auth_token'] = $client['auth_token'];
-		
+		$body['auth_token']  = $client['auth_token'];
+
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => $body,
-			'action' => $action
+			'body'     => $body,
+			'action'   => $action,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -271,7 +274,7 @@ class Twilio_Helpers {
 		}
 
 		return $response['data'];
-	
+
 	}
 
 	/**
@@ -283,44 +286,21 @@ class Twilio_Helpers {
 
 		$redirect_url = $this->tab_url;
 
-		if ( $this->credentials_updated() ) {
-			
-			$result = 1;
+		$result = 1;
 
-			try {
-				$this->get_twilio_accounts_connected();
-			} catch ( \Exception $e ) { 
-				delete_option( 'uap_twilio_connected_user' );
-				$result = $e->getMessage();
-			}
-
-			$redirect_url .= '&connect=' . $result;
+		try {
+			$this->get_twilio_accounts_connected();
+		} catch ( \Exception $e ) {
+			update_option( 'uap_twilio_connected_user', array() );
+			$result = $e->getMessage();
 		}
+
+		$redirect_url .= '&connect=' . $result;
 
 		wp_safe_redirect( $redirect_url );
 		die;
 	}
-	
-	/**
-	 * credentials_updated
-	 *
-	 * @return void
-	 */
-	public function credentials_updated() {
 
-		$client = $this->get_client();
-		$account_credentials = $client['account_sid'] . ':' . $client['auth_token'];
-		$new_credentials_hash = base64_encode( $account_credentials );		
-		$old_credentials_hash = get_option( 'uap_automator_twilio_api_credentials_hash', time() );
-
-		if ( $new_credentials_hash !== $old_credentials_hash ) {
-			update_option( 'uap_automator_twilio_api_credentials_hash', $new_credentials_hash );
-			return true;
-		}
-
-		return false;
-	}
-	
 	/**
 	 * get_user
 	 *
@@ -332,7 +312,7 @@ class Twilio_Helpers {
 		if ( 'no' !== $users_option_exist ) {
 			return $users_option_exist;
 		}
-				
+
 		return $this->get_twilio_accounts_connected();
 	}
 }

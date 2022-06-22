@@ -48,6 +48,7 @@ class Wc_Tokens {
 			'shipping_city'        => esc_attr__( 'Shipping city', 'uncanny-automator' ),
 			'shipping_state'       => esc_attr__( 'Shipping state', 'uncanny-automator' ),
 			'shipping_postcode'    => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
+			'order_date'           => esc_attr__( 'Order date', 'uncanny-automator' ),
 			'order_id'             => esc_attr__( 'Order ID', 'uncanny-automator' ),
 			'order_comments'       => esc_attr__( 'Order comments', 'uncanny-automator' ),
 			'order_total'          => esc_attr__( 'Order total', 'uncanny-automator' ),
@@ -430,6 +431,9 @@ class Wc_Tokens {
 									break;
 								case 'billing_email':
 									$value = $order->get_billing_email();
+									break;
+								case 'order_date':
+									$value = $order->get_date_created()->format( get_option( 'date_format', 'F j, Y' ) );
 									break;
 								case 'shipping_first_name':
 									$value = $order->get_shipping_first_name();

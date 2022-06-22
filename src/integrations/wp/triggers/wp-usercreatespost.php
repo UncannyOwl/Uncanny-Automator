@@ -15,47 +15,69 @@ class WP_USERCREATESPOST {
 	public static $integration = 'WP';
 
 	/**
+	 * Property trigger_code
+	 *
 	 * @var string
 	 */
 	private $trigger_code;
+
 	/**
+	 * Property trigger_meta
+	 *
 	 * @var string
 	 */
 	private $trigger_meta;
+
 	/**
+	 * Property trigger_meta_log
+	 *
 	 * @var array
 	 */
 	private $trigger_meta_log;
+
 	/**
+	 * Property array
+	 *
 	 * @var array
 	 */
+
 	private $result;
+
 	/**
+	 * Property post
+	 *
 	 * @var \WP_Post
 	 */
 	private $post;
 
 	/**
-	 * @var
+	 * Property terms_list
+	 *
+	 * @var array
 	 */
 	private $terms_list;
 
 	/**
+	 * Property taxonomy_list
+	 *
 	 * @var array
 	 */
 	private $taxonomy_list = array();
 
 	/**
+	 * Property match_recipes
+	 *
 	 * @var array
 	 */
 	private $matched_recipes = array();
 
-	/**
-	 * Set up Automator trigger constructor.
-	 */
+
 	public function __construct() {
+
 		$this->trigger_code = 'USERSPOST';
+
 		$this->trigger_meta = 'WPPOSTTYPES';
+
 		if ( is_admin() && empty( $_POST ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			add_action( 'init', array( $this, 'define_trigger' ), 99 );
 		} else {
@@ -67,6 +89,8 @@ class WP_USERCREATESPOST {
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
+	 *
+	 * @return void
 	 */
 	public function define_trigger() {
 		$trigger = array(
@@ -94,41 +118,25 @@ class WP_USERCREATESPOST {
 	}
 
 	/**
-	 * load_options
+	 * Method load_options.
 	 *
 	 * @return void
 	 */
 	public function load_options() {
-		
+
 		Automator()->helpers->recipe->wp->options->load_options = true;
 
-		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
+		$all_post_types = Automator()->helpers->recipe->wp->options->all_wp_post_types(
 			null,
 			'WPPOSTTYPES',
 			array(
-				'token'        => false,
-				'is_ajax'      => true,
-				'target_field' => 'WPTAXONOMIES',
-				'endpoint'     => 'select_post_type_taxonomies',
+				'token'               => false,
+				'is_ajax'             => true,
+				'target_field'        => 'WPTAXONOMIES',
+				'endpoint'            => 'select_post_type_taxonomies',
+				'use_zero_as_default' => true,
 			)
 		);
-
-		// now get regular post types.
-		$args = array(
-			'public'   => true,
-			'_builtin' => true,
-		);
-
-		$options      = array();
-		$options['0'] = __( 'Any post type', 'uncanny-automator' );
-		$post_types   = get_post_types( $args, 'object' );
-		if ( ! empty( $post_types ) ) {
-			foreach ( $post_types as $post_type ) {
-				$options[ $post_type->name ] = esc_html( $post_type->labels->singular_name );
-			}
-		}
-		$options                   = array_merge( $options, $all_post_types['options'] );
-		$all_post_types['options'] = $options;
 
 		$options = Automator()->utilities->keep_order_of_options(
 			array(

@@ -31,24 +31,45 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-content">
 
-				<?php if ( $this->client && ! empty( $connect ) && 1 === $connect ) { ?>
+				<?php if ( $this->client && 1 === $connect ) { ?>
+
 					<?php /* translators: Success message */ ?>
 					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
+
 				<?php } ?>
 
 				<?php // Show some error message in case there is an error. ?>
-				<?php if ( $this->client && ! empty( $connect ) && 1 !== $connect ) { ?>
+
+				<?php if ( 2 === $connect ) { ?>
+
 					<uo-alert heading="<?php esc_attr_e( 'An error has occured while connecting to Google API. Please try again later.', 'uncanny-automator' ); ?>" type="error" class="uap-spacing-bottom"></uo-alert>
+
+				<?php } ?>
+
+				<?php // Show missing_auth error ?>
+
+				<?php if ( 3 === $connect ) { ?>
+
+					<uo-alert heading="<?php esc_attr_e( 'Required permissions not granted.', 'uncanny-automator' ); ?>" type="error" class="uap-spacing-bottom">
+
+						<?php esc_html_e( 'Make sure everything is checked off in the list of required permissions. Sometimes the last 2 checkboxes are unchecked by default.', 'uncanny-automator' ); ?>
+
+					</uo-alert>
+
 				<?php } ?>
 
 				<?php if ( ! $this->client ) { ?>
 
 					<div class="uap-settings-panel-content-subtitle">
+
 						<?php esc_html_e( 'Connect Uncanny Automator to Google Sheets', 'uncanny-automator' ); ?>
+
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
+
 						<?php esc_html_e( 'Connect Uncanny Automator to Google Sheets to automatically send data to Google Sheets when users perform actions like submitting forms, making purchases or completing courses on your site. Turn Google Sheets into a powerful reporting tool for your WordPress site.', 'uncanny-automator' ); ?>
+
 					</div>
 
 					<p>

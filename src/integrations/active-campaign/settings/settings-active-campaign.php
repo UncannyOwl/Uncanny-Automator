@@ -21,7 +21,7 @@ class Active_Campaign_Settings {
 	 */
 	use Settings\Premium_Integrations;
 
-    protected $helpers;
+	protected $helpers;
 	protected $account_url;
 	protected $api_key;
 	protected $is_connected;
@@ -35,8 +35,8 @@ class Active_Campaign_Settings {
 	 */
 	public function __construct( $helpers ) {
 
-        $this->helpers = $helpers;
-		
+		$this->helpers = $helpers;
+
 		// Register the tab
 		$this->setup_settings();
 
@@ -46,11 +46,11 @@ class Active_Campaign_Settings {
 		}
 
 		// Localize button labels.
-		add_action('admin_enqueue_scripts', array($this, 'localize_button_labels'), 20 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'localize_button_labels' ), 20 );
 
 	}
 
-    /**
+	/**
 	 * Sets up the properties of the settings page
 	 */
 	protected function set_properties() {
@@ -79,10 +79,10 @@ class Active_Campaign_Settings {
 
 		if ( ! empty( $this->api_key ) && ! empty( $this->account_url ) ) {
 
-			$this->users = $this->helpers->get_users(); 
+			$this->users = get_option( 'uap_active_campaign_connected_user', array() );
 
 		}
-		
+
 		$this->is_connected = ! empty( $this->users[0]['email'] );
 
 		$this->set_status( $this->is_connected ? 'success' : '' );
@@ -95,7 +95,7 @@ class Active_Campaign_Settings {
 	 * @return void.
 	 */
 	public function output() {
-		
+
 		$this->enable_triggers = $this->helpers->is_webhook_enabled() ? 'checked' : '';
 
 		$this->kb_link = automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/activecampaign-triggers/', 'settings', 'active-campaign-triggers-kb_article' );
@@ -120,15 +120,15 @@ class Active_Campaign_Settings {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-		
+
 		include_once 'view-active-campaign.php';
 
 	}
 
 	public function localize_button_labels() {
-		
-		wp_localize_script('uap-premium-integration-active-campaign', 'AutomatorActiveCampaignSettingsL10n', $this->helpers->get_sync_btn_label() );
-		
+
+		wp_localize_script( 'uap-premium-integration-active-campaign', 'AutomatorActiveCampaignSettingsL10n', $this->helpers->get_sync_btn_label() );
+
 	}
 
 

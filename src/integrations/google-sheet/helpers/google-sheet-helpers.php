@@ -120,6 +120,7 @@ class Google_Sheet_Helpers {
 			)
 		);
 
+		// Would probably be a good idea if we move 'validate_oauth_tokens' away from the 'init' hook to its own endpoint.
 		add_action( 'init', array( $this, 'validate_oauth_tokens' ), 100, 3 );
 		add_action( 'wp_ajax_select_gsspreadsheet_from_gsdrive', array( $this, 'select_gsspreadsheet_from_gsdrive' ) );
 		add_action( 'wp_ajax_select_gsworksheet_from_gsspreadsheet', array( $this, 'select_gsworksheet_from_gsspreadsheet' ) );
@@ -428,10 +429,12 @@ class Google_Sheet_Helpers {
 
 		// Bailout if no message from api.
 		if ( empty( $api_message ) ) {
+
 			return;
+
 		}
 
-		$error_google_sheet_url = 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=' . $this->setting_tab . '&integration=google-sheet&connect=2';
+		$error_google_sheet_url = 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=' . $this->setting_tab . '&integration=google-sheet';
 
 		$secret = get_transient( 'automator_api_google_authorize_nonce' );
 
@@ -442,14 +445,22 @@ class Google_Sheet_Helpers {
 			// On success.
 			update_option( '_uncannyowl_google_sheet_settings', $tokens );
 
-			// Delete expired settings.
-			delete_option( '_uncannyowl_google_sheet_settings_expired' );
-
 			// Set the transient.
 			set_transient( '_uncannyowl_google_sheet_settings', $tokens['access_token'] . '|' . $tokens['refresh_token'], 60 * 50 );
 
 			// Refresh the user info.
 			delete_transient( '_uncannyowl_google_user_info' );
+
+			// Delete expired settings.
+			delete_option( '_uncannyowl_google_sheet_settings_expired' );
+
+			if ( $this->has_missing_scope() ) {
+
+				wp_safe_redirect( admin_url( $error_google_sheet_url ) . '&connect=3' );
+
+				die;
+
+			}
 
 			wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=' . $this->setting_tab . '&integration=google-sheet&connect=1' ) );
 
@@ -458,7 +469,7 @@ class Google_Sheet_Helpers {
 		} else {
 
 			// On Error.
-			wp_safe_redirect( admin_url( $error_google_sheet_url ) );
+			wp_safe_redirect( admin_url( $error_google_sheet_url ) . '&connect=2' );
 
 			die;
 
@@ -466,6 +477,39 @@ class Google_Sheet_Helpers {
 
 	}
 
+	/**
+	 * Method has_missing_scope
+	 *
+	 * Checks the client if it has any missing scope or not.
+	 *
+	 * @return boolean True if there is a missing scope. Otherwise, false.
+	 */
+	public function has_missing_scope() {
+
+		$client = $this->get_google_client();
+
+		$scopes = array(
+			self::SCOPE_DRIVE,
+			self::SCOPE_SPREADSHEETS,
+			self::SCOPE_USERINFO,
+			self::SCOPE_USER_EMAIL,
+		);
+
+		if ( ! isset( $client['scope'] ) || empty( $client['scope'] ) ) {
+			return true;
+		}
+
+		$has_missing_scope = false;
+
+		foreach ( $scopes as $scope ) {
+			if ( false === strpos( $client['scope'], $scope ) ) {
+				$has_missing_scope = true;
+			}
+		}
+
+		return $has_missing_scope;
+
+	}
 
 	/**
 	 * Method api_get_google_drives

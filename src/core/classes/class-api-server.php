@@ -209,9 +209,37 @@ class Api_Server {
 			$response_body = $api->create_payload( null, $code );
 		}
 
+		$api->maybe_throw_exception( $response_body, $code );
+
+		if ( isset( $response_body['statusCode'] ) && array_key_exists( 'data', $response_body ) ) {
+			return $response_body;
+		}
+
+		automator_log( var_export( $response_body, true ), 'Unrecognized API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+
+		throw new \Exception( 'Unrecognized API response', 500 );
+	}
+
+	/**
+	 * Method maybe_throw_exception
+	 *
+	 * @param array $response_body The response body.
+	 * @param integer $code The HTTP Status code.
+	 *
+	 * @throws Exception If there is an error with the response.
+	 *
+	 * @return void
+	 */
+	private function maybe_throw_exception( $response_body = array(), $code = 200 ) {
+
 		if ( ! is_array( $response_body ) ) {
 			automator_log( var_export( $response_body, true ), 'Invalid API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 			throw new \Exception( 'Invalid API response', 500 );
+		}
+
+		// Handle zero credits from client with upgrade to link.
+		if ( 402 === $code && false !== strpos( $response_body['error']['description'], 'Upgrade to Uncanny Automator Pro' ) ) {
+			throw new \Exception( 'Credit required for action/trigger. Current credits: 0. {{automator_upgrade_link}}.', 402 );
 		}
 
 		if ( isset( $response_body['error'] ) && isset( $response_body['error']['description'] ) ) {
@@ -225,13 +253,6 @@ class Api_Server {
 			throw new \Exception( 'API has responded with an error message: ' . $response_body['data']['error']['message'], $response_body['statusCode'] );
 		}
 
-		if ( isset( $response_body['statusCode'] ) && array_key_exists( 'data', $response_body ) ) {
-			return $response_body;
-		}
-
-		automator_log( var_export( $response_body, true ), 'Unrecognized API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
-
-		throw new \Exception( 'Unrecognized API response', 500 );
 	}
 
 	/**

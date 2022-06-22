@@ -35,6 +35,11 @@ trait Triggers {
 	use Trigger_Filters;
 
 	/**
+	 * Trigger Recipe Filters. This trait returns the recipes that matches given parameters.
+	 */
+	use Trigger_Recipe_Filters;
+
+	/**
 	 * Trigger Conditions. This trait handles trigger conditions. This is where trigger conditionally executes. For
 	 * example, a form ID has to be matched, a specific field needs to have a certain value/
 	 */

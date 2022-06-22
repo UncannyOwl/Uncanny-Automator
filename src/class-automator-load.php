@@ -147,8 +147,9 @@ class Automator_Load {
 		// An old version of Uncanny Automator is running
 		$url = admin_url( 'plugins.php#uncanny-automator-pro-update' );
 
-		/* translators: 1. Trademarked term. 2. Trademarked term */
-		$message        = sprintf( __( "%2\$s recipes have been disabled because your version of PHP (%3\$s) is not fully compatible with the version of %1\$s that's installed.", 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator', PHP_VERSION );
+		/* translators: 2. Recipes. 3. PHP version */
+		$message = sprintf( __( "%2\$s recipes have been disabled because your version of PHP (%3\$s) is not fully compatible with the version of %1\$s that's installed.", 'uncanny-automator' ), 'Uncanny Automator Pro', 'Uncanny Automator', PHP_VERSION );
+		/* translators: 1. Trademarked term. 2. Version number */
 		$message_update = sprintf( __( 'Please update %1$s to version %2$s or later.', 'uncanny-automator' ), 'Uncanny Automator Pro', $version );
 
 		printf( '<div class="%1$s"><h3 style="font-weight: bold; color: red"><span class="dashicons dashicons-warning"></span>%2$s <a href="%3$s">' . esc_html( $message_update ) . '</a></h3></div>', esc_attr( $class ), esc_html( $message ), esc_url_raw( $url ) );
@@ -158,9 +159,30 @@ class Automator_Load {
 	 * @param $plugin
 	 */
 	public function automator_activated( $plugin ) {
-		if ( $plugin === plugin_basename( AUTOMATOR_BASE_FILE ) && true === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
+
+		if ( plugin_basename( AUTOMATOR_BASE_FILE ) === $plugin && true === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
+
+			$checked = filter_input( INPUT_POST, 'checked', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+			// Bail if bulked activated and there are more than 1 plugin.
+			if ( is_array( $checked ) && count( $checked ) >= 2 ) {
+				return;
+			}
+
+			// Bail if not from `wp-admin/plugins.php` (e.g coming from an ajax, or unit test)
+			if ( false !== wp_get_referer() && ! strpos( wp_get_referer(), 'wp-admin/plugins.php' ) ) {
+				return;
+			}
+
+			// Bail if from Codeception WPTestCase.
+			if ( class_exists( '\Codeception\TestCase\WPTestCase' ) ) {
+				return;
+			}
+
 			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+
 			exit();
+
 		}
 	}
 
@@ -268,6 +290,7 @@ class Automator_Load {
 
 		require UA_ABSPATH . 'src/core/class-utilities.php';
 		Utilities::get_instance();
+
 	}
 
 	/**
@@ -554,11 +577,23 @@ class Automator_Load {
 
 		//$classes['Import_Recipe'] = UA_ABSPATH . 'src/core/classes/class-import-recipe.php';
 
+		// Load migrations
+		$this->load_migrations();
+
 		do_action( 'automator_after_autoloader' );
 
 		return $classes;
 	}
 
+	/**
+	 * load_migrations
+	 *
+	 * @return void
+	 */
+	public function load_migrations() {
+		require_once UA_ABSPATH . 'src/core/migrations/abstract-migration.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-schedules.php';
+	}
 
 	/**
 	 *
@@ -577,11 +612,12 @@ class Automator_Load {
 		$classes['Closures']            = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-closures.php';
 
 		// Triggers
-		$classes['Trait_Trigger_Setup']      = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-setup.php';
-		$classes['Trait_Trigger_Filters']    = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-filters.php';
-		$classes['Trait_Trigger_Conditions'] = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-conditions.php';
-		$classes['Trait_Trigger_Process']    = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-process.php';
-		$classes['Triggers']                 = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-triggers.php';
+		$classes['Trait_Trigger_Setup']          = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-setup.php';
+		$classes['Trait_Trigger_Filters']        = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-filters.php';
+		$classes['Trait_Trigger_Recipe_Filters'] = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-recipe-filters.php';
+		$classes['Trait_Trigger_Conditions']     = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-conditions.php';
+		$classes['Trait_Trigger_Process']        = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-process.php';
+		$classes['Triggers']                     = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-triggers.php';
 
 		// Actions
 		$classes['Trait_Action_Setup']         = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-setup.php';

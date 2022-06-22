@@ -97,6 +97,7 @@ class ANON_WP_VIEWPOSTTYPE {
 		);
 
 		$options = Automator()->utilities->keep_order_of_options( $options );
+
 		return $options;
 	}
 
@@ -105,6 +106,9 @@ class ANON_WP_VIEWPOSTTYPE {
 	 */
 	public function view_post_type() {
 		global $post;
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
 		if ( ! is_singular( $post->post_type ) && ! is_post_type_viewable( $post->post_type ) ) {
 			return;
 		}

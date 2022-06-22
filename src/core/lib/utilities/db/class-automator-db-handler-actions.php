@@ -9,6 +9,7 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Automator_DB_Handler_Actions {
+
 	/**
 	 * @var
 	 */
@@ -37,7 +38,21 @@ class Automator_DB_Handler_Actions {
 		$recipe_id     = absint( $args['recipe_id'] );
 		$recipe_log_id = absint( $args['recipe_log_id'] );
 		$completed     = esc_attr( $args['completed'] );
-		$error_message = sanitize_text_field( $args['error_message'] );
+		$error_message = wp_kses(
+			$args['error_message'],
+			array(
+				'a' => array(
+					'href'   => array(),
+					'title'  => array(),
+					'target' => array(),
+				),
+				array(
+					'data'  => array(),
+					'http'  => array(),
+					'https' => array(),
+				),
+			)
+		);
 		$date_time     = $args['date_time'];
 
 		global $wpdb;
@@ -260,4 +275,5 @@ class Automator_DB_Handler_Actions {
 			)
 		);
 	}
+
 }

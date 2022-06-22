@@ -34,7 +34,7 @@ class Zoom_Webinar_Helpers {
 	 * @var Zoom_Webinar_Helpers
 	 */
 	public $setting_tab;
-	
+
 	/**
 	 * @var bool
 	 */
@@ -79,19 +79,19 @@ class Zoom_Webinar_Helpers {
 			'no_of_employees',
 			'org',
 			'purchasing_time_frame',
-			'role_in_purchase_process'
+			'role_in_purchase_process',
 		);
 
 	}
-	
+
 	/**
 	 * load_settings
 	 *
 	 * @return void
 	 */
 	public function load_settings() {
-		$this->setting_tab   = 'zoom-webinar-api';
-		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		$this->setting_tab = 'zoom-webinar-api';
+		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 		include_once __DIR__ . '/../settings/settings-zoom-webinar.php';
 		new Zoom_Webinar_Settings( $this );
 	}
@@ -114,7 +114,7 @@ class Zoom_Webinar_Helpers {
 
 		$script_uri = plugin_dir_url( __FILE__ ) . '../scripts/zoom-webinars.js';
 
-		wp_enqueue_script( 'zoom-webinars', $script_uri, array ( 'jquery' ), InitializePlugin::PLUGIN_VERSION, true );
+		wp_enqueue_script( 'zoom-webinars', $script_uri, array( 'jquery' ), InitializePlugin::PLUGIN_VERSION, true );
 	}
 
 	/**
@@ -160,10 +160,10 @@ class Zoom_Webinar_Helpers {
 		$options      = array();
 
 		$body = array(
-			'action'       => 'get_webinars',
-			'page_number'  => 1,
-			'page_size'    => 1000,
-			'type'         => 'upcoming',
+			'action'      => 'get_webinars',
+			'page_number' => 1,
+			'page_size'   => 1000,
+			'type'        => 'upcoming',
 		);
 
 		try {
@@ -180,11 +180,10 @@ class Zoom_Webinar_Helpers {
 					'text'  => $webinar['topic'],
 				);
 			}
-			
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => $e->getMessage()
+				'text'  => $e->getMessage(),
 			);
 		}
 
@@ -214,7 +213,7 @@ class Zoom_Webinar_Helpers {
 	public function add_to_webinar( $user, $webinar_key, $action_data ) {
 
 		if ( empty( $user['email'] ) || false === is_email( $user['email'] ) ) {
-			throw new \Exception(  __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $user['first_name'] ) ) {
@@ -226,8 +225,8 @@ class Zoom_Webinar_Helpers {
 		}
 
 		$body = array(
-			'action'       => 'register_webinar_user',
-			'webinar_key'  => $webinar_key
+			'action'      => 'register_webinar_user',
+			'webinar_key' => $webinar_key,
 		);
 
 		$body = array_merge( $body, $user );
@@ -252,15 +251,15 @@ class Zoom_Webinar_Helpers {
 	public function unregister_user( $email, $webinar_key, $action_data ) {
 
 		if ( empty( $email ) || ! is_email( $email ) ) {
-			throw new \Exception(  __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		$body = array(
-			'action'       => 'unregister_webinar_user',
-			'webinar_key'  => $webinar_key,
-			'email'        => $email,
+			'action'      => 'unregister_webinar_user',
+			'webinar_key' => $webinar_key,
+			'email'       => $email,
 		);
-	
+
 		$response = $this->api_request( $body, $action_data );
 
 		if ( 201 !== $response['statusCode'] && 204 !== $response['statusCode'] ) {
@@ -380,7 +379,7 @@ class Zoom_Webinar_Helpers {
 		exit;
 
 	}
-	
+
 	/**
 	 * disconnect_url
 	 *
@@ -411,8 +410,8 @@ class Zoom_Webinar_Helpers {
 
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => $body,
-			'action' => $action_data
+			'body'     => $body,
+			'action'   => $action_data,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -421,7 +420,7 @@ class Zoom_Webinar_Helpers {
 
 		return $response;
 	}
-	
+
 	/**
 	 * check_for_errors
 	 *
@@ -496,8 +495,8 @@ class Zoom_Webinar_Helpers {
 		try {
 
 			$body = array(
-				'action' => 'get_webinar_questions',
-				'webinar_id' => $webinar_id
+				'action'     => 'get_webinar_questions',
+				'webinar_id' => $webinar_id,
 			);
 
 			$response = $this->api_request( $body );
@@ -512,7 +511,7 @@ class Zoom_Webinar_Helpers {
 			$error = new \WP_Error( $e->getCode(), $e->getMessage() );
 			wp_send_json_error( $error );
 		}
-		
+
 		die();
 	}
 
@@ -533,15 +532,15 @@ class Zoom_Webinar_Helpers {
 				continue;
 			}
 
-			$question_name = $question['QUESTION_NAME'];
+			$question_name  = $question['QUESTION_NAME'];
 			$question_value = Automator()->parse->text( $question['QUESTION_VALUE'], $recipe_id, $user_id, $args );
 
-			if ( in_array( $question_name, $this->default_questions ) ) {  	// If it is one of the default questions
-				$user[$question_name] = $question_value;
-			} else { 															// If it's a custom question
-				$question_data = array();
-				$question_data['title'] = $question_name;
-				$question_data['value'] = $question_value;
+			if ( in_array( $question_name, $this->default_questions ) ) {   // If it is one of the default questions
+				$user[ $question_name ] = $question_value;
+			} else {                                                            // If it's a custom question
+				$question_data              = array();
+				$question_data['title']     = $question_name;
+				$question_data['value']     = $question_value;
 				$user['custom_questions'][] = $question_data;
 			}
 		}
@@ -557,25 +556,25 @@ class Zoom_Webinar_Helpers {
 	public function settings_updated() {
 
 		$redirect_url = $this->tab_url;
-	
+
 		delete_option( '_uncannyowl_zoom_webinar_settings' );
 
 		$result = 1;
 
 		try {
 			$this->api_get_user_info();
-		} catch ( \Exception $e ) { 
-			delete_option( 'uap_zoom_webinar_api_connected_user' );
+		} catch ( \Exception $e ) {
+			update_option( 'uap_zoom_webinar_api_connected_user', array() );
 			$result = $e->getMessage();
 		}
 
 		$redirect_url .= '&connect=' . $result;
-		
+
 		wp_safe_redirect( $redirect_url );
 
 		exit;
 	}
-	
+
 	/**
 	 * get_user
 	 *
@@ -587,11 +586,12 @@ class Zoom_Webinar_Helpers {
 		if ( 'no' !== $users_option_exist ) {
 			return $users_option_exist;
 		}
-				
+
 		try {
-			$user = $this->api_get_user_info(); 
+			$user = $this->api_get_user_info();
 		} catch ( \Exception $e ) {
-			$user = false;
+			$user = array();
+			update_option( 'uap_zoom_api_connected_user', $user );
 		}
 
 		return $user;

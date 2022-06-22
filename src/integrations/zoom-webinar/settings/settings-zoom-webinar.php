@@ -21,14 +21,14 @@ class Zoom_Webinar_Settings {
 	 */
 	use Settings\Premium_Integrations;
 
-    protected $helpers;
+	protected $helpers;
 
 	/**
 	 * Creates the settings page
 	 */
 	public function __construct( $helpers ) {
 
-        $this->helpers = $helpers;
+		$this->helpers = $helpers;
 
 		// Register the tab
 		$this->setup_settings();
@@ -40,7 +40,7 @@ class Zoom_Webinar_Settings {
 
 	}
 
-    /**
+	/**
 	 * Sets up the properties of the settings page
 	 */
 	protected function set_properties() {
@@ -51,7 +51,7 @@ class Zoom_Webinar_Settings {
 
 		$this->set_name( 'Zoom Webinars' );
 
-        $this->register_option( 'uap_automator_zoom_webinar_api_consumer_key' );
+		$this->register_option( 'uap_automator_zoom_webinar_api_consumer_key' );
 		$this->register_option( 'uap_automator_zoom_webinar_api_consumer_secret' );
 		$this->register_option( 'uap_automator_zoom_webinar_api_settings_timestamp' );
 
@@ -61,7 +61,7 @@ class Zoom_Webinar_Settings {
 		$this->user = false;
 
 		if ( ! empty( $this->api_key ) && ! empty( $this->api_secret ) ) {
-			$this->user = $this->helpers->get_user();
+			$this->user = get_option( 'uap_zoom_webinar_api_connected_user', array() );
 		}
 
 		$this->is_connected = false;
@@ -69,7 +69,7 @@ class Zoom_Webinar_Settings {
 		if ( ! empty( $this->user['email'] ) ) {
 			$this->is_connected = true;
 		}
-		
+
 		$this->set_status( $this->is_connected ? 'success' : '' );
 
 	}
@@ -88,14 +88,13 @@ class Zoom_Webinar_Settings {
 			if ( is_object( $this->user ) ) {
 				$this->user = (array) $this->user;
 			}
-			
 		} catch ( \Exception $e ) {
 			update_option( 'uap_automator_zoom_webinar_api_settings_expired', true );
-			$this->user = array();
+			$this->user         = array();
 			$this->is_connected = false;
 		}
 
-        $disconnect_url = $this->helpers->disconnect_url();
+		$disconnect_url = $this->helpers->disconnect_url();
 
 		include_once 'view-zoom-webinar.php';
 

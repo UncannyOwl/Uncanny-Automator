@@ -117,6 +117,9 @@ class TUTORLMS_LESSONCOMPLETED {
 
 		// global post object.
 		global $post;
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
 
 		// Is this the registered lesson post type
 		if ( tutor()->lesson_post_type !== $post->post_type ) {

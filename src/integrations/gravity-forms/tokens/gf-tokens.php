@@ -329,12 +329,9 @@ class Gf_Tokens {
 
 			global $wpdb;
 
-			$t_data = array_shift( $trigger_data );
-
-			$batch_id = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
-
-			$expiry_date = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
-
+			$t_data           = array_shift( $trigger_data );
+			$batch_id         = isset( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] ) ? $t_data['meta']['GF_SUBFORM_CODES_METADATA_CODES'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
+			$expiry_date      = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
 			$expiry_timestamp = strtotime( $expiry_date );
 
 			// Check if the date is in future to filter out empty dates
@@ -348,138 +345,44 @@ class Gf_Tokens {
 			}
 		}
 
-		// Entry tokens
+		/**
+		 * Entry tokens
+		 */
 		$token_piece = $pieces[2];
-		global $wpdb;
-
-		$token_info = explode( '|', $token_piece );
-		$form_id    = $token_info[0];
-		$meta_key   = isset( $token_info[1] ) ? $token_info[1] : '';
-
-		if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
-			$table_name = RGFormsModel::get_entry_table_name();
-		} else {
-			$table_name = RGFormsModel::get_lead_table_name();
-		}
-
-		$where_user_id = 0 === absint( $user_id ) ? 'created_by IS NULL' : 'created_by=' . $user_id;
-
-		$lead_id = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
-				$form_id
-			)
-		);
-
-		if ( $lead_id ) {
-
-			if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-				$table_name = RGFormsModel::get_entry_meta_table_name();
-			} else {
-				$table_name = RGFormsModel::get_lead_meta_table_name();
-			}
-
-			$value = $wpdb->get_var( $wpdb->prepare( 'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s', $form_id, $lead_id, $meta_key ) );
-
-			return $value;
-		}
-		if ( 0 !== (int) $user_id && is_user_logged_in() ) {
-			//fallback.. ... attempt to find them by email??
-			if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-				$table_name = RGFormsModel::get_entry_meta_table_name();
-			} else {
-				$table_name = RGFormsModel::get_lead_meta_table_name();
-			}
-			$where_user_email = get_user_by( 'ID', $user_id )->user_email;
-
-			$lead_id = $wpdb->get_var(
-				$wpdb->prepare(
-					'SELECT entry_id FROM ' . esc_sql( $table_name ) . " WHERE meta_value LIKE '" . esc_sql( $where_user_email ) . "' AND form_id = %d ORDER BY entry_id DESC LIMIT 0,1",
-					$form_id
-				)
+		$token_info  = explode( '|', $token_piece );
+		$form_id     = $token_info[0];
+		$meta_key    = isset( $token_info[1] ) ? $token_info[1] : '';
+		// Get Entry ID from meta first
+		$entry_id = Automator()->db->token->get( 'GFENTRYID', $replace_args );
+		if ( empty( $entry_id ) ) {
+			$search_criteria                    = array();
+			$search_criteria['field_filters']   = array();
+			$search_criteria['field_filters'][] = array(
+				'key'   => 'created_by',
+				'value' => $user_id,
 			);
-			if ( $lead_id ) {
-				if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-					$table_name = RGFormsModel::get_entry_meta_table_name();
-				} else {
-					$table_name = RGFormsModel::get_lead_meta_table_name();
-				}
 
-				$value = $wpdb->get_var(
-					$wpdb->prepare(
-						'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
-						$form_id,
-						$lead_id,
-						$meta_key
-					)
-				);
-			} else {
-				// Try again for anonymous user when its using a different email address
-				if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
-					$table_name = RGFormsModel::get_entry_table_name();
-				} else {
-					$table_name = RGFormsModel::get_lead_table_name();
-				}
-				$where_user_id = 'created_by IS NULL';
-
-				$lead_id = (int) $wpdb->get_var(
-					$wpdb->prepare(
-						'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
-						$form_id
-					)
-				);
-
-				if ( $lead_id ) {
-					if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-						$table_name = RGFormsModel::get_entry_meta_table_name();
-					} else {
-						$table_name = RGFormsModel::get_lead_meta_table_name();
-					}
-
-					$value = $wpdb->get_var(
-						$wpdb->prepare(
-							'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
-							$form_id,
-							$lead_id,
-							$meta_key
-						)
-					);
-
-				}
-			}
-		} elseif ( 0 !== (int) $user_id && ! is_user_logged_in() ) {
-			// Try again for anonymous user when its using a different email address
-			if ( method_exists( 'RGFormsModel', 'get_entry_table_name' ) ) {
-				$table_name = RGFormsModel::get_entry_table_name();
-			} else {
-				$table_name = RGFormsModel::get_lead_table_name();
-			}
-			$where_user_id = 'created_by IS NULL';
-
-			$lead_id = (int) $wpdb->get_var(
-				$wpdb->prepare(
-					'SELECT id FROM ' . esc_sql( $table_name ) . ' WHERE ' . esc_sql( $where_user_id ) . ' AND form_id = %d ORDER BY date_created DESC LIMIT 0,1',
-					$form_id
-				)
+			$sorting  = array(
+				'key'       => 'date_created',
+				'direction' => 'DESC',
 			);
-			if ( $lead_id ) {
-				if ( method_exists( 'RGFormsModel', 'get_entry_meta_table_name' ) ) {
-					$table_name = RGFormsModel::get_entry_meta_table_name();
-				} else {
-					$table_name = RGFormsModel::get_lead_meta_table_name();
-				}
-
-				$value = $wpdb->get_var(
-					$wpdb->prepare(
-						'SELECT meta_value FROM ' . esc_sql( $table_name ) . ' WHERE form_id = %d AND entry_id = %d AND meta_key LIKE %s',
-						$form_id,
-						$lead_id,
-						$meta_key
-					)
-				);
+			$paging   = array(
+				'offset'    => 0,
+				'page_size' => 1,
+			);
+			$lead_ids = \GFAPI::get_entry_ids( $form_id, $search_criteria, $sorting, $paging );
+			if ( empty( $lead_ids ) ) {
+				return $value;
 			}
-		} else {
-			$value = '';
+			$entry_id = array_pop( $lead_ids );
+		}
+		$entry = \GFAPI::get_entry( $entry_id );
+
+		if ( $entry ) {
+			$field_value = rgar( $entry, $meta_key );
+			if ( ! empty( $field_value ) ) {
+				$value = $field_value;
+			}
 		}
 
 		return $value;

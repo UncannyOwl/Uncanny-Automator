@@ -312,10 +312,10 @@ class Wp_Helpers {
 			echo wp_json_encode( $fields );
 			die();
 		}
-//		if ( empty( automator_filter_input( 'value', INPUT_POST ) ) ) {
-//			echo wp_json_encode( $fields );
-//			die();
-//		}
+		//      if ( empty( automator_filter_input( 'value', INPUT_POST ) ) ) {
+		//          echo wp_json_encode( $fields );
+		//          die();
+		//      }
 
 		$fields[]  = array(
 			'value' => '0',
@@ -339,7 +339,6 @@ class Wp_Helpers {
 			}
 		}
 
-
 		echo wp_json_encode( $fields );
 		die();
 	}
@@ -355,10 +354,10 @@ class Wp_Helpers {
 			echo wp_json_encode( $fields );
 			die();
 		}
-//		if ( empty( automator_filter_input( 'value', INPUT_POST ) ) ) {
-//			echo wp_json_encode( $fields );
-//			die();
-//		}
+		//      if ( empty( automator_filter_input( 'value', INPUT_POST ) ) ) {
+		//          echo wp_json_encode( $fields );
+		//          die();
+		//      }
 		$fields[] = array(
 			'value' => '0',
 			'text'  => __( 'Any taxonomy term', 'uncanny-automator' ),
@@ -465,6 +464,7 @@ class Wp_Helpers {
 	 * @return mixed|void
 	 */
 	public function all_wp_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
+
 		if ( ! $this->load_options ) {
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -473,12 +473,13 @@ class Wp_Helpers {
 			$label = __( 'Post types', 'uncanny-automator' );
 		}
 
-		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
-		$comments     = key_exists( 'comments', $args ) ? $args['comments'] : false;
-		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
-		$is_any       = key_exists( 'is_any', $args ) ? $args['is_any'] : true;
-		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
-		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$token           = key_exists( 'token', $args ) ? $args['token'] : false;
+		$comments        = key_exists( 'comments', $args ) ? $args['comments'] : false;
+		$is_ajax         = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$is_any          = key_exists( 'is_any', $args ) ? $args['is_any'] : true;
+		$target_field    = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
+		$end_point       = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$zero_as_default = key_exists( 'use_zero_as_default', $args ) ? 0 : -1;
 
 		$default_tokens = array(
 			$option_code                => __( 'Post title', 'uncanny-automator' ),
@@ -493,7 +494,7 @@ class Wp_Helpers {
 		$options         = array();
 
 		if ( $is_any == true ) {
-			$options['-1'] = __( 'Any post type', 'uncanny-automator' );
+			$options[ $zero_as_default ] = __( 'Any post type', 'uncanny-automator' );
 		}
 
 		// now get regular post types.
@@ -574,7 +575,7 @@ class Wp_Helpers {
 		// post type supports comments
 		if ( $comments ) {
 			foreach ( $options as $post_type => $opt ) {
-				if ( $post_type != '-1' && ! post_type_supports( $post_type, 'comments' ) ) {
+				if ( intval( $post_type ) !== intval( '-1' ) && ! post_type_supports( $post_type, 'comments' ) ) {
 					unset( $options[ $post_type ] );
 				}
 			}

@@ -68,8 +68,13 @@ class UPSELL_PLUGIN_PURCHPROD {
 			return;
 		}
 
-		$customer = get_user_by_email( $order->customer_email );
-		$user_id  = ( ! empty( $customer ) ) ? $customer->ID : 0;
+		if ( true === apply_filters( 'automator_upsell_order_use_current_logged_user', false, $order ) ) {
+			$user_id = get_current_user_id();
+		} else {
+			$customer = get_user_by_email( $order->customer_email );
+			$user_id  = ( ! empty( $customer ) ) ? $customer->ID : 0;
+		}
+
 		if ( 0 === $user_id ) {
 			// Its a logged in recipe and
 			// user ID is 0. Skip process
@@ -147,4 +152,5 @@ class UPSELL_PLUGIN_PURCHPROD {
 
 		return;
 	}
+
 }

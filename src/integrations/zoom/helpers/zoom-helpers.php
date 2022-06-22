@@ -70,22 +70,22 @@ class Zoom_Helpers {
 			'no_of_employees',
 			'org',
 			'purchasing_time_frame',
-			'role_in_purchase_process'
+			'role_in_purchase_process',
 		);
 	}
-	
+
 	/**
 	 * load_settings
 	 *
 	 * @return void
 	 */
 	public function load_settings() {
-		$this->setting_tab   = 'zoom-api';
-		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		$this->setting_tab = 'zoom-api';
+		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 		include_once __DIR__ . '/../settings/settings-zoom.php';
 		new Zoom_Settings( $this );
 	}
-	
+
 	/**
 	 * load_scripts
 	 *
@@ -104,7 +104,7 @@ class Zoom_Helpers {
 
 		$script_uri = plugin_dir_url( __FILE__ ) . '../scripts/zoom-meetings.js';
 
-		wp_enqueue_script( 'zoom-meetings', $script_uri, array ( 'jquery' ), InitializePlugin::PLUGIN_VERSION, true );
+		wp_enqueue_script( 'zoom-meetings', $script_uri, array( 'jquery' ), InitializePlugin::PLUGIN_VERSION, true );
 	}
 
 	/**
@@ -149,10 +149,10 @@ class Zoom_Helpers {
 		$options      = array();
 
 		$body = array(
-			'action'       => 'get_meetings',
-			'page_number'  => 1,
-			'page_size'    => 1000,
-			'type'         => 'upcoming',
+			'action'      => 'get_meetings',
+			'page_number' => 1,
+			'page_size'   => 1000,
+			'type'        => 'upcoming',
 		);
 
 		try {
@@ -173,11 +173,10 @@ class Zoom_Helpers {
 					'text'  => $meeting['topic'],
 				);
 			}
-			
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => $e->getMessage()
+				'text'  => $e->getMessage(),
 			);
 		}
 
@@ -195,7 +194,7 @@ class Zoom_Helpers {
 
 		return apply_filters( 'uap_option_zoom_get_meetings', $option );
 	}
-	
+
 	/**
 	 * get_meeting_questions_repeater
 	 *
@@ -235,7 +234,7 @@ class Zoom_Helpers {
 			'hide_actions'      => true,
 		);
 	}
-	
+
 	/**
 	 * api_get_meeting_questions
 	 *
@@ -251,8 +250,8 @@ class Zoom_Helpers {
 		try {
 
 			$body = array(
-				'action' => 'get_meeting_questions',
-				'meeting_id' => $meeting_id
+				'action'     => 'get_meeting_questions',
+				'meeting_id' => $meeting_id,
 			);
 
 			$response = $this->api_request( $body );
@@ -267,10 +266,10 @@ class Zoom_Helpers {
 			$error = new \WP_Error( $e->getCode(), $e->getMessage() );
 			wp_send_json_error( $error );
 		}
-		
+
 		die();
 	}
-	
+
 	/**
 	 * add_to_meeting
 	 *
@@ -282,7 +281,7 @@ class Zoom_Helpers {
 	public function add_to_meeting( $user, $meeting_key, $action_data ) {
 
 		if ( empty( $user['email'] ) || false === is_email( $user['email'] ) ) {
-			throw new \Exception(  __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $user['first_name'] ) ) {
@@ -294,8 +293,8 @@ class Zoom_Helpers {
 		}
 
 		$body = array(
-			'action'       => 'register_meeting_user',
-			'meeting_key'  => $meeting_key
+			'action'      => 'register_meeting_user',
+			'meeting_key' => $meeting_key,
 		);
 
 		$body = array_merge( $body, $user );
@@ -320,15 +319,15 @@ class Zoom_Helpers {
 	public function unregister_user( $email, $meeting_key, $action_data ) {
 
 		if ( empty( $email ) || ! is_email( $email ) ) {
-			throw new \Exception(  __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		$body = array(
-			'action'       => 'unregister_meeting_user',
-			'meeting_key'  => $meeting_key,
-			'email'        => $email,
+			'action'      => 'unregister_meeting_user',
+			'meeting_key' => $meeting_key,
+			'email'       => $email,
 		);
-	
+
 		$response = $this->api_request( $body, $action_data );
 
 		if ( 201 !== $response['statusCode'] && 204 !== $response['statusCode'] ) {
@@ -457,7 +456,7 @@ class Zoom_Helpers {
 		exit;
 
 	}
-	
+
 	/**
 	 * Method api_request
 	 *
@@ -473,8 +472,8 @@ class Zoom_Helpers {
 
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => $body,
-			'action' => $action_data
+			'body'     => $body,
+			'action'   => $action_data,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -483,7 +482,7 @@ class Zoom_Helpers {
 
 		return $response;
 	}
-	
+
 	/**
 	 * check_for_errors
 	 *
@@ -502,7 +501,7 @@ class Zoom_Helpers {
 		}
 
 	}
-	
+
 	/**
 	 * add_custom_questions
 	 *
@@ -520,22 +519,22 @@ class Zoom_Helpers {
 				continue;
 			}
 
-			$question_name = $question['QUESTION_NAME'];
+			$question_name  = $question['QUESTION_NAME'];
 			$question_value = Automator()->parse->text( $question['QUESTION_VALUE'], $recipe_id, $user_id, $args );
 
-			if ( in_array( $question_name, $this->default_questions ) ) {  	// If it is one of the default questions
-				$user[$question_name] = $question_value;
-			} else { 															// If it's a custom question
-				$question_data = array();
-				$question_data['title'] = $question_name;
-				$question_data['value'] = $question_value;
+			if ( in_array( $question_name, $this->default_questions ) ) {   // If it is one of the default questions
+				$user[ $question_name ] = $question_value;
+			} else {                                                            // If it's a custom question
+				$question_data              = array();
+				$question_data['title']     = $question_name;
+				$question_data['value']     = $question_value;
 				$user['custom_questions'][] = $question_data;
 			}
 		}
 
 		return $user;
 	}
-	
+
 
 	/**
 	 * settings_updated
@@ -545,20 +544,20 @@ class Zoom_Helpers {
 	public function settings_updated() {
 
 		$redirect_url = $this->tab_url;
-	
+
 		delete_option( '_uncannyowl_zoom_settings' );
 
 		$result = 1;
 
 		try {
 			$this->api_get_user_info();
-		} catch ( \Exception $e ) { 
-			delete_option( 'uap_zoom_api_connected_user' );
+		} catch ( \Exception $e ) {
+			update_option( 'uap_zoom_api_connected_user', array() );
 			$result = $e->getMessage();
 		}
 
 		$redirect_url .= '&connect=' . $result;
-		
+
 		wp_safe_redirect( $redirect_url );
 
 		exit;
@@ -577,9 +576,10 @@ class Zoom_Helpers {
 		}
 
 		try {
-			$user = $this->api_get_user_info(); 
+			$user = $this->api_get_user_info();
 		} catch ( \Exception $e ) {
-			$user = false;
+			$user = array();
+			update_option( 'uap_zoom_api_connected_user', $user );
 		}
 
 		return $user;

@@ -23,9 +23,35 @@ class CAMPAIGN_CREATEANDSEND {
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
+
 		$this->action_code = 'MCHIMPCAMPAIGNCREATEANDSEND';
+
 		$this->action_meta = 'CAMPAIGNCREATEANDSEND';
+
+		add_filter( 'automator_option_text_field', array( $this, 'add_supports_fullpage_editing' ), 10, 1 );
+
 		$this->define_action();
+
+	}
+
+	/**
+	 * Adds fullpage editing to `MCEMAILCONTENT` field.
+	 *
+	 * @param $option The accepted argument from `automator_option_text_field` filter.
+	 * @since 4.1.1
+	 *
+	 * @return array $option The option.
+	 */
+	public function add_supports_fullpage_editing( $option ) {
+
+		if ( 'MCEMAILCONTENT' === $option['option_code'] ) {
+
+			$option['supports_fullpage_editing'] = true;
+
+		}
+
+		return $option;
+
 	}
 
 	/**
@@ -53,11 +79,6 @@ class CAMPAIGN_CREATEANDSEND {
 		Automator()->register->action( $action );
 	}
 
-	/**
-	 * load_options
-	 *
-	 * @return void
-	 */
 	public function load_options() {
 		return array(
 			'options_group' => array(

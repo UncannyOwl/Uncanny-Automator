@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.0 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.1 \
+**Stable tag:** 4.1.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -232,6 +232,47 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.1.1 [2022-06-22]
+
+**New Tokens:**
+
+* LearnDash - Course status #2138
+* LearnDash - Course completion date #2130
+* WooCommerce - Order date #2175
+
+**Added:**
+
+* Upsell Plugin - "A user purchases a product" - Filter `automator_upsell_order_use_current_logged_user` to override customer email with logged in user email #2096
+* WishList Member - Any membership level option added in triggers #2076
+* Action Logs - Allow anchor links in recipe logs #2118
+
+**Enhanced:**
+
+* Google Sheet Permissions enhancement #2075
+
+**Updated:**
+
+* Google Calendar - str_contains switched to strpos for PHP backwards compatibility #2153
+* Mailchimp - "Create and send a campaign" now supports fullpage HTML #2135
+* Action Logs - Display "Out of credits" error for users with zero credits #1203
+* Disable Automator plugin activation redirect in some situations #2137
+
+**Fixed:**
+
+* Automator Core - WP_Rewrite usage conflict in a specific situation #2161
+* Google Sheets - PHP Error if `$fields` are `empty` or `null` on PHP 8.x #2167
+* Gravity Forms - The field "Date" is having problems #2133
+* WordPress Core - "A user publishes a type of post with a taxonomy term in a taxonomy" now displays all public and private post types #2169
+* Delay Modal - Hour selection is not displaying #2128
+* Premium API Integrations - Unnecessary HTTP API calls fixed when user is unauthenticated #2127
+* PHP Notices - "Attempt to read property of `post_type`" in a few triggers #2185 
+* Recipe UI Field - TinyMCE textarea is deleting content on save #2146
+* Remove extra spaces from some token names #2177
+
+**Internal:**
+
+* Automator Core - Trigger Filters Trait - Add a way to filter multiple trigger conditions #2105
 
 ### 4.1 [2022-06-08]
 

@@ -767,7 +767,10 @@ class Admin_Menu {
 			'uncanny-automator-integrations',
 			'uncanny-automator-config',
 			'uncanny-automator-tools',
-			'edit.php',
+			'uncanny-automator-action-log',
+			//          'uncanny-automator-trigger-log',
+			//          'uncanny-automator-recipe-log',
+				'edit.php',
 		);
 
 		// Enqueue admin scripts

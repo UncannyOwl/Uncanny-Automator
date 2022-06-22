@@ -52,7 +52,7 @@ class WM_USERADDED {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'add_user_to_membership_level' ),
 			'options'             => array(
-				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null, $this->trigger_meta ),
+				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null, $this->trigger_meta, array( 'any' => true ) ),
 			),
 		);
 
@@ -81,7 +81,7 @@ class WM_USERADDED {
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
-				if ( in_array( $required_level[ $recipe_id ][ $trigger_id ], $new_levels ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+				if ( intval( '-1' ) === intval( $required_level[ $recipe_id ][ $trigger_id ] ) || in_array( $required_level[ $recipe_id ][ $trigger_id ], $new_levels ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
@@ -107,6 +107,21 @@ class WM_USERADDED {
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
+
+							$trigger_meta = array(
+								'user_id'        => $user_id,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							);
+
+							foreach ( $new_levels as $level ) {
+								$level_details              = wlmapi_get_level( $level );
+								$trigger_meta['meta_key']   = $this->trigger_meta;
+								$trigger_meta['meta_value'] = maybe_serialize( $level_details['level']['name'] );
+								Automator()->insert_trigger_meta( $trigger_meta );
+							}
+
 							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}

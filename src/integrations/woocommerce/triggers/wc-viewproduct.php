@@ -80,6 +80,9 @@ class WC_VIEWPRODUCT {
 	public function view_woo_product() {
 
 		global $post;
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
 
 		if ( 'product' !== $post->post_type ) {
 			return;

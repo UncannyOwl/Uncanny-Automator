@@ -71,9 +71,9 @@ class WP_VIEWCUSTOMPOST {
 	 * @return void
 	 */
 	public function load_options() {
-		
+
 		Automator()->helpers->recipe->wp->options->load_options = true;
-		
+
 		$options = Automator()->utilities->keep_order_of_options(
 			array(
 				'options_group' => array(
@@ -128,6 +128,10 @@ class WP_VIEWCUSTOMPOST {
 	public function view_post() {
 
 		global $post;
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
+
 		if ( $post ) {
 
 			$user_id = get_current_user_id();

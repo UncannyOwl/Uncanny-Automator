@@ -40,6 +40,8 @@ class Logs_List_Table extends WP_List_Table {
 				'ajax'     => false,
 			)
 		);
+
+		add_filter( 'automator_action_log_error', array( $this, 'format_all_upgrade_links' ), 10, 2 );
 	}
 
 	/**
@@ -745,7 +747,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$action_date_completed = $action->action_date;
 			$action_status         = apply_filters( 'automator_action_log_status', $st, $action );
-			$error_message         = $action->error_message;
+			$error_message         = apply_filters( 'automator_action_log_error', $action->error_message, $action );
 			$recipe_link           = get_edit_post_link( absint( $action->automator_recipe_id ) );
 			$recipe_name           = '<a href="' . $recipe_link . '" class="uap-log-table__recipe-name">' . $action->recipe_title . '</a>';
 
@@ -792,6 +794,23 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Replaces {{automator_upgrade_link}} with actual upgrade link.
+	 *
+	 * @param string $message The message.
+	 *
+	 * @return string The message with upgrade link.
+	 */
+	public function format_all_upgrade_links( $message, $action ) {
+
+		$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=recipe_log&utm_content=upgrade_to_pro';
+
+		$upgrade_link = sprintf( '<a target="_blank" href="%1$s" title="%2$s">%2$s</a>', $link, esc_html__( 'Please upgrade for unlimited credits', 'uncanny-automator' ) );
+
+		return str_replace( '{{automator_upgrade_link}}', $upgrade_link, $message );
+
 	}
 
 	/**

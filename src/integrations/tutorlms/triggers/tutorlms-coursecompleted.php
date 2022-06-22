@@ -79,6 +79,9 @@ class TUTORLMS_COURSECOMPLETED {
 
 		// global post object.
 		global $post;
+		if ( ! $post instanceof \WP_Post ) {
+			return;
+		}
 
 		// Is valid post?
 		if ( ! is_object( $post ) ) {

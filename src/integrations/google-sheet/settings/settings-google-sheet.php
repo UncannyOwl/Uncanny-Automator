@@ -53,8 +53,9 @@ class Google_Sheet_Settings {
 		$this->client = false;
 
 		try {
-			$this->client = $this->helper->get_google_client();
-		} catch ( \Exception $e ) {
+			// The connection must have a Google credentials and must not have any missing scope.
+			$this->client = $this->helper->get_google_client() && ! $this->helper->has_missing_scope();
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing
 		}
 
