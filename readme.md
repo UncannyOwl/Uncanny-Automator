@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.0 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.1.1 \
+**Stable tag:** 4.1.1.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -232,6 +232,16 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.1.1.1 [2022-06-29]
+
+**Fixed:**
+
+* Recipe UI - Fix fallback for unsupported regular expressions by Safari #2199
+
+**Internal:**
+
+* Settings UI - Icon assets updated #2156
 
 ### 4.1.1 [2022-06-22]
 
