@@ -33,11 +33,6 @@ class BDB_ADDTOGROUP {
 	 */
 	public function define_action() {
 
-		$bp_group_args = array(
-			'uo_include_any' => false,
-			'status'         => array( 'public', 'hidden', 'private' ),
-		);
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/buddyboss/' ),
@@ -50,12 +45,29 @@ class BDB_ADDTOGROUP {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_to_bb_group' ),
-			'options'            => array(
-				Automator()->helpers->recipe->buddyboss->options->all_buddyboss_groups( null, 'BDBGROUPS', $bp_group_args ),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$bp_group_args = array(
+			'uo_include_any' => false,
+			'status'         => array( 'public', 'hidden', 'private' ),
+		);
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->buddyboss->options->all_buddyboss_groups( null, 'BDBGROUPS', $bp_group_args ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -78,4 +90,5 @@ class BDB_ADDTOGROUP {
 		}
 
 	}
+
 }

@@ -46,7 +46,8 @@ class MEC_HELPERS {
 	/**
 	 * Sets the option.
 	 *
-	 * @param MEC_HELPERS $options The instance of this class passed as an argument.
+	 * @param MEC_HELPERS $options The instance of this class passed as an
+	 *     argument.
 	 *
 	 * @return void.
 	 */
@@ -71,13 +72,27 @@ class MEC_HELPERS {
 	 * @return void.
 	 */
 	public function __construct() {
-		add_action( 'wp_ajax_ua_mec_select_events', array( $this, 'select_events_endpoint' ) );
-		add_action( 'wp_ajax_ua_mec_select_event_ticket', array( $this, 'select_event_tickets' ) );
+		$this->load_options = true;
+		add_action(
+			'wp_ajax_ua_mec_select_events',
+			array(
+				$this,
+				'select_events_endpoint',
+			)
+		);
+		add_action(
+			'wp_ajax_ua_mec_select_event_ticket',
+			array(
+				$this,
+				'select_event_tickets',
+			)
+		);
 	}
 
 	/**
 	 * This is a callback method to `wp_ajax_ua_mec_select_events` hook.
-	 * The method renders a json array which is  immediately followed by die function from wp_send_json.
+	 * The method renders a json array which is  immediately followed by die
+	 * function from wp_send_json.
 	 *
 	 * @return void.
 	 */
@@ -104,7 +119,8 @@ class MEC_HELPERS {
 
 	/**
 	 * This is a callback method to `wp_ajax_ua_mec_select_events` hook.
-	 * The method renders a json array which is  immediately followed by die function from wp_send_json.
+	 * The method renders a json array which is  immediately followed by die
+	 * function from wp_send_json.
 	 *
 	 * @return void.
 	 */
@@ -238,7 +254,8 @@ class MEC_HELPERS {
 	/**
 	 * Returns the location of the event.
 	 *
-	 * @return mixed Returns `null` when location term does not exists. Otherwise, returns the location in string.
+	 * @return mixed Returns `null` when location term does not exists.
+	 *     Otherwise, returns the location in string.
 	 */
 	public function get_event_location() {
 
@@ -323,7 +340,8 @@ class MEC_HELPERS {
 	/**
 	 * Returns the Event Organizer.
 	 *
-	 * @return mixed Returns null when org term is empty. Otherwise, returns the organizer in string format.
+	 * @return mixed Returns null when org term is empty. Otherwise, returns
+	 *     the organizer in string format.
 	 */
 	public function get_event_organizer() {
 
@@ -344,8 +362,8 @@ class MEC_HELPERS {
 	/**
 	 * Returns the date of the event.
 	 *
-	 * @param  mixed $type Either 'start' or 'end'
-	 * @param  mixed $format The format of date.
+	 * @param mixed $type Either 'start' or 'end'
+	 * @param mixed $format The format of date.
 	 *
 	 * @return string The formatted event date.
 	 */

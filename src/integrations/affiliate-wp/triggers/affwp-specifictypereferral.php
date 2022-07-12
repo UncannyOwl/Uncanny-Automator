@@ -23,7 +23,7 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 		//      add_action(
 		//          'plugins_loaded',
 		//          function () {
-				$this->define_trigger();
+		$this->define_trigger();
 		//          }
 		//      );
 	}
@@ -45,14 +45,28 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 			'action'              => 'affwp_complete_referral',
 			'priority'            => 99,
 			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'affwp_insert_specific_type_referral' ),
-			'options'             => array(
-				Automator()->helpers->recipe->affiliate_wp->options->get_referral_types( null, $this->trigger_meta, array( 'any_option' => true ) ),
+			'validation_function' => array(
+				$this,
+				'affwp_insert_specific_type_referral',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
 
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->affiliate_wp->options->get_referral_types( null, $this->trigger_meta, array( 'any_option' => true ) ),
+				),
+			)
+		);
 	}
 
 	/**

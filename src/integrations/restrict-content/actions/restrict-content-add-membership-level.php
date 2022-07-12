@@ -45,19 +45,30 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'add_rcp_membership' ),
-			'options_group'      => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->restrict_content->options->get_membership_levels(
-						null,
-						$this->action_meta,
-						array( 'any' => false )
-					),
-					Automator()->helpers->recipe->field->text_field( 'RCMEMBERSHIPEXPIRY', esc_attr__( 'Expiry date', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Leave empty to use expiry settings from the membership level, or type a specific date in the format YYYY-MM-DD', 'uncanny-automator' ) ),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => array(
+					$this->action_meta => array(
+						Automator()->helpers->recipe->restrict_content->options->get_membership_levels(
+							null,
+							$this->action_meta,
+							array( 'any' => false )
+						),
+						Automator()->helpers->recipe->field->text_field( 'RCMEMBERSHIPEXPIRY', esc_attr__( 'Expiry date', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Leave empty to use expiry settings from the membership level, or type a specific date in the format YYYY-MM-DD', 'uncanny-automator' ) ),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -154,4 +165,5 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

@@ -71,24 +71,35 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 			'priority'            => 200,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'contact_status_updated' ),
-			'options'             => array(
-				array(
-					'input_type'               => 'select',
-					'option_code'              => $this->trigger_code,
-					'options'                  => Automator()->helpers->recipe->fluent_crm->get_subscriber_statuses(),
-					'required'                 => true,
-					'label'                    => esc_html__( 'List of all available status values for Fluent CRM contacts.', 'uncanny-automator' ),
-					'description'              => esc_html__( 'Select from dropdown list of the options above.', 'uncanny-automator' ),
-					'supports_token'           => true,
-					'supports_multiple_values' => false,
-					'supports_custom_value'    => false,
-					'relevant_tokens'          => $this->get_tokens(),
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
 
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					array(
+						'input_type'               => 'select',
+						'option_code'              => $this->trigger_code,
+						'options'                  => Automator()->helpers->recipe->fluent_crm->get_subscriber_statuses(),
+						'required'                 => true,
+						'label'                    => esc_html__( 'List of all available status values for Fluent CRM contacts.', 'uncanny-automator' ),
+						'description'              => esc_html__( 'Select from dropdown list of the options above.', 'uncanny-automator' ),
+						'supports_token'           => true,
+						'supports_multiple_values' => false,
+						'supports_custom_value'    => false,
+						'relevant_tokens'          => $this->get_tokens(),
+					),
+				),
+			)
+		);
 	}
 
 	/*

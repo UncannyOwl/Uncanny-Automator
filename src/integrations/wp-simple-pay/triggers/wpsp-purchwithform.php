@@ -54,17 +54,32 @@ class WPSP_PURCHWITHFORM {
 			'action'              => 'simpay_charge_created',
 			'priority'            => 20,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'simple_pay_charge_created' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wp_simple_pay->options->list_wp_simpay_forms(
-					null,
-					$this->trigger_meta,
-					array( 'is_any' => true )
-				),
+			'validation_function' => array(
+				$this,
+				'simple_pay_charge_created',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
+
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp_simple_pay->options->list_wp_simpay_forms(
+						null,
+						$this->trigger_meta,
+						array( 'is_any' => true )
+					),
+				),
+			)
+		);
 	}
 
 	/**

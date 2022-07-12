@@ -41,10 +41,6 @@ class PMP_MEMBERSHIPEXPIRES {
 	 */
 	public function define_trigger() {
 
-		$options = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
-
-		$options['options'] = array( '-1' => esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/paid-memberships-pro/' ),
@@ -57,15 +53,31 @@ class PMP_MEMBERSHIPEXPIRES {
 			'action'              => 'pmpro_membership_post_membership_expiry',
 			'priority'            => 100,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'pmpro_subscription_expired' ),
-			'options'             => array(
-				$options,
+			'validation_function' => array(
+				$this,
+				'pmpro_subscription_expired',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$options            = Automator()->helpers->recipe->paid_memberships_pro->options->all_memberships( esc_attr__( 'Membership', 'uncanny-automator' ) );
+		$options['options'] = array( '-1' => esc_attr__( 'Any membership', 'uncanny-automator' ) ) + $options['options'];
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					$options,
+				),
+			)
+		);
 	}
 
 	/**
@@ -146,4 +158,5 @@ class PMP_MEMBERSHIPEXPIRES {
 
 		return;
 	}
+
 }

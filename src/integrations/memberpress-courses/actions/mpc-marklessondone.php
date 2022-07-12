@@ -11,8 +11,7 @@ use memberpress\courses\models as models;
  *
  * @package Uncanny_Automator
  */
-class MPC_MARKLESSONDONE
-{
+class MPC_MARKLESSONDONE {
 
 	/**
 	 * Integration code
@@ -27,8 +26,7 @@ class MPC_MARKLESSONDONE
 	/**
 	 * Set up Automator action constructor.
 	 */
-	public function __construct()
-	{
+	public function __construct() {
 		$this->action_code = 'MPMARKLESSONEDONE';
 		$this->action_meta = 'MPLESSON';
 		$this->define_action();
@@ -37,18 +35,7 @@ class MPC_MARKLESSONDONE
 	/**
 	 * Define and register the action by pushing it into the Automator object
 	 */
-	public function define_action()
-	{
-
-		$args = array(
-			'post_type'      => 'mpcs-course',
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
-		);
-
-		$options = Automator()->helpers->recipe->options->wp_query( $args );
+	public function define_action() {
 
 		$action = array(
 			'author'             => Automator()->get_author_name(),
@@ -62,28 +49,50 @@ class MPC_MARKLESSONDONE
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_lesson' ),
-			'options_group'      => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->field->select_field_ajax(
-						'MPCOURSE',
-						esc_attr__( 'Course', 'uncanny-automator' ),
-						$options,
-						'',
-						'',
-						false,
-						true,
-						array(
-							'target_field' => $this->action_meta,
-							'endpoint'     => 'select_lesson_from_course_LESSONDONE',
-						),
-						''
-					),
-					Automator()->helpers->recipe->field->select_field( $this->action_meta, esc_attr__( 'Lesson', 'uncanny-automator' ), array(), false, false, false, '' ),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
-		Automator()->register->action($action);
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$args = array(
+			'post_type'      => 'mpcs-course',
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+		);
+
+		$options = Automator()->helpers->recipe->options->wp_query( $args );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => array(
+					$this->action_meta => array(
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'MPCOURSE',
+							esc_attr__( 'Course', 'uncanny-automator' ),
+							$options,
+							'',
+							'',
+							false,
+							true,
+							array(
+								'target_field' => $this->action_meta,
+								'endpoint'     => 'select_lesson_from_course_LESSONDONE',
+							),
+							''
+						),
+						Automator()->helpers->recipe->field->select_field( $this->action_meta, esc_attr__( 'Lesson', 'uncanny-automator' ), array(), false, false, false, '' ),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -93,7 +102,7 @@ class MPC_MARKLESSONDONE
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function mark_completes_a_lesson( $user_id, $action_data, $recipe_id, $args) {
+	public function mark_completes_a_lesson( $user_id, $action_data, $recipe_id, $args ) {
 		$course_id = $action_data['meta']['MPCOURSE'];
 		$lesson_id = $action_data['meta']['MPLESSON'];
 

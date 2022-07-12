@@ -45,13 +45,24 @@ class LF_LESSONDONE {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'lf_lesson_completed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->lifterlms->options->all_lf_lessons( null, $this->trigger_meta ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->lifterlms->options->all_lf_lessons( null, $this->trigger_meta ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**

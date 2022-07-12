@@ -19,7 +19,7 @@
 
 		<?php $view = $this->get_view_path() . sprintf( '%s.php', $step ); ?>
 
-		<?php if ( ! file_exists( $view ) ) : ?>
+		<?php if ( ! is_file( $view ) ) : ?>
 			<?php $step = 'step-1'; ?>
 			<?php $view = $this->get_view_path() . sprintf( '%s.php', $step ); ?>
 		<?php endif; ?>

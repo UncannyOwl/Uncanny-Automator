@@ -28,8 +28,24 @@ class UNCANNYCEUS_EARNSCEUS {
 		if ( version_compare( $version, '3.0.6', '>' ) ) {
 
 			// Ths trigger is running through a crob job .. We need to let is pass through cron checks
-			add_filter( 'uap_run_automator_actions', array( $this, 'maybe_allow_triggers_to_actionify', 10, 2 ) );
-			add_filter( 'automator_maybe_parse_token', array( $this, 'tokens' ), 20, 6 );
+			add_filter(
+				'uap_run_automator_actions',
+				array(
+					$this,
+					'maybe_allow_triggers_to_actionify',
+					10,
+					2,
+				)
+			);
+			add_filter(
+				'automator_maybe_parse_token',
+				array(
+					$this,
+					'tokens',
+				),
+				20,
+				6
+			);
 			$this->trigger_code = 'EARNSCEUS';
 			$this->trigger_meta = 'AMOUNTSCEUS';
 			$this->define_trigger();
@@ -57,23 +73,44 @@ class UNCANNYCEUS_EARNSCEUS {
 			'priority'            => 20,
 			'accepted_args'       => 7,
 			'validation_function' => array( $this, 'updated_user_ceu_record' ),
-			'options'             => array(
-				array(
-					'option_code'     => $this->trigger_meta,
-					/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
-					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
-					'input_type'      => 'float',
-					'validation_type' => 'integer',
-					'required'        => true,
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					array(
+						'option_code'     => $this->trigger_meta,
+						/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
+						'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
+						'input_type'      => 'float',
+						'validation_type' => 'integer',
+						'required'        => true,
+					),
+				),
+			)
+		);
+	}
+
+
+	/**
+	 * Triggers to allow actionify.
+	 *
+	 * @param $run_automator_actions
+	 * @param $REQUEST
+	 *
+	 * @return bool|mixed
+	 */
 	public function maybe_allow_triggers_to_actionify( $run_automator_actions, $REQUEST ) {
 
 		if ( false === $run_automator_actions ) {
@@ -192,7 +229,7 @@ class UNCANNYCEUS_EARNSCEUS {
 
 		if ( $pieces ) {
 			if (
-			in_array( $this->trigger_code, $pieces, true )
+				in_array( $this->trigger_code, $pieces, true )
 			) {
 
 				if ( ! absint( $user_id ) ) {
@@ -234,4 +271,5 @@ class UNCANNYCEUS_EARNSCEUS {
 
 		return $value;
 	}
+
 }

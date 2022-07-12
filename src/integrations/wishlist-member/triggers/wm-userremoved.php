@@ -9,6 +9,7 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class WM_USERREMOVED {
+
 	/**
 	 * Integration code
 	 *
@@ -51,13 +52,27 @@ class WM_USERREMOVED {
 			'action'              => 'wishlistmember_remove_user_levels',
 			'priority'            => 99,
 			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'remove_user_to_membership_level' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null, $this->trigger_meta, array( 'any' => true ) ),
+			'validation_function' => array(
+				$this,
+				'remove_user_to_membership_level',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -130,4 +145,5 @@ class WM_USERREMOVED {
 			}
 		}
 	}
+
 }

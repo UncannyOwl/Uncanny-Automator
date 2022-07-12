@@ -213,7 +213,7 @@ class Utilities {
 	 */
 	public static function cleanup_icon_path( $dirname, $icon, $file_name ) {
 		// path relative to plugin
-		if ( file_exists( $file_name ) ) {
+		if ( is_file( $file_name ) ) {
 			$val = str_replace(
 				array(
 					dirname( $dirname ),
@@ -275,12 +275,12 @@ class Utilities {
 	 *
 	 */
 	public static function legacy_automator_enqueue_global_assets() {
-		wp_enqueue_style( 'uap-admin-global-fonts', 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap', array(), Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-admin-global-fonts', 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap', array(), self::automator_get_version() );
 
-		wp_enqueue_style( 'uap-admin-global', Utilities::automator_get_asset( 'legacy/css/admin/global.css' ), array( 'uap-admin-global-fonts' ), Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-admin-global', self::automator_get_asset( 'legacy/css/admin/global.css' ), array( 'uap-admin-global-fonts' ), self::automator_get_version() );
 		self::automator_enqueue_frontend_assets();
 
-		wp_enqueue_script( 'uap-admin-global', Utilities::automator_get_asset( 'legacy/js/admin/global.js' ), array( 'jquery' ), Utilities::automator_get_version(), true );
+		wp_enqueue_script( 'uap-admin-global', self::automator_get_asset( 'legacy/js/admin/global.js' ), array( 'jquery' ), self::automator_get_version(), true );
 	}
 
 	/**
@@ -290,7 +290,7 @@ class Utilities {
 	 *
 	 */
 	public static function automator_enqueue_frontend_assets() {
-		wp_enqueue_style( 'uap-automator-css', Utilities::automator_get_asset( 'legacy/css/automator.css' ), null, Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-automator-css', self::automator_get_asset( 'legacy/css/automator.css' ), null, self::automator_get_version() );
 	}
 
 	/**
@@ -448,7 +448,7 @@ class Utilities {
 	 *
 	 */
 	public static function get_pro_items_list() {
-		include Utilities::automator_get_include( 'pro-items-list.php' );
+		include self::automator_get_include( 'pro-items-list.php' );
 
 		return automator_pro_items_list();
 	}
@@ -508,7 +508,7 @@ class Utilities {
 		//$trace_end         = "\n===========================<<<< TRACE END >>>>===========================\n";
 
 		$backtrace_start = "\n===========================<<<< BACKTRACE START >>>>===========================\n";
-		$error_string    = print_r( ( new \Exception )->getTraceAsString(), true );
+		$error_string    = print_r( ( new \Exception() )->getTraceAsString(), true );
 		$backtrace_end   = "\n===========================<<<< BACKTRACE END >>>>===========================\n";
 
 		$trace_msg_start = "\n===========================<<<< TRACE MESSAGE START >>>>===========================\n";
@@ -516,7 +516,7 @@ class Utilities {
 
 		$trace_message = print_r( $trace_message, true );
 		$log_directory = UA_DEBUG_LOGS_DIR;
-		if ( ! file_exists( $log_directory ) ) {
+		if ( ! is_dir( $log_directory ) ) {
 			mkdir( $log_directory, 0755 );
 		}
 		$file = $log_directory . 'uo-' . $file_name . '.log';

@@ -43,10 +43,7 @@ class UT_USER_IMPORTED_IN_COURSE {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-		$all_courses = Automator()->helpers->recipe->learndash->options->all_ld_courses( null, $this->trigger_meta );
-		if ( isset( $all_courses['relevant_tokens'] ) ) {
-			unset( $all_courses['relevant_tokens'] );
-		}
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-toolkit/' ),
@@ -61,12 +58,28 @@ class UT_USER_IMPORTED_IN_COURSE {
 			'priority'            => 20,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'a_user_is_imported' ),
-			'options'             => array(
-				$all_courses,
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		$all_courses = Automator()->helpers->recipe->learndash->options->all_ld_courses( null, $this->trigger_meta );
+		if ( isset( $all_courses['relevant_tokens'] ) ) {
+			unset( $all_courses['relevant_tokens'] );
+		}
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					$all_courses,
+				),
+			)
+		);
 	}
 
 	/**
@@ -168,4 +181,5 @@ class UT_USER_IMPORTED_IN_COURSE {
 			Automator()->process->user->maybe_trigger_complete( $rr['args'] );
 		}
 	}
+
 }

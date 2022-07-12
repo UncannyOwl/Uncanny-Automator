@@ -55,13 +55,24 @@ class CF7_SUBFORM {
 			'priority'            => 99,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wpcf7_submit' ),
-			'options'             => array(
-				Automator()->helpers->recipe->contact_form7->options->list_contact_form7_forms(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->contact_form7->options->list_contact_form7_forms(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -99,4 +110,5 @@ class CF7_SUBFORM {
 		}
 
 	}
+
 }

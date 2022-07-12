@@ -223,6 +223,10 @@ class WP_SENDEMAIL {
 			return;
 		}
 
+		$sent_email_completed = absint( get_option( 'automator_sent_email_completed', 0 ) );
+
+		update_option( 'automator_sent_email_completed', $sent_email_completed + 1 );
+
 		Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 	}

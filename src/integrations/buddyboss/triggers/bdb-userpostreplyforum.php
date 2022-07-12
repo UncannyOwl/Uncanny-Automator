@@ -33,6 +33,30 @@ class BDB_USERPOSTREPLYFORUM {
 	 */
 	public function define_trigger() {
 
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddyboss/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - bbPress */
+			'sentence'            => sprintf( __( 'A user replies to {{a topic:%1$s}} in {{a forum:%2$s}}', 'uncanny-automator' ), $this->trigger_meta, 'BDBFORUMS:' . $this->trigger_meta ),
+			/* translators: Logged-in trigger - bbPress */
+			'select_option_name'  => __( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
+			'action'              => 'bbp_new_reply',
+			'priority'            => 10,
+			'accepted_args'       => 3,
+			'validation_function' => array( $this, 'bbp_insert_reply' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$args = array(
 			'post_type'      => 'forum',
 			'posts_per_page' => 999,
@@ -54,43 +78,29 @@ class BDB_USERPOSTREPLYFORUM {
 			$this->trigger_meta . '_URL' => __( 'Topic URL', 'uncanny-automator' ),
 		);
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddyboss/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - bbPress */
-			'sentence'            => sprintf( __( 'A user replies to {{a topic:%1$s}} in {{a forum:%2$s}}', 'uncanny-automator' ), $this->trigger_meta, 'BDBFORUMS:' . $this->trigger_meta ),
-			/* translators: Logged-in trigger - bbPress */
-			'select_option_name'  => __( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
-			'action'              => 'bbp_new_reply',
-			'priority'            => 10,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'bbp_insert_reply' ),
-			'options_group'       => array(
-				$this->trigger_meta => array(
-					Automator()->helpers->recipe->field->select_field_ajax(
-						'BDBFORUMS',
-						__( 'Forum', 'uncanny-automator' ),
-						$options,
-						'',
-						'',
-						false,
-						true,
-						array(
-							'target_field' => $this->trigger_meta,
-							'endpoint'     => 'select_topic_from_forum_BDBTOPICREPLY',
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => array(
+					$this->trigger_meta => array(
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'BDBFORUMS',
+							__( 'Forum', 'uncanny-automator' ),
+							$options,
+							'',
+							'',
+							false,
+							true,
+							array(
+								'target_field' => $this->trigger_meta,
+								'endpoint'     => 'select_topic_from_forum_BDBTOPICREPLY',
+							),
+							$forum_relevant_tokens
 						),
-						$forum_relevant_tokens
+						Automator()->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 					),
-					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 				),
-			),
+			)
 		);
-
-		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -184,4 +194,5 @@ class BDB_USERPOSTREPLYFORUM {
 
 		return false;
 	}
+
 }

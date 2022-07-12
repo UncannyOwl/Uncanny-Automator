@@ -1,10 +1,10 @@
-<?php
+<?php //phpcs:ignore Internal.Exception
 
 namespace Uncanny_Automator;
 
 /**
  * Class Automator_Functions
- * 
+ *
  * Development ready functions.
  *
  * @package Uncanny_Automator
@@ -30,6 +30,13 @@ class Automator_Functions {
 	 * @access   public
 	 */
 	public $recipe_types = array( 'user', 'anonymous' );
+	/**
+	 * Collection of all recipe items
+	 *
+	 * @since    4.2.0
+	 * @access   public
+	 */
+	public $recipe_items = array();
 	/**
 	 * Collection of all integrations
 	 *
@@ -288,21 +295,45 @@ class Automator_Functions {
 	 * @param $trigger
 	 */
 	public function set_triggers( $trigger ) {
-		$this->triggers[] = $trigger;
+		if ( $this->add_unique_recipe_item( $trigger, 'triggers' ) ) {
+			$this->triggers[] = $trigger;
+		};
 	}
 
 	/**
 	 * @param $action
 	 */
 	public function set_actions( $action ) {
-		$this->actions[] = $action;
+		if ( $this->add_unique_recipe_item( $action, 'actions' ) ) {
+			$this->actions[] = $action;
+		}
 	}
 
 	/**
 	 * @param $closure
 	 */
 	public function set_closures( $closure ) {
-		$this->closures[] = $closure;
+		if ( $this->add_unique_recipe_item( $closure, 'closures' ) ) {
+			$this->closures[] = $closure;
+		}
+	}
+
+	/**
+	 * @param array $item
+	 * @param string $type "actions" || "triggers" || "closures"
+	 */
+	private function add_unique_recipe_item( $item, $type ) {
+
+		$integration = $item['integration'];
+		$code        = $item['code'];
+
+		if ( isset( $this->recipe_items[ $integration ][ $type ][ $code ] ) ) {
+			return false;
+		}
+
+		$this->recipe_items[ $integration ][ $type ][ $code ] = 1;
+
+		return true;
 	}
 
 	/**
@@ -311,6 +342,15 @@ class Automator_Functions {
 	 */
 	public function set_recipe_type( $recipe_type, $details ) {
 		$this->recipe_types[ $recipe_type ] = $details;
+	}
+
+	/**
+	 * Returns a filtered set of automator recipe items
+	 *
+	 * @return array
+	 */
+	public function get_recipe_items() {
+		return apply_filters( 'automator_recipe_items', $this->recipe_items );
 	}
 
 	/**
@@ -436,7 +476,18 @@ class Automator_Functions {
 
 		global $wpdb;
 
-		$recipes = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_type, post_status, post_parent FROM $wpdb->posts WHERE post_type = %s AND post_status NOT LIKE %s ORDER BY ID DESC LIMIT 0, 99999", 'uo-recipe', 'trash' ) );
+		$recipes = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID, post_title, post_type, post_status, post_parent
+FROM $wpdb->posts
+WHERE post_type = %s
+  AND post_status NOT LIKE %s
+ORDER BY ID DESC
+LIMIT 0, 99999",
+				'uo-recipe',
+				'trash'
+			)
+		);
 		if ( empty( $recipes ) ) {
 			return array();
 		}
@@ -654,7 +705,8 @@ FROM $wpdb->postmeta pm
     LEFT JOIN $wpdb->posts p
         ON p.ID = pm.post_id
 WHERE pm.post_id
-          IN (SELECT ID FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = %s))", 'uo-recipe'
+          IN (SELECT ID FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = %s))",
+					'uo-recipe'
 				)
 			);
 
@@ -934,7 +986,6 @@ WHERE pm.post_id
 			return null;
 		}
 
-		global $wpdb;
 		if ( empty( $recipe_children ) ) {
 			// All the triggers associated with the recipe
 			$recipe_children = $this->get_recipe_children_query( $recipe_id, $type );
@@ -1017,7 +1068,7 @@ WHERE pm.post_id
 		$item_not_found = true;
 
 		if ( 'uo-trigger' === $type ) {
-			$system_triggers = $this->get_triggers();
+			$system_triggers = $this->triggers;
 			if ( ! empty( $system_triggers ) ) {
 				foreach ( $system_triggers as $trigger ) {
 					if ( $trigger['code'] === $code ) {
@@ -1030,7 +1081,7 @@ WHERE pm.post_id
 		}
 
 		if ( 'uo-action' === $type ) {
-			$system_actions = $this->get_actions();
+			$system_actions = $this->actions;
 			if ( ! empty( $system_actions ) ) {
 				foreach ( $system_actions as $action ) {
 					if ( $action['code'] === $code ) {
@@ -1043,7 +1094,7 @@ WHERE pm.post_id
 		}
 
 		if ( 'uo-closure' === $type ) {
-			$system_closures = $this->get_closures();
+			$system_closures = $this->closures;
 			if ( ! empty( $system_closures ) ) {
 				foreach ( $system_closures as $closure ) {
 					if ( $closure['code'] === $code ) {
@@ -1424,7 +1475,7 @@ WHERE pm.post_id
 		if ( null === $trigger_code ) {
 			return false;
 		}
-		$triggers = $this->get_triggers();
+		$triggers = $this->triggers;
 		if ( empty( $triggers ) ) {
 			return false;
 		}
@@ -1447,7 +1498,7 @@ WHERE pm.post_id
 
 	/**
 	 * Determines whether the trigger type is a user.
-	 * 
+	 *
 	 * @param string $trigger_code The trigger code.
 	 *
 	 * @return bool True if the trigger type is 'user'. Otherwise, false.
@@ -1460,9 +1511,9 @@ WHERE pm.post_id
 
 	/**
 	 * Determines whether the trigger type is an anonymous.
-	 * 
+	 *
 	 * @param string $trigger_code The trigger code.
-	 * 
+	 *
 	 * @return bool True if the trigger type is 'anonymous'. Otherwise, false.
 	 */
 	public function is_trigger_type_anonymous( $trigger_code = '' ) {
@@ -1473,10 +1524,10 @@ WHERE pm.post_id
 
 	/**
 	 * Determines if the trigger type is equal to the given type.
-	 * 
+	 *
 	 * @param string $type The type (anonymous, user) you want to compare against the trigger.
 	 * @param string $trigger_code The trigger code of the trigger.
-	 * 
+	 *
 	 * @return bool True if given type is equal to the type of the trigger. Otherwise, false.
 	 */
 	public function is_trigger_type( $type = '', $trigger_code = '' ) {

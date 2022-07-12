@@ -93,7 +93,7 @@ class Add_Instagram_Integration {
 	}
 
 	/**
-	 * Check if there pages contains an instagram account.
+	 * Check if pages contains an instagram account.
 	 *
 	 * @return integer The total number of instagram account connected.
 	 */
@@ -107,9 +107,28 @@ class Add_Instagram_Integration {
 
 			$ig_account = isset( $page['ig_account'] ) ? $page['ig_account'] : '';
 
+			//$has_ig_connection = isset( $page['ig_connection']['is_connected'] ) ? $page['ig_connection']['is_connected'] : 'COMPAT_ALLOW_NULL';
+
+			$has_connection_key = array_key_exists( 'ig_connection', $page );
+
+			// Handle backwards compatibility.
 			if ( ! empty( $ig_account ) ) {
 
-				$total ++;
+				// Allow connection with [ig_account] but with out connection key for backwards compatibility.
+				if ( ! $has_connection_key ) {
+
+					$total ++;
+
+					continue; // Proceed.
+
+				}
+
+				// Otherwise newer version should have connection key and [is_connected] must be true.
+				if ( $has_connection_key && true === $page['ig_connection']['is_connected'] ) {
+
+					$total ++;
+
+				}
 			}
 		}
 

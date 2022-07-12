@@ -11,6 +11,7 @@ use Uncanny_Automator_Pro\Memberpress_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Memberpress_Helpers {
+
 	/**
 	 * @var Memberpress_Helpers
 	 */
@@ -31,7 +32,7 @@ class Memberpress_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 
 	}
 
@@ -77,7 +78,7 @@ class Memberpress_Helpers {
 		$options = array();
 
 		if ( $args['uo_include_any'] ) {
-			$options[ - 1 ] = $args['uo_any_label'];
+			$options[- 1] = $args['uo_any_label'];
 		}
 
 		$options = Automator()->helpers->recipe->options->wp_query( array( 'post_type' => 'memberpressproduct' ) );
@@ -128,7 +129,7 @@ class Memberpress_Helpers {
 		$options = array();
 
 		if ( $args['uo_include_any'] ) {
-			$options[ - 1 ] = $args['uo_any_label'];
+			$options[- 1] = $args['uo_any_label'];
 		}
 
 		//$posts   = get_posts( );
@@ -192,7 +193,7 @@ class Memberpress_Helpers {
 		$options = array();
 
 		if ( $args['uo_include_any'] ) {
-			$options[ - 1 ] = $args['uo_any_label'];
+			$options[- 1] = $args['uo_any_label'];
 		}
 
 		$query_args = array(

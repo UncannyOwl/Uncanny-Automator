@@ -57,12 +57,23 @@ class ANON_CF_SUBFORM {
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'caldera_forms_submit' ),
-			'options'             => array(
-				Automator()->helpers->recipe->caldera_forms->options->list_caldera_forms_forms( null, $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->caldera_forms->options->list_caldera_forms_forms( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -119,7 +130,6 @@ class ANON_CF_SUBFORM {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -159,4 +169,5 @@ class ANON_CF_SUBFORM {
 
 		return false;
 	}
+
 }

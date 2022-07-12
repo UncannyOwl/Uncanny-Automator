@@ -47,15 +47,24 @@ class LD_FAILQUIZ {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'quiz_submitted' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -64,7 +73,7 @@ class LD_FAILQUIZ {
 	 * @param $data
 	 */
 	public function quiz_submitted( $data, $current_user ) {
-		
+
 		if ( empty( $data ) ) {
 			return;
 		}

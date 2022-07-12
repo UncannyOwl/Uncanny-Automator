@@ -38,11 +38,24 @@ class FCRM_ADD_CONTACT {
 		$this->set_sentence( sprintf( esc_attr__( 'Add {{a contact:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - FluentCRM */
 		$this->set_readable_sentence( esc_attr__( 'Add {{a contact}}', 'uncanny-automator' ) );
+		$this->set_options_callback( array( $this, 'load_options' ) );
+		$this->register_action();
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$options_group = array(
 			$this->get_action_meta() => $this->get_all_fields(),
 		);
-		$this->set_options_group( $options_group );
-		$this->register_action();
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => $options_group,
+			)
+		);
 	}
 
 	/**

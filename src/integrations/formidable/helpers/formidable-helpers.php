@@ -13,6 +13,7 @@ use Uncanny_Automator_Pro\Formidable_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Formidable_Helpers {
+
 	/**
 	 * @var Formidable_Helpers
 	 */
@@ -33,7 +34,7 @@ class Formidable_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -60,7 +61,6 @@ class Formidable_Helpers {
 	public function all_formidable_forms( $label = null, $option_code = 'FIFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -68,7 +68,8 @@ class Formidable_Helpers {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
-		$args = wp_parse_args( $args,
+		$args = wp_parse_args(
+			$args,
 			array(
 				'uo_include_any' => false,
 				'uo_any_label'   => esc_attr__( 'Any product', 'uncanny-automator' ),
@@ -83,15 +84,15 @@ class Formidable_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
-				$options[ - 1 ] = $args['uo_any_label'];
+				$options[- 1] = $args['uo_any_label'];
 			}
-			$s_query                = [
-				[
+			$s_query                = array(
+				array(
 					'or'               => 1,
 					'parent_form_id'   => null,
 					'parent_form_id <' => 1,
-				],
-			];
+				),
+			);
 			$s_query['is_template'] = 0;
 			$s_query['status !']    = 'trash';
 			$forms                  = FrmForm::getAll( $s_query, '', ' 0, 999' );
@@ -102,7 +103,7 @@ class Formidable_Helpers {
 				}
 			}
 		}
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -113,10 +114,10 @@ class Formidable_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code          => __( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'  => __( 'Form ID', 'uncanny-automator' ),
+				$option_code         => __( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => __( 'Form ID', 'uncanny-automator' ),
 			),
-		];
+		);
 
 		return apply_filters( 'uap_option_all_formidable_forms', $option );
 	}
@@ -146,18 +147,19 @@ class Formidable_Helpers {
 
 			if ( $data ) {
 
-				$insert = [
+				$insert = array(
 					'user_id'        => $user_id,
 					'trigger_id'     => $trigger_id,
 					'trigger_log_id' => $trigger_log_id,
 					'meta_key'       => $meta_key,
 					'meta_value'     => maybe_serialize( $data ),
 					'run_number'     => $run_number,
-				];
+				);
 				Automator()->insert_trigger_meta( $insert );
 			}
 		}
 
 		return $data;
 	}
+
 }

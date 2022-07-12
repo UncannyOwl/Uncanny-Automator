@@ -124,7 +124,8 @@ class Facebook_Helpers {
 	 */
 	public function has_connection_data() {
 
-		$facebook_options_user  = get_option( self::OPTION_KEY, array() );
+		$facebook_options_user = get_option( self::OPTION_KEY, array() );
+
 		$facebook_options_pages = get_option( '_uncannyowl_facebook_pages_settings', array() );
 
 		if ( ! empty( $facebook_options_user ) && ! empty( $facebook_options_pages ) ) {
@@ -139,18 +140,37 @@ class Facebook_Helpers {
 	 */
 	public function automator_integration_facebook_capture_token() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+
+			wp_safe_redirect( $this->get_settings_page_uri() . '&status=error' );
+
+			exit;
+
+		}
+
+		if ( ! wp_verify_nonce( automator_filter_input( 'state' ), self::OPTION_KEY ) ) {
+
+			wp_safe_redirect( $this->get_settings_page_uri() . '&status=error' );
+
+			exit;
+
+		}
+
 		$settings = array(
 			'user' => array(
-				'id'    => filter_input( INPUT_GET, 'fb_user_id', FILTER_SANITIZE_NUMBER_INT ),
-				'token' => filter_input( INPUT_GET, 'fb_user_token', FILTER_SANITIZE_STRING ),
+				'id'    => absint( automator_filter_input( 'fb_user_id' ) ),
+				'token' => automator_filter_input( 'fb_user_token' ),
 			),
 		);
 
 		$error_status = filter_input( INPUT_GET, 'status', FILTER_DEFAULT );
 
 		if ( 'error' === $error_status ) {
+
 			wp_safe_redirect( $this->get_settings_page_uri() . '&status=error' );
+
 			exit;
+
 		}
 
 		// Only update the record when there is a valid user.
@@ -236,6 +256,8 @@ class Facebook_Helpers {
 		$message = '';
 
 		$pages = array();
+
+		$status = 200;
 
 		try {
 

@@ -51,7 +51,7 @@ class Wm_Tokens {
 	 *
 	 * @return mixed
 	 */
-	public function parse_wm_token( $value, $pieces, $recipe_id, $trigger_data, $user_id = 0, $replace_args ) {
+	public function parse_wm_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		$tokens = array(
 			'WMMEMBERSHIPLEVELS',
 		);

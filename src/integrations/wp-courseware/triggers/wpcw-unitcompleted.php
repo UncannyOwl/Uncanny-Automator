@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPCW_UNITCOMPLETED
+ *
  * @package Uncanny_Automator
  */
 class WPCW_UNITCOMPLETED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPCW';
@@ -31,8 +33,6 @@ class WPCW_UNITCOMPLETED {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-courseware/' ),
@@ -46,15 +46,24 @@ class WPCW_UNITCOMPLETED {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpcw_unit_completed' ),
-			'options'             => [
-				Automator()->helpers->recipe->wp_courseware->options->all_wpcw_units(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp_courseware->options->all_wpcw_units(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -70,15 +79,14 @@ class WPCW_UNITCOMPLETED {
 			return;
 		}
 
-
-
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $unit_id ),
 			'user_id' => $user_id,
-		];
+		);
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}
+
 }

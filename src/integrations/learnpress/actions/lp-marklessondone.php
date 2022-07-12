@@ -33,15 +33,6 @@ class LP_MARKLESSONDONE {
 	 */
 	public function define_action() {
 
-		$args    = array(
-			'post_type'      => 'lp_course',
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
-		);
-		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learnpress/' ),
@@ -54,55 +45,70 @@ class LP_MARKLESSONDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lp_mark_lesson_done' ),
-			'options_group'      => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->field->select_field_args(
-						array(
-							'option_code'              => 'LPCOURSE',
-							'options'                  => $options,
-							'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
-
-							'required'                 => true,
-							'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
-
-							'is_ajax'                  => true,
-							'target_field'             => 'LPSECTION',
-							'endpoint'                 => 'select_section_from_course_LPMARKLESSONDONE',
-						)
-					),
-
-					Automator()->helpers->recipe->field->select_field_args(
-						array(
-							'option_code'              => 'LPSECTION',
-							'options'                  => array(),
-							'label'                    => esc_attr__( 'Section', 'uncanny-automator' ),
-
-							'required'                 => true,
-							'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
-
-							'is_ajax'                  => true,
-							'target_field'             => $this->action_meta,
-							'endpoint'                 => 'select_lesson_from_section_LPMARKLESSONDONE',
-						)
-					),
-
-					Automator()->helpers->recipe->field->select_field_args(
-						array(
-							'option_code'              => $this->action_meta,
-							'options'                  => array(),
-							'label'                    => esc_attr__( 'Lesson', 'uncanny-automator' ),
-
-							'required'                 => true,
-							'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
-						)
-					),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$args    = array(
+			'post_type'      => 'lp_course',
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+		);
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => array(
+					$this->action_meta => array(
+						Automator()->helpers->recipe->field->select_field_args(
+							array(
+								'option_code'              => 'LPCOURSE',
+								'options'                  => $options,
+								'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
+								'required'                 => true,
+								'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+								'is_ajax'                  => true,
+								'target_field'             => 'LPSECTION',
+								'endpoint'                 => 'select_section_from_course_LPMARKLESSONDONE',
+							)
+						),
+
+						Automator()->helpers->recipe->field->select_field_args(
+							array(
+								'option_code'              => 'LPSECTION',
+								'options'                  => array(),
+								'label'                    => esc_attr__( 'Section', 'uncanny-automator' ),
+								'required'                 => true,
+								'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
+								'is_ajax'                  => true,
+								'target_field'             => $this->action_meta,
+								'endpoint'                 => 'select_lesson_from_section_LPMARKLESSONDONE',
+							)
+						),
+
+						Automator()->helpers->recipe->field->select_field_args(
+							array(
+								'option_code'              => $this->action_meta,
+								'options'                  => array(),
+								'label'                    => esc_attr__( 'Lesson', 'uncanny-automator' ),
+								'required'                 => true,
+								'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+							)
+						),
+					),
+				),
+			)
+		);
+	}
 
 	/**
 	 * Validation function when the action is hit.
@@ -136,4 +142,5 @@ class LP_MARKLESSONDONE {
 		}
 
 	}
+
 }

@@ -45,12 +45,23 @@ class FI_SUBMITFORM {
 			'priority'            => 10,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'fi_submit_form' ),
-			'options'             => array(
-				Automator()->helpers->recipe->formidable->options->all_formidable_forms( null, $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->formidable->options->all_formidable_forms( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -117,4 +128,5 @@ class FI_SUBMITFORM {
 		}
 
 	}
+
 }

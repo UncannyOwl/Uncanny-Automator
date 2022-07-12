@@ -51,12 +51,23 @@ class MP_PURCHASEPRODUCTRECURRING {
 			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'mp_product_purchased' ),
-			'options'             => array(
-				Automator()->helpers->recipe->memberpress->options->all_memberpress_products_recurring( null, $this->trigger_meta, array( 'uo_include_any' => true ) ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->memberpress->options->all_memberpress_products_recurring( null, $this->trigger_meta, array( 'uo_include_any' => true ) ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -128,4 +139,5 @@ class MP_PURCHASEPRODUCTRECURRING {
 			}
 		}
 	}
+
 }

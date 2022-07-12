@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LF_MARKLESSONDONE
+ *
  * @package Uncanny_Automator
  */
 class LF_MARKLESSONDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LF';
@@ -31,8 +33,6 @@ class LF_MARKLESSONDONE {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/lifterlms/' ),
@@ -45,14 +45,24 @@ class LF_MARKLESSONDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lf_mark_lesson_done' ),
-			'options'            => [
-				Automator()->helpers->recipe->lifterlms->options->all_lf_lessons( esc_attr__( 'Lesson', 'uncanny-automator' ), $this->action_meta, false ),
-			],
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->lifterlms->options->all_lf_lessons( esc_attr__( 'Lesson', 'uncanny-automator' ), $this->action_meta, false ),
+				),
+			)
+		);
+	}
 
 	/**
 	 * Validation function when the action is hit.
@@ -62,8 +72,6 @@ class LF_MARKLESSONDONE {
 	 * @param string $recipe_id recipe id.
 	 */
 	public function lf_mark_lesson_done( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		if ( ! function_exists( 'llms_mark_complete' ) ) {
 			$error_message = 'The function llms_mark_complete does not exist';
@@ -79,4 +87,5 @@ class LF_MARKLESSONDONE {
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

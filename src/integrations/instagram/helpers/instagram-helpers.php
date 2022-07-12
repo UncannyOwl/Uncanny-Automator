@@ -122,6 +122,15 @@ class Instagram_Helpers {
 
 	}
 
+	/**
+	 * Method automator_integration_instagram_capture_token_fetch_instagram_accounts.
+	 *
+	 * Callback method to fetch connected pages business instagram accounts. The response will include all the
+	 * Instagram business account connected and then validate to check if it has permission or not during fetch.
+	 * This request also update the Facebook settings to include the IG data.
+	 *
+	 * @return wp_json response.
+	 */
 	public function automator_integration_instagram_capture_token_fetch_instagram_accounts() {
 
 		if ( wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
@@ -133,8 +142,11 @@ class Instagram_Helpers {
 			$access_token = '';
 
 			foreach ( $facebook_pages as $page ) {
+
 				if ( $page['value'] === $page_id ) {
+
 					$access_token = $page['page_access_token'];
+
 				}
 			}
 
@@ -153,14 +165,26 @@ class Instagram_Helpers {
 					if ( $page['value'] === $page_id ) {
 
 						if ( isset( $ig_response['data'] ) ) {
+
 							// Convert $ig_response['data'] to make sure existing integrations don't break.
 							$facebook_pages[ $key ]['ig_account'] = json_decode( wp_json_encode( $ig_response['data'] ) );
 
+							// Validate IG if the user has given sufficient permission during OAuth dialog.
+							if ( isset( $ig_response['data']['data'][0] ) ) {
+
+								$connection = $this->get_business_account_connection_data( $ig_response['data']['data'][0] );
+
+								// Save ig_connection index.
+								$facebook_pages[ $key ]['ig_connection'] = $connection;
+
+								// Send response as 'connected'.
+								$ig_response['data']['data'][0]['ig_connection'] = $connection;
+
+							}
 						}
 					}
 				}
 
-				// Update the option.
 				update_option( self::FB_OPTIONS_KEY, $facebook_pages );
 
 				wp_send_json( $ig_response );
@@ -178,6 +202,31 @@ class Instagram_Helpers {
 		}
 
 		die;
+
+	}
+
+	/**
+	 * Method get_business_account_connection_data.
+	 *
+	 * Analyze the response to check if there is an associated business account.
+	 *
+	 * @return array The connection with is_connected and message keys.
+	 */
+	public function get_business_account_connection_data( $ig_response ) {
+
+		$connection = array(
+			'is_connected' => true,
+			'message'      => '',
+		);
+
+		if ( empty( $ig_response['instagram_business_account'] ) ) {
+			$connection = array(
+				'is_connected' => false,
+				'message'      => esc_html__( 'There was an error connecting to your Instagram account.  Please ensure you check the box next to the desired Instagram account during the authentication process.', 'uncanny-automator' ),
+			);
+		}
+
+		return $connection;
 
 	}
 
@@ -310,11 +359,11 @@ class Instagram_Helpers {
 	public function get_facebook_pages_settings_url() {
 		return add_query_arg(
 			array(
-				'post_type'          => 'uo-recipe',
-				'page'               => 'uncanny-automator-config',
-				'tab'                => 'premium-integrations',
-				'integration'        => 'facebook-pages',
-				'automator_minimal'  => filter_input( INPUT_GET, 'automator_minimal', FILTER_DEFAULT ),
+				'post_type'                    => 'uo-recipe',
+				'page'                         => 'uncanny-automator-config',
+				'tab'                          => 'premium-integrations',
+				'integration'                  => 'facebook-pages',
+				'automator_minimal'            => filter_input( INPUT_GET, 'automator_minimal', FILTER_DEFAULT ),
 				'automator_hide_settings_tabs' => filter_input( INPUT_GET, 'automator_hide_settings_tabs', FILTER_DEFAULT ),
 			),
 			admin_url( 'edit.php' )

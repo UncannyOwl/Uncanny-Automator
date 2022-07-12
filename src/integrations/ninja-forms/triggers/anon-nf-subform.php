@@ -38,6 +38,7 @@ class ANON_NF_SUBFORM {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/ninja-forms/' ),
@@ -53,12 +54,23 @@ class ANON_NF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'nform_submit' ),
-			'options'             => array(
-				Automator()->helpers->recipe->ninja_forms->options->list_ninja_forms( null, $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->ninja_forms->options->list_ninja_forms( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**

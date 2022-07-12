@@ -31,7 +31,7 @@ class Wp_Fluent_Forms_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -75,9 +75,9 @@ class Wp_Fluent_Forms_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( function_exists( 'wpFluent' ) ) {
 				$forms = wpFluent()->table( 'fluentform_forms' )
-				                   ->select( array( 'id', 'title' ) )
-				                   ->orderBy( 'id', 'DESC' )
-				                   ->get();
+								   ->select( array( 'id', 'title' ) )
+								   ->orderBy( 'id', 'DESC' )
+								   ->get();
 
 				if ( ! empty( $forms ) ) {
 					foreach ( $forms as $form ) {

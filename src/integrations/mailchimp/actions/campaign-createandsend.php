@@ -60,26 +60,39 @@ class CAMPAIGN_CREATEANDSEND {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
-			'is_pro'             => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
+			'is_pro'                => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'requires_user'         => false,
 			// translators: Campaign
-			'sentence'           => sprintf( __( 'Create and send {{a campaign:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Create and send {{a campaign}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'requires_user'      => false,
-			'options_callback'   => array( $this, 'load_options' ),
-			'execution_function' => array( $this, 'create_send_campaign' ),
+			'sentence'              => sprintf( __( 'Create and send {{a campaign:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Create and send {{a campaign}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'requires_user'         => false,
+			'options_callback'      => array( $this, 'load_options' ),
+			'execution_function'    => array( $this, 'create_send_campaign' ),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );
 	}
 
 	public function load_options() {
+
+		$from_email_description = sprintf(
+			'%1$s. <a target="_blank" href="%2$s" title="%3$s">%3$s</a>',
+			esc_html__( 'The from email must be from a verified domain', 'uncanny-automator' ),
+			Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
+			esc_html__( 'Learn more', 'uncanny-automator' )
+		);
+
+		$client = get_option( '_uncannyowl_mailchimp_settings', array() );
+
+		$user_email = ! empty( $client['login']->email ) ? $client['login']->email : '';
+
 		return array(
 			'options_group' => array(
 				$this->action_meta => array(
@@ -105,7 +118,8 @@ class CAMPAIGN_CREATEANDSEND {
 					Automator()->helpers->recipe->field->text_field( 'MCEMAILSUBJECT', __( 'Email subject', 'uncanny-automator' ), true, 'text', null ),
 					Automator()->helpers->recipe->field->text_field( 'MCPREVIEWTEXT', __( 'Preview text', 'uncanny-automator' ), true, 'text', null, false ),
 					Automator()->helpers->recipe->field->text_field( 'MCFROMNAME', __( 'From name', 'uncanny-automator' ), true, 'text', null ),
-					Automator()->helpers->recipe->field->text_field( 'MCFROMEMAILADDRESS', __( 'From email address', 'uncanny-automator' ), true, 'email', null ),
+					Automator()->helpers->recipe->field->text_field( 'MCFROMEMAILADDRESS', __( 'From email address', 'uncanny-automator' ), true, 'email', $user_email, false, $from_email_description, null ),
+					//   $required = true, $description = '', $placeholder = null
 					Automator()->helpers->recipe->field->text_field( 'MCTONAME', __( 'To name', 'uncanny-automator' ), true, 'text', null, false, __( 'Supports merge tags such as *|FNAME|*, *|LNAME|*, *|FNAME|* *|LNAME|*, etc.', 'uncanny-automator' ) ),
 					Automator()->helpers->recipe->mailchimp->options->get_all_email_templates(
 						__( 'Template', 'uncanny-automator' ),

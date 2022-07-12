@@ -38,21 +38,22 @@ class GTT_REGISTERUSER {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/gototraining/' ),
-			'is_pro'             => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf(
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/gototraining/' ),
+			'is_pro'                => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'sentence'              => sprintf(
 				/* translators: Action sentence */
 				__( 'Add the user to {{a training session:%1$s}}', 'uncanny-automator' ),
 				$this->action_meta
 			),
-			'select_option_name' => __( 'Add the user to {{a training session}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'gtt_register_user' ),
-			'options_callback'   => array( $this, 'load_options' ),
+			'select_option_name'    => __( 'Add the user to {{a training session}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'gtt_register_user' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );
@@ -100,17 +101,17 @@ class GTT_REGISTERUSER {
 			}
 
 			$training_key = str_replace( '-objectkey', '', $training_key );
-	
+
 			$result = Automator()->helpers->recipe->gototraining->gtt_register_user( $user_id, $training_key, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 		} catch ( \Exception $e ) {
-			
+
 			$action_data['do-nothing'] = true;
-	
+
 			$action_data['complete_with_errors'] = true;
-	
+
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}

@@ -46,7 +46,7 @@ class AC_ANNON_ADDTAG {
 				esc_attr__( 'Add {{a tag:%1$s}} to {{a contact:%2$s}}', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				$this->prefix . '_CONTACT_ID' . ':' . $this->get_action_meta()
-			//'WPTAXONOMYTERM' . ':' . $this->trigger_meta,
+				//'WPTAXONOMYTERM' . ':' . $this->trigger_meta,
 			)
 		);
 
@@ -79,6 +79,8 @@ class AC_ANNON_ADDTAG {
 		);
 
 		$this->set_options_group( $options_group );
+
+		$this->set_background_processing( true );
 
 		$this->register_action();
 

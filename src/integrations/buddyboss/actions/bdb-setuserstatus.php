@@ -45,16 +45,32 @@ class BDB_SETUSERSTATUS {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'set_user_status' ),
-			'options'            => array(
-				Automator()->helpers->recipe->field->select( array(
-					'option_code' => $this->action_meta,
-					'label'       => esc_attr__( 'Status', 'uncanny-automator' ),
-					'options'     => array( 'active' => 'Active', 'suspend' => 'Suspend' ),
-				) ),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->field->select(
+						array(
+							'option_code' => $this->action_meta,
+							'label'       => esc_attr__( 'Status', 'uncanny-automator' ),
+							'options'     => array(
+								'active'  => 'Active',
+								'suspend' => 'Suspend',
+							),
+						)
+					),
+				),
+			)
+		);
 	}
 
 	/**

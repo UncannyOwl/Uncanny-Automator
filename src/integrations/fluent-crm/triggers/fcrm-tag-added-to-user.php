@@ -52,16 +52,24 @@ class FCRM_TAG_ADDED_TO_USER {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'contact_added_to_tags' ),
-			'options'             => array(
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags(),
+				),
+			)
+		);
+	}
 
 	/**
 	 * @param $attached_tag_ids
@@ -146,4 +154,5 @@ class FCRM_TAG_ADDED_TO_USER {
 			}
 		}
 	}
+
 }

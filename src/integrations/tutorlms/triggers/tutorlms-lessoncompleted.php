@@ -2,8 +2,8 @@
 /**
  * Contains Lesson Completion Trigger.
  *
- * @version 2.4.0
  * @since   2.4.0
+ * @version 2.4.0
  */
 
 namespace Uncanny_Automator;
@@ -44,8 +44,31 @@ class TUTORLMS_LESSONCOMPLETED {
 	 */
 	public function define_trigger() {
 
-		// global automator object.
+		// setup trigger configuration.
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/tutor-lms/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - TutorLMS */
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - TutorLMS */
+			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
+			'action'              => 'tutor_lesson_completed_after',
+			'priority'            => 10,
+			'accepted_args'       => 1,
+			'validation_function' => array( $this, 'complete' ),
+			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
+			'options_callback'    => array( $this, 'load_options' ),
+		);
 
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
 		$course_tokens = array();
 
 		$relevant_tokens = array(
@@ -66,46 +89,32 @@ class TUTORLMS_LESSONCOMPLETED {
 
 		$courses = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
-		// setup trigger configuration.
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/tutor-lms/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - TutorLMS */
-			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - TutorLMS */
-			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
-			'action'              => 'tutor_lesson_completed_after',
-			'priority'            => 10,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'complete' ),
-			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
-			'options_group'       => array(
-				$this->trigger_meta => array(
-					Automator()->helpers->recipe->field->select_field_ajax(
-						'TUTORLMSCOURSE',
-						esc_attr__( 'Course', 'uncanny-automator' ),
-						$courses,
-						'',
-						'',
-						false,
-						true,
-						array(
-							'target_field' => $this->trigger_meta,
-							'endpoint'     => 'select_lesson_from_course_LESSONCOMPLETED',
-						),
-						$course_tokens
-					),
-					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Lesson', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(
+					Automator()->helpers->recipe->options->number_of_times(),
 				),
-			),
+				'options_group' => array(
+					$this->trigger_meta => array(
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'TUTORLMSCOURSE',
+							esc_attr__( 'Course', 'uncanny-automator' ),
+							$courses,
+							'',
+							'',
+							false,
+							true,
+							array(
+								'target_field' => $this->trigger_meta,
+								'endpoint'     => 'select_lesson_from_course_LESSONCOMPLETED',
+							),
+							$course_tokens
+						),
+						Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Lesson', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+					),
+				),
+			)
 		);
-
-		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -140,4 +149,5 @@ class TUTORLMS_LESSONCOMPLETED {
 		// run trigger.
 		Automator()->maybe_add_trigger_entry( $args );
 	}
+
 }

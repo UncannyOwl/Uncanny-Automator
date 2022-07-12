@@ -2,7 +2,7 @@
 require_once UA_ABSPATH . 'src/core/views/admin-tools-header.php';
 if ( ( filter_has_var( INPUT_GET, 'delete_log' ) && 'yes' === filter_input( INPUT_GET, 'delete_log' ) ) && ( filter_has_var( INPUT_GET, '_wpnonce' ) && wp_verify_nonce( filter_input( INPUT_GET, '_wpnonce' ), 'Aut0mAt0r' ) ) ) {
 	$file = filter_input( INPUT_GET, 'delete' );
-	if ( file_exists( UA_DEBUG_LOGS_DIR . $file ) ) {
+	if ( is_file( UA_DEBUG_LOGS_DIR . $file ) ) {
 		if ( unlink( UA_DEBUG_LOGS_DIR . $file ) ) {
 			$url = add_query_arg(
 				array(
@@ -48,7 +48,7 @@ if ( filter_has_var( INPUT_GET, 'file_removed' ) ) {
 // Read logs directory
 $log_directory = UA_DEBUG_LOGS_DIR;
 $log_files     = array();
-if ( ! file_exists( $log_directory ) ) {
+if ( ! is_file( $log_directory ) ) {
 	printf( '<h3>%s</h3>', esc_html__( 'No logs found.', 'uncanny-automator' ) );
 
 	return;

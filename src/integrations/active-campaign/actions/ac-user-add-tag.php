@@ -64,6 +64,8 @@ class AC_USER_ADD_TAG {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

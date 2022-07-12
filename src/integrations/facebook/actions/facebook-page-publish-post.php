@@ -74,6 +74,8 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		$this->set_options_group( $options );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

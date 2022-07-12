@@ -28,9 +28,9 @@ class UOTC_MODULEINTERACTION {
 
 		// We are only loading it if Tin Canny exists
 		//if ( defined( 'UNCANNY_REPORTING_VERSION' ) ) {
-			$this->trigger_code = 'MODULEINTERACTION';
-			$this->trigger_meta = 'TCMODULEINTERACTION';
-			$this->define_trigger();
+		$this->trigger_code = 'MODULEINTERACTION';
+		$this->trigger_meta = 'TCMODULEINTERACTION';
+		$this->define_trigger();
 		//}
 	}
 
@@ -38,14 +38,6 @@ class UOTC_MODULEINTERACTION {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-
-		$options       = array();
-		$modules       = Database::get_modules();
-		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
-
-		foreach ( $modules as $module ) {
-			$options[ $module->ID ] = $module->file_name;
-		}
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -59,35 +51,58 @@ class UOTC_MODULEINTERACTION {
 			'action'              => 'tincanny_module_completed',
 			'priority'            => 99,
 			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'tincanny_module_completed_func' ),
-			'options'             => array(
-				Automator()->helpers->recipe->field->select(
-					array(
-						'option_code' => $this->trigger_meta,
-						'label'       => esc_attr__( 'Module', 'uncanny-automator' ),
-						'options'     => $options,
-					)
-				),
-				Automator()->helpers->recipe->field->select(
-					array(
-						'option_code'           => 'TCVERB',
-						'supports_custom_value' => true,
-						'label'                 => esc_attr_x( 'Verb', 'Tin Can verb', 'uncanny-automator' ),
-						'options'               => array(
-							'-1'          => 'Any',
-							'completed'   => 'Completed',
-							'passed'      => 'Passed',
-							'failed'      => 'Failed',
-							'answered'    => 'Answered',
-							'attempted'   => 'Attempted',
-							'experienced' => 'Experienced',
-						),
-					)
-				),
+			'validation_function' => array(
+				$this,
+				'tincanny_module_completed_func',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$options       = array();
+		$modules       = Database::get_modules();
+		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
+
+		foreach ( $modules as $module ) {
+			$options[ $module->ID ] = $module->file_name;
+		}
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->field->select(
+						array(
+							'option_code' => $this->trigger_meta,
+							'label'       => esc_attr__( 'Module', 'uncanny-automator' ),
+							'options'     => $options,
+						)
+					),
+					Automator()->helpers->recipe->field->select(
+						array(
+							'option_code'           => 'TCVERB',
+							'supports_custom_value' => true,
+							'label'                 => esc_attr_x( 'Verb', 'Tin Can verb', 'uncanny-automator' ),
+							'options'               => array(
+								'-1'          => 'Any',
+								'completed'   => 'Completed',
+								'passed'      => 'Passed',
+								'failed'      => 'Failed',
+								'answered'    => 'Answered',
+								'attempted'   => 'Attempted',
+								'experienced' => 'Experienced',
+							),
+						)
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -225,4 +240,5 @@ class UOTC_MODULEINTERACTION {
 
 		return $matches;
 	}
+
 }

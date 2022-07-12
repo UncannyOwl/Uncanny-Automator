@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.0 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.1.1.1 \
+**Stable tag:** 4.2 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -76,11 +76,13 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [myCred](https://automatorplugin.com/integration/mycred/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Pabbly Connect](https://automatorplugin.com/integration/pabbly-connect/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tin Canny Reporting](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -232,6 +234,77 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.2 [2022-07-12]
+
+**New Integrations:**
+
+* [Pabbly Connect](https://automatorplugin.com/integration/pabbly-connect/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2266
+* [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1697
+
+**New Triggers:**
+
+* Mailpoet - A user submits a form #217
+* Studiocart - A user completes an order for a product #2210
+* Studiocart - A user purchases a product #2226
+* Studiocart - A user's order for a product is refunded #2227
+* Uncanny Groups - A group is created #1478
+
+**New Action:**
+
+* Pabbly Connect - Send data to Pabbly Connect #2212
+
+**New Tokens:**
+
+* WooCommerce:
+	* Product SKU #2179
+	* Product categories #2190
+	* Product tags #2191
+* WordPress - Additional tokens in all Post/Page/Comment type triggers: #2209
+	* Post/Page ID
+	* Post/Page content
+	* Post type
+	* Post/Page author first name
+	* Post/Page author last name
+	* Post/Page author display name
+	* Post/Page author email 
+
+**Added:**
+
+* Automator Core - Premium Integrations and Webhooks now run asynchronously #1797
+
+**Updated:**
+
+* All Recipes list - All actions are listed in recipe order #2007
+* Automator Core - Improved performance on high data & traffic sites #2149
+* Automator Core - Review Banner - Several UI upgrades #2229
+* Instagram - Permissions errors are now properly reflected in Recipe logs #2272
+* Instagram - Permissions/scopes validation added before making the action available in recipes #1606
+* Instagram - Recipe logs now reflect an error if the Instagram account is delinked from Facebook #2273
+* Mailchimp - "Send an email campaign" - "From" drop-down description added #1451
+* Recipe UI - "Use a token/custom value" added in token drop-down for several actions #1742
+* Recipe UI - JSON strings are now supported in fields #2203
+* WordPress - "A user's post receives a comment" - Duplicate "Any" options removed #2182
+* WordPress - All triggers now have standard post/page/comment tokens #2209
+* WordPress - Triggers with apost type option now list all post types #2180
+
+**Internal:**
+
+* Automator Core - `automator_before_process_action` do action, `automator_maybe_parse_replaceable` filter #2194
+* Automator Core - Duplicate Action "code" conflict in a specific situation #2207
+
+**Fixed:**
+
+* Automator Closure - Usermeta in redirect URL now parses reliably #2251
+* BuddyBoss - Profile field tokens now parses as comma-separated string instead of `Array` #2221
+* Elementor - PHP 8.x+ error when email token is used on the "To" field of send an email action #2214
+* Facebook Settings - Nonce verification fixed #2263
+* WordPress - "A user submits a comment on a post" firing for all custom post types #2259
+* WPForms - Multiple select field token now separates data by comma instead of new line #2225
+* Warning - URL redirect in WP-CLI mode #2231
+* WordPress - "A user publishes a post with a taxonomy term in a taxonomy" now lists all post types reliably #2196
+* WordPress - "A user publishes a type of post with a taxonomy term in a taxonomy" now parses tokens reliably #2245
+* WordPress - "A user views a custom post type" firing on any post #2243
 
 ### 4.1.1.1 [2022-06-29]
 
@@ -401,7 +474,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Added:**
 
-* Events Manager - Several new tokens added  #1857
+* Events Manager - Several new tokens added #1857
 * WP Job Manager - "Job ID" token added in triggers #1807
 * Mailchimp - Webhooks settings page #1791, #1815
 * In-plugin notifications #1715
@@ -413,7 +486,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Instagram - "Publish a photo to an Instagram Business account" now accepts Media Library ID in addition to the media URL #1852
 * Instagram, Facebook - Converted to use the API class #1795
 * Convert Facebook integration to use the API class #1794
-* Automator Core - Set user signed in flag true for all logged-in type triggers  #1817
+* Automator Core - Set user signed in flag true for all logged-in type triggers #1817
 
 **Fixed:**
 
@@ -424,7 +497,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Wishlist Member - "A user is added to a membership level" now fires with ThriveCart checkout #1808
 * Recipe Tags/Categories - Yoast SEO erroneously enables archives on frontend #1850
 * Internal query now sorts the result set reliably #1913
-* WordPress - A user views a page -  "All pages" option renamed to "Any page" #1914
+* WordPress - A user views a page - "All pages" option renamed to "Any page" #1914
 * Automator Core - Number of times token now parses reliably in certain situations #1918
 * Automator Core - Option to define alternate label for a token added in Automator fields #1919
 * Automator API - API request timeout for Facebook Pages and Google Sheets changed from 5 to 10 seconds #1921
@@ -593,7 +666,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Advanced token - Current time (Unix timestamp) #1592
 * Common token: User reset password URL #1500
 * Common token: User IP address - Note: IP address is not stored, and will return "N/A" in scheduled actions #1456
-* LearnDash - New token "Passing score %" - Returns value of "Passing score" quiz setting  #1523
+* LearnDash - New token "Passing score %" - Returns value of "Passing score" quiz setting #1523
 * LearnDash - "A user completes a lesson" now fires when lesson manually completed by admin on edit user in /wp-admin #1492
 
 **Updated:**
@@ -926,35 +999,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WordPress Core - Added Post featured image ID and Post featured image URL tokens to "A specific type of post is viewed" #957
 * WordPress Core - Role triggers #956
 * Switching between Visual/Text tabs in the rich text editor no longer breaks HTML content when tokens used inside HTML element attributes #942
-
-### 3.2.0.2 [2021-10-06]
-
-**Updated:**
-
-* WPForms - Automator integration enhancements #946
-* WPForms - Cleaned up token parsing #946
-* WPForms - Excluded some sensitive fields from token parsing (e.g. password, Stripe, Authorize.net)  #946
-* www removed from some references to automatorplugin.com #948
-
-**Fixed:**
-
-* WordPress - A user publishes a type of post with a taxonomy term in a taxonomy no longer fires when any category is assigned to a post #964
-* WPForms - PHP notices on some sites #945
-
-### 3.2.0.1 [2021-10-01]
-
-**Added:**
-
-* PHP 8 compatibility updates #940
-
-**Updated:**
-
-* Code quality #938
-
-**Fixed:**
-
-* Slack - PHP notices on some sites #939
-* Zoom - Fatal error on some site configurations #931
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

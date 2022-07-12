@@ -144,7 +144,7 @@ class Automator_Registration {
 			'automator_register_trigger_integration'
 		);
 		$integration = apply_filters( 'automator_register_trigger_integration', $integration, $trigger, $integration_code );
-
+		//      $integrations = Automator()->get_integrations();
 		// Integration was passed in, lets try to register it
 		if ( null !== $integration_code ) {
 			if ( ! is_string( $integration_code ) || null === $integration || is_array( $integration ) ) {
@@ -152,9 +152,9 @@ class Automator_Registration {
 			}
 
 			// Sanity check that the integration code does not exist already
-			if ( ! key_exists( $integration_code, Automator()->get_integrations() ) ) {
-				Automator()->register->integration( $integration_code, $integration );
-			}
+			//          if ( ! key_exists( $integration_code, $integrations ) ) {
+			//              Automator()->register->integration( $integration_code, $integration );
+			//          }
 		}
 
 		// Sanity check that trigger_integration isset
@@ -163,9 +163,9 @@ class Automator_Registration {
 		}
 
 		// Sanity check that the trigger has a integration that is defined
-		if ( ! key_exists( $trigger['integration'], Automator()->get_integrations() ) ) {
-			throw new Automator_Exception( 'You are trying to register a trigger to an integration that does not exist.', 1001 );
-		}
+		//      if ( ! key_exists( $trigger['integration'], $integrations ) ) {
+		//          throw new Automator_Exception( 'You are trying to register a trigger to an integration that does not exist.', 1001 );
+		//      }
 
 		// Sanity check that trigger_code isset
 		if ( ! isset( $trigger['code'] ) ) {
@@ -186,16 +186,6 @@ class Automator_Registration {
 		// Sanity check that trigger_validation_function isset
 		if ( ! isset( $trigger['validation_function'] ) ) {
 			throw new Automator_Exception( 'You are trying to register a trigger without setting its trigger_validation_function', 1001 );
-		}
-
-		// Loop through existing to force only unique values for trigger_code and trigger_name
-		foreach ( Automator()->get_triggers() as $existing_trigger ) {
-
-			// Sanity check that trigger_code is unique
-			if ( $existing_trigger['code'] === $trigger['code'] ) {
-				// Already exists. Bail.
-				return null;
-			}
 		}
 
 		// Register the trigger into the system
@@ -224,7 +214,7 @@ class Automator_Registration {
 		}
 
 		// Register integration if it doesn't already exist
-		if ( ! key_exists( $integration_code, Automator()->get_integrations() ) ) {
+		if ( ! array_key_exists( $integration_code, Automator()->integrations ) ) {
 			Automator()->set_integrations( $integration_code, $integration );
 		} elseif ( array_key_exists( 'icon_svg', $integration ) ) {
 			Automator()->set_integrations( $integration_code, $integration );
@@ -309,6 +299,7 @@ class Automator_Registration {
 			'automator_register_action_integration'
 		);
 		$integration = apply_filters( 'automator_register_action_integration', $integration, $uap_action, $integration_code );
+		//$integrations = Automator()->get_integrations();
 
 		// Integration was passed in, lets try to register it
 		if ( null !== $integration_code ) {
@@ -318,9 +309,9 @@ class Automator_Registration {
 			if ( null === $integration && is_array( $integration ) ) {
 				throw new Automator_Exception( 'You are trying to register an action without passing an proper integration object.', 1003 );
 			}                    // Sanity check that the integration code does not exist already
-			if ( ! key_exists( $integration_code, Automator()->get_integrations() ) ) {
-				Automator()->register->integration( $integration_code, $integration );
-			}
+			//          if ( ! key_exists( $integration_code, $integrations ) ) {
+			//              Automator()->register->integration( $integration_code, $integration );
+			//          }
 		}
 
 		// Sanity check that trigger_integration isset
@@ -329,9 +320,9 @@ class Automator_Registration {
 		}
 
 		// Sanity check that the trigger has a integration that is defined
-		if ( ! key_exists( $uap_action['integration'], Automator()->get_integrations() ) ) {
-			throw new Automator_Exception( 'You are trying to register an action to an integration that does not exist.', 1003 );
-		}
+		//      if ( ! key_exists( $uap_action['integration'], $integrations ) ) {
+		//          throw new Automator_Exception( 'You are trying to register an action to an integration that does not exist.', 1003 );
+		//      }
 
 		// Sanity check that trigger_code isset
 		if ( ! isset( $uap_action['code'] ) ) {
@@ -341,15 +332,6 @@ class Automator_Registration {
 		// Sanity check that execution_function isset
 		if ( ! isset( $uap_action['execution_function'] ) ) {
 			throw new Automator_Exception( 'You are trying to register an action without setting its execution_function.', 1003 );
-		}
-
-		// Loop through existing to force only unique values for action_code and action_name
-		foreach ( Automator()->get_actions() as $existing_action ) {
-			// Sanity check that action_code is unique
-			if ( $existing_action['code'] === $uap_action['code'] ) {
-				// Already exists. Bail.
-				return null;
-			}
 		}
 
 		Automator()->set_actions( Automator()->utilities->keep_order_of_options( $uap_action ) );
@@ -425,6 +407,7 @@ class Automator_Registration {
 			'automator_register_closure_integration'
 		);
 		$integration = apply_filters( 'automator_register_closure_integration', $integration, $closure, $integration_code );
+		//$integrations = Automator()->get_integrations();
 
 		// Integration was passed in, lets try to register it
 		if ( null !== $integration_code ) {
@@ -435,9 +418,9 @@ class Automator_Registration {
 				throw new Automator_Exception( 'You are trying to register a closure without passing an proper integration object.', 1004 );
 			}
 			// Sanity check that the integration code does not exist already
-			if ( ! key_exists( $integration_code, Automator()->get_integrations() ) ) {
-				Automator()->register->integration( $integration_code, $integration );
-			}
+			//          if ( ! key_exists( $integration_code, $integrations ) ) {
+			//              Automator()->register->integration( $integration_code, $integration );
+			//          }
 		}
 
 		// Sanity check that trigger_integration isset
@@ -446,9 +429,9 @@ class Automator_Registration {
 		}
 
 		// Sanity check that the trigger has a integration that is defined
-		if ( ! key_exists( $closure['integration'], Automator()->get_integrations() ) ) {
-			throw new Automator_Exception( 'You are trying to register a closure to an integration that does not exist.', 1004 );
-		}
+		//      if ( ! key_exists( $closure['integration'], $integrations ) ) {
+		//          throw new Automator_Exception( 'You are trying to register a closure to an integration that does not exist.', 1004 );
+		//      }
 
 		// Sanity check that trigger_code isset
 		if ( ! isset( $closure['code'] ) ) {
@@ -458,16 +441,6 @@ class Automator_Registration {
 		// Sanity check that trigger_validation_function isset
 		if ( ! isset( $closure['execution_function'] ) ) {
 			throw new Automator_Exception( 'You are trying to register a closure without setting its closure_execution_function.', 1004 );
-		}
-
-		// Loop through existing to force only unique values for closure_code and closure_name
-		foreach ( Automator()->get_closures() as $existing_closure ) {
-
-			// Sanity check that action_code is unique
-			if ( $existing_closure['code'] === $closure['code'] ) {
-				// Already exists. Bail
-				return null;
-			}
 		}
 
 		Automator()->set_closures( Automator()->utilities->keep_order_of_options( $closure ) );

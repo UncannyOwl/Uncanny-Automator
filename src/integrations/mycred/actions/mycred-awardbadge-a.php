@@ -46,24 +46,35 @@ class MYCRED_AWARDBADGE_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_mycred_badge' ),
-			'options'            => array(),
-			'options_group'      => array(
-				$this->action_meta => array(
-					/* translators: Noun */
-					Automator()->helpers->recipe->mycred->options->list_mycred_badges(
-						esc_attr__( 'Badge', 'uncanny-automator' ),
-						$this->action_meta,
-						array(
-							'token'        => false,
-							'is_ajax'      => true,
-							'target_field' => $this->action_meta,
-						)
-					),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(),
+				'options_group' => array(
+					$this->action_meta => array(
+						/* translators: Noun */
+						Automator()->helpers->recipe->mycred->options->list_mycred_badges(
+							esc_attr__( 'Badge', 'uncanny-automator' ),
+							$this->action_meta,
+							array(
+								'token'        => false,
+								'is_ajax'      => true,
+								'target_field' => $this->action_meta,
+							)
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -81,4 +92,5 @@ class MYCRED_AWARDBADGE_A {
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

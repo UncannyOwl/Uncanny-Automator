@@ -46,12 +46,23 @@ class PRESTO_VIDEOCOMPLETE {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'video_progress' ),
-			'options'             => array(
-				Automator()->helpers->recipe->presto->options->list_presto_videos( null, $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->presto->options->list_presto_videos( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	public function video_progress( $video_id, $percent ) {
@@ -77,4 +88,5 @@ class PRESTO_VIDEOCOMPLETE {
 			}
 		}
 	}
+
 }

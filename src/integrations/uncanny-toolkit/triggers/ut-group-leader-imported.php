@@ -3,7 +3,8 @@
 namespace Uncanny_Automator;
 
 /**
- * Uncanny Toolkit: Trigger - A Group Leader is imported to {{a LearnDash Group}}
+ * Uncanny Toolkit: Trigger - A Group Leader is imported to {{a LearnDash
+ * Group}}
  */
 class UT_GROUP_LEADER_IMPORTED {
 
@@ -43,10 +44,7 @@ class UT_GROUP_LEADER_IMPORTED {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-		$all_groups = Automator()->helpers->recipe->learndash->options->all_ld_groups( null, $this->trigger_meta );
-		if ( isset( $all_groups['relevant_tokens'] ) ) {
-			unset( $all_groups['relevant_tokens'] );
-		}
+
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-toolkit/' ),
@@ -61,12 +59,28 @@ class UT_GROUP_LEADER_IMPORTED {
 			'priority'            => 20,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'a_user_is_imported' ),
-			'options'             => array(
-				$all_groups,
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		$all_groups = Automator()->helpers->recipe->learndash->options->all_ld_groups( null, $this->trigger_meta );
+		if ( isset( $all_groups['relevant_tokens'] ) ) {
+			unset( $all_groups['relevant_tokens'] );
+		}
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					$all_groups,
+				),
+			)
+		);
 	}
 
 	/**
@@ -168,4 +182,5 @@ class UT_GROUP_LEADER_IMPORTED {
 			Automator()->process->user->maybe_trigger_complete( $rr['args'] );
 		}
 	}
+
 }

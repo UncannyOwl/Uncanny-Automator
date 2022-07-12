@@ -47,6 +47,8 @@ class AC_ANNON_ADD {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

@@ -37,7 +37,7 @@ class Wpforms_Helpers {
 	 * Wpforms_Helpers constructor.
 	 */
 	public function __construct() {
-
+		$this->load_options = true;
 	}
 
 	/**
@@ -178,4 +178,5 @@ class Wpforms_Helpers {
 
 		return $entry_id;
 	}
+
 }

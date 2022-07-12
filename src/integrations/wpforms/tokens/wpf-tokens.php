@@ -126,7 +126,7 @@ class Wpf_Tokens {
 			return $value;
 		}
 		if ( ! in_array( 'WPFFORMS', $pieces, true ) && ! in_array( 'ANONWPFFORMS', $pieces, true )
-			 && ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
+			&& ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -221,10 +221,20 @@ class Wpf_Tokens {
 					$meta_key     = sprintf( '%d:%s', $trigger_id, $trigger_args['meta'] );
 					$form_id      = $form_data['id'];
 					$data         = array();
+
 					foreach ( $fields as $field ) {
+
 						$field_id     = $field['id'];
 						$key          = "{$meta_key}:{$form_id}|{$field_id}";
 						$data[ $key ] = $field['value'];
+
+						// Separate checkbox and select.
+						if ( in_array( $field['type'], array( 'checkbox', 'select' ), true ) ) {
+							$choices = explode( PHP_EOL, $field['value'] );
+							if ( is_array( $choices ) ) {
+								$data[ $key ] = implode( ', ', $choices );
+							}
+						}
 					}
 
 					$user_id        = (int) $trigger_result['args']['user_id'];
@@ -289,7 +299,7 @@ class Wpf_Tokens {
 	 * @return string|null
 	 */
 	public function wpf_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		if ( in_array( 'WPFENTRYTOKENS', $pieces ) ) {
+		if ( in_array( 'WPFENTRYTOKENS', $pieces, true ) ) {
 			if ( $trigger_data ) {
 				foreach ( $trigger_data as $trigger ) {
 					$trigger_id     = $trigger['ID'];

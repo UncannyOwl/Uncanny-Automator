@@ -33,6 +33,29 @@ class WPF_USERGROUP {
 	 */
 	public function define_action() {
 
+		$action = array(
+			'author'             => Automator()->get_author_name(),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wpforo/' ),
+			'integration'        => self::$integration,
+			'code'               => $this->action_code,
+			/* translators: Action - wpForo */
+			'sentence'           => sprintf( esc_attr__( "Set the user's primary group to {{a specific group:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Action - wpForo */
+			'select_option_name' => esc_attr__( "Set the user's primary group to {{a specific group}}", 'uncanny-automator' ),
+			'priority'           => 10,
+			'accepted_args'      => 1,
+			'execution_function' => array( $this, 'enrol_in_to_group' ),
+			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$usergroups = WPF()->usergroup->get_usergroups();
 
 		$group_options = array();
@@ -48,24 +71,13 @@ class WPF_USERGROUP {
 			'options'     => $group_options,
 		);
 
-		$action = array(
-			'author'             => Automator()->get_author_name(),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/wpforo/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			/* translators: Action - wpForo */
-			'sentence'           => sprintf( esc_attr__( "Set the user's primary group to {{a specific group:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
-			/* translators: Action - wpForo */
-			'select_option_name' => esc_attr__( "Set the user's primary group to {{a specific group}}", 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'enrol_in_to_group' ),
-			'options'            => array(
-				$option,
-			),
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					$option,
+				),
+			)
 		);
-
-		Automator()->register->action( $action );
 	}
 
 	/**
@@ -85,4 +97,5 @@ class WPF_USERGROUP {
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

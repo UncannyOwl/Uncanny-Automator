@@ -46,35 +46,46 @@ class BO_AWARDRANK_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_points' ),
-			'options'            => array(),
-			'options_group'      => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->badgeos->options->list_bo_rank_types(
-						'',
-						'BORANKTYPES',
-						array(
-							'token'        => false,
-							'is_ajax'      => true,
-							'target_field' => $this->action_meta,
-							'endpoint'     => 'select_ranks_from_types_BOAWARDRANKS',
-						)
-					),
-
-					Automator()->helpers->recipe->field->select_field_args(
-						array(
-							'option_code'              => $this->action_meta,
-							'options'                  => array(),
-							/* translators: Noun */
-							'label'                    => esc_attr__( 'Rank', 'uncanny-automator' ),
-							'required'                 => true,
-							'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' ),
-						)
-					),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(),
+				'options_group' => array(
+					$this->action_meta => array(
+						Automator()->helpers->recipe->badgeos->options->list_bo_rank_types(
+							'',
+							'BORANKTYPES',
+							array(
+								'token'        => false,
+								'is_ajax'      => true,
+								'target_field' => $this->action_meta,
+								'endpoint'     => 'select_ranks_from_types_BOAWARDRANKS',
+							)
+						),
+
+						Automator()->helpers->recipe->field->select_field_args(
+							array(
+								'option_code'              => $this->action_meta,
+								'options'                  => array(),
+								/* translators: Noun */
+								'label'                    => esc_attr__( 'Rank', 'uncanny-automator' ),
+								'required'                 => true,
+								'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' ),
+							)
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**

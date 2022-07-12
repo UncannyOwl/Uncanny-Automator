@@ -30,6 +30,7 @@ class Affwp_Helpers {
 	 * Affwp_Helpers constructor.
 	 */
 	public function __construct() {
+		$this->load_options = true;
 	}
 
 	/**

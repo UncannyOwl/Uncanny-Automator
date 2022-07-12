@@ -47,15 +47,24 @@ class LP_LESSONDONE {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'lp_lesson_completed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->learnpress->options->all_lp_lessons(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->learnpress->options->all_lp_lessons(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -80,4 +89,5 @@ class LP_LESSONDONE {
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}
+
 }

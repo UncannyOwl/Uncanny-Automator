@@ -28,45 +28,48 @@ class Wc_Tokens {
 	 */
 	public function __construct() {
 		$this->possible_order_fields = array(
-			'billing_first_name'   => esc_attr__( 'Billing first name', 'uncanny-automator' ),
-			'billing_last_name'    => esc_attr__( 'Billing last name', 'uncanny-automator' ),
-			'billing_company'      => esc_attr__( 'Billing company', 'uncanny-automator' ),
-			'billing_country'      => esc_attr__( 'Billing country', 'uncanny-automator' ),
-			'billing_address_1'    => esc_attr__( 'Billing address line 1', 'uncanny-automator' ),
-			'billing_address_2'    => esc_attr__( 'Billing address line 2', 'uncanny-automator' ),
-			'billing_city'         => esc_attr__( 'Billing city', 'uncanny-automator' ),
-			'billing_state'        => esc_attr__( 'Billing state', 'uncanny-automator' ),
-			'billing_postcode'     => esc_attr__( 'Billing postcode', 'uncanny-automator' ),
-			'billing_phone'        => esc_attr__( 'Billing phone', 'uncanny-automator' ),
-			'billing_email'        => esc_attr__( 'Billing email', 'uncanny-automator' ),
-			'shipping_first_name'  => esc_attr__( 'Shipping first name', 'uncanny-automator' ),
-			'shipping_last_name'   => esc_attr__( 'Shipping last name', 'uncanny-automator' ),
-			'shipping_company'     => esc_attr__( 'Shipping company', 'uncanny-automator' ),
-			'shipping_country'     => esc_attr__( 'Shipping country', 'uncanny-automator' ),
-			'shipping_address_1'   => esc_attr__( 'Shipping address line 1', 'uncanny-automator' ),
-			'shipping_address_2'   => esc_attr__( 'Shipping address line 2', 'uncanny-automator' ),
-			'shipping_city'        => esc_attr__( 'Shipping city', 'uncanny-automator' ),
-			'shipping_state'       => esc_attr__( 'Shipping state', 'uncanny-automator' ),
-			'shipping_postcode'    => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
-			'order_date'           => esc_attr__( 'Order date', 'uncanny-automator' ),
-			'order_id'             => esc_attr__( 'Order ID', 'uncanny-automator' ),
-			'order_comments'       => esc_attr__( 'Order comments', 'uncanny-automator' ),
-			'order_total'          => esc_attr__( 'Order total', 'uncanny-automator' ),
-			'order_total_raw'      => esc_attr__( 'Order total (unformatted)', 'uncanny-automator' ),
-			'order_status'         => esc_attr__( 'Order status', 'uncanny-automator' ),
-			'order_subtotal'       => esc_attr__( 'Order subtotal', 'uncanny-automator' ),
-			'order_subtotal_raw'   => esc_attr__( 'Order subtotal (unformatted)', 'uncanny-automator' ),
-			'order_tax'            => esc_attr__( 'Order tax', 'uncanny-automator' ),
-			'order_tax_raw'        => esc_attr__( 'Order tax (unformatted)', 'uncanny-automator' ),
-			'order_discounts'      => esc_attr__( 'Order discounts', 'uncanny-automator' ),
-			'order_discounts_raw'  => esc_attr__( 'Order discounts (unformatted)', 'uncanny-automator' ),
-			'order_coupons'        => esc_attr__( 'Order coupons', 'uncanny-automator' ),
-			'order_products'       => esc_attr__( 'Order products', 'uncanny-automator' ),
-			'order_products_qty'   => esc_attr__( 'Order products and quantity', 'uncanny-automator' ),
-			'order_qty'            => esc_attr__( 'Order quantity', 'uncanny-automator' ),
-			'payment_method'       => esc_attr__( 'Payment method', 'uncanny-automator' ),
-			'order_products_links' => esc_attr__( 'Order products links', 'uncanny-automator' ),
-			'order_summary'        => esc_attr__( 'Order summary', 'uncanny-automator' ),
+			'product_sku'           => esc_attr__( 'Product SKU', 'uncanny-automator' ),
+			'WOOPRODUCT_CATEGORIES' => esc_attr__( 'Product categories', 'uncanny-automator' ),
+			'WOOPRODUCT_TAGS'       => esc_attr__( 'Product tags', 'uncanny-automator' ),
+			'billing_first_name'    => esc_attr__( 'Billing first name', 'uncanny-automator' ),
+			'billing_last_name'     => esc_attr__( 'Billing last name', 'uncanny-automator' ),
+			'billing_company'       => esc_attr__( 'Billing company', 'uncanny-automator' ),
+			'billing_country'       => esc_attr__( 'Billing country', 'uncanny-automator' ),
+			'billing_address_1'     => esc_attr__( 'Billing address line 1', 'uncanny-automator' ),
+			'billing_address_2'     => esc_attr__( 'Billing address line 2', 'uncanny-automator' ),
+			'billing_city'          => esc_attr__( 'Billing city', 'uncanny-automator' ),
+			'billing_state'         => esc_attr__( 'Billing state', 'uncanny-automator' ),
+			'billing_postcode'      => esc_attr__( 'Billing postcode', 'uncanny-automator' ),
+			'billing_phone'         => esc_attr__( 'Billing phone', 'uncanny-automator' ),
+			'billing_email'         => esc_attr__( 'Billing email', 'uncanny-automator' ),
+			'shipping_first_name'   => esc_attr__( 'Shipping first name', 'uncanny-automator' ),
+			'shipping_last_name'    => esc_attr__( 'Shipping last name', 'uncanny-automator' ),
+			'shipping_company'      => esc_attr__( 'Shipping company', 'uncanny-automator' ),
+			'shipping_country'      => esc_attr__( 'Shipping country', 'uncanny-automator' ),
+			'shipping_address_1'    => esc_attr__( 'Shipping address line 1', 'uncanny-automator' ),
+			'shipping_address_2'    => esc_attr__( 'Shipping address line 2', 'uncanny-automator' ),
+			'shipping_city'         => esc_attr__( 'Shipping city', 'uncanny-automator' ),
+			'shipping_state'        => esc_attr__( 'Shipping state', 'uncanny-automator' ),
+			'shipping_postcode'     => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
+			'order_date'            => esc_attr__( 'Order date', 'uncanny-automator' ),
+			'order_id'              => esc_attr__( 'Order ID', 'uncanny-automator' ),
+			'order_comments'        => esc_attr__( 'Order comments', 'uncanny-automator' ),
+			'order_total'           => esc_attr__( 'Order total', 'uncanny-automator' ),
+			'order_total_raw'       => esc_attr__( 'Order total (unformatted)', 'uncanny-automator' ),
+			'order_status'          => esc_attr__( 'Order status', 'uncanny-automator' ),
+			'order_subtotal'        => esc_attr__( 'Order subtotal', 'uncanny-automator' ),
+			'order_subtotal_raw'    => esc_attr__( 'Order subtotal (unformatted)', 'uncanny-automator' ),
+			'order_tax'             => esc_attr__( 'Order tax', 'uncanny-automator' ),
+			'order_tax_raw'         => esc_attr__( 'Order tax (unformatted)', 'uncanny-automator' ),
+			'order_discounts'       => esc_attr__( 'Order discounts', 'uncanny-automator' ),
+			'order_discounts_raw'   => esc_attr__( 'Order discounts (unformatted)', 'uncanny-automator' ),
+			'order_coupons'         => esc_attr__( 'Order coupons', 'uncanny-automator' ),
+			'order_products'        => esc_attr__( 'Order products', 'uncanny-automator' ),
+			'order_products_qty'    => esc_attr__( 'Order products and quantity', 'uncanny-automator' ),
+			'order_qty'             => esc_attr__( 'Order quantity', 'uncanny-automator' ),
+			'order_products_links'  => esc_attr__( 'Order products links', 'uncanny-automator' ),
+			'order_summary'         => esc_attr__( 'Order summary', 'uncanny-automator' ),
+			'payment_method'        => esc_attr__( 'Payment method', 'uncanny-automator' ),
 		);
 
 		add_action(
@@ -220,7 +223,7 @@ class Wc_Tokens {
 		}
 		$tokens = array_merge( $tokens, $fields );
 
-		return $tokens;
+		return Automator()->utilities->remove_duplicate_token_ids( $tokens );
 	}
 
 	/**
@@ -554,6 +557,17 @@ class Wc_Tokens {
 								case 'payment_method':
 									$value = $order->get_payment_method_title();
 									break;
+								case 'product_sku':
+									$value = $this->get_products_skus( $order );
+									break;
+								case 'WOOPRODUCT_CATEGORIES':
+									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+									$value          = $this->get_woo_product_categories_from_items( $order, $value_to_match );
+									break;
+								case 'WOOPRODUCT_TAGS':
+									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+									$value          = $this->get_woo_product_tags_from_items( $order, $value_to_match );
+									break;
 								case 'CARRIER':
 									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_CARRIER', $trigger_id, $trigger_log_id, $user_id );
 									break;
@@ -880,4 +894,93 @@ class Wc_Tokens {
 		return implode( PHP_EOL, $html );
 	}
 
+	/**
+	 * Method get_products_skus.
+	 *
+	 * @param \WC_Order $order Instance of WC_Order.
+	 *
+	 * @return string The product SKUs (comma separated) .
+	 */
+	public function get_products_skus( $order ) {
+
+		$skus = array_map(
+			function ( $item ) {
+
+				$product = wc_get_product( $item->get_product_id() );
+
+				return $product->get_sku();
+
+			},
+			$order->get_items()
+		);
+
+		return implode( ', ', $skus );
+
+	}
+
+	/**
+	 * @param WC_Order $order
+	 * @param $value_to_match
+	 *
+	 * @return string
+	 */
+	public function get_woo_product_categories_from_items( WC_Order $order, $value_to_match ) {
+		if ( intval( '-1' ) === intval( $value_to_match ) ) {
+			$return = array();
+			if ( $order->get_items() ) {
+				/** @var \WC_Order_Item_Product $item */
+				foreach ( $order->get_items() as $item ) {
+					$terms = wp_get_post_terms( $item->get_product_id(), 'product_cat' );
+					if ( $terms ) {
+						foreach ( $terms as $term ) {
+							$return[] = $term->name;
+						}
+					}
+				}
+			}
+
+			$return = array_unique( $return );
+
+			return join( ', ', $return );
+		}
+		$term = get_term_by( 'ID', $value_to_match, 'product_cat' );
+		if ( ! $term ) {
+			return '';
+		}
+
+		return $term->name;
+	}
+
+	/**
+	 * @param WC_Order $order
+	 * @param $value_to_match
+	 *
+	 * @return string
+	 */
+	public function get_woo_product_tags_from_items( WC_Order $order, $value_to_match ) {
+		if ( intval( '-1' ) === intval( $value_to_match ) ) {
+			$return = array();
+			if ( $order->get_items() ) {
+				foreach ( $order->get_items() as $item ) {
+					$terms = wp_get_post_terms( $item->get_product_id(), 'product_tag' );
+					if ( $terms ) {
+						foreach ( $terms as $term ) {
+							$return[] = $term->name;
+						}
+					}
+				}
+			}
+
+			$return = array_unique( $return );
+
+			return join( ', ', $return );
+		}
+		$term = get_term_by( 'ID', $value_to_match, 'product_tag' );
+		if ( ! $term ) {
+			return '';
+		}
+
+		return $term->name;
+
+	}
 }

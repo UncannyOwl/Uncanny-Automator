@@ -34,19 +34,20 @@ class ZOOM_REGISTERUSER {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
-			'is_pro'             => false,
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
+			'is_pro'                => false,
 			//'is_deprecated'      => true,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf( __( 'Add the user to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add the user to {{a meeting}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'zoom_register_user' ),
-			'options_callback'   => array( $this, 'load_options' ),
-			'buttons'            => array(
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'sentence'              => sprintf( __( 'Add the user to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Add the user to {{a meeting}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'zoom_register_user' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
+			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
 					'text'        => __( 'Get meeting questions', 'uncanny-automator' ),
@@ -100,29 +101,29 @@ class ZOOM_REGISTERUSER {
 			}
 
 			$meeting_key = str_replace( '-objectkey', '', $meeting_key );
-			$user = get_userdata( $user_id );
+			$user        = get_userdata( $user_id );
 
 			if ( is_wp_error( $user ) ) {
 				throw new \Exception( __( 'User was not found.', 'uncanny-automator' ) );
 			}
 
-			$meeting_user = array();
+			$meeting_user          = array();
 			$meeting_user['email'] = $user->user_email;
 
 			$meeting_user['first_name'] = $user->first_name;
-			$meeting_user['last_name'] = $user->last_name;
+			$meeting_user['last_name']  = $user->last_name;
 
-			$email_parts = explode( '@', $meeting_user['email'] );
-			$meeting_user['first_name']  = empty( $meeting_user['first_name'] ) ? $email_parts[0] : $meeting_user['first_name'];
+			$email_parts                = explode( '@', $meeting_user['email'] );
+			$meeting_user['first_name'] = empty( $meeting_user['first_name'] ) ? $email_parts[0] : $meeting_user['first_name'];
 
-			if ( ! empty( $action_data['meta'][ 'MEETINGQUESTIONS' ] ) ) {
-				$meeting_user = $helpers->add_custom_questions( $meeting_user, $action_data['meta'][ 'MEETINGQUESTIONS' ], $recipe_id, $user_id, $args );
+			if ( ! empty( $action_data['meta']['MEETINGQUESTIONS'] ) ) {
+				$meeting_user = $helpers->add_custom_questions( $meeting_user, $action_data['meta']['MEETINGQUESTIONS'], $recipe_id, $user_id, $args );
 			}
 
 			$response = Automator()->helpers->recipe->zoom->add_to_meeting( $meeting_user, $meeting_key, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-		
+
 		} catch ( \Exception $e ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;

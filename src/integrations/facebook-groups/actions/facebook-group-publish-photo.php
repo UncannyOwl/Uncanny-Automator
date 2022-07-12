@@ -61,6 +61,8 @@ class FACEBOOK_GROUP_PUBLISH_PHOTO {
 			)
 		);
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

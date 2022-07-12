@@ -299,9 +299,13 @@ class Automator_Cache_Handler {
 			'admin_notices',
 			function () {
 				?>
-				<div class="notice notice-success is-dismissible">
-					<p><?php esc_html_e( 'Automator cache flushed!', 'uncanny-automator' ); ?></p>
+
+				<div class="uap notice">
+					<uo-alert type="success">
+						Automator cache flushed!
+					</uo-alert>
 				</div>
+
 				<?php
 			}
 		);

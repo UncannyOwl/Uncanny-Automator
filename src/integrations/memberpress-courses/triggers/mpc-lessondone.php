@@ -35,6 +35,29 @@ class MPC_LESSONDONE {
 	 */
 	public function define_trigger() {
 
+		$trigger = array(
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/memberpress-courses/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - Memberpress */
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - Memberpress */
+			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
+			'action'              => base\SLUG_KEY . '_completed_lesson',
+			'priority'            => 10,
+			'accepted_args'       => 1,
+			'validation_function' => array( $this, 'lesson_done' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$args = array(
 			'post_type'      => 'mpcs-course',
 			'posts_per_page' => 999,
@@ -61,45 +84,32 @@ class MPC_LESSONDONE {
 			$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
 		);
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name(),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/memberpress-courses/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - Memberpress */
-			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - Memberpress */
-			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
-			'action'              => base\SLUG_KEY . '_completed_lesson',
-			'priority'            => 10,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'lesson_done' ),
-			'options'             => array(
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
-			'options_group'       => array(
-				$this->trigger_meta => array(
-					Automator()->helpers->recipe->field->select_field_ajax(
-						'MPCOURSE',
-						esc_attr__( 'Course', 'uncanny-automator' ),
-						$options,
-						'',
-						'',
-						false,
-						true,
-						array(
-							'target_field' => $this->trigger_meta,
-							'endpoint'     => 'select_lesson_from_course_LESSONDONE',
-						),
-						$course_relevant_tokens
-					),
-					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Lesson', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(
+					Automator()->helpers->recipe->options->number_of_times(),
 				),
-			),
+				'options_group' => array(
+					$this->trigger_meta => array(
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'MPCOURSE',
+							esc_attr__( 'Course', 'uncanny-automator' ),
+							$options,
+							'',
+							'',
+							false,
+							true,
+							array(
+								'target_field' => $this->trigger_meta,
+								'endpoint'     => 'select_lesson_from_course_LESSONDONE',
+							),
+							$course_relevant_tokens
+						),
+						Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Lesson', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+					),
+				),
+			)
 		);
-		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -140,5 +150,6 @@ class MPC_LESSONDONE {
 			}
 		}
 	}
+
 }
 

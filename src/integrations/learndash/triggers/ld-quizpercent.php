@@ -46,22 +46,33 @@ class LD_QUIZPERCENT {
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'learndash_quiz_submitted' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->field->less_or_greater_than(),
-				Automator()->helpers->recipe->field->int(
-					array(
-						'option_code' => 'QUIZPERCENT',
-						'label'       => esc_attr__( 'Required percentage', 'uncanny-automator' ),
-						'placeholder' => esc_attr__( 'Example: 80', 'uncanny-automator' ),
-						'default'     => '80',
-					)
-				),
-				Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->field->less_or_greater_than(),
+					Automator()->helpers->recipe->field->int(
+						array(
+							'option_code' => 'QUIZPERCENT',
+							'label'       => esc_attr__( 'Required percentage', 'uncanny-automator' ),
+							'placeholder' => esc_attr__( 'Example: 80', 'uncanny-automator' ),
+							'default'     => '80',
+						)
+					),
+					Automator()->helpers->recipe->learndash->options->all_ld_quiz(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**

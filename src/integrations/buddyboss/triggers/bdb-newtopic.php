@@ -46,15 +46,24 @@ class BDB_NEWTOPIC {
 			'priority'            => 10,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'bbp_new_topic' ),
-			'options'             => array(
-				Automator()->helpers->recipe->buddyboss->options->list_buddyboss_forums( esc_attr__( 'Forum', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => true ) ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->buddyboss->options->list_buddyboss_forums( esc_attr__( 'Forum', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => true ) ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**

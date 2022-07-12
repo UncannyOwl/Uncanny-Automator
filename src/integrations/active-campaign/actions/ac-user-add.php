@@ -45,6 +45,8 @@ class AC_USER_ADD {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}
@@ -126,6 +128,6 @@ class AC_USER_ADD {
 		);
 
 		return $fields;
-	
+
 	}
 }

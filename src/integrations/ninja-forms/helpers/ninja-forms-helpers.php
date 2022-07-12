@@ -12,6 +12,7 @@ use function Ninja_Forms;
  * @package Uncanny_Automator
  */
 class Ninja_Forms_Helpers {
+
 	/**
 	 * @var Ninja_Forms_Helpers
 	 */
@@ -32,7 +33,7 @@ class Ninja_Forms_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -52,7 +53,7 @@ class Ninja_Forms_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -94,8 +95,8 @@ class Ninja_Forms_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code                => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'        => esc_attr__( 'Form ID', 'uncanny-automator' )
+				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
 			),
 		);
 
@@ -149,10 +150,10 @@ class Ninja_Forms_Helpers {
 	/**
 	 * Matching form fields values.
 	 *
-	 * @param array       $entry               form data.
-	 * @param array|null  $recipes             recipe data.
-	 * @param string|null $trigger_meta        trigger meta key.
-	 * @param string|null $trigger_code        trigger code key.
+	 * @param array $entry form data.
+	 * @param array|null $recipes recipe data.
+	 * @param string|null $trigger_meta trigger meta key.
+	 * @param string|null $trigger_code trigger code key.
 	 * @param string|null $trigger_second_code trigger second code key.
 	 *
 	 * @return array|bool
@@ -212,4 +213,5 @@ class Ninja_Forms_Helpers {
 
 		return false;
 	}
+
 }

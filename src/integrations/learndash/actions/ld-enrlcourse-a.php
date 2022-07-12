@@ -45,14 +45,24 @@ class LD_ENRLCOURSE_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'enroll_in_course' ),
-			'options'            => array(
-				Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
+				),
+			)
+		);
+	}
 
 	/**
 	 * Validation function when the trigger action is hit
@@ -77,4 +87,5 @@ class LD_ENRLCOURSE_A {
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

@@ -11,6 +11,7 @@ use Uncanny_Automator_Pro\Presto_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Presto_Helpers {
+
 	/**
 	 * @var Presto_Helpers
 	 */
@@ -31,7 +32,7 @@ class Presto_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -51,7 +52,7 @@ class Presto_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
@@ -103,4 +104,5 @@ class Presto_Helpers {
 
 		return apply_filters( 'uap_option_list_presto_videos', $option );
 	}
+
 }

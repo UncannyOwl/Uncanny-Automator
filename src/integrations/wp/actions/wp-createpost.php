@@ -51,7 +51,6 @@ class WP_CREATEPOST {
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'create_post' ),
 			'options_callback'   => array( $this, 'load_options' ),
-
 		);
 
 		Automator()->register->action( $action );
@@ -191,6 +190,7 @@ class WP_CREATEPOST {
 				),
 			)
 		);
+
 		return $options;
 	}
 

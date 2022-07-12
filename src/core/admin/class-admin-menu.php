@@ -763,23 +763,30 @@ class Admin_Menu {
 		// List of page where we have to add the assets
 		$this->backend_enqueue_in = array(
 			'post.php', // Has filter, check callback
+			'edit-tags.php',
 			'uncanny-automator-dashboard',
 			'uncanny-automator-integrations',
 			'uncanny-automator-config',
 			'uncanny-automator-tools',
 			'uncanny-automator-action-log',
-			//          'uncanny-automator-trigger-log',
-			//          'uncanny-automator-recipe-log',
-				'edit.php',
+			'uncanny-automator-trigger-log',
+			'uncanny-automator-recipe-log',
+			'edit.php',
 		);
 
 		// Enqueue admin scripts
 		add_action(
 			'admin_enqueue_scripts',
 			function ( $hook ) {
+				$hooks_assets_loaded = array(
+					'post.php',
+					'edit.php',
+					'edit-tags.php', // Added in 4.2 for review banner
+				);
+
 				// Add exception for the "post.php" hook
-				if ( 'post.php' === $hook || 'edit.php' === $hook ) {
-					if ( 'uo-recipe' !== (string) get_post_type() ) {
+				if ( in_array( $hook, $hooks_assets_loaded, true ) ) {
+					if ( 'uo-recipe' !== $this->get_current_screen_post_type() ) {
 						return;
 					}
 				}
@@ -815,6 +822,28 @@ class Admin_Menu {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Method get_current_screen_post_type
+	 *
+	 * This method will return the post type from `get_post_type()`.
+	 * Defaults to http query var `post_type` if get_post_type() is empty.
+	 *
+	 * @return string The current post type loaded inside wp-admin.
+	 */
+	public function get_current_screen_post_type() {
+
+		$post_type = (string) get_post_type();
+
+		if ( ! empty( $post_type ) ) {
+			return $post_type;
+		}
+
+		if ( ! empty( automator_filter_input( 'post_type' ) ) ) {
+			return automator_filter_input( 'post_type' );
+		}
+
 	}
 
 	/**

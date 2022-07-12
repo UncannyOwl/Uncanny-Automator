@@ -48,7 +48,6 @@ class Set_Up_Automator {
 	 * @throws Exception
 	 */
 	public function __construct() {
-
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'favicon' ) ) {
 			// bail out if it's favicon.ico
 			return;
@@ -64,50 +63,6 @@ class Set_Up_Automator {
 				'closures',
 			)
 		);
-
-		add_action( 'plugins_loaded', array( $this, 'automator_configure' ), AUTOMATOR_CONFIGURATION_PRIORITY );
-		add_action(
-			'automator_configuration_complete',
-			array(
-				$this,
-				'automator_configuration_complete_func',
-			),
-			AUTOMATOR_CONFIGURATION_COMPLETE_PRIORITY
-		);
-		add_action( 'admin_notices', array( $this, 'automator_pro_configure' ), 999 );
-	}
-
-	/**
-	 * Show a notice if the Pro is < 3.0
-	 *
-	 * @since 3.0.4
-	 * @deprecated @4.1
-	 */
-	public function automator_pro_configure() {
-		if ( ! class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
-			return;
-		}
-		$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
-		if ( version_compare( $version, '3.0', '<' ) ) {
-			?>
-			<div class="notice notice-error">
-				<?php
-				echo sprintf(
-					'<p><strong>%s:</strong> %s</p>',
-					esc_html__( 'Warning', 'uncanny-automator' ),
-					sprintf(
-						'%s (%s) %s <a href="%s" target="_blank">%s<span style="font-size:14px; margin-left:-3px" class="dashicons dashicons-external"></span></a>',
-						esc_html__( 'The version of Uncanny Automator Pro', 'uncanny-automator' ),
-						esc_attr( $version ),
-						esc_html__( 'installed on your site is incompatible with Uncanny Automator 3.0 and higher. Uncanny Automator Pro has been temporarily disabled. Upgrade to the latest version of Uncanny Automator Pro to re-enable functionality or downgrade Uncanny Automator to version 2.11.1.', 'uncanny-automator' ),
-						'https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_medium=admin_notice&utm_campaign=30upgradewarning',
-						esc_html__( 'Learn More', 'uncanny-automator' )
-					)  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				?>
-			</div>
-			<?php
-		}
 	}
 
 	/**
@@ -171,7 +126,7 @@ class Set_Up_Automator {
 						$integration_files['main'] = $directory . DIRECTORY_SEPARATOR . $item;
 					} else {
 						// Avoid Integromat fatal error if Pro < 3.0 and Free is >= 3.0
-						if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) {
+						if ( class_exists( '\Uncanny_Automator_Pro\InitializePlugin', false ) ) {
 							$version = \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
 							if ( version_compare( $version, '3.0', '<' ) ) {
 								/**
@@ -201,82 +156,16 @@ class Set_Up_Automator {
 	 */
 	public static function extract_integration_folders( $integrations, $directory ) {
 		$folders = array();
-		if ( $integrations ) {
-			foreach ( $integrations as $f => $integration ) {
-				$path      = isset( $integration['main'] ) ? dirname( $integration['main'] ) : $directory . DIRECTORY_SEPARATOR . $f;
-				$path      = apply_filters( 'automator_integration_folder_paths', $path, $integration, $directory, $f );
-				$folders[] = $path;
-			}
+		if ( empty( $integrations ) ) {
+			return $folders;
+		}
+		foreach ( $integrations as $f => $integration ) {
+			$path      = isset( $integration['main'] ) ? dirname( $integration['main'] ) : $directory . DIRECTORY_SEPARATOR . $f;
+			$path      = apply_filters( 'automator_integration_folder_paths', $path, $integration, $directory, $f );
+			$folders[] = $path;
 		}
 
 		return apply_filters( 'automator_integration_folders', $folders, $integrations, $directory );
-	}
-
-	/**
-	 * Configure Automator
-	 *
-	 * @throws Exception
-	 */
-	public function automator_configure() {
-
-		// Add all extensions --- hook here to add your own triggers and actions
-		do_action( 'automator_configure' );
-		// Sets all trigger, actions, and closure classes directories for spl autoloader
-		self::$auto_loaded_directories = Automator()->cache->get( 'automator_integration_directories_loaded' );
-		self::$all_integrations        = Automator()->cache->get( 'automator_get_all_integrations' );
-
-		if ( empty( self::$auto_loaded_directories ) || empty( self::$all_integrations ) ) {
-			self::$auto_loaded_directories = $this->get_integrations_autoload_directories();
-			Automator()->cache->set( 'automator_integration_directories_loaded', self::$auto_loaded_directories, 'automator', Automator()->cache->long_expires );
-		}
-		// Loads all internal triggers, actions, and closures then provides hooks for external ones
-		// All extensions are loaded.
-		do_action( 'automator_configuration_complete' );
-	}
-
-	/**
-	 * Once Automator configure is completed
-	 *
-	 * @throws Exception
-	 */
-	public function automator_configuration_complete_func() {
-
-		//Let others hook in and add integrations
-		do_action_deprecated( 'uncanny_automator_add_integration', array(), '3.0', 'automator_add_integration' );
-		do_action( 'automator_add_integration' );
-
-		// Loads integrations
-		try {
-			$this->initialize_add_integrations();
-		} catch ( Exception $e ) {
-			throw new Automator_Exception( $e->getMessage() );
-		}
-
-		//Let others hook in and add integrations
-		do_action_deprecated( 'uncanny_automator_add_recipe_type', array(), '3.0', 'automator_add_recipe_type' );
-		do_action( 'automator_add_recipe_type' );
-
-		//Let others hook in to the directories and add their integration's actions / triggers etc
-		self::$auto_loaded_directories = apply_filters_deprecated( 'uncanny_automator_integration_directory', array( self::$auto_loaded_directories ), '3.0', 'automator_integration_directory' );
-		self::$auto_loaded_directories = apply_filters( 'automator_integration_directory', self::$auto_loaded_directories );
-		// Loads all options and provide a hook for external options
-		add_action(
-			'plugins_loaded',
-			function () {
-				$this->initialize_integration_helpers();
-				// Let others hook in and add options
-				do_action_deprecated( 'uncanny_automator_add_integration_helpers', array(), '3.0', 'automator_add_integration_helpers' );
-				do_action( 'automator_add_integration_helpers' );
-
-				// Loads all internal triggers, actions, and closures then provides hooks for external ones
-				$this->initialize_triggers_actions_closures();
-
-				// Let others hook in and add triggers actions or tokens
-				do_action_deprecated( 'uncanny_automator_add_integration_triggers_actions_tokens', array(), '3.0', 'automator_add_integration_recipe_parts' );
-				do_action( 'automator_add_integration_recipe_parts' );
-			}
-		);
-
 	}
 
 	/**
@@ -310,19 +199,14 @@ class Set_Up_Automator {
 					continue;
 				}
 
-				if ( ! file_exists( $file ) ) {
+				$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file ), $file );
+				if ( class_exists( $class, false ) ) {
 					continue;
 				}
 				require_once $file;
-				$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file ), $file );
-				try {
-					$is_using_trait = ( new ReflectionClass( $class ) )->getTraits();
-				} catch ( ReflectionException $e ) {
-					throw new Automator_Exception( $e->getMessage() );
-				}
 				$i                = new $class();
-				$integration_code = ! empty( $is_using_trait ) ? $i->get_integration() : $class::$integration;
-				$active           = ! empty( $is_using_trait ) ? $i->plugin_active() : $i->plugin_active( 0, $integration_code );
+				$integration_code = method_exists( $i, 'get_integration' ) ? $i->get_integration() : $class::$integration;
+				$active           = method_exists( $i, 'get_integration' ) ? $i->plugin_active() : $i->plugin_active( 0, $integration_code );
 				$active           = apply_filters( 'automator_maybe_integration_active', $active, $integration_code );
 				if ( true !== $active ) {
 					unset( $i );
@@ -344,7 +228,6 @@ class Set_Up_Automator {
 				}
 
 				$this->active_directories[ $dir_name ] = $i;
-				$this->active_directories              = apply_filters( 'automator_active_integration_directories', $this->active_directories );
 				if ( method_exists( $i, 'add_integration_directory_func' ) ) {
 					$directories_to_include = $i->add_integration_directory_func( array(), $file );
 					if ( $directories_to_include ) {
@@ -358,9 +241,10 @@ class Set_Up_Automator {
 				if ( method_exists( $i, 'add_integration' ) ) {
 					$i->add_integration( $i->get_integration(), array( $i->get_name(), $i->get_icon() ) );
 				}
-				Automator()->cache->set( 'automator_active_integrations', $this->active_directories );
 				Utilities::add_class_instance( $class, $i );
 			}
+			$this->active_directories = apply_filters( 'automator_active_integration_directories', $this->active_directories );
+			Automator()->cache->set( 'automator_active_integrations', $this->active_directories );
 		}
 	}
 
@@ -412,23 +296,13 @@ class Set_Up_Automator {
 				if ( is_array( $file ) ) {
 					continue;
 				}
-				if ( ! file_exists( $file ) ) {
-					continue;
-				}
-				require_once $file;
+
 				$class = apply_filters( 'automator_helpers_class_name', $this->get_class_name( $file ), $file );
-				if ( class_exists( $class ) ) {
+				if ( ! class_exists( $class, false ) ) {
+					require_once $file;
 					$mod = str_replace( '-', '_', $dir_name );
-					try {
-						$reflection = new ReflectionClass( $class );
-						if ( $reflection->hasMethod( 'setOptions' ) ) {
-							// Todo: Do not initiate helpers class.
-							Utilities::add_helper_instance( $mod, new $class() );
-						}
-					} catch ( Automator_Exception $e ) {
-						// is not a helper file.. shouldn't be loaded as helper
-						Utilities::add_class_instance( $class, new $class() );
-					}
+					// Todo: Do not initiate helpers class.
+					Utilities::add_helper_instance( $mod, new $class() );
 				}
 			}
 		}
@@ -465,12 +339,9 @@ class Set_Up_Automator {
 				if ( is_array( $file ) ) {
 					continue;
 				}
-				if ( ! file_exists( $file ) ) {
-					continue;
-				}
-				require_once $file;
-				$class = apply_filters( 'automator_recipe_parts_class_name', $this->get_class_name( $file ), $file );
-				if ( class_exists( $class ) ) {
+				$class = apply_filters( 'automator_recipe_parts_class_name', $this->get_class_name( $file, true ), $file );
+				if ( ! class_exists( $class, false ) ) {
+					require_once $file;
 					Utilities::add_class_instance( $class, new $class() );
 				}
 			}
@@ -481,15 +352,19 @@ class Set_Up_Automator {
 	 * Get a class name based on file name
 	 *
 	 * @param $file
+	 * @param bool $uppercase
 	 *
 	 * @return mixed|void
 	 */
-	public function get_class_name( $file ) {
+	public function get_class_name( $file, $uppercase = false ) {
 		// Remove file extension my-class-name.php to my-class-name
 		$file_name = basename( $file, '.php' );
 		// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
 		$class_name = self::file_name_to_class( $file_name );
-		$class      = self::validate_namespace( $class_name, $file_name, $file );
+		if ( $uppercase ) {
+			$class_name = strtoupper( $class_name );
+		}
+		$class = __NAMESPACE__ . '\\' . $class_name;
 
 		return apply_filters( 'automator_recipes_class_name', $class, $file, $file_name );
 	}
@@ -502,6 +377,7 @@ class Set_Up_Automator {
 	 * @param $file
 	 *
 	 * @return mixed|string
+	 * @deprecated 4.2
 	 */
 	public static function validate_namespace( $class_name, $file_name, $file ) {
 		$class_name = strtoupper( $class_name );

@@ -49,12 +49,23 @@ class MPC_MARKCOURSEDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_course' ),
-			'options'            => array(
-				Automator()->helpers->recipe->memberpress_courses->all_mp_courses( null, 'MPCOURSE', false ),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->memberpress_courses->all_mp_courses( null, 'MPCOURSE', false ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -65,8 +76,8 @@ class MPC_MARKCOURSEDONE {
 	 * @param $recipe_id
 	 */
 	public function mark_completes_a_course( $user_id, $action_data, $recipe_id, $args ) {
-		$sections  = [];
-		$lessons   = [];
+		$sections  = array();
+		$lessons   = array();
 		$course_id = $action_data['meta'][ $this->action_meta ];
 		$sections  = Automator()->helpers->recipe->memberpress_courses->find_all_by_course( $course_id );
 

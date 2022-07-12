@@ -453,7 +453,7 @@ class Recipe_Post_Rest_Api {
 			 */
 			do_action( 'automator_recipe_closure_created', $post_id, $item_code, $request );
 		}
-		
+
 		if ( $request->has_param( 'default_meta' ) ) {
 			if ( is_array( $request->get_param( 'default_meta' ) ) ) {
 				$meta_values = (array) Automator()->utilities->automator_sanitize( $request->get_param( 'default_meta' ), 'mixed' );
@@ -548,9 +548,11 @@ class Recipe_Post_Rest_Api {
 			if ( $item ) {
 				if ( is_array( $meta_value ) ) {
 					foreach ( $meta_value as $meta_key => $meta_val ) {
+						$meta_val = Automator()->utilities->maybe_slash_json_value( $meta_val, true );
 						update_post_meta( $item_id, $meta_key, $meta_val );
 					}
 				} else {
+					$meta_value = Automator()->utilities->maybe_slash_json_value( $meta_value, true );
 					update_post_meta( $item_id, $meta_key, $meta_value );
 				}
 				Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
@@ -564,14 +566,13 @@ class Recipe_Post_Rest_Api {
 				$return = apply_filters( 'automator_option_updated', $return, $item, $meta_key, $meta_value );
 
 				return new WP_REST_Response( $return, 200 );
-			} else {
-				$return['message'] = 'You are trying to update trigger meta for a trigger that does not exist. Please reload the page and trying again.';
-				$return['success'] = false;
-				$return['data']    = $request;
-				$return['post']    = '';
-
-				return new WP_REST_Response( $return, 200 );
 			}
+			$return['message'] = 'You are trying to update trigger meta for a trigger that does not exist. Please reload the page and trying again.';
+			$return['success'] = false;
+			$return['data']    = $request;
+			$return['post']    = '';
+
+			return new WP_REST_Response( $return, 200 );
 		}
 
 		$return['message'] = 'The data that was sent was malformed. Please reload the page and trying again.';

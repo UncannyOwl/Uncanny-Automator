@@ -50,8 +50,6 @@ class AFFWP_APPROVALWAITING {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -161,7 +159,6 @@ class AFFWP_APPROVALWAITING {
 				}
 			}
 		}
-
-		return;
 	}
+
 }

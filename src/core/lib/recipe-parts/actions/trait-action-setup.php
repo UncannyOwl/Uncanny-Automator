@@ -90,6 +90,11 @@ trait Action_Setup {
 	protected $buttons;
 
 	/**
+	 * @var
+	 */
+	protected $background_processing = false;
+
+	/**
 	 * @return mixed
 	 */
 	public function get_integration() {
@@ -286,21 +291,36 @@ trait Action_Setup {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function get_background_processing() {
+		return $this->background_processing;
+	}
+
+	/**
+	 * @param mixed $set_background_processing
+	 */
+	public function set_background_processing( $background_processing ) {
+		$this->background_processing = $background_processing;
+	}
+
+	/**
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	protected function register_action() {
 
 		$action = array(
-			'author'             => $this->get_author(),
-			'support_link'       => $this->get_support_link(),
-			'integration'        => $this->get_integration(),
-			'is_pro'             => $this->is_is_pro(),
-			'is_deprecated'      => $this->is_is_deprecated(),
-			'requires_user'      => $this->get_requires_user(),
-			'code'               => $this->get_action_code(),
-			'sentence'           => $this->get_sentence(),
-			'select_option_name' => $this->get_readable_sentence(),
-			'execution_function' => array( $this, 'do_action' ),
+			'author'                => $this->get_author(),
+			'support_link'          => $this->get_support_link(),
+			'integration'           => $this->get_integration(),
+			'is_pro'                => $this->is_is_pro(),
+			'is_deprecated'         => $this->is_is_deprecated(),
+			'requires_user'         => $this->get_requires_user(),
+			'code'                  => $this->get_action_code(),
+			'sentence'              => $this->get_sentence(),
+			'select_option_name'    => $this->get_readable_sentence(),
+			'execution_function'    => array( $this, 'do_action' ),
+			'background_processing' => $this->get_background_processing(),
 		);
 
 		if ( ! empty( $this->get_options() ) ) {
@@ -314,7 +334,7 @@ trait Action_Setup {
 		if ( ! empty( $this->get_options_callback() ) ) {
 			$action['options_callback'] = $this->get_options_callback();
 		}
-		
+
 		if ( ! empty( $this->get_buttons() ) ) {
 			$action['buttons'] = $this->get_buttons();
 		}

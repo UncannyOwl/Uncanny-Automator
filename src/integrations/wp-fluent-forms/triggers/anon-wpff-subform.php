@@ -53,11 +53,22 @@ class ANON_WPFF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpffform_submit' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms( null, $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -181,4 +192,5 @@ class ANON_WPFF_SUBFORM {
 
 		return false;
 	}
+
 }

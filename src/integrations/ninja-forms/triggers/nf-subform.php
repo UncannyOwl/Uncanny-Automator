@@ -46,15 +46,24 @@ class NF_SUBFORM {
 			'priority'            => 20,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'nform_submit' ),
-			'options'             => array(
-				Automator()->helpers->recipe->ninja_forms->options->list_ninja_forms(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->ninja_forms->options->list_ninja_forms(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -100,4 +109,5 @@ class NF_SUBFORM {
 			}
 		}
 	}
+
 }

@@ -30,7 +30,7 @@ class Buddypress_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 
 		add_action( 'wp_ajax_select_topic_from_forum_BDBTOPICREPLY', array( $this, 'select_topic_fields_func' ) );
 	}

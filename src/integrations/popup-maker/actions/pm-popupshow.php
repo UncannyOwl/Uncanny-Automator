@@ -27,13 +27,45 @@ class PM_POPUPSHOW {
 		$this->action_meta = 'POPUPID';
 		$this->define_action();
 
-		add_filter( 'automator_option_updated', array( $this, 'automator_option_updated' ), 10, 4 );
+		add_filter(
+			'automator_option_updated',
+			array(
+				$this,
+				'automator_option_updated',
+			),
+			10,
+			4
+		);
 	}
 
 	/**
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	public function define_action() {
+
+		$action = array(
+			'author'             => 'Uncanny Automator',
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/working-with-popup-maker-actions' ),
+			'integration'        => self::$integration,
+			'code'               => $this->action_code,
+			'requires_user'      => false,
+			/* translators: Logged-in trigger - Popup Maker */
+			'sentence'           => sprintf( esc_attr__( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			/* translators: Logged-in trigger - Popup Maker */
+			'select_option_name' => esc_attr__( 'Show {{a popup}}', 'uncanny-automator' ),
+			'priority'           => 11,
+			'accepted_args'      => 3,
+			'execution_function' => array( $this, 'display_pop_up' ),
+			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
 
 		$args = array(
 			'post_type'      => 'popup',
@@ -54,25 +86,13 @@ class PM_POPUPSHOW {
 			'custom_value_description' => esc_attr__( 'Popup ID', 'uncanny-automator' ),
 		);
 
-		$action = array(
-			'author'             => 'Uncanny Automator',
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/working-with-popup-maker-actions' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
-			/* translators: Logged-in trigger - Popup Maker */
-			'sentence'           => sprintf( esc_attr__( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			/* translators: Logged-in trigger - Popup Maker */
-			'select_option_name' => esc_attr__( 'Show {{a popup}}', 'uncanny-automator' ),
-			'priority'           => 11,
-			'accepted_args'      => 3,
-			'execution_function' => array( $this, 'display_pop_up' ),
-			'options'            => array(
-				$option,
-			),
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					$option,
+				),
+			)
 		);
-
-		Automator()->register->action( $action );
 	}
 
 	/**
@@ -218,4 +238,5 @@ class PM_POPUPSHOW {
 
 		return $return;
 	}
+
 }

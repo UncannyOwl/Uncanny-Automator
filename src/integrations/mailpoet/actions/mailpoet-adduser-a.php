@@ -45,19 +45,29 @@ class MAILPOET_ADDUSER_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mailpoet_add_user_to_list' ),
-			'options'            => array(),
-			'options_group'      => array(
-				$this->action_meta =>
-					array(
-						Automator()->helpers->recipe->mailpoet->options->get_all_mailpoet_lists( esc_attr__( 'List', 'uncanny-automator' ), $this->action_meta ),
-						Automator()->helpers->recipe->field->text_field( 'USERADDEDTOLIST_CONFIRMATIONEMAIL', esc_attr__( 'Add the user directly to the list - Do not send confirmation email', 'uncanny-automator' ), true, 'checkbox', '', false ),
-					),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(),
+				'options_group' => array(
+					$this->action_meta =>
+						array(
+							Automator()->helpers->recipe->mailpoet->options->get_all_mailpoet_lists( esc_attr__( 'List', 'uncanny-automator' ), $this->action_meta ),
+							Automator()->helpers->recipe->field->text_field( 'USERADDEDTOLIST_CONFIRMATIONEMAIL', esc_attr__( 'Add the user directly to the list - Do not send confirmation email', 'uncanny-automator' ), true, 'checkbox', '', false ),
+						),
+				),
+			)
+		);
+	}
 
 	/**
 	 * Validation function when the action is hit.
@@ -101,4 +111,5 @@ class MAILPOET_ADDUSER_A {
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		}
 	}
+
 }

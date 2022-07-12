@@ -84,6 +84,8 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

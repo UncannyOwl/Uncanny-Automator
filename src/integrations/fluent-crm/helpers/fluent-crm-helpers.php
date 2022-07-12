@@ -39,7 +39,7 @@ class Fluent_Crm_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 
 		$fluent_crm_targetted_actions = array(
 			'fluentcrm_subscriber_status_to_subscribed',

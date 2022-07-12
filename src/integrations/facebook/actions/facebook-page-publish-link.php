@@ -14,7 +14,7 @@ class FACEBOOK_PAGE_PUBLISH_LINK {
 
 	public function __construct() {
 
-		add_action( "wp_ajax_" . self::AJAX_ENDPOINT, array( $this, self::AJAX_ENDPOINT ) );
+		add_action( 'wp_ajax_' . self::AJAX_ENDPOINT, array( $this, self::AJAX_ENDPOINT ) );
 
 		$this->setup_action();
 
@@ -84,6 +84,8 @@ class FACEBOOK_PAGE_PUBLISH_LINK {
 		);
 
 		$this->set_options_group( $options_group );
+
+		$this->set_background_processing( true );
 
 		$this->register_action();
 

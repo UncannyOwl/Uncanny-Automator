@@ -46,12 +46,23 @@ class ANON_BB_NEWTOPIC {
 			'accepted_args'       => 4,
 			'type'                => 'anonymous',
 			'validation_function' => array( $this, 'bbp_new_topic' ),
-			'options'             => array(
-				Automator()->helpers->recipe->bbpress->options->list_bbpress_forums( null, $this->trigger_meta, true ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->bbpress->options->list_bbpress_forums( null, $this->trigger_meta, true ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -75,7 +86,7 @@ class ANON_BB_NEWTOPIC {
 				if ( isset( $required_forum[ $recipe_id ] ) && isset( $required_forum[ $recipe_id ][ $trigger_id ] ) ) {
 					//Add where option is set to Any Forum
 					if ( - 1 === intval( $required_forum[ $recipe_id ][ $trigger_id ] )
-					     || $required_forum[ $recipe_id ][ $trigger_id ] == $forum_id ) {
+						 || $required_forum[ $recipe_id ][ $trigger_id ] == $forum_id ) {
 						$matched_recipe_ids[] = array(
 							'recipe_id'  => $recipe_id,
 							'trigger_id' => $trigger_id,

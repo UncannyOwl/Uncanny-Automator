@@ -13,6 +13,7 @@ use Uncanny_Automator_Pro\Learnpress_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Learnpress_Helpers {
+
 	/**
 	 * @var Learnpress_Helpers
 	 */
@@ -31,7 +32,7 @@ class Learnpress_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 
 		add_action(
 			'wp_ajax_select_section_from_course_LPMARKLESSONDONE',
@@ -73,7 +74,7 @@ class Learnpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool   $any_option
+	 * @param bool $any_option
 	 *
 	 * @return mixed
 	 */
@@ -218,4 +219,5 @@ class Learnpress_Helpers {
 		echo wp_json_encode( $fields );
 		die();
 	}
+
 }

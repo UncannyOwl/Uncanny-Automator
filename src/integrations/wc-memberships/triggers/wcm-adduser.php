@@ -45,17 +45,31 @@ class WCM_ADDUSER {
 			'action'              => 'wc_memberships_user_membership_saved',
 			'priority'            => 99,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'wc_user_added_to_membership_plan' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
-					null,
-					$this->trigger_meta,
-					array( 'is_any' => true )
-				),
+			'validation_function' => array(
+				$this,
+				'wc_user_added_to_membership_plan',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
+						null,
+						$this->trigger_meta,
+						array( 'is_any' => true )
+					),
+				),
+			)
+		);
 	}
 
 	/**
