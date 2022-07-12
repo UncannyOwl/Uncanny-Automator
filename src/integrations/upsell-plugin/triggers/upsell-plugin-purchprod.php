@@ -46,16 +46,24 @@ class UPSELL_PLUGIN_PURCHPROD {
 			'priority'            => 99,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'upsell_order_completed' ),
-			'options'             => array(
-				Automator()->helpers->recipe->upsell_plugin->options->all_upsell_products( esc_attr__( 'Product', 'uncanny-automator' ) ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
-
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->upsell_plugin->options->all_upsell_products( esc_attr__( 'Product', 'uncanny-automator' ) ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	public function upsell_order_completed( $order ) {

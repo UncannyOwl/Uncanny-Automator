@@ -2,8 +2,8 @@
 /**
  * Contains Quiz Attempt Passed Trigger.
  *
- * @version 2.4.0
  * @since   2.4.0
+ * @version 2.4.0
  */
 
 namespace Uncanny_Automator;
@@ -59,13 +59,24 @@ class TUTORLMS_QUIZPASSED {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'passed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_quizzes( null, $this->trigger_meta, true ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->tutorlms->options->all_tutorlms_quizzes( null, $this->trigger_meta, true ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -86,7 +97,13 @@ class TUTORLMS_QUIZPASSED {
 		}
 
 		// bail if the attempt isn't finished yet.
-		if ( ! in_array( $attempt->attempt_status, array( 'attempt_ended', 'review_required' ) ) ) {
+		if ( ! in_array(
+			$attempt->attempt_status,
+			array(
+				'attempt_ended',
+				'review_required',
+			)
+		) ) {
 			return;
 		}
 

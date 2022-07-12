@@ -61,14 +61,12 @@ class WP_VIEWCUSTOMPOST {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
 	 * load_options
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function load_options() {
 
@@ -89,20 +87,11 @@ class WP_VIEWCUSTOMPOST {
 							)
 						),
 						/* translators: Noun */
-						Automator()->helpers->recipe->field->select_field(
-							$this->trigger_meta,
-							esc_attr__( 'Post', 'uncanny-automator' ),
-							array(),
-							null,
-							false,
-							'',
+						Automator()->helpers->recipe->field->select(
 							array(
-								$this->trigger_meta => esc_attr__( 'Post title', 'uncanny-automator' ),
-								$this->trigger_meta . '_ID' => esc_attr__( 'Post ID', 'uncanny-automator' ),
-								$this->trigger_meta . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
-								$this->trigger_meta . '_EXCERPT' => __( 'Post excerpt', 'uncanny-automator' ),
-								'POSTIMAGEURL'      => __( 'Post featured image URL', 'uncanny-automator' ),
-								'POSTIMAGEID'       => __( 'Post featured image ID', 'uncanny-automator' ),
+								'option_code'     => $this->trigger_meta,
+								'label'           => esc_attr__( 'Post', 'uncanny-automator' ),
+								'relevant_tokens' => array(),
 							)
 						),
 					),
@@ -112,6 +101,7 @@ class WP_VIEWCUSTOMPOST {
 				),
 			)
 		);
+
 		return $options;
 	}
 
@@ -131,50 +121,80 @@ class WP_VIEWCUSTOMPOST {
 		if ( ! $post instanceof \WP_Post ) {
 			return;
 		}
+		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_post_type = Automator()->get->meta_from_recipes( $recipes, 'WPPOSTTYPES' );
+		$required_post      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$matched_recipe_ids = array();
+		$user_id            = get_current_user_id();
+		if ( empty( $recipes ) ) {
+			return;
+		}
+		if ( empty( $required_post_type ) ) {
+			return;
+		}
+		if ( empty( $required_post ) ) {
+			return;
+		}
+		//Add where option is set to Any post / specific post
+		foreach ( $recipes as $recipe_id => $recipe ) {
 
-		if ( $post ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id = $trigger['ID'];
+				if (
+					// Check any or specific post type
+					(
+						intval( '-1' ) === intval( $required_post_type[ $recipe_id ][ $trigger_id ] ) ||
+						$post->post_type === $required_post_type[ $recipe_id ][ $trigger_id ]
+					) &&
+					//check specific or any post
+					(
+						intval( '-1' ) === intval( $required_post[ $recipe_id ][ $trigger_id ] ) ||
+						absint( $post->ID ) === absint( $required_post[ $recipe_id ][ $trigger_id ] )
+					)
+				) {
+					$matched_recipe_ids[] = array(
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+					);
+				}
+			}
+		}
 
-			$user_id = get_current_user_id();
-
-			$args                    = array(
-				'code'    => $this->trigger_code,
-				'meta'    => $this->trigger_meta,
-				'post_id' => $post->ID,
-				'user_id' => $user_id,
+		if ( empty( $matched_recipe_ids ) ) {
+			return;
+		}
+		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+			$args = array(
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'user_id'          => $user_id,
+				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+				'trigger_to_match' => $matched_recipe_id['trigger_id'],
+				'post_id'          => $post->ID,
 			);
+
 			$post_type               = get_post_type_object( $post->post_type );
 			$args['post_type_label'] = $post_type->labels->singular_name;
 
 			$arr = Automator()->maybe_add_trigger_entry( $args, false );
-			if ( $arr ) {
-				foreach ( $arr as $result ) {
-					if ( true === $result['result'] ) {
-						$result['args']['post_type_label'] = $post_type->labels->singular_name;
+			if ( empty( $arr ) ) {
+				continue;
+			}
+			foreach ( $arr as $result ) {
+				if ( true === $result['result'] ) {
+					$result['args']['post_type_label'] = $post_type->labels->singular_name;
 
-						$trigger_meta = array(
-							'user_id'        => (int) $user_id,
-							'trigger_id'     => $result['args']['trigger_id'],
-							'trigger_log_id' => $result['args']['get_trigger_id'],
-							'run_number'     => $result['args']['run_number'],
-						);
+					$trigger_meta = array(
+						'user_id'        => (int) $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					);
 
-						// Post excerpt
-						$trigger_meta['meta_key']   = $this->trigger_meta . '_EXCERPT';
-						$trigger_meta['meta_value'] = maybe_serialize( $post->post_excerpt );
-						Automator()->insert_trigger_meta( $trigger_meta );
+					// post_id Token
+					Automator()->db->token->save( 'post_id', $post->ID, $trigger_meta );
 
-						// Post Featured Image URL
-						$trigger_meta['meta_key']   = 'POSTIMAGEURL';
-						$trigger_meta['meta_value'] = maybe_serialize( get_the_post_thumbnail_url( $post->ID, 'full' ) );
-						Automator()->insert_trigger_meta( $trigger_meta );
-
-						// Post Featured Image ID
-						$trigger_meta['meta_key']   = 'POSTIMAGEID';
-						$trigger_meta['meta_value'] = maybe_serialize( get_post_thumbnail_id( $post->ID ) );
-						Automator()->insert_trigger_meta( $trigger_meta );
-
-						Automator()->maybe_trigger_complete( $result['args'] );
-					}
+					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}
 		}

@@ -42,22 +42,39 @@ class EM_BOOKING_APPROVED {
 			'sentence'            => sprintf( esc_attr__( "A user's booking for {{an event:%1\$s}} is approved", 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Manager */
 			'select_option_name'  => esc_attr__( "A user's booking for {{an event}} is approved", 'uncanny-automator' ),
-			'action'              => array( 'em_booking_save', 'em_booking_set_status' ),
+			'action'              => array(
+				'em_booking_save',
+				'em_booking_set_status',
+			),
 			'priority'            => 99,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'user_registered_for_event' ),
-			'options'             => array(
-				Automator()->helpers->recipe->events_manager->options->all_em_events(
-					null,
-					$this->trigger_meta,
-					array(
-						'any_option' => true,
-					)
-				),
+			'validation_function' => array(
+				$this,
+				'user_registered_for_event',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->events_manager->options->all_em_events(
+						null,
+						$this->trigger_meta,
+						array(
+							'any_option' => true,
+						)
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -118,4 +135,5 @@ class EM_BOOKING_APPROVED {
 
 		return $em_status;
 	}
+
 }

@@ -52,6 +52,34 @@ class MEC_USER_BOOKING_COMPLETED {
 	 */
 	public function define_trigger() {
 
+		$trigger = array(
+			'author'              => Automator()->get_author_name(),
+			'support_link'        => Automator()->get_author_support_link(),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			'is_pro'              => false,
+			'sentence'            => sprintf(
+			/* translators: The Event or `Any Event` */
+				esc_attr__( "A user's booking of {{an event:%1\$s}} is completed", 'uncanny-automator' ),
+				$this->trigger_code
+			),
+			'select_option_name'  => esc_attr__( "A user's booking of {{an event}} is completed", 'uncanny-automator' ),
+			'action'              => 'mec_booking_completed',
+			'priority'            => 99,
+			'accepted_args'       => 1,
+			'validation_function' => array( $this, 'mec_booking_completed' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$helper = new MEC_HELPERS();
 
 		$events_options = $helper->get_events_select_field(
@@ -75,29 +103,13 @@ class MEC_USER_BOOKING_COMPLETED {
 
 		$events_options['options'] = array( '-1' => __( 'Any event', 'uncanny-automator' ) ) + $events_options['options'];
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name(),
-			'support_link'        => Automator()->get_author_support_link(),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'is_pro'              => false,
-			'sentence'            => sprintf(
-			/* translators: The Event or `Any Event` */
-				esc_attr__( "A user's booking of {{an event:%1\$s}} is completed", 'uncanny-automator' ),
-				$this->trigger_code
-			),
-			'select_option_name'  => esc_attr__( "A user's booking of {{an event}} is completed", 'uncanny-automator' ),
-			'action'              => 'mec_booking_completed',
-			'priority'            => 99,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'mec_booking_completed' ),
-			'options'             => array(
-				$events_options,
-			),
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					$events_options,
+				),
+			)
 		);
-
-		Automator()->register->trigger( $trigger );
-
 	}
 
 	/**

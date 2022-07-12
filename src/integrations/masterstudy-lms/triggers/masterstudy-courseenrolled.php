@@ -33,16 +33,6 @@ class MASTERSTUDY_COURSEENROLLED {
 	 */
 	public function define_trigger() {
 
-		$args = array(
-			'post_type'      => 'stm-courses',
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
-		);
-
-		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any course', 'uncanny-automator' ) );
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/masterstudy-lms/' ),
@@ -56,26 +46,48 @@ class MASTERSTUDY_COURSEENROLLED {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'course_enrolled' ),
-			'options'             => array(
-				array(
-					'option_code'              => $this->trigger_meta,
-					'label'                    => esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
-					'input_type'               => 'select',
-					'required'                 => true,
-					'options'                  => $options,
-					'relevant_tokens'          => array(
-						'MSLMSCOURSE'           => esc_attr__( 'Course title', 'uncanny-automator' ),
-						'MSLMSCOURSE_ID'        => esc_attr__( 'Course ID', 'uncanny-automator' ),
-						'MSLMSCOURSE_URL'       => esc_attr__( 'Course URL', 'uncanny-automator' ),
-						'MSLMSCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
-						'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
-					),
-					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$args = array(
+			'post_type'      => 'stm-courses',
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+		);
+
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any course', 'uncanny-automator' ) );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					array(
+						'option_code'              => $this->trigger_meta,
+						'label'                    => esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
+						'input_type'               => 'select',
+						'required'                 => true,
+						'options'                  => $options,
+						'relevant_tokens'          => array(
+							'MSLMSCOURSE'           => esc_attr__( 'Course title', 'uncanny-automator' ),
+							'MSLMSCOURSE_ID'        => esc_attr__( 'Course ID', 'uncanny-automator' ),
+							'MSLMSCOURSE_URL'       => esc_attr__( 'Course URL', 'uncanny-automator' ),
+							'MSLMSCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+							'MSLMSCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
+						),
+						'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -95,4 +107,5 @@ class MASTERSTUDY_COURSEENROLLED {
 		Automator()->maybe_add_trigger_entry( $args );
 
 	}
+
 }

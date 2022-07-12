@@ -8,6 +8,7 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class ANON_FCRM_TAG_ADDED {
+
 	/**
 	 * Integration code
 	 *
@@ -56,14 +57,28 @@ class ANON_FCRM_TAG_ADDED {
 			'action'              => 'fluentcrm_contact_added_to_tags',
 			'priority'            => 20,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'anon_tag_added_to_contact' ),
-			'options'             => array(
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->trigger_meta ),
+			'validation_function' => array(
+				$this,
+				'anon_tag_added_to_contact',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
 
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -129,4 +144,5 @@ class ANON_FCRM_TAG_ADDED {
 		}// endif.
 
 	}
+
 }

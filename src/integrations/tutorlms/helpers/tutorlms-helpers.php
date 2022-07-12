@@ -12,6 +12,7 @@ use function tutor_utils;
  * @package Uncanny_Automator
  */
 class Tutorlms_Helpers {
+
 	/**
 	 * @var Tutorlms_Helpers
 	 */
@@ -37,8 +38,14 @@ class Tutorlms_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-		add_action( 'wp_ajax_select_lesson_from_course_LESSONCOMPLETED', array( $this, 'select_lesson_from_course_func' ) );
+		$this->load_options = true;
+		add_action(
+			'wp_ajax_select_lesson_from_course_LESSONCOMPLETED',
+			array(
+				$this,
+				'select_lesson_from_course_func',
+			)
+		);
 	}
 
 	/**
@@ -223,8 +230,8 @@ class Tutorlms_Helpers {
 	 *
 	 * @param object $attempt The quiz attempt object.
 	 *
-	 * @return int
 	 * @since 2.4.0
+	 * @return int
 	 */
 	public function get_percentage_scored( $attempt ) {
 		return number_format( ( $attempt->earned_marks * 100 ) / $attempt->total_marks );
@@ -235,8 +242,8 @@ class Tutorlms_Helpers {
 	 *
 	 * @param object $attempt The quiz attempt object.
 	 *
-	 * @return int
 	 * @since 2.4.0
+	 * @return int
 	 */
 	public function get_percentage_required( $attempt ) {
 		return (int) tutor_utils()->get_quiz_option( $attempt->quiz_id, 'passing_grade', 0 );
@@ -300,4 +307,5 @@ class Tutorlms_Helpers {
 		echo wp_json_encode( $fields );
 		die();
 	}
+
 }

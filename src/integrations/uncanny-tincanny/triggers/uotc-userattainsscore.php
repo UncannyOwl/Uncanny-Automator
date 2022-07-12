@@ -39,15 +39,6 @@ class UOTC_USERATTAINSSCORE {
 	 */
 	public function define_trigger() {
 
-		$modules = Database::get_modules();
-
-		$options       = array();
-		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
-
-		foreach ( $modules as $module ) {
-			$options[ $module->ID ] = $module->file_name;
-		}
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/tin-canny-reporting/' ),
@@ -60,21 +51,45 @@ class UOTC_USERATTAINSSCORE {
 			'action'              => 'tincanny_module_result_processed',
 			'priority'            => 99,
 			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'tincan_module_result_processed' ),
-			'options'             => array(
-				Automator()->helpers->recipe->field->select(
-					array(
-						'option_code' => 'TCMODULEINTERACTION',
-						'label'       => esc_attr__( 'Module', 'uncanny-automator' ),
-						'options'     => $options,
-					)
-				),
-				Automator()->helpers->recipe->field->text_field( $this->trigger_meta, esc_attr__( 'Module Score', 'uncanny-automator' ), true, 'text', '0', true ),
-				Automator()->helpers->recipe->less_or_greater_than(),
+			'validation_function' => array(
+				$this,
+				'tincan_module_result_processed',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$modules = Database::get_modules();
+
+		$options       = array();
+		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
+
+		foreach ( $modules as $module ) {
+			$options[ $module->ID ] = $module->file_name;
+		}
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->field->select(
+						array(
+							'option_code' => 'TCMODULEINTERACTION',
+							'label'       => esc_attr__( 'Module', 'uncanny-automator' ),
+							'options'     => $options,
+						)
+					),
+					Automator()->helpers->recipe->field->text_field( $this->trigger_meta, esc_attr__( 'Module Score', 'uncanny-automator' ), true, 'text', '0', true ),
+					Automator()->helpers->recipe->less_or_greater_than(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -226,4 +241,5 @@ class UOTC_USERATTAINSSCORE {
 
 		return $matches;
 	}
+
 }

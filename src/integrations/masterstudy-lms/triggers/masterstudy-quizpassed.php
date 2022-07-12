@@ -34,6 +34,30 @@ class MASTERSTUDY_QUIZPASSED {
 	 */
 	public function define_trigger() {
 
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/masterstudy-lms/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - MasterStudy LMS */
+			'sentence'            => sprintf( esc_attr__( 'A user passes {{a quiz:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - MasterStudy LMS */
+			'select_option_name'  => esc_attr__( 'A user passes {{a quiz}}', 'uncanny-automator' ),
+			'action'              => 'stm_lms_quiz_passed',
+			'priority'            => 10,
+			'accepted_args'       => 3,
+			'validation_function' => array( $this, 'quiz_passed' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$args = array(
 			'post_type'      => 'stm-courses',
 			'posts_per_page' => 999,
@@ -62,42 +86,30 @@ class MASTERSTUDY_QUIZPASSED {
 
 		);
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/masterstudy-lms/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - MasterStudy LMS */
-			'sentence'            => sprintf( esc_attr__( 'A user passes {{a quiz:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - MasterStudy LMS */
-			'select_option_name'  => esc_attr__( 'A user passes {{a quiz}}', 'uncanny-automator' ),
-			'action'              => 'stm_lms_quiz_passed',
-			'priority'            => 10,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'quiz_passed' ),
-			'options'             => array(),
-			'options_group'       => array(
-				$this->trigger_meta => array(
-					Automator()->helpers->recipe->field->select_field_ajax(
-						'MSLMSCOURSE',
-						esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
-						$options,
-						'',
-						'',
-						false,
-						true,
-						array(
-							'target_field' => $this->trigger_meta,
-							'endpoint'     => 'select_mslms_quiz_from_course_QUIZ',
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(),
+				'options_group' => array(
+					$this->trigger_meta => array(
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'MSLMSCOURSE',
+							esc_attr_x( 'Course', 'MasterStudy LMS', 'uncanny-automator' ),
+							$options,
+							'',
+							'',
+							false,
+							true,
+							array(
+								'target_field' => $this->trigger_meta,
+								'endpoint'     => 'select_mslms_quiz_from_course_QUIZ',
+							),
+							$course_relevant_tokens
 						),
-						$course_relevant_tokens
+						Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Quiz', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 					),
-					Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_attr__( 'Quiz', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 				),
-			),
+			)
 		);
-
-		Automator()->register->trigger( $trigger );
 	}
 
 	/**
@@ -161,4 +173,5 @@ class MASTERSTUDY_QUIZPASSED {
 			}
 		}
 	}
+
 }

@@ -39,6 +39,29 @@ class WPP_POLLSUBMIT {
 	 */
 	public function define_trigger() {
 
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-polls/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - LearnDash */
+			'sentence'            => sprintf( esc_attr__( 'A user submits {{a poll:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			/* translators: Logged-in trigger - LearnDash */
+			'select_option_name'  => esc_attr__( 'A user submits {{a poll}}', 'uncanny-automator' ),
+			'action'              => 'wp_polls_vote_poll_success',
+			'priority'            => 1,
+			'accepted_args'       => 0,
+			'validation_function' => array( $this, 'poll_success' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
 		global $wpdb;
 
 		// Get Poll Questions
@@ -58,42 +81,28 @@ class WPP_POLLSUBMIT {
 			$questions_options[ $question->pollq_id ] = $title;
 		}
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-polls/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( esc_attr__( 'A user submits {{a poll:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => esc_attr__( 'A user submits {{a poll}}', 'uncanny-automator' ),
-			'action'              => 'wp_polls_vote_poll_success',
-			'priority'            => 1,
-			'accepted_args'       => 0,
-			'validation_function' => array( $this, 'poll_success' ),
-			'options'             => array(
-				Automator()->helpers->recipe->field->select_field(
-					$this->trigger_meta,
-					esc_attr__( 'Poll', 'uncanny-automator' ),
-					$questions_options,
-					null,
-					'',
-					false,
-					array(
-						$this->trigger_meta                   => __( 'Poll question', 'uncanny-automator' ),
-						$this->trigger_meta . '_ANSWERS'      => __( 'Poll answers', 'uncanny-automator' ),
-						$this->trigger_meta . '_START'        => __( 'Poll start date', 'uncanny-automator' ),
-						$this->trigger_meta . '_END'          => __( 'Poll end date', 'uncanny-automator' ),
-						$this->trigger_meta . '_WPPOLLANSWER' => __( 'Poll selected answer(s)', 'uncanny-automator' ),
-					)
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(
+					Automator()->helpers->recipe->field->select_field(
+						$this->trigger_meta,
+						esc_attr__( 'Poll', 'uncanny-automator' ),
+						$questions_options,
+						null,
+						'',
+						false,
+						array(
+							$this->trigger_meta            => __( 'Poll question', 'uncanny-automator' ),
+							$this->trigger_meta . '_ANSWERS' => __( 'Poll answers', 'uncanny-automator' ),
+							$this->trigger_meta . '_START' => __( 'Poll start date', 'uncanny-automator' ),
+							$this->trigger_meta . '_END'   => __( 'Poll end date', 'uncanny-automator' ),
+							$this->trigger_meta . '_WPPOLLANSWER' => __( 'Poll selected answer(s)', 'uncanny-automator' ),
+						)
+					),
 				),
-			),
-			'options_group'       => array(),
+				'options_group' => array(),
+			)
 		);
-
-		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -177,6 +186,6 @@ class WPP_POLLSUBMIT {
 			}
 		}
 
-
 	}
+
 }

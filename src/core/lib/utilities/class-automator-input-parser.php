@@ -192,9 +192,10 @@ class Automator_Input_Parser {
 			if ( false !== strpos( $match, ':' ) ) {
 				if ( preg_match( '/(USERMETA)/', $match ) ) {
 					//Usermeta found!!
-					if ( is_null( $user_id ) && 0 !== absint( $user_id ) ) {
+					if ( is_null( $user_id ) || 0 === absint( $user_id ) ) {
 						$user_id = wp_get_current_user()->ID;
 					}
+
 					if ( 0 !== $user_id ) {
 						$pieces = explode( ':', $match );
 						switch ( $pieces[0] ) {
@@ -419,8 +420,12 @@ class Automator_Input_Parser {
 			}
 
 			$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $user_id );
-			$field_text  = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
-			$field_text  = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
+
+			$replaceable = apply_filters( 'automator_maybe_parse_replaceable', $replaceable );
+
+			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
+
+			$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 		}
 
 		return str_replace( array( '{{', '}}' ), '', $field_text );
@@ -717,7 +722,7 @@ class Automator_Input_Parser {
 		 *
 		 * @since 3.0
 		 */
-		return do_shortcode( stripslashes( $return ) );
+		return do_shortcode( apply_filters( 'automator_parse_token_parse_text', stripslashes( $return ), $args ) );
 	}
 
 	/**

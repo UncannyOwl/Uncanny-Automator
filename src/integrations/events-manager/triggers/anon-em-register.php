@@ -8,6 +8,7 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class ANON_EM_REGISTER {
+
 	/**
 	 * Integration code
 	 *
@@ -44,19 +45,33 @@ class ANON_EM_REGISTER {
 			'action'              => 'em_bookings_added',
 			'priority'            => 99,
 			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'attendee_registered_for_event' ),
-			'options'             => array(
-				Automator()->helpers->recipe->events_manager->options->all_em_events(
-					null,
-					$this->trigger_meta,
-					array(
-						'any_option' => true,
-					)
-				),
+			'validation_function' => array(
+				$this,
+				'attendee_registered_for_event',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->events_manager->options->all_em_events(
+						null,
+						$this->trigger_meta,
+						array(
+							'any_option' => true,
+						)
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -110,4 +125,5 @@ class ANON_EM_REGISTER {
 			}
 		}
 	}
+
 }

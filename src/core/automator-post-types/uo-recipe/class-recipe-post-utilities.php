@@ -436,7 +436,7 @@ class Recipe_Post_Utilities {
 			'i18n'                => Automator()->i18n->get_all(),
 			'recipes_object'      => Automator()->get_recipes_data( true, $post_id ),
 			'version'             => Utilities::automator_get_version(),
-			'proVersion'          => defined( 'AUTOMATOR_PRO_FILE' ) ? \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION : '',
+			'proVersion'          => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : '',
 			'proFeatures'         => $this->get_pro_items(),
 			'recipe'              => array(
 				'id'               => $post_id,
@@ -723,7 +723,7 @@ class Recipe_Post_Utilities {
 
 				break;
 			case 'actions':
-				$action_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent=%d AND post_type=%s", $post_id, 'uo-action' ) );
+				$action_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent=%d AND post_type=%s ORDER BY `menu_order` ASC", $post_id, 'uo-action' ) );
 				?>
 				<div class="uap">
 					<div class="uo-post-column__list">

@@ -76,6 +76,8 @@ class UOA_SENDWEBHOOK {
 			)
 		);
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 	}
 

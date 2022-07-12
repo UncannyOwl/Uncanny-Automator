@@ -66,6 +66,8 @@ class AC_USER_REMOVE_TAG {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}
@@ -87,7 +89,7 @@ class AC_USER_REMOVE_TAG {
 		$tag_id = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
 
 		// Get the contact id of the user connected to ActiveCampaign.
-		$user    = get_user_by( 'ID', $user_id );
+		$user = get_user_by( 'ID', $user_id );
 
 		try {
 
@@ -108,7 +110,7 @@ class AC_USER_REMOVE_TAG {
 			}
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-			
+
 		} catch ( \Exception $e ) {
 			$ac_helper->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}

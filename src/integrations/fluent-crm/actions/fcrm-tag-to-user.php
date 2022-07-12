@@ -47,14 +47,24 @@ class FCRM_TAG_TO_USER {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'tag_to_user' ),
-			'options'            => array(
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->action_meta, array( 'supports_multiple_values' => true ) ),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->action_meta, array( 'supports_multiple_values' => true ) ),
+				),
+			)
+		);
+	}
 
 	/**
 	 * Validation function when the trigger action is hit
@@ -71,7 +81,8 @@ class FCRM_TAG_TO_USER {
 
 		if ( $user_info ) {
 
-			$subscriber = Subscriber::where( 'email', $user_info->user_email )->first();
+			$subscriber = Subscriber::where( 'email', $user_info->user_email )
+									->first();
 
 			// User exists but is not a FluentCRM contact.
 			if ( false === $subscriber || is_null( $subscriber ) ) {

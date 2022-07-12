@@ -123,14 +123,14 @@ WHERE p.post_type IS NOT NULL
 	 * @return null|string
 	 */
 	public function elem_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		if ( empty( $pieces ) ) {
+
+		if ( empty( $pieces ) || empty( $trigger_data ) ) {
 			return $value;
 		}
-		if ( empty( $trigger_data ) ) {
-			return $value;
-		}
+
 		$piece = 'ELEMFORM';
-		if ( ! in_array( $piece, $pieces ) && ! in_array( $piece . '_ID', $pieces ) ) {
+
+		if ( ! in_array( $piece, $pieces, true ) && ! in_array( $piece . '_ID', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -146,7 +146,15 @@ WHERE p.post_type IS NOT NULL
 		}
 
 		foreach ( $trigger_data as $trigger ) {
+
+			if ( empty( $trigger['meta'] ) ) {
+
+				continue;
+
+			}
+
 			if ( key_exists( $piece, $trigger['meta'] ) ) {
+
 				$trigger_id     = $trigger['ID'];
 				$trigger_log_id = $replace_args['trigger_log_id'];
 				$token_info     = explode( '|', $pieces[2] );
@@ -154,6 +162,7 @@ WHERE p.post_type IS NOT NULL
 				$meta_key       = isset( $token_info[1] ) ? $token_info[1] : '';
 				$meta_field     = $piece . '_' . $form_id;
 				$entry          = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
+
 				if ( ! empty( $entry ) ) {
 					if ( is_array( $entry ) && ! empty( $meta_key ) ) {
 						$value = isset( $entry[ $meta_key ] ) ? $entry[ $meta_key ] : '';

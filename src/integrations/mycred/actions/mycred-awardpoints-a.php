@@ -45,37 +45,48 @@ class MYCRED_AWARDPOINTS_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_mycred_points' ),
-			'options'            => array(),
-			'options_group'      => array(
-				'MYCREDPOINTVALUE' => array(
-					Automator()->helpers->recipe->mycred->options->list_mycred_points_types(
-						esc_attr__( 'Point type', 'uncanny-automator' ),
-						$this->action_meta,
-						array(
-							'token'   => false,
-							'is_ajax' => false,
-						)
-					),
-					array(
-						'input_type'      => 'float',
-						'option_code'     => 'MYCREDPOINTVALUE',
-						'label'           => esc_attr__( 'Points', 'uncanny-automator' ),
-						'supports_tokens' => true,
-						'required'        => true,
-					),
-					array(
-						'input_type'      => 'text',
-						'option_code'     => 'MYCREDDESCRIPTION',
-						'label'           => __( 'Description', 'uncanny-automator' ),
-						'description'     => __( 'If this is left blank, the description "Revoked by Uncanny Automator" will be used', 'uncanny-automator' ),
-						'supports_tokens' => true,
-						'required'        => false,
-					),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(),
+				'options_group' => array(
+					'MYCREDPOINTVALUE' => array(
+						Automator()->helpers->recipe->mycred->options->list_mycred_points_types(
+							esc_attr__( 'Point type', 'uncanny-automator' ),
+							$this->action_meta,
+							array(
+								'token'   => false,
+								'is_ajax' => false,
+							)
+						),
+						array(
+							'input_type'      => 'float',
+							'option_code'     => 'MYCREDPOINTVALUE',
+							'label'           => esc_attr__( 'Points', 'uncanny-automator' ),
+							'supports_tokens' => true,
+							'required'        => true,
+						),
+						array(
+							'input_type'      => 'text',
+							'option_code'     => 'MYCREDDESCRIPTION',
+							'label'           => __( 'Description', 'uncanny-automator' ),
+							'description'     => __( 'If this is left blank, the description "Revoked by Uncanny Automator" will be used', 'uncanny-automator' ),
+							'supports_tokens' => true,
+							'required'        => false,
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -101,4 +112,5 @@ class MYCRED_AWARDPOINTS_A {
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

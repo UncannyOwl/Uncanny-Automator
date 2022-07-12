@@ -39,10 +39,6 @@ class UM_USERREGISTER {
 	 */
 	public function define_trigger() {
 
-		$options = Automator()->helpers->recipe->ultimate_member->options->get_um_forms( esc_attr__( 'Form', 'uncanny-automator' ) );
-
-		$options['options'] = array( '-1' => esc_attr__( 'Any form', 'uncanny-automator' ) ) + $options['options'];
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/ultimate-member/' ),
@@ -55,15 +51,31 @@ class UM_USERREGISTER {
 			'action'              => 'um_registration_complete',
 			'priority'            => 99,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'um_user_register_with_form' ),
-			'options'             => array(
-				$options,
+			'validation_function' => array(
+				$this,
+				'um_user_register_with_form',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$options            = Automator()->helpers->recipe->ultimate_member->options->get_um_forms( esc_attr__( 'Form', 'uncanny-automator' ) );
+		$options['options'] = array( '-1' => esc_attr__( 'Any form', 'uncanny-automator' ) ) + $options['options'];
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					$options,
+				),
+			)
+		);
 	}
 
 	/**
@@ -94,4 +106,5 @@ class UM_USERREGISTER {
 
 		return;
 	}
+
 }

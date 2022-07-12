@@ -39,18 +39,18 @@ class SLACK_CREATECHANNEL {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/slack/' ),
-			'is_pro'             => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
-			'sentence'           => sprintf( __( 'Create {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Create {{a channel}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'create_channel' ),
-			'options_group'      => array(
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/slack/' ),
+			'is_pro'                => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'requires_user'         => false,
+			'sentence'              => sprintf( __( 'Create {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Create {{a channel}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'create_channel' ),
+			'options_group'         => array(
 				$this->action_meta => array(
 
 					Automator()->helpers->recipe->field->text_field( 'SLACKCHANNELNAME', esc_attr__( 'Channel name', 'uncanny-automator' ) ),
@@ -62,6 +62,7 @@ class SLACK_CREATECHANNEL {
 					),
 				),
 			),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );

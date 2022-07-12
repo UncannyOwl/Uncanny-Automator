@@ -43,18 +43,19 @@ class HUBSPOT_REMOVECONTACTFROMLIST {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/hubspot/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'integration/hubspot/' ),
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
 			// translators: The selected HubSpot static list name
-			'sentence'           => sprintf( __( 'Remove a HubSpot contact from {{a static list:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Remove a HubSpot contact from {{a static list}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'requires_user'      => false,
-			'execution_function' => array( $this, 'remove_contact_from_list' ),
-			'options_callback'   => array( $this, 'load_options' ),
+			'sentence'              => sprintf( __( 'Remove a HubSpot contact from {{a static list:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Remove a HubSpot contact from {{a static list}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'requires_user'         => false,
+			'execution_function'    => array( $this, 'remove_contact_from_list' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );
@@ -107,9 +108,9 @@ class HUBSPOT_REMOVECONTACTFROMLIST {
 		$list  = trim( Automator()->parse->text( $action_data['meta']['HUBSPOTLIST'], $recipe_id, $user_id, $args ) );
 
 		try {
-					
+
 			$response = $helpers->remove_contact_from_list( $list, $email, $action_data );
-			
+
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 		} catch ( \Exception $e ) {

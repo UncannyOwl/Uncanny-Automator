@@ -79,6 +79,8 @@ class AC_ANNON_LISTREMOVE {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}
@@ -101,7 +103,7 @@ class AC_ANNON_LISTREMOVE {
 		$contact_email = isset( $parsed[ $this->prefix . '_CONTACT_ID' ] ) ? sanitize_text_field( $parsed[ $this->prefix . '_CONTACT_ID' ] ) : 0;
 
 		try {
-			
+
 			$contact_id = $ac_helper->get_email_id( $contact_email );
 
 			$body = array(

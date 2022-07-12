@@ -24,6 +24,7 @@ class Give_Helpers {
 	 * Give_Helpers constructor.
 	 */
 	public function __construct() {
+		$this->load_options = true;
 	}
 
 	/**

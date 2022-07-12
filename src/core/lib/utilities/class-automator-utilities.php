@@ -40,6 +40,9 @@ class Automator_Utilities {
 	 */
 	public function keep_order_of_options( $item ) {
 		// Check if it has options
+		if ( ! isset( $item['options'] ) && ! isset( $item['options_group'] ) ) {
+			return $item;
+		}
 		if ( isset( $item['options'] ) ) {
 
 			// Iterate each option
@@ -401,6 +404,40 @@ class Automator_Utilities {
 	}
 
 	/**
+	 * @param $data
+	 * @param bool $slash_only
+	 *
+	 * @return array|string
+	 */
+	public function automator_sanitize_json( $data, $slash_only = false ) {
+		if ( $slash_only ) {
+			return wp_slash( $data );
+		}
+		$filters = array(
+			'email'   => FILTER_VALIDATE_EMAIL,
+			'url'     => FILTER_VALIDATE_URL,
+			'name'    => FILTER_SANITIZE_STRING,
+			'address' => FILTER_SANITIZE_STRING,
+		);
+		$options = array(
+			'email' => array(
+				'flags' => FILTER_NULL_ON_FAILURE,
+			),
+			'url'   => array(
+				'flags' => FILTER_NULL_ON_FAILURE,
+			),
+			//... and so on
+		);
+		$inputs   = json_decode( $data );
+		$filtered = array();
+		foreach ( $inputs as $key => $value ) {
+			$filtered[ $key ] = filter_var( $value, $filters[ $key ], $options[ $key ] );
+		}
+
+		return wp_slash( wp_json_encode( $filtered ) );
+	}
+
+	/**
 	 * Recursively calls itself if children has arrays as well
 	 *
 	 * @param $data
@@ -496,5 +533,42 @@ class Automator_Utilities {
 		}
 
 		return array_values( $new_tokens );
+	}
+
+
+	/**
+	 * @param $string
+	 *
+	 * @return bool
+	 */
+	public function is_json_string( $string ) {
+		return is_string( $string ) && is_array( json_decode( $string, true ) ) && ( JSON_ERROR_NONE === json_last_error() ) ? true : false;
+	}
+
+	/**
+	 * @param $meta_value
+	 * @param bool $slash_only
+	 *
+	 * @return array|mixed|string
+	 */
+	public function maybe_slash_json_value( $meta_value, $slash_only = false ) {
+		if ( $this->is_json_string( $meta_value ) ) {
+			$meta_value = Automator()->utilities->automator_sanitize_json( $meta_value, $slash_only );
+		}
+
+		return $meta_value;
+	}
+
+	/**
+	 * @param $meta_value
+	 *
+	 * @return array|mixed|string
+	 */
+	public function maybe_unslash_value( $meta_value ) {
+		if ( $this->is_json_string( wp_unslash( $meta_value ) ) ) {
+			return wp_unslash( $meta_value );
+		}
+
+		return $meta_value;
 	}
 }

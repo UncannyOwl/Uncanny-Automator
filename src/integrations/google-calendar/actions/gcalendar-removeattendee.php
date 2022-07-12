@@ -59,6 +59,8 @@ class GCALENDAR_REMOVEATTENDEE {
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

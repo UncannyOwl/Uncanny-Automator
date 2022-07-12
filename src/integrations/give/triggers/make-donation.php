@@ -52,12 +52,23 @@ class MAKE_DONATION {
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'givewp_make_donation' ),
-			'options'             => array(
-				Automator()->helpers->recipe->give->options->list_all_give_forms( __( 'Form', 'uncanny-automator' ), $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->give->options->list_all_give_forms( __( 'Form', 'uncanny-automator' ), $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**

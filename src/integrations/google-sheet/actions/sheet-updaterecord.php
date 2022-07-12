@@ -53,24 +53,24 @@ class SHEET_UPDATERECORD {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/google-sheets/' ),
-			'is_pro'             => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf(
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/google-sheets/' ),
+			'is_pro'                => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'sentence'              => sprintf(
 				/* translators: Action sentence */
 				esc_html__( 'Update a row in a {{Google Sheet:%1$s}}', 'uncanny-automator' ),
 				$this->action_meta
 			),
-			'select_option_name' => esc_html__( 'Update a row in a {{Google Sheet}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'requires_user'      => false,
-			'execution_function' => array( $this, 'update_row_google_sheet' ),
-			'options_callback'   => array( $this, 'load_options' ),
-			'custom_html'        => $this->custom_html(),
-			'buttons'            => array(
+			'select_option_name'    => esc_html__( 'Update a row in a {{Google Sheet}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'requires_user'         => false,
+			'execution_function'    => array( $this, 'update_row_google_sheet' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'custom_html'           => $this->custom_html(),
+			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
 					'text'        => __( 'Get columns', 'uncanny-automator' ),
@@ -79,6 +79,7 @@ class SHEET_UPDATERECORD {
 					'modules'     => array( 'modal', 'markdown' ),
 				),
 			),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );

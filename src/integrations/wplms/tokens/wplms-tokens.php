@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator_Pro;
+namespace Uncanny_Automator;
 
 /**
  * Class Wplms_Tokens

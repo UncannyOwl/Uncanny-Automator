@@ -44,8 +44,6 @@ class TUTORLMS_COURSECOMPLETED {
 	 */
 	public function define_trigger() {
 
-		// global automator object.
-
 		// setup trigger configuration.
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -61,13 +59,24 @@ class TUTORLMS_COURSECOMPLETED {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'complete' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_courses( null, $this->trigger_meta, true, true ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->tutorlms->options->all_tutorlms_courses( null, $this->trigger_meta, true, true ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -115,4 +124,5 @@ class TUTORLMS_COURSECOMPLETED {
 		// run trigger.
 		Automator()->maybe_add_trigger_entry( $args );
 	}
+
 }

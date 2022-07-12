@@ -46,13 +46,24 @@ class WPLMS_COURSECOMPLETED {
 			'priority'            => 10,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wplms_course_completed' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wplms->options->all_wplms_courses(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wplms->options->all_wplms_courses(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -135,4 +146,5 @@ class WPLMS_COURSECOMPLETED {
 			}
 		}
 	}
+
 }

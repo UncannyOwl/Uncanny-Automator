@@ -45,7 +45,10 @@ class AFFWP_NEWAFFILIATE {
 			'action'              => 'affwp_set_affiliate_status',
 			'priority'            => 10,
 			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'affwp_user_becomes_affiliate' ),
+			'validation_function' => array(
+				$this,
+				'affwp_user_becomes_affiliate',
+			),
 			'options'             => array(),
 		);
 
@@ -162,4 +165,5 @@ class AFFWP_NEWAFFILIATE {
 			}
 		}
 	}
+
 }

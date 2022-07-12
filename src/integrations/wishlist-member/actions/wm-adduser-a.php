@@ -29,7 +29,8 @@ class WM_ADDUSER_A {
 	}
 
 	/**
-	 * Define and register the action by pushing it into the Automator object Add the user to {a membership level}
+	 * Define and register the action by pushing it into the Automator object
+	 * Add the user to {a membership level}
 	 */
 	public function define_action() {
 
@@ -44,19 +45,33 @@ class WM_ADDUSER_A {
 			'select_option_name' => esc_attr__( 'Add the user to {{a membership level}}', 'uncanny-automator' ),
 			'priority'           => 99,
 			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'add_user_to_membership_levels' ),
-			'options'            => array(
-				Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels(
-					null,
-					$this->action_meta,
-					array(
-						'include_all' => true,
-					)
-				),
+			'execution_function' => array(
+				$this,
+				'add_user_to_membership_levels',
 			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wishlist_member->options->wm_get_all_membership_levels(
+						null,
+						$this->action_meta,
+						array(
+							'include_all' => true,
+						)
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -89,4 +104,5 @@ class WM_ADDUSER_A {
 		$WishListMemberInstance->SetMembershipLevels( $user_id, $level_ids );
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

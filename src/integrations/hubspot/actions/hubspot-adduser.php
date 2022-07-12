@@ -44,18 +44,19 @@ class HUBSPOT_ADDUSER {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/hubspot/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'integration/hubspot/' ),
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
 			// translators: The user
-			'sentence'           => sprintf( __( 'Add/Update {{the user:%1$s}} in HubSpot', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add/Update {{the user}} in HubSpot', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'requires_user'      => true,
-			'execution_function' => array( $this, 'add_contact' ),
-			'options_callback'   => array( $this, 'load_options' ),
+			'sentence'              => sprintf( __( 'Add/Update {{the user:%1$s}} in HubSpot', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Add/Update {{the user}} in HubSpot', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'requires_user'         => true,
+			'execution_function'    => array( $this, 'add_contact' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );

@@ -47,21 +47,31 @@ class FCRM_USER_TO_LIST {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'list_to_user' ),
-			'options'            => array(
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists(
-					esc_attr_x( 'Lists', 'Fluent Forms', 'uncanny-automator' ),
-					$this->action_meta,
-					array(
-						'supports_multiple_values' => true,
-						'is_any'                   => false,
-					)
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists(
+						esc_attr_x( 'Lists', 'Fluent Forms', 'uncanny-automator' ),
+						$this->action_meta,
+						array(
+							'supports_multiple_values' => true,
+							'is_any'                   => false,
+						)
+					),
+				),
+			)
+		);
+	}
 
 	/**
 	 * Validation function when the trigger action is hit
@@ -76,7 +86,8 @@ class FCRM_USER_TO_LIST {
 		$user_info = get_userdata( $user_id );
 
 		if ( $user_info ) {
-			$subscriber = Subscriber::where( 'email', $user_info->user_email )->first();
+			$subscriber = Subscriber::where( 'email', $user_info->user_email )
+									->first();
 
 			// User exists but is not a FluentCRM contact.
 			$subscriber = Automator()->helpers->recipe->fluent_crm->add_user_as_contact( $user_info );
@@ -160,4 +171,5 @@ class FCRM_USER_TO_LIST {
 			return;
 		}
 	}
+
 }

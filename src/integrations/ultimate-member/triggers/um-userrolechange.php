@@ -52,14 +52,23 @@ class UM_USERROLECHANGE {
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'set_user_role' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wp->options->wp_user_roles(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp->options->wp_user_roles(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -134,4 +143,5 @@ class UM_USERROLECHANGE {
 
 		return $matched_recipe_ids;
 	}
+
 }

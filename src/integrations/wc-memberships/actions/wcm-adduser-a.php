@@ -50,16 +50,30 @@ class WCM_ADDUSER_A {
 			'select_option_name' => esc_attr__( 'Add the user to {{a membership plan}}', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'add_user_to_membership_plan' ),
-			'options'            => array(
-				Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
-					null,
-					$this->action_meta
-				),
+			'execution_function' => array(
+				$this,
+				'add_user_to_membership_plan',
 			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
+						null,
+						$this->action_meta
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -104,4 +118,5 @@ class WCM_ADDUSER_A {
 
 		return;
 	}
+
 }

@@ -66,6 +66,8 @@ class AC_USER_LIST_REMOVE {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}
@@ -103,7 +105,7 @@ class AC_USER_LIST_REMOVE {
 
 		} catch ( \Exception $e ) {
 			$ac_helper->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
-		}	
+		}
 	}
 
 }

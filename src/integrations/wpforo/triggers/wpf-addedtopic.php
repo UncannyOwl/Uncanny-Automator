@@ -34,6 +34,30 @@ class WPF_ADDEDTOPIC {
 	 */
 	public function define_trigger() {
 
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wpforo/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - wpForo */
+			'sentence'            => sprintf( esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - wpForo */
+			'select_option_name'  => esc_attr__( 'A user creates a new topic in {{a forum}}', 'uncanny-automator' ),
+			'action'              => 'wpforo_after_add_topic',
+			'priority'            => 5,
+			'accepted_args'       => 1,
+			'validation_function' => array( $this, 'added_topic' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$forums = WPF()->forum->get_forums( array( 'type' => 'forum' ) );
 
 		$forum_options = array( 0 => 'Any Forum' );
@@ -51,37 +75,23 @@ class WPF_ADDEDTOPIC {
 			'WPFORO_TOPIC_CONTENT' => __( 'Topic content', 'uncanny-automator' ),
 		);
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wpforo/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - wpForo */
-			'sentence'            => sprintf( esc_attr__( 'A user creates a topic in {{a forum:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - wpForo */
-			'select_option_name'  => esc_attr__( 'A user creates a new topic in {{a forum}}', 'uncanny-automator' ),
-			'action'              => 'wpforo_after_add_topic',
-			'priority'            => 5,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'added_topic' ),
-			'options'             => array(
-				Automator()->helpers->recipe->field->select_field_args(
-					array(
-						'option_code'     => $this->trigger_meta,
-						'options'         => $forum_options,
-						'label'           => esc_attr__( 'Forums', 'uncanny-automator' ),
-						'required'        => true,
-						'token_name'      => 'Forum ID',
-						'relevant_tokens' => $forum_relevant_tokens,
-					)
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->field->select_field_args(
+						array(
+							'option_code'     => $this->trigger_meta,
+							'options'         => $forum_options,
+							'label'           => esc_attr__( 'Forums', 'uncanny-automator' ),
+							'required'        => true,
+							'token_name'      => 'Forum ID',
+							'relevant_tokens' => $forum_relevant_tokens,
+						)
+					),
+					Automator()->helpers->recipe->options->number_of_times(),
 				),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			)
 		);
-
-		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	public function added_topic( $args ) {
@@ -161,4 +171,5 @@ class WPF_ADDEDTOPIC {
 			}
 		}
 	}
+
 }

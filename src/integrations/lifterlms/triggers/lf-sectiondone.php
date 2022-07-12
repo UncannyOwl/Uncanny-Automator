@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class LF_SECTIONDONE
+ *
  * @package Uncanny_Automator
  */
 class LF_SECTIONDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LF';
@@ -44,13 +46,24 @@ class LF_SECTIONDONE {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'lf_section_done' ),
-			'options'             => array(
-				Automator()->helpers->recipe->lifterlms->options->all_lf_sections(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->lifterlms->options->all_lf_sections(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -75,4 +88,5 @@ class LF_SECTIONDONE {
 
 		Automator()->maybe_add_trigger_entry( $args );
 	}
+
 }

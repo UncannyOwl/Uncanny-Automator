@@ -10,6 +10,7 @@ use Uncanny_Automator_Pro\Events_Manager_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Events_Manager_Helpers {
+
 	/**
 	 * @var Events_Manager_Helpers
 	 */
@@ -29,6 +30,7 @@ class Events_Manager_Helpers {
 	 * Event_Tickets_Helpers constructor.
 	 */
 	public function __construct() {
+		$this->load_options = true;
 	}
 
 	/**
@@ -113,4 +115,5 @@ class Events_Manager_Helpers {
 
 		return apply_filters( 'uap_option_all_em_events', $option );
 	}
+
 }

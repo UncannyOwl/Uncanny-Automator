@@ -39,18 +39,19 @@ class SLACK_SENDDIRECTMESSAGE {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name(),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/slack/' ),
-			'is_pro'             => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
-			'sentence'           => sprintf( __( 'Send a direct message to {{a Slack user:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Send a direct message to {{a Slack user}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'send_message' ),
-			'options_callback'   => array( $this, 'load_options' ),
+			'author'                => Automator()->get_author_name(),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/slack/' ),
+			'is_pro'                => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'requires_user'         => false,
+			'sentence'              => sprintf( __( 'Send a direct message to {{a Slack user:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Send a direct message to {{a Slack user}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'send_message' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );
@@ -83,7 +84,7 @@ class SLACK_SENDDIRECTMESSAGE {
 		$message            = array();
 		$message['channel'] = $action_data['meta']['SLACKUSER'];
 		$message['text']    = Automator()->parse->text( $action_data['meta']['SLACKMESSAGE'], $recipe_id, $user_id, $args );
-		$error_msg = '';
+		$error_msg          = '';
 
 		try {
 			$response = Automator()->helpers->recipe->slack->chat_post_message( $message, $action_data );

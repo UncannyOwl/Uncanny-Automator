@@ -66,6 +66,8 @@ class AC_USER_LIST_ADD {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}
@@ -84,8 +86,8 @@ class AC_USER_LIST_ADD {
 
 		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
 		$list_id   = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
-		$user      = get_user_by( 'ID', $user_id );	
-		
+		$user      = get_user_by( 'ID', $user_id );
+
 		try {
 
 			$contact_id = $ac_helper->get_email_id( $user->data->user_email );

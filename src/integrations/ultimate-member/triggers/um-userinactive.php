@@ -51,8 +51,6 @@ class UM_USERINACTIVE {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**

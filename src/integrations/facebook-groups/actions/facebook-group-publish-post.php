@@ -58,6 +58,8 @@ class FACEBOOK_GROUP_PUBLISH_POST {
 			)
 		);
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

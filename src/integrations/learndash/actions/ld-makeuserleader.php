@@ -32,16 +32,6 @@ class LD_MAKEUSERLEADER {
 	 */
 	public function define_action() {
 
-		$args = array(
-			'post_type'      => 'groups',
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
-		);
-
-		$options = Automator()->helpers->recipe->options->wp_query( $args );
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/learndash/' ),
@@ -54,38 +44,60 @@ class LD_MAKEUSERLEADER {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'make_user_leader_of_group' ),
-			'options_group'      =>
-				array(
-					$this->action_meta =>
-						array(
-							array(
-								'option_code' => 'LDGROUP',
-								'label'       => esc_attr__( 'Group', 'uncanny-automator' ),
-								'input_type'  => 'select',
-								'required'    => true,
-								'options'     => $options,
-							),
-							array(
-								'input_type'            => 'select',
-								'option_code'           => 'GROUP_LEADER_ROLE_ASSIGNMENT',
-								/* translators: Uncanny Groups */
-								'label'                 => esc_attr__( 'If the user does not currently have the Group Leader role', 'uncanny-automator' ),
-								'description'           => '<div class="user-selector__warning">' . esc_attr__( 'Only users with the Group Leader role can be made the leader of a group.', 'uncanny-automator' ) . '</div>',
-								'required'              => true,
-								'default_value'         => 'do_nothing',
-								'options'               => array(
-									'do_nothing' => esc_attr__( 'Do nothing', 'uncanny-automator' ),
-									'add'        => esc_attr__( 'Add the role to their existing role(s)', 'uncanny-automator' ),
-									'replace'    => esc_attr__( 'Replace their existing role(s) with the Group Leader role', 'uncanny-automator' ),
-								),
-								'supports_custom_value' => false,
-								'supports_tokens'       => false,
-							),
-						),
-				),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$args = array(
+			'post_type'      => 'groups',
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+		);
+
+		$options = Automator()->helpers->recipe->options->wp_query( $args );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' =>
+					array(
+						$this->action_meta =>
+							array(
+								array(
+									'option_code' => 'LDGROUP',
+									'label'       => esc_attr__( 'Group', 'uncanny-automator' ),
+									'input_type'  => 'select',
+									'required'    => true,
+									'options'     => $options,
+								),
+								array(
+									'input_type'      => 'select',
+									'option_code'     => 'GROUP_LEADER_ROLE_ASSIGNMENT',
+									/* translators: Uncanny Groups */
+									'label'           => esc_attr__( 'If the user does not currently have the Group Leader role', 'uncanny-automator' ),
+									'description'     => '<div class="user-selector__warning">' . esc_attr__( 'Only users with the Group Leader role can be made the leader of a group.', 'uncanny-automator' ) . '</div>',
+									'required'        => true,
+									'default_value'   => 'do_nothing',
+									'options'         => array(
+										'do_nothing' => esc_attr__( 'Do nothing', 'uncanny-automator' ),
+										'add'        => esc_attr__( 'Add the role to their existing role(s)', 'uncanny-automator' ),
+										'replace'    => esc_attr__( 'Replace their existing role(s) with the Group Leader role', 'uncanny-automator' ),
+									),
+									'supports_custom_value' => false,
+									'supports_tokens' => false,
+								),
+							),
+					),
+			)
+		);
 	}
 
 	/**
@@ -126,7 +138,6 @@ class LD_MAKEUSERLEADER {
 		}
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		return;
 	}
+
 }

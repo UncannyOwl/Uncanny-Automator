@@ -23,7 +23,7 @@ class Wc_Memberships_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**

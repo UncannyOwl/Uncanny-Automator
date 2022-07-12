@@ -54,26 +54,38 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 			'priority'            => 20,
 			'accepted_args'       => 7,
 			'validation_function' => array( $this, 'updated_user_ceu_record' ),
-			'options'             => array(
-				array(
-					'option_code'     => $this->trigger_meta,
-					/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
-					'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
-					'input_type'      => 'float',
-					'validation_type' => 'integer',
-					'required'        => true,
-					'relevant_tokens' => array(
-						$this->trigger_meta            => sprintf( esc_attr__( '%1$s amount', 'uncanny-automator' ), $credit_designation_label_plural ),
-						$this->trigger_meta . '_title' => sprintf( esc_attr__( 'Course or %1$s title', 'uncanny-automator' ), $credit_designation_label_plural ),
-						$this->trigger_meta . '_date'  => esc_attr__( 'Date awarded', 'uncanny-automator' ),
-					),
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					array(
+						'option_code'     => $this->trigger_meta,
+						/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
+						'label'           => sprintf( esc_attr__( 'Number of %1$s', 'uncanny-automator' ), $credit_designation_label_plural ),
+						'input_type'      => 'float',
+						'validation_type' => 'integer',
+						'required'        => true,
+						'relevant_tokens' => array(
+							$this->trigger_meta            => sprintf( esc_attr__( '%1$s amount', 'uncanny-automator' ), $credit_designation_label_plural ),
+							$this->trigger_meta . '_title' => sprintf( esc_attr__( 'Course or %1$s title', 'uncanny-automator' ), $credit_designation_label_plural ),
+							$this->trigger_meta . '_date'  => esc_attr__( 'Date awarded', 'uncanny-automator' ),
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**

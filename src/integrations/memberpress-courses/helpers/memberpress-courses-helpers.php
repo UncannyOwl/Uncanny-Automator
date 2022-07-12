@@ -12,6 +12,7 @@ use Uncanny_Automator_Pro\Memberpress_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Memberpress_Courses_Helpers {
+
 	/**
 	 * @var Memberpress_Courses_Helpers
 	 */
@@ -32,9 +33,15 @@ class Memberpress_Courses_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 
-		add_action( 'wp_ajax_select_lesson_from_course_LESSONDONE', array( $this, 'select_lesson_from_course_func' ) );
+		add_action(
+			'wp_ajax_select_lesson_from_course_LESSONDONE',
+			array(
+				$this,
+				'select_lesson_from_course_func',
+			)
+		);
 		add_action(
 			'wp_ajax_select_lesson_from_course_MARKLESSONDONE',
 			array(

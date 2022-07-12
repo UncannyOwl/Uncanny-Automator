@@ -34,18 +34,19 @@ class AUDIENCE_REMOVEUSERTAG {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
-			'is_pro'             => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
+			'is_pro'                => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
 			// translators: Mailchimp tag
-			'sentence'           => sprintf( __( 'Remove {{a tag:%1$s}} from the user', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'options_callback'   => array( $this, 'load_options' ),
-			'execution_function' => array( $this, 'remove_tag_audience_member' ),
+			'sentence'              => sprintf( __( 'Remove {{a tag:%1$s}} from the user', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'options_callback'      => array( $this, 'load_options' ),
+			'execution_function'    => array( $this, 'remove_tag_audience_member' ),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );
@@ -127,7 +128,7 @@ class AUDIENCE_REMOVEUSERTAG {
 			$response = $helpers->api_request( $request_params, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-			
+
 		} catch ( \Exception $e ) {
 			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
 		}

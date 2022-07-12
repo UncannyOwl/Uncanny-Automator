@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPCW_MODULECOMPLETED
+ *
  * @package Uncanny_Automator
  */
 class WPCW_MODULECOMPLETED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPCW';
@@ -31,8 +33,6 @@ class WPCW_MODULECOMPLETED {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-courseware/' ),
@@ -46,15 +46,24 @@ class WPCW_MODULECOMPLETED {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpcw_module_completed' ),
-			'options'             => [
-				Automator()->helpers->recipe->wp_courseware->options->all_wpcw_modules(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp_courseware->options->all_wpcw_modules(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -70,27 +79,25 @@ class WPCW_MODULECOMPLETED {
 			return;
 		}
 
-
-
 		$module_id = $parent->parent_module_id;
 
-		$args = [
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $module_id ),
 			'user_id' => $user_id,
-		];
+		);
 		$args = Automator()->maybe_add_trigger_entry( $args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
-					$trigger_meta = [
+					$trigger_meta = array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $result['args']['trigger_id'],
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],
-					];
+					);
 
 					$trigger_meta['meta_key']   = $this->trigger_meta;
 					$trigger_meta['meta_value'] = $module_id;
@@ -100,4 +107,5 @@ class WPCW_MODULECOMPLETED {
 			}
 		}
 	}
+
 }

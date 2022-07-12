@@ -56,19 +56,30 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 			'priority'           => 10,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'mark_course_complete' ),
-			'options'            => array(
-				array(
-					'option_code'              => $this->action_meta,
-					'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
-					'input_type'               => 'select',
-					'required'                 => true,
-					'options'                  => $options,
-					'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					array(
+						'option_code'              => $this->action_meta,
+						'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
+						'input_type'               => 'select',
+						'required'                 => true,
+						'options'                  => $options,
+						'custom_value_description' => _x( 'Course ID', 'MasterStudy', 'uncanny-automator' ),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -154,4 +165,5 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 			}
 		}
 	}
+
 }

@@ -68,14 +68,23 @@ class GF_SUBFORM_CODES {
 		// Which do_action() fires this trigger.
 		$this->add_action( 'gform_after_submission' );
 		$this->set_action_args_count( 2 );
-		$this->set_options(
-			array(
-				Automator()->helpers->recipe->gravity_forms->options->list_gravity_forms( esc_attr__( 'Form', 'uncanny-automator' ), $this->get_trigger_meta(), array( 'uncanny_code_specific' => true ) ),
-				Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch( esc_attr__( 'Batch', 'uncanny-automator' ), sprintf( '%s_CODES', $this->get_trigger_meta() ), true ),
-			)
-		);
+		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_trigger();
 
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->gravity_forms->options->list_gravity_forms( esc_attr__( 'Form', 'uncanny-automator' ), $this->get_trigger_meta(), array( 'uncanny_code_specific' => true ) ),
+					Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch( esc_attr__( 'Batch', 'uncanny-automator' ), sprintf( '%s_CODES', $this->get_trigger_meta() ), true ),
+				),
+			)
+		);
 	}
 
 	/**

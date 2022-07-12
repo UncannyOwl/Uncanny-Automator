@@ -3,7 +3,6 @@
 
 namespace Uncanny_Automator;
 
-
 use Uncanny_Automator_Pro\Wp_Courseware_Pro_Helpers;
 
 /**
@@ -31,7 +30,7 @@ class Wp_Courseware_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -57,26 +56,24 @@ class Wp_Courseware_Helpers {
 	public function all_wpcw_courses( $label = null, $option_code = 'WPCW_COURSE', $any_option = true ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Course', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'post_type'      => 'wpcw_course',
 			'posts_per_page' => 9999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -85,12 +82,12 @@ class Wp_Courseware_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_wpcw_courses', $option );
 	}
@@ -106,11 +103,8 @@ class Wp_Courseware_Helpers {
 	public function all_wpcw_modules( $label = null, $option_code = 'WPCW_MODULE', $any_option = true ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Module', 'uncanny-automator' );
@@ -131,7 +125,7 @@ class Wp_Courseware_Helpers {
 				}
 			}
 		}
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -140,7 +134,7 @@ class Wp_Courseware_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_all_wpcw_modules', $option );
 	}
@@ -154,27 +148,24 @@ class Wp_Courseware_Helpers {
 	public function all_wpcw_units( $label = null, $option_code = 'WPCW_UNIT', $any_option = true ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
-
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Unit', 'uncanny-automator' );
 		}
 
-		$args = [
+		$args = array(
 			'post_type'      => 'course_unit',
 			'posts_per_page' => 9999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
-		];
-
+		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any unit', 'uncanny-automator' ) );
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -183,12 +174,12 @@ class Wp_Courseware_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => [
+			'relevant_tokens' => array(
 				$option_code          => esc_attr__( 'Unit title', 'uncanny-automator' ),
 				$option_code . '_ID'  => esc_attr__( 'Unit ID', 'uncanny-automator' ),
 				$option_code . '_URL' => esc_attr__( 'Unit URL', 'uncanny-automator' ),
-			],
-		];
+			),
+		);
 
 		return apply_filters( 'uap_option_all_wpcw_units', $option );
 	}

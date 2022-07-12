@@ -52,19 +52,31 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 			'action'              => 'rcp_membership_post_activate',
 			'priority'            => 5,
 			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'user_purchases_membership_level' ),
-			'options'             => array(
-				Automator()->helpers->recipe->restrict_content->options->get_membership_levels(
-					null,
-					$this->trigger_meta,
-					array( 'any' => true )
-				),
+			'validation_function' => array(
+				$this,
+				'user_purchases_membership_level',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->restrict_content->options->get_membership_levels(
+						null,
+						$this->trigger_meta,
+						array( 'any' => true )
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -138,4 +150,5 @@ class RESTRICT_CONTENT_PURCHASESMEMBERSHIP {
 		return;
 
 	}
+
 }

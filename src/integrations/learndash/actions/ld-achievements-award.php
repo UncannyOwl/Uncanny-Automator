@@ -49,24 +49,34 @@ class LD_ACHIEVEMENTS_AWARD {
 			'priority'           => 10,
 			'accepted_args'      => 0,
 			'execution_function' => array( $this, 'award_achievement' ),
-			'options_group'      => array(
-				$this->action_meta => array(
-					array(
-						'input_type'            => 'select',
-						'option_code'           => $this->action_meta,
-						'options'               => $this->get_achievements(),
-						'required'              => true,
-						'label'                 => esc_attr__( 'Achievements', 'uncanny-automator' ),
-						'description'           => esc_attr__( 'Select from the list of available achievements.', 'uncanny-automator' ),
-						'supports_token'        => false,
-						'supports_custom_value' => false,
-					),
-				),
-			),
-
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => array(
+					$this->action_meta => array(
+						array(
+							'input_type'            => 'select',
+							'option_code'           => $this->action_meta,
+							'options'               => $this->get_achievements(),
+							'required'              => true,
+							'label'                 => esc_attr__( 'Achievements', 'uncanny-automator' ),
+							'description'           => esc_attr__( 'Select from the list of available achievements.', 'uncanny-automator' ),
+							'supports_token'        => false,
+							'supports_custom_value' => false,
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -131,4 +141,5 @@ class LD_ACHIEVEMENTS_AWARD {
 
 		return $achievements;
 	}
+
 }

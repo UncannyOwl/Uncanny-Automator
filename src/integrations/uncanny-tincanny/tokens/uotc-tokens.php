@@ -134,7 +134,7 @@ class UOTC_Tokens {
 	 *
 	 * @return string|null
 	 */
-	public function uotc_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
+	public function uotc_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( ! is_array( $trigger_data ) ) {
 			return $value;
 		}

@@ -52,16 +52,25 @@ class FCRM_ADD_USER_TO_LIST {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'contact_added_to_lists' ),
-			'options'             => array(
-				Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
-	
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists(),
+				),
+			)
+		);
+	}
+
 	/**
 	 * @param $attached_list_ids
 	 * @param $subscriber
@@ -144,4 +153,5 @@ class FCRM_ADD_USER_TO_LIST {
 			}
 		}
 	}
+
 }

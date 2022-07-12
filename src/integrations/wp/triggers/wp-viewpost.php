@@ -59,9 +59,9 @@ class WP_VIEWPOST {
 	 * @return void
 	 */
 	public function load_options() {
-		
+
 		Automator()->helpers->recipe->wp->options->load_options = true;
-		
+
 		$options = Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
@@ -70,6 +70,7 @@ class WP_VIEWPOST {
 				),
 			)
 		);
+
 		return $options;
 	}
 
@@ -105,17 +106,8 @@ class WP_VIEWPOST {
 						'run_number'     => $result['args']['run_number'],
 					);
 
-					$trigger_meta['meta_key']   = 'WPPOST';
-					$trigger_meta['meta_value'] = maybe_serialize( $post->post_title );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'WPPOST_ID';
-					$trigger_meta['meta_value'] = maybe_serialize( $post->ID );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'WPPOST_URL';
-					$trigger_meta['meta_value'] = maybe_serialize( get_permalink( $post->ID ) );
-					Automator()->insert_trigger_meta( $trigger_meta );
+					// post_id Token
+					Automator()->db->token->save( 'post_id', $post->ID, $trigger_meta );
 
 					Automator()->maybe_trigger_complete( $result['args'] );
 				}

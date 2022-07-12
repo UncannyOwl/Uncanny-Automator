@@ -31,7 +31,7 @@ class Wpjm_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -167,7 +167,7 @@ class Wpjm_Helpers {
 			'relevant_tokens' => array(
 				$option_code         => __( 'Job title', 'uncanny-automator' ),
 				$option_code . '_ID' => __( 'Job ID', 'uncanny-automator' ),
-			)
+			),
 		);
 
 		return apply_filters( 'uap_option_list_wpjm_jobs', $option );

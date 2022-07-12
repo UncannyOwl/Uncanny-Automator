@@ -259,18 +259,37 @@ class Facebook_Groups_Helpers {
 	 */
 	public function automator_integration_facebook_group_capture_token() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+
+			wp_safe_redirect( $this->get_settings_page_url() . '&status=error' );
+
+			exit;
+
+		}
+
+		if ( ! wp_verify_nonce( automator_filter_input( 'state' ), self::OPTION_KEY ) ) {
+
+			wp_safe_redirect( $this->get_settings_page_url() . '&status=error' );
+
+			exit;
+
+		}
+
 		$settings = array(
 			'user' => array(
-				'id'    => filter_input( INPUT_GET, 'fb_user_id', FILTER_SANITIZE_NUMBER_INT ),
-				'token' => filter_input( INPUT_GET, 'fb_user_token', FILTER_SANITIZE_STRING ),
+				'id'    => automator_filter_input( 'fb_user_id' ),
+				'token' => automator_filter_input( 'fb_user_token' ),
 			),
 		);
 
-		$error_status = filter_input( INPUT_GET, 'status', FILTER_DEFAULT );
+		$error_status = automator_filter_input( 'status' );
 
 		if ( 'error' === $error_status ) {
+
 			wp_safe_redirect( $this->get_settings_page_url() . '&status=error' );
+
 			exit;
+
 		}
 
 		delete_transient( 'uo-fb-group-transient-user-connected' );

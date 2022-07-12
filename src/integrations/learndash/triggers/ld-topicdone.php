@@ -33,6 +33,30 @@ class LD_TOPICDONE {
 	 */
 	public function define_trigger() {
 
+		$trigger = array(
+			'author'              => Automator()->get_author_name( $this->trigger_code ),
+			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
+			'integration'         => self::$integration,
+			'code'                => $this->trigger_code,
+			/* translators: Logged-in trigger - LearnDash */
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a topic:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			/* translators: Logged-in trigger - LearnDash */
+			'select_option_name'  => esc_attr__( 'A user completes {{a topic}}', 'uncanny-automator' ),
+			'action'              => 'learndash_topic_completed',
+			'priority'            => 10,
+			'accepted_args'       => 1,
+			'validation_function' => array( $this, 'topic_completed' ),
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$args = array(
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => 999,
@@ -73,60 +97,47 @@ class LD_TOPICDONE {
 			$this->trigger_meta . '_THUMB_ID'  => esc_attr__( 'Topic featured image ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Topic featured image URL', 'uncanny-automator' ),
 		);
-		$trigger                = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/learndash/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( esc_attr__( 'A user completes {{a topic:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => esc_attr__( 'A user completes {{a topic}}', 'uncanny-automator' ),
-			'action'              => 'learndash_topic_completed',
-			'priority'            => 10,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'topic_completed' ),
-			'options'             => array(
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
-			'options_group'       => array(
-				$this->trigger_meta => array(
-					Automator()->helpers->recipe->field->select_field_ajax(
-						'LDCOURSE',
-						esc_attr__( 'Course', 'uncanny-automator' ),
-						$course_options,
-						'',
-						'',
-						false,
-						true,
-						array(
-							'target_field' => 'LDLESSON',
-							'endpoint'     => 'select_lesson_from_course_LD_TOPICDONE',
-						),
-						$course_relevant_tokens
-					),
-					Automator()->helpers->recipe->field->select_field_ajax(
-						'LDLESSON',
-						esc_attr__( 'Lesson', 'uncanny-automator' ),
-						$lesson_options,
-						'',
-						'',
-						false,
-						true,
-						array(
-							'target_field' => 'LDTOPIC',
-							'endpoint'     => 'select_topic_from_lesson_LD_TOPICDONE',
-						),
-						$lesson_relevant_tokens
-					),
-					Automator()->helpers->recipe->field->select_field( 'LDTOPIC', esc_attr__( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(
+					Automator()->helpers->recipe->options->number_of_times(),
 				),
-			),
+				'options_group' => array(
+					$this->trigger_meta => array(
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'LDCOURSE',
+							esc_attr__( 'Course', 'uncanny-automator' ),
+							$course_options,
+							'',
+							'',
+							false,
+							true,
+							array(
+								'target_field' => 'LDLESSON',
+								'endpoint'     => 'select_lesson_from_course_LD_TOPICDONE',
+							),
+							$course_relevant_tokens
+						),
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'LDLESSON',
+							esc_attr__( 'Lesson', 'uncanny-automator' ),
+							$lesson_options,
+							'',
+							'',
+							false,
+							true,
+							array(
+								'target_field' => 'LDTOPIC',
+								'endpoint'     => 'select_topic_from_lesson_LD_TOPICDONE',
+							),
+							$lesson_relevant_tokens
+						),
+						Automator()->helpers->recipe->field->select_field( 'LDTOPIC', esc_attr__( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+					),
+				),
+			)
 		);
-
-		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**

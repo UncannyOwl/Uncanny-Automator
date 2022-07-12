@@ -45,8 +45,6 @@ class WP_SUBMITPOST {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -55,20 +53,23 @@ class WP_SUBMITPOST {
 	 * @return void
 	 */
 	public function load_options() {
-		$options = array(
-			'options' => array(
-				array(
-					'option_code'        => 'NUMTIMES',
-					'label'              => 'Number of Times',
-					'input_type'         => 'text',
-					// to setup example, lets define the value the child will be based on
-					'current_value'      => false,
-					'default_value'      => false,
-					'validation_type'    => 'integer',
-					'validation_message' => 'Please add how many times the page must be submitted.',
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					array(
+						'option_code'        => 'NUMTIMES',
+						'label'              => 'Number of Times',
+						'input_type'         => 'text',
+						// to setup example, lets define the value the child will be based on
+						'current_value'      => false,
+						'default_value'      => false,
+						'validation_type'    => 'integer',
+						'validation_message' => 'Please add how many times the page must be submitted.',
+					),
 				),
-			),
+			)
 		);
-		return $options;
+
 	}
 }

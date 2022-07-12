@@ -179,6 +179,11 @@ class Automator_Load {
 				return;
 			}
 
+			// Bail if in WP CLI mode.
+			if ( defined( 'WP_CLI' ) && WP_CLI ) {
+				return;
+			}
+
 			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
 			exit();
@@ -340,10 +345,10 @@ class Automator_Load {
 		$this->load_traits();
 
 		foreach ( $classes as $class_name => $file ) {
-			if ( ! file_exists( $file ) ) {
+			if ( ! is_file( $file ) ) {
 				continue;
 			}
-			require $file;
+			require_once $file;
 			$class                                 = __NAMESPACE__ . '\\' . $class_name;
 			self::$core_class_inits[ $class_name ] = new $class();
 		}
@@ -573,9 +578,11 @@ class Automator_Load {
 		$classes['Api_Server']                          = UA_ABSPATH . 'src/core/classes/class-api-server.php';
 		$classes['Usage_Reports']                       = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 		$classes['Set_Up_Automator']                    = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
+		$classes['Initialize_Automator']                = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
 		$classes['Automator_Notifications']             = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
+		$classes['Calculation_Token']                   = UA_ABSPATH . 'src/core/classes/class-calculation-token.php';
 
-		//$classes['Import_Recipe'] = UA_ABSPATH . 'src/core/classes/class-import-recipe.php';
+		$classes['Background_Actions'] = UA_ABSPATH . 'src/core/classes/class-background-actions.php';
 
 		// Load migrations
 		$this->load_migrations();

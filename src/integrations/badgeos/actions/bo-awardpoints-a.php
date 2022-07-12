@@ -45,33 +45,42 @@ class BO_AWARDPOINTS_A {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_points' ),
-			'options'            => array(),
-			'options_group'      => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->badgeos->options->list_bo_points_types(
-						esc_attr__( 'Point type', 'uncanny-automator' ),
-						$this->action_meta,
-						array(
-							'token'   => false,
-							'is_ajax' => false,
-						)
-					),
-				),
-				'BOPOINTVALUE'     => array(
-					array(
-						'input_type'      => 'int',
-
-						'option_code'     => 'BOPOINTVALUE',
-						'label'           => esc_attr__( 'Points', 'uncanny-automator' ),
-
-						'supports_tokens' => true,
-						'required'        => true,
-					),
-				),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(),
+				'options_group' => array(
+					$this->action_meta => array(
+						Automator()->helpers->recipe->badgeos->options->list_bo_points_types(
+							esc_attr__( 'Point type', 'uncanny-automator' ),
+							$this->action_meta,
+							array(
+								'token'   => false,
+								'is_ajax' => false,
+							)
+						),
+					),
+					'BOPOINTVALUE'     => array(
+						array(
+							'input_type'      => 'int',
+							'option_code'     => 'BOPOINTVALUE',
+							'label'           => esc_attr__( 'Points', 'uncanny-automator' ),
+							'supports_tokens' => true,
+							'required'        => true,
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**

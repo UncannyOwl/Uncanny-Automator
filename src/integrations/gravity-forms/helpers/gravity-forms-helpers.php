@@ -11,6 +11,7 @@ use Uncanny_Automator_Pro\Gravity_Forms_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Gravity_Forms_Helpers {
+
 	/**
 	 * @var Gravity_Forms_Helpers
 	 */
@@ -31,7 +32,7 @@ class Gravity_Forms_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -149,7 +150,8 @@ class Gravity_Forms_Helpers {
 	 * Get the batch object by code value.
 	 *
 	 * @param $code_field The code field entry inside Gravity forms object.
-	 * @param $entry The GF entry passed from `gform_after_submission` action hook.
+	 * @param $entry The GF entry passed from `gform_after_submission` action
+	 *     hook.
 	 *
 	 * @return object The batch.
 	 */

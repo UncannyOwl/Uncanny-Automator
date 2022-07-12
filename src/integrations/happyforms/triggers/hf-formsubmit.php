@@ -52,21 +52,30 @@ class HF_FORMSUBMIT {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'hf_form_submitted' ),
-			'options'             => array(
-				Automator()->helpers->recipe->happyforms->options->all_happyforms_forms(
-					null,
-					$this->trigger_meta,
-					array(
-						'include_any' => true,
-						'any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
-					)
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->happyforms->options->all_happyforms_forms(
+						null,
+						$this->trigger_meta,
+						array(
+							'include_any' => true,
+							'any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
+						)
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -110,4 +119,5 @@ class HF_FORMSUBMIT {
 			}
 		}
 	}
+
 }

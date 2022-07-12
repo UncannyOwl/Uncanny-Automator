@@ -126,7 +126,7 @@ class WP_USERCREATESPOST {
 
 		Automator()->helpers->recipe->wp->options->load_options = true;
 
-		$all_post_types = Automator()->helpers->recipe->wp->options->all_wp_post_types(
+		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			null,
 			'WPPOSTTYPES',
 			array(
@@ -328,69 +328,21 @@ class WP_USERCREATESPOST {
 			'run_number'     => $result['args']['run_number'],
 		);
 
-		$prefix = $trigger_id . ':' . $this->trigger_code;
+		// post_id Token
+		Automator()->db->token->save( 'post_id', $post->ID, $trigger_meta );
 
-		// Post Title Token
-		$trigger_meta['meta_key']   = $prefix . ':POSTTITLE';
-		$trigger_meta['meta_value'] = maybe_serialize( $post->post_title );
-		Automator()->insert_trigger_meta( $trigger_meta );
-
-		// Post ID Token
-		$trigger_meta['meta_key']   = $prefix . ':POSTID';
-		$trigger_meta['meta_value'] = maybe_serialize( $post->ID );
-		Automator()->insert_trigger_meta( $trigger_meta );
-
-		// Post URL Token
-		$trigger_meta['meta_key']   = $prefix . ':POSTURL';
-		$trigger_meta['meta_value'] = maybe_serialize( get_permalink( $post->ID ) );
-		Automator()->insert_trigger_meta( $trigger_meta );
-
-		// Post Content Token
-		$trigger_meta['meta_key']   = $prefix . ':POSTCONTENT';
-		$trigger_meta['meta_value'] = maybe_serialize( $post->post_content );
-		Automator()->insert_trigger_meta( $trigger_meta );
-
-		// Post Excerpt Token
-		$trigger_meta['meta_key']   = $prefix . ':POSTEXCERPT';
-		$trigger_meta['meta_value'] = maybe_serialize( $post->post_excerpt );
-		Automator()->insert_trigger_meta( $trigger_meta );
-
-		// Post Type Token
-		$trigger_meta['meta_key']   = $prefix . ':WPPOSTTYPES';
-		$trigger_meta['meta_value'] = maybe_serialize( $post->post_type );
-		Automator()->insert_trigger_meta( $trigger_meta );
-
-		$trigger_meta['meta_key']   = $prefix . ':WPTAXONOMYTERM';
-		$trigger_meta['meta_value'] = '';
 		if ( isset( $this->terms_list[ $recipe_id ][ $trigger_id ] ) ) {
-			$trigger_meta['meta_value'] = maybe_serialize( implode( ', ', $this->terms_list[ $recipe_id ][ $trigger_id ] ) );
+			$terms = implode( ', ', $this->terms_list[ $recipe_id ][ $trigger_id ] );
+			Automator()->db->token->save( 'WPTAXONOMYTERM', $terms, $trigger_meta );
 		}
-		Automator()->insert_trigger_meta( $trigger_meta );
 
-		$trigger_meta['meta_key']   = $prefix . ':WPTAXONOMIES';
-		$trigger_meta['meta_value'] = '';
 		if ( isset( $this->taxonomy_list[ $recipe_id ][ $trigger_id ] ) ) {
-			$trigger_meta['meta_value'] = maybe_serialize( implode( ', ', $this->taxonomy_list[ $recipe_id ][ $trigger_id ] ) );
+			$taxonomies = implode( ', ', $this->taxonomy_list[ $recipe_id ][ $trigger_id ] );
+			Automator()->db->token->save( 'WPTAXONOMIES', $taxonomies, $trigger_meta );
 		}
-		Automator()->insert_trigger_meta( $trigger_meta );
 
 		$this->trigger_meta_log = $trigger_meta;
 		$this->result           = $result;
-
-		if ( defined( 'REST_REQUEST' ) ) {
-			add_action(
-				"rest_after_insert_{$post->post_type}",
-				array(
-					$this,
-					'store_thumbnail',
-				),
-				10,
-				3
-			);
-
-			return;
-		}
-		$this->store_thumbnail( $post );
 	}
 
 	/**
@@ -458,6 +410,11 @@ class WP_USERCREATESPOST {
 				$matched[] = $recipe_id;
 				foreach ( $post_terms as $term ) {
 					$this->terms_list[ $recipe_id ][ $trigger_id ][ $term->term_id ] = $term->name;
+
+					$_taxonomy = get_taxonomy( $term->taxonomy );
+					if ( ! empty( $_taxonomy ) ) {
+						$this->taxonomy_list[ $recipe_id ][ $trigger_id ][ $_taxonomy->name ] = $_taxonomy->labels->singular_name;
+					}
 				}
 			}
 		}

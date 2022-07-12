@@ -51,8 +51,6 @@ class UC_CODEREDEEMED {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**

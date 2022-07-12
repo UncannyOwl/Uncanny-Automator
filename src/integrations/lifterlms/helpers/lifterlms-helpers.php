@@ -11,6 +11,7 @@ use Uncanny_Automator_Pro\Lifterlms_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Lifterlms_Helpers {
+
 	/**
 	 * @var Lifterlms_Helpers
 	 */
@@ -31,7 +32,7 @@ class Lifterlms_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -283,4 +284,5 @@ class Lifterlms_Helpers {
 
 		return apply_filters( 'uap_option_all_lf_quizs', $option );
 	}
+
 }

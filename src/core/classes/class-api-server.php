@@ -308,7 +308,7 @@ class Api_Server {
 		$optional_params = array( 'method', 'body', 'timeout', 'redirection', 'httpversion', 'blocking', 'headers', 'cookies' );
 
 		foreach ( $optional_params as $optional_param ) {
-			if ( ! empty( $params[ $optional_param ] ) ) {
+			if ( isset( $params[ $optional_param ] ) ) {
 				$request[ $optional_param ] = $params[ $optional_param ];
 			}
 		}

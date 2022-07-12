@@ -446,6 +446,8 @@ class Automator_Translations {
 					/* translators: Token category. It refers to advanced tokens. */
 					'advanced'                   => esc_attr_x( 'Advanced', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.advanced
+					'formulas'                   => esc_attr_x( 'Modifiers', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.formulas
 					/* translators: Token name */
 					'userMetaKey'                => esc_attr_x( 'User meta', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.userMetaKey
@@ -458,6 +460,10 @@ class Automator_Translations {
 					/* translators: 1. The post. 2. The meta key */
 					'postMetaKeyTemplate'        => esc_attr_x( 'Post: %1$s meta: %2$s', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.postMetaKeyTemplate
+					'calculation'                => esc_attr_x( 'Calculation', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.calculationKey
+					'calculationTemplate'        => esc_attr_x( 'Calculation: %1$s', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.userMetaKeyTemplate
 					'currentDate'                => esc_attr_x( 'Current date', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.currentDate
 					'currentTime'                => esc_attr_x( 'Current time', 'Token', 'uncanny-automator' ),
@@ -472,7 +478,7 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.tokens.global.user_ip_address
 				),
 				'specialTokens'                  => array(
-					'userMeta' => array(
+					'userMeta'    => array(
 						'modal' => array(
 							'title'                  => esc_attr__( "What's the key of the meta you want to retrieve?", 'uncanny-automator' ),
 							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.title
@@ -484,7 +490,7 @@ class Automator_Translations {
 							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.userMetaKeyDescription
 						),
 					),
-					'postMeta' => array(
+					'postMeta'    => array(
 						'modal' => array(
 							'title'                => esc_attr__( 'Token data', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.title
@@ -498,6 +504,18 @@ class Automator_Translations {
 							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.keyFieldLabel
 							'keyFieldDescription'  => esc_attr__( 'The meta key associated with the data you want to retrieve. Only one meta key can be entered per token.', 'uncanny-automator' ),
 							// UncannyAutomator.i18n.tokens.specialTokens.postMeta.modal.keyFieldDescription
+						),
+					),
+					'calculation' => array(
+						'modal' => array(
+							'title'                   => esc_attr__( 'Calculation', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.title
+							'confirmButton'           => esc_attr__( 'Add token', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.confirmButton
+							'formulaFieldLabel'       => esc_attr_x( 'Formula', 'Token', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.userMetaKey
+							'formulaFieldDescription' => esc_attr__( 'Use + for addition, - for subtraction, / for division and * for multiplication.  Use tokens that output numerical values.  If a token outputs a string, it will be replaced with zero (0).  Example: [Some token] + 1.', 'uncanny-automator' ),
+							// UncannyAutomator.i18n.tokens.specialTokens.userMeta.modal.userMetaKeyDescription
 						),
 					),
 				),

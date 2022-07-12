@@ -33,10 +33,6 @@ class BP_ACTIVITYSTRM {
 	 */
 	public function define_trigger() {
 
-		$bp_users_args = array(
-			'uo_include_any' => true,
-		);
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name(),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/buddypress/' ),
@@ -50,14 +46,28 @@ class BP_ACTIVITYSTRM {
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'bp_activity_posted_update' ),
-			'options'             => array(
-				Automator()->helpers->recipe->buddypress->options->all_buddypress_users( null, 'BPUSERS', $bp_users_args ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$bp_users_args = array(
+			'uo_include_any' => true,
+		);
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->buddypress->options->all_buddypress_users( null, 'BPUSERS', $bp_users_args ),
+				),
+			)
+		);
 	}
 
 	/**

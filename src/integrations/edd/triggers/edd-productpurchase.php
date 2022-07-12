@@ -51,18 +51,17 @@ class EDD_PRODUCTPURCHASE {
 		Automator()->register->trigger( $trigger );
 	}
 
+	/**
+	 * @return array[]
+	 */
 	public function load_options() {
-
-		$options = array(
-			'options' => array(
-				Automator()->helpers->recipe->edd->options->all_edd_downloads( esc_attr__( 'Product', 'uncanny-automator' ), $this->trigger_meta ),
-			),
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->edd->options->all_edd_downloads( esc_attr__( 'Product', 'uncanny-automator' ), $this->trigger_meta ),
+				),
+			)
 		);
-
-		$options = Automator()->utilities->keep_order_of_options( $options );
-
-		return $options;
-
 	}
 
 	/**

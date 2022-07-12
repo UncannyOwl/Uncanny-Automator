@@ -31,7 +31,7 @@ class Happyforms_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 
@@ -82,7 +82,7 @@ class Happyforms_Helpers {
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			if ( $args['uo_include_any'] ) {
-				$options[ - 1 ] = $args['uo_any_label'];
+				$options[- 1] = $args['uo_any_label'];
 			}
 			$form_controller = happyforms_get_form_controller();
 

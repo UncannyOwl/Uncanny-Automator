@@ -46,13 +46,25 @@ class LD_MARKCOURSEDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'mark_completes_a_course' ),
-			'options'            => array(
-				Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
+				),
+			)
+		);
+	}
+
 
 	/**
 	 * Validation function when the action is hit
@@ -156,7 +168,8 @@ class LD_MARKCOURSEDONE {
 					'has_graded'       => false,
 					'statistic_ref_id' => 0,
 					'm_edit_by'        => 9999999,  // Manual Edit By ID.
-					'm_edit_time'      => time(),          // Manual Edit timestamp.
+					'm_edit_time'      => time(),
+					// Manual Edit timestamp.
 				);
 
 				$quizz_progress[] = $quizdata;
@@ -189,4 +202,5 @@ class LD_MARKCOURSEDONE {
 			update_user_meta( $user_id, '_sfwd-quizzes', $quizz_progress );
 		}
 	}
+
 }

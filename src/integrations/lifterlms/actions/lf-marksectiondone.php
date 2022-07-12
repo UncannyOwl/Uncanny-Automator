@@ -6,12 +6,14 @@ use LLMS_Section;
 
 /**
  * Class LF_MARKSECTIONDONE
+ *
  * @package Uncanny_Automator
  */
 class LF_MARKSECTIONDONE {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'LF';
@@ -33,8 +35,6 @@ class LF_MARKSECTIONDONE {
 	 */
 	public function define_action() {
 
-
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/lifterlms/' ),
@@ -47,14 +47,24 @@ class LF_MARKSECTIONDONE {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lf_mark_section_done' ),
-			'options'            => [
-				Automator()->helpers->recipe->lifterlms->options->all_lf_sections( esc_attr__( 'Section', 'uncanny-automator' ), $this->action_meta, false ),
-			],
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->lifterlms->options->all_lf_sections( esc_attr__( 'Section', 'uncanny-automator' ), $this->action_meta, false ),
+				),
+			)
+		);
+	}
 
 	/**
 	 * Validation function when the action is hit.
@@ -64,8 +74,6 @@ class LF_MARKSECTIONDONE {
 	 * @param string $recipe_id recipe id.
 	 */
 	public function lf_mark_section_done( $user_id, $action_data, $recipe_id, $args ) {
-
-
 
 		if ( ! function_exists( 'llms_mark_complete' ) ) {
 			$error_message = 'The function llms_mark_complete does not exist';
@@ -89,4 +97,5 @@ class LF_MARKSECTIONDONE {
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

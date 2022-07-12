@@ -46,36 +46,50 @@ class UNCANNYCEUS_AWARDCEUS {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'award_ceus' ),
-			'options_group'      =>
-				array(
-					'AWARDCEUS' =>
-						array(
-							array(
-								'option_code' => 'AWARDCEUSDATE',
-								'label'       => esc_attr__( 'Date', 'uncanny-automator' ),
-								'input_type'  => 'text',
-								'required'    => true,
-								'description' => __( 'Format: MM/DD/YYYY Example: 12/05/2020', 'uncanny-automator' ),
-							),
-							array(
-								'option_code' => 'AWARDCEUSCOURSE',
-								'label'       => esc_attr__( 'Description', 'uncanny-automator' ),
-								'input_type'  => 'text',
-								'required'    => true,
-							),
-							array(
-								'option_code' => 'AWARDCEUS',
-								/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
-								'label'       => sprintf( esc_attr__( 'Number of %1$s to award', 'uncanny-automator' ), $credit_designation_label_plural ),
-								'input_type'  => 'float',
-								'required'    => true,
-
-							),
-						),
-				),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' =>
+					array(
+						'AWARDCEUS' =>
+							array(
+								array(
+									'option_code' => 'AWARDCEUSDATE',
+									'label'       => esc_attr__( 'Date', 'uncanny-automator' ),
+									'input_type'  => 'text',
+									'required'    => true,
+									'description' => __( 'Format: MM/DD/YYYY Example: 12/05/2020', 'uncanny-automator' ),
+								),
+								array(
+									'option_code' => 'AWARDCEUSCOURSE',
+									'label'       => esc_attr__( 'Description', 'uncanny-automator' ),
+									'input_type'  => 'text',
+									'required'    => true,
+								),
+								array(
+									'option_code' => 'AWARDCEUS',
+									/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
+									'label'       => sprintf( esc_attr__( 'Number of %1$s to award', 'uncanny-automator' ), $credit_designation_label_plural ),
+									'input_type'  => 'float',
+									'required'    => true,
+
+								),
+							),
+					),
+			)
+		);
 	}
 
 	/**
@@ -97,7 +111,8 @@ class UNCANNYCEUS_AWARDCEUS {
 		$data = array(
 			'course'       => 0, // It is not a real course
 			'customCourse' => $course, // The fake course to save data against
-			'date'         => $date, // date to store CEU fon in format F d Y, g:i:s a
+			'date'         => $date,
+			// date to store CEU fon in format F d Y, g:i:s a
 			'ceus'         => $ceus, // the amount of CEUs
 		);
 
@@ -130,4 +145,5 @@ class UNCANNYCEUS_AWARDCEUS {
 
 		return;
 	}
+
 }

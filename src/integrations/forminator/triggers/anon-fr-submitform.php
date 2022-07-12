@@ -53,12 +53,23 @@ class ANON_FR_SUBMITFORM {
 			'priority'            => 100,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'fr_submit_form' ),
-			'options'             => array(
-				Automator()->helpers->recipe->forminator->options->all_forminator_forms( null, $this->trigger_meta ),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->forminator->options->all_forminator_forms( null, $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**

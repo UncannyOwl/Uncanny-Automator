@@ -63,6 +63,8 @@ class FACEBOOK_GROUP_PUBLISH_LINK {
 
 		$this->set_options_group( $this->get_options_group() );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}

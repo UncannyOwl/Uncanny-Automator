@@ -3,57 +3,66 @@
 	flex-direction: column;
 }
 
-	.uap-facebook-page {
-		border: 1px solid var(--uap-border-color-gray);
-		border-radius: var(--uap-border-radius);
-	}
+.uap-facebook-page {
+	border: 1px solid var(--uap-border-color-gray);
+	border-radius: var(--uap-border-radius);
+}
 
-		.uap-instagram-account {
-			padding: 10px;
-		}
+.uap-instagram-account {
+	padding: 10px;
+}
 
-			.uap-instagram-account-no-account {
-				color: var(--uap-font-color-secondary);
-				font-style: italic;
-			}
+.uap-instagram-account-no-account {
+	color: var(--uap-font-color-secondary);
+	font-style: italic;
+}
 
-			/* Instagram pill */
-			.uap-instagram-account-pill {
-				display: flex;
-				align-items: center;
-			}
+/* Instagram pill */
+.uap-instagram-account-pill {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
 
-				.uap-instagram-account-pill-avatar {
-					width: 24px;
-					height: 24px;
+.uap-instagram-account-pill-avatar {
+	width: 24px;
+	height: 24px;
 
-					border-radius: 50%;
-				}
+	border-radius: 50%;
+}
 
-				.uap-instagram-account-pill-username {
-					margin-left: 8px;
-					margin-right: 8px;
+.uap-instagram-account-pill-username {
+	margin-left: 8px;
+	margin-right: 8px;
 
-					font-weight: 500;
+	font-weight: 500;
 
-					color: var(--uap-font-color);
-				}
+	color: var(--uap-font-color);
+}
 
-				.uap-instagram-account-pill uo-icon[id="instagram"] {
-					line-height: 1;
-					margin-top: 2px;
-				}
+.uap-instagram-account-pill uo-icon[id="instagram"] {
+	line-height: 1;
+	margin-top: 2px;
+}
 
-		.uap-linked-account {
-			padding: 10px;
+p.uap-instagram-error-message {
+	color: var(--uap-color-red);
+	margin: 15px 0 0 0;
+	display: block;
+	width: 100%;
+	font-style: italic;
+}
 
-			background: rgba( var(--uap-color-gray-rgb), .2 );
+.uap-linked-account {
+	padding: 10px;
 
-			font-size: var(--uap-font-size--body-xxsmall);
-			line-height: var(--uap-line-height--body-xxsmall);
-			color: var(--uap-font-color-secondary);
-		}
+	background: rgba(var(--uap-color-gray-rgb), .2);
 
-			.uap-linked-account uo-icon[id="facebook"] {
-				font-size: var(--uap-font-size--body-xxsmall);
-			}
+	font-size: var(--uap-font-size--body-xxsmall);
+	line-height: var(--uap-line-height--body-xxsmall);
+	color: var(--uap-font-color-secondary);
+}
+
+.uap-linked-account uo-icon[id="facebook"] {
+	font-size: var(--uap-font-size--body-xxsmall);
+}

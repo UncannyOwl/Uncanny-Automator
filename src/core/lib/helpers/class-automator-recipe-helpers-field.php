@@ -333,7 +333,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 
 			// Supports custom value
 			// default: true
-			$field_args['supports_custom_value'] = isset( $args['supports_custom_value'] ) ? $args['supports_custom_value'] : true;
+			$field_args['supports_custom_value'] = $this->supports_custom_value( $args );
 
 			// Elements related to supports custom value
 			// First we have to check if it supports custom values
@@ -369,7 +369,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'default_value'            => null,
 			'options'                  => array(),
 			'custom_value_description' => '',
-			'supports_custom_value'    => null,
+			'supports_custom_value'    => apply_filters( 'automator_supports_custom_value', true, $args ),
 			'relevant_tokens'          => null,
 			'is_ajax'                  => false,
 			'chained_to'               => null,
@@ -456,7 +456,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		}
 
 		$custom_value_description = key_exists( 'custom_value_description', $args ) ? $args['custom_value_description'] : null;
-		$supports_custom_value    = key_exists( 'supports_custom_value', $args ) ? $args['supports_custom_value'] : null;
+		$supports_custom_value    = $this->supports_custom_value( $args );
 		$supports_tokens          = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
 		$support_token            = apply_filters( 'uap_option_' . $option_code . '_select_field', array( false ), '3.0', 'automator_option_' . $option_code . '_select_field' );
 		$support_token            = apply_filters( 'automator_option_' . $option_code . '_select_field', $support_token );
@@ -470,7 +470,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'options'                  => $options,
 			'custom_value_description' => $custom_value_description,
 			'supports_custom_value'    => $supports_custom_value,
-			'supports_tokens'          => $supports_tokens,
+			//          'supports_tokens'          => $supports_tokens,
 			//'is_ajax'         => $is_ajax,
 			//'chained_to'      => $fill_values_in,
 		);
@@ -528,12 +528,13 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$description              = key_exists( 'description', $args ) ? $args['description'] : null;
 		$custom_value_description = key_exists( 'custom_value_description', $args ) ? $args['custom_value_description'] : null;
-		$supports_custom_value    = key_exists( 'supports_custom_value', $args ) ? $args['supports_custom_value'] : null;
-		$supports_tokens          = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
-		$supports_tokens          = apply_filters_deprecated( 'uap_option_' . $option_code . '_select_field', array( $supports_tokens ), '3.0', 'automator_option_' . $option_code . '_select_field' );
-		$supports_tokens          = apply_filters( 'automator_option_' . $option_code . '_select_field', $supports_tokens );
-		$token_name               = apply_filters( 'automator_option_' . $option_code . '_select_field_token_name', '', $args );
-		$option                   = array(
+		// default true
+		$supports_custom_value = $this->supports_custom_value( $args );
+		$supports_tokens       = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
+		$supports_tokens       = apply_filters_deprecated( 'uap_option_' . $option_code . '_select_field', array( $supports_tokens ), '3.0', 'automator_option_' . $option_code . '_select_field' );
+		$supports_tokens       = apply_filters( 'automator_option_' . $option_code . '_select_field', $supports_tokens );
+		$token_name            = apply_filters( 'automator_option_' . $option_code . '_select_field_token_name', '', $args );
+		$option                = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'description'              => $description,
@@ -561,5 +562,20 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		return apply_filters( 'automator_option_select_field_ajax', $option );
 	}
 
+	/**
+	 * @param $args
+	 *
+	 * @return bool
+	 */
+	public function supports_custom_value( $args ) {
+		if ( ! key_exists( 'supports_custom_value', $args ) ) {
+			return apply_filters( 'automator_supports_custom_value', true, $args );
+		}
+		if ( null === $args['supports_custom_value'] ) {
+			return apply_filters( 'automator_supports_custom_value', true, $args );
+		}
+
+		return apply_filters( 'automator_supports_custom_value', boolval( $args['supports_custom_value'] ), $args );
+	}
 }
 

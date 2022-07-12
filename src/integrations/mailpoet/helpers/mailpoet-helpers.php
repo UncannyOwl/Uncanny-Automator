@@ -31,7 +31,7 @@ class Mailpoet_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 	}
 
 	/**
@@ -125,6 +125,62 @@ class Mailpoet_Helpers {
 		);
 
 		return apply_filters( 'uap_option_get_all_mailpoet_subscribers', $option );
+	}
+
+	/**
+	 * @param string $label
+	 * @param string $option_code
+	 * @param array $args
+	 *
+	 * @return mixed
+	 */
+	public function list_mailpoet_forms( $label = null, $option_code = 'MAILPOETFORMS', $args = array() ) {
+		global $wpdb;
+
+		if ( ! $this->load_options ) {
+			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+		}
+
+		if ( ! $label ) {
+			$label = esc_attr__( 'Form', 'uncanny-automator' );
+		}
+
+		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
+		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
+		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$options      = array();
+
+		if ( Automator()->helpers->recipe->load_helpers ) {
+			$forms = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailpoet_forms WHERE `deleted_at` IS NULL AND `status` = %s ORDER BY `id` LIMIT %d", 'enabled', 9999 ) );
+			if ( ! empty( $forms ) ) {
+				foreach ( $forms as $form ) {
+					$options[ $form->id ] = esc_html( $form->name );
+				}
+			}
+		}
+		$type = 'select';
+
+		$option = array(
+			'option_code'     => $option_code,
+			'label'           => $label,
+			'input_type'      => $type,
+			'required'        => true,
+			'supports_tokens' => $token,
+			'is_ajax'         => $is_ajax,
+			'fill_values_in'  => $target_field,
+			'endpoint'        => $end_point,
+			'options'         => $options,
+			'relevant_tokens' => array(
+				$option_code                => esc_attr__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code . '_FIRSTNAME' => esc_attr__( 'First name', 'uncanny-automator' ),
+				$option_code . '_LASTNAME'  => esc_attr__( 'Last name', 'uncanny-automator' ),
+				$option_code . '_EMAIL'     => esc_attr__( 'Email', 'uncanny-automator' ),
+			),
+		);
+
+		return apply_filters( 'uap_option_list_mailpoet_forms', $option );
 	}
 
 }

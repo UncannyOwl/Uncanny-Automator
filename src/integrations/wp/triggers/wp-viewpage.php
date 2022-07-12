@@ -84,7 +84,6 @@ class WP_VIEWPAGE {
 	public function view_page() {
 
 		global $post;
-
 		// Bail out if the page is not of a post type 'page'.
 		if ( ! is_singular( 'page' ) ) {
 			return;
@@ -116,6 +115,15 @@ class WP_VIEWPAGE {
 		if ( $arr ) {
 			foreach ( $arr as $result ) {
 				if ( true === $result['result'] ) {
+					$trigger_meta = array(
+						'user_id'        => (int) $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					);
+					// post_id Token
+					Automator()->db->token->save( 'post_id', $post->ID, $trigger_meta );
+
 					Automator()->process->user->maybe_trigger_complete( $result['args'] );
 				}
 			}

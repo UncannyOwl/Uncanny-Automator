@@ -90,6 +90,8 @@ class INSTAGRAM_PUBLISH_PHOTO {
 
 		$this->set_options_group( $options_group );
 
+		$this->set_background_processing( true );
+
 		$this->register_action();
 
 	}
@@ -161,7 +163,7 @@ class INSTAGRAM_PUBLISH_PHOTO {
 		// Try sending the data to our API.
 		try {
 
-			$instagram->api_request( $body, $action_data );
+			$response = $instagram->api_request( $body, $action_data );
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
@@ -170,9 +172,30 @@ class INSTAGRAM_PUBLISH_PHOTO {
 			// Log all errors.
 			$action_data['complete_with_errors'] = true;
 
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+			$error_message = $this->get_beautified_error_message( $e->getMessage() );
+
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
 		}
+
+	}
+
+	/**
+	 * Transform API response into more comprehensive message.
+	 *
+	 * @param string $error_mesage The original error message.
+	 *
+	 * @return string The error message.
+	 */
+	protected function get_beautified_error_message( $error_message = '' ) {
+
+		if ( false !== strpos( $error_message, 'cannot be loaded due to missing permissions' ) ) {
+
+			return esc_html__( 'Instagram account not found. Check that the requested account is connected to the associated Facebook page.' );
+
+		}
+
+		return $error_message;
 
 	}
 }

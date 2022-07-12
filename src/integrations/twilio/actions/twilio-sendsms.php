@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator_Pro;
+namespace Uncanny_Automator;
 
 /**
  * Class TWILIO_SENDSMS
@@ -36,7 +36,7 @@ class TWILIO_SENDSMS {
 	 */
 	public function define_action() {
 
-		$number_field_args    = array(
+		$number_field_args = array(
 			'option_code' => $this->action_meta,
 			'input_type'  => 'text',
 			'label'       => esc_attr__( 'To', 'uncanny-automator' ),
@@ -46,32 +46,33 @@ class TWILIO_SENDSMS {
 		);
 
 		$body_field_args = array(
-			'option_code' => 'SMSBODY',
-			'input_type'  => 'textarea',
-			'label'       => esc_attr__( 'Body', 'uncanny-automator' ),
-			'required'    => true,
-			'tokens'      => true,
-			'supports_tinymce' => false
+			'option_code'      => 'SMSBODY',
+			'input_type'       => 'textarea',
+			'label'            => esc_attr__( 'Body', 'uncanny-automator' ),
+			'required'         => true,
+			'tokens'           => true,
+			'supports_tinymce' => false,
 		);
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/twilio/' ),
-			'is_pro'             => false,
-			'requires_user'      => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf( __( 'Send an SMS message to {{a number:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Send an SMS message to {{a number}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'twilio_send_sms' ),
-			'options_group'      => [
-				$this->action_meta => [
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'integration/twilio/' ),
+			'is_pro'                => false,
+			'requires_user'         => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'sentence'              => sprintf( __( 'Send an SMS message to {{a number:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Send an SMS message to {{a number}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'twilio_send_sms' ),
+			'options_group'         => array(
+				$this->action_meta => array(
 					Automator()->helpers->recipe->field->text( $number_field_args ),
 					Automator()->helpers->recipe->field->text( $body_field_args ),
-				],
-			],
+				),
+			),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );

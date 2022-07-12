@@ -34,16 +34,17 @@ class GTW_UNREGISTERUSER {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/gotowebinar/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf( __( 'Remove the user from {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'gtw_unregister_user' ),
-			'options_callback'   => array( $this, 'load_options' ),
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/gotowebinar/' ),
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'sentence'              => sprintf( __( 'Remove the user from {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'gtw_unregister_user' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );
@@ -87,7 +88,7 @@ class GTW_UNREGISTERUSER {
 			}
 
 			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
-			
+
 			if ( empty( $webinar_key ) ) {
 				throw new \Exception( __( 'Webinar not found.', 'uncanny-automator' ) );
 			}
@@ -104,7 +105,7 @@ class GTW_UNREGISTERUSER {
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} catch ( \Exception $e ) {
-			$action_data['do-nothing'] = true;
+			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}

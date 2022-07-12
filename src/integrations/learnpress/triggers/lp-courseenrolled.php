@@ -46,14 +46,25 @@ class LP_COURSEENROLLED {
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'lp_course_enrolled' ),
-			'options'             => array(
-				Automator()->helpers->recipe->learnpress->options->all_lp_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
 
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->learnpress->options->all_lp_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -79,4 +90,5 @@ class LP_COURSEENROLLED {
 		Automator()->maybe_add_trigger_entry( $args );
 
 	}
+
 }

@@ -29,7 +29,7 @@ class Gamipress_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+		$this->load_options = true;
 
 		add_action(
 			'wp_ajax_select_achievements_from_types_AWARDACHIEVEMENT',

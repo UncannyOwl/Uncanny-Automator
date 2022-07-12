@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPCW_USERENROLLED
+ *
  * @package Uncanny_Automator
  */
 class WPCW_USERENROLLED {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPCW';
@@ -31,8 +33,6 @@ class WPCW_USERENROLLED {
 	 */
 	public function define_trigger() {
 
-
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-courseware/' ),
@@ -46,15 +46,24 @@ class WPCW_USERENROLLED {
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wpcw_user_enrolled' ),
-			'options'             => [
-				Automator()->helpers->recipe->wp_courseware->options->all_wpcw_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			],
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wp_courseware->options->all_wpcw_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -69,21 +78,20 @@ class WPCW_USERENROLLED {
 			return;
 		}
 
-
-
 		foreach ( $courses_enrolled as $course_key ) {
 
 			$course_detail = WPCW_courses_getCourseDetails( $course_key );
 
-			$args = [
+			$args = array(
 				'code'         => $this->trigger_code,
 				'meta'         => $this->trigger_meta,
 				'post_id'      => intval( $course_detail->course_post_id ),
 				'user_id'      => $user_id,
 				'is_signed_in' => true,
-			];
+			);
 
 			Automator()->maybe_add_trigger_entry( $args );
 		}
 	}
+
 }

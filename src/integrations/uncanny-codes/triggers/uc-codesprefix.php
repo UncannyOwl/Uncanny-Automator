@@ -46,15 +46,27 @@ class UC_CODESPREFIX {
 			'action'              => 'ulc_user_redeemed_code',
 			'priority'            => 20,
 			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'user_redeemed_code_prefix' ),
-			'options'             => array(
-				Automator()->helpers->recipe->uncanny_codes->options->get_all_code_prefix( esc_attr__( 'Prefix', 'uncanny-automator' ), $this->trigger_meta ),
+			'validation_function' => array(
+				$this,
+				'user_redeemed_code_prefix',
 			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
 
-		return;
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->uncanny_codes->options->get_all_code_prefix( esc_attr__( 'Prefix', 'uncanny-automator' ), $this->trigger_meta ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -122,4 +134,5 @@ class UC_CODESPREFIX {
 		return;
 
 	}
+
 }

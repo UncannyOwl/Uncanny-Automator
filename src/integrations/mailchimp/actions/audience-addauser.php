@@ -34,19 +34,20 @@ class AUDIENCE_ADDAUSER {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
-			'is_pro'             => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
+			'is_pro'                => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
 			// translators: the selected Mailchimp's audience name
-			'sentence'           => sprintf( __( 'Add the user to {{an audience:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add the user to {{an audience}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'add_update_audience_member' ),
-			'options_callback'   => array( $this, 'load_options' ),
-			'buttons'            => array(
+			'sentence'              => sprintf( __( 'Add the user to {{an audience:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Add the user to {{an audience}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'add_update_audience_member' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
+			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
 					'text'        => __( 'Load fields', 'uncanny-automator' ),
@@ -407,7 +408,7 @@ class AUDIENCE_ADDAUSER {
 					throw new \Exception( __( 'User already subscribed to the list.', 'uncanny-automator' ) );
 				}
 
-				$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list ); 
+				$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list );
 			}
 
 			// Now create an audience
@@ -416,7 +417,7 @@ class AUDIENCE_ADDAUSER {
 			if ( 'yes' === $double_optin ) {
 				$status = 'pending';
 			}
-				
+
 			$user_data = array(
 				'email_address' => $user->user_email,
 				'status'        => $status,
@@ -424,7 +425,7 @@ class AUDIENCE_ADDAUSER {
 				'language'      => $lang_code,
 				'interests'     => $user_interests,
 			);
-			
+
 			if ( 'yes' === $update_existing ) {
 				$user_data['status_if_new'] = $status;
 			}
@@ -445,7 +446,7 @@ class AUDIENCE_ADDAUSER {
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 			return;
-			
+
 		} catch ( \Exception $e ) {
 			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
 		}

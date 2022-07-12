@@ -43,17 +43,17 @@ class TWITTER_POSTSTATUS_2 {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/twitter/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf( __( 'Post {{a tweet:%1$s}} to Twitter', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Post {{a tweet}} to Twitter', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'requires_user'      => false,
-			'execution_function' => array( $this, 'post_status' ),
-			'options_group'      => array(
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/twitter/' ),
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'sentence'              => sprintf( __( 'Post {{a tweet:%1$s}} to Twitter', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Post {{a tweet}} to Twitter', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'requires_user'         => false,
+			'execution_function'    => array( $this, 'post_status' ),
+			'options_group'         => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->twitter->textarea_field(
 						'TWITTERSTATUSCONTENT',
@@ -80,6 +80,7 @@ class TWITTER_POSTSTATUS_2 {
 					),
 				),
 			),
+			'background_processing' => true,
 		);
 
 		Automator()->register->action( $action );
@@ -154,8 +155,8 @@ class TWITTER_POSTSTATUS_2 {
 		$response = Automator()->helpers->recipe->twitter->api_request( $body, null, $timeout );
 
 		if ( empty( $response['data']['media_id'] ) ) {
-			throw new \Exception( __( "Media couldn't be uploded", "uncanny-automator" ) );
-		} 
+			throw new \Exception( __( "Media couldn't be uploded", 'uncanny-automator' ) );
+		}
 
 		return $response['data']['media_id'];
 	}

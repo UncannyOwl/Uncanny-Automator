@@ -33,11 +33,6 @@ class BP_ADDTOGROUP {
 	 */
 	public function define_action() {
 
-		$bp_group_args = array(
-			'uo_include_any' => false,
-			'status'         => array( 'public', 'hidden', 'private' ),
-		);
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/buddypress/' ),
@@ -50,12 +45,29 @@ class BP_ADDTOGROUP {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'add_to_bp_group' ),
-			'options'            => array(
-				Automator()->helpers->recipe->buddypress->options->all_buddypress_groups( null, 'BPGROUPS', $bp_group_args ),
-			),
+			'options_callback'   => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
+		$bp_group_args = array(
+			'uo_include_any' => false,
+			'status'         => array( 'public', 'hidden', 'private' ),
+		);
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->buddypress->options->all_buddypress_groups( null, 'BPGROUPS', $bp_group_args ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -67,10 +79,11 @@ class BP_ADDTOGROUP {
 	 */
 	public function add_to_bp_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		$add_to_bp_gropu = $action_data['meta'][ $this->action_meta ];
+		$add_to_bp_group = $action_data['meta'][ $this->action_meta ];
 
-		groups_join_group( $add_to_bp_gropu, $user_id );
+		groups_join_group( $add_to_bp_group, $user_id );
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
+
 }

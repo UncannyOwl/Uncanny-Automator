@@ -34,19 +34,20 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 	public function define_action() {
 
 		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
-			'is_pro'             => false,
-			'requires_user'      => false,
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'sentence'           => sprintf( __( 'Add an attendee to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name' => __( 'Add an attendee to {{a webinar}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'zoom_webinar_register_user' ),
-			'options_callback'   => array( $this, 'load_options' ),
-			'buttons'            => array(
+			'author'                => Automator()->get_author_name( $this->action_code ),
+			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
+			'is_pro'                => false,
+			'requires_user'         => false,
+			'integration'           => self::$integration,
+			'code'                  => $this->action_code,
+			'sentence'              => sprintf( __( 'Add an attendee to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Add an attendee to {{a webinar}}', 'uncanny-automator' ),
+			'priority'              => 10,
+			'accepted_args'         => 1,
+			'execution_function'    => array( $this, 'zoom_webinar_register_user' ),
+			'options_callback'      => array( $this, 'load_options' ),
+			'background_processing' => true,
+			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
 					'text'        => __( 'Get webinar questions', 'uncanny-automator' ),
@@ -138,7 +139,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 				throw new \Exception( __( 'Webinar was not found.', 'uncanny-automator' ) );
 			}
 
-			$webinar_key = str_replace( '-objectkey', '', $webinar_key );
+			$webinar_key  = str_replace( '-objectkey', '', $webinar_key );
 			$webinar_user = array();
 
 			$webinar_user['email'] = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
@@ -152,19 +153,19 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 			}
 
 			$webinar_user['first_name'] = Automator()->parse->text( $action_data['meta']['FIRSTNAME'], $recipe_id, $user_id, $args );
-			$webinar_user['last_name'] = Automator()->parse->text( $action_data['meta']['LASTNAME'], $recipe_id, $user_id, $args );
+			$webinar_user['last_name']  = Automator()->parse->text( $action_data['meta']['LASTNAME'], $recipe_id, $user_id, $args );
 
-			$email_parts = explode( '@', $webinar_user['email'] );
-			$webinar_user['first_name']  = empty( $webinar_user['first_name'] ) ? $email_parts[0] : $webinar_user['first_name'];
+			$email_parts                = explode( '@', $webinar_user['email'] );
+			$webinar_user['first_name'] = empty( $webinar_user['first_name'] ) ? $email_parts[0] : $webinar_user['first_name'];
 
-			if ( ! empty( $action_data['meta'][ 'WEBINARQUESTIONS' ] ) ) {
-				$webinar_user = $helpers->add_custom_questions( $webinar_user, $action_data['meta'][ 'WEBINARQUESTIONS' ], $recipe_id, $user_id, $args );
+			if ( ! empty( $action_data['meta']['WEBINARQUESTIONS'] ) ) {
+				$webinar_user = $helpers->add_custom_questions( $webinar_user, $action_data['meta']['WEBINARQUESTIONS'], $recipe_id, $user_id, $args );
 			}
 
 			$response = $helpers->add_to_webinar( $webinar_user, $webinar_key, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-		
+
 		} catch ( \Exception $e ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;

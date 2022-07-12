@@ -6,11 +6,20 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'a9b1a482cd0ab616cdc8a91557ff445e42e1630f',
+    'reference' => '9a00a801ca07ff78c6eeaa3f2a2624b27dfb0613',
     'name' => 'uncanny-owl/uncanny-automator',
   ),
   'versions' => 
   array (
+    'chriskonnertz/string-calc' => 
+    array (
+      'pretty_version' => 'v1.0.12',
+      'version' => '1.0.12.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'bddc5aaea1c1c0a270e6c96f3719c48afa6cb7f0',
+    ),
     'firebase/php-jwt' => 
     array (
       'pretty_version' => 'v5.5.1',
@@ -27,7 +36,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'a9b1a482cd0ab616cdc8a91557ff445e42e1630f',
+      'reference' => '9a00a801ca07ff78c6eeaa3f2a2624b27dfb0613',
     ),
   ),
 );

@@ -2,8 +2,8 @@
 /**
  * Contains Quiz Attempt Failed Trigger.
  *
- * @version 2.4.0
  * @since   2.4.0
+ * @version 2.4.0
  */
 
 namespace Uncanny_Automator;
@@ -42,8 +42,6 @@ class TUTORLMS_QUIZFAILED {
 	 */
 	public function define_trigger() {
 
-		// global automator object.
-
 		// setup trigger configuration.
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -59,13 +57,24 @@ class TUTORLMS_QUIZFAILED {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'failed' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
-			'options'             => array(
-				Automator()->helpers->recipe->tutorlms->options->all_tutorlms_quizzes( null, $this->trigger_meta, true ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->tutorlms->options->all_tutorlms_quizzes( null, $this->trigger_meta, true ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -86,7 +95,13 @@ class TUTORLMS_QUIZFAILED {
 		}
 
 		// bail if the attempt isn't finished yet.
-		if ( ! in_array( $attempt->attempt_status, array( 'attempt_ended', 'review_required' ) ) ) {
+		if ( ! in_array(
+			$attempt->attempt_status,
+			array(
+				'attempt_ended',
+				'review_required',
+			)
+		) ) {
 			return;
 		}
 

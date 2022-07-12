@@ -46,14 +46,25 @@ class EDD_ORDERDONE {
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'edd_complete_purchase' ),
-			'options'             => array(
-				Automator()->helpers->recipe->field->integer_field( $this->trigger_meta ),
-				Automator()->helpers->recipe->field->less_or_greater_than(),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->field->integer_field( $this->trigger_meta ),
+					Automator()->helpers->recipe->field->less_or_greater_than(),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**

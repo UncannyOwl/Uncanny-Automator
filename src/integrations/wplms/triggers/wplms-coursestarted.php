@@ -46,13 +46,24 @@ class WPLMS_COURSESTARTED {
 			'priority'            => 10,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'wplms_course_started' ),
-			'options'             => array(
-				Automator()->helpers->recipe->wplms->options->all_wplms_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
-				Automator()->helpers->recipe->options->number_of_times(),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->wplms->options->all_wplms_courses( esc_attr__( 'Course', 'uncanny-automator' ), $this->trigger_meta ),
+					Automator()->helpers->recipe->options->number_of_times(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -119,7 +130,7 @@ class WPLMS_COURSESTARTED {
 				'is_signed_in'     => true,
 			);
 
-			$arr        = Automator()->maybe_add_trigger_entry( $pass_args, false );
+			$arr = Automator()->maybe_add_trigger_entry( $pass_args, false );
 			if ( $arr ) {
 				foreach ( $arr as $result ) {
 					if ( true === $result['result'] ) {
@@ -128,11 +139,12 @@ class WPLMS_COURSESTARTED {
 							'user_id'   => $user_id,
 							'action'    => 'course_started',
 						);
-						do_action( 'automator_wplms_save_tokens', $token_args, $result['args']  );
+						do_action( 'automator_wplms_save_tokens', $token_args, $result['args'] );
 						Automator()->maybe_trigger_complete( $result['args'] );
 					}
 				}
 			}
 		}
 	}
+
 }

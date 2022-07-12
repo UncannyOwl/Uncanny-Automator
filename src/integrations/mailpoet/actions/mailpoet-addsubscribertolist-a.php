@@ -39,6 +39,34 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 */
 	public function define_action() {
 
+		$action = array(
+			'author'             => Automator()->get_author_name( $this->action_code ),
+			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mailpoet/' ),
+			'integration'        => self::$integration,
+			'code'               => $this->action_code,
+			'requires_user'      => false,
+			/* translators: Action - MailPoet */
+			'sentence'           => sprintf( esc_attr__( 'Add {{a subscriber:%1$s}} to {{a list:%2$s}}', 'uncanny-automator' ), 'ADDSUBSCRIBER', $this->action_meta ),
+			/* translators: Action - MailPoet */
+			'select_option_name' => esc_attr__( 'Add {{a subscriber}} to {{a list}}', 'uncanny-automator' ),
+			'priority'           => 10,
+			'accepted_args'      => 1,
+			'execution_function' => array(
+				$this,
+				'mailpoet_add_subscriber_to_list',
+			),
+			'options_callback'   => array( $this, 'load_options' ),
+
+		);
+
+		Automator()->register->action( $action );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function load_options() {
+
 		$mailpoet  = \MailPoet\API\API::MP( 'v1' );
 		$all_lists = $mailpoet->getLists();
 
@@ -54,46 +82,33 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			'bounced'      => 'Bounced',
 		);
 
-		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mailpoet/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
-			/* translators: Action - MailPoet */
-			'sentence'           => sprintf( esc_attr__( 'Add {{a subscriber:%1$s}} to {{a list:%2$s}}', 'uncanny-automator' ), 'ADDSUBSCRIBER', $this->action_meta ),
-			/* translators: Action - MailPoet */
-			'select_option_name' => esc_attr__( 'Add {{a subscriber}} to {{a list}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'mailpoet_add_subscriber_to_list' ),
-			'options'            => array(),
-			'options_group'      =>
-				array(
-					'ADDSUBSCRIBER'    =>
-						array(
-							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER', esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
-							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_FIRSTNAME', esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_LASTNAME', esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-							Automator()->helpers->recipe->field->select_field( 'ADDSUBSCRIBER_STATUS', esc_attr__( 'Subscriber Status', 'uncanny-automator' ), $subscriber_status ),
-							Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_CONFIRMATIONEMAIL', esc_attr__( 'Add the user directly to the list - Do not send confirmation email', 'uncanny-automator' ), true, 'checkbox', '', false ),
-						),
-					$this->action_meta => array(
-						array(
-							'option_code'              => $this->action_meta,
-							'label'                    => esc_attr__( 'List', 'uncanny-automator' ),
-							'input_type'               => 'select',
-							'supports_multiple_values' => true,
-							'required'                 => true,
-							'options'                  => $options,
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options'       => array(),
+				'options_group' =>
+					array(
+						'ADDSUBSCRIBER'    =>
+							array(
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER', esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_FIRSTNAME', esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_LASTNAME', esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
+								Automator()->helpers->recipe->field->select_field( 'ADDSUBSCRIBER_STATUS', esc_attr__( 'Subscriber Status', 'uncanny-automator' ), $subscriber_status ),
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_CONFIRMATIONEMAIL', esc_attr__( 'Add the user directly to the list - Do not send confirmation email', 'uncanny-automator' ), true, 'checkbox', '', false ),
+							),
+						$this->action_meta => array(
+							array(
+								'option_code'              => $this->action_meta,
+								'label'                    => esc_attr__( 'List', 'uncanny-automator' ),
+								'input_type'               => 'select',
+								'supports_multiple_values' => true,
+								'required'                 => true,
+								'options'                  => $options,
+							),
 						),
 					),
-				),
+			)
 		);
-
-		Automator()->register->action( $action );
 	}
-
 
 	/**
 	 * Validation function when the action is hit.
