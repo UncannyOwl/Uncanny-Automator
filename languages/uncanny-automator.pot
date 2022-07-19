@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.2\n"
+"Project-Id-Version: Uncanny Automator 4.2.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-07-12T17:08:28+00:00\n"
+"POT-Creation-Date: 2022-07-19T15:48:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
@@ -58,7 +58,8 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/advanced.php:34
+#: src/core/admin/admin-settings/tabs/general-tabs/advanced.php:31
+#: src/core/views/admin-settings/tab/general/advanced.php:26
 msgid "Advanced"
 msgstr ""
 
@@ -222,7 +223,7 @@ msgstr ""
 
 #. translators: The number of times a recipe was completed
 #: src/core/admin/class-admin-menu.php:956
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:783
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:810
 msgid "Completed runs"
 msgstr ""
 
@@ -723,14 +724,14 @@ msgstr ""
 
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:50
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:55
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:780
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:807
 #: src/core/lib/utilities/class-automator-translations.php:40
 msgid "Triggers"
 msgstr ""
 
 #. translators: Log column.
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:109
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:781
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:808
 #: src/core/includes/recipe-logs-view.php:51
 #: src/core/includes/recipe-logs-view.php:194
 #: src/core/lib/utilities/class-automator-translations.php:66
@@ -833,12 +834,12 @@ msgctxt "Recipe"
 msgid "Not found in trash"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:473
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:500
 msgid "View logs"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:754
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:781
 #: src/core/includes/recipe-logs-view.php:49
 #: src/core/includes/recipe-logs-view.php:96
 #: src/core/includes/recipe-logs-view.php:147
@@ -849,16 +850,16 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:758
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:785
 msgid "Live"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:758
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:785
 msgid "Draft"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:784
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:811
 #: src/core/includes/recipe-logs-view.php:88
 #: src/core/includes/recipe-logs-view.php:141
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:68
@@ -900,23 +901,27 @@ msgstr ""
 msgid "Not enough credits"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:86
+#: src/core/classes/class-background-actions.php:98
 msgid "This action is scheduled or delayed"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:103
+#: src/core/classes/class-background-actions.php:115
 msgid "This action was prevented from processing earlier"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:122
+#: src/core/classes/class-background-actions.php:134
 msgid "This action is not set to run in background"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:262
+#: src/core/classes/class-background-actions.php:322
+msgid "Background actions have been automatically disabled because an error was detected:"
+msgstr ""
+
+#: src/core/classes/class-background-actions.php:346
 msgid "Background actions"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:271
+#: src/core/classes/class-background-actions.php:357
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:34
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:179
@@ -924,7 +929,7 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:271
+#: src/core/classes/class-background-actions.php:357
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:38
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:179
@@ -932,7 +937,7 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:277
+#: src/core/classes/class-background-actions.php:363
 msgid "When enabled, actions that send data to an external site or service will be run in a background process to accelerate the execution of recipes.  We recommend leaving this setting enabled unless instructed otherwise by support."
 msgstr ""
 
@@ -977,7 +982,7 @@ msgstr ""
 #: src/core/includes/automator-settings.php:139
 #: src/core/includes/automator-settings.php:293
 #: src/core/lib/utilities/class-automator-translations.php:1054
-#: src/core/views/admin-settings/tab/general/advanced.php:31
+#: src/core/views/admin-settings/tab/general/advanced.php:42
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:54
 msgid "Save"
 msgstr ""
@@ -1091,18 +1096,18 @@ msgid "Call {{a custom function/method}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:193
-msgid "Run {{a WordPress hook}}"
+msgid "Run {{a JavaScript code}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:198
-msgid "Run JavaScript code"
+msgid "Run {{a WordPress hook}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:207
 #: src/core/includes/pro-items-list.php:845
 #: src/core/includes/pro-items-list.php:1108
-#: src/core/includes/pro-items-list.php:2527
-#: src/core/includes/pro-items-list.php:2539
+#: src/core/includes/pro-items-list.php:2516
+#: src/core/includes/pro-items-list.php:2528
 msgid "{{A tag}} is removed from a user"
 msgstr ""
 
@@ -1147,8 +1152,8 @@ msgstr ""
 #. translators: Action - Groundhogg
 #. translators: Mailchimp tag
 #: src/core/includes/pro-items-list.php:253
-#: src/core/includes/pro-items-list.php:2547
-#: src/core/includes/pro-items-list.php:2552
+#: src/core/includes/pro-items-list.php:2536
+#: src/core/includes/pro-items-list.php:2541
 #: src/integrations/active-campaign/actions/ac-user-remove-tag.php:48
 #: src/integrations/groundhogg/actions/gh-removetag.php:62
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:44
@@ -1190,12 +1195,12 @@ msgid "A user replies to {{a topic}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:307
-#: src/core/includes/pro-items-list.php:452
+#: src/core/includes/pro-items-list.php:447
 msgid "Post a reply to {{a topic}} in {{a forum}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:312
-#: src/core/includes/pro-items-list.php:457
+#: src/core/includes/pro-items-list.php:452
 msgid "Post a topic in {{a forum}}"
 msgstr ""
 
@@ -1205,11 +1210,11 @@ msgid "Subscribe the user to {{a forum}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:326
-msgid "A user joins a hidden group"
+msgid "A user activates a new account via an email invitation"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:332
-msgid "A user activates a new account via an email invitation"
+msgid "A user joins {{a hidden group}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:338
@@ -1225,7 +1230,7 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:350
 #: src/core/includes/pro-items-list.php:528
 #: src/core/includes/pro-items-list.php:1395
-#: src/core/includes/pro-items-list.php:2654
+#: src/core/includes/pro-items-list.php:2643
 msgid "A user leaves {{a group}}"
 msgstr ""
 
@@ -1270,80 +1275,80 @@ msgid "A user's email invitation results in a new member registration"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:412
-msgid "Show an on-screen notification to the user"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:417
 #: src/core/includes/pro-items-list.php:578
 msgid "Add a post to the activity stream of {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:422
+#: src/core/includes/pro-items-list.php:417
 #: src/core/includes/pro-items-list.php:583
 msgid "Add a post to the sitewide {{activity}} stream"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:427
+#: src/core/includes/pro-items-list.php:422
 #: src/core/includes/pro-items-list.php:588
 msgid "Add a post to the user's {{activity}} stream"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:432
+#: src/core/includes/pro-items-list.php:427
 msgid "Create a friendship between {{a user}} and {{another user}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Groups
-#: src/core/includes/pro-items-list.php:437
+#: src/core/includes/pro-items-list.php:432
 #: src/core/includes/pro-items-list.php:593
 #: src/integrations/learndash/actions/ld-creategroup.php:43
 msgid "Create {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:442
+#: src/core/includes/pro-items-list.php:437
 #: src/core/includes/pro-items-list.php:598
 msgid "End friendship with {{a user}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:447
+#: src/core/includes/pro-items-list.php:442
 msgid "Follow {{a user}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:462
+#: src/core/includes/pro-items-list.php:457
 #: src/core/includes/pro-items-list.php:603
 msgid "Remove user from {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:467
+#: src/core/includes/pro-items-list.php:462
 #: src/core/includes/pro-items-list.php:608
 msgid "Send a friendship request to {{a user}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:472
+#: src/core/includes/pro-items-list.php:467
 msgid "Send a notification to all members of {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:477
+#: src/core/includes/pro-items-list.php:472
 msgid "Send a private message to all members of {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:482
+#: src/core/includes/pro-items-list.php:477
 #: src/core/includes/pro-items-list.php:613
 msgid "Send {{a private message}} to the user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:487
+#: src/core/includes/pro-items-list.php:482
 #: src/core/includes/pro-items-list.php:618
 msgid "Send the user a {{notification}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:492
+#: src/core/includes/pro-items-list.php:487
 #: src/core/includes/pro-items-list.php:623
 msgid "Set the user's member type to {{a specific type}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:497
+#: src/core/includes/pro-items-list.php:492
 #: src/core/includes/pro-items-list.php:628
 msgid "Set the user's {{Xprofile data}}"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:497
+msgid "Show {{an on-screen notification}} to the user"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:502
@@ -1376,7 +1381,7 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:1045
 #: src/core/includes/pro-items-list.php:1154
 #: src/core/includes/pro-items-list.php:1657
-#: src/core/includes/pro-items-list.php:2694
+#: src/core/includes/pro-items-list.php:2683
 msgid "A user submits {{a form}} with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
@@ -1389,7 +1394,7 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:1057
 #: src/core/includes/pro-items-list.php:1160
 #: src/core/includes/pro-items-list.php:1663
-#: src/core/includes/pro-items-list.php:2706
+#: src/core/includes/pro-items-list.php:2695
 msgid "{{A form}} is submitted with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
@@ -1404,7 +1409,7 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:1202
 #: src/core/includes/pro-items-list.php:1671
 #: src/core/includes/pro-items-list.php:1688
-#: src/core/includes/pro-items-list.php:2720
+#: src/core/includes/pro-items-list.php:2709
 msgid "Register a new user"
 msgstr ""
 
@@ -1437,39 +1442,39 @@ msgid "Unregister the user from {{an event}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:786
-msgid "A ticket for a product is closed by a customer or an agent"
+msgid "A ticket for {{a product}} is closed by {{a customer or an agent}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:792
-msgid "A ticket for a product is opened by a customer or an agent"
+msgid "A ticket for {{a product}} is opened by {{a customer or an agent}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:798
-msgid "A ticket for a product is replied to by a customer"
+msgid "A ticket for {{a product}} is replied to by a customer"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:804
-msgid "A ticket for a product is replied to by an agent"
+msgid "A ticket for {{a product}} is replied to by an agent"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:810
-msgid "A ticket with a specific priority is closed by a customer or an agent"
+msgid "A ticket with {{a priority}} is closed by {{a customer or an agent}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:816
-msgid "A ticket with a specific priority is opened by a customer or an agent"
+msgid "A ticket with {{a priority}} is opened by {{a customer or an agent}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:822
-msgid "A ticket with a specific priority is replied to by a customer"
+msgid "A ticket with {{a priority}} is replied to by a customer"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:828
-msgid "A ticket with a specific priority is replied to by an agent"
+msgid "A ticket with {{a priority}} is replied to by an agent"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:836
-msgid "Create a ticket "
+msgid "Create {{a ticket}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:871
@@ -1566,8 +1571,8 @@ msgid "An entry for {{a specific form}} is rejected"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1102
-#: src/core/includes/pro-items-list.php:2521
-#: src/core/includes/pro-items-list.php:2533
+#: src/core/includes/pro-items-list.php:2510
+#: src/core/includes/pro-items-list.php:2522
 msgid "{{A tag}} is added to a user"
 msgstr ""
 
@@ -1600,11 +1605,11 @@ msgid "Receive data from Integromat {{webhook}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1222
-msgid "A Group Leader is added to a group"
+msgid "A Group Leader is added to {{a group}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1228
-msgid "A Group Leader is removed from a group"
+msgid "A Group Leader is removed from {{a group}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1234
@@ -1620,7 +1625,7 @@ msgstr ""
 #. translators: Logged-in trigger - MasterStudy LMS
 #. translators: Logged-in trigger - WP Courseware
 #: src/core/includes/pro-items-list.php:1246
-#: src/core/includes/pro-items-list.php:1844
+#: src/core/includes/pro-items-list.php:1833
 #: src/integrations/learnpress/triggers/lp-courseenrolled.php:44
 #: src/integrations/lifterlms/triggers/lf-courseenrolled.php:44
 #: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:44
@@ -1645,62 +1650,62 @@ msgstr ""
 msgid "A user's access to {{a course}} expires"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1278
-msgid "Send an email to Group Leaders of a group"
-msgstr ""
-
 #. translators: Action - BuddyBoss
 #. translators: Action - BuddyPress
-#: src/core/includes/pro-items-list.php:1283
+#: src/core/includes/pro-items-list.php:1278
 #: src/integrations/buddyboss/actions/bdb-addtogroup.php:44
 #: src/integrations/buddypress/actions/bp-addtogroup.php:44
 msgid "Add the user to {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1288
+#: src/core/includes/pro-items-list.php:1283
 #: src/core/includes/pro-items-list.php:1465
 msgid "Mark {{a lesson}} not complete for the user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1293
+#: src/core/includes/pro-items-list.php:1288
 msgid "Mark {{a topic}} not complete for the user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1298
+#: src/core/includes/pro-items-list.php:1293
 msgid "Remove the Group Leader from {{a group}} and all its children"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1303
+#: src/core/includes/pro-items-list.php:1298
 msgid "Remove the user as a leader of {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1308
-#: src/core/includes/pro-items-list.php:2737
+#: src/core/includes/pro-items-list.php:1303
+#: src/core/includes/pro-items-list.php:2726
 msgid "Remove the user from {{a group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1313
+#: src/core/includes/pro-items-list.php:1308
 msgid "Remove the user from {{a group}} and all its children"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1318
+#: src/core/includes/pro-items-list.php:1313
 msgid "Remove the user from all groups"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1323
+#: src/core/includes/pro-items-list.php:1318
 #: src/core/includes/pro-items-list.php:1428
 msgid "Reset the user's attempts for {{a quiz}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1328
+#: src/core/includes/pro-items-list.php:1323
 #: src/core/includes/pro-items-list.php:1475
 #: src/core/includes/pro-items-list.php:1553
-#: src/core/includes/pro-items-list.php:1873
+#: src/core/includes/pro-items-list.php:1862
 msgid "Reset the user's progress in {{a course}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1333
+#: src/core/includes/pro-items-list.php:1328
 msgid "Send a {{certificate}}"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:1333
+msgid "Send an {{email}} to Group Leaders of {{a group}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1338
@@ -1718,9 +1723,9 @@ msgstr ""
 #. translators: Action - LearnDash
 #: src/core/includes/pro-items-list.php:1358
 #: src/core/includes/pro-items-list.php:1403
-#: src/core/includes/pro-items-list.php:1858
-#: src/core/includes/pro-items-list.php:2507
-#: src/core/includes/pro-items-list.php:2615
+#: src/core/includes/pro-items-list.php:1847
+#: src/core/includes/pro-items-list.php:2496
+#: src/core/includes/pro-items-list.php:2604
 #: src/integrations/learndash/actions/ld-enrlcourse-a.php:44
 msgid "Enroll the user in {{a course}}"
 msgstr ""
@@ -1729,7 +1734,7 @@ msgstr ""
 #. translators: Action - Memberpress
 #: src/core/includes/pro-items-list.php:1363
 #: src/core/includes/pro-items-list.php:1413
-#: src/core/includes/pro-items-list.php:1863
+#: src/core/includes/pro-items-list.php:1852
 #: src/integrations/learndash/actions/ld-markcoursedone.php:45
 #: src/integrations/masterstudy-lms/actions/masterstudy-markcoursecomplete.php:55
 #: src/integrations/memberpress-courses/actions/mpc-markcoursedone.php:48
@@ -1738,7 +1743,7 @@ msgstr ""
 
 #: src/core/includes/pro-items-list.php:1368
 #: src/core/includes/pro-items-list.php:1418
-#: src/core/includes/pro-items-list.php:2512
+#: src/core/includes/pro-items-list.php:2501
 msgid "Remove the user from {{a course}}"
 msgstr ""
 
@@ -1749,7 +1754,7 @@ msgid "A user cancels {{a membership}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1389
-#: src/core/includes/pro-items-list.php:2648
+#: src/core/includes/pro-items-list.php:2637
 msgid "A user joins {{a group}}"
 msgstr ""
 
@@ -1778,7 +1783,7 @@ msgstr ""
 #. translators: Action - LifterLMS
 #. translators: Action - Memberpress
 #: src/core/includes/pro-items-list.php:1460
-#: src/core/includes/pro-items-list.php:1868
+#: src/core/includes/pro-items-list.php:1857
 #: src/integrations/learndash/actions/ld-marklessondone.php:45
 #: src/integrations/learnpress/actions/lp-marklessondone.php:44
 #: src/integrations/lifterlms/actions/lf-marklessondone.php:44
@@ -1867,581 +1872,577 @@ msgid "Receive data from OptinMonster {{webhook}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1697
-msgid "Receive data from Pabbly Connect {{webhook}}"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:1708
 msgid "A user renews {{an expired membership}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Popup Maker
 #. translators: Action - Wishlist Member
-#: src/core/includes/pro-items-list.php:1716
+#: src/core/includes/pro-items-list.php:1705
 #: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:44
 #: src/integrations/wishlist-member/actions/wm-adduser-a.php:45
 msgid "Add the user to {{a membership level}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1721
-#: src/core/includes/pro-items-list.php:1801
-#: src/core/includes/pro-items-list.php:1987
+#: src/core/includes/pro-items-list.php:1710
+#: src/core/includes/pro-items-list.php:1790
+#: src/core/includes/pro-items-list.php:1976
 msgid "Remove the user from {{a membership level}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1730
+#: src/core/includes/pro-items-list.php:1719
 msgid "A user gains a new follower"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1736
+#: src/core/includes/pro-items-list.php:1725
 msgid "A user loses a follower"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1742
+#: src/core/includes/pro-items-list.php:1731
 msgid "A user publishes an activity post"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1748
+#: src/core/includes/pro-items-list.php:1737
 msgid "A user unfollows {{another PeepSo member}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1754
+#: src/core/includes/pro-items-list.php:1743
 msgid "A user updates {{a specific field}} to {{a specific field value}} in their profile"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1762
+#: src/core/includes/pro-items-list.php:1751
 msgid "Add {{a post}} to the site wide activity stream"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1767
+#: src/core/includes/pro-items-list.php:1756
 msgid "Change the user's PeepSo role to {{a new role}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1776
+#: src/core/includes/pro-items-list.php:1765
 msgid "A user watches at least {{a specific percentage}} of {{a video}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1787
+#: src/core/includes/pro-items-list.php:1776
 msgid "A user's membership to {{a specific level}} expires"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1793
+#: src/core/includes/pro-items-list.php:1782
 msgid "A user's membership to {{a specific level}} is cancelled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1810
+#: src/core/includes/pro-items-list.php:1799
 msgid "A user attends {{an event}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1816
+#: src/core/includes/pro-items-list.php:1805
 msgid "An attendee is registered for {{an event}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1824
+#: src/core/includes/pro-items-list.php:1813
 msgid "RSVP for {{an event}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1829
+#: src/core/includes/pro-items-list.php:1818
 msgid "RSVP on behalf of the user for {{an event}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1838
+#: src/core/includes/pro-items-list.php:1827
 msgid "A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on a quiz"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1850
+#: src/core/includes/pro-items-list.php:1839
 msgid "A user posts a question in {{a course}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1878
+#: src/core/includes/pro-items-list.php:1867
 msgid "Unenroll a user from {{a course}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1887
+#: src/core/includes/pro-items-list.php:1876
 msgid "A user registers with {{a form}} with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1895
+#: src/core/includes/pro-items-list.php:1884
 msgid "Add {{a role}} to the user's roles"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1900
+#: src/core/includes/pro-items-list.php:1889
 msgid "Set the user's role to {{a specific role}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1909
-#: src/core/includes/pro-items-list.php:2158
+#: src/core/includes/pro-items-list.php:1898
+#: src/core/includes/pro-items-list.php:2147
 msgid "A user subscribes to {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1920
+#: src/core/includes/pro-items-list.php:1909
 msgid "Receive data from a webhook"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1931
-msgid "A user is approved for a membership level"
+#: src/core/includes/pro-items-list.php:1920
+msgid "A user is approved for {{a membership level}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1937
-msgid "A user is confirmed for a membership level"
+#: src/core/includes/pro-items-list.php:1926
+msgid "A user is confirmed for {{a membership level}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1943
-msgid "A user is unconfirmed for a membership level"
+#: src/core/includes/pro-items-list.php:1932
+msgid "A user is unconfirmed for {{a membership level}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1949
-msgid "A user’s access to a membership level is cancelled"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:1955
-msgid "A user’s access to a membership level is unapproved"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:1961
-msgid "A user’s access to a membership level is uncancelled"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:1967
+#: src/core/includes/pro-items-list.php:1938
 msgid "A user submits {{a registration form}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1973
+#: src/core/includes/pro-items-list.php:1944
 msgid "A user submits {{a registration form}} with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1979
+#: src/core/includes/pro-items-list.php:1950
+msgid "A user's access to {{a membership level}} is cancelled"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:1956
+msgid "A user's access to {{a membership level}} is unapproved"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:1962
+msgid "A user's access to {{a membership level}} is uncancelled"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:1968
 msgid "A user's {{specific}} membership level account is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:1996
-msgid "A Payment fails on an order"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:2002
-msgid "A guest completes, pays for, lands on a thank you page for an order with a specific coupon"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:2008
-msgid "A product has its associated order set to a specific status"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:2014
+#: src/core/includes/pro-items-list.php:1985
 msgid "A user adds {{a product}} to their cart"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2020
-msgid "A user {{completes, pays for, lands on a thank you page for}} an order"
+#: src/core/includes/pro-items-list.php:1991
+msgid "A user {{completes, pays for, lands on a thank you page for}} an order paid for with {{a specific payment method}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2026
-msgid "A user {{completes, pays for, lands on a thank you page for}} an order paid for with {{a specific method}}"
-msgstr ""
-
-#: src/core/includes/pro-items-list.php:2032
+#: src/core/includes/pro-items-list.php:1997
 msgid "A user {{completes, pays for, lands on a thank you page for}} an order with a product in {{a category}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2038
+#: src/core/includes/pro-items-list.php:2003
 msgid "A user {{completes, pays for, lands on a thank you page for}} an order with a product with {{a tag}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2044
+#: src/core/includes/pro-items-list.php:2009
 msgid "A user {{completes, pays for, lands on a thank you page for}} an order with a quantity {{greater than, less than or equal to}} {{a quantity}} of {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2050
+#: src/core/includes/pro-items-list.php:2015
 msgid "A user {{completes, pays for, lands on a thank you page for}} an order with {{a specific quantity}} of {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2056
+#: src/core/includes/pro-items-list.php:2021
+msgid "A user {{completes, pays for, lands on a thank you page for}} an order with a total {{greater than, less than or equal to}} {{a specific amount}}"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:2027
 msgid "A user purchases {{a variable product}} with {{a variation}} selected"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2062
+#: src/core/includes/pro-items-list.php:2033
 msgid "A user reviews {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2068
+#: src/core/includes/pro-items-list.php:2039
 msgid "A user reviews {{a product}} with a rating {{greater than, less than or equal to}} {{an amount}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2074
+#: src/core/includes/pro-items-list.php:2045
 msgid "A user's order status changes to {{a specific status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2080
+#: src/core/includes/pro-items-list.php:2051
 msgid "A user's review on {{a product}} is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2086
+#: src/core/includes/pro-items-list.php:2057
 msgid "A guest {{completes, pays for, lands on a thank you page for}} an order with {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2092
+#: src/core/includes/pro-items-list.php:2063
 msgid "A guest {{completes, pays for, lands on a thank you page for}} an order with a product in {{a category}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2098
+#: src/core/includes/pro-items-list.php:2069
+msgid "A guest {{completes, pays for, lands on a thank you page for}} an order with {{a specific coupon}}"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:2075
 msgid "A guest order's status is changed to {{a specific status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2104
+#: src/core/includes/pro-items-list.php:2081
+msgid "A payment fails on an order"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:2087
 msgid "{{A product}} has its associated order {{completed, paid for, or a thank you page visited}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2110
+#: src/core/includes/pro-items-list.php:2093
+msgid "{{A product}} has its associated order set to {{a specific status}}"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:2099
 msgid "A user's access to {{a membership plan}} is cancelled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2116
+#: src/core/includes/pro-items-list.php:2105
 msgid "A user's access to {{a membership plan}} expires"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2122
+#: src/core/includes/pro-items-list.php:2111
 msgid "An order with {{a specific product}} is shipped"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2128
+#: src/core/includes/pro-items-list.php:2117
 msgid "An order with a total {{greater than, less than or equal to}} {{a specific amount}} is shipped"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2134
+#: src/core/includes/pro-items-list.php:2123
 msgid "A user cancels a subscription to {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2140
+#: src/core/includes/pro-items-list.php:2129
 msgid "A user purchases {{a variable subscription}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2146
+#: src/core/includes/pro-items-list.php:2135
 msgid "A user purchases {{a variable subscription}} with {{a variation}} selected"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2152
+#: src/core/includes/pro-items-list.php:2141
 msgid "A user renews a subscription to {{a product}} "
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2164
+#: src/core/includes/pro-items-list.php:2153
 msgid "A user renews a subscription to {{a specific}} variation of {{a variable subscription}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2170
+#: src/core/includes/pro-items-list.php:2159
 msgid "A user's subscription to {{a product}} expires"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2176
+#: src/core/includes/pro-items-list.php:2165
 msgid "A user's subscription to {{a product}} is set to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2182
+#: src/core/includes/pro-items-list.php:2171
 msgid "A user's subscription to {{a specific}} variation of {{a variable subscription}} expires"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2188
+#: src/core/includes/pro-items-list.php:2177
 msgid "A user's subscription to {{a specific}} variation of {{a variable subscription}} is set to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2194
+#: src/core/includes/pro-items-list.php:2183
 msgid "A user's trial period to {{a subscription}} expires"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2200
+#: src/core/includes/pro-items-list.php:2189
 msgid "A user's trial period to {{a specific}} variation of {{a variable subscription}} expires"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2208
+#: src/core/includes/pro-items-list.php:2197
 msgid "Cancel the user's subscription to {{a subscription product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2213
+#: src/core/includes/pro-items-list.php:2202
 msgid "Create a subscription order with {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2218
+#: src/core/includes/pro-items-list.php:2207
 msgid "Create a subscription order with {{a product}} with a payment method"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2223
+#: src/core/includes/pro-items-list.php:2212
 msgid "Create an order with {{a product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2228
+#: src/core/includes/pro-items-list.php:2217
 msgid "Create an order with {{a product}} with a payment gateway"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2233
+#: src/core/includes/pro-items-list.php:2222
 msgid "Generate and email a coupon {{code}} to the user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2238
+#: src/core/includes/pro-items-list.php:2227
 msgid "Set {{a specific order}} to {{a specific status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2243
+#: src/core/includes/pro-items-list.php:2232
 msgid "Remove the user from {{a membership plan}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2248
+#: src/core/includes/pro-items-list.php:2237
 msgid "Cancel the user's subscription to {{a specific variation}} of {{a variable subscription variation}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2253
+#: src/core/includes/pro-items-list.php:2242
 msgid "Cancel the user's subscription to {{a variable subscription product}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2258
-msgid "Set the user's subscription to a specific variation of a variable subscription product to a status"
+#: src/core/includes/pro-items-list.php:2247
+msgid "Set the user's subscription of {{a subscription product}} to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2263
-msgid "Set the user’s subscription of a subscription product to a status"
+#: src/core/includes/pro-items-list.php:2252
+msgid "Set the user's subscription to {{a specific}} variation of {{a variable subscription product}} to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2272
+#: src/core/includes/pro-items-list.php:2261
 msgid "{{A post}} is moved to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2278
+#: src/core/includes/pro-items-list.php:2267
 msgid "{{A specific}} role is removed from the user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2284
+#: src/core/includes/pro-items-list.php:2273
 msgid "A user is created"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2290
+#: src/core/includes/pro-items-list.php:2279
 msgid "A user is created with {{a specific role}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2296
+#: src/core/includes/pro-items-list.php:2285
 msgid "A user resets their password"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2302
+#: src/core/includes/pro-items-list.php:2291
 msgid "A user updates {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2308
+#: src/core/includes/pro-items-list.php:2297
 msgid "A user updates a post in {{a specific}} status"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2314
+#: src/core/includes/pro-items-list.php:2303
 msgid "A user updates a post in {{a specific taxonomy}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2320
+#: src/core/includes/pro-items-list.php:2309
 msgid "A user updates a post not in {{a specific}} status"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2326
+#: src/core/includes/pro-items-list.php:2315
 msgid "A user updates {{a specific meta key}} of a {{specific type of post}} to {{a specific value}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2332
+#: src/core/includes/pro-items-list.php:2321
 msgid "{{A user's post}} is set to {{a specific}} status"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2338
+#: src/core/includes/pro-items-list.php:2327
 msgid "A user's {{profile field}} is updated"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2344
+#: src/core/includes/pro-items-list.php:2333
 msgid "A user's role changed from {{a specific role}} to {{a specific role}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2350
+#: src/core/includes/pro-items-list.php:2339
 msgid "A user's {{specific}} meta key is updated"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2356
+#: src/core/includes/pro-items-list.php:2345
 msgid "A user's {{specific}} meta key is updated to {{a specific value}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2362
+#: src/core/includes/pro-items-list.php:2351
 msgid "A user's {{specific type of post}} is moved to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2368
+#: src/core/includes/pro-items-list.php:2357
 msgid "A user's {{specific type of post}} is set to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2374
+#: src/core/includes/pro-items-list.php:2363
 msgid "A user's {{specific type of post}} is updated"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2380
+#: src/core/includes/pro-items-list.php:2369
 msgid "A user's comment on {{a post}} is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2386
+#: src/core/includes/pro-items-list.php:2375
 msgid "A user's comment on {{a specific type of post}} receives a reply"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2392
+#: src/core/includes/pro-items-list.php:2381
 msgid "A guest comment is submitted on a user's {{post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2398
+#: src/core/includes/pro-items-list.php:2387
 msgid "A guest comment on {{a user's post}} is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2404
+#: src/core/includes/pro-items-list.php:2393
 msgid "{{A taxonomy term}} is added to a {{specific type of post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2412
-msgid "Add a comment to a post"
+#: src/core/includes/pro-items-list.php:2401
+msgid "Add a comment to {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2417
+#: src/core/includes/pro-items-list.php:2406
 msgid "Add {{a taxonomy term}} to {{a post}} in {{a post type}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2422
+#: src/core/includes/pro-items-list.php:2411
 msgid "Add {{an image}} to the media library"
 msgstr ""
 
 #. translators: Action - WordPress
-#: src/core/includes/pro-items-list.php:2427
+#: src/core/includes/pro-items-list.php:2416
 #: src/integrations/wp/actions/wp-createuser.php:62
 msgid "Create a {{user}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2432
+#: src/core/includes/pro-items-list.php:2421
 msgid "Delete a user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2437
+#: src/core/includes/pro-items-list.php:2426
 msgid "Delete user meta"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2442
+#: src/core/includes/pro-items-list.php:2431
 msgid "Move {{a post}} to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2447
+#: src/core/includes/pro-items-list.php:2436
 msgid "Move all {{of a specific type of posts}} with {{a taxonomy term}} in {{a taxonomy}} to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2452
+#: src/core/includes/pro-items-list.php:2441
 msgid "Remove {{a role}} from the user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2457
+#: src/core/includes/pro-items-list.php:2446
 msgid "Remove {{a taxonomy term}} from {{a post}} in {{a post type}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2462
+#: src/core/includes/pro-items-list.php:2451
 msgid "Set {{a post}} to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2467
+#: src/core/includes/pro-items-list.php:2456
 msgid "Set {{post meta}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2472
+#: src/core/includes/pro-items-list.php:2461
 msgid "Set the featured image of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2477
+#: src/core/includes/pro-items-list.php:2466
 msgid "Set {{user meta}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2482
+#: src/core/includes/pro-items-list.php:2471
 msgid "Update the content of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2487
+#: src/core/includes/pro-items-list.php:2476
 msgid "Update the slug of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2492
+#: src/core/includes/pro-items-list.php:2481
 msgid "Update the title of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2497
+#: src/core/includes/pro-items-list.php:2486
 msgid "Update the user's {{details}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2561
+#: src/core/includes/pro-items-list.php:2550
 msgid "{{A job}} is filled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2567
+#: src/core/includes/pro-items-list.php:2556
 msgid "A user marks a {{specific type of}} job as filled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2573
+#: src/core/includes/pro-items-list.php:2562
 msgid "A user marks a {{specific type of}} job as not filled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2579
+#: src/core/includes/pro-items-list.php:2568
 msgid "A user receives an application to a {{specific type of}} job"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2585
+#: src/core/includes/pro-items-list.php:2574
 msgid "A user updates {{a job}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2591
+#: src/core/includes/pro-items-list.php:2580
 msgid "A user's application is set to {{a specific status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2597
+#: src/core/includes/pro-items-list.php:2586
 msgid "A user's application to a {{specific type of}} job is set to {{a specific status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2603
+#: src/core/includes/pro-items-list.php:2592
 msgid "An application is received for {{a job}} of {{a specific type}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2624
+#: src/core/includes/pro-items-list.php:2613
 msgid "A user is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2630
+#: src/core/includes/pro-items-list.php:2619
 msgid "A user is approved to join {{a private group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2636
+#: src/core/includes/pro-items-list.php:2625
 msgid "A user is rejected"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2642
+#: src/core/includes/pro-items-list.php:2631
 msgid "A user is rejected from joining {{a private group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2660
+#: src/core/includes/pro-items-list.php:2649
 msgid "A user registers using {{a form}} with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2666
+#: src/core/includes/pro-items-list.php:2655
 msgid "A user updates their account information"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2672
+#: src/core/includes/pro-items-list.php:2661
 msgid "A user verifies their email address"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2683
+#: src/core/includes/pro-items-list.php:2672
 msgid "A user submits {{a poll}} with {{a specific answer}} selected"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2700
+#: src/core/includes/pro-items-list.php:2689
 msgid "A user submits {{a form}} with PayPal payment"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2712
+#: src/core/includes/pro-items-list.php:2701
 msgid "{{A form}} is submitted with PayPal payment "
 msgstr ""
 
 #. translators: Logged-in trigger - bbPress
-#: src/core/includes/pro-items-list.php:2729
+#: src/core/includes/pro-items-list.php:2718
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:44
 msgid "A user replies to {{a topic}} in {{a forum}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:2746
+#: src/core/includes/pro-items-list.php:2735
 msgid "Receive data from Zapier webhook"
 msgstr ""
 
@@ -3582,7 +3583,7 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:499
 #: src/integrations/wp/helpers/wp-helpers.php:159
 #: src/integrations/wp/helpers/wp-helpers.php:490
-#: src/integrations/wp/triggers/wp-submitcomment.php:97
+#: src/integrations/wp/triggers/wp-submitcomment.php:104
 msgid "Post ID"
 msgstr ""
 
@@ -13063,8 +13064,8 @@ msgstr ""
 #. translators: Noun
 #: src/integrations/wp/helpers/wp-helpers.php:137
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:89
-#: src/integrations/wp/triggers/wp-submitcomment.php:90
-#: src/integrations/wp/triggers/wp-viewcustompost.php:93
+#: src/integrations/wp/triggers/wp-submitcomment.php:97
+#: src/integrations/wp/triggers/wp-viewcustompost.php:100
 msgid "Post"
 msgstr ""
 
@@ -13072,7 +13073,7 @@ msgstr ""
 #: src/integrations/wp/helpers/wp-helpers.php:489
 #: src/integrations/wp/tokens/wp-post-tokens.php:101
 #: src/integrations/wp/tokens/wp-post-tokens.php:200
-#: src/integrations/wp/triggers/wp-submitcomment.php:96
+#: src/integrations/wp/triggers/wp-submitcomment.php:103
 msgid "Post title"
 msgstr ""
 
@@ -13080,17 +13081,17 @@ msgstr ""
 #: src/integrations/wp/helpers/wp-helpers.php:491
 #: src/integrations/wp/tokens/wp-post-tokens.php:113
 #: src/integrations/wp/tokens/wp-post-tokens.php:212
-#: src/integrations/wp/triggers/wp-submitcomment.php:98
+#: src/integrations/wp/triggers/wp-submitcomment.php:105
 msgid "Post URL"
 msgstr ""
 
 #: src/integrations/wp/helpers/wp-helpers.php:161
-#: src/integrations/wp/triggers/wp-submitcomment.php:99
+#: src/integrations/wp/triggers/wp-submitcomment.php:106
 msgid "Post content"
 msgstr ""
 
 #: src/integrations/wp/helpers/wp-helpers.php:162
-#: src/integrations/wp/triggers/wp-submitcomment.php:100
+#: src/integrations/wp/triggers/wp-submitcomment.php:107
 msgid "Post excerpt"
 msgstr ""
 
@@ -13098,13 +13099,13 @@ msgstr ""
 #: src/integrations/wp/helpers/wp-helpers.php:544
 #: src/integrations/wp/tokens/wp-post-tokens.php:131
 #: src/integrations/wp/tokens/wp-post-tokens.php:230
-#: src/integrations/wp/triggers/wp-submitcomment.php:101
+#: src/integrations/wp/triggers/wp-submitcomment.php:108
 msgid "Post type"
 msgstr ""
 
 #: src/integrations/wp/helpers/wp-helpers.php:164
 #: src/integrations/wp/helpers/wp-helpers.php:492
-#: src/integrations/wp/triggers/wp-submitcomment.php:102
+#: src/integrations/wp/triggers/wp-submitcomment.php:109
 msgid "Post featured image ID"
 msgstr ""
 
@@ -13112,7 +13113,7 @@ msgstr ""
 #: src/integrations/wp/helpers/wp-helpers.php:493
 #: src/integrations/wp/tokens/wp-post-tokens.php:137
 #: src/integrations/wp/tokens/wp-post-tokens.php:236
-#: src/integrations/wp/triggers/wp-submitcomment.php:103
+#: src/integrations/wp/triggers/wp-submitcomment.php:110
 msgid "Post featured image URL"
 msgstr ""
 
@@ -13210,12 +13211,12 @@ msgid "Any post type"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:53
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:60
 msgid "A {{specific type of post:%1$s}} is viewed"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/anon-wp-viewposttype.php:55
+#: src/integrations/wp/triggers/anon-wp-viewposttype.php:62
 msgid "A {{specific type of post}} is viewed"
 msgstr ""
 
@@ -13240,54 +13241,54 @@ msgid "{{A user's post}} receives a comment"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-submitcomment.php:46
+#: src/integrations/wp/triggers/wp-submitcomment.php:53
 msgid "A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-submitcomment.php:48
+#: src/integrations/wp/triggers/wp-submitcomment.php:55
 msgid "A user submits a comment on {{a post}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-submitcomment.php:109
+#: src/integrations/wp/triggers/wp-submitcomment.php:116
 msgid "Comment content"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-submitcomment.php:110
+#: src/integrations/wp/triggers/wp-submitcomment.php:117
 msgid "Comment submitted date"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-submitcomment.php:111
+#: src/integrations/wp/triggers/wp-submitcomment.php:118
 msgid "Commenter email"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-submitcomment.php:112
+#: src/integrations/wp/triggers/wp-submitcomment.php:119
 msgid "Commenter name"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-submitcomment.php:113
+#: src/integrations/wp/triggers/wp-submitcomment.php:120
 msgid "Commenter website"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-submitcomment.php:114
+#: src/integrations/wp/triggers/wp-submitcomment.php:121
 msgid "Commenter status"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-usercreatespost.php:103
+#: src/integrations/wp/triggers/wp-usercreatespost.php:110
 msgid "A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-usercreatespost.php:109
+#: src/integrations/wp/triggers/wp-usercreatespost.php:116
 msgid "A user publishes a {{type of}} post with {{a taxonomy term}} in {{a taxonomy}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-usercreatespost.php:149
+#: src/integrations/wp/triggers/wp-usercreatespost.php:156
 msgid "Taxonomy"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-usercreatespost.php:160
+#: src/integrations/wp/triggers/wp-usercreatespost.php:167
 msgid "Taxonomy term"
 msgstr ""
 
@@ -13302,12 +13303,12 @@ msgid "{{A specific}} role is added to the user"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-viewcustompost.php:53
+#: src/integrations/wp/triggers/wp-viewcustompost.php:60
 msgid "A user views {{a custom post type:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress
-#: src/integrations/wp/triggers/wp-viewcustompost.php:55
+#: src/integrations/wp/triggers/wp-viewcustompost.php:62
 msgid "A user views {{a custom post type}}"
 msgstr ""
 

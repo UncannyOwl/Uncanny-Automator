@@ -32,11 +32,18 @@ class WP_VIEWCUSTOMPOST {
 	public function __construct() {
 		$this->trigger_code = 'VIEWCUSTOMPOST';
 		$this->trigger_meta = 'WPCUSTOMPOST';
-		if ( is_admin() ) {
-			add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 99 );
-		} else {
-			$this->define_trigger();
+		if ( Automator()->helpers->recipe->is_edit_page() ) {
+			add_action(
+				'wp_loaded',
+				function () {
+					$this->define_trigger();
+				},
+				99
+			);
+
+			return;
 		}
+		$this->define_trigger();
 	}
 
 	/**

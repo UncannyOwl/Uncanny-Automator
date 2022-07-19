@@ -216,15 +216,17 @@ KEY meta_key (meta_key(15))
 	 */
 	public static function activation() {
 
+		do_action( 'automator_activation_before' );
+
 		update_option( 'automator_over_time', array( 'installed_date' => time() ) );
 
 		$db_version = get_option( 'uap_database_version', null );
+
 		if ( null !== $db_version && (string) AUTOMATOR_DATABASE_VERSION === (string) $db_version ) {
 			// bail. No db upgrade needed!
 			return;
 		}
 
-		do_action( 'automator_activation_before' );
 		self::create_tables();
 
 		do_action( 'automator_activation_after' );

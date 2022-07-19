@@ -25,11 +25,18 @@ class WP_SUBMITCOMMENT {
 	public function __construct() {
 		$this->trigger_code = 'WPSUBMITCOMMENT';
 		$this->trigger_meta = 'WPPOSTCOMMENTS';
-		if ( is_admin() ) {
-			add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 99 );
-		} else {
-			$this->define_trigger();
+		if ( Automator()->helpers->recipe->is_edit_page() ) {
+			add_action(
+				'wp_loaded',
+				function () {
+					$this->define_trigger();
+				},
+				99
+			);
+
+			return;
 		}
+		$this->define_trigger();
 	}
 
 	/**

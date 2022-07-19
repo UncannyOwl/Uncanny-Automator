@@ -38,7 +38,7 @@ class Admin_Settings_General_Improve_Automator {
 				$tabs['improve-automator'] = (object) array(
 					'name'     => esc_html__( 'Improve Automator', 'uncanny-automator' ),
 					'function' => array( $this, 'tab_output' ),
-					'preload'  => true, // Determines if the content should be loaded even if the tab is not selected
+					'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 					'icon'     => 'heart',
 				);
 

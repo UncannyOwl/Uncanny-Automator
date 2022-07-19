@@ -31,7 +31,7 @@ class Admin_Settings_General_Logs {
 				$tabs['logs'] = (object) array(
 					'name'     => esc_html__( 'Logs', 'uncanny-automator' ),
 					'function' => array( $this, 'tab_output' ),
-					'preload'  => true, // Determines if the content should be loaded even if the tab is not selected
+					'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 					'icon'     => 'th-list',
 				);
 

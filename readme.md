@@ -3,9 +3,9 @@
 **Contributors:** uncannyautomator, uncannyowl \
 **Tags:** automation, zapier, google sheets, mailchimp, learndash \
 **Requires at least:** 5.3 \
-**Tested up to:** 6.0 \
+**Tested up to:** 6.0.1 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.2 \
+**Stable tag:** 4.2.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -234,6 +234,22 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.2.1 [2022-07-19]
+
+**Updated:**
+
+* Background Processing - Added REST API validation before activating the setting on sites #2293
+* Settings - Tabs now redirect back to themselves after saving #2301
+* WordPress - "A user submits a comment on a post" gains improved compatibility with wpDiscuz #2283
+
+**Fixed:**
+
+* MemberPress Courses - PHP error when Automator Pro is active #2297
+* Scheduled Actions - Changed priority to accommodate Background processing when Automator Pro is active #2327
+* Recipe UI + FluentCRM - Dequeue conflictive scripts and styles in recipe builder #2311
+* Recipe UI - Fix spacing between icons and text in <uo-button> #2309
+* Recipe UI - Dequeue select2 added by Event Tickets & Studiocart #2323
 
 ### 4.2 [2022-07-12]
 

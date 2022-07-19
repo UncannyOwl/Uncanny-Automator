@@ -18,19 +18,31 @@ namespace Uncanny_Automator;
 
 	<?php settings_fields( self::SETTINGSGROUP ); ?>
 
-	<?php do_action( 'automator_settings_advanced_tab_view', self::SETTINGSGROUP ); ?>
+	<div class="uap-settings-panel">
 
-	<div class="uap-settings-panel-content-separator"></div>
+		<div class="uap-settings-panel-top">
 
-	<input type="hidden" name="<?php esc_attr_e( self::SETTINGSGROUP ); ?>'_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
+			<div class="uap-settings-panel-title">
+				<?php esc_html_e( 'Advanced', 'uncanny-automator' ); ?>
+			</div>
 
-	<uo-button
-		type="submit"
-		class="uap-spacing-top"
-	>
-		<?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
-	</uo-button>
+			<div class="uap-settings-panel-content">
 
+			<?php do_action( 'automator_settings_advanced_tab_view', self::SETTINGSGROUP ); ?>
+
+			</div>
+		</div>
+
+	
+		<div class="uap-settings-panel-bottom">
+			<div class="uap-settings-panel-bottom-right">
+				<uo-button
+					type="submit"
+				>
+					<?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
+				</uo-button>
+			<div>
+		</div>
 </form>
 
 

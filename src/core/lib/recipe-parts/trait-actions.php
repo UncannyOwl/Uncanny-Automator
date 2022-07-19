@@ -60,6 +60,8 @@ trait Actions {
 		$action_data['maybe_parsed'] = $maybe_parsed;
 
 		$this->process_action( $user_id, $action_data, $recipe_id, $args, $maybe_parsed );
+
+		do_action( 'automator_after_process_action', $user_id, $action_data, $recipe_id, $args, $maybe_parsed );
 	}
 
 	/**

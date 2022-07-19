@@ -20,9 +20,6 @@ class Admin_Settings_General_Advanced {
 	public function __construct() {
 		add_filter( 'automator_settings_general_tabs', array( $this, 'create_tab' ), 99, 1 );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-
-		add_action( 'update_option_' . self::SETTINGSGROUP . '_settings_timestamp', array( $this, 'settings_updated' ), 100, 3 );
-		add_action( 'add_option_' . self::SETTINGSGROUP . '_settings_timestamp', array( $this, 'settings_updated' ), 100, 3 );
 	}
 
 	/**
@@ -33,7 +30,7 @@ class Admin_Settings_General_Advanced {
 		$tabs['advanced'] = (object) array(
 			'name'     => esc_html__( 'Advanced', 'uncanny-automator' ),
 			'function' => array( $this, 'tab_output' ),
-			'preload'  => true, // Determines if the content should be loaded even if the tab is not selected
+			'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 			'icon'     => 'code',
 		);
 
@@ -52,13 +49,6 @@ class Admin_Settings_General_Advanced {
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/general/advanced.php' );
-	}
-
-	public function settings_updated() {
-		wp_safe_redirect(
-			$this->get_advanced_settings_url()
-		);
-		exit;
 	}
 
 	public function get_advanced_settings_url() {

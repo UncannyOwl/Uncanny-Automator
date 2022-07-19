@@ -34,7 +34,7 @@ class Admin_Settings_General_License {
 				$tabs['license'] = (object) array(
 					'name'     => esc_html__( 'License', 'uncanny-automator' ),
 					'function' => array( $this, 'tab_output' ),
-					'preload'  => true, // Determines if the content should be loaded even if the tab is not selected
+					'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 					'icon'     => 'badge-check',
 				);
 

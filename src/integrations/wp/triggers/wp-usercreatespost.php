@@ -78,11 +78,18 @@ class WP_USERCREATESPOST {
 
 		$this->trigger_meta = 'WPPOSTTYPES';
 
-		if ( is_admin() && empty( $_POST ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			add_action( 'init', array( $this, 'define_trigger' ), 99 );
-		} else {
-			$this->define_trigger();
+		if ( Automator()->helpers->recipe->is_edit_page() ) {
+			add_action(
+				'wp_loaded',
+				function () {
+					$this->define_trigger();
+				},
+				99
+			);
+
+			return;
 		}
+		$this->define_trigger();
 
 		add_action( 'uoa_wp_after_insert_post', array( $this, 'post_published' ), 99, 1 );
 	}

@@ -8,7 +8,8 @@ namespace Uncanny_Automator;
  */
 class Background_Actions {
 
-	const ENDPOINT = '/async_action/';
+	const ENDPOINT    = '/async_action/';
+	const OPTION_NAME = 'uncanny_automator_background_actions';
 
 	/**
 	 * __construct
@@ -20,11 +21,22 @@ class Background_Actions {
 		add_action( 'rest_api_init', array( $this, 'register_rest_endpoint' ) );
 
 		//The priority is important here. We need to make sure we run this filter after scheduling the actions
-		add_filter( 'automator_before_action_executed', array( $this, 'maybe_send_to_background' ), 100 );
+		add_filter( 'automator_before_action_executed', array( $this, 'maybe_send_to_background' ), 200 );
 
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action( 'automator_settings_advanced_tab_view', array( $this, 'settings_output' ) );
 
+		add_action( 'automator_activation_before', array( $this, 'add_option' ) );
+
+	}
+
+	/**
+	 * add_option
+	 *
+	 * @return void
+	 */
+	public function add_option() {
+		add_option( self::OPTION_NAME, $this->test_endpoint( '1' ) );
 	}
 
 	/**
@@ -126,10 +138,21 @@ class Background_Actions {
 
 	}
 
+	/**
+	 * bg_actions_enabled
+	 *
+	 * @return void
+	 */
 	public function bg_actions_enabled() {
-		return get_option( 'uncanny_automator_background_actions', true );
+		$value = get_option( self::OPTION_NAME, '1' );
+		return '1' === $value;
 	}
 
+	/**
+	 * is_bg_action
+	 *
+	 * @return void
+	 */
 	public function is_bg_action() {
 
 		$bg_action = Automator()->get->value_from_action_meta( $this->action_code, 'background_processing' );
@@ -144,25 +167,52 @@ class Background_Actions {
 	 *
 	 * @return $this
 	 */
-	public function send_to_background() {
+	public function send_to_background( $test = false ) {
 
 		$url = get_rest_url() . AUTOMATOR_REST_API_END_POINT . self::ENDPOINT;
 
+		$request = array(
+			'body' => $this->action,
+		);
+
+		if ( false === $test ) {
+			$request['timeout']  = 0.01;
+			$request['blocking'] = false;
+		}
+
 		// Call the endpoint to make sure that the process runs at the background.
 		// Store the response for unit tests simplification.
-		$this->last_response = wp_remote_post(
-			$url,
-			array(
-				'body'     => $this->action,
-				'timeout'  => 0.01,
-				'blocking' => false,
-			)
-		);
+		$this->last_response = wp_remote_post( $url, $request );
 
 		$this->action['process_further'] = false;
 
 		return $this;
 
+	}
+
+	/**
+	 * test_endpoint
+	 *
+	 * Disable background actions if the endpoint is not reachable.
+	 *
+	 * @return void
+	 */
+	public function test_endpoint( $value ) {
+
+		if ( empty( $value ) ) {
+			return '0';
+		}
+
+		$this->action = array();
+		$this->send_to_background( true );
+
+		if ( ! is_wp_error( $this->last_response ) ) {
+			return '1';
+		}
+
+		add_settings_error( self::OPTION_NAME, self::OPTION_NAME, $this->last_response->get_error_message(), 'error' );
+
+		return '0';
 	}
 
 	/**
@@ -240,7 +290,43 @@ class Background_Actions {
 	 * @return void
 	 */
 	public function register_setting() {
-		register_setting( 'uncanny_automator_advanced', 'uncanny_automator_background_actions' );
+
+		$args = array(
+			'type'              => 'boolean',
+			'sanitize_callback' => array( $this, 'test_endpoint' ),
+		);
+
+		register_setting( 'uncanny_automator_advanced', self::OPTION_NAME, $args );
+	}
+
+	/**
+	 * maybe_show_error
+	 *
+	 * @return void
+	 */
+	public function maybe_show_error() {
+
+		$error_message = '';
+
+		$errors = (array) get_settings_errors( self::OPTION_NAME );
+
+		if ( empty( $errors ) ) {
+			return;
+		}
+
+		$error         = array_shift( $errors );
+		$error_message = $error['message'];
+
+		?>
+
+		<uo-alert class="uap-spacing-top" type="error" heading="<?php esc_html_e( 'Background actions have been automatically disabled because an error was detected:', 'uncanny-automator' ); ?>">
+
+			<?php echo esc_html( $error_message ); ?>
+
+		</uo-alert>
+
+		<?php
+
 	}
 
 	/**
@@ -253,19 +339,19 @@ class Background_Actions {
 	 */
 	public function settings_output( $settings_group ) {
 
-		$bg_actions_option_name = 'uncanny_automator_background_actions';
-
-		$bg_actions_enabled = get_option( $bg_actions_option_name, true );
+		$bg_actions_enabled = $this->bg_actions_enabled();
 
 		?>
 		<div class="uap-settings-panel-content-subtitle">
 			<?php esc_html_e( 'Background actions', 'uncanny-automator' ); ?>
 		</div>
 
+		<?php $this->maybe_show_error(); ?>
+
 		<div class="uap-field uap-spacing-top--small">
 
 			<uo-switch
-				id="<?php echo esc_attr( $bg_actions_option_name ); ?>"
+				id="<?php echo esc_attr( self::OPTION_NAME ); ?>"
 				<?php echo $bg_actions_enabled ? 'checked' : ''; ?>
 
 				status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"
@@ -282,3 +368,4 @@ class Background_Actions {
 
 	}
 }
+

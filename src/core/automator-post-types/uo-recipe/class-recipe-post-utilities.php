@@ -39,7 +39,8 @@ class Recipe_Post_Utilities {
 			array(
 				$this,
 				'automator_recipe_scripts',
-			)
+			),
+			999
 		);
 
 		// Change to before delete post.
@@ -225,6 +226,10 @@ class Recipe_Post_Utilities {
 			),
 			Utilities::automator_get_version()
 		);
+
+		// Remove conflictive assets
+		// These shouldn't load in the recipe builder
+		$this->dequeue_conflictive_assets();
 	}
 
 	/**
@@ -361,6 +366,28 @@ class Recipe_Post_Utilities {
 			Utilities::automator_get_version(),
 			true
 		);
+	}
+
+	/**
+	 * Dequeues conflictive assets that shouldn't be loading in the recipe builder
+	 */
+	private function dequeue_conflictive_assets() {
+		/**
+		 * LearnDash
+		 */
+		wp_deregister_style( 'learndash-select2-jquery-style' );
+		wp_deregister_script( 'learndash-select2-jquery-script' );
+
+		/**
+		 * The Events Calendar
+		 */
+		wp_deregister_script( 'tribe-select2' );
+
+		/**
+		 * Studiocart
+		 */
+		wp_deregister_style( 'sc-select2_css' );
+		wp_deregister_script( 'sc-select2_js' );
 	}
 
 	/**

@@ -1284,7 +1284,7 @@ WHERE t.automator_trigger_id = %d
 	/**
 	 * total_completed_runs
 	 *
-	 * @return void
+	 * @return int
 	 */
 	public function total_completed_runs() {
 		global $wpdb;

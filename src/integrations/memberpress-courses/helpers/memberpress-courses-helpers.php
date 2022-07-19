@@ -61,7 +61,7 @@ class Memberpress_Courses_Helpers {
 	/**
 	 * @param Memberpress_Pro_Helpers $pro
 	 */
-	public function setPro( Memberpress_Courses_Pro_Helpers $pro ) {
+	public function setPro( \Uncanny_Automator_Pro\Memberpress_Courses_Pro_Helpers $pro ) {
 		$this->pro = $pro;
 	}
 
