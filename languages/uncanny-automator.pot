@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.2.1\n"
+"Project-Id-Version: Uncanny Automator 4.2.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-07-19T15:48:22+00:00\n"
+"POT-Creation-Date: 2022-07-21T17:41:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
@@ -901,27 +901,31 @@ msgstr ""
 msgid "Not enough credits"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:98
+#: src/core/classes/class-background-actions.php:110
 msgid "This action is scheduled or delayed"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:115
+#: src/core/classes/class-background-actions.php:126
 msgid "This action was prevented from processing earlier"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:134
+#: src/core/classes/class-background-actions.php:144
 msgid "This action is not set to run in background"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:322
+#: src/core/classes/class-background-actions.php:257
+msgid "Unknown REST API error"
+msgstr ""
+
+#: src/core/classes/class-background-actions.php:364
 msgid "Background actions have been automatically disabled because an error was detected:"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:346
+#: src/core/classes/class-background-actions.php:388
 msgid "Background actions"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:357
+#: src/core/classes/class-background-actions.php:399
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:34
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:179
@@ -929,7 +933,7 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:357
+#: src/core/classes/class-background-actions.php:399
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:38
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:179
@@ -937,7 +941,7 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:363
+#: src/core/classes/class-background-actions.php:405
 msgid "When enabled, actions that send data to an external site or service will be run in a background process to accelerate the execution of recipes.  We recommend leaving this setting enabled unless instructed otherwise by support."
 msgstr ""
 

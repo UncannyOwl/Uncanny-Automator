@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.0.1 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.2.1 \
+**Stable tag:** 4.2.1.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -234,6 +234,16 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.2.1.1 [2022-07-21]
+
+**Updated:**
+
+* Background Processing - Additional validation added when REST APIs are set to private or disabled by 3rd-party plugins #2359
+
+**Fixed:**
+
+* Automator core - Improved compatibility with 3rd-party Automator Integrations #2360
 
 ### 4.2.1 [2022-07-19]
 

@@ -28,6 +28,18 @@ class Background_Actions {
 
 		add_action( 'automator_activation_before', array( $this, 'add_option' ) );
 
+		add_filter( 'perfmatters_rest_api_exceptions', array( $this, 'add_rest_api_exception' ) );
+	}
+
+	/**
+	 * add_rest_api_exception for perfmatters.
+	 *
+	 * @param  mixed $exceptions
+	 * @return void
+	 */
+	public function add_rest_api_exception( $exceptions ) {
+		$exceptions[] = 'uap';
+		return $exceptions;
 	}
 
 	/**
@@ -99,7 +111,6 @@ class Background_Actions {
 		}
 
 		return $this;
-
 	}
 
 	/**
@@ -116,7 +127,6 @@ class Background_Actions {
 		}
 
 		return $this;
-
 	}
 
 	/**
@@ -135,7 +145,6 @@ class Background_Actions {
 		}
 
 		return $this;
-
 	}
 
 	/**
@@ -167,7 +176,7 @@ class Background_Actions {
 	 *
 	 * @return $this
 	 */
-	public function send_to_background( $test = false ) {
+	public function send_to_background( $blocking = false ) {
 
 		$url = get_rest_url() . AUTOMATOR_REST_API_END_POINT . self::ENDPOINT;
 
@@ -175,7 +184,7 @@ class Background_Actions {
 			'body' => $this->action,
 		);
 
-		if ( false === $test ) {
+		if ( false === $blocking ) {
 			$request['timeout']  = 0.01;
 			$request['blocking'] = false;
 		}
@@ -187,7 +196,6 @@ class Background_Actions {
 		$this->action['process_further'] = false;
 
 		return $this;
-
 	}
 
 	/**
@@ -203,16 +211,50 @@ class Background_Actions {
 			return '0';
 		}
 
-		$this->action = array();
+		$this->action = array(
+			'process_further' => false,
+			'action_data'     => array(
+				'meta' => array(
+					'integration' => 'WP',
+					'code'        => 'REST_API_TEST',
+				),
+			),
+		);
+
 		$this->send_to_background( true );
 
-		if ( ! is_wp_error( $this->last_response ) ) {
-			return '1';
+		$error = $this->rest_api_error();
+
+		if ( ! empty( $error ) ) {
+			add_settings_error( self::OPTION_NAME, self::OPTION_NAME, $error, 'error' );
+			return '0';
 		}
 
-		add_settings_error( self::OPTION_NAME, self::OPTION_NAME, $this->last_response->get_error_message(), 'error' );
+		return '1';
+	}
 
-		return '0';
+	/**
+	 * rest_api_error
+	 *
+	 * @return string
+	 */
+	public function rest_api_error() {
+
+		if ( is_wp_error( $this->last_response ) ) {
+			return $this->last_response->get_error_message();
+		}
+
+		if ( 200 === wp_remote_retrieve_response_code( $this->last_response ) ) {
+			return;
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $this->last_response ), true );
+
+		if ( ! empty( $body['message'] ) ) {
+			return $body['message'];
+		}
+
+		return __( 'Unknown REST API error', 'uncanny-automator' );
 	}
 
 	/**
@@ -243,7 +285,7 @@ class Background_Actions {
 
 		$action = apply_filters( 'automator_before_background_action_executed', $action );
 
-		if ( isset( $action['process_further'] ) && false === $action['process_further'] ) {
+		if ( isset( $action['process_further'] ) && false === boolval( $action['process_further'] ) ) {
 
 			automator_log( 'Action was skipped by automator_before_background_action_executed filter.' );
 
@@ -365,7 +407,6 @@ class Background_Actions {
 
 		</div>
 		<?php
-
 	}
 }
 

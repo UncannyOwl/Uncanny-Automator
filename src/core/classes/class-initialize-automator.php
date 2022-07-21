@@ -14,6 +14,7 @@ class Initialize_Automator extends Set_Up_Automator {
 	 * @throws Exception
 	 */
 	public function __construct() {
+		$this->integrations_directory_path = UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'integrations';
 
 		$this->default_directories = apply_filters(
 			'automator_integration_default_directories',
@@ -26,8 +27,11 @@ class Initialize_Automator extends Set_Up_Automator {
 			)
 		);
 
-		add_action( 'plugins_loaded', array( $this, 'automator_configure' ), AUTOMATOR_CONFIGURATION_PRIORITY );
-
+		add_action(
+			'plugins_loaded',
+			array( $this, 'automator_configure' ),
+			AUTOMATOR_CONFIGURATION_PRIORITY
+		);
 	}
 
 	/**
@@ -43,31 +47,18 @@ class Initialize_Automator extends Set_Up_Automator {
 
 		$this->load_integrations();
 
-		$this->load_helpers();
-
-		$this->load_recipe_parts();
-
 		// Loads all internal triggers, actions, and closures then provides hooks for external ones
 		// All extensions are loaded.
 		do_action( 'automator_configuration_complete', $this );
+
+		$this->automator_configuration_complete_func();
 	}
 
 	/**
-	 * Fetch integrations/* directories and initiate integrations
-	 *
 	 * @return void
 	 * @throws Automator_Exception
-	 * @throws Exception
 	 */
-	public function load_integrations() {
-		// Sets all trigger, actions, and closure classes directories for spl autoloader
-		self::$auto_loaded_directories = Automator()->cache->get( 'automator_integration_directories_loaded' );
-		self::$all_integrations        = Automator()->cache->get( 'automator_get_all_integrations' );
-
-		if ( empty( self::$auto_loaded_directories ) || empty( self::$all_integrations ) ) {
-			self::$auto_loaded_directories = $this->get_integrations_autoload_directories();
-			Automator()->cache->set( 'automator_integration_directories_loaded', self::$auto_loaded_directories, 'automator', Automator()->cache->long_expires );
-		}
+	public function automator_configuration_complete_func() {
 
 		//Let others hook in and add integrations
 		do_action_deprecated( 'uncanny_automator_add_integration', array(), '3.0', 'automator_add_integration' );
@@ -87,6 +78,31 @@ class Initialize_Automator extends Set_Up_Automator {
 		//Let others hook in and add integrations
 		do_action_deprecated( 'uncanny_automator_add_recipe_type', array(), '3.0', 'automator_add_recipe_type' );
 		do_action( 'automator_add_recipe_type' );
+		// Loads all options and provide a hook for external options
+		// Load Helpers
+		$this->load_helpers();
+
+		// Load Recipe parts
+		$this->load_recipe_parts();
+
+	}
+
+	/**
+	 * Fetch integrations/* directories and initiate integrations
+	 *
+	 * @return void
+	 * @throws Automator_Exception
+	 * @throws Exception
+	 */
+	public function load_integrations() {
+		// Sets all trigger, actions, and closure classes directories for spl autoloader
+		self::$auto_loaded_directories = Automator()->cache->get( 'automator_integration_directories_loaded' );
+		self::$all_integrations        = Automator()->cache->get( 'automator_get_all_integrations' );
+
+		if ( empty( self::$auto_loaded_directories ) || empty( self::$all_integrations ) ) {
+			self::$auto_loaded_directories = $this->get_integrations_autoload_directories();
+			Automator()->cache->set( 'automator_integration_directories_loaded', self::$auto_loaded_directories, 'automator', Automator()->cache->long_expires );
+		}
 	}
 
 	/**

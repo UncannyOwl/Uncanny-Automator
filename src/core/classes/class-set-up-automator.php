@@ -43,6 +43,11 @@ class Set_Up_Automator {
 	public $directories_to_include = array();
 
 	/**
+	 * @var string
+	 */
+	public $integrations_directory_path = '';
+
+	/**
 	 * Set_Up_Automator constructor.
 	 *
 	 * @throws Exception
@@ -71,9 +76,8 @@ class Set_Up_Automator {
 	 * @throws Exception
 	 */
 	public function get_integrations_autoload_directories() {
-		$directory = UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'integrations';
 		try {
-			$integrations = self::read_directory( $directory );
+			$integrations = self::read_directory( $this->integrations_directory_path );
 		} catch ( Exception $e ) {
 			throw new Automator_Exception( $e->getTraceAsString() );
 		}
@@ -81,7 +85,7 @@ class Set_Up_Automator {
 		self::$all_integrations = apply_filters( 'automator_integrations_setup', $integrations );
 		Automator()->cache->set( 'automator_get_all_integrations', self::$all_integrations, 'automator', Automator()->cache->long_expires );
 
-		return self::extract_integration_folders( self::$all_integrations, $directory );
+		return self::extract_integration_folders( self::$all_integrations, $this->integrations_directory_path );
 	}
 
 	/**
@@ -364,9 +368,14 @@ class Set_Up_Automator {
 		if ( $uppercase ) {
 			$class_name = strtoupper( $class_name );
 		}
-		$class = __NAMESPACE__ . '\\' . $class_name;
 
-		return apply_filters( 'automator_recipes_class_name', $class, $file, $file_name );
+		// Check if it's an internal Automator file
+		$pattern = '/(' . addcslashes( $this->integrations_directory_path, '/-:\\' ) . ')/';
+		if ( preg_match( $pattern, $file ) ) {
+			$class_name = __NAMESPACE__ . '\\' . $class_name;
+		}
+
+		return apply_filters( 'automator_recipes_class_name', $class_name, $file, $file_name );
 	}
 
 	/**
