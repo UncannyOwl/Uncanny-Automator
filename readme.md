@@ -1,4 +1,4 @@
-# Uncanny Automator - Automate everything with the no-code Automation tool for WordPress
+# Uncanny Automator – Automate everything with the #1 no-code Automation tool for WordPress
 
 **Contributors:** uncannyautomator, uncannyowl \
 **Tags:** automation, zapier, google sheets, mailchimp, learndash \
@@ -338,13 +338,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Under the hood:**
 
-* Usage reports - Added detailed recipe information #2455
 * Automator core - Background processing automatically disabled if unsupported #2456
 * Automator API - Added DB table and view to store API logs #2252
 * GoToTraining/Webinar - Now use Automator API for improved reliability and retries #2429
 * Migration scheduling - Activation hooks added #2457
 * New filter: `automator_conflictive_assets` to dequeue site-specific scripts and styles that may conflict with the recipe UI #2439
 * Updated token framework  #116  #118 #119 #130
+* Usage reports - Added detailed recipe information #2455
 * Token Parser - PHP 8 issue when a token is used in a recipe sentence #2365
 * Tools - `automator_log` now shows debug files in the admin #2443
 * `Trait_Recipe_Filters` updated #2364
