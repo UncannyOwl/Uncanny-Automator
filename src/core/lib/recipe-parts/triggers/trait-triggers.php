@@ -15,6 +15,7 @@
 namespace Uncanny_Automator\Recipe;
 
 use Exception;
+use Uncanny_Automator\Automator_Exception;
 
 /**
  * Trait Triggers
@@ -49,6 +50,11 @@ trait Triggers {
 	 * Trigger Process. This trait handles trigger execution.
 	 */
 	use Trigger_Process;
+
+	/**
+	 * Trigger Tokens. This trait handles trigger tokens.
+	 */
+	use Trigger_Tokens;
 
 	/**
 	 * Set values before trigger is processed. For example, setting post id, setting conditional trigger to true etc.
@@ -153,6 +159,7 @@ trait Triggers {
 			/**
 			 * Filters recipes even further based on the conditions. Multiple conditions can be passed to the function.
 			 * See sample integration.
+			 * @deprecated v4.3 | Use $this->validate_conditions() override with $this->find_all()
 			 */
 			$this->trigger_conditions( $args );
 
@@ -195,6 +202,8 @@ trait Triggers {
 	 * @param $args
 	 */
 	protected function process_trigger( $args ) {
+		// Enqueuing do_actions
+		$this->enqueue_token_action_and_filter();
 		/**
 		 * Allow developers to manipulate $pass_args with custom arguments. For example, ignore_post_id.
 		 */
@@ -209,48 +218,57 @@ trait Triggers {
 		 * Attempt to add trigger entry and autocomplete it if autocomplete is set to true.
 		 */
 		do_action( 'automator_before_trigger_run', $args, $pass_args );
+
 		if ( true === $this->do_trigger_autocomplete() ) {
 			Automator()->process->user->maybe_add_trigger_entry( $pass_args, $complete_trigger );
-		} else {
-			$entry_args = Automator()->process->user->maybe_add_trigger_entry( $pass_args, $complete_trigger );
-			/**
-			 * If trigger is not autocompleted, an array is returned which should be handled manually.
-			 */
-			if ( empty( $entry_args ) ) {
-				return;
-			}
 
-			foreach ( $entry_args as $result ) {
-				if ( true === $result['result'] ) {
-					$result_args = $result['args'];
-					/**
-					 * @var array $args | All the arguments passed to this function
-					 * @var array $pass_args | All the arguments passed to run mark a trigger complete
-					 * @var array $result_args | All the arguments returned after marking trigger complete
-					 */
-					$do_action = array(
-						'trigger_entry' => $result_args,
-						'entry_args'    => $pass_args,
-						'trigger_args'  => $args,
-					);
+			do_action( 'automator_after_trigger_run', $args, $pass_args );
 
-					do_action( 'automator_before_trigger_completed', $do_action, $this );
+			return;
+		}
+		$entry_args = Automator()->process->user->maybe_add_trigger_entry( $pass_args, $complete_trigger, $args );
+		/**
+		 * If trigger is not autocompleted, an array is returned which should be handled manually.
+		 */
+		if ( empty( $entry_args ) ) {
+			return;
+		}
 
+		foreach ( $entry_args as $result ) {
+			if ( true === $result['result'] ) {
+				$result_args = $result['args'];
+				/**
+				 * @var array $args | All the arguments passed to this function
+				 * @var array $pass_args | All the arguments passed to run mark a trigger complete
+				 * @var array $result_args | All the arguments returned after marking trigger complete
+				 */
+				$do_action = array(
+					'trigger_entry' => $result_args,
+					'entry_args'    => $pass_args,
+					'trigger_args'  => $args,
+				);
+
+				do_action( 'automator_before_trigger_completed', $do_action, $this );
+
+				$process_further = apply_filters( 'automator_trigger_should_complete', true, $do_action, $this );
+
+				if ( $process_further ) {
 					Automator()->process->user->maybe_trigger_complete( $result_args );
-
-					do_action_deprecated(
-						'automator_after_trigger_completed',
-						array(
-							$do_action,
-							$this,
-						),
-						'4.1',
-						'automator_after_maybe_trigger_complete'
-					);
-					do_action( 'automator_after_maybe_trigger_complete', $do_action, $this );
 				}
+
+				do_action_deprecated(
+					'automator_after_trigger_completed',
+					array(
+						$do_action,
+						$this,
+					),
+					'4.1',
+					'automator_after_maybe_trigger_complete'
+				);
+				do_action( 'automator_after_maybe_trigger_complete', $do_action, $this );
 			}
 		}
+
 		do_action( 'automator_after_trigger_run', $args, $pass_args );
 	}
 }

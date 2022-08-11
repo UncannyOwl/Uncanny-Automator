@@ -23,7 +23,7 @@ namespace Uncanny_Automator;
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<?php esc_html_e( 'Advanced', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'Background actions', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
@@ -33,16 +33,17 @@ namespace Uncanny_Automator;
 			</div>
 		</div>
 
-	
 		<div class="uap-settings-panel-bottom">
+
+			<div class="uap-settings-panel-bottom-left"><!--do nothing--></div>
+
 			<div class="uap-settings-panel-bottom-right">
-				<uo-button
-					type="submit"
-				>
-					<?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
+				<uo-button type="submit">
+					<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
 				</uo-button>
 			<div>
 		</div>
+
 </form>
 
 

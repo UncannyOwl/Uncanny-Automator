@@ -30,7 +30,6 @@ class Admin_Settings_General {
 		$this->load_tab( 'license' );
 		$this->load_tab( 'logs' );
 		$this->load_tab( 'improve-automator' );
-		$this->load_tab( 'advanced' );
 	}
 
 	/**

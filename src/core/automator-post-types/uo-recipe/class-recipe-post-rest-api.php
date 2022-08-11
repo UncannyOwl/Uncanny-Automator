@@ -212,6 +212,26 @@ class Recipe_Post_Rest_Api {
 				'permission_callback' => array( $this, 'save_settings_permissions' ),
 			)
 		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/duplicate_action/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'duplicate_action' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/resend_api_request/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'resend_api_request' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 	}
 
 	/**
@@ -534,6 +554,14 @@ class Recipe_Post_Rest_Api {
 			 */
 			if ( $request->has_param( 'sentence_human_readable' ) ) {
 				$human_readable = sanitize_text_field( $request->get_param( 'sentence_human_readable' ) );
+				// Fix for 4.2.1.2 where token is erroneously parsed because of four brackets.
+				$human_readable = strtr(
+					$human_readable,
+					array(
+						'{{{{' => '{{',
+						'}}}}' => '}}',
+					)
+				);
 				update_post_meta( $item_id, 'sentence_human_readable', $human_readable );
 			}
 
@@ -1051,7 +1079,7 @@ class Recipe_Post_Rest_Api {
 		// Make sure we have all the data
 		if ( $request->get_param( 'recipeId' ) && $request->has_param( 'actionId' ) ) {
 
-			Utilities::log( 'Removing schedule $request: ' . var_export( $request, true ) );
+			Utilities::log( 'Removing schedule $request: ' . var_export( $request, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 
 			$post_id   = (int) $request->get_param( 'actionId' );
 			$recipe_id = (int) $request->get_param( 'recipeId' );
@@ -1182,6 +1210,99 @@ class Recipe_Post_Rest_Api {
 		$return['message'] = 'Failed to update';
 		$return['success'] = false;
 		$return['action']  = 'show_error';
+
+		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function duplicate_action( WP_REST_Request $request ) {
+
+		// Make sure we have a recipe ID and the newOrder
+		if ( ! $request->has_param( 'recipe_id' ) || ! $request->has_param( 'action_id' ) ) {
+			$return['message'] = 'Recipe or Action ID is empty';
+			$return['success'] = false;
+			$return['action']  = 'show_error';
+
+			return new WP_REST_Response( $return, 400 );
+		}
+
+		$recipe_id   = absint( $request->get_param( 'recipe_id' ) );
+		$action_id   = $request->get_param( 'action_id' );
+		$action_post = get_post( $action_id );
+		if ( ! $action_post instanceof \WP_Post ) {
+			$return['message'] = 'Action does not exist';
+			$return['success'] = false;
+			$return['action']  = 'show_error';
+
+			return new WP_REST_Response( $return, 400 );
+		}
+
+		if ( 'uo-action' !== $action_post->post_type ) {
+			$return['message'] = 'Action is not of the correct post type';
+			$return['success'] = false;
+			$return['action']  = 'show_error';
+
+			return new WP_REST_Response( $return, 400 );
+		}
+
+		if ( ! automator_duplicate_recipe_part( $action_id, $recipe_id, 'draft' ) ) {
+			$return['message'] = 'Something went wrong';
+			$return['success'] = false;
+			$return['action']  = 'show_error';
+
+			return new WP_REST_Response( $return, 400 );
+		}
+		Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
+
+		$return                   = array();
+		$return['success']        = true;
+		$return['post_ID']        = $recipe_id;
+		$return['action']         = 'add-new-action';
+		$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
+
+		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function resend_api_request( WP_REST_Request $request ) {
+
+		// Make sure we have a recipe ID and the newOrder
+		if ( ! $request->has_param( 'item_log_id' ) ) {
+			$return['success'] = false;
+			$return['message'] = __( 'Action Log ID is empty', 'uncanny-automator' );
+			return new WP_REST_Response( $return, 400 );
+		}
+
+		$item_log_id = absint( $request->get_param( 'item_log_id' ) );
+
+		$api_request = Automator()->db->api->get_by_log_id( 'action', $item_log_id );
+
+		if ( empty( $api_request->params ) ) {
+			$return['success'] = false;
+			$return['message'] = __( 'Missing action params', 'uncanny-automator' );
+		}
+
+		$params = maybe_unserialize( $api_request->params );
+
+		try {
+			$response = Api_Server::api_call( $params );
+		} catch ( \Exception $e ) {
+			$return['success'] = false;
+			$return['message'] = $e->getMessage();
+			automator_log( $e->getMessage() );
+			return new WP_REST_Response( $return, $e->getCode() );
+		}
+
+		$return['message'] = __( 'The request has been successfully resent', 'uncanny-automator' );
+		$return['success'] = true;
 
 		return new WP_REST_Response( $return, 200 );
 	}

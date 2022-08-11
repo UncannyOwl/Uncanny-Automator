@@ -77,6 +77,9 @@ class Activity_Log {
 		$recipe_log_id = (int) automator_filter_input( 'recipe_log_id' );
 		$page          = (string) automator_filter_input( 'page' );
 
+		// Delete api logs
+		automator_purge_api_logs( $recipe_id, $recipe_log_id );
+
 		// Delete closure logs
 		automator_purge_closure_logs( $recipe_id, $recipe_log_id );
 

@@ -59,9 +59,9 @@ class Wpff_Tokens {
 		if ( true === $fluent_active && ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 
 			$form = wpFluent()->table( 'fluentform_forms' )->where( 'id', '=', $form_id )
-			                  ->select( array( 'id', 'title', 'form_fields' ) )
-			                  ->orderBy( 'id', 'DESC' )
-			                  ->get();
+							  ->select( array( 'id', 'title', 'form_fields' ) )
+							  ->orderBy( 'id', 'DESC' )
+							  ->get();
 
 			if ( $form ) {
 				$form               = array_pop( $form );
@@ -79,6 +79,11 @@ class Wpff_Tokens {
 							// Fields are in a column
 							foreach ( $raw_field['columns'] as $columns ) {
 								foreach ( $columns as $fields_or_multi_inputs ) {
+
+									if ( ! is_array( $fields_or_multi_inputs ) ) {
+										continue;
+									}
+
 									foreach ( $fields_or_multi_inputs as $field_or_multi_input ) {
 
 										// Skip html only feilds that are not actual form inputs
@@ -159,9 +164,9 @@ class Wpff_Tokens {
 											}
 										}
 										$fields_tokens[] = array(
-											'tokenId'         => $token_id,
-											'tokenName'       => $input_title,
-											'tokenType'       => $type,
+											'tokenId'   => $token_id,
+											'tokenName' => $input_title,
+											'tokenType' => $type,
 											'tokenIdentifier' => $trigger_meta,
 										);
 									} else {
@@ -188,7 +193,6 @@ class Wpff_Tokens {
 							if ( isset( $field['attributes']['name'] ) ) {
 								$fields_tokens[] = $this->create_token( $form_id, $field, $trigger_meta );
 							}
-
 						}
 					}
 				}

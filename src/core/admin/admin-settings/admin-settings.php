@@ -50,6 +50,7 @@ class Admin_Settings {
 		// Load the files
 		$this->load_tab( 'general' );
 		$this->load_tab( 'premium-integrations' );
+		$this->load_tab( 'advanced' );
 	}
 
 	/**

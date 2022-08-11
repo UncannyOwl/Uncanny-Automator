@@ -9,6 +9,15 @@ namespace Uncanny_Automator;
 class Gotowebinar_Helpers {
 
 	/**
+	 * The API endpoint address.
+	 *
+	 * @var API_ENDPOINT The endpoint adress.
+	 */
+	const API_ENDPOINT = 'v2/goto';
+
+	const TRANSIENT = 'automator_gtw_settings';
+
+	/**
 	 * Options.
 	 *
 	 * @var Gotowebinar_Helpers
@@ -94,29 +103,18 @@ class Gotowebinar_Helpers {
 		$webinars = array();
 
 		try {
-			list( $access_token, $organizer_key ) = $this->get_webinar_token();
 
-			$current_time = current_time( 'Y-m-d\TH:i:s\Z' );
-	
-			$current_time_plus_years = gmdate( 'Y-m-d\TH:i:s\Z', strtotime( '+2 year', strtotime( $current_time ) ) );
-	
-			$params['headers'] = array(
-				'Authorization' => $access_token,
-			);
-	
-			$params['method'] = 'GET';
-			$params['url'] = 'https://api.getgo.com/G2W/rest/v2/organizers/' . $organizer_key . '/webinars?fromTime=' . $current_time . '&toTime=' . $current_time_plus_years . '&page=0&size=200';
-	
-			$response = $this->remote_request( $params );
+			$params['action'] = 'get_webinars';
+			$response         = $this->remote_request( $params );
 
-			$code = wp_remote_retrieve_response_code( $response );
-	
+			$code = $response['statusCode'];
+
 			// Prepare webinar list.
 			if ( 200 !== $code ) {
 				throw new \Exception( __( 'Unable to fetch webinars from this account', 'uncanny-automator' ) );
 			}
-	
-			$jsondata = json_decode( preg_replace( '/("\w+"):(\d+(\.\d+)?)/', '\\1:"\\2"', wp_remote_retrieve_body( $response ) ), true );
+
+			$jsondata = $response['data'];
 
 			$jsondata = isset( $jsondata['_embedded']['webinars'] ) ? $jsondata['_embedded']['webinars'] : array();
 
@@ -124,7 +122,7 @@ class Gotowebinar_Helpers {
 				throw new \Exception( __( 'No webinars were found in this account', 'uncanny-automator' ) );
 			}
 
-			foreach ( $jsondata as $key1 => $webinar ) {
+			foreach ( $jsondata as $webinar ) {
 
 				$webinars[] = array(
 					'text'  => $webinar['subject'],
@@ -132,12 +130,11 @@ class Gotowebinar_Helpers {
 				);
 
 			}
-		
 		} catch ( \Exception $e ) {
-			
+
 			$webinars[] = array(
 				'text'  => $e->getMessage(),
-				'value' => ''
+				'value' => '',
 			);
 		}
 
@@ -161,42 +158,29 @@ class Gotowebinar_Helpers {
 		}
 
 		$customer_first_name = $user->first_name;
-		$customer_last_name = $user->last_name;
-		$customer_email = $user->user_email;
+		$customer_last_name  = $user->last_name;
+		$customer_email      = $user->user_email;
 
 		if ( ! empty( $customer_email ) ) {
 			$customer_email_parts = explode( '@', $customer_email );
-			$customer_first_name = empty( $customer_first_name ) ? $customer_email_parts[0] : $customer_first_name;
-			$customer_last_name = empty( $customer_last_name ) ? $customer_email_parts[0] : $customer_last_name;
+			$customer_first_name  = empty( $customer_first_name ) ? $customer_email_parts[0] : $customer_first_name;
+			$customer_last_name   = empty( $customer_last_name ) ? $customer_email_parts[0] : $customer_last_name;
 		}
 
-		list( $access_token, $organizer_key ) = $this->get_webinar_token();
-
-		$params = array(
-			'method'      => 'POST',
-			'url' 		  => "https://api.getgo.com/G2W/rest/v2/organizers/{$organizer_key}/webinars/{$webinar_key}/registrants?resendConfirmation=true",
-			'timeout'     => 45,
-			'redirection' => 5,
-			'httpversion' => '1.0',
-			'blocking'    => true,
-			'headers'     => array(
-				'Authorization' => $access_token,
-				'Content-type'  => 'application/json',
-			),
-			'body'        => wp_json_encode(
-				array(
-					'firstName' => $customer_first_name,
-					'lastName'   => $customer_last_name,
-					'email'     => $customer_email,
-				)
-			),
+		$body['action']      = 'gtw_register_user';
+		$body['webinar_key'] = $webinar_key;
+		$body['user']        = wp_json_encode(
+			array(
+				'firstName' => $customer_first_name,
+				'lastName'  => $customer_last_name,
+				'email'     => $customer_email,
+			)
 		);
 
-		$response = $this->remote_request( $params, $action_data );
+		$response = $this->remote_request( $body, $action_data );
 
-		$code = wp_remote_retrieve_response_code( $response );
-
-		$jsondata = json_decode( $response['body'], true, 512, JSON_BIGINT_AS_STRING );
+		$code     = $response['statusCode'];
+		$jsondata = $response['data'];
 
 		if ( 201 !== $code ) {
 			throw new \Exception( $jsondata['description'], $code );
@@ -220,33 +204,22 @@ class Gotowebinar_Helpers {
 	 */
 	public function gtw_unregister_user( $user_id, $webinar_key, $action_data = null ) {
 
-		list( $access_token, $organizer_key ) = $this->get_webinar_token();
-
 		$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtw_webinar_' . $webinar_key . '_registrantKey', true );
 
 		if ( empty( $user_registrant_key ) ) {
 			throw new \Exception( __( 'User was not registered for webinar.', 'uncanny-automator' ) );
 		}
 
-		$params = array(
-			'url' => "https://api.getgo.com/G2W/rest/v2/organizers/{$organizer_key}/webinars/{$webinar_key}/registrants/{$user_registrant_key}",
-			'method'      => 'DELETE',
-			'timeout'     => 45,
-			'redirection' => 5,
-			'httpversion' => '1.0',
-			'blocking'    => true,
-			'headers'     => array(
-				'Authorization' => $access_token,
-				'Content-type'  => 'application/json',
-			),
-		);
+		$body['action']              = 'gtw_unregister_user';
+		$body['webinar_key']         = $webinar_key;
+		$body['user_registrant_key'] = $user_registrant_key;
 
-		$response = $this->remote_request( $params, $action_data );
+		$response = $this->remote_request( $body, $action_data );
 
-		$code = wp_remote_retrieve_response_code( $response );
+		$jsondata = $response['data'];
+		$code     = $response['statusCode'];
 
 		if ( 201 !== $code && 204 !== $code ) {
-			$jsondata = json_decode( $response['body'], true, 512, JSON_BIGINT_AS_STRING );
 			throw new \Exception( esc_html( $jsondata['description'] ) );
 		}
 
@@ -261,15 +234,13 @@ class Gotowebinar_Helpers {
 	 */
 	public function get_webinar_token() {
 
-		$get_transient = get_transient( '_uncannyowl_gtw_settings' );
+		$get_transient = get_transient( self::TRANSIENT );
 
 		if ( false !== $get_transient ) {
 
-			$tokens = explode( '|', $get_transient );
+			return $get_transient;
 
-			return array( $tokens[0], $tokens[1] );
-
-		} 
+		}
 
 		$oauth_settings        = get_option( '_uncannyowl_gtw_settings' );
 		$current_refresh_token = isset( $oauth_settings['refresh_token'] ) ? $oauth_settings['refresh_token'] : '';
@@ -283,8 +254,8 @@ class Gotowebinar_Helpers {
 		$consumer_secret = trim( get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
 
 		$params = array(
-			'method' => 'POST',
-			'url' => 'https://api.getgo.com/oauth/v2/token',
+			'method'  => 'POST',
+			'url'     => 'https://api.getgo.com/oauth/v2/token',
 			'headers' => array(
 				'Authorization' => 'Basic ' . base64_encode( $consumer_key . ':' . $consumer_secret ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 				'Content-Type'  => 'application/x-www-form-urlencoded; charset=utf-8',
@@ -295,7 +266,7 @@ class Gotowebinar_Helpers {
 			),
 		);
 
-		$response = $this->remote_request( $params );
+		$response = Api_Server::call( $params );
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			update_option( '_uncannyowl_gtw_settings', array() );
@@ -313,11 +284,11 @@ class Gotowebinar_Helpers {
 		$tokens_info['account_key']   = $jsondata['account_key'];
 
 		update_option( '_uncannyowl_gtw_settings', $tokens_info );
-		set_transient( '_uncannyowl_gtw_settings', $tokens_info['access_token'] . '|' . $tokens_info['organizer_key'], 60 * 50 );
+		set_transient( self::TRANSIENT, $tokens_info, 60 * 50 );
 		delete_option( '_uncannyowl_gtw_settings_expired' );
 
 		//return the array
-		return array( $tokens_info['access_token'], $tokens_info['organizer_key'] );
+		return $tokens_info;
 
 	}
 
@@ -406,14 +377,14 @@ class Gotowebinar_Helpers {
 			return;
 		}
 
-		$consumer_key = trim( get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
+		$consumer_key    = trim( get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
 		$consumer_secret = trim( get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
 
 		$code = automator_filter_input( 'code' );
 
 		$params = array(
-			'method' => 'POST',
-			'url' => 'https://api.getgo.com/oauth/v2/token',
+			'method'  => 'POST',
+			'url'     => 'https://api.getgo.com/oauth/v2/token',
 			'headers' => array(
 				'Content-Type'  => 'application/x-www-form-urlencoded; charset=utf-8',
 				'Authorization' => 'Basic ' . base64_encode( $consumer_key . ':' . $consumer_secret ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
@@ -423,21 +394,21 @@ class Gotowebinar_Helpers {
 				'code'       => $code,
 				'grant_type' => 'authorization_code',
 				//'redirect_uri' => urlencode( $tab_url ),
-			)
+			),
 		);
 
 		$connect = 2;
 
 		try {
 
-			$response = $this->remote_request( $params );
+			$response = Api_Server::call( $params );
 
 			if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 				throw new \Exception( __( 'Error validating Oauth tokens', 'uncanny-automator' ) );
 			}
 
 			$jsondata = array();
-			
+
 			//lets get the response and decode it
 			$jsondata = json_decode( $response['body'], true );
 
@@ -445,14 +416,14 @@ class Gotowebinar_Helpers {
 			delete_option( '_uncannyowl_gtw_settings_expired' );
 
 			// Set the transient.
-			set_transient( '_uncannyowl_gtw_settings', $jsondata['access_token'] . '|' . $jsondata['organizer_key'], 60 * 50 );
+			set_transient( self::TRANSIENT, $jsondata, 60 * 50 );
 
 			$connect = 1;
 
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
 		}
-		
+
 		wp_safe_redirect( automator_get_premium_integrations_settings_url( 'go-to-webinar' ) . '&connect=' . $connect );
 		die;
 
@@ -483,7 +454,7 @@ class Gotowebinar_Helpers {
 				'uap_automator_gtw_api_consumer_secret',
 			),
 			'transients' => array(
-				'_uncannyowl_gtw_settings',
+				self::TRANSIENT,
 			),
 		);
 
@@ -520,6 +491,24 @@ class Gotowebinar_Helpers {
 
 	}
 
+	// /**
+	//  * remote_request
+	//  *
+	//  * @param  mixed $params
+	//  * @param  mixed $action_data
+	//  * @return void
+	//  */
+	// public function remote_request( $params, $action_data = null ) {
+
+	// 	if ( null !== $action_data ) {
+	// 		Api_Server::charge_credit();
+	// 	}
+
+	// 	$params['action'] = $action_data;
+	// 	$response = Api_Server::call( $params );
+	// 	return $response;
+	// }
+
 	/**
 	 * remote_request
 	 *
@@ -527,14 +516,19 @@ class Gotowebinar_Helpers {
 	 * @param  mixed $action_data
 	 * @return void
 	 */
-	public function remote_request( $params, $action_data = null ) {
+	public function remote_request( $body, $action_data = null ) {
 
-		if ( null !== $action_data ) {
-			Api_Server::charge_credit();
-		}
-		
-		$params['action'] = $action_data;
-		$response = Api_Server::call( $params );
+		$body['client'] = $this->get_webinar_token();
+
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body'     => $body,
+			'action'   => $action_data,
+			'timeout'  => 30,
+		);
+
+		$response = Api_Server::api_call( $params );
+
 		return $response;
 	}
 

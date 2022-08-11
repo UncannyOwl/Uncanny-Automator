@@ -111,7 +111,7 @@ class FACEBOOK_GROUP_PUBLISH_PHOTO {
 		// The group id.
 		$group_id = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
 		// The caption.
-		$caption = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_GROUPS_PUBLISH_MESSAGE'] ) : '';
+		$caption = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_GROUPS_PUBLISH_MESSAGE'] ) ) : '';
 		// The image url.
 		$image_url = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_GROUPS_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
 

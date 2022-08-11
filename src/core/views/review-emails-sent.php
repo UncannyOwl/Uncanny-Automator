@@ -22,7 +22,7 @@
 		<img 
 			slot="icon"
 			src="<?php echo esc_url( Utilities::automator_get_asset( 'backend/dist/img/robot-feedback.svg' ) ); ?>"
-			width="55px"
+			width="90px"
 		>
 
 		<p>

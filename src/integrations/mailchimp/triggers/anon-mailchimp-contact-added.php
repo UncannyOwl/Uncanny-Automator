@@ -52,6 +52,8 @@ class ANON_MAILCHIMP_CONTACT_ADDED {
 
 		$this->set_is_pro( false );
 
+		$this->set_uses_api( true );
+
 		/* Translators: Trigger sentence */
 		$this->set_sentence(
 			sprintf(

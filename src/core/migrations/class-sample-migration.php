@@ -41,7 +41,7 @@ class Sample_Migration extends Migration {
 	public function migrate() {
 
 		// Do not hesitate to log the migration steps
-		automator_log( 'Something to log', $this->name, true );
+		automator_log( 'Something to log', $this->name );
 
 		// Call this function after migration was successfully completed and it will never run again
 		$this->complete();

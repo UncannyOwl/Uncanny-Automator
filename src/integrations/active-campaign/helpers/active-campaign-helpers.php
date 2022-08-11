@@ -1042,12 +1042,8 @@ class Active_Campaign_Helpers {
 	 *
 	 * @return void
 	 */
-	public function validate_trigger() {
-		try {
-			return false !== Api_Server::charge_credit();
-		} catch ( \Exception $e ) {
-			return false;
-		}
+	public function validate_trigger( $trigger_data ) {
+		return true;
 	}
 
 	/**

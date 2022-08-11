@@ -1,8 +1,6 @@
 <?php
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Logs_List_Table;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
@@ -13,8 +11,10 @@ $_GET['orderby'] = 'automator_trigger_id';
 $current_tab = 'trigger-log';
 ?>
 
-<div class="uap-logs-minimal">
-	<h2><?php esc_html_e( 'Recipe run details', 'uncanny-automator' ); ?></h2>
+<div class="uap-logs-details uap-logs-minimal">
+	<div class="uap-logs-details-header uap-spacing-bottom">
+		<?php esc_html_e( 'Recipe run details', 'uncanny-automator' ); ?>
+	</div>
 
 	<ul class="recipe-details__list">
 		<li>
@@ -81,8 +81,10 @@ $current_tab = 'trigger-log';
 				'action_date'      => esc_html__( 'Completion date:', 'uncanny-automator' ),
 				'action_completed' => esc_html__( 'Status:', 'uncanny-automator' ),
 				'error_message'    => esc_html__( 'Notes:', 'uncanny-automator' ),
+				'buttons'          => '',
 			)
 		);
+
 		?>
 </div>
 
@@ -137,6 +139,7 @@ $current_tab = 'trigger-log';
 		'.action_title',
 		'.action_completed',
 		'.error_message',
+		'.buttons',
 	];
 
 	$.each($data_source_tds, function() {

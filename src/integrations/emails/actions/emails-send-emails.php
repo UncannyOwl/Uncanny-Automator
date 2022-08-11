@@ -3,19 +3,24 @@
 namespace Uncanny_Automator;
 
 /**
- * Class WP_SENDEMAIL
+ * Class EMAILS_SEND_EMAILS
  *
  * @package Uncanny_Automator
  */
-class WP_SENDEMAIL {
+class EMAILS_SEND_EMAILS {
 
 	use Recipe\Actions;
 
 	/**
+	 * Property $key_generated.
+	 *
 	 * @var false
 	 */
 	private $key_generated;
+
 	/**
+	 * Property $key.
+	 *
 	 * @var null
 	 */
 	private $key;
@@ -38,9 +43,12 @@ class WP_SENDEMAIL {
 	 */
 	protected function setup_action() {
 
-		$this->set_integration( 'WP' );
+		$this->set_integration( 'EMAILS' );
+
 		$this->set_action_code( 'SENDEMAIL' );
+
 		$this->set_action_meta( 'EMAILTO' );
+
 		$this->set_requires_user( false );
 
 		/* translators: Action - WordPress */
@@ -56,7 +64,7 @@ class WP_SENDEMAIL {
 	}
 
 	/**
-	 * load_options
+	 * Method load_options
 	 *
 	 * @return void
 	 */
@@ -168,6 +176,8 @@ class WP_SENDEMAIL {
 
 
 	/**
+	 * Method process_action.
+	 *
 	 * @param $user_id
 	 * @param $action_data
 	 * @param $recipe_id

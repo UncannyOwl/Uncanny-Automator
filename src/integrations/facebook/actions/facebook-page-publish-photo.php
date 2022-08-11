@@ -107,7 +107,9 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 		$facebook  = Automator()->helpers->recipe->facebook->options;
 		$page_id   = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) : 0;
 		$image_url = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
-		$message   = isset( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) : '';
+
+		// Post content editor adds BR tag if shift+enter. Enter key adds paragraph. Support both.
+		$message = isset( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ) : '';
 
 		$body = array(
 			'action'    => 'image-to-page',

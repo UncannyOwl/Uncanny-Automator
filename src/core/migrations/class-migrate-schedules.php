@@ -67,11 +67,7 @@ class Migrate_Schedules extends Migration {
 	 * @param  mixed $recipes
 	 * @return void
 	 */
-	private function check_recipes( $recipes ) {
-
-		if ( empty( $recipes ) ) {
-			return;
-		}
+	private function check_recipes( $recipes = array() ) {
 
 		foreach ( $recipes as $recipe ) {
 
@@ -130,17 +126,17 @@ class Migrate_Schedules extends Migration {
 
 		try {
 
-			automator_log( 'Updating schedule for action: ' . $action['ID'], $this->name, true );
-			automator_log( 'Old date: ' . $old_date, $this->name, true );
+			automator_log( 'Updating schedule for action: ' . $action['ID'], $this->name );
+			automator_log( 'Old date: ' . $old_date, $this->name );
 
 			$new_date = $this->convert_date( $old_date );
 
-			automator_log( 'New date: ' . $new_date, $this->name, true );
+			automator_log( 'New date: ' . $new_date, $this->name );
 
 			$this->update_schedule( $action['ID'], $new_date );
 
 		} catch ( \Exception $e ) {
-			automator_log( $e->getMessage(), $this->name, true );
+			automator_log( $e->getMessage(), $this->name );
 		}
 
 	}
@@ -155,7 +151,7 @@ class Migrate_Schedules extends Migration {
 
 		$wp_date_format = get_option( 'date_format' );
 
-		automator_log( 'WP date format: ' . $wp_date_format, $this->name, true );
+		automator_log( 'WP date format: ' . $wp_date_format, $this->name );
 
 		$date_time = \DateTime::createFromFormat( $wp_date_format, $old_date, wp_timezone() );
 

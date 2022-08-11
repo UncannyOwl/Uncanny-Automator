@@ -53,7 +53,7 @@ class Automator_Recipe_Process_Complete {
 		$recipe_log_id  = absint( $args['recipe_log_id'] );
 
 		// Set user ID
-		if ( is_null( $user_id ) ) {
+		if ( is_null( $user_id ) || 0 === $user_id ) {
 			$user_id = get_current_user_id();
 		}
 
@@ -88,9 +88,9 @@ class Automator_Recipe_Process_Complete {
 
 		Automator()->db->trigger->mark_complete( $trigger_id, $user_id, $recipe_id, $recipe_log_id, $trigger_log_id );
 
-		$maybe_continue  = true;
-		$process_further = array(
-			'maybe_continue_recipe_process' => $maybe_continue,
+		$maybe_continue_recipe_process = true;
+		$process_further               = array(
+			'maybe_continue_recipe_process' => $maybe_continue_recipe_process,
 			'recipe_id'                     => $recipe_id,
 			'user_id'                       => $user_id,
 			'recipe_log_id'                 => $recipe_log_id,
@@ -110,7 +110,10 @@ class Automator_Recipe_Process_Complete {
 		do_action( 'automator_trigger_completed', $process_further );
 
 		// If all triggers for the recipe are completed
-		if ( $maybe_continue && $this->triggers_completed( $recipe_id, $user_id, $recipe_log_id, $args ) ) {
+		if ( $maybe_continue_recipe_process && $this->triggers_completed( $recipe_id, $user_id, $recipe_log_id, $args ) ) {
+			// All triggers are completed. Now fix the $args. See function.
+			$args = $this->maybe_get_triggers_of_a_recipe( $args );
+
 			$this->complete_actions( $recipe_id, $user_id, $recipe_log_id, $args );
 		}
 
@@ -252,6 +255,9 @@ class Automator_Recipe_Process_Complete {
 					$valid_function = false;
 				}
 
+				$action_data['completed']     = Automator_Status::NOT_COMPLETED;
+				$action_data['action_log_id'] = $this->create_action( $user_id, $action_data, $recipe_id, null, $recipe_log_id, $args );
+
 				if ( ! $valid_function ) {
 					$error_message                       = Automator()->error_message->get( 'action-function-not-exist' );
 					$action_data['complete_with_errors'] = true;
@@ -389,7 +395,8 @@ class Automator_Recipe_Process_Complete {
 			return;
 		}
 
-		$action_log_id = $this->create_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+		Automator()->db->action->mark_complete( $action_id, $recipe_log_id, $action_data['completed'], $error_message );
+		$action_log_id = $action_data['action_log_id'];
 
 		// The action is about to be completed
 		do_action_deprecated(
@@ -469,14 +476,14 @@ class Automator_Recipe_Process_Complete {
 		 * 8 = skipped
 		 * 9 = completed, do nothing
 		 */
-		$completed = 0;
+		$completed = Automator_Status::NOT_COMPLETED;
 
 		if ( is_array( $action_data ) && ! empty( $error_message ) && key_exists( 'complete_with_errors', $action_data ) ) {
-			$completed = 2;
+			$completed = Automator_Status::COMPLETED_WITH_ERRORS;
 		} elseif ( ( is_array( $action_data ) && key_exists( 'do-nothing', $action_data ) ) ) {
-			$completed = 9;
+			$completed = Automator_Status::DID_NOTHING;
 		} elseif ( empty( $error_message ) ) {
-			$completed = 1;
+			$completed = Automator_Status::COMPLETED;
 		}
 
 		return apply_filters( 'automator_get_action_completed_status', $completed, $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
@@ -603,12 +610,12 @@ class Automator_Recipe_Process_Complete {
 
 		$run_number = Automator()->get->next_run_number( $recipe_id, $user_id, true );
 		if ( $recipe_log_id && Automator()->db->recipe->get_scheduled_actions_count( $recipe_log_id, $args ) > 0 ) {
-			$completed = 5;
+			$completed = Automator_Status::IN_PROGRESS;
 		} elseif ( ( is_array( $args ) && key_exists( 'do-nothing', $args ) ) ) {
-			$completed  = 9;
+			$completed  = Automator_Status::DID_NOTHING;
 			$run_number = 1;
 		} else {
-			$completed = 1;
+			$completed = Automator_Status::COMPLETED;
 		}
 
 		do_action_deprecated(
@@ -647,14 +654,14 @@ class Automator_Recipe_Process_Complete {
 				$skip = true;
 			} elseif ( strpos( $message, 'New user created' ) || strpos( $message, 'Create new user failed' ) ) {
 				$skip = true;
-			} elseif ( 9 === (int) $complete ) {
+			} elseif ( Automator_Status::DID_NOTHING === (int) $complete ) {
 				$skip = true;
-			} elseif ( 8 === (int) $complete ) {
+			} elseif ( Automator_Status::SKIPPED === (int) $complete ) {
 				$skip = true;
 			}
 
 			if ( ! $skip ) {
-				$comp = 9 === absint( $completed ) ? 9 : $complete;
+				$comp = Automator_Status::DID_NOTHING === absint( $completed ) ? Automator_Status::DID_NOTHING : $complete;
 				Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, $comp );
 				do_action( 'automator_recipe_completed_with_errors', $recipe_id, $user_id, $recipe_log_id, $args );
 			}
@@ -729,5 +736,53 @@ class Automator_Recipe_Process_Complete {
 		do_action( 'automator_closures_completed', $recipe_id, $user_id, $args );
 
 		return true;
+	}
+
+	/**
+	 * When there are multiple triggers in a recipe, $args only contains the last run trigger info.
+	 * It creates issues in the parsing of the tokens. This is an attempt to fix the issue by returning
+	 * all triggers of a recipe in an already passing $args.
+	 *
+	 * @param $args
+	 *
+	 * @return array|mixed|void
+	 * @since 4.3
+	 * @author Saad
+	 *
+	 */
+	public function maybe_get_triggers_of_a_recipe( $args = array() ) {
+		if ( empty( $args ) ) {
+			// Something is wrong here!
+			return $args;
+		}
+		$user_id       = isset( $args['user_id'] ) ? $args['user_id'] : null;
+		$recipe_id     = isset( $args['recipe_id'] ) ? $args['recipe_id'] : null;
+		$recipe_log_id = isset( $args['recipe_log_id'] ) ? $args['recipe_log_id'] : null;
+		$run_number    = isset( $args['run_number'] ) ? $args['run_number'] : null;
+
+		if ( null === $user_id || null === $recipe_id || null === $recipe_log_id ) {
+			return $args;
+		}
+
+		$recipe_triggers = Automator()->db->trigger->get_triggers_by_recipe_log_id( $user_id, $recipe_id, $recipe_log_id, $run_number );
+		if ( empty( $recipe_triggers ) ) {
+			return $args;
+		}
+		foreach ( $recipe_triggers as $recipe_trigger ) {
+			$trigger_id                             = $recipe_trigger->automator_trigger_id;
+			$trigger_log_id                         = $recipe_trigger->trigger_log_id;
+			$args['recipe_triggers'][ $trigger_id ] = array(
+				'recipe_id'      => $recipe_id,
+				'recipe_log_id'  => $recipe_log_id,
+				'trigger_id'     => $trigger_id,
+				'trigger_log_id' => $trigger_log_id,
+				'user_id'        => $user_id,
+				'run_number'     => $args['run_number'],
+				'meta'           => $args['meta'],
+				'code'           => $args['code'],
+			);
+		}
+
+		return $args;
 	}
 }

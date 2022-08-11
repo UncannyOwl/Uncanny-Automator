@@ -14,6 +14,8 @@
 
 namespace Uncanny_Automator\Recipe;
 
+use Uncanny_Automator\Automator_Exception;
+
 /**
  * Trait Trigger_Setup
  *
@@ -108,11 +110,27 @@ trait Trigger_Setup {
 	/**
 	 * @var
 	 */
-	protected $trigger_tokens = array();
+
+	//protected $trigger_tokens = array();
+
 	/**
 	 * @var
 	 */
 	protected $token_parser;
+
+	/**
+	 * @var bool
+	 */
+	protected $uses_api = false;
+
+	/**
+	 * Set up Automator trigger constructor.
+	 */
+	public function __construct() {
+
+		$this->setup_trigger();
+
+	}
 
 	/**
 	 * @return mixed
@@ -237,6 +255,13 @@ trait Trigger_Setup {
 	 */
 	public function set_options_callback( $callback ) {
 		$this->options_callback = $callback;
+	}
+
+	/**
+	 * @param bool
+	 */
+	protected function set_uses_api( $uses_api ) {
+		$this->uses_api = $uses_api;
 	}
 
 	/**
@@ -379,16 +404,16 @@ trait Trigger_Setup {
 	/**
 	 * @return mixed
 	 */
-	public function get_trigger_tokens() {
-		return $this->trigger_tokens;
-	}
+	//  public function get_trigger_tokens() {
+	//      return $this->trigger_tokens;
+	//  }
 
 	/**
 	 * @param mixed $trigger_tokens
 	 */
-	public function set_trigger_tokens( $trigger_tokens ) {
-		$this->trigger_tokens = $trigger_tokens;
-	}
+	//  public function set_trigger_tokens( $trigger_tokens ) {
+	//      $this->trigger_tokens = $trigger_tokens;
+	//  }
 
 	/**
 	 * @return mixed
@@ -420,7 +445,19 @@ trait Trigger_Setup {
 
 
 	/**
+	 * @param bool
+	 *
+	 * @return void
+	 *
+	 */
+	public function get_uses_api() {
+		return $this->uses_api;
+	}
+
+
+	/**
 	 * Define and register the trigger by pushing it into the Automator object
+	 * @throws Automator_Exception
 	 */
 	protected function register_trigger() {
 
@@ -440,6 +477,7 @@ trait Trigger_Setup {
 			'tokens'              => $this->get_trigger_tokens(), // all the linked tokens of the trigger.
 			'token_parser'        => $this->get_token_parser(), // v3.0, Pass a function to parse tokens.
 			'validation_function' => array( $this, 'validate' ), // function to call for add_action().
+			'uses_api'            => $this->get_uses_api(),
 		);
 
 		if ( ! empty( $this->get_options() ) ) {
@@ -456,6 +494,10 @@ trait Trigger_Setup {
 
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );
 
+		// $this->trigger_tokens_filter returns false if trigger has no token.
+		$this->add_trigger_tokens_filter( $this->get_trigger_code(), $this->get_integration() );
+
 		Automator()->register->trigger( $trigger );
+
 	}
 }

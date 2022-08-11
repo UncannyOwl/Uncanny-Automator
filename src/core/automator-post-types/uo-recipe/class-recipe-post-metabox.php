@@ -20,12 +20,32 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Recipe_Post_Metabox {
+
 	/**
 	 * Recipe_Post_Metabox constructor.
 	 */
 	public function __construct() {
+
 		// Adding entry point for JS based triggers and actions UI into Meta Boxes
 		add_action( 'add_meta_boxes', array( $this, 'recipe_add_meta_box_ui' ), 11 );
+
+		// Disable sortable.
+		add_action( 'load-post.php', array( $this, 'disable_drag_metabox' ) );
+
+	}
+
+	/**
+	 * Deregisters postbox script if on load-post.php and its a uo-recipe post type.
+	 *
+	 * @return void
+	 */
+	public function disable_drag_metabox() {
+
+		if ( ! empty( get_current_screen()->post_type ) && 'uo-recipe' === get_current_screen()->post_type ) {
+
+			wp_deregister_script( 'postbox' );
+
+		}
 
 	}
 

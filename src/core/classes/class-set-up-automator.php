@@ -207,7 +207,10 @@ class Set_Up_Automator {
 				if ( class_exists( $class, false ) ) {
 					continue;
 				}
-				require_once $file;
+				if ( ! is_file( $file ) ) {
+					continue;
+				}
+				include_once $file;
 				$i                = new $class();
 				$integration_code = method_exists( $i, 'get_integration' ) ? $i->get_integration() : $class::$integration;
 				$active           = method_exists( $i, 'get_integration' ) ? $i->plugin_active() : $i->plugin_active( 0, $integration_code );
@@ -303,7 +306,10 @@ class Set_Up_Automator {
 
 				$class = apply_filters( 'automator_helpers_class_name', $this->get_class_name( $file ), $file );
 				if ( ! class_exists( $class, false ) ) {
-					require_once $file;
+					if ( ! is_file( $file ) ) {
+						continue;
+					}
+					include_once $file;
 					$mod = str_replace( '-', '_', $dir_name );
 					// Todo: Do not initiate helpers class.
 					Utilities::add_helper_instance( $mod, new $class() );
@@ -345,7 +351,10 @@ class Set_Up_Automator {
 				}
 				$class = apply_filters( 'automator_recipe_parts_class_name', $this->get_class_name( $file, true ), $file );
 				if ( ! class_exists( $class, false ) ) {
-					require_once $file;
+					if ( ! is_file( $file ) ) {
+						continue;
+					}
+					include_once $file;
 					Utilities::add_class_instance( $class, new $class() );
 				}
 			}

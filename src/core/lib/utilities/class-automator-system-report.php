@@ -316,9 +316,11 @@ class Automator_System_Report {
 					'action_meta'  => 'uap_action_log_meta',
 					'closure'      => 'uap_closure_log',
 					'closure_meta' => 'uap_closure_log_meta',
+					'api'          => 'uap_api_log',
 					'recipe_logs'  => 'uap_recipe_logs_view',
 					'trigger_logs' => 'uap_trigger_logs_view',
 					'action_logs'  => 'uap_action_logs_view',
+					'api_logs'     => 'uap_api_logs_view',
 				)
 			);
 

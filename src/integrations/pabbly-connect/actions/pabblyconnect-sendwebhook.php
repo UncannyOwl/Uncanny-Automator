@@ -49,14 +49,14 @@ class PABBLYCONNECT_SENDWEBHOOK {
 		$this->set_sentence(
 			sprintf(
 			/* translators: Trigger sentence */
-				esc_attr__( 'Send data to {{Pabbly Connect:%1$s}}', 'uncanny-automator' ),
+				esc_attr__( 'Send data to Pabbly Connect {{webhook:%1$s}}', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
 
 		/* translators: Action - Uncanny Automator */
 		$this->set_readable_sentence(
-			esc_attr__( 'Send data to {{Pabbly Connect}}', 'uncanny-automator' )
+			esc_attr__( 'Send data to Pabbly Connect {{webhook}}', 'uncanny-automator' )
 		);
 
 		$this->set_options_group(

@@ -123,12 +123,12 @@ class Automator_DB_Handler_Triggers {
 
 			return null;
 		}
-//      // Disabling this check to avoid unnecessary recipe issues
-//		if ( null === $meta_value ) {
-//			Automator()->error->add_error( 'insert_trigger_meta', 'ERROR: You are trying to insert trigger meta without providing a meta_value', $this );
-//
-//			return null;
-//		}
+		//      // Disabling this check to avoid unnecessary recipe issues
+		//      if ( null === $meta_value ) {
+		//          Automator()->error->add_error( 'insert_trigger_meta', 'ERROR: You are trying to insert trigger meta without providing a meta_value', $this );
+		//
+		//          return null;
+		//      }
 
 		if ( 'sentence_human_readable' === $meta_key ) {
 			if ( ! empty( $this->get_sentence( $user_id, $trigger_log_id, $run_number, $meta_key ) ) ) {
@@ -172,7 +172,7 @@ class Automator_DB_Handler_Triggers {
 	 */
 	public function add_token_meta( $meta_key, $meta_value, $args ) {
 		$trigger_id     = isset( $args['trigger_id'] ) ? absint( $args['trigger_id'] ) : 0;
-		$trigger_log_id = isset( $args['trigger_log_id'] ) ? absint( $args['trigger_log_id'] ) : null;
+		$trigger_log_id = Automator()->parse->get_trigger_log_id( $args, $trigger_id );
 		$run_number     = isset( $args['run_number'] ) ? absint( $args['run_number'] ) : 0;
 		$user_id        = isset( $args['user_id'] ) ? absint( $args['user_id'] ) : 0;
 		// Set user ID
@@ -303,7 +303,7 @@ class Automator_DB_Handler_Triggers {
 	 */
 	public function get_token_meta( $meta_key, $args = array() ) {
 		$trigger_id     = absint( $args['trigger_id'] );
-		$trigger_log_id = absint( $args['trigger_log_id'] );
+		$trigger_log_id = Automator()->parse->get_trigger_log_id( $args, $trigger_id );
 		$user_id        = absint( $args['user_id'] );
 
 		return $this->get_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
@@ -487,6 +487,37 @@ class Automator_DB_Handler_Triggers {
 			$trigger_tbl,
 			array(
 				'automator_recipe_id' => $recipe_id,
+			)
+		);
+	}
+
+	/**
+	 * @param $user_id
+	 * @param $recipe_id
+	 * @param $recipe_log_id
+	 * @param $run_number
+	 *
+	 * @return array|object|\stdClass[]|null
+	 */
+	public function get_triggers_by_recipe_log_id( $user_id, $recipe_id, $recipe_log_id, $run_number ) {
+		global $wpdb;
+
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT t.ID as trigger_log_id, t.automator_trigger_id
+FROM {$wpdb->prefix}uap_trigger_log t
+JOIN {$wpdb->prefix}uap_recipe_log r
+ON r.ID = t.automator_recipe_log_id AND t.`automator_recipe_log_id` = %d
+WHERE 1=1
+AND t.automator_recipe_id = %d
+AND r.user_id = %d
+AND t.completed = %d
+AND r.run_number = %d;",
+				$recipe_log_id,
+				$recipe_id,
+				$user_id,
+				1,
+				$run_number
 			)
 		);
 	}

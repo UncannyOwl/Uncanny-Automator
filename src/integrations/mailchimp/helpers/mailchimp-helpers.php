@@ -1,8 +1,6 @@
 <?php
 namespace Uncanny_Automator;
 
-global $mailchimp_meeting_token_renew;
-
 use Uncanny_Automator_Pro\Mailchimp_Pro_Helpers;
 
 use Uncanny_Automator\Api_Server;
@@ -104,7 +102,9 @@ class Mailchimp_Helpers {
 	 * @param Mailchimp_Helpers $options
 	 */
 	public function setOptions( Mailchimp_Helpers $options ) { // phpcs:ignore
+
 		$this->options = $options;
+
 	}
 
 	/**
@@ -113,7 +113,9 @@ class Mailchimp_Helpers {
 	 * @param Mailchimp_Helpers $pro
 	 */
 	public function setPro( Mailchimp_Pro_Helpers $pro ) { // phpcs:ignore
+
 		$this->pro = $pro;
+
 	}
 
 	/**
@@ -925,7 +927,7 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * check_for_errors
+	 * Method check_for_errors.
 	 *
 	 * @param  mixed $response
 	 * @return void
@@ -965,7 +967,7 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * get_user
+	 * Method get_user.
 	 *
 	 * @return void
 	 */
@@ -985,7 +987,7 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * compile_user_interests
+	 * Method compile_user_interests.
 	 *
 	 * @param  mixed $existing_user
 	 * @param  mixed $change_groups
@@ -1185,6 +1187,7 @@ class Mailchimp_Helpers {
 	 * This function will fire for valid incoming webhook calls
 	 *
 	 * @param  mixed $request
+	 *
 	 * @return void
 	 */
 	public function webhook_callback( $request ) {
@@ -1299,7 +1302,7 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * validate_trigger
+	 * Method validate_trigger
 	 *
 	 * @return void
 	 */
@@ -1307,15 +1310,27 @@ class Mailchimp_Helpers {
 
 		$msg = 'true';
 
-		try {
-			Api_Server::charge_credit();
-		} catch ( \Exception $e ) {
-			$msg = $e->getMessage();
-		}
-
 		$this->log( '[2/3. Validating found trigger]. Result: ' . $msg );
 
 		return 'true' === $msg;
+	}
+
+	/**
+	 * Method get_email_field.
+	 *
+	 * @param string $option_code The option code.
+	 *
+	 * @return array The common email field option.
+	 */
+	public function get_email_field( $option_code = '' ) {
+
+		return array(
+			'option_code' => $option_code,
+			'label'       => esc_attr__( 'Email', 'uncanny-automator' ),
+			'input_type'  => 'email',
+			'required'    => true,
+		);
+
 	}
 
 }

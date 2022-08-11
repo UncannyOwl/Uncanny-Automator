@@ -28,11 +28,40 @@ class Wp_Helpers {
 	 * Wp_Helpers constructor.
 	 */
 	public function __construct() {
+
 		$this->load_options = true;
 
-		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
+		add_action(
+			'wp_ajax_select_custom_post_by_type',
+			array(
+				$this,
+				'select_custom_post_func',
+			)
+		);
 
-		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
+		add_action(
+			'wp_ajax_select_post_type_taxonomies',
+			array(
+				$this,
+				'select_post_type_taxonomies',
+			)
+		);
+
+		add_action(
+			'wp_ajax_select_specific_post_type_taxonomies',
+			array(
+				$this,
+				'select_specific_post_type_taxonomies',
+			)
+		);
+
+		add_action(
+			'wp_ajax_select_specific_taxonomy_terms',
+			array(
+				$this,
+				'select_specific_taxonomy_terms',
+			)
+		);
 
 		add_action(
 			'wp_ajax_select_terms_for_selected_taxonomy',
@@ -42,7 +71,13 @@ class Wp_Helpers {
 			)
 		);
 
-		add_action( 'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE', array( $this, 'select_posts_by_post_type' ) );
+		add_action(
+			'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE',
+			array(
+				$this,
+				'select_posts_by_post_type',
+			)
+		);
 
 	}
 
@@ -64,12 +99,16 @@ class Wp_Helpers {
 	 * Return all the specific fields of post type in ajax call
 	 */
 	public function select_custom_post_func() {
+
 		Automator()->utilities->ajax_auth_check();
+
 		$fields = array();
+
 		if ( ! automator_filter_has_var( 'value', INPUT_POST ) ) {
 			echo wp_json_encode( $fields );
 			die();
 		}
+
 		$post_type = automator_filter_input( 'value', INPUT_POST );
 
 		$args = array(
@@ -118,7 +157,9 @@ class Wp_Helpers {
 		}
 
 		echo wp_json_encode( $fields );
+
 		die();
+
 	}
 
 	/**
@@ -128,6 +169,7 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
+
 		if ( ! $this->load_options ) {
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -233,6 +275,7 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE' ) {
+
 		if ( ! $this->load_options ) {
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
@@ -265,12 +308,15 @@ class Wp_Helpers {
 	}
 
 	/**
+	 * Get all post types.
+	 *
 	 * @param string $label
 	 * @param string $option_code
 	 *
 	 * @return mixed
 	 */
 	public function all_post_types( $label = null, $option_code = 'WPPOSTTYPES', $args = array() ) {
+
 		$apply_relevant_tokens = false;
 
 		$post_types = $this->get_post_types_options( $label, $option_code, $args, $apply_relevant_tokens );
@@ -324,24 +370,96 @@ class Wp_Helpers {
 	}
 
 	/**
+	 * Send a JSON response [value:integer,text:string] back to an Ajax request
+	 *
+	 * @return string JSON encoded response.
+	 */
+	public function select_specific_post_type_taxonomies() {
+
+		Automator()->utilities->ajax_auth_check();
+
+		$options = array();
+
+		$taxonomies = $this->get_taxonomies( automator_filter_input( 'value', INPUT_POST ) );
+
+		if ( empty( $taxonomies ) ) {
+			wp_send_json( array() );
+		}
+
+		foreach ( $taxonomies as $id => $item ) {
+
+			if ( ! empty( $id ) && ! empty( $item->label ) ) {
+				$options[] = array(
+					'value' => $id,
+					'text'  => $item->label,
+				);
+			}
+		}
+
+		wp_send_json( $options );
+
+	}
+
+	/**
+	 * Send a JSON response [value:integer,text:string] back to an Ajax request
+	 *
+	 * @return string JSON encoded response.
+	 */
+	public function select_specific_taxonomy_terms() {
+
+		Automator()->utilities->ajax_auth_check();
+
+		$options = array();
+
+		$taxonomies = automator_filter_input_array( 'value', INPUT_POST );
+
+		if ( empty( $taxonomies ) ) {
+			wp_send_json( array() );
+		}
+
+		$terms = get_terms(
+			array(
+				'taxonomy'   => $taxonomies,
+				'hide_empty' => false,
+			)
+		);
+
+		if ( empty( $terms ) ) {
+			wp_send_json( array() );
+		}
+
+		foreach ( $terms as $term ) {
+			if ( ! empty( $term->slug ) && ! empty( $term->name ) ) {
+				$options[] = array(
+					'value' => $term->taxonomy . ':' . $term->slug,
+					'text'  => $term->name,
+				);
+			}
+		}
+
+		wp_send_json( $options );
+
+	}
+
+	/**
 	 * Return all the specific terms of the selected taxonomy in ajax call
 	 */
 	public function select_terms_for_selected_taxonomy() {
+
 		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
+
 		if ( ! automator_filter_has_var( 'value', INPUT_POST ) ) {
 			echo wp_json_encode( $fields );
 			die();
 		}
-		//      if ( empty( automator_filter_input( 'value', INPUT_POST ) ) ) {
-		//          echo wp_json_encode( $fields );
-		//          die();
-		//      }
+
 		$fields[] = array(
 			'value' => '0',
 			'text'  => __( 'Any taxonomy term', 'uncanny-automator' ),
 		);
+
 		$taxonomy = automator_filter_input( 'value', INPUT_POST );
 
 		if ( '0' !== $taxonomy ) {
@@ -372,7 +490,9 @@ class Wp_Helpers {
 		}
 
 		echo wp_json_encode( $fields );
+
 		die();
+
 	}
 
 	/**
@@ -536,7 +656,7 @@ class Wp_Helpers {
 		}
 
 		// Sort alphabetically.
-		asort( $options, SORT_STRING );
+		// asort( $options, SORT_STRING );
 
 		$option = array(
 			'input_type'      => 'select',
@@ -575,6 +695,19 @@ class Wp_Helpers {
 		}
 
 		return ! empty( $post_type->name ) && ! empty( $post_type->labels->name ) && ! empty( $post_type->labels->singular_name );
+
+	}
+
+	/**
+	 * Returns the taxonomies of the given post type.
+	 *
+	 * @param string $post_type The WordPress post type.
+	 *
+	 * @return object The taxonomies of a given post type.
+	 */
+	public function get_taxonomies( $post_type = 'post' ) {
+
+		return get_object_taxonomies( $post_type, 'objects' );
 
 	}
 

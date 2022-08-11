@@ -104,6 +104,8 @@ class Automator_DB {
 		//Automator closure meta data log
 		$tbl_closure_log_meta = $wpdb->prefix . 'uap_closure_log_meta';
 
+		$tbl_api_log = $wpdb->prefix . 'uap_api_log';
+
 		return "CREATE TABLE {$tbl_recipe_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
 `date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -201,6 +203,24 @@ PRIMARY KEY  (`ID`),
 KEY user_id (`user_id`),
 KEY automator_closure_id (`automator_closure_id`),
 KEY meta_key (meta_key(15))
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_api_log} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+`type` varchar(255) DEFAULT '' NOT NULL,
+`recipe_log_id` bigint unsigned NOT NULL,
+`item_log_id` bigint unsigned NOT NULL,
+`endpoint` varchar(255) DEFAULT '' NULL,
+`params` longtext NULL,
+`request` longtext NULL,
+`response` longtext NULL,
+`status` varchar(255) DEFAULT '' NULL,
+`price` bigint unsigned NULL,
+`balance` bigint unsigned NULL,
+`time_spent` bigint unsigned NULL,
+`notes` longtext NULL,
+PRIMARY KEY  (`ID`),
+KEY item_log_id (`item_log_id`)
 ) ENGINE=InnoDB {$charset_collate};";
 	}
 
@@ -262,6 +282,7 @@ KEY meta_key (meta_key(15))
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_closure_log_meta`;" );
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_trigger_log`;" );
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_trigger_log_meta`;" );
+		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_api_log`;" );
 	}
 
 	/**
@@ -303,6 +324,11 @@ KEY meta_key (meta_key(15))
 		$action_view_query = self::action_log_view_query();
 
 		$wpdb->query( "CREATE OR REPLACE VIEW $action_view AS $action_view_query" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		$api_view       = "{$wpdb->prefix}uap_api_logs_view";
+		$api_view_query = self::api_log_view_query();
+
+		$wpdb->query( "CREATE OR REPLACE VIEW $api_view AS $api_view_query" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		update_option( 'uap_database_views_version', AUTOMATOR_DATABASE_VIEWS_VERSION );
 	}
 
@@ -419,6 +445,101 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	}
 
 	/**
+	 * @param $group_by
+	 *
+	 * @return string
+	 */
+	public static function api_log_view_query() {
+
+		global $wpdb;
+		$qry = "SELECT
+				api.ID,
+				api.date_time AS date,
+				u.user_email,
+				u.display_name,
+				u.ID AS user_id,
+				pr.post_title AS recipe_title,
+				rl.automator_recipe_id,
+				al.automator_recipe_log_id AS recipe_log_id,
+				rl.date_time AS recipe_date_time,
+				rl.completed AS recipe_completed,
+				rl.run_number AS recipe_run_number,
+				pa.post_title AS title,
+				asen.meta_value AS sentence,
+				al.automator_action_id as item_id,
+				al.completed AS completed,
+				al.error_message as error_message,
+				api.type,
+				api.item_log_id,
+				api.status,
+				api.params,
+				api.price,
+				api.balance,
+				api.notes,
+				api.time_spent,
+				api.endpoint
+				FROM {$wpdb->prefix}uap_api_log api
+				LEFT JOIN {$wpdb->prefix}uap_action_log al
+				ON al.ID = api.item_log_id
+				LEFT JOIN {$wpdb->prefix}uap_recipe_log rl
+				ON al.automator_recipe_log_id = rl.ID
+				LEFT JOIN {$wpdb->posts} pr
+				ON pr.ID = al.automator_recipe_id
+				JOIN {$wpdb->posts} pa
+				ON pa.ID = al.automator_action_id
+				LEFT JOIN {$wpdb->prefix}uap_action_log_meta asen
+				ON asen.automator_action_log_id = al.ID AND asen.meta_key = 'sentence_human_readable_html'
+				LEFT JOIN {$wpdb->users} u
+				ON al.user_id = u.ID
+				WHERE api.type = 'action'
+				UNION SELECT
+				api.ID,
+				api.date_time AS date,
+				u.user_email,
+				u.display_name,
+				u.ID AS user_id,
+				pr.post_title AS recipe_title,
+				rl.automator_recipe_id,
+				tl.automator_recipe_log_id as recipe_log_id,
+				rl.date_time AS recipe_date_time,
+				rl.completed AS recipe_completed,
+				rl.run_number AS recipe_run_number,
+				pt.post_title AS title,
+				tsen.meta_value AS sentence,
+				tl.automator_trigger_id as item_id,
+				tl.completed AS completed,
+				'' as error_message,
+				api.type,
+				api.item_log_id,
+				api.status,
+				api.params,
+				api.price,
+				api.balance,
+				api.notes,
+				api.time_spent,
+				api.endpoint
+				FROM {$wpdb->prefix}uap_api_log api
+				LEFT JOIN {$wpdb->prefix}uap_trigger_log tl
+				ON tl.ID = api.item_log_id
+				LEFT JOIN {$wpdb->prefix}uap_recipe_log rl
+				ON tl.automator_recipe_log_id = rl.ID
+				LEFT JOIN {$wpdb->posts} pr
+				ON pr.ID = tl.automator_recipe_id
+				JOIN {$wpdb->posts} pt
+				ON pt.ID = tl.automator_trigger_id
+				LEFT JOIN {$wpdb->prefix}uap_trigger_log_meta tsen
+				ON tsen.automator_trigger_log_id = tl.ID AND tsen.meta_key = 'sentence_human_readable'
+				LEFT JOIN {$wpdb->users} u
+				ON tl.user_id = u.ID
+				WHERE api.type = 'trigger'";
+
+		return apply_filters(
+			'automator_api_log_view_query',
+			$qry
+		);
+	}
+
+	/**
 	 * Check if specific VIEW is missing.
 	 *
 	 * @param $type
@@ -436,6 +557,9 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		}
 		if ( 'action' === $type ) {
 			$recipe_view = "{$wpdb->prefix}uap_action_logs_view";
+		}
+		if ( 'api' === $type ) {
+			$recipe_view = "{$wpdb->prefix}uap_api_logs_view";
 		}
 
 		if ( empty( $recipe_view ) ) {
@@ -465,6 +589,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 			"{$wpdb->prefix}uap_recipe_logs_view",
 			"{$wpdb->prefix}uap_trigger_logs_view",
 			"{$wpdb->prefix}uap_action_logs_view",
+			"{$wpdb->prefix}uap_api_logs_view",
 		);
 
 		if ( ! $results ) {

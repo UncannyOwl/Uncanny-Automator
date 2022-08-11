@@ -52,6 +52,8 @@ class ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED {
 
 		$this->set_is_pro( false );
 
+		$this->set_uses_api( true );
+
 		/* Translators: Trigger sentence */
 		$this->set_sentence( esc_html__( 'A contact email is changed', 'uncanny-automator' ) );
 

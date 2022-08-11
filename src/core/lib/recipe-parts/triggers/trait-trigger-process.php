@@ -195,9 +195,10 @@ trait Trigger_Process {
 	 */
 	protected function prepare_entry_args( $args ) {
 		$pass_args = array(
-			'code'    => $this->get_trigger_code(),
-			'meta'    => $this->get_trigger_meta(),
-			'user_id' => $this->get_user_id(),
+			'code'        => $this->get_trigger_code(),
+			'meta'        => $this->get_trigger_meta(),
+			'user_id'     => $this->get_user_id(),
+			'integration' => $this->get_integration(),
 		);
 
 		if ( null !== $this->get_post_id() && null === $this->get_trigger_to_match() && null === $this->get_recipe_to_match() ) {
