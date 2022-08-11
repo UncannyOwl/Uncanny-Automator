@@ -95,7 +95,7 @@ class FACEBOOK_GROUP_PUBLISH_POST {
 
 		$group_id = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
 
-		$message = isset( $parsed['FACEBOOK_GROUP_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_GROUP_MESSAGE'] ) : '';
+		$message = isset( $parsed['FACEBOOK_GROUP_MESSAGE'] ) ? sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_GROUP_MESSAGE'] ) ) : '';
 
 		$body = array(
 			'action'       => 'send_message',

@@ -36,7 +36,6 @@ class Automator_Input_Parser {
 				'user_lastname',
 				'user_email',
 				'user_displayname',
-				'reset_pass_link',
 				'admin_email',
 				'site_url',
 				'recipe_id',
@@ -50,6 +49,7 @@ class Automator_Input_Parser {
 				'currentdate_unix_timestamp',
 				'current_blog_id',
 				'user_ip_address',
+				'reset_pass_link',
 				'user_reset_pass_url',
 			)
 		);
@@ -161,6 +161,74 @@ class Automator_Input_Parser {
 	}
 
 	/**
+	 * @param $args
+	 *
+	 * @return int|null
+	 */
+	public function get_recipe_id( $args ) {
+		return array_key_exists( 'recipe_id', $args ) ? absint( $args['recipe_id'] ) : null;
+	}
+
+	/**
+	 * @param $args
+	 *
+	 * @return int|null
+	 */
+	public function get_recipe_log_id( $args ) {
+		return array_key_exists( 'recipe_log_id', $args ) ? absint( $args['recipe_log_id'] ) : null;
+	}
+
+	/**
+	 * @param $args
+	 *
+	 * @return int|null
+	 */
+	public function get_trigger_id( $args ) {
+		return array_key_exists( 'trigger_id', $args ) ? absint( $args['trigger_id'] ) : null;
+	}
+
+	/**
+	 * @param $args
+	 * @param $trigger_id
+	 *
+	 * @return int|null
+	 */
+	public function get_trigger_log_id( $args, $trigger_id ) {
+		$trigger_log_id = array_key_exists( 'trigger_log_id', $args ) ? absint( $args['trigger_log_id'] ) : null;
+		if ( ! isset( $args['recipe_triggers'] ) ) {
+			return $trigger_log_id;
+		}
+		/**
+		 * src/core/lib/process/class-automator-recipe-process-complete.php before $this->complete_actions()
+		 *
+		 * @since 4.3
+		 */
+		if ( ! isset( $args['recipe_triggers'][ $trigger_id ] ) || ! isset( $args['recipe_triggers'][ $trigger_id ]['trigger_log_id'] ) ) {
+			return $trigger_log_id;
+		}
+
+		return absint( $args['recipe_triggers'][ $trigger_id ]['trigger_log_id'] );
+	}
+
+	/**
+	 * @param $args
+	 *
+	 * @return int|null
+	 */
+	public function get_run_number( $args ) {
+		return array_key_exists( 'run_number', $args ) ? absint( $args['run_number'] ) : null;
+	}
+
+	/**
+	 * @param $args
+	 *
+	 * @return int|null
+	 */
+	public function get_user_id( $args ) {
+		return array_key_exists( 'user_id', $args ) ? absint( $args['user_id'] ) : null;
+	}
+
+	/**
 	 * Parse field text by replacing variable with real data
 	 *
 	 * @param $args
@@ -171,13 +239,13 @@ class Automator_Input_Parser {
 	public function parse_vars( $args, $trigger_args = array() ) {
 		$field_text     = $args['field_text'];
 		$meta_key       = $args['meta_key'];
-		$user_id        = $args['user_id'];
 		$action_data    = $args['action_data'];
-		$recipe_id      = $args['recipe_id'];
-		$trigger_log_id = array_key_exists( 'trigger_log_id', $args ) ? absint( $args['trigger_log_id'] ) : null;
-		$run_number     = array_key_exists( 'run_number', $args ) ? absint( $args['run_number'] ) : null;
-		$recipe_log_id  = array_key_exists( 'recipe_log_id', $args ) ? absint( $args['recipe_log_id'] ) : null;
-		$trigger_id     = array_key_exists( 'trigger_id', $args ) ? absint( $args['trigger_id'] ) : null;
+		$user_id        = $this->get_user_id( $args );
+		$recipe_id      = $this->get_recipe_id( $args );
+		$recipe_log_id  = $this->get_recipe_log_id( $args );
+		$trigger_id     = $this->get_trigger_id( $args );
+		$trigger_log_id = $this->get_trigger_log_id( $args, $trigger_id );
+		$run_number     = $this->get_run_number( $args );
 
 		// find brackets and replace with real data
 		preg_match_all( '/{{\s*(.*?)\s*}}/', $field_text, $arr );
@@ -216,18 +284,29 @@ class Automator_Input_Parser {
 								if ( is_array( $replaceable ) ) {
 									$replaceable = join( ', ', $replaceable );
 								}
+								$replaceable = apply_filters(
+									'automator_usermeta_token_parsed',
+									$replaceable,
+									$user_id,
+									$meta_key,
+									$args,
+									$trigger_args
+								);
 								break;
 							default:
 								$replace_args = array(
-									'pieces'         => $pieces,
-									'recipe_id'      => $recipe_id,
-									'recipe_log_id'  => $recipe_log_id,
-									'trigger_id'     => $trigger_id,
-									'trigger_log_id' => $trigger_log_id,
-									'run_number'     => $run_number,
-									'user_id'        => $user_id,
+									'pieces'          => $pieces,
+									'recipe_id'       => $recipe_id,
+									'recipe_log_id'   => $recipe_log_id,
+									'trigger_id'      => $trigger_id,
+									'trigger_log_id'  => $trigger_log_id,
+									'run_number'      => $run_number,
+									'user_id'         => $user_id,
+									'recipe_triggers' => array(),
 								);
-
+								if ( isset( $args['recipe_triggers'] ) ) {
+									$replace_args['recipe_triggers'] = $args['recipe_triggers'];
+								}
 								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
 								break;
 						}
@@ -237,21 +316,13 @@ class Automator_Input_Parser {
 				} else {
 					//Non usermeta
 					global $wpdb;
-					$parsed_data = $wpdb->get_var(
-						$wpdb->prepare(
-							"SELECT meta_value
-										FROM {$wpdb->prefix}uap_trigger_log_meta
-										WHERE 1=1
-										  AND meta_key = %s
-										  AND automator_trigger_log_id = %d
-										  AND user_id = %d
-										  AND run_number = %d",
-							'parsed_data',
-							$trigger_log_id,
-							$user_id,
-							$run_number
-						)
+					$parse_args  = array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $trigger_id,
+						'trigger_log_id' => $trigger_log_id,
+						'run_number'     => $run_number,
 					);
+					$parsed_data = Automator()->db->token->get( 'parsed_data', $parse_args );
 					$run_func    = true;
 
 					if ( ! empty( $parsed_data ) ) {
@@ -270,15 +341,18 @@ class Automator_Input_Parser {
 						$pieces = explode( ':', $match );
 						if ( $pieces ) {
 							$replace_args = array(
-								'pieces'         => $pieces,
-								'recipe_id'      => $recipe_id,
-								'recipe_log_id'  => $recipe_log_id,
-								'trigger_id'     => $trigger_id,
-								'trigger_log_id' => $trigger_log_id,
-								'run_number'     => $run_number,
-								'user_id'        => $user_id,
+								'pieces'          => $pieces,
+								'recipe_id'       => $recipe_id,
+								'recipe_log_id'   => $recipe_log_id,
+								'trigger_id'      => $trigger_id,
+								'trigger_log_id'  => $trigger_log_id,
+								'run_number'      => $run_number,
+								'user_id'         => $user_id,
+								'recipe_triggers' => array(),
 							);
-
+							if ( isset( $args['recipe_triggers'] ) ) {
+								$replace_args['recipe_triggers'] = $args['recipe_triggers'];
+							}
 							$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
 						}
 					}
@@ -423,7 +497,7 @@ class Automator_Input_Parser {
 
 			$replaceable = apply_filters( 'automator_maybe_parse_replaceable', $replaceable );
 
-			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
+			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable, $args );
 
 			$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 		}
@@ -438,18 +512,19 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function replace_recipe_variables( $replace_args, $args = array() ) {
-		$pieces         = $this->parse_inner_token( $replace_args['pieces'], $replace_args );
-		$recipe_id      = $replace_args['recipe_id'];
-		$trigger_log_id = $replace_args['trigger_log_id'];
-		$run_number     = $replace_args['run_number'];
-		$user_id        = $replace_args['user_id'];
+		$pieces         = $this->sanitize_token_pieces( $this->parse_inner_token( $replace_args['pieces'], $replace_args ) );
+		$recipe_id      = $this->get_recipe_id( $args );
 		$trigger_id     = absint( $pieces[0] );
+		$trigger_log_id = $this->get_trigger_log_id( $replace_args, $trigger_id );
+		$run_number     = $this->get_run_number( $replace_args );
+		$user_id        = $this->get_user_id( $replace_args );
 		$trigger        = Automator()->get_trigger_data( $recipe_id, $trigger_id );
 		$trigger_data   = array( $trigger );
 		$return         = '';
 
 		// save trigger ID in the $replace_args
-		$replace_args['trigger_id'] = $trigger_id;
+		$replace_args['trigger_id']     = $trigger_id;
+		$replace_args['trigger_log_id'] = $trigger_log_id;
 
 		if ( is_null( $user_id ) && 0 !== absint( $user_id ) ) {
 			$user_id = wp_get_current_user()->ID;
@@ -481,9 +556,8 @@ class Automator_Input_Parser {
 			if ( 'NUMTIMES' === (string) $piece ) {
 				$return = isset( $trigger['meta'][ $piece ] ) && ! empty( $trigger['meta'][ $piece ] ) ? $trigger['meta'][ $piece ] : 1;
 			} elseif ( is_numeric( $trigger['meta'][ $piece ] ) ) {
-
 				if ( intval( '-1' ) === intval( $trigger['meta'][ $piece ] ) ) {
-					$post_id = Automator()->get->maybe_get_meta_value_from_trigger_log( $piece, $trigger_id, $trigger_log_id, $run_number, $user_id );
+					$post_id = Automator()->db->trigger->get_token_meta( $piece, $replace_args );
 				} else {
 					$post_id = $trigger['meta'][ $piece ];
 				}
@@ -584,10 +658,13 @@ class Automator_Input_Parser {
 		 * @since 3.5
 		 */
 		if ( in_array( 'POSTMETA', $pieces, true ) ) {
-			// Postmeta token found
+
+			// Postmeta token found.
 			$post_id  = $pieces[1];
 			$meta_key = $pieces[2];
-			$return   = get_post_meta( $post_id, $meta_key, true );
+
+			$return = get_post_meta( $post_id, $meta_key, true );
+
 			if ( is_array( $return ) ) {
 				$return = join( ', ', $return );
 			}
@@ -597,13 +674,73 @@ class Automator_Input_Parser {
 
 		$return = apply_filters( 'automator_maybe_parse_token', $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 
-		/*
-		 * May be run a do_shortcode on the field itself if it contains a shortcode?
-		 * Ticket# 22255
+		/**
+		 * Filter automator_parse_token_for_trigger_{{integration}}_{{trigger_code}}
+		 *
+		 * {{integration}} - The integration name of the trigger you are attaching the tokens into.
+		 * {{trigger_code}}- The trigger code of the trigger you are attaching the tokens into.
+		 *
+		 * @param mixed $return The current return value.
+		 * @param array $pieces The current token pieces.
+		 * @param int $recipe_id The current recipe ID.
+		 * @param array $trigger_data The data of the current trigger.
+		 * @param int $user_id The ID of the user.
+		 * @param array $replace_args The replacement arguments.
+		 *
+		 * @since 4.3
+		 */
+		if ( ! empty( $trigger['meta']['code'] ) && ! empty( $trigger['meta']['integration'] ) ) {
+
+			$filter = strtr(
+				'automator_parse_token_for_trigger_{{integration}}_{{trigger_code}}',
+				array(
+					'{{integration}}'  => strtolower( $trigger['meta']['integration'] ),
+					'{{trigger_code}}' => strtolower( $trigger['meta']['code'] ),
+				)
+			);
+
+			$return = apply_filters(
+				$filter,
+				$return,
+				$pieces,
+				$recipe_id,
+				$trigger_data,
+				$user_id,
+				$replace_args
+			);
+
+		}
+
+		/**
+		 * Maybe run a do_shortcode on the field itself if it contains a shortcode?
+		 *
+		 * @ticket #2255
 		 * @since 3.0
 		 */
-
 		return do_shortcode( $return );
+	}
+
+	/**
+	 * Sanitize pieces. No piece should contain {{ or }} in the value to avoid
+	 * following situation
+	 * SELECT meta_value FROM wp_uap_trigger_log_meta
+	 * WHERE meta_key = 'ANONWPFFFORMS' AND automator_trigger_log_id = 1009
+	 * AND automator_trigger_id = {{8347
+	 * LIMIT 0, 1
+	 *
+	 * @since v4.2.1+
+	 */
+	public function sanitize_token_pieces( $pieces = array() ) {
+
+		$pieces = array_map(
+			function ( $piece ) {
+				return str_replace( array( '{', '}' ), '', $piece );
+			},
+			$pieces
+		);
+
+		return $pieces;
+
 	}
 
 	/**
@@ -712,6 +849,9 @@ class Automator_Input_Parser {
 		}
 		if ( ! empty( $trigger_args['trigger_id'] ) ) {
 			$args['trigger_id'] = $trigger_args['trigger_id'];
+		}
+		if ( isset( $trigger_args['recipe_triggers'] ) ) {
+			$args['recipe_triggers'] = $trigger_args['recipe_triggers'];
 		}
 
 		$return = apply_filters( 'automator_text_field_parsed', $this->parse_vars( $args, $trigger_args ), $args );

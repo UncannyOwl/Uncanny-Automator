@@ -6,14 +6,14 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VERSION', '3.7' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '4.3' );
 }
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VIEWS_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VIEWS_VERSION', '3.1' );
+	define( 'AUTOMATOR_DATABASE_VIEWS_VERSION', '4.3' );
 }
 
 if ( ! defined( 'AUTOMATOR_REST_API_END_POINT' ) ) {

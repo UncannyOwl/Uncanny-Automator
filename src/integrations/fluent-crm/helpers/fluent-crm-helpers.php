@@ -155,9 +155,11 @@ class Fluent_Crm_Helpers {
 	 * @return mixed
 	 */
 	public function fluent_crm_tags( $label = null, $option_code = 'FCRMTAG', $args = array() ) {
+
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
+
 		}
 
 		if ( ! $label ) {
@@ -539,5 +541,23 @@ class Fluent_Crm_Helpers {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * Returns the option field for email address.
+	 *
+	 * @return array
+	 */
+	public function get_email_field() {
+		return array(
+			'option_code' => 'EMAIL',
+			'input_type'  => 'text',
+			'label'       => esc_attr__( 'Email address', 'uncanny-automator' ),
+			'placeholder' => '',
+			'description' => '',
+			'required'    => true,
+			'tokens'      => true,
+			'default'     => '',
+		);
 	}
 }

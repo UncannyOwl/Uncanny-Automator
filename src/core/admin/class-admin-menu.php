@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class Admin_Menu {
 
+	public static $instance = null;
+
 	/**
 	 * @var array
 	 */
@@ -82,6 +84,15 @@ class Admin_Menu {
 
 	}
 
+	public static function get_instance() {
+
+		if ( null === self::$instance ) {
+			self::$instance = new Admin_Menu();
+		}
+
+		return self::$instance;
+	}
+
 	/**
 	 * Updates the `automator_reporting` to true if the user is connected.
 	 *
@@ -129,15 +140,38 @@ class Admin_Menu {
 	}
 
 	/**
+	 * is_a_log
+	 *
+	 * @param  string $hook
+	 * @return bool
+	 */
+	public function is_a_log( $hook ) {
+
+		$log_pages = apply_filters(
+			'automator_log_pages',
+			array(
+				'uncanny-automator-recipe-activity',
+				'uncanny-automator-recipe-activity-details',
+				'uncanny-automator-debug-log',
+				'uncanny-automator-recipe-log',
+				'uncanny-automator-trigger-log',
+				'uncanny-automator-action-log',
+			)
+		);
+
+		foreach ( $log_pages as $page ) {
+			if ( strpos( $hook, $page ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * @param $hook
 	 */
 	public function reporting_assets( $hook ) {
-		$is_a_log = ( strpos( $hook, 'uncanny-automator-recipe-activity' ) !== false )
-					|| ( strpos( $hook, 'uncanny-automator-recipe-activity-details' ) !== false )
-					|| ( strpos( $hook, 'uncanny-automator-debug-log' ) !== false )
-					|| ( strpos( $hook, 'uncanny-automator-recipe-log' ) !== false )
-					|| ( strpos( $hook, 'uncanny-automator-trigger-log' ) !== false )
-					|| ( strpos( $hook, 'uncanny-automator-action-log' ) !== false );
 
 		// Load tools.css.
 		$load_in_pages = array(
@@ -150,7 +184,7 @@ class Admin_Menu {
 			wp_enqueue_style( 'uap-admin-tools', Utilities::automator_get_asset( 'legacy/css/admin/tools.css' ), array(), Utilities::automator_get_version() );
 		}
 
-		if ( $is_a_log ) {
+		if ( $this->is_a_log( $hook ) ) {
 			Utilities::legacy_automator_enqueue_global_assets();
 			// Automator assets
 			wp_enqueue_script( 'jquery-ui-tabs' );
@@ -204,9 +238,9 @@ class Admin_Menu {
 		);
 
 		add_submenu_page( null, esc_attr__( 'Recipe activity details', 'uncanny-automator' ), esc_attr__( 'Recipe activity details', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-activity-details', $function );
-		add_submenu_page( $parent_slug, esc_attr__( 'Recipe log', 'uncanny-automator' ), esc_attr__( 'Recipe log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
-		add_submenu_page( $parent_slug, esc_attr__( 'Trigger log', 'uncanny-automator' ), esc_attr__( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
-		add_submenu_page( $parent_slug, esc_attr__( 'Action log', 'uncanny-automator' ), esc_attr__( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
+		add_submenu_page( $parent_slug, esc_attr__( 'Recipe log', 'uncanny-automator' ), esc_attr__( 'Logs', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
+		add_submenu_page( null, esc_attr__( 'Trigger log', 'uncanny-automator' ), esc_attr__( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
+		add_submenu_page( null, esc_attr__( 'Action log', 'uncanny-automator' ), esc_attr__( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
 		add_submenu_page(
 			null,
 			esc_attr__( 'Debug logs', 'uncanny-automator' ),
@@ -760,18 +794,22 @@ class Admin_Menu {
 	 * Enqueues global assets in the Automator pages
 	 */
 	private function enqueue_global_assets() {
-		// List of page where we have to add the assets
-		$this->backend_enqueue_in = array(
-			'post.php', // Has filter, check callback
-			'edit-tags.php',
-			'uncanny-automator-dashboard',
-			'uncanny-automator-integrations',
-			'uncanny-automator-config',
-			'uncanny-automator-tools',
-			'uncanny-automator-action-log',
-			'uncanny-automator-trigger-log',
-			'uncanny-automator-recipe-log',
-			'edit.php',
+		// List of pages where we have to add the assets
+		$this->backend_enqueue_in = apply_filters(
+			'automator_enqueue_global_assets',
+			array(
+				'post.php', // Has filter, check callback
+				'edit-tags.php',
+				'uncanny-automator-dashboard',
+				'uncanny-automator-integrations',
+				'uncanny-automator-config',
+				'uncanny-automator-tools',
+				'uncanny-automator-action-log',
+				'uncanny-automator-trigger-log',
+				'uncanny-automator-recipe-log',
+				'uncanny-automator-recipe-activity-details',
+				'edit.php',
+			)
 		);
 
 		// Enqueue admin scripts

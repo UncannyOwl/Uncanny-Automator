@@ -21,10 +21,12 @@ class Automator_Recipe_Process_User {
 	 *
 	 * @param      $args
 	 * @param bool $mark_trigger_complete
+	 * @param array $trigger_args
 	 *
-	 * @return array|bool|int|null
+	 * @return array|null
 	 */
-	public function maybe_add_trigger_entry( $args, $mark_trigger_complete = true ) {
+	public function maybe_add_trigger_entry( $args, $mark_trigger_complete = true, $trigger_args = array() ) {
+		$original_args      = $args;
 		$is_signed_in       = Automator()->is_user_signed_in( $args );
 		$check_trigger_code = key_exists( 'code', $args ) ? $args['code'] : null;
 		$trigger_meta       = key_exists( 'meta', $args ) ? $args['meta'] : null;
@@ -42,7 +44,7 @@ class Automator_Recipe_Process_User {
 			return null;
 		}
 
-		$args = [
+		$args = array(
 			'code'             => $check_trigger_code,
 			'meta'             => $trigger_meta,
 			'post_id'          => $post_id,
@@ -51,7 +53,7 @@ class Automator_Recipe_Process_User {
 			'trigger_to_match' => $matched_trigger_id,
 			'ignore_post_id'   => $ignore_post_id,
 			'is_signed_in'     => $is_signed_in,
-		];
+		);
 
 		if ( $is_webhook ) {
 			$recipes = Automator()->get->recipes_from_trigger_code( $check_trigger_code, $webhook_recipe );
@@ -114,7 +116,7 @@ class Automator_Recipe_Process_User {
 
 				$get_trigger_log_id = $get_trigger_log_id['trigger_log_id'];
 
-				$numtimes_arg = [
+				$numtimes_arg = array(
 					'recipe_id'      => $recipe_id,
 					'trigger_id'     => $trigger_id,
 					'trigger'        => $trigger,
@@ -122,13 +124,13 @@ class Automator_Recipe_Process_User {
 					'recipe_log_id'  => $recipe_log_id,
 					'trigger_log_id' => $get_trigger_log_id,
 					'is_signed_in'   => $is_signed_in,
-				];
+				);
 
 				$trigger_steps_completed = $this->maybe_trigger_num_times_completed( $numtimes_arg );
 
 				//If -1 / Any option is used, save it's entry for tokens
 				if ( ( isset( $trigger['meta'][ $trigger_meta ] ) && intval( '-1' ) === intval( $trigger['meta'][ $trigger_meta ] ) ) && true === $trigger_steps_completed['result'] ) {
-					$meta_arg = [
+					$meta_arg = array(
 						'recipe_id'      => $recipe_id,
 						'trigger_id'     => $trigger_id,
 						'user_id'        => $user_id,
@@ -139,7 +141,7 @@ class Automator_Recipe_Process_User {
 						'is_signed_in'   => $is_signed_in,
 						'meta'           => $trigger_meta,
 						'run_number'     => Automator()->get->next_run_number( $recipe_id, $user_id, true ),
-					];
+					);
 
 					// Fix to avoid saving value as 0 when Any option is selected
 					if ( 0 !== absint( $post_id ) ) {
@@ -178,7 +180,9 @@ class Automator_Recipe_Process_User {
 					$args['run_number']     = Automator()->get->next_run_number( $recipe_id, $user_id, true );
 
 					if ( 1 === + $mark_trigger_complete ) {
+
 						$this->maybe_trigger_complete( $args );
+
 					} else {
 						$result[] = array(
 							'result' => true,
@@ -206,10 +210,10 @@ class Automator_Recipe_Process_User {
 	 *
 	 * Added $maybe_simulate in order to avoid unnecessary recipe logs in database.
 	 * It'll return existing $recipe_log_id if there's one for a user & recipe, or
-	 * simulate an ID for the next run.. The reason for simulate is to avoid unnecessary
+	 * simulate an ID for the next run. The reason for simulate is to avoid unnecessary
 	 * recipe_logs in the database since we insert recipe log first & check if trigger
 	 * is valid after which means, recipe log is added and not used in this run.
-	 * Once trigger is validated.. I pass $maybe_simulate ID to $maybe_add_log_id
+	 * Once trigger is validated. I pass $maybe_simulate to $maybe_add_log_id
 	 * and insert recipe log at this point.
 	 *
 	 */
@@ -302,7 +306,6 @@ class Automator_Recipe_Process_User {
 			$num_times_recipe_run = false;
 		}
 
-
 		if ( ! $num_times_recipe_run ) {
 			$run_number = Automator()->get->next_run_number( $recipe_id, $user_id );
 
@@ -373,12 +376,11 @@ class Automator_Recipe_Process_User {
 	public function maybe_validate_trigger_without_postid( $args = array(), $trigger = null, $recipe_id = null, $recipe_log_id = null ) {
 
 		if ( empty( $args ) || null === $trigger || null === $recipe_id ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'One of the required field is missing.', 'uncanny-automator' ),
-			];
+			);
 		}
-
 
 		$check_trigger_code  = $args['code'];
 		$trigger_meta        = $args['meta'];
@@ -394,10 +396,10 @@ class Automator_Recipe_Process_User {
 			// The plugin for this trigger is NOT active
 			Automator()->error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
 
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'Plugin is not active.', 'uncanny-automator' ),
-			];
+			);
 		}
 
 		/*if ( is_null( $recipe_log_id ) || ! is_numeric( $recipe_log_id ) ) {
@@ -405,27 +407,28 @@ class Automator_Recipe_Process_User {
 		}*/
 
 		// Stop here if the trigger was already completed
-		$is_trigger_completed = $this->is_trigger_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
+		$process_recipe       = apply_filters( 'automator_get_trigger_log_id_process_recipe', false, $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
+		$is_trigger_completed = Automator()->db->trigger->is_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $process_recipe, $args );
 
 		if ( $is_trigger_completed ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'Trigger is completed.', 'uncanny-automator' ),
-			];
+			);
 		}
 		// Skip if the executed trigger doesn't match
 		if ( (string) $check_trigger_code !== (string) $trigger_code ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => sprintf( '%s AND %s triggers not matched.', $check_trigger_code, $trigger_code ),
-			];
+			);
 		}
 
 		if ( 0 !== (int) $matched_recipe_id && (int) $recipe_id !== (int) $matched_recipe_id ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'Recipe not matched.', 'uncanny-automator' ),
-			];
+			);
 		} elseif ( (int) $recipe_id === (int) $matched_recipe_id ) {
 			/**
 			 * Added second part of code to check for MAGICBUTTON
@@ -436,10 +439,10 @@ class Automator_Recipe_Process_User {
 			 * @author  Saad
 			 */
 			if ( ! isset( $trigger['meta'][ $trigger_meta ] ) && ! isset( $trigger['meta'][ $args['code'] ] ) ) {
-				return [
+				return array(
 					'result' => false,
 					'error'  => esc_html__( 'Trigger meta not found.', 'uncanny-automator' ),
-				];
+				);
 			}
 		}
 
@@ -486,16 +489,16 @@ class Automator_Recipe_Process_User {
 			);
 		}
 
-		$get_trigger_id = Automator()->get->trigger_log_id( $user_id, $trigger_id, $recipe_id, $recipe_log_id );
+		$trigger_log_id = Automator()->get->trigger_log_id( $user_id, $trigger_id, $recipe_id, $recipe_log_id );
 
-		if ( is_null( $get_trigger_id ) && is_numeric( $recipe_log_id ) ) {
+		if ( is_null( $trigger_log_id ) && is_numeric( $recipe_log_id ) ) {
 			//Nothing found! Insert
-			$get_trigger_id = $this->insert_trigger( $user_id, $trigger_id, $recipe_id, false, $recipe_log_id );
+			$trigger_log_id = Automator()->db->trigger->add( $user_id, $trigger_id, $recipe_id, false, $recipe_log_id );
 		}
 
 		return array(
 			'result'         => true,
-			'trigger_log_id' => $get_trigger_id,
+			'trigger_log_id' => $trigger_log_id,
 		);
 	}
 
@@ -534,10 +537,10 @@ class Automator_Recipe_Process_User {
 	public function maybe_validate_trigger( $args = array(), $trigger = null, $recipe_id = null, $recipe_log_id = null ) {
 
 		if ( empty( $args ) || null === $trigger || null === $recipe_id ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'One of the required field is missing.', 'uncanny-automator' ),
-			];
+			);
 		}
 
 		$check_trigger_code  = $args['code'];
@@ -553,28 +556,29 @@ class Automator_Recipe_Process_User {
 			// The plugin for this trigger is NOT active
 			Automator()->error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
 
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'Plugin is not active.', 'uncanny-automator' ),
-			];
+			);
 		}
 
 		// Stop here if the trigger was already completed
-		$is_trigger_completed = $this->is_trigger_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
+		$process_recipe       = apply_filters( 'automator_get_trigger_log_id_process_recipe', false, $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
+		$is_trigger_completed = Automator()->db->trigger->is_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $process_recipe, $args );
 
 		if ( $is_trigger_completed ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'Trigger is completed.', 'uncanny-automator' ),
-			];
+			);
 		}
 
 		// Skip if the executed trigger doesn't match
 		if ( $check_trigger_code !== $trigger_code ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => esc_html__( 'Trigger isn\'t matched.', 'uncanny-automator' ),
-			];
+			);
 		}
 
 		// The post ID the current user needs to visit
@@ -586,15 +590,15 @@ class Automator_Recipe_Process_User {
 
 		if ( intval( '-1' ) !== intval( $trigger_post_id ) ) {
 			if ( is_numeric( $trigger_post_id ) && is_numeric( $post_id ) && absint( $trigger_post_id ) !== absint( $post_id ) ) {
-				return [
+				return array(
 					'result' => false,
 					'error'  => esc_html__( 'Trigger not matched.', 'uncanny-automator' ),
-				];
+				);
 			} elseif ( (string) $trigger_post_id != (string) $post_id ) {
-				return [
+				return array(
 					'result' => false,
 					'error'  => esc_html__( 'Trigger not matched.', 'uncanny-automator' ),
-				];
+				);
 			}
 		}
 
@@ -633,13 +637,13 @@ class Automator_Recipe_Process_User {
 		// How many times has this user triggered this trigger
 		$user_num_times = Automator()->get->trigger_meta( $user_id, $trigger['ID'], 'NUMTIMES', $trigger_log_id );
 
-		$args = [
+		$args = array(
 			'user_id'        => $user_id,
 			'trigger_id'     => $trigger_id,
 			'meta_key'       => 'NUMTIMES',
 			'run_number'     => $run_number,
 			'trigger_log_id' => $trigger_log_id,
-		];
+		);
 
 		if ( empty( $user_num_times ) ) {
 			//This is first time user visited
@@ -690,10 +694,10 @@ class Automator_Recipe_Process_User {
 
 		// Move on if the user didn't trigger the trigger enough times
 		if ( $user_num_times < $num_times ) {
-			return [
+			return array(
 				'result' => false,
 				'error'  => 'Number of times condition is not completed.',
-			];
+			);
 		}
 
 		// If the trigger was hit the enough times then complete the trigger
@@ -898,7 +902,6 @@ class Automator_Recipe_Process_User {
 		if ( empty( $args ) && false === $is_signed_in ) {
 			return false;
 		}
-
 		Automator()->complete->trigger( $args );
 	}
 
@@ -919,7 +922,7 @@ class Automator_Recipe_Process_User {
 			$user_id = get_current_user_id();
 		}
 
-		// No user id is aviable.
+		// No user id is available.
 		if ( 0 === $user_id ) {
 			Automator()->error->add_error( 'get_trigger_meta_id', 'ERROR: You are trying to get trigger meta ID when a there is no logged in user.', $this );
 
@@ -945,44 +948,6 @@ class Automator_Recipe_Process_User {
 			return (int) $results;
 		}
 
-		return $results;
-	}
-
-
-	/**
-	 * Update the trigger for the user
-	 *
-	 * @param $user_id    null
-	 * @param $trigger_id null
-	 * @param $recipe_id  null
-	 * @param $ID         null
-	 *
-	 * @return null|void
-	 */
-	public function update_trigger( $user_id = null, $trigger_id = null, $recipe_id = null, $ID = null ) {
-
-		// Set user ID
-		if ( null === $user_id ) {
-			$user_id = get_current_user_id();
-		}
-
-		// No user id is aviable.
-		if ( 0 === $user_id ) {
-			Automator()->error->add_error( 'update_trigger', 'ERROR: You are trying to update a trigger when a there is no logged in user.', $this );
-
-			return null;
-		}
-
-		if ( null === $trigger_id || ! is_numeric( $trigger_id ) ) {
-			Automator()->error->add_error( 'update_trigger', 'ERROR: You are trying to update a trigge without providing a trigger_id', $this );
-
-			return null;
-		}
-
-		if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
-			Automator()->error->add_error( 'update_trigger', 'ERROR: You are trying to update a trigge without providing a recipe_id', $this );
-
-			return null;
-		}
+		return null;
 	}
 }

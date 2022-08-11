@@ -26,7 +26,7 @@ class UC_GENERATE_CODES {
 	public function __construct() {
 		$this->action_code = 'UCGENERATECODES';
 		$this->action_meta = 'WPUCGENERATECODES';
-		//$this->define_action();
+		$this->define_action();
 	}
 
 	/**

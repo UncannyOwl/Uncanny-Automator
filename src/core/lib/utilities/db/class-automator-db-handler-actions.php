@@ -149,6 +149,24 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
+	 * @param $action_log_id
+	 * @param $meta_key
+	 *
+	 * @return string
+	 */
+	public function get_meta_by_id( $meta_id ) {
+		global $wpdb;
+		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
+		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID =%s", $meta_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		if ( ! $result ) {
+			return $result;
+		}
+
+		return $result->meta_value;
+	}
+
+	/**
 	 * @param $action_id
 	 * @param $recipe_log_id
 	 * @param $completed

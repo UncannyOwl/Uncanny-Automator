@@ -94,6 +94,8 @@ class Automator_Load {
 			99
 		);
 
+		add_action( 'admin_init', array( $this, 'automator_schedule_healthchecks' ) );
+
 		$this->load_automator();
 
 		// Show set-up wizard.
@@ -438,7 +440,7 @@ class Automator_Load {
 			'user_id'           => $user_id,
 			'client_secret_key' => md5( 'l6fsX3vAAiJbSXticLBd' . $user_id ),
 		);
-		wp_register_script( 'uoapp-client', Utilities::automator_get_asset( 'legacy/js/uo-sseclient.js' ), array(), '2.1.0' ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+		wp_register_script( 'uoapp-client', Utilities::automator_get_asset( 'legacy/js/uo-sseclient.js' ), array(), AUTOMATOR_PLUGIN_VERSION ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 		wp_localize_script( 'uoapp-client', 'uoAppRestApiSetup', $api_setup );
 		wp_enqueue_script( 'uoapp-client' );
 	}
@@ -471,10 +473,11 @@ class Automator_Load {
 
 		do_action( 'automator_before_admin_init' );
 
-		$classes['Admin_Menu']        = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
-		$classes['Copy_Recipe_Parts'] = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
-		$classes['Prune_Logs']        = UA_ABSPATH . 'src/core/admin/class-prune-logs.php';
-		$classes['Admin_Settings']    = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
+		$classes['Admin_Menu']     = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
+		$classes['Prune_Logs']     = UA_ABSPATH . 'src/core/admin/class-prune-logs.php';
+		$classes['Admin_Settings'] = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
+
+		$classes['Api_Log'] = UA_ABSPATH . 'src/core/admin/api-log/class-api-log.php';
 
 		$classes['Add_User_Recipe_Type'] = UA_ABSPATH . 'src/core/classes/class-add-user-recipe-type.php';
 		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
@@ -575,14 +578,16 @@ class Automator_Load {
 		$classes['Automator_Send_Webhook_Ajax_Handler'] = UA_ABSPATH . 'src/core/lib/webhooks/class-automator-send-webhook-ajax-handler.php';
 		$classes['Automator_Review']                    = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
 		$classes['Automator_Autoloader']                = UA_ABSPATH . 'src/core/lib/autoload/class-ua-autoloader.php';
-		$classes['Api_Server']                          = UA_ABSPATH . 'src/core/classes/class-api-server.php';
-		$classes['Usage_Reports']                       = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
-		$classes['Set_Up_Automator']                    = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
-		$classes['Initialize_Automator']                = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
-		$classes['Automator_Notifications']             = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
-		$classes['Calculation_Token']                   = UA_ABSPATH . 'src/core/classes/class-calculation-token.php';
+		//$classes['Api_Server']                          = UA_ABSPATH . 'src/core/classes/class-api-server.php';
+		$classes['Usage_Reports']           = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
+		$classes['Set_Up_Automator']        = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
+		$classes['Initialize_Automator']    = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
+		$classes['Automator_Notifications'] = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
+		$classes['Calculation_Token']       = UA_ABSPATH . 'src/core/classes/class-calculation-token.php';
+		$classes['Copy_Recipe_Parts']       = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
+		$classes['Background_Actions']      = UA_ABSPATH . 'src/core/classes/class-background-actions.php';
 
-		$classes['Background_Actions'] = UA_ABSPATH . 'src/core/classes/class-background-actions.php';
+		require_once UA_ABSPATH . 'src/core/classes/class-api-server.php';
 
 		// Load migrations
 		$this->load_migrations();
@@ -617,6 +622,9 @@ class Automator_Load {
 		// Closures
 		$classes['Trait_Closure_Setup'] = UA_ABSPATH . 'src/core/lib/recipe-parts/closures/trait-closure-setup.php';
 		$classes['Closures']            = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-closures.php';
+
+		//Tokens
+		$classes['Trait_Trigger_Tokens'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-trigger-tokens.php';
 
 		// Triggers
 		$classes['Trait_Trigger_Setup']          = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-setup.php';
@@ -737,6 +745,22 @@ class Automator_Load {
 					'set_tried_connecting',
 				)
 			);
+		}
+	}
+
+	/**
+	 * automator_schedule_healthchecks
+	 *
+	 * @return void
+	 */
+	public function automator_schedule_healthchecks() {
+
+		if ( ! wp_next_scheduled( 'automator_weekly_healthcheck' ) ) {
+			wp_schedule_event( time(), 'weekly', 'automator_weekly_healthcheck' );
+		}
+
+		if ( ! wp_next_scheduled( 'automator_daily_healthcheck' ) ) {
+			wp_schedule_event( time(), 'daily', 'automator_daily_healthcheck' );
 		}
 	}
 }

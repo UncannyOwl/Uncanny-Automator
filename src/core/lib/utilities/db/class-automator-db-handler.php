@@ -37,6 +37,10 @@ class Automator_DB_Handler {
 	 * @var Automator_DB_Handler_Tokens
 	 */
 	public $token;
+	/**
+	 * @var Automator_DB_Handler_Api
+	 */
+	public $api;
 
 	/**
 	 * Automator_DB_Handler constructor.
@@ -52,9 +56,12 @@ class Automator_DB_Handler {
 				'action_meta'  => 'uap_action_log_meta',
 				'closure'      => 'uap_closure_log',
 				'closure_meta' => 'uap_closure_log_meta',
+				'api'          => 'uap_api_log',
+				'api_meta'     => 'uap_api_log_meta',
 				'recipe_logs'  => 'uap_recipe_logs_view',
 				'trigger_logs' => 'uap_trigger_logs_view',
 				'action_logs'  => 'uap_action_logs_view',
+				'api_logs'     => 'uap_api_logs_view',
 			)
 		);
 		$this->recipe  = Automator_DB_Handler_Recipes::get_instance();
@@ -62,6 +69,7 @@ class Automator_DB_Handler {
 		$this->trigger = Automator_DB_Handler_Triggers::get_instance();
 		$this->action  = Automator_DB_Handler_Actions::get_instance();
 		$this->closure = Automator_DB_Handler_Closures::get_instance();
+		$this->api     = Automator_DB_Handler_Api::get_instance();
 	}
 
 	/**

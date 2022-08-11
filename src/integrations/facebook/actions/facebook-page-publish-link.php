@@ -107,7 +107,7 @@ class FACEBOOK_PAGE_PUBLISH_LINK {
 
 		$facebook = Automator()->helpers->recipe->facebook->options;
 		$page_id  = isset( $parsed['FACEBOOK_PAGE_PUBLISH_LINK_PAGE'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_LINK_PAGE'] ) : 0;
-		$message  = isset( $parsed['FACEBOOK_PAGE_PUBLISH_LINK_MESSAGE'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_LINK_MESSAGE'] ) : '';
+		$message  = isset( $parsed['FACEBOOK_PAGE_PUBLISH_LINK_MESSAGE'] ) ? sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_PAGE_PUBLISH_LINK_MESSAGE'] ) ) : '';
 		$link     = isset( $parsed['FACEBOOK_PAGE_PUBLISH_LINK_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_LINK_URL'] ) : '';
 
 		$body = array(

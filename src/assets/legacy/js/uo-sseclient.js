@@ -48,7 +48,7 @@ window.onload = function () {
                         })(x.contentWindow.XMLHttpRequest.prototype.open);
                     }
                 }catch (e) {
-                    //console.log((e);
+                    //console.log(e);
                 }
             });
         }

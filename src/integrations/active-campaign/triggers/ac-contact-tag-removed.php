@@ -31,6 +31,8 @@ class AC_CONTACT_TAG_REMOVED {
 		$this->set_trigger_meta( 'TAG' );
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_is_login_required( false );
+		$this->set_trigger_autocomplete( false );
+		$this->set_uses_api( true );
 
 		/* Translators: Some information for translators */
 		$this->set_sentence( sprintf( '{{A tag:%1$s}} is removed from a contact', $this->get_trigger_meta() ) ); // Sentence to appear when trigger is added. {{a page:%1$s}} will be presented in blue box as selectable value
@@ -90,7 +92,7 @@ class AC_CONTACT_TAG_REMOVED {
 			return false;
 		}
 
-		return Automator()->helpers->recipe->active_campaign->options->validate_trigger();
+		return Automator()->helpers->recipe->active_campaign->options->validate_trigger( $this );
 	}
 
 	/**
@@ -128,6 +130,5 @@ class AC_CONTACT_TAG_REMOVED {
 		// FInd the tag in trigger meta
 		$this->do_find_this( $this->get_trigger_meta() );
 		$this->do_find_in( $ac_event['tag'] );
-
 	}
 }

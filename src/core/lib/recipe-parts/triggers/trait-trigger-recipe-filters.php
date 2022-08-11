@@ -265,6 +265,9 @@ trait Trigger_Recipe_Filters {
 
 	protected function get_where_values( $trigger_id, $recipe_id ) {
 
+		// Reset the values. Hooks that executed multiple times can fill the where values.
+		$this->actual_where_values = array();
+
 		foreach ( $this->get_where_conditions() as $i => $trigger_option_code ) {
 
 			$trigger_meta = Automator()->get->meta_from_recipes( $this->get_recipes(), $trigger_option_code );

@@ -158,6 +158,9 @@ class Automator_Translations {
 						),
 
 					),
+
+					'unlockSchedule'         => sprintf( esc_attr__( 'Get %s to unlock delays/schedules', 'uncanny-automator' ), 'Uncanny Automator Pro' ),
+					// UncannyAutomator.i18n.action.asyncActions.unlockSchedule
 				),
 			),
 			'closure'             => array(
@@ -1066,6 +1069,9 @@ class Automator_Translations {
 			/* translators: Non-personal infinitive verb */
 			'cancel'              => esc_attr__( 'Cancel', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.cancel
+			/* translators: Non-personal infinitive verb */
+			'duplicate'           => esc_attr__( 'Duplicate', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.duplicate
 			/* translators: Non-personal infinitive verb */
 			'delete'              => esc_attr__( 'Delete', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.delete

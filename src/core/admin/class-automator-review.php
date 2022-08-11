@@ -6,6 +6,7 @@
  * @package Uncanny_Automator
  * @author  Saad S.
  */
+
 namespace Uncanny_Automator;
 
 use WP_REST_Response;
@@ -70,20 +71,7 @@ class Automator_Review {
 	 */
 	public function uo_register_api_for_reviews() {
 
-		global $wpdb;
-
-		$check_closure = $wpdb->get_col(
-			"SELECT cp.ID as ID FROM {$wpdb->posts} cp
-				LEFT JOIN {$wpdb->posts} rp
-				ON rp.ID = cp.post_parent
-				WHERE cp.post_type
-				LIKE 'uo-closure'
-				AND cp.post_status
-				LIKE 'publish'
-				AND rp.post_status
-				LIKE 'publish' LIMIT 1"
-		);
-
+		$check_closure = Automator()->db->closure->get_all();
 		if ( ! empty( $check_closure ) ) {
 			register_rest_route(
 				AUTOMATOR_REST_API_END_POINT,
@@ -156,7 +144,7 @@ class Automator_Review {
 
 		$data = $request->get_params();
 
-		if ( isset( $data['user_id'] ) && isset( $data['client_secret'] ) && $data['client_secret'] == md5( 'l6fsX3vAAiJbSXticLBd' . $data['user_id'] ) ) {
+		if ( isset( $data['user_id'] ) && isset( $data['client_secret'] ) && md5( 'l6fsX3vAAiJbSXticLBd' . $data['user_id'] ) === (string) $data['client_secret'] ) {
 
 			$user_id = $data['user_id'];
 
@@ -329,7 +317,17 @@ class Automator_Review {
 
 		global $wpdb;
 
-		$integration_codes = array( 'GOOGLESHEET', 'SLACK', 'MAILCHIMP', 'TWITTER', 'FACEBOOK', 'INSTAGRAM', 'HUBSPOT', 'ACTIVE_CAMPAIGN', 'TWILIO' );
+		$integration_codes = array(
+			'GOOGLESHEET',
+			'SLACK',
+			'MAILCHIMP',
+			'TWITTER',
+			'FACEBOOK',
+			'INSTAGRAM',
+			'HUBSPOT',
+			'ACTIVE_CAMPAIGN',
+			'TWILIO',
+		);
 
 		$where_meta = array();
 		foreach ( $integration_codes as $code ) {
@@ -542,6 +540,7 @@ class Automator_Review {
 					'credits_used' => 1000 - $this->get_credits_remaining(),
 				)
 			);
+
 			return;
 		}
 
@@ -554,6 +553,7 @@ class Automator_Review {
 					'emails_sent' => $this->get_sent_emails_count(),
 				)
 			);
+
 			return;
 		}
 
@@ -650,7 +650,7 @@ class Automator_Review {
 		$page = automator_filter_input( 'page' );
 
 		if ( ( $page !== 'uncanny-automator-dashboard' ) &&
-			( empty( $typenow ) || 'uo-recipe' !== $typenow )
+			 ( empty( $typenow ) || 'uo-recipe' !== $typenow )
 		) {
 			return false;
 		}

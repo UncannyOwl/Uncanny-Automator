@@ -375,7 +375,7 @@ class Wp_Post_Tokens {
 				break;
 			case 'POSTIMAGEURL':
 			case 'WPPOSTCOMMENTS_THUMB_URL':
-				$value = get_the_post_thumbnail_url( $comment->comment_post_ID );
+				$value = get_the_post_thumbnail_url( $comment->comment_post_ID, apply_filters( 'automator_token_post_featured_image_size', 'full', $comment->comment_post_ID, $to_replace ) );
 				break;
 			case 'POSTAUTHORFN':
 				$author_id = get_post_field( 'post_author', $comment->comment_post_ID );
@@ -520,7 +520,7 @@ class Wp_Post_Tokens {
 			case 'WPPOST_THUMB_URL':
 			case 'WPPAGE_THUMB_URL':
 			case 'POSTIMAGEURL':
-				$value = get_the_post_thumbnail_url( $post->ID );
+				$value = get_the_post_thumbnail_url( $post->ID, apply_filters( 'automator_token_post_featured_image_size', 'full', $post->ID, $to_replace ) );
 				break;
 			case 'POSTAUTHORFN':
 				$value = get_the_author_meta( 'user_firstname', $post->post_author );

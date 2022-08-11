@@ -372,22 +372,55 @@ class Recipe_Post_Utilities {
 	 * Dequeues conflictive assets that shouldn't be loading in the recipe builder
 	 */
 	private function dequeue_conflictive_assets() {
-		/**
-		 * LearnDash
-		 */
-		wp_deregister_style( 'learndash-select2-jquery-style' );
-		wp_deregister_script( 'learndash-select2-jquery-script' );
+		// Set conflictive scripts
+		$conflictive_scripts = array(
+			// LearnDash
+			'learndash-select2-jquery-script',
 
-		/**
-		 * The Events Calendar
-		 */
-		wp_deregister_script( 'tribe-select2' );
+			// The Events Calendar
+			'tribe-select2',
 
-		/**
-		 * Studiocart
-		 */
-		wp_deregister_style( 'sc-select2_css' );
-		wp_deregister_script( 'sc-select2_js' );
+			// Studiocart
+			'sc-select2_js',
+
+			// JW Player 6 for WordPress
+			'jquerySelect2',
+			'jwp6media',
+
+			// YouTube Embed Plus
+			'__ytprefs_admin__',
+		);
+
+		$conflictive_styles = array(
+			// LearnDash
+			'learndash-select2-jquery-style',
+
+			// Studiocart
+			'sc-select2_css',
+
+			// JW Player 6 for WordPress
+			'jquerySelect2Style',
+		);
+
+		$conflictive_assets = array(
+			'scripts' => $conflictive_scripts,
+			'styles'  => $conflictive_styles,
+		);
+
+		$conflictive_assets = apply_filters( 'automator_conflictive_assets', $conflictive_assets );
+
+		// Check if the array is valid
+		if ( empty( $conflictive_assets ) || ! isset( $conflictive_assets['scripts'] ) || ! isset( $conflictive_assets['styles'] ) ) {
+			// Someone made a mess and this is empty now. Bail
+			return;
+		}
+		foreach ( $conflictive_assets['scripts'] as $conflictive_script ) {
+			wp_deregister_script( $conflictive_script );
+		}
+
+		foreach ( $conflictive_assets['styles'] as $conflictive_style ) {
+			wp_deregister_style( $conflictive_style );
+		}
 	}
 
 	/**

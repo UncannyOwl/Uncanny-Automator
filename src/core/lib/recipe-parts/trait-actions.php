@@ -51,6 +51,8 @@ trait Actions {
 	 * @param $action_data
 	 * @param $recipe_id
 	 * @param $args
+	 *
+	 * @throws \Exception
 	 */
 	public function do_action( $user_id, $action_data, $recipe_id, $args ) {
 

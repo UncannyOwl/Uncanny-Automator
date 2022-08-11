@@ -686,8 +686,8 @@ class Automator_Get_Data {
 	/**
 	 * Get the trigger log ID for the user
 	 *
-	 * @param      $user_id       null
-	 * @param      $trigger_id    null
+	 * @param null $user_id
+	 * @param null $trigger_id
 	 * @param null $recipe_id null
 	 * @param null $recipe_log_id null
 	 *
@@ -1353,7 +1353,8 @@ WHERE t.automator_trigger_id = %d
 	/**
 	 * Return all integration published actions.
 	 *
-	 * @param  mixed $integration The integration.
+	 * @param mixed $integration The integration.
+	 *
 	 * @return array The recipe data.
 	 */
 	public function get_integration_publish_actions( $integration = '' ) {
@@ -1361,21 +1362,22 @@ WHERE t.automator_trigger_id = %d
 		// Get all published recipes.
 		$published_recipes = array_filter(
 			Automator()->get_recipes_data(),
-			function( $recipe ) {
+			function ( $recipe ) {
 				return 'publish' === $recipe['post_status'];
 			}
 		);
 
 		// Map all published integration actions.
 		$published_actions = array_map(
-			function( $published_recipe ) use ( $integration ) {
+			function ( $published_recipe ) use ( $integration ) {
 				// Filter the actions by integration and publish staus.
 				$published_actions = array_filter(
 					$published_recipe['actions'],
-					function( $action ) use ( $integration ) {
+					function ( $action ) use ( $integration ) {
 						return 'publish' === $action['post_status'] && $integration === $action['meta']['integration'];
 					}
 				);
+
 				// Return the specific integration actions that are published.
 				return $published_actions;
 			},

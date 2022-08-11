@@ -9,7 +9,9 @@ namespace Uncanny_Automator\Migrations;
  */
 abstract class Migration {
 
-	const OPTION_NAME = 'automator_migrations';
+	const OPTION_NAME        = 'automator_migrations';
+	const AUTOMATOR_PATH     = 'uncanny-automator/uncanny-automator.php';
+	const AUTOMATOR_PRO_PATH = 'uncanny-automator-pro/uncanny-automator-pro.php';
 
 	/**
 	 * name
@@ -24,9 +26,8 @@ abstract class Migration {
 
 		$this->name = $name;
 
-		if ( $this->conditions_met() ) {
-			add_action( 'shutdown', array( $this, 'maybe_run_migration' ) );
-		}
+		add_action( 'activate_' . self::AUTOMATOR_PATH, array( $this, 'maybe_run_migration' ) );
+		add_action( 'activate_' . self::AUTOMATOR_PRO_PATH, array( $this, 'maybe_run_migration' ) );
 
 	}
 
@@ -52,6 +53,10 @@ abstract class Migration {
 	 * @return void
 	 */
 	public function maybe_run_migration() {
+
+		if ( ! $this->conditions_met() ) {
+			return;
+		}
 
 		// If the migration was completed before, bail.
 		if ( $this->migration_completed_before() ) {

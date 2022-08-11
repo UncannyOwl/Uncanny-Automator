@@ -27,6 +27,7 @@ class Background_Actions {
 		add_action( 'automator_settings_advanced_tab_view', array( $this, 'settings_output' ) );
 
 		add_action( 'automator_activation_before', array( $this, 'add_option' ) );
+		add_action( 'automator_daily_healthcheck', array( $this, 'add_option' ) );
 
 		add_filter( 'perfmatters_rest_api_exceptions', array( $this, 'add_rest_api_exception' ) );
 	}
@@ -48,7 +49,18 @@ class Background_Actions {
 	 * @return void
 	 */
 	public function add_option() {
-		add_option( self::OPTION_NAME, $this->test_endpoint( '1' ) );
+
+		$current_option  = get_option( self::OPTION_NAME, 'option_does_not_exist' );
+		$bg_actions_work = $this->test_endpoint( '1' );
+
+		if ( 'option_does_not_exist' === $current_option ) {
+			add_option( self::OPTION_NAME, $bg_actions_work );
+			return;
+		}
+
+		if ( '1' === $current_option && '0' === $bg_actions_work ) {
+			update_option( self::OPTION_NAME, '0' );
+		}
 	}
 
 	/**
@@ -384,9 +396,6 @@ class Background_Actions {
 		$bg_actions_enabled = $this->bg_actions_enabled();
 
 		?>
-		<div class="uap-settings-panel-content-subtitle">
-			<?php esc_html_e( 'Background actions', 'uncanny-automator' ); ?>
-		</div>
 
 		<?php $this->maybe_show_error(); ?>
 

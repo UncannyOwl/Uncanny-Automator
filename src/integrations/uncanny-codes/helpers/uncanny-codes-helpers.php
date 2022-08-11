@@ -217,4 +217,26 @@ class Uncanny_Codes_Helpers {
 
 		return apply_filters( 'uap_option_get_all_code_batch', $option );
 	}
+
+	/**
+	 * Method uc_get_batch_info.
+	 *
+	 * @return array A list of data returned with batch info.
+	 */
+	public function uc_get_batch_info( $batch_id ) {
+		global $wpdb;
+
+		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
+		$tbl_codes  = $wpdb->prefix . 'uncanny_codes_codes';
+
+		$batch_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl_groups} WHERE `ID` = %d GROUP BY ID", $batch_id ), OBJECT );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$codes_data = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT(`code`) as codes FROM {$tbl_codes} WHERE `code_group` = %d", $batch_id ), OBJECT );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return array(
+			'batch_data' => $batch_data,
+			'codes_data' => $codes_data,
+		);
+
+	}
+
 }

@@ -222,6 +222,7 @@ class SHEET_ADDARECORD {
 				// Create the function we're going to use recursively to
 				// do check for the samples
 				var getSamples = function () {
+					
 					// Do AJAX call
 					jQuery.ajax({
 						method: 'POST',
@@ -288,16 +289,25 @@ class SHEET_ADDARECORD {
 								// Get the field with the fields (WEBHOOK_DATA)
 
 								let worksheetFields = data.item.options.GOOGLESHEETROW.fields[3];
-
+								
 								// Remove all the current fields
 								worksheetFields.fieldRows = [];
 
-								// Add new rows. Iterate rows from the sample
-								jQuery.each(rows, function (index, row) {
-									// Add row
+								let rowValuesInput = jQuery('input[name=GS_COLUMN_VALUE]');
+
+								jQuery.each( rows, function( index, row ) {
+
+									var rowValue = "";
+
+									if ( rowValuesInput[index] ) {
+										rowValue = rowValuesInput[index].value;
+									}
+
 									worksheetFields.addRow({
-										GS_COLUMN_NAME: row.key
+										GS_COLUMN_NAME: row.key,
+										GS_COLUMN_VALUE: rowValue
 									}, false);
+									
 								});
 
 								// Render again

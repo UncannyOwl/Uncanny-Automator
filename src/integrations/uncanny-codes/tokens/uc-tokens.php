@@ -8,6 +8,7 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Uc_Tokens {
+
 	/**
 	 * Integration code
 	 *
@@ -19,11 +20,108 @@ class Uc_Tokens {
 	 * Uc_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_uncanny_codes_token' ), 20, 6 );
+
+		//Adding Batch Codes tokens
+		add_filter(
+			'automator_maybe_trigger_uncannycode_anoncodebatchcreated_tokens',
+			array(
+				$this,
+				'uc_codes_possible_tokens',
+			),
+			20,
+			2
+		);
+
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'parse_uncanny_codes_token',
+			),
+			20,
+			6
+		);
 	}
 
 	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
+	 * @param array $tokens
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function uc_codes_possible_tokens( $tokens = array(), $args = array() ) {
+
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
+
+		$trigger_code = $args['triggers_meta']['code'];
+
+		$fields = array(
+			array(
+				'tokenId'         => 'UNCANNYCODESBATCH_ID',
+				'tokenName'       => __( 'Batch ID', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESTYPE',
+				'tokenName'       => __( 'Type', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESPREFIXBATCH',
+				'tokenName'       => __( 'Prefix', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESSUFFIXBATCH',
+				'tokenName'       => __( 'Suffix', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESLD_TYPE',
+				'tokenName'       => __( 'LD Type', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESMAX_PER_CODE',
+				'tokenName'       => __( 'Max per code', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESCODES_GENERATED',
+				'tokenName'       => __( 'Codes Generated', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESEXPIRY_DATE',
+				'tokenName'       => __( 'Expiry date', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'UNCANNYCODESLIST_OF_CODES',
+				'tokenName'       => __( 'Codes (CSV list of codes)', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+		);
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+
+	/**
+	 * Only load this integration and its triggers and actions if the related
+	 * plugin is active
 	 *
 	 * @param $status
 	 * @param $code
@@ -57,6 +155,15 @@ class Uc_Tokens {
 			'UNCANNYCODESSUFFIX',
 			'UNCANNYCODESBATCH',
 			'UNCANNYCODESBATCHEXPIRY',
+			'UNCANNYCODESBATCH_ID',
+			'UNCANNYCODESTYPE',
+			'UNCANNYCODESPREFIXBATCH',
+			'UNCANNYCODESSUFFIXBATCH',
+			'UNCANNYCODESLD_TYPE',
+			'UNCANNYCODESMAX_PER_CODE',
+			'UNCANNYCODESCODES_GENERATED',
+			'UNCANNYCODESEXPIRY_DATE',
+			'UNCANNYCODESLIST_OF_CODES',
 		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {
@@ -85,6 +192,33 @@ class Uc_Tokens {
 							case 'UNCANNYCODESBATCH':
 								$value = $trigger['meta']['UNCANNYCODESBATCH_readable'];
 								break;
+							case 'UNCANNYCODESBATCH_ID':
+								$value = Automator()->db->token->get( 'UNCANNYCODESBATCH_ID', $replace_args );
+								break;
+							case 'UNCANNYCODESTYPE':
+								$value = Automator()->db->token->get( 'UNCANNYCODESTYPE', $replace_args );
+								break;
+							case 'UNCANNYCODESPREFIXBATCH':
+								$value = Automator()->db->token->get( 'UNCANNYCODESPREFIXBATCH', $replace_args );
+								break;
+							case 'UNCANNYCODESSUFFIXBATCH':
+								$value = Automator()->db->token->get( 'UNCANNYCODESSUFFIXBATCH', $replace_args );
+								break;
+							case 'UNCANNYCODESLD_TYPE':
+								$value = Automator()->db->token->get( 'UNCANNYCODESLD_TYPE', $replace_args );
+								break;
+							case 'UNCANNYCODESMAX_PER_CODE':
+								$value = Automator()->db->token->get( 'UNCANNYCODESMAX_PER_CODE', $replace_args );
+								break;
+							case 'UNCANNYCODESCODES_GENERATED':
+								$value = Automator()->db->token->get( 'UNCANNYCODESCODES_GENERATED', $replace_args );
+								break;
+							case 'UNCANNYCODESEXPIRY_DATE':
+								$value = Automator()->db->token->get( 'UNCANNYCODESEXPIRY_DATE', $replace_args );
+								break;
+							case 'UNCANNYCODESLIST_OF_CODES':
+								$value = Automator()->db->token->get( 'UNCANNYCODESLIST_OF_CODES', $replace_args );
+								break;
 							default:
 								$value = isset( $trigger['meta'][ $meta_field ] ) ? $trigger['meta'][ $meta_field ] : '';
 								break;
@@ -96,4 +230,5 @@ class Uc_Tokens {
 
 		return $value;
 	}
+
 }

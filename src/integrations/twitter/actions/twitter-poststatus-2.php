@@ -98,13 +98,7 @@ class TWITTER_POSTSTATUS_2 {
 
 		try {
 
-			$media_id = '';
-
-			if ( ! empty( $media ) ) {
-				$media_id = $this->media_upload( $media );
-			}
-
-			$response = $this->statuses_update( $status, $media_id, $action_data );
+			$response = $this->statuses_update( $status, $media, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 			return;
@@ -127,13 +121,13 @@ class TWITTER_POSTSTATUS_2 {
 	 *
 	 * @return mixed
 	 */
-	public function statuses_update( $status, $media_id = '', $action_data = null ) {
+	public function statuses_update( $status, $media = '', $action_data = null ) {
 
-		$body['action']    = 'statuses_update';
-		$body['status']    = $status;
-		$body['media_ids'] = $media_id;
+		$body['action'] = 'statuses_update';
+		$body['status'] = $status;
+		$body['media']  = $media;
 
-		$response = Automator()->helpers->recipe->twitter->api_request( $body, $action_data );
+		$response = Automator()->helpers->recipe->twitter->api_request( $body, $action_data, 60 );
 
 		return $response;
 	}

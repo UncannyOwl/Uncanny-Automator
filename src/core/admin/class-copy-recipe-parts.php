@@ -109,8 +109,8 @@ class Copy_Recipe_Parts {
 			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->term_relationships WHERE object_id=%d;", $new_recipe_id ) );
 			$wpdb->query( $wpdb->prepare( "CREATE TEMPORARY TABLE tmpCopyCats SELECT * FROM $wpdb->term_relationships WHERE object_id=%d;", $recipe_id ) );
 			$wpdb->query( $wpdb->prepare( 'UPDATE tmpCopyCats SET object_id=%d WHERE object_id=%d;', $new_recipe_id, $recipe_id ) );
-			$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->term_relationships SELECT * FROM tmpCopyCats;" ) );
-			$wpdb->query( $wpdb->prepare( 'DROP TEMPORARY TABLE IF EXISTS tmpCopyCats;' ) );
+			$wpdb->query( "INSERT INTO $wpdb->term_relationships SELECT * FROM tmpCopyCats;" );
+			$wpdb->query( 'DROP TEMPORARY TABLE IF EXISTS tmpCopyCats;' );
 		}
 
 		return $new_recipe_id;
@@ -132,7 +132,7 @@ class Copy_Recipe_Parts {
 				'post_status'    => array( 'draft', 'publish' ),
 				'order_by'       => 'ID',
 				'order'          => 'ASC',
-				'posts_per_page' => '999',
+				'posts_per_page' => '99999', //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			)
 		);
 
@@ -158,24 +158,23 @@ class Copy_Recipe_Parts {
 	/**
 	 * @param $post_id
 	 * @param int $post_parent
-	 * @param string $status
 	 *
 	 * @return false|int|\WP_Error
 	 */
-	public function copy( $post_id, $post_parent = 0, $status = 'draft' ) {
+	public function copy( $post_id, $post_parent = 0, $status = '' ) {
 		$post = get_post( $post_id );
 		// We don't want to clone revisions
 		if ( 'revision' === $post->post_type ) {
 			return false;
 		}
-
-		if ( 'attachment' !== $post->post_type ) {
+		$new_post_author = wp_get_current_user();
+		// Keep the same status of triggers and actions as original recipe, but draft the recipe
+		$status = ! empty( $status ) ? $status : $post->post_status;
+		if ( 'uo-recipe' === $post->post_type ) {
 			$status = 'draft';
 		}
-
-		$new_post_author = wp_get_current_user();
-		$post_title      = 'uo-recipe' === $post->post_type ? $post->post_title . ' ' . __( '(Copy)', 'uncanny-automator' ) : $post->post_title;
-		$new_post        = array(
+		$post_title = 'uo-recipe' === $post->post_type ? $post->post_title . ' ' . __( '(Copy)', 'uncanny-automator' ) : $post->post_title;
+		$new_post   = array(
 			'menu_order'     => $post->menu_order,
 			'comment_status' => $post->comment_status,
 			'ping_status'    => $post->ping_status,
@@ -185,7 +184,7 @@ class Copy_Recipe_Parts {
 			'post_mime_type' => $post->post_mime_type,
 			'post_parent'    => empty( $post_parent ) ? $post->post_parent : $post_parent,
 			'post_password'  => $post->post_password,
-			'post_status'    => empty( $status ) ? $post->post_status : $status,
+			'post_status'    => $status,
 			'post_title'     => $post_title,
 			'post_type'      => $post->post_type,
 			'post_date'      => current_time( 'mysql' ),
@@ -198,6 +197,8 @@ class Copy_Recipe_Parts {
 
 		$this->copy_recipe_metas( $post_id, $new_post_id, $post_parent );
 
+		do_action( 'automator_recipe_part_duplicated', $new_post_id, $post );
+
 		return $new_post_id;
 	}
 
@@ -208,10 +209,19 @@ class Copy_Recipe_Parts {
 	 */
 	public function copy_recipe_metas( $post_id, $new_post_id, $post_parent = 0 ) {
 		$recipe_meta = get_post_meta( $post_id );
-
+		// Store the original recipe, trigger, action ID
+		update_post_meta( $new_post_id, 'automator_duplicated_from', $post_id );
 		foreach ( $recipe_meta as $key => $value ) {
+			if ( 'automator_duplicated_from' === $key ) {
+				continue;
+			}
 			$val = maybe_unserialize( $value[0] );
+			// Modify conditions
+			if ( 'actions_conditions' === $key ) {
+				$val = $this->modify_conditions( $val, $post_id, $new_post_id );
+			}
 			$val = $this->modify_tokens( $val, $post_parent, $new_post_id );
+			$val = apply_filters( 'automator_recipe_part_meta_value', $val, $post_id, $new_post_id );
 			update_post_meta( $new_post_id, $key, $val );
 		}
 	}
@@ -244,5 +254,53 @@ class Copy_Recipe_Parts {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * @param $content
+	 * @param $post_id
+	 * @param $new_post_id
+	 *
+	 * @return false|mixed|string
+	 */
+	public function modify_conditions( $content, $post_id = 0, $new_post_id = 0 ) {
+
+		if ( empty( $content ) ) {
+			return $content;
+		}
+		// decode into array/object
+		$content = json_decode( $content );
+		global $wpdb;
+		foreach ( $content as $k => $condition ) {
+			if ( ! isset( $condition->actions ) ) {
+				continue;
+			}
+
+			foreach ( $condition->actions as $kk => $action_id ) {
+				// Use `automator_duplicated_from` meta to figure out the new action ID
+				// Since the action conditions are stored at the Recipe level by the Action ID
+				// We have to do a lookup based on the old Action ID and the new recipe post parent ID
+				$qry = $wpdb->prepare(
+					"SELECT pm.post_id
+FROM $wpdb->postmeta pm
+JOIN $wpdb->posts p
+ON p.ID = pm.post_id AND p.post_parent = %d
+WHERE pm.meta_value = %d
+AND pm.meta_key = %s;",
+					$new_post_id,
+					$action_id,
+					'automator_duplicated_from'
+				);
+
+				$new_action_id = $wpdb->get_var( $qry ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				if ( is_numeric( $new_action_id ) ) {
+					unset( $condition->actions[ $kk ] ); // Remove old action ID
+					$condition->actions[ $kk ] = $new_action_id; // Add new action ID
+				}
+			}
+		}
+
+		// return encoded string
+		return wp_json_encode( $content );
 	}
 }

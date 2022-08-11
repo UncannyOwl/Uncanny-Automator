@@ -45,6 +45,7 @@ class Ld_Tokens {
 
 		add_filter( 'automator_maybe_parse_token', array( $this, 'ld_tokens' ), 20, 6 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'ld_course_status_token' ), 9999, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'ld_course_access_expiry_token' ), 9999, 6 );
 	}
 
 	/**
@@ -500,6 +501,46 @@ class Ld_Tokens {
 		}
 
 		return learndash_course_status( $course_id, $user_id );
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return mixed|string
+	 */
+	public function ld_course_access_expiry_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args = array() ) {
+
+		if ( empty( $pieces ) || empty( $trigger_data ) || empty( $replace_args ) ) {
+			return $value;
+		}
+		if ( ! in_array( 'LDCOURSE_ACCESS_EXPIRY', $pieces, true ) ) {
+			return $value;
+		}
+
+		if ( ! absint( $user_id ) ) {
+			return $value;
+		}
+
+		if ( ! absint( $recipe_id ) ) {
+			return $value;
+		}
+		$course_id = (int) Automator()->db->token->get( 'LDCOURSE', $replace_args );
+		if ( empty( $course_id ) ) {
+			$trigger = array_shift( $trigger_data );
+			if ( isset( $trigger['meta'] ) && isset( $trigger['meta']['LDCOURSE'] ) && intval( '-1' ) !== intval( $trigger['meta']['LDCOURSE'] ) ) {
+				$course_id = absint( $trigger['meta']['LDCOURSE'] );
+			}
+		}
+		if ( empty( $course_id ) ) {
+			return '-';
+		}
+
+		return learndash_adjust_date_time_display( ld_course_access_expires_on( $course_id, $user_id ) );
 	}
 
 	/**

@@ -12,7 +12,7 @@ class Studiocart_Tokens {
 	 */
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_studiocart_tokens', array( $this, 'studiocart_possible_tokens' ), 20, 2 );
-		add_filter( 'automator_maybe_parse_token', array( $this, 'studiocart_token' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'studiocart_token' ), 999999, 6 );
 	}
 
 	/**

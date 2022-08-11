@@ -41,7 +41,7 @@ class Logs_List_Table extends WP_List_Table {
 			)
 		);
 
-		add_filter( 'automator_action_log_error', array( $this, 'format_all_upgrade_links' ), 10, 2 );
+		add_filter( 'automator_action_log_error', array( self::class, 'format_all_upgrade_links' ), 10, 2 );
 	}
 
 	/**
@@ -367,6 +367,7 @@ class Logs_List_Table extends WP_List_Table {
 				$recipe_id   = 0;
 			}
 
+			/* translators: Recipe ID */
 			$recipe_name = ! empty( $recipe->recipe_title ) ? $recipe->recipe_title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $recipe_id );
 
 			if ( '#' !== $recipe_link ) {
@@ -472,6 +473,7 @@ class Logs_List_Table extends WP_List_Table {
 				$recipe_id   = 0;
 			}
 
+			/* translators: Recipe ID */
 			$recipe_name = ! empty( $recipe->recipe_title ) ? $recipe->recipe_title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $recipe_id );
 
 			if ( '#' !== $recipe_link ) {
@@ -628,6 +630,7 @@ class Logs_List_Table extends WP_List_Table {
 				'recipe_completed'   => $recipe_status,
 				'recipe_date_time'   => $recipe_date_completed,
 				'recipe_run_number'  => $recipe_run_number,
+				/* translators: 1. Trigger run number 2. Trigger total times */
 				'trigger_run_number' => sprintf( esc_attr__( '%1$d of %2$d', 'uncanny-automator' ), $trigger_run_number, $trigger_total_times ),
 				'display_name'       => $user_name,
 			);
@@ -780,6 +783,15 @@ class Logs_List_Table extends WP_List_Table {
 				/* translators: User type */
 				$user_name = esc_attr_x( 'N/A', 'User', 'uncanny-automator' );
 			}
+
+			$buttons = array();
+
+			$api_request = Automator()->db->api->get_by_log_id( 'action', $action->action_log_id );
+
+			if ( ! empty( $api_request->params ) ) {
+				$buttons['resend'] = Api_Log::resend_button_html( $action->action_log_id );
+			}
+
 			$data[] = array(
 				'action_title'      => $action_name,
 				'action_date'       => $action_date_completed,
@@ -790,6 +802,7 @@ class Logs_List_Table extends WP_List_Table {
 				'recipe_date_time'  => $recipe_date_completed,
 				'recipe_run_number' => $recipe_run_number,
 				'display_name'      => $user_name,
+				'buttons'           => join( ' ', $buttons ),
 			);
 		}
 
@@ -803,7 +816,7 @@ class Logs_List_Table extends WP_List_Table {
 	 *
 	 * @return string The message with upgrade link.
 	 */
-	public function format_all_upgrade_links( $message, $action ) {
+	public static function format_all_upgrade_links( $message, $action ) {
 
 		$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=recipe_log&utm_content=upgrade_to_pro';
 

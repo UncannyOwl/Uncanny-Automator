@@ -89,6 +89,7 @@ trait Trigger_Conditions {
 
 	/**
 	 * @return mixed
+	 * @deprecated v4.3 | Use $this->validate_conditions() override with $this->find_all()
 	 */
 	public function get_find_any() {
 		return $this->find_any;
@@ -96,6 +97,8 @@ trait Trigger_Conditions {
 
 	/**
 	 * @param mixed $find_any
+	 *
+	 * @deprecated v4.3 | Use $this->validate_conditions() override with $this->find_all()
 	 */
 	public function do_find_any( $find_any ) {
 		$this->find_any = $find_any;
@@ -110,6 +113,8 @@ trait Trigger_Conditions {
 
 	/**
 	 * @param mixed $find_in
+	 *
+	 * @deprecated v4.3 | Use $this->validate_conditions() override with $this->find_all()
 	 */
 	protected function do_find_in( $find_in ) {
 		$this->find_in[] = $find_in;
@@ -124,6 +129,8 @@ trait Trigger_Conditions {
 
 	/**
 	 * @param mixed $find_this
+	 *
+	 * @deprecated v4.3 | Use $this->validate_conditions() override with $this->find_all()
 	 */
 	protected function do_find_this( $find_this ) {
 		$this->find_this[] = $find_this;
@@ -137,6 +144,7 @@ trait Trigger_Conditions {
 	 *
 	 * @see \Uncanny_Automator\Trigger_Conditions do_find_in( $this->get_trigger_meta() );
 	 * @see \Uncanny_Automator\Trigger_Conditions do_find_this( $this->get_post_id() );
+	 * @deprecated v4.3 | Use $this->validate_conditions() override with $this->find_all()
 	 */
 	protected function trigger_conditions( ...$args ) {
 		// Placeholder function

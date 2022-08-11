@@ -200,6 +200,7 @@ class Automator_Functions {
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-actions.php';
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-triggers.php';
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-recipes.php';
+		require_once __DIR__ . '/utilities/db/class-automator-db-handler-api.php';
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler.php';
 		$this->db = Automator_DB_Handler::get_instance();
 
@@ -222,6 +223,7 @@ class Automator_Functions {
 		$this->process = Automator_Recipe_Process::get_instance();
 
 		// Automator integration, trigger, action and closure process
+		require_once __DIR__ . '/process/class-automator-action-status.php';
 		require_once __DIR__ . '/process/class-automator-recipe-process-complete.php';
 		$this->complete = Automator_Recipe_Process_Complete::get_instance();
 
@@ -242,7 +244,6 @@ class Automator_Functions {
 		$this->error_message = Automator_Error_Messages::get_instance();
 
 		// Load plugin status checks
-		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/trait-tokens.php';
 		require_once __DIR__ . '/recipe-parts/tokens/class-automator-tokens.php';
 		$this->tokens = Automator_Tokens::get_instance();
 

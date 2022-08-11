@@ -98,7 +98,8 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		$page_id = sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_POST_META'] );
 
-		$message = sanitize_textarea_field( $parsed['FACEBOOK_PAGE_MESSAGE'] );
+		// Post content editor adds BR tag if shift+enter. Enter key adds paragraph. Support both.
+		$message = sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_PAGE_MESSAGE'] ) );
 
 		$body = array(
 			'action'  => 'post-to-page',

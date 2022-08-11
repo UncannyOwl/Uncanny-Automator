@@ -19,7 +19,6 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Automator_Tokens {
-	use Recipe\Tokens;
 
 	/**
 	 * @var
@@ -103,9 +102,9 @@ class Automator_Tokens {
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
-//		if ( ! Automator()->helpers->recipe->is_edit_page() && ! Automator()->helpers->recipe->is_rest() && ! Automator()->helpers->recipe->is_ajax() ) {
-//			return $tokens;
-//		}
+		//      if ( ! Automator()->helpers->recipe->is_edit_page() && ! Automator()->helpers->recipe->is_rest() && ! Automator()->helpers->recipe->is_ajax() ) {
+		//          return $tokens;
+		//      }
 		if ( empty( $triggers_meta ) ) {
 			return $tokens;
 		}
@@ -208,6 +207,10 @@ class Automator_Tokens {
 			foreach ( $filters as $filter => $args ) {
 				$tokens = apply_filters( $filter, $tokens, $args );
 			}
+		}
+		if ( null === $tokens ) {
+			// Uncaught TypeError: Unsupported operand types: array + null
+			$tokens = array();
 		}
 
 		if ( isset( $triggers_meta['code'] ) ) {

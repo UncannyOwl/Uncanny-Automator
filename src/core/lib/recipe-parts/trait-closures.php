@@ -38,18 +38,22 @@ trait Closure {
 		if ( empty( $redirect_url ) ) {
 			return;
 		}
-		$redirect_url = Automator()->parse->url( $redirect_url, $recipe_id, $args );
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		$redirect_url = Automator()->parse->text( $redirect_url, $recipe_id, $user_id, $args );
+		//if ( Automator()->helpers->recipe->is_ajax() || automator_filter_has_var( 'gform_ajax', INPUT_POST ) ) {
+		if ( Automator()->helpers->recipe->is_ajax() ) {
 			update_option( 'UO_REDIRECTURL_' . $user_id, $redirect_url );
-		} else {
-			?>
-			<script type="text/javascript">
-				let t = setTimeout(function () {
-					document.location.href = '<?php echo esc_url( $redirect_url ); ?>'
-				}, 200);
-			</script>
-			<?php
-			exit;
+
+			return;
 		}
+		?>
+		<script>
+			let t = setTimeout(function () {
+					top.location.replace('<?php echo esc_url( $redirect_url ); ?>')
+				},
+				1000
+			);
+		</script>
+		<?php
+		exit;
 	}
 }

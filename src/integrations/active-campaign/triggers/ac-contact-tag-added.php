@@ -31,6 +31,7 @@ class AC_CONTACT_TAG_ADDED {
 		$this->set_trigger_meta( 'TAG' );
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_is_login_required( false );
+		$this->set_uses_api( true );
 
 		/* Translators: Some information for translators */
 		$this->set_sentence( sprintf( '{{A tag:%1$s}} is added to a contact', $this->get_trigger_meta() ) ); // Sentence to appear when trigger is added. {{a page:%1$s}} will be presented in blue box as selectable value
@@ -41,7 +42,7 @@ class AC_CONTACT_TAG_ADDED {
 		$this->add_action( 'automator_active_campaign_webhook_received' ); // which do_action() fires this trigger
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
-		
+
 		if ( get_option( 'uap_active_campaign_enable_webhook', false ) ) {
 			$this->register_trigger(); // Registering this trigger
 		}
@@ -90,7 +91,7 @@ class AC_CONTACT_TAG_ADDED {
 			return false;
 		}
 
-		return Automator()->helpers->recipe->active_campaign->options->validate_trigger();
+		return Automator()->helpers->recipe->active_campaign->options->validate_trigger( $ac_event );
 	}
 
 	/**

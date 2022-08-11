@@ -376,6 +376,16 @@ function automator_purge_action_logs( $recipe_id, $automator_recipe_log_id ) {
 }
 
 /**
+ * Purge api logs
+ *
+ * @param $recipe_id
+ * @param $automator_recipe_log_id
+ */
+function automator_purge_api_logs( $recipe_id, $automator_recipe_log_id ) {
+	Automator()->db->api->delete_logs( $recipe_id, $automator_recipe_log_id );
+}
+
+/**
  * Purge closure logs
  *
  * @param $recipe_id
@@ -476,7 +486,8 @@ function is_automator_pro_license_valid() {
  *
  * Returns true if Automator Pro is enabled and older than the $version
  *
- * @param  mixed $version
+ * @param mixed $version
+ *
  * @return void
  */
 function automator_pro_older_than( $version ) {
@@ -522,4 +533,26 @@ function automator_do_identify_tokens() {
 	}
 
 	return true;
+}
+
+/**
+ * Duplicate a trigger or an action
+ *
+ * @param $part_id
+ * @param $recipe_id
+ * @param $status
+ *
+ * @return false|int|WP_Error
+ */
+function automator_duplicate_recipe_part( $part_id, $recipe_id, $status = 'draft' ) {
+	if ( ! class_exists( '\Uncanny_Automator\Automator_Load' ) ) {
+		return false;
+	}
+	/** @var \Uncanny_Automator\Copy_Recipe_Parts $copy_recipe_part */
+	$copy_recipe_part = \Uncanny_Automator\Automator_Load::$core_class_inits['Copy_Recipe_Parts'];
+	if ( ! $copy_recipe_part instanceof \Uncanny_Automator\Copy_Recipe_Parts ) {
+		return false;
+	}
+
+	return $copy_recipe_part->copy( $part_id, $recipe_id, $status );
 }
