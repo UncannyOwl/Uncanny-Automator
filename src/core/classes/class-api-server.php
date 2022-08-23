@@ -92,7 +92,6 @@ class Api_Server {
 	 */
 	public static function get_license_key() {
 		$license_type = self::get_license_type();
-
 		return get_option( 'uap_automator_' . $license_type . '_license_key' );
 	}
 
@@ -585,6 +584,32 @@ class Api_Server {
 		);
 
 		Automator()->db->trigger->add_meta( $trigger_id, $trigger_log_id, $run_number, $args );
+	}
+
+	/**
+	 * is_automator_connected
+	 *
+	 * @return void
+	 */
+	public static function is_automator_connected( $force_refresh = false ) {
+
+		if ( $force_refresh ) {
+			delete_transient( 'automator_api_license' );
+		}
+
+		$license_key = self::get_license_key();
+
+		if ( false === $license_key ) {
+			return false;
+		}
+
+		try {
+			return self::get_license();
+		} catch ( \Exception $e ) {
+			automator_log( $e->getMessage() );
+		}
+
+		return false;
 	}
 }
 

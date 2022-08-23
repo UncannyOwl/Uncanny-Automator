@@ -8,7 +8,13 @@ namespace Uncanny_Automator;
  */
 class Background_Actions {
 
-	const ENDPOINT    = '/async_action/';
+	/**
+	 *
+	 */
+	const ENDPOINT = '/async_action/';
+	/**
+	 *
+	 */
 	const OPTION_NAME = 'uncanny_automator_background_actions';
 
 	/**
@@ -35,11 +41,13 @@ class Background_Actions {
 	/**
 	 * add_rest_api_exception for perfmatters.
 	 *
-	 * @param  mixed $exceptions
+	 * @param mixed $exceptions
+	 *
 	 * @return void
 	 */
 	public function add_rest_api_exception( $exceptions ) {
 		$exceptions[] = 'uap';
+
 		return $exceptions;
 	}
 
@@ -55,6 +63,7 @@ class Background_Actions {
 
 		if ( 'option_does_not_exist' === $current_option ) {
 			add_option( self::OPTION_NAME, $bg_actions_work );
+
 			return;
 		}
 
@@ -86,7 +95,8 @@ class Background_Actions {
 	 *
 	 * This function will check if the action should sent to background.
 	 *
-	 * @param  array $action
+	 * @param array $action
+	 *
 	 * @return array
 	 */
 	public function maybe_send_to_background( $action ) {
@@ -97,10 +107,11 @@ class Background_Actions {
 		try {
 
 			$this
-			->not_scheduled()
-			->can_process_further()
-			->should_process_in_background()
-			->send_to_background();
+				->is_not_doing_cron()
+				->not_scheduled()
+				->can_process_further()
+				->should_process_in_background()
+				->send_to_background();
 
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
@@ -159,6 +170,23 @@ class Background_Actions {
 		return $this;
 	}
 
+
+	/**
+	 * Because of ticket #42462. When a user submits a post with a term and tax,
+	 * it creates a cron schedule to run the trigger, because of it, the cron fires
+	 * the action, the action then runs twice
+	 *
+	 * @return $this
+	 * @throws \Exception
+	 */
+	public function is_not_doing_cron() {
+		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
+			throw new \Exception( __( 'WP cron is running', 'uncanny-automator' ) );
+		}
+
+		return $this;
+	}
+
 	/**
 	 * bg_actions_enabled
 	 *
@@ -166,6 +194,7 @@ class Background_Actions {
 	 */
 	public function bg_actions_enabled() {
 		$value = get_option( self::OPTION_NAME, '1' );
+
 		return '1' === $value;
 	}
 
@@ -237,12 +266,15 @@ class Background_Actions {
 
 		$error = $this->rest_api_error();
 
-		if ( ! empty( $error ) ) {
-			add_settings_error( self::OPTION_NAME, self::OPTION_NAME, $error, 'error' );
-			return '0';
+		if ( empty( $error ) ) {
+			return '1';
 		}
 
-		return '1';
+		if ( function_exists( 'add_settings_error' ) ) {
+			add_settings_error( self::OPTION_NAME, self::OPTION_NAME, $error, 'error' );
+		}
+
+		return '0';
 	}
 
 	/**
@@ -272,7 +304,8 @@ class Background_Actions {
 	/**
 	 * validate_rest_call
 	 *
-	 * @param  mixed $request
+	 * @param mixed $request
+	 *
 	 * @return bool
 	 */
 	public function validate_rest_call( $request ) {
@@ -312,7 +345,8 @@ class Background_Actions {
 	 *
 	 * This function  will run the actions at the background.
 	 *
-	 * @param  array $action
+	 * @param array $action
+	 *
 	 * @return void
 	 */
 	public function run_action( $action ) {
@@ -331,7 +365,8 @@ class Background_Actions {
 	/**
 	 * get_action_code
 	 *
-	 * @param  mixed $action
+	 * @param mixed $action
+	 *
 	 * @return void
 	 */
 	public function get_action_code( $action ) {
@@ -373,7 +408,8 @@ class Background_Actions {
 
 		?>
 
-		<uo-alert class="uap-spacing-top" type="error" heading="<?php esc_html_e( 'Background actions have been automatically disabled because an error was detected:', 'uncanny-automator' ); ?>">
+		<uo-alert class="uap-spacing-top" type="error"
+				  heading="<?php esc_html_e( 'Background actions have been automatically disabled because an error was detected:', 'uncanny-automator' ); ?>">
 
 			<?php echo esc_html( $error_message ); ?>
 
@@ -388,7 +424,8 @@ class Background_Actions {
 	 *
 	 * Outputs the background action settings.
 	 *
-	 * @param  mixed $action
+	 * @param mixed $action
+	 *
 	 * @return void
 	 */
 	public function settings_output( $settings_group ) {

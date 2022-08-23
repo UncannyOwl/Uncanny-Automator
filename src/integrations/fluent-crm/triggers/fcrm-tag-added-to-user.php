@@ -17,25 +17,34 @@ class FCRM_TAG_ADDED_TO_USER {
 	public static $integration = 'FCRM';
 
 	/**
+	 * The trigger code.
+	 *
 	 * @var string
 	 */
-	private $trigger_code;
+	private $trigger_code = 'FCRMUSERTAG';
+
 	/**
+	 * The trigger meta.
+	 *
 	 * @var string
 	 */
-	private $trigger_meta;
+	private $trigger_meta = 'FCRMTAG';
 
 	/**
 	 * Set up Automator trigger constructor.
+	 *
+	 * @return void
 	 */
 	public function __construct() {
-		$this->trigger_code = 'FCRMUSERTAG';
-		$this->trigger_meta = 'FCRMTAG';
+
 		$this->define_trigger();
+
 	}
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
+	 *
+	 * @return void
 	 */
 	public function define_trigger() {
 
@@ -59,9 +68,12 @@ class FCRM_TAG_ADDED_TO_USER {
 	}
 
 	/**
-	 * @return array[]
+	 * Method load options.
+	 *
+	 * @return array The collection of fields.
 	 */
 	public function load_options() {
+
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
@@ -69,9 +81,12 @@ class FCRM_TAG_ADDED_TO_USER {
 				),
 			)
 		);
+
 	}
 
 	/**
+	 * Method contact_added_to_tags.
+	 *
 	 * @param $attached_tag_ids
 	 * @param $subscriber
 	 *
@@ -81,30 +96,22 @@ class FCRM_TAG_ADDED_TO_USER {
 
 		$user_id = $subscriber->user_id;
 
-		if ( 0 === $user_id ) {
-			// There is no wp user associated with the subscriber
+		// There is no wp user associated with the subscriber.
+		if ( empty( $user_id ) ) {
 			return;
 		}
 
-		$tag_ids = Automator()
-			->helpers
-			->recipe
-			->fluent_crm
-			->get_attached_tag_ids( $attached_tag_ids );
-
-		if ( empty( $tag_ids ) ) {
-			// sanity check
-			return;
-		}
-
+		// Contact is already attached with tag ids. Perform recipe trigger matching.
 		$matched_recipes = Automator()
 			->helpers
 			->recipe
 			->fluent_crm
-			->match_single_condition( $tag_ids, 'int', $this->trigger_meta, $this->trigger_code );
+			->match_single_condition( $attached_tag_ids, 'int', $this->trigger_meta, $this->trigger_code );
 
 		if ( ! empty( $matched_recipes ) ) {
+
 			foreach ( $matched_recipes as $matched_recipe ) {
+
 				if ( ! Automator()->is_recipe_completed( $matched_recipe->recipe_id, $user_id ) ) {
 
 					$args = array(
@@ -119,8 +126,11 @@ class FCRM_TAG_ADDED_TO_USER {
 					$result = Automator()->maybe_add_trigger_entry( $args, false );
 
 					if ( $result ) {
+
 						foreach ( $result as $r ) {
+
 							if ( true === $r['result'] ) {
+
 								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
 
 									$insert = array(
@@ -144,6 +154,7 @@ class FCRM_TAG_ADDED_TO_USER {
 									);
 
 									Automator()->insert_trigger_meta( $insert );
+
 								}
 
 								Automator()->maybe_trigger_complete( $r['args'] );

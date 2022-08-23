@@ -344,11 +344,26 @@ class Fluent_Crm_Helpers {
 	 */
 	public function get_attached_list_ids( $attachedListIds ) {
 
+		/**
+		 * SubscriberPivot::whereIn is causing the list ids to return an empty array.
+		 *
+		 * @since 4.4
+		 */
+		$disable_pivot_check = apply_filters( 'automator_fluentcrm_subscriber_pivot_list', true, $attachedListIds );
+
+		// Disable the pivot check by default since $attachedListIds already returns the ids.
+		if ( $disable_pivot_check ) {
+
+			return $attachedListIds;
+
+		}
+
 		/*
 		 * This action is triggered by three different processes and returns either list ids
 		 * or pivot ids(table: wp_fc_subscriber_pivot)
 		 */
-		$list_ids     = array();
+		$list_ids = array();
+
 		$request_type = automator_filter_input( 'type', INPUT_POST );
 
 		if ( ! empty( $request_type ) ) {
@@ -372,6 +387,20 @@ class Fluent_Crm_Helpers {
 	 * @return array
 	 */
 	public function get_attached_tag_ids( $attachedTagIds ) {
+
+		/**
+		 * SubscriberPivot::whereIn is causing the list ids to return an empty array.
+		 *
+		 * @since 4.4
+		 */
+		$disable_pivot_check = apply_filters( 'automator_fluentcrm_subscriber_pivot_tags', true, $attachedTagIds );
+
+		// Disable the pivot check by default since $attachedListIds already returns the ids.
+		if ( $disable_pivot_check ) {
+
+			return $attachedTagIds;
+
+		}
 
 		/*
 		 * This action is triggered by three different processes and returns either list ids

@@ -91,6 +91,8 @@ class ANON_WPFF_SUBFORM {
 			return;
 		}
 
+		$entry_data = json_decode( $insert_data['response'], true );
+
 		foreach ( $matches as $trigger_id => $match ) {
 			if ( Automator()->is_recipe_completed( $match['recipe_id'], $user_id ) ) {
 				continue;
@@ -123,7 +125,7 @@ class ANON_WPFF_SUBFORM {
 							);
 
 							$wp_ff_args['meta_key'] = $this->trigger_meta;
-							Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
+							Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
 
 							$wp_ff_args['meta_key']   = $this->trigger_meta . '_ID';
 							$wp_ff_args['meta_value'] = absint( $form->id );

@@ -91,11 +91,6 @@ class Wpff_Tokens {
 											continue;
 										}
 
-										// Skip file upload fields. Not supported
-										if ( isset( $fields_or_multi_inputs['element'] ) && 'input_file' === $fields_or_multi_inputs['element'] ) {
-											continue;
-										}
-
 										if ( isset( $field_or_multi_input['fields'] ) ) {
 											// Multiple grouped fields in a column
 											$field_group_name = $field_or_multi_input['attributes']['name'];
@@ -106,11 +101,6 @@ class Wpff_Tokens {
 
 												// Skip html only feilds that are not actual form inputs
 												if ( isset( $field['element'] ) && 'custom_html' === $field['element'] ) {
-													continue;
-												}
-
-												// Skip file upload fields. Not supported
-												if ( isset( $field['element'] ) && 'input_file' === $field['element'] ) {
 													continue;
 												}
 
@@ -130,11 +120,6 @@ class Wpff_Tokens {
 
 											// Skip html only feilds that are not actual form inputs
 											if ( isset( $field['element'] ) && 'custom_html' === $field['element'] ) {
-												continue;
-											}
-
-											// Skip file upload fields. Not supported
-											if ( isset( $field['element'] ) && 'input_file' === $field['element'] ) {
 												continue;
 											}
 
@@ -180,11 +165,6 @@ class Wpff_Tokens {
 
 							// Skip html only feilds that are not actual form inputs
 							if ( isset( $raw_field['element'] ) && 'custom_html' === $raw_field['element'] ) {
-								continue;
-							}
-
-							// Skip file upload fields. Not supported
-							if ( isset( $raw_field['element'] ) && 'input_file' === $raw_field['element'] ) {
 								continue;
 							}
 

@@ -224,7 +224,7 @@ class Automator_Recipe_Process_User {
 			$wpdb->prepare(
 				"SELECT ID
 						FROM {$wpdb->prefix}uap_recipe_log
-						WHERE completed NOT IN (1,2,5,9)
+						WHERE completed NOT IN (1,2,5,9,10)
 						AND automator_recipe_id = %d
 						AND user_id = %d",
 				$recipe_id,

@@ -569,6 +569,7 @@ class Zoom_Helpers {
 	 * @return void
 	 */
 	public function get_user() {
+
 		$users_option_exist = get_option( 'uap_zoom_api_connected_user', 'no' );
 
 		if ( 'no' !== $users_option_exist ) {

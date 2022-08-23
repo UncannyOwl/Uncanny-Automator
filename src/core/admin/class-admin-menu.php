@@ -104,7 +104,7 @@ class Admin_Menu {
 
 		$uap_automator_allow_tracking = get_option( $option_key, false );
 
-		$is_connected = self::is_automator_connected();
+		$is_connected = Api_Server::is_automator_connected();
 
 		if ( false === $uap_automator_allow_tracking && false !== $is_connected ) {
 			// Opt-in the user automatically.
@@ -322,7 +322,7 @@ class Admin_Menu {
 	public function dashboard_menu_page_output() {
 
 		// Check connect and credits
-		$is_connected = $this->automator_connect;
+		$is_connected = Api_Server::is_automator_connected( true );
 
 		$website      = preg_replace( '(^https?://)', '', get_home_url() );
 		$redirect_url = admin_url( 'admin.php?page=uncanny-automator-dashboard' );
@@ -506,7 +506,7 @@ class Admin_Menu {
 
 			if ( 'settings' === $active ) {
 				// Check connect and credits
-				$is_connected = self::is_automator_connected();
+				$is_connected = Api_Server::is_automator_connected();
 
 				$website            = preg_replace( '(^https?://)', '', get_home_url() );
 				$redirect_url       = site_url( 'wp-admin/edit.php?post_type=uo-recipe&page=uncanny-automator-settings' );
@@ -579,64 +579,6 @@ class Admin_Menu {
 			echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
-
-	/**
-	 * Checks automator connect and get credits
-	 *
-	 * @return false|array
-	 */
-	public static function is_automator_connected() {
-		$existing_data = get_transient( 'automator_api_credit_data' );
-		if ( ! empty( $existing_data ) ) {
-			return is_object( $existing_data ) ? (array) $existing_data : $existing_data;
-		}
-		$licence_key = '';
-
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ) {
-			$licence_key = get_option( 'uap_automator_pro_license_key' );
-		} elseif ( 'valid' === get_option( 'uap_automator_free_license_status' ) ) {
-			$licence_key = get_option( 'uap_automator_free_license_key' );
-		}
-
-		if ( empty( $licence_key ) ) {
-			return false;
-		}
-
-		$plugin_version = AUTOMATOR_PLUGIN_VERSION;
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) ) {
-			$plugin_version = defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION;
-		}
-		// data to send in our API request
-		$api_params = array(
-			'action'  => 'get_credits',
-			'api_ver' => '2.0',
-			'plugins' => $plugin_version,
-		);
-
-		// Call the custom API.
-		$response = wp_remote_post(
-			AUTOMATOR_API_URL . 'v2/credits',
-			array(
-				'timeout'   => 15,
-				'sslverify' => false,
-				'body'      => $api_params,
-			)
-		);
-		if ( is_wp_error( $response ) ) {
-			return false;
-		}
-
-		$credit_data = json_decode( wp_remote_retrieve_body( $response ) );
-
-		if ( ! empty( $credit_data->statusCode ) && 200 === $credit_data->statusCode ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			set_transient( 'automator_api_credit_data', (array) $credit_data->data, HOUR_IN_SECONDS );
-
-			return (array) $credit_data->data;
-		}
-
-		return false;
-	}
-
 
 	/**
 	 *
@@ -968,7 +910,7 @@ class Admin_Menu {
 				// Check if the current page is the "Dashboard" page
 				if ( 'uo-recipe_page_uncanny-automator-dashboard' === (string) $hook ) {
 					// Get data about the connected site
-					$this->automator_connect = self::is_automator_connected();
+					$this->automator_connect = Api_Server::is_automator_connected();
 
 					// Check if the user has Automator Pro
 					$is_pro_active = false;

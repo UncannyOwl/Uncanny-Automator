@@ -207,6 +207,7 @@ class Automator_Review {
 
 	}
 
+
 	/**
 	 * Callback for getting api credits.
 	 *
@@ -216,91 +217,24 @@ class Automator_Review {
 	 * @since 3.1
 	 */
 	public function get_credits() {
+
 		// The rest response object
 		$response = (object) array();
 
 		// Default return message
-		$response->message  = __( 'Information is missing.', 'automator-plugin' );
-		$response->success  = true;
-		$have_valid_licence = false;
-		$licence_key        = '';
-		$item_name          = '';
-		$count              = 0;
-		$existing_data      = get_transient( 'automator_api_credits' );
+		$response->message       = __( 'Information is missing.', 'automator-plugin' );
+		$response->success       = true;
+		$response->credits_left  = 0;
+		$response->total_credits = 0;
+		$existing_data           = Api_Server::is_automator_connected();
 
-		if ( ! empty( $existing_data ) ) {
-
-			if ( is_array( $existing_data ) ) {
-
-				$existing_data = (object) $existing_data;
-			}
-
-			$response->credits_left = $existing_data->data->usage_limit - $existing_data->data->paid_usage_count;
-
-			$response->total_credits = $existing_data->data->usage_limit;
-
+		if ( empty( $existing_data ) ) {
 			return new \WP_REST_Response( $response, 200 );
 		}
 
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ) {
+		$response->credits_left = $existing_data['usage_limit'] - $existing_data['paid_usage_count'];
 
-			$licence_key = get_option( 'uap_automator_pro_license_key' );
-			$item_name   = defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ? AUTOMATOR_PRO_ITEM_NAME : AUTOMATOR_AUTOMATOR_PRO_ITEM_NAME;
-
-		} elseif ( 'valid' === get_option( 'uap_automator_free_license_status' ) ) {
-
-			$licence_key = get_option( 'uap_automator_free_license_key' );
-			$item_name   = AUTOMATOR_FREE_ITEM_NAME;
-
-		}
-
-		if ( empty( $licence_key ) ) {
-			$response->credits_left  = 0;
-			$response->total_credits = 0;
-			$response                = new \WP_REST_Response( $response, 200 );
-
-			return $response;
-		}
-
-		$website = preg_replace( '(^https?://)', '', get_home_url() );
-
-		// data to send in our API request
-		$api_params = array(
-			'action'      => 'get_credits',
-			'license_key' => $licence_key,
-			'site_name'   => $website,
-			'item_name'   => $item_name,
-			'api_ver'     => '2.0',
-			'plugins'     => defined( 'AUTOMATOR_PRO_FILE' ) ? \Uncanny_Automator_Pro\InitializePlugin::PLUGIN_VERSION : AUTOMATOR_PLUGIN_VERSION,
-		);
-
-		// Call the custom API.
-		$api_response = wp_remote_post(
-			AUTOMATOR_API_URL . 'v2/credits',
-			array(
-				'timeout'   => 15,
-				'sslverify' => false,
-				'body'      => $api_params,
-			)
-		);
-		if ( is_wp_error( $api_response ) ) {
-			$response->credits_left  = 0;
-			$response->total_credits = 0;
-
-			return new \WP_REST_Response( $response, 200 );
-		}
-
-		$credit_data = json_decode( wp_remote_retrieve_body( $api_response ) );
-
-		if ( 200 === $credit_data->statusCode ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-
-			$response->credits_left = $credit_data->data->usage_limit - $credit_data->data->paid_usage_count;
-
-			$response->total_credits = $credit_data->data->usage_limit;
-
-			set_transient( 'automator_api_credits', $credit_data, HOUR_IN_SECONDS );
-
-		}
+		$response->total_credits = $existing_data['usage_limit'];
 
 		return new \WP_REST_Response( $response, 200 );
 	}
@@ -687,14 +621,14 @@ class Automator_Review {
 
 	public function get_credits_remaining() {
 
-		$credits = get_transient( 'automator_api_credits' );
+		$credits = Api_Server::is_automator_connected();
 
-		if ( empty( $credits ) || empty( $credits->data->usage_limit ) || empty( $credits->data->paid_usage_count ) ) {
+		if ( false === $credits || empty( $credits['usage_limit'] ) || empty( $credits['paid_usage_count'] ) ) {
 			// Assume unused if credits are empty.
 			return apply_filters( 'automator_review_get_credits_remaining', 1000, $this );
 		}
 
-		$credits_remaining = absint( intval( $credits->data->usage_limit ) - intval( $credits->data->paid_usage_count ) );
+		$credits_remaining = absint( intval( $credits['usage_limit'] ) - intval( $credits['paid_usage_count'] ) );
 
 		return apply_filters( 'automator_review_get_credits_remaining', $credits_remaining, $this );
 

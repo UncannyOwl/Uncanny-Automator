@@ -396,7 +396,7 @@ class Automator_Recipe_Process_Complete {
 		}
 
 		Automator()->db->action->mark_complete( $action_id, $recipe_log_id, $action_data['completed'], $error_message );
-		$action_log_id = $action_data['action_log_id'];
+		$action_log_id = isset( $action_data['action_log_id'] ) ? absint( $action_data['action_log_id'] ) : null; // Doesn't exist for inactive, action not found situations
 
 		// The action is about to be completed
 		do_action_deprecated(
@@ -440,15 +440,17 @@ class Automator_Recipe_Process_Complete {
 	 */
 	public function get_action_error_message( $user_id = null, $action_data = null, $recipe_id = null, $error_message = '', $recipe_log_id = null, $args = array() ) {
 
+		$message = '';
+
 		if ( ! empty( $error_message ) && key_exists( 'complete_with_errors', $action_data ) ) {
-			return $error_message;
+			$message = $error_message;
 		}
 
 		if ( key_exists( 'user_action_message', $args ) && ! empty( $args['user_action_message'] ) ) {
-			return $args['user_action_message'];
+			$message = $args['user_action_message'];
 		}
 
-		return '';
+		return apply_filters( 'automator_get_action_error_message', $message, $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 
 	}
 

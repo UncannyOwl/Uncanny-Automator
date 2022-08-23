@@ -787,7 +787,7 @@ class Automator_Get_Data {
 					"SELECT MAX(run_number)
 						FROM {$wpdb->prefix}uap_recipe_log
 						WHERE 1=1
-						AND completed NOT IN (2,9)
+						AND completed NOT IN (2,9,10)
 						AND automator_recipe_id = %d
 						AND user_id = %d",
 					$recipe_id,

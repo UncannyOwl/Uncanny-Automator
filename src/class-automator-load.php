@@ -50,6 +50,9 @@ class Automator_Load {
 	 */
 	public function __construct() {
 
+		// Load text domain
+		add_action( 'init', array( $this, 'automator_load_textdomain' ) );
+
 		// Bailout if not php8 compatible.
 		if ( ! $this->is_php8_compat() ) {
 			return;
@@ -226,9 +229,6 @@ class Automator_Load {
 			return;
 		}
 
-		// Load text domain
-		add_action( 'plugins_loaded', array( $this, 'automator_load_textdomain' ) );
-
 		do_action( 'automator_before_configure' );
 
 		// Load Assets
@@ -391,7 +391,7 @@ class Automator_Load {
 	 * @since 1.0.0
 	 */
 	public function automator_load_textdomain() {
-		load_plugin_textdomain( 'uncanny-automator', false, basename( dirname( AUTOMATOR_BASE_FILE ) ) . '/languages/' );
+		load_plugin_textdomain( 'uncanny-automator', false, dirname( plugin_basename( AUTOMATOR_BASE_FILE ) ) . '/languages' );
 	}
 
 	/**

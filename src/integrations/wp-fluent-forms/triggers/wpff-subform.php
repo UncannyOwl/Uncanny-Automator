@@ -98,6 +98,8 @@ class WPFF_SUBFORM {
 			return;
 		}
 
+		$entry_data = json_decode( $insert_data['response'], true );
+
 		if ( ! empty( $matches ) ) {
 			foreach ( $matches as $recipe_id => $match ) {
 				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
@@ -125,7 +127,7 @@ class WPFF_SUBFORM {
 									);
 
 									$wp_ff_args['meta_key'] = $this->trigger_meta;
-									Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $data, $form, $wp_ff_args );
+									Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
 
 									$wp_ff_args['meta_key']   = 'WPFFENTRYID';
 									$wp_ff_args['meta_value'] = $insert_data['serial_number'];
