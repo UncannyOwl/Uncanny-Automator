@@ -542,7 +542,7 @@ class Recipe_Post_Utilities {
 			),
 			'connectApiUrl'       => sprintf( '%s%s?redirect_url=%s', AUTOMATOR_FREE_STORE_URL, AUTOMATOR_FREE_STORE_CONNECT_URL, rawurlencode( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ),
 			'dashboardUrl'        => admin_url( 'admin.php?page=uncanny-automator-dashboard' ),
-			'hasAccountConnected' => ( ! Admin_Menu::is_automator_connected() ? false : true ),
+			'hasAccountConnected' => ( ! Api_Server::is_automator_connected() ? false : true ),
 			'hasValidProLicense'  => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),
 			'licenseUrl'          => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
 			'marketing'           => array(

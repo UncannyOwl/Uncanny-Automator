@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 6.0.1
 Requires PHP: 5.6
-Stable tag: 4.3
+Stable tag: 4.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,6 +46,9 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
 = Integrations =
 
@@ -93,7 +96,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- Meta Box _(In Pro 4.3)_
+- [Meta Box](https://automatorplugin.com/integration/meta-box/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [myCred](https://automatorplugin.com/integration/mycred/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Newsletter](https://automatorplugin.com/integration/newsletter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
@@ -135,8 +138,6 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WPForms](https://automatorplugin.com/integration/wp-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
 Over 250+ automation triggers and actions are available for the plugins listed above in the free version. There's simple documentation to follow in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
 
@@ -235,17 +236,56 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 4.4 [2022-08-23] =
+
+**New Integration:**
+
+* [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1932
+
+**New Triggers:**
+
+* WhatsApp - A message is received #2504
+* WhatsApp - A message to a recipient is not delivered because they have not opted in #2201
+* WhatsApp - A message to a recipient is set to a specific status #2503
+* WhatsApp - A message to a recipient was not delivered #2505
+
+**New Actions:**
+
+* WhatsApp - Send a WhatsApp message template to a number #2208
+* WhatsApp - Send a WhatsApp message to a number #845
+
+**Added:**
+
+* Fluent Forms - "File upload" field token now returns a valid URL #2516
+* Recipe UI - Trigger/Action sentences now show field labels when populated #2465
+
+**Fixed:**
+
+* Background processing - Action running twice if server cron is used instead of WordPress cron #2539
+* Background processing - PHP error when background actions are tested during daily system health check #2544
+* FluentCRM - "A tag is added to a user" trigger now fires reliably #2477
+* Recipe UI - Now displays translations as expected if user language is different than site language #2491
+* Recipe UI - Dropdowns inside a repeater field now support custom values #2540
+* WordPress - "A user views a post" no longer fires on archive pages #2508
+
+**Under the hood:**
+
+* Dashboard - Displayed credits remaining now more accurate #2507
+* Zapier - Logo updated #2498
+* PHP Notice - array key `action_log_id` in `class-automator-recipe-process-complete.php` #2480
+* `Traits_Recipe_Filters` - Added `string_comparison` logic #2485
+
 = 4.3 [2022-08-11] =
 
 **New Integrations:**
 
-* [Airtable](https://automatorplugin.com/integration/airtable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #2346
-* [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #2353
-* [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #2377
-* [KonnectzIT](https://automatorplugin.com/integration/konnectzit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #2300
-* [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #2292
-* [Make](https://automatorplugin.com/integration/make/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #2415
-* [WP Mail SMTP Pro](https://automatorplugin.com/integration/wp-mail-smtp-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #2389
+* [Airtable](https://automatorplugin.com/integration/airtable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2346
+* [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2353
+* [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2377
+* [KonnectzIT](https://automatorplugin.com/integration/konnectzit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2300
+* [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2292
+* [Make](https://automatorplugin.com/integration/make/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2415
+* [WP Mail SMTP Pro](https://automatorplugin.com/integration/wp-mail-smtp-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2389
 
 **New Triggers:**
 
@@ -296,7 +336,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe UI - Disabled ability to drag Triggers and Actions metaboxes #2160
 * Recipe UI - Conditions are now duplicated when a recipe is duplicated #2120
 * Recipe UI - IDs, URLs, and email tokens are now displayed correctly in their corresponding fields #2410
-* Recipe UI - Duplicating a recipe now keeps the original live/draft status of triggers and actions  #353
+* Recipe UI - Duplicating a recipe now keeps the original live/draft status of triggers and actions #353
 * WP-Admin - Automator menu item "Recipe logs" renamed to "Logs" #2451
 * WP-Admin - Trigger log and Action log removed from Automator menu #2375
 * In-plugin branding updates #2391
@@ -318,7 +358,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * GoToTraining/Webinar - Now use Automator API for improved reliability and retries #2429
 * Migration scheduling - Activation hooks added #2457
 * New filter: `automator_conflictive_assets` to dequeue site-specific scripts and styles that may conflict with the recipe UI #2439
-* Updated token framework  #116  #118 #119 #130
+* Updated token framework #116 #118 #119 #130
 * Usage reports - Added detailed recipe information #2455
 * Token Parser - PHP 8 issue when a token is used in a recipe sentence #2365
 * Tools - `automator_log` now shows debug files in the admin #2443
@@ -921,25 +961,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Ninja Forms - Tokens for multiple value fields now render reliably #1285
 * BuddyBoss - A user replies to a topic in a forum - Forum field is now formatted correctly #802
 * Style of links on the Dashboard page #1346
-
-= 3.5.2 [2022-01-05] =
-
-**Updated:**
-
-* WordPress Core - Added post excerpt tokens to additional triggers #1261
-* ActiveCampaign - Added local tag and list sync for tags, lists and custom contact fields #1208
-* HappyForms - Added Form title and ID tokens #794
-* Improved recipe UI on sites using an RTL language in /wp-admin #1247
-
-**Fixed:**
-
-* WordPress Core - "A user publishes a type of post with a taxonomy term in a taxonomy" now runs more reliably #1305
-* Formidable Forms - Image tokens no longer return HTML #1303
-* Elementor - File upload field token now renders a value #1283
-* FluentCRM Pro - All tag triggers now fire when tags are added via Smart Link #1271
-* WordPress Core - "A user views a post" and "A post of a specific type is viewed" no longer triggers on unrelated events in some situations #1192
-* JavaScript error on URL fields when populated with postmeta or usermeta tokens #1290
-* When "Use a custom value" is selected in a dropdown, the saved value is now displayed when the action is edited #1286
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

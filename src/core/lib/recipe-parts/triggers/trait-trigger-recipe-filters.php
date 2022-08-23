@@ -210,29 +210,42 @@ trait Trigger_Recipe_Filters {
 
 	public function conditions_matched( $notation, $where, $condition ) {
 
+		// Process non-integer inputs.
 		if ( ! empty( $this->get_compare() ) && ( ! is_numeric( $where ) || ! is_numeric( $condition ) ) ) {
 
 			$condition_matched = ( $where === $condition );
 
-			$message = 'Asserting ' . gettype( $where ) . ":{$where} '=' " . gettype( $condition ) . ":$condition | Result: ";
+			// Special string_contains notation.
+			// @since 4.4
+			if ( 'string_contains' === $notation ) {
 
-			$message .= $condition_matched ? 'Matched' : 'Failed';
+				$add_slashes       = apply_filters( 'automator_escape_matching_characters', '/._-:\\' );
+				$condition_matched = preg_match( '/(' . addcslashes( $where, $add_slashes ) . ')/i', $condition );
 
-			$this->push_log( $message );
+				$this->push_log( 'Asserting ' . gettype( $where ) . ":{$where} '{$notation}' " . gettype( $condition ) . ":$condition | Result: " . ( $condition_matched ? 'Matched' : 'Failed' ) );
+
+				return $condition_matched;
+
+			}
+
+			$this->push_log( 'Asserting (non-numeric)' . gettype( $where ) . ":{$where} '{$notation}' " . gettype( $condition ) . ":$condition | Result: " . ( $condition_matched ? 'Matched' : 'Failed' ) );
 
 			return $condition_matched;
 
 		}
 
-		$message = 'Asserting ' . gettype( $where ) . ":{$where} '{$notation}' " . gettype( $condition ) . ":$condition | Result: ";
+		// Otherwise, process with equality sign.
+		$condition_matched = $this->match_condition( $notation, $where, $condition );
 
-		$condition_matched = Automator()->utilities->match_condition_vs_number( $notation, $where, $condition );
-
-		$message .= $condition_matched ? 'Matched (with non-numeric parameter converted to int)' : 'Failed';
-
-		$this->push_log( $message );
+		$this->push_log( 'Asserting ' . gettype( $where ) . ":{$where} '{$notation}' " . gettype( $condition ) . ":$condition | Result: " . ( $condition_matched ? 'Matched (with non-numeric parameter converted to int)' : 'Failed' ) );
 
 		return $condition_matched;
+
+	}
+
+	protected function match_condition( $notation, $where, $condition ) {
+
+		return Automator()->utilities->match_condition_vs_number( $notation, $where, $condition );
 
 	}
 

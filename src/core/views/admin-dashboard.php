@@ -2,9 +2,6 @@
 // Delete credit data transient on dashboard
 use Uncanny_Automator\Utilities;
 
-delete_transient( 'automator_api_credit_data' );
-delete_transient( 'automator_api_credits' );
-
 // Create an array where we could save CSS classes that
 // we will later add to the dashboard main container
 $dashboard_css_classes = array();
@@ -664,10 +661,62 @@ if ( $dashboard->has_site_connected ) {
 
 			<?php
 
-			// Add the "Credits left" box
-			// First, check if the site is connected
-			if ( $dashboard->has_site_connected ) {
-				// Check if it's a pro user
+			// If the site is not connected
+			if ( ! $dashboard->has_site_connected || ( $dashboard->is_pro_installed && ! $dashboard->is_pro ) ) {
+				?>
+
+				<div id="uap-dashboard-credits-left" class="uap-dashboard-box">
+					<div class="uap-dashboard-box-header uap-dashboard-box-header--no-padding">
+						<div class="uap-dashboard-box-progress uap-dashboard-box-progress--warning">
+							<div class="uap-dashboard-box-progress-bar" style="width: 100%"></div>
+						</div>
+					</div>
+					<div class="uap-dashboard-box-content">
+						<div class="uap-dashboard-box-content-number">
+							0
+						</div>
+						<div class="uap-dashboard-box-content-label uap-dashboard-box-content-label--reduced-margin">
+							<?php esc_attr_e( 'Credits left', 'uncanny-automator' ); ?>
+						</div>
+						<div
+							class="uap-dashboard-box-content-below-label uap-dashboard-box-content-below-label--warning">
+							<span
+								class="uap-icon uap-icon--exclamation-triangle"></span> <?php esc_attr_e( 'Site not connected', 'uncanny-automator' ); ?>
+						</div>
+					</div>
+					<div class="uap-dashboard-box-footer">
+						<?php if ( ! $dashboard->is_pro_installed ) { ?>
+							<?php
+							$setup_wizard_link = add_query_arg(
+								array(
+									'post_type' => 'uo-recipe',
+									'page'      => 'uncanny-automator-setup-wizard',
+								),
+								admin_url( 'edit.php' )
+							);
+							?>
+
+							<uo-button
+								href="<?php echo esc_url( $setup_wizard_link ); ?>"
+							>
+								<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
+							</uo-button>
+
+						<?php } ?>
+						<?php if ( ! $dashboard->is_pro && $dashboard->is_pro_installed ) { ?>
+
+							<uo-button
+								href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
+							>
+								<?php esc_attr_e( 'Activate your license', 'uncanny-automator' ); ?>
+							</uo-button>
+
+						<?php } ?>
+					</div>
+				</div>
+
+				<?php
+			} else {
 				if ( $dashboard->is_pro ) {
 					?>
 
@@ -766,60 +815,6 @@ if ( $dashboard->has_site_connected ) {
 
 					<?php
 				}
-			} else {
-				?>
-
-				<div id="uap-dashboard-credits-left" class="uap-dashboard-box">
-					<div class="uap-dashboard-box-header uap-dashboard-box-header--no-padding">
-						<div class="uap-dashboard-box-progress uap-dashboard-box-progress--warning">
-							<div class="uap-dashboard-box-progress-bar" style="width: 100%"></div>
-						</div>
-					</div>
-					<div class="uap-dashboard-box-content">
-						<div class="uap-dashboard-box-content-number">
-							0
-						</div>
-						<div class="uap-dashboard-box-content-label uap-dashboard-box-content-label--reduced-margin">
-							<?php esc_attr_e( 'Credits left', 'uncanny-automator' ); ?>
-						</div>
-						<div
-							class="uap-dashboard-box-content-below-label uap-dashboard-box-content-below-label--warning">
-							<span
-								class="uap-icon uap-icon--exclamation-triangle"></span> <?php esc_attr_e( 'Site not connected', 'uncanny-automator' ); ?>
-						</div>
-					</div>
-					<div class="uap-dashboard-box-footer">
-						<?php if ( ! $dashboard->is_pro_installed ) { ?>
-							<?php
-							$setup_wizard_link = add_query_arg(
-								array(
-									'post_type' => 'uo-recipe',
-									'page'      => 'uncanny-automator-setup-wizard',
-								),
-								admin_url( 'edit.php' )
-							);
-							?>
-
-							<uo-button
-								href="<?php echo esc_url( $setup_wizard_link ); ?>"
-							>
-								<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
-							</uo-button>
-
-						<?php } ?>
-						<?php if ( ! $dashboard->is_pro && $dashboard->is_pro_installed ) { ?>
-
-							<uo-button
-								href="<?php echo esc_url_raw( $dashboard->pro_activate_link ); ?>"
-							>
-								<?php esc_attr_e( 'Activate your license', 'uncanny-automator' ); ?>
-							</uo-button>
-
-						<?php } ?>
-					</div>
-				</div>
-
-				<?php
 			}
 
 			?>

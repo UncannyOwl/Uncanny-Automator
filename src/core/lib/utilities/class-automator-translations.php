@@ -24,15 +24,18 @@ class Automator_Translations {
 	 *
 	 */
 	public function __construct() {
-		$this->set_strings();
-		do_action_deprecated( 'uap_localized_string_after', array(), '3.0', 'automator_localized_string_after' );
-		do_action( 'automator_localized_string_after' );
+
 	}
 
 	/**
 	 *
 	 */
 	private function set_strings() {
+
+		// if it is already initilized?
+		if ( ! empty( $this->ls ) ) {
+			return;
+		}
 
 		// Localized strings
 		$this->ls = array(
@@ -1119,10 +1122,6 @@ class Automator_Translations {
 			// UncannyAutomator.i18n.removeRow
 			/* translators: 1. Row number */
 			'rowNumber'           => esc_attr__( 'Row %1$s', 'uncanny-automator' ),
-			// UncannyAutomator.i18n.rowNumber
-			'yes'                 => esc_attr__( 'Yes', 'uncanny-automator' ),
-			// UncannyAutomator.i18n.yes
-			'no'                  => esc_attr__( 'No', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.no
 			'close'               => esc_attr_x( 'Close', 'Verb', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.close
@@ -1139,6 +1138,9 @@ class Automator_Translations {
 			// Don't translate this string
 			// UncannyAutomator.i18n.uncannyAutomatorPro
 		);
+
+		do_action_deprecated( 'uap_localized_string_after', array(), '3.0', 'automator_localized_string_after' );
+		do_action( 'automator_localized_string_after' );
 	}
 
 	/**
@@ -1180,9 +1182,8 @@ class Automator_Translations {
 			'3.0',
 			'automator_localized_string'
 		);
-		$localized_string = apply_filters( 'automator_localized_string', $localized_string, $string_key );
 
-		return $localized_string;
+		return apply_filters( 'automator_localized_string', $localized_string, $string_key );
 	}
 
 	/**
@@ -1191,6 +1192,7 @@ class Automator_Translations {
 	 * @return array
 	 */
 	public function get_all() {
+		$this->set_strings();
 		$this->ls          = apply_filters_deprecated( 'uap_localized_strings', array( $this->ls ), '3.0', 'automator_localized_strings' );
 		$localized_strings = apply_filters( 'automator_localized_strings', $this->ls );
 

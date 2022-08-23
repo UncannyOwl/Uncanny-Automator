@@ -390,12 +390,15 @@ class Logs_List_Table extends WP_List_Table {
 			} elseif ( 9 === (int) $recipe->recipe_completed ) {
 				/* translators: Recipe status */
 				$recipe_status = esc_attr_x( 'Completed - do nothing', 'Recipe', 'uncanny-automator' );
+			} elseif ( 10 === (int) $recipe->recipe_completed ) {
+				/* translators: Recipe status */
+				$recipe_status = esc_attr_x( 'Completed - pending response', 'Recipe', 'uncanny-automator' );
 			} else {
 				/* translators: Recipe status */
 				$recipe_status = esc_attr_x( 'In progress', 'Recipe', 'uncanny-automator' );
 			}
 
-			$recipe_date_completed = ( 1 === absint( $recipe->recipe_completed ) || 2 === absint( $recipe->recipe_completed ) || 9 === absint( $recipe->recipe_completed ) ) ? $recipe->recipe_date_time : '';
+			$recipe_date_completed = ( 10 === absint( $recipe->recipe_completed ) || 1 === absint( $recipe->recipe_completed ) || 2 === absint( $recipe->recipe_completed ) || 9 === absint( $recipe->recipe_completed ) ) ? $recipe->recipe_date_time : '';
 			$current_type          = Automator()->utilities->get_recipe_type( $recipe_id );
 			$run_number            = 'anonymous' === $current_type ? 'N/A' : $recipe->run_number;
 
@@ -496,12 +499,15 @@ class Logs_List_Table extends WP_List_Table {
 			} elseif ( 9 === (int) $recipe->recipe_completed ) {
 				/* translators: Recipe status */
 				$recipe_status = esc_attr_x( 'Completed - do nothing', 'Recipe', 'uncanny-automator' );
+			} elseif ( 10 === (int) $recipe->recipe_completed ) {
+				/* translators: Recipe status */
+				$recipe_status = esc_attr_x( 'Completed - pending response', 'Recipe', 'uncanny-automator' );
 			} else {
 				/* translators: Recipe status */
 				$recipe_status = esc_attr_x( 'In progress', 'Recipe', 'uncanny-automator' );
 			}
 
-			$recipe_date_completed = ( 1 === absint( $recipe->recipe_completed ) || 2 === absint( $recipe->recipe_completed ) || 9 === absint( $recipe->recipe_completed ) ) ? $recipe->recipe_date_time : '';
+			$recipe_date_completed = ( 10 === absint( $recipe->recipe_completed ) || 1 === absint( $recipe->recipe_completed ) || 2 === absint( $recipe->recipe_completed ) || 9 === absint( $recipe->recipe_completed ) ) ? $recipe->recipe_date_time : '';
 			$current_type          = Automator()->utilities->get_recipe_type( $recipe_id );
 			$run_number            = 'anonymous' === $current_type ? 'N/A' : $recipe->run_number;
 
@@ -724,6 +730,9 @@ class Logs_List_Table extends WP_List_Table {
 			} elseif ( 9 === (int) $action->action_completed ) {
 				/* translators: Action status */
 				$st = esc_attr_x( 'Completed, do nothing', 'Action', 'uncanny-automator' );
+			} elseif ( 10 === (int) $action->action_completed ) {
+				/* translators: Action status */
+				$st = esc_attr_x( 'Completed, awaiting', 'Action', 'uncanny-automator' );
 			}
 			$action_code = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
 			/* translators: 1. Action ID */

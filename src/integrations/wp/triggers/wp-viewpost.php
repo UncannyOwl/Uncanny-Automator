@@ -83,7 +83,11 @@ class WP_VIEWPOST {
 			return;
 		}
 
-		if ( ! is_singular( $post->post_type ) && ! is_post_type_viewable( $post->post_type ) ) {
+		if ( ! is_singular( $post->post_type ) || ! is_post_type_viewable( $post->post_type ) ) {
+			return;
+		}
+
+		if ( ! is_user_logged_in() ) {
 			return;
 		}
 

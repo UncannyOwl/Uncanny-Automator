@@ -110,7 +110,7 @@ class Setup_Wizard {
 	}
 
 	public function is_user_connected() {
-		return Admin_Menu::is_automator_connected();
+		return Api_Server::is_automator_connected();
 	}
 
 	public function get_steps() {

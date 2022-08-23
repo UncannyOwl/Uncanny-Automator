@@ -46,6 +46,7 @@ class Automator_DB_Handler_Actions {
 					'title'  => array(),
 					'target' => array(),
 				),
+				'br',
 				array(
 					'data'  => array(),
 					'http'  => array(),

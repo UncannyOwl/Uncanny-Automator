@@ -71,7 +71,7 @@ class Admin_Settings_General_Improve_Automator {
 
 			// Make sure it's NOT connected
 			// Connected sites have this enabled by default
-			&& ! Admin_Menu::is_automator_connected()
+			&& ! Api_Server::is_automator_connected()
 		) {
 			// Register the setting
 			add_action(

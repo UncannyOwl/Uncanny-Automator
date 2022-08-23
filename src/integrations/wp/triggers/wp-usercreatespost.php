@@ -164,7 +164,7 @@ class WP_USERCREATESPOST {
 								'endpoint'     => 'select_terms_for_selected_taxonomy',
 							)
 						),
-						Automator()->helpers->recipe->field->select_field( 'WPTAXONOMYTERM', esc_attr__( 'Taxonomy term', 'uncanny-automator' ) ),
+						Automator()->helpers->recipe->field->select_field( 'WPTAXONOMYTERM', esc_attr__( 'Term', 'uncanny-automator' ) ),
 					),
 				),
 			)

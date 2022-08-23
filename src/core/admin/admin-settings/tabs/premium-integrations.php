@@ -54,17 +54,16 @@ class Admin_Settings_Premium_Integrations {
 		// Check if the user has access to the premium integrations
 		// This will be true if the site is connected (Automator Free) or if the
 		// user has Automator Pro activated
-		$user_can_use_premium_integrations = Admin_Menu::is_automator_connected() || is_automator_pro_active();
+		$user_can_use_premium_integrations = Api_Server::is_automator_connected() || is_automator_pro_active();
 
 		// Get the link to upgrade to Pro
 		$upgrade_to_pro_url = add_query_arg(
 			// UTM
 			array(
-				'utm_source' => 'uncanny_automator',
-				'utm_medium' => 'settings',
-				'utm_content' => 'premium_integrations_connect'
+				'utm_source'  => 'uncanny_automator',
+				'utm_medium'  => 'settings',
+				'utm_content' => 'premium_integrations_connect',
 			),
-
 			'https://automatorplugin.com/pricing/'
 		);
 
@@ -72,11 +71,10 @@ class Admin_Settings_Premium_Integrations {
 		$credits_article_url = add_query_arg(
 			// UTM
 			array(
-				'utm_source' => 'uncanny_automator',
-				'utm_medium' => 'settings',
-				'utm_content' => 'premium_integrations_connect'
+				'utm_source'  => 'uncanny_automator',
+				'utm_medium'  => 'settings',
+				'utm_content' => 'premium_integrations_connect',
 			),
-
 			'https://automatorplugin.com/knowledge-base/what-are-credits/'
 		);
 

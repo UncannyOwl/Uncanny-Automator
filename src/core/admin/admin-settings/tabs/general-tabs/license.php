@@ -77,7 +77,7 @@ class Admin_Settings_General_License {
 			function() {
 
 				// Get data of the connected site
-				$site_data = Admin_Menu::is_automator_connected();
+				$site_data = Api_Server::is_automator_connected();
 
 				// Check if the user connected their site to automatorplugin.com
 				$site_is_connected = isset( $site_data ) && isset( $site_data['license'] );
