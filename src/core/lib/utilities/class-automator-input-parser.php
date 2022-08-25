@@ -284,11 +284,14 @@ class Automator_Input_Parser {
 								if ( is_array( $replaceable ) ) {
 									$replaceable = join( ', ', $replaceable );
 								}
-								$replaceable = apply_filters(
+								$trigger_meta_key = $meta_key;
+								$user_meta_key    = $pieces[1];
+								$replaceable      = apply_filters(
 									'automator_usermeta_token_parsed',
 									$replaceable,
 									$user_id,
-									$meta_key,
+									$user_meta_key,
+									$trigger_meta_key,
 									$args,
 									$trigger_args
 								);

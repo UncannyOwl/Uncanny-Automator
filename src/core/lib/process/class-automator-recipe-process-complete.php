@@ -53,7 +53,7 @@ class Automator_Recipe_Process_Complete {
 		$recipe_log_id  = absint( $args['recipe_log_id'] );
 
 		// Set user ID
-		if ( is_null( $user_id ) || 0 === $user_id ) {
+		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
 

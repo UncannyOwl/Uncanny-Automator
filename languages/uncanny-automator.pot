@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.4\n"
+"Project-Id-Version: Uncanny Automator 4.4.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-08-23T17:12:34+00:00\n"
+"POT-Creation-Date: 2022-08-25T17:24:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
@@ -3058,16 +3058,16 @@ msgstr ""
 msgid "An error was found in the webhook (%1$s) response."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:436
+#: src/core/lib/utilities/class-automator-input-parser.php:439
 msgid "N/A"
 msgstr ""
 
 #. translators: Article. Fallback. Any type of content (post, page, media, etc)
-#: src/core/lib/utilities/class-automator-input-parser.php:623
+#: src/core/lib/utilities/class-automator-input-parser.php:626
 msgid "Any"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:809
+#: src/core/lib/utilities/class-automator-input-parser.php:812
 msgid "Click here to reset your password."
 msgstr ""
 
@@ -6276,7 +6276,7 @@ msgstr ""
 #: src/integrations/active-campaign/actions/ac-annon-add.php:116
 #: src/integrations/active-campaign/tokens/ac-tokens.php:40
 #: src/integrations/autonami/helpers/autonami-helpers.php:21
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:584
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:580
 #: src/integrations/hubspot/actions/hubspot-addcontacttolist.php:77
 #: src/integrations/hubspot/actions/hubspot-createcontact.php:77
 #: src/integrations/hubspot/actions/hubspot-removecontactfromlist.php:76
@@ -7268,17 +7268,17 @@ msgid "Unverified"
 msgstr ""
 
 #: src/integrations/autonami/tokens/autonami-tokens.php:385
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:449
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:445
 msgid "Subscribed"
 msgstr ""
 
 #: src/integrations/autonami/tokens/autonami-tokens.php:387
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:452
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:448
 msgid "Bounced"
 msgstr ""
 
 #: src/integrations/autonami/tokens/autonami-tokens.php:389
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:451
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:447
 msgid "Unsubscribed"
 msgstr ""
 
@@ -8755,19 +8755,19 @@ msgctxt "FluentCRM"
 msgid "Any tag"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:450
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:446
 msgid "Pending"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:453
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:449
 msgid "Complained"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:457
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:453
 msgid "Any status"
 msgstr ""
 
-#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:525
+#: src/integrations/fluent-crm/helpers/fluent-crm-helpers.php:521
 msgid "yyyy-mm-dd hh:mm:ss"
 msgstr ""
 

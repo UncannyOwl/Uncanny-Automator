@@ -197,7 +197,7 @@ WHERE p.post_type IS NOT NULL
 		if ( ! empty( $data ) ) {
 			if ( ! empty( $fields ) ) {
 				foreach ( $fields as $field_name => $field_data ) {
-					if ( ! isset( $data[ $field_name ] ) ) {
+					if ( ! isset( $data[ $field_name ] ) || $field_data['value'] !== $field_data['raw_value'] ) {
 						$data[ $field_name ] = $field_data['value'];
 					}
 				}

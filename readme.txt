@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 6.0.1
 Requires PHP: 5.6
-Stable tag: 4.4
+Stable tag: 4.4.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -235,6 +235,19 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.4.0.1 [2022-08-25] =
+
+**Fixed:**
+
+* Elementor Pro - Tokens are now parsed reliably if the field value is changed during form processing using filte #2537
+* FluentCRM - Updated trigger matching logic to fix Automator Pro triggers #2548
+* Gravity Forms - "Time" type field token now parsed reliably #2551
+
+**Under the hood:**
+
+* Filter `automator_usermeta_token_parsed` - User meta key parameter added #2561
+* "Everyone" recipes no longer stuck "In Progress" in specific situations #2554
 
 = 4.4 [2022-08-23] =
 

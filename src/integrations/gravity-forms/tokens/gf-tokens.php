@@ -147,7 +147,24 @@ class Gf_Tokens {
 			if ( is_array( $meta['fields'] ) ) {
 				foreach ( $meta['fields'] as $field ) {
 					if ( isset( $field['inputs'] ) && is_array( $field['inputs'] ) ) {
+
+						/**
+						 * Disable Time field splitting. It creates a probem.
+						 *
+						 * @ticket #41901
+						 * @since 4.5
+						 */
+						if ( 'time' === $field['type'] ) {
+							$fields[] = array(
+								'tokenId'         => $form_id . '|' . $field['id'],
+								'tokenName'       => $field['label'],
+								'tokenIdentifier' => $trigger_meta,
+							);
+							continue; // Skip processing below.
+						}
+
 						foreach ( $field['inputs'] as $input ) {
+
 							$input_id    = $input['id'];
 							$input_title = GFCommon::get_label( $field, $input['id'] );
 							$input_type  = $this->get_field_type( $input );

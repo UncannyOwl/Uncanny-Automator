@@ -223,13 +223,9 @@ class Fluent_Crm_Helpers {
 
 		$recipe_ids = array();
 
-		if (
-			null === $to_match ||
-			null === $trigger_meta ||
-			null === $trigger_code
-		) {
+		if ( null === $to_match || null === $trigger_meta || null === $trigger_code ) {
 			// Sanity check
-			return $recipe_ids;
+			return array();
 		}
 
 		$matched_recipe_ids = array();
@@ -264,16 +260,16 @@ class Fluent_Crm_Helpers {
 								break;
 						}
 
-						if (
-							$trigger_value === $match ||
-							0 === $trigger_value || // handle "any" selection
-							'0' === $trigger_value // handle "any" selection
-						) {
+						// @todo: This logic can be improved.
+						if ( $trigger_value === $match || 0 === $trigger_value || '0' === $trigger_value ) {
+
 							$matched_recipe_ids[] = (object) array(
 								'recipe_id'     => $recipe['ID'],
 								'trigger_value' => $trigger_value,
 								'matched_value' => $to_match,
+								'trigger_id'    => $trigger['ID'],
 							);
+
 							break;
 						}
 					}//end foreach
