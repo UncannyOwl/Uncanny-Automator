@@ -116,7 +116,7 @@ $current_tab = 'trigger-log';
 		$run = $data_source.find('> td.recipe_run_number').html(),
 		$user = $data_source.find('> td[data-colname="User"]').html();
 
-	if (0 === $date.trim().length) {
+	if ( $date && 0 === $date.trim().length) {
 		$date = '&ndash;';
 	}
 

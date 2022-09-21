@@ -408,7 +408,7 @@ class Automator_Recipe_Process_User {
 
 		// Stop here if the trigger was already completed
 		$process_recipe       = apply_filters( 'automator_get_trigger_log_id_process_recipe', false, $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
-		$is_trigger_completed = Automator()->db->trigger->is_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $process_recipe, $args );
+		$is_trigger_completed = $this->is_trigger_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $process_recipe, $args );
 
 		if ( $is_trigger_completed ) {
 			return array(

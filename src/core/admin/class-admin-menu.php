@@ -65,11 +65,32 @@ class Admin_Menu {
 		$this->dashboard_inline_js_data();
 		$this->integrations_inline_js_data();
 
-		add_action( 'admin_enqueue_scripts', array( $this, 'reporting_assets' ) );
-		add_filter( 'admin_title', array( $this, 'modify_report_titles' ), 40, 2 );
+		add_action(
+			'admin_enqueue_scripts',
+			array(
+				$this,
+				'reporting_assets',
+			)
+		);
+		add_filter(
+			'admin_title',
+			array(
+				$this,
+				'modify_report_titles',
+			),
+			40,
+			2
+		);
 
 		// Run licence key update
-		add_action( 'admin_init', array( $this, 'update_automator_connect' ), 1 );
+		add_action(
+			'admin_init',
+			array(
+				$this,
+				'update_automator_connect',
+			),
+			1
+		);
 
 		// Auto opt-in users if they are connected.
 
@@ -77,10 +98,30 @@ class Admin_Menu {
 
 		// Setup Theme Options Page Menu in Admin
 		add_action( 'admin_init', array( $this, 'plugins_loaded' ), 1 );
-		add_action( 'admin_menu', array( $this, 'register_options_menu_page' ) );
+		add_action(
+			'admin_menu',
+			array(
+				$this,
+				'register_options_menu_page',
+			)
+		);
 
-		add_action( 'admin_menu', array( $this, 'register_legacy_options_menu_page' ), 999 );
-		add_action( 'admin_init', array( $this, 'maybe_redirect_to_first_settings_tab' ), 1000 );
+		add_action(
+			'admin_menu',
+			array(
+				$this,
+				'register_legacy_options_menu_page',
+			),
+			999
+		);
+		add_action(
+			'admin_init',
+			array(
+				$this,
+				'maybe_redirect_to_first_settings_tab',
+			),
+			1000
+		);
 
 	}
 
@@ -104,7 +145,7 @@ class Admin_Menu {
 
 		$uap_automator_allow_tracking = get_option( $option_key, false );
 
-		$is_connected = Api_Server::is_automator_connected();
+		$is_connected = Api_Server::get_license_type();
 
 		if ( false === $uap_automator_allow_tracking && false !== $is_connected ) {
 			// Opt-in the user automatically.
@@ -142,7 +183,8 @@ class Admin_Menu {
 	/**
 	 * is_a_log
 	 *
-	 * @param  string $hook
+	 * @param string $hook
+	 *
 	 * @return bool
 	 */
 	public function is_a_log( $hook ) {
@@ -156,6 +198,7 @@ class Admin_Menu {
 				'uncanny-automator-recipe-log',
 				'uncanny-automator-trigger-log',
 				'uncanny-automator-action-log',
+				'uncanny-automator-admin-logs',
 			)
 		);
 
@@ -206,9 +249,17 @@ class Admin_Menu {
 	 * Create Plugin options menu
 	 */
 	public function register_options_menu_page() {
+
+		if ( ! current_user_can( apply_filters( 'automator_admin_menu_capability', 'manage_options' ) ) ) {
+			remove_menu_page( 'edit.php?post_type=uo-recipe' );
+		}
+
 		$parent_slug              = 'edit.php?post_type=uo-recipe';
 		$this->settings_page_slug = $parent_slug;
-		$function                 = array( $this, 'logs_options_menu_page_output' );
+		$function                 = array(
+			$this,
+			'logs_options_menu_page_output',
+		);
 
 		// Create "Dashboard" submenu page
 		add_submenu_page(
@@ -237,10 +288,14 @@ class Admin_Menu {
 			)
 		);
 
+		// Recipe details (modal).
 		add_submenu_page( null, esc_attr__( 'Recipe activity details', 'uncanny-automator' ), esc_attr__( 'Recipe activity details', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-activity-details', $function );
-		add_submenu_page( $parent_slug, esc_attr__( 'Recipe log', 'uncanny-automator' ), esc_attr__( 'Logs', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
-		add_submenu_page( null, esc_attr__( 'Trigger log', 'uncanny-automator' ), esc_attr__( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
-		add_submenu_page( null, esc_attr__( 'Action log', 'uncanny-automator' ), esc_attr__( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
+		//@deprecated 4.5
+		#add_submenu_page( $parent_slug, esc_attr__( 'Recipe log', 'uncanny-automator' ), esc_attr__( 'Logs', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
+		//@deprecated 4.5
+		#add_submenu_page( null, esc_attr__( 'Trigger log', 'uncanny-automator' ), esc_attr__( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
+		//@deprecated 4.5
+		#add_submenu_page( null, esc_attr__( 'Action log', 'uncanny-automator' ), esc_attr__( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
 		add_submenu_page(
 			null,
 			esc_attr__( 'Debug logs', 'uncanny-automator' ),
@@ -253,8 +308,12 @@ class Admin_Menu {
 			)
 		);
 
-		$function = array( $this, 'tools_menu_page_output' );
-		add_submenu_page( $parent_slug, esc_attr__( 'Tools', 'uncanny-automator' ), esc_attr__( 'Tools', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-tools', $function );
+		/*
+		 * <@deprecated 4.5
+		   $function = array( $this, 'tools_menu_page_output' );
+		   add_submenu_page( $parent_slug, esc_attr__( 'Tools', 'uncanny-automator' ), esc_attr__( 'Tools', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-tools', $function );
+		   />
+		*/
 		add_submenu_page(
 			null,
 			esc_attr__( 'Database tools', 'uncanny-automator' ),
@@ -281,7 +340,10 @@ class Admin_Menu {
 			$menu_title               = esc_attr__( 'Legacy settings', 'uncanny-automator' );
 			$menu_slug                = 'uncanny-automator-settings';
 			$this->settings_page_slug = $menu_slug;
-			$function                 = array( $this, 'options_menu_settings_page_output' );
+			$function                 = array(
+				$this,
+				'options_menu_settings_page_output',
+			);
 
 			add_submenu_page( 'edit.php?post_type=uo-recipe', $page_title, $menu_title, $capability, $menu_slug, $function );
 		}
@@ -293,9 +355,13 @@ class Admin_Menu {
 	 * Create Page view
 	 */
 	public function logs_options_menu_page_output() {
-		$logs_class = __DIR__ . '/class-logs-list-table.php';
+
+		$logs_class = __DIR__ . '/admin-logs/wp-list-table/class-logs-list-table.php';
+
 		include_once $logs_class;
+
 		include_once Utilities::automator_get_include( 'recipe-logs-view.php' );
+
 	}
 
 	/**
@@ -344,7 +410,13 @@ class Admin_Menu {
 		$user             = wp_get_current_user();
 		$paid_usage_count = isset( $is_connected['paid_usage_count'] ) ? $is_connected['paid_usage_count'] : 0;
 		$usage_limit      = isset( $is_connected['usage_limit'] ) ? $is_connected['usage_limit'] : 1000;
-		$dashboard        = (object) array(
+
+		$first_name      = isset( $is_connected['customer_name'] ) ? $is_connected['customer_name'] : __( 'Guest', 'uncanny-automator' );
+		$avatar          = isset( $is_connected['user_avatar'] ) ? $is_connected['user_avatar'] : esc_url( get_avatar_url( $user->ID ) );
+		$connected_sites = isset( $is_connected['license_id'] ) && isset( $is_connected['payment_id'] ) ? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id'] : '#';
+		$free_credits    = $is_connected ? ( $usage_limit - $paid_usage_count ) : 1000;
+
+		$dashboard = (object) array(
 			// Check if the user is using Automator Pro
 			'is_pro'             => $is_pro_active,
 			// Is Pro connected
@@ -357,21 +429,21 @@ class Admin_Menu {
 			'connected_user'     => (object) array(
 				// First name.
 				// If first name is not available, then Display name
-				'first_name' => $is_connected ? $is_connected['customer_name'] : 'Guest',
+				'first_name' => $first_name,
 				// Gravatar
-				'avatar'     => $is_connected ? $is_connected['user_avatar'] : esc_url( get_avatar_url( $user->ID ) ),
+				'avatar'     => $avatar,
 				'url'        => (object) array(
 					// automatorplugin.com link to edit profile
 					'edit_profile'       => self::$automator_connect_url . 'my-account/',
 					// automatorplugin.com link to manage connected sites under this account
-					'connected_sites'    => $is_connected ? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id'] : '#',
+					'connected_sites'    => $connected_sites,
 					// URL to disconnect current site from the account
 					'disconnect_account' => add_query_arg( array( 'action' => 'discount_automator_connect' ) ),
 				),
 			),
 			'connect_url'        => $connect_url,
 			'miscellaneous'      => (object) array(
-				'free_credits'              => $is_connected ? ( $usage_limit - $paid_usage_count ) : 1000,
+				'free_credits'              => $free_credits,
 				'site_url_without_protocol' => preg_replace( '(^https?://)', '', get_site_url() ),
 			),
 		);
@@ -591,7 +663,8 @@ class Admin_Menu {
 			$api_params = array(
 				'edd_action' => 'activate_license',
 				'license'    => $license,
-				'item_name'  => urlencode( AUTOMATOR_FREE_ITEM_NAME ), // the name of our product in uo
+				'item_name'  => urlencode( AUTOMATOR_FREE_ITEM_NAME ),
+				// the name of our product in uo
 				'url'        => home_url(),
 			);
 
@@ -618,7 +691,14 @@ class Admin_Menu {
 					// License data
 					update_option( 'uap_automator_free_license_data', (array) $license_data );
 				}
-				wp_safe_redirect( remove_query_arg( array( 'action', 'uap_automator_free_license_key' ) ) );
+				wp_safe_redirect(
+					remove_query_arg(
+						array(
+							'action',
+							'uap_automator_free_license_key',
+						)
+					)
+				);
 				die;
 			}
 		} elseif ( automator_filter_has_var( 'action' ) && 'discount_automator_connect' === automator_filter_input( 'action' ) ) {
@@ -629,7 +709,8 @@ class Admin_Menu {
 				$api_params = array(
 					'edd_action' => 'deactivate_license',
 					'license'    => $license,
-					'item_name'  => urlencode( AUTOMATOR_FREE_ITEM_NAME ), // the name of our product in uo
+					'item_name'  => urlencode( AUTOMATOR_FREE_ITEM_NAME ),
+					// the name of our product in uo
 					'url'        => home_url(),
 				);
 
@@ -658,7 +739,8 @@ class Admin_Menu {
 	/**
 	 * API call to check if License key is valid
 	 *
-	 * The updater class does this for you. This function can be used to do something custom.
+	 * The updater class does this for you. This function can be used to do
+	 * something custom.
 	 *
 	 * @return null|object|bool
 	 * @since    1.0.0
@@ -750,6 +832,8 @@ class Admin_Menu {
 				'uncanny-automator-trigger-log',
 				'uncanny-automator-recipe-log',
 				'uncanny-automator-recipe-activity-details',
+				'uncanny-automator-admin-logs',
+				'uncanny-automator-admin-tools',
 				'edit.php',
 			)
 		);
@@ -845,7 +929,7 @@ class Admin_Menu {
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			),
 			'i18n'      => array(
-				'error'    => array(
+				'error'     => array(
 					'request' => array(
 						'badRequest'   => array(
 							'title' => __( 'Bad request', 'uncanny-automator' ),
@@ -876,10 +960,21 @@ class Admin_Menu {
 						),
 					),
 				),
-				'proLabel' => array(
+				'proLabel'  => array(
 					'pro' => __( 'Pro', 'uncanny-automator' ),
 				),
-				'notSaved' => __( 'Changes you made may not be saved.', 'uncanny-automator' ),
+				'notSaved'  => __( 'Changes you made may not be saved.', 'uncanny-automator' ),
+
+				'utilities' => array(
+					'confirm' => array(
+						'heading'            => __( 'Are you sure?', 'uncanny-automator' ),
+						// UncannyAutomatorBackend.i18n.utilities.confirm.heading
+						'confirmButtonLabel' => __( 'Confirm', 'uncanny-automator' ),
+						// UncannyAutomatorBackend.i18n.utilities.confirm.confirmButtonLabel
+						'cancelButtonLabel'  => __( 'Cancel', 'uncanny-automator' ),
+						// UncannyAutomatorBackend.i18n.utilities.confirm.cancelButtonLabel
+					),
+				),
 			),
 			'debugging' => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
@@ -899,8 +994,8 @@ class Admin_Menu {
 	/**
 	 * Adds required JS data for the Dashboard page. Before doing so, checks if
 	 * the current page is indeed the Dashboard page.
-	 * This uses the filter "automator_assets_backend_js_data". If the page is not
-	 * the targeted page, it just returns the data unmodified.
+	 * This uses the filter "automator_assets_backend_js_data". If the page is
+	 * not the targeted page, it just returns the data unmodified.
 	 */
 	private function dashboard_inline_js_data() {
 		// Filter inline data
@@ -953,10 +1048,10 @@ class Admin_Menu {
 	}
 
 	/**
-	 * Adds required JS data for the Integrations page. Before doing so, checks if
-	 * the current page is indeed the Integrations page.
-	 * This uses the filter "automator_assets_backend_js_data". If the page is not
-	 * the targeted page, it just returns the data unmodified.
+	 * Adds required JS data for the Integrations page. Before doing so, checks
+	 * if the current page is indeed the Integrations page. This uses the
+	 * filter "automator_assets_backend_js_data". If the page is not the
+	 * targeted page, it just returns the data unmodified.
 	 */
 	private function integrations_inline_js_data() {
 		// Filter inline data
@@ -1001,8 +1096,8 @@ class Admin_Menu {
 	}
 
 	/**
-	 * Defines what's the template that must be loaded for the integrations page,
-	 * depending on the value of the GET parameter "integration"
+	 * Defines what's the template that must be loaded for the integrations
+	 * page, depending on the value of the GET parameter "integration"
 	 *
 	 * @return null|void
 	 */
@@ -1247,4 +1342,5 @@ class Admin_Menu {
 		// Load single view
 		include Utilities::automator_get_view( 'admin-integrations/single.php' );
 	}
+
 }

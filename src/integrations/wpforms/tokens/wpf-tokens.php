@@ -103,6 +103,18 @@ class Wpf_Tokens {
 					'tokenType'       => in_array( $field['type'], $allowed_token_types, true ) ? $field['type'] : 'text',
 					'tokenIdentifier' => $trigger_meta,
 				);
+
+				// Added support for multiple option (label).
+				if ( in_array( $field['type'], array( 'select', 'checkbox', 'radio' ), true ) ) {
+
+					$fields[] = array(
+						'tokenId'         => $token_id . '|label',
+						'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(label)', 'uncanny-automator' ) ),
+						'tokenType'       => in_array( $field['type'], $allowed_token_types, true ) ? $field['type'] : 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+
+				}
 			}
 
 			$tokens = array_merge( $tokens, $fields );
@@ -178,13 +190,23 @@ class Wpf_Tokens {
 		if ( empty( $entry ) ) {
 			return $value;
 		}
+
 		$to_match = "{$trigger_id}:{$trigger_meta}:{$field}";
+
 		if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
 			$value = $entry[ $to_match ];
+		}
+
+		$token_info = explode( '|', $pieces[2] );
+
+		if ( $this->should_fetch_label( $token_info ) ) {
+
+			$value = $this->get_field_label( $token_info, $entry, $to_match );
 
 		}
 
 		return $value;
+
 	}
 
 	/**
@@ -317,5 +339,92 @@ class Wpf_Tokens {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Retrieves the field choice label.
+	 *
+	 * @param array $token_info
+	 * @param array $entry
+	 * @param string $to_match
+	 *
+	 * @return string
+	 */
+	private function get_field_label( $token_info = array(), $entry = array(), $to_match = '' ) {
+
+		// Get the enry.
+		$entry_choice = $entry[ str_replace( '|label', '', $to_match ) ];
+
+		// Bail if no selection.
+		if ( empty( $entry_choice ) ) {
+			return '';
+		}
+
+		// Get the form.
+		$form = $this->get_wpforms_form( absint( $token_info[0] ) );
+
+		// Get the field type.
+		$field_type = $form['fields'][ $token_info[1] ]['type'];
+
+		// Check if there are choices.
+		if ( ! empty( $form['fields'][ $token_info[1] ]['choices'] ) ) {
+
+			$choices = $form['fields'][ $token_info[1] ]['choices'];
+
+			foreach ( $choices as $choice ) {
+
+				// Handle checkbox selections.
+				if ( in_array( $field_type, array( 'checkbox' ), true ) ) {
+
+					$entry_choice_arr = explode( ', ', $entry_choice );
+
+					$choices_column = array_column( $choices, 'label' );
+
+					$selections = array();
+
+					foreach ( $choices_column as $index => $choice_column ) {
+
+						if ( in_array( $choice_column, $entry_choice_arr, true ) ) {
+
+							$selections[] = $choices_column[ $index ];
+
+						}
+					}
+
+					if ( ! empty( $selections ) ) {
+						return implode( ', ', $selections );
+					}
+				}
+
+				if ( $entry_choice === $choice['label'] || $entry_choice === $choice['value'] ) {
+
+					return $choice['label'];
+
+				}
+			}
+		}
+
+		return '';
+
+	}
+
+	private function should_fetch_label( $token_info = array() ) {
+		return 3 === count( $token_info ) && 'label' === $token_info[2];
+	}
+
+	private function get_wpforms_form( $form_id = 0 ) {
+
+		global $wpdb;
+
+		return json_decode(
+			$wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT post_content FROM $wpdb->posts WHERE id = %d",
+					$form_id
+				)
+			),
+			true
+		);
+
 	}
 }

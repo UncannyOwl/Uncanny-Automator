@@ -74,7 +74,7 @@ class TWITTER_POSTSTATUS_2 {
 							'label'       => esc_attr__( 'Image URL', 'uncanny-automator' ),
 							'input_type'  => 'text',
 							'default'     => '',
-							'description' => 'Images posted to Twitter have a 5 Mb limit.',
+							'description' => 'Supported image formats include JPG, PNG, GIF, WEBP. Images posted to Twitter have a 5MB limit.',
 							'required'    => false,
 						)
 					),

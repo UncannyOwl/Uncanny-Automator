@@ -8,11 +8,20 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Bbpress_Anon_Tokens {
+
 	/**
 	 * Bbpress_Anon_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_bb_anon_tokens' ), 20, 6 );
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'parse_bb_anon_tokens',
+			),
+			20,
+			6
+		);
 		add_filter(
 			'automator_maybe_trigger_bb_anonbbnewtopic_tokens',
 			array(
@@ -59,6 +68,70 @@ LIMIT 0,1",
 			}
 		}
 
+		if ( in_array( 'BBPOSTAREPLY', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
+		if ( in_array( 'REPLY_CONTENT', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
+		if ( in_array( 'REPLY_ID', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
+		if ( in_array( 'REPLY_URL', $pieces ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
+		if ( in_array( 'ANONYMOUS_GUEST_NAME', $pieces ) ) {
+			$value = Automator()->db->token->get( 'ANONYMOUS_GUEST_NAME', $replace_args );
+		}
+
+		if ( in_array( 'ANONYMOUS_GUEST_WEBSITE', $pieces ) ) {
+			$value = Automator()->db->token->get( 'ANONYMOUS_GUEST_WEBSITE', $replace_args );
+		}
+
 		return $value;
 	}
 
@@ -73,12 +146,24 @@ LIMIT 0,1",
 			return $tokens;
 		}
 
-		$trigger_meta        = $args['meta'];
+		$trigger_meta = $args['meta'];
 
 		$fields = array(
 			array(
 				'tokenId'         => 'ANONYMOUS_EMAIL',
 				'tokenName'       => __( 'Guest email', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			),
+			array(
+				'tokenId'         => 'ANONYMOUS_GUEST_NAME',
+				'tokenName'       => __( 'Guest name', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			),
+			array(
+				'tokenId'         => 'ANONYMOUS_GUEST_WEBSITE',
+				'tokenName'       => __( 'Guest website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),

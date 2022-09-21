@@ -15,6 +15,8 @@ class Api_Server {
 
 	private static $instance = null;
 
+	private static $license = null;
+
 	/**
 	 * __construct
 	 *
@@ -29,6 +31,10 @@ class Api_Server {
 
 	}
 
+	public static function set_instance( $instance ) {
+		self::$instance = $instance;
+	}
+
 	/**
 	 * get_instance
 	 *
@@ -37,7 +43,7 @@ class Api_Server {
 	public static function get_instance() {
 
 		if ( null === self::$instance ) {
-			self::$instance = new Api_server();
+			self::set_instance( new Api_server() );
 		}
 
 		return self::$instance;
@@ -360,8 +366,9 @@ class Api_Server {
 		);
 
 		try {
-			$response = self::api_call( $params );
-			$license  = $response['data'];
+			$response      = self::api_call( $params );
+			$license       = $response['data'];
+			self::$license = $license;
 			set_transient( 'automator_api_license', $license, MINUTE_IN_SECONDS );
 
 			return $license;
@@ -479,7 +486,11 @@ class Api_Server {
 			'time_spent'    => isset( $params['time_spent'] ) ? $params['time_spent'] : 0,
 		);
 
-		Automator()->db->api->add( $log );
+		return $this->add_log( $log );
+	}
+
+	public function add_log( $log ) {
+		return Automator()->db->api->add( $log );
 	}
 
 	public function get_response_credits( $response ) {
@@ -539,22 +550,19 @@ class Api_Server {
 			'recipe_log_id' => $log_entry['recipe_log_id'],
 			'item_log_id'   => $log_entry['trigger_log_id'],
 			'params'        => $args['trigger_args'],
-			'balance'       => isset( $credits['balance'] ) ? $credits['balance'] : null,
-			'price'         => isset( $credits['price'] ) ? $credits['price'] : null,
 		);
 
-		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
-			try {
-				$api_response   = $this->charge_usage();
-				$credits        = $api_response['credits'];
-				$log['balance'] = isset( $credits['balance'] ) ? $credits['balance'] : null;
-				$log['price']   = isset( $credits['price'] ) ? $credits['price'] : null;
-			} catch ( \Exception $e ) {
-				$process_further = false;
-			}
+		try {
+			$api_response   = $this->charge_usage();
+			$credits        = $api_response['credits'];
+			$log['balance'] = isset( $credits['balance'] ) ? $credits['balance'] : null;
+			$log['price']   = isset( $credits['price'] ) ? $credits['price'] : null;
+		} catch ( \Exception $e ) {
+			$log['response'] = $e->getMessage();
+			$process_further = false;
 		}
 
-		Automator()->db->api->add( $log );
+		$this->add_log( $log );
 
 		return $process_further;
 
@@ -592,6 +600,11 @@ class Api_Server {
 	 * @return void
 	 */
 	public static function is_automator_connected( $force_refresh = false ) {
+
+		// Limit to only one call per session
+		if ( null !== self::$license ) {
+			return self::$license;
+		}
 
 		if ( $force_refresh ) {
 			delete_transient( 'automator_api_license' );

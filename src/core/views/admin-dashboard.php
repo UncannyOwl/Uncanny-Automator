@@ -87,7 +87,7 @@ if ( $dashboard->has_site_connected ) {
 			<?php } else { ?>
 
 				<div class="uap-dashboard-header-user__avatar">
-					<span class="uap-icon uap-icon--user-robot"></span>
+					<uo-icon id="user"></uo-icon>
 				</div>
 
 				<div class="uap-dashboard-header-user__name">

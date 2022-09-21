@@ -71,7 +71,7 @@ class Admin_Settings_General_Improve_Automator {
 
 			// Make sure it's NOT connected
 			// Connected sites have this enabled by default
-			&& ! Api_Server::is_automator_connected()
+			&& false === Api_Server::get_license_type()
 		) {
 			// Register the setting
 			add_action(

@@ -470,7 +470,7 @@ class Recipe_Post_Utilities {
 		$url       = add_query_arg(
 			array(
 				'post_type' => 'uo-recipe',
-				'page'      => 'uncanny-automator-recipe-log',
+				'page'      => 'uncanny-automator-admin-logs',
 				'recipe_id' => $post_id,
 			),
 			admin_url( 'edit.php' )
@@ -547,6 +547,14 @@ class Recipe_Post_Utilities {
 			'licenseUrl'          => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
 			'marketing'           => array(
 				'utmR' => get_option( 'uncannyautomator_source', '' ),
+			),
+			'assets'              => array(
+				'global'        => array(
+					'style' => Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
+				),
+				'recipeBuilder' => array(
+					'style' => Utilities::automator_get_recipe_dist( 'bundle.min.css' ),
+				),
 			),
 		);
 
@@ -802,7 +810,7 @@ class Recipe_Post_Utilities {
 				$url   = add_query_arg(
 					array(
 						'post_type' => 'uo-recipe',
-						'page'      => 'uncanny-automator-recipe-log',
+						'page'      => 'uncanny-automator-admin-logs',
 						'recipe_id' => $post_id,
 					),
 					admin_url( 'edit.php' )

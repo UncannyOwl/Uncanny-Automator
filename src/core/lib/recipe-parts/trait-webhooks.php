@@ -38,6 +38,12 @@ trait Webhooks {
 		$fields       = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, $parsing_args );
 		$request_type = Automator()->send_webhook->request_type( $data );
 		$headers      = Automator()->send_webhook->get_content_type( $data_type, $headers );
+
+		// Fix required boundary for multipart/* content-type.
+		if ( false !== strpos( $headers['Content-Type'], 'multipart/' ) ) {
+			$headers['Content-Type'] .= ';boundary=' . sha1( time() );
+		}
+
 		if ( empty( $webhook_url ) ) {
 			/* translators: 1. Webhook URL */
 			$error_message                       = esc_attr__( 'Webhook URL is empty.', 'uncanny-automator' );
@@ -70,39 +76,97 @@ trait Webhooks {
 			$args['headers'] = apply_filters( 'automator_send_webhook_remote_headers', $headers, $data, $this );
 		}
 
-		$response      = Automator_Send_Webhook::call_webhook( $webhook_url, $args, $request_type );
+		try {
+
+			$response = Automator_Send_Webhook::call_webhook( $webhook_url, $args, $request_type );
+
+			$validated = $this->validate_response( $response );
+			if ( $validated ) {
+
+				// All good. Completing action.
+				Automator()->complete->action( $user_id, $action_data, $recipe_id );
+				/**
+				 * @since 4.5
+				 * @author Saad S.
+				 */
+				$do_action_args = array(
+					'action_data'     => $action_data,
+					'recipe_id'       => $recipe_id,
+					'webhook_url'     => $webhook_url,
+					'sent_to_webhook' => $args,
+					'request_type'    => $request_type,
+				);
+				$body           = wp_remote_retrieve_body( $response );
+				do_action( 'automator_webhook_action_completed', $body, $response, $user_id, $do_action_args, $this );
+			}
+		} catch ( \Exception $e ) {
+
+			$action_data['complete_with_errors'] = true;
+
+			// Something bad happened. Complete with error.
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Validates the response
+	 *
+	 * @param $response
+	 *
+	 * @return boolean|\Exception True if no exception has occured.
+	 * @throws \Exception
+	 */
+	protected function validate_response( $response ) {
+
 		$response_code = wp_remote_retrieve_response_code( $response );
 
-		// Server return invalid response.
+		// The client did not receive a valid response while sending data to webhook url server.
+		// e.g. timeout, server not found, etc.
+		if ( is_wp_error( $response ) ) {
+
+			/* translators: 1. Webhook URL */
+			$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $response->get_error_message() );
+
+			if ( ! empty( $response->get_error_message() ) ) {
+
+				$error_message = $response->get_error_message();
+
+			}
+
+			throw new \Exception( $error_message, absint( $response->get_error_code() ) ); // Converts blank error code to 0.
+		}
+
+		// Server returned non 200 OK status.
 		if ( 200 !== $response_code ) {
 
 			/* translators: Error message */
 			$error_message = sprintf( esc_html__( 'An error has been encountered with response code: %s', 'uncanny-automator' ), $response_code );
-			$response      = json_decode( wp_remote_retrieve_body( $response ) );
-			if ( isset( $response->message ) && ! empty( $response->message ) ) {
+
+			$response = json_decode( wp_remote_retrieve_body( $response ) );
+
+			// Overwrite error message if response has message.
+			if ( ! empty( $response->message ) ) {
+
 				$error_message = $response->message;
-			}
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
-			return;
+			}
+
+			throw new \Exception( $error_message, $response_code );
 
 		}
 
-		// The client return an invalid response. Failed to send data to webhook url server.
-		if ( is_wp_error( $response ) ) {
-			/* translators: 1. Webhook URL */
-			$error_message = sprintf( esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ), $response->get_error_message() );
-			if ( ! empty( $response->get_error_message() ) ) {
-				$error_message = $response->get_error_message();
-			}
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+		// Server has returned 200 OK status but with an error message in the body.
+		$response = json_decode( wp_remote_retrieve_body( $response ) );
 
-			return;
+		if ( ! empty( $response->data->errors ) || ! empty( $response->data->error ) ) {
+
+			throw new \Exception(
+				'A response containing an error object in the data was received. The server response in JSON format: ' . wp_json_encode( $response ),
+				400 // Send 400 status code.
+			);
+
 		}
 
-		// All good. Completing action.
-		Automator()->complete->action( $user_id, $action_data, $recipe_id );
+		return true;
 	}
 }

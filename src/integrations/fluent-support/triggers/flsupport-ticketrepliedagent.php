@@ -31,7 +31,7 @@ class FLSUPPORT_TICKETREPLIEDAGENT {
 	public function __construct() {
 		$this->trigger_code = 'FLSTTICKETREPLIEDAGENT';
 		$this->trigger_meta = 'FLSTTICKETREPLIEDAGENT_META';
-		//$this->define_trigger();
+		$this->define_trigger();
 	}
 
 	/**

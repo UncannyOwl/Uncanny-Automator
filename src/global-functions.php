@@ -556,3 +556,15 @@ function automator_duplicate_recipe_part( $part_id, $recipe_id, $status = 'draft
 
 	return $copy_recipe_part->copy( $part_id, $recipe_id, $status );
 }
+
+/**
+ * Method automator_sort_options
+ *
+ * @param array $a
+ * @param array $b
+ *
+ * @return int
+ */
+function automator_sort_options( $a, $b ) {
+	return strcmp( $a['text'], $b['text'] );
+}

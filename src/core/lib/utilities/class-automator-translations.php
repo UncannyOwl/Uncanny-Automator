@@ -53,7 +53,7 @@ class Automator_Translations {
 				'add'             => esc_attr__( 'Add trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.add
 				/* translators: Non-personal infinitive verb */
-				'addAnother'      => esc_attr__( 'Add another trigger', 'uncanny-automator' ),
+				'addAnother'      => esc_attr__( 'Add trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.addAnother
 				/* translators: Verb conjugated in present-tense second-person singular */
 				'select'          => esc_attr__( 'Select a trigger', 'uncanny-automator' ),
@@ -74,7 +74,7 @@ class Automator_Translations {
 				'add'          => esc_attr__( 'Add action', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.action.add
 				/* translators: Non-personal infinitive verb */
-				'addAnother'   => esc_attr__( 'Add another action', 'uncanny-automator' ),
+				'addAnother'   => esc_attr__( 'Add action', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.action.addAnother
 				/* translators: Verb conjugated in present-tense second-person singular */
 				'select'       => esc_attr__( 'Select an action', 'uncanny-automator' ),
@@ -176,7 +176,7 @@ class Automator_Translations {
 				'unlockConditions'                     => sprintf( esc_attr__( 'Get %s to unlock conditions', 'uncanny-automator' ), 'Uncanny Automator Pro' ),
 				// UncannyAutomator.i18n.conditions.unlockConditions
 
-				'addBtnLabel'                          => esc_html__( 'Add', 'uncanny-automator' ),
+				'addBtnLabel'                          => esc_html__( 'Add condition', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.addBtnLabel
 
 				'noConditions'                         => esc_html__( 'No conditions', 'uncanny-automator' ),
@@ -218,6 +218,9 @@ class Automator_Translations {
 				'actionsWontRunContent'                => esc_html__( 'Conditions/Filters are a feature of %1$s. Please re-activate Uncanny Automator Pro to enable these actions.', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.actionsWontRunContent
 
+				'otherActionsMightRunBefore'           => esc_html__( 'Other actions in this recipe may run before the actions below.', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.otherActionsMightRunBefore
+
 				'pleaseSaveActionFirst'                => esc_attr__( 'Please save the action first', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.pleaseSaveActionFirst
 
@@ -250,6 +253,15 @@ class Automator_Translations {
 
 				'missingCondition'                     => esc_html__( 'Missing condition', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.missingCondition
+
+				'wantToRemoveConditionsGroup'          => array(
+					'heading'            => esc_attr__( 'Remove empty conditions block?', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.conditions.wantToRemoveConditionsGroup.heading
+					'confirmButtonLabel' => esc_attr__( 'Remove', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.conditions.wantToRemoveConditionsGroup.confirmButtonLabel
+					'cancelButtonLabel'  => esc_attr__( 'Keep', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.conditions.wantToRemoveConditionsGroup.cancelButtonLabel
+				),
 			),
 			'validation'          => array(
 				'recipe' => array(
@@ -452,6 +464,8 @@ class Automator_Translations {
 					/* translators: Token category. It refers to advanced tokens. */
 					'advanced'                   => esc_attr_x( 'Advanced', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.advanced
+					'date'                       => esc_attr_x( 'Date', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.date
 					'formulas'                   => esc_attr_x( 'Modifiers', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.formulas
 					/* translators: Token name */
@@ -474,9 +488,11 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.tokens.global.currentDate
 					'currentTime'                => esc_attr_x( 'Current time', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.currentTime
+					'currentDateAndTime'         => esc_attr_x( 'Current date and time', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.currentDateAndTime
 					'current_unix_timestamp'     => esc_attr_x( 'Current Unix timestamp', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.current_unix_timestamp
-					'currentdate_unix_timestamp' => esc_attr_x( 'Current date (Unix timestamp)', 'Token', 'uncanny-automator' ),
+					'currentdate_unix_timestamp' => esc_attr_x( 'Current Unix timestamp (date only)', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.currentdate_unix_timestamp
 					'currentBlogId'              => esc_attr_x( 'Current site ID', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.current_blog_id
@@ -1125,6 +1141,8 @@ class Automator_Translations {
 			// UncannyAutomator.i18n.no
 			'close'               => esc_attr_x( 'Close', 'Verb', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.close
+			'areYouSure'          => esc_attr__( 'Are you sure?', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.areYouSure
 			'needsUserData'       => esc_attr__( 'Needs user data', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.needsUserData
 			'scrollToIncrement'   => esc_attr__( 'Scroll to increment', 'uncanny-automator' ),

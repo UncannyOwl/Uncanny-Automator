@@ -8,6 +8,7 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Automator_Cache_Handler {
+
 	/**
 	 * @var mixed|void
 	 */
@@ -55,7 +56,13 @@ class Automator_Cache_Handler {
 	public function __construct() {
 
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
-		add_action( 'automator_settings_advanced_tab_view_automator_cache', array( $this, 'settings_output' ) );
+		add_action(
+			'automator_settings_advanced_tab_view_automator_cache',
+			array(
+				$this,
+				'settings_output',
+			)
+		);
 
 		if ( false === $this->is_cache_enabled() ) {
 			return;
@@ -66,28 +73,132 @@ class Automator_Cache_Handler {
 		$expiry             = 1440 * MINUTE_IN_SECONDS; // 24 hours.
 		$this->long_expires = apply_filters( 'automator_cache_long_expiry', $expiry );
 
-		add_action( 'wp_after_insert_post', array( $this, 'maybe_clear_cache_for_posts' ), 99999, 4 );
-		add_action( 'wp_after_insert_post', array( $this, 'maybe_clear_cache_for_recipes' ), 99999, 4 );
-		add_action( 'user_register', array( $this, 'maybe_clear_user_cache' ), 99999 );
-		add_action( 'automator_recipe_completed', array( $this, 'reset_recipes_after_completion' ), 99999, 4 );
-		add_action( 'activated_plugin', array( $this, 'reset_integrations_directory' ), 99999, 2 );
-		add_action( 'deactivated_plugin', array( $this, 'reset_integrations_directory' ), 99999, 2 );
-		add_action( 'delete_post', array( $this, 'recipe_post_deleted' ), 99999, 2 );
+		add_action(
+			'wp_after_insert_post',
+			array(
+				$this,
+				'maybe_clear_cache_for_posts',
+			),
+			99999,
+			4
+		);
+		add_action(
+			'wp_after_insert_post',
+			array(
+				$this,
+				'maybe_clear_cache_for_recipes',
+			),
+			99999,
+			4
+		);
+		add_action(
+			'user_register',
+			array(
+				$this,
+				'maybe_clear_user_cache',
+			),
+			99999
+		);
+		add_action(
+			'automator_recipe_completed',
+			array(
+				$this,
+				'reset_recipes_after_completion',
+			),
+			99999,
+			4
+		);
+		add_action(
+			'activated_plugin',
+			array(
+				$this,
+				'reset_integrations_directory',
+			),
+			99999,
+			2
+		);
+		add_action(
+			'deactivated_plugin',
+			array(
+				$this,
+				'reset_integrations_directory',
+			),
+			99999,
+			2
+		);
+		add_action(
+			'delete_post',
+			array(
+				$this,
+				'recipe_post_deleted',
+			),
+			99999,
+			2
+		);
 
-		add_action( 'transition_post_status', array( $this, 'recipe_post_status_changed' ), 99999, 3 );
-		add_action( 'automator_recipe_action_created', array( $this, 'recipe_post_status_changed' ), 99999 );
-		add_action( 'automator_recipe_trigger_created', array( $this, 'recipe_post_status_changed' ), 99999 );
-		add_action( 'automator_recipe_closure_created', array( $this, 'recipe_post_status_changed' ), 99999 );
+		add_action(
+			'transition_post_status',
+			array(
+				$this,
+				'recipe_post_status_changed',
+			),
+			99999,
+			3
+		);
+		add_action(
+			'automator_recipe_action_created',
+			array(
+				$this,
+				'recipe_post_status_changed',
+			),
+			99999
+		);
+		add_action(
+			'automator_recipe_trigger_created',
+			array(
+				$this,
+				'recipe_post_status_changed',
+			),
+			99999
+		);
+		add_action(
+			'automator_recipe_closure_created',
+			array(
+				$this,
+				'recipe_post_status_changed',
+			),
+			99999
+		);
 
 		add_action( 'admin_init', array( $this, 'remove_all_cache' ) );
 
 		add_action( 'admin_bar_menu', array( $this, 'add_cache_clear' ), 999 );
 
 		// Enqueue assets for the admin bar
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_admin_bar_assets' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_bar_assets' ) );
+		add_action(
+			'wp_enqueue_scripts',
+			array(
+				$this,
+				'enqueue_admin_bar_assets',
+			)
+		);
+		add_action(
+			'admin_enqueue_scripts',
+			array(
+				$this,
+				'enqueue_admin_bar_assets',
+			)
+		);
 
-		add_action( 'upgrader_process_complete', array( $this, 'upgrader_process_completed' ), 999, 0 );
+		add_action(
+			'upgrader_process_complete',
+			array(
+				$this,
+				'upgrader_process_completed',
+			),
+			999,
+			0
+		);
 	}
 
 	/**
@@ -385,7 +496,16 @@ class Automator_Cache_Handler {
 				'parent' => $parent_id,
 				'title'  => esc_html__( 'Logs', 'uncanny-automator' ),
 				'group'  => false,
-				'href'   => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-recipe-log' ),
+				'href'   => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-admin-logs' ),
+			)
+		);
+		$wp_admin_bar->add_node(
+			array(
+				'id'     => 'automator-settings',
+				'parent' => $parent_id,
+				'title'  => esc_html__( 'Settings', 'uncanny-automator' ),
+				'group'  => false,
+				'href'   => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config' ),
 			)
 		);
 
@@ -400,6 +520,7 @@ class Automator_Cache_Handler {
 				)
 			);
 		}
+
 	}
 
 	/**
@@ -507,4 +628,5 @@ class Automator_Cache_Handler {
 
 		return '1';
 	}
+
 }

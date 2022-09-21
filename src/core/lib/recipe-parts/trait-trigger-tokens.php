@@ -85,8 +85,12 @@ trait Trigger_Tokens {
 				return $this->get_tokens_renderable( $trigger_code );
 			}
 
+			// Allow modification of renderable tokens before setting.
+			// @since 4.5
+			$tokens = apply_filters( 'automator_token_renderable_before_set_' . strtolower( $trigger_code ), $this->get_tokens(), $trigger_code, $tokens, $args );
+
 			// Otherwise, set the renderable tokens.
-			$this->set_tokens_renderable( $this->get_tokens(), $trigger_code );
+			$this->set_tokens_renderable( $tokens, $trigger_code );
 
 			return $this->get_tokens_renderable( $trigger_code );
 
@@ -185,6 +189,8 @@ trait Trigger_Tokens {
 				$hydrate_with = $token['hydrate_with'];
 
 				if ( is_array( $hydrate_with ) ) {
+
+					$token['id'] = $token_id;
 
 					$parsed[ $token_id ] = call_user_func( $hydrate_with, $token, $args, $trigger );
 

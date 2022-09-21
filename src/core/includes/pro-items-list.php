@@ -1262,6 +1262,17 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
+		'KONNECTZ_IT'    => array(
+			'triggers' => array(
+				array(
+					/* translators: Anonymous trigger - KonnectzIT */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Receive data from KonnectzIT {{webhook}}", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'  => array(),
+		),
 		'LD'             => array(
 			'triggers' => array(
 				array(
@@ -1492,6 +1503,17 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'MAKE'           => array(
+			'triggers' => array(
+				array(
+					/* translators: Anonymous trigger - Make */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Receive data from Make {{webhook}}", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'  => array(),
+		),
 		'MSLMS'          => array(
 			'triggers' => array(
 				array(
@@ -1608,6 +1630,12 @@ function automator_pro_items_list() {
 					/* translators: Logged-in trigger - Meta Box */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user updates {{a field}} on {{a post}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - Meta Box */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user's {{Meta Box field}} is updated", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
@@ -2532,7 +2560,7 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Action - WordPress Core */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "Remove {{a role}} from the user", 'uncanny-automator' ),
+					'name' => __( "Remove {{a role}} from the user's roles", 'uncanny-automator' ),
 				),
 				array(
 					/* translators: Action - WordPress Core */

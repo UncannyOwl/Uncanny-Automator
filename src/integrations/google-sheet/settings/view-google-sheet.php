@@ -42,7 +42,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php if ( 2 === $connect ) { ?>
 
-					<uo-alert heading="<?php esc_attr_e( 'An error has occured while connecting to Google API. Please try again later.', 'uncanny-automator' ); ?>" type="error" class="uap-spacing-bottom"></uo-alert>
+					<uo-alert heading="<?php esc_attr_e( 'An error has occurred while connecting to the Google API. Please try again later.', 'uncanny-automator' ); ?>" type="error" class="uap-spacing-bottom"></uo-alert>
 
 				<?php } ?>
 

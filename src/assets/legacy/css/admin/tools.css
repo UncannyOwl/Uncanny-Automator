@@ -6,11 +6,10 @@
 /*Initial State*/
 .uap .uap-logs #debug-report {
 	display: none;
-}
-.uap .uap-logs #debug-report p.submit {
 	position: relative;
 }
-.uap .uap-logs #debug-report > textarea {
+
+.uap .uap-logs #debug-report>textarea {
 	width: 100%;
 	height: 250px;
 	resize: both;
@@ -21,37 +20,53 @@
 /*Info Message*/
 .uap .updated.automator-message {
 	border-left-color: #0790e8;
+	margin: 0 0 20px 0;
 }
 
 /*Clipboard Status*/
 .uap span#copy-for-support-status {
 	width: 140px;
 	position: absolute;
-	top: 8px;
-	left: -34px;
+	top: auto;
+	left: -45px;
 	display: none;
 }
 
 /*Tables*/
 table.automator_status_table {
 	margin-bottom: 1em;
+	border-radius: 8px;
+	border-color: var(--uap-border-color-gray);
+	overflow: hidden;
 }
-table.automator_status_table tr:nth-child(2n) td,table.automator_status_table tr:nth-child(2n) th {
+
+.automator_status_table code {
+	background: transparent;
+	font-family: var(--uap-font-family);
+	font-size: 13px;
+}
+
+table.automator_status_table tr:nth-child(2n) td,
+table.automator_status_table tr:nth-child(2n) th {
 	background: #fcfcfc;
 }
+
 table.automator_status_table td:first-child {
-	width: 33%;
+	width: 30%;
 }
+
 table.automator_status_table thead tr th {
 	padding: 9px;
+	border-color: var(--uap-border-color-gray);
 }
+
 table.automator_status_table thead tr th h2 {
 	margin: 0;
 	font-size: 14px;
-	line-height: 20.02px;
+	line-height: 1.5em;
 }
 
-table.automator_status_table thead tr th h2 > strong {
+table.automator_status_table thead tr th h2>strong {
 	background: #fff1f1;
 	font-size: 14px;
 	display: inline-block;
@@ -59,8 +74,9 @@ table.automator_status_table thead tr th h2 > strong {
 	padding: 5px;
 	border-radius: 3px;
 }
+
 table.automator_status_table td {
-	font-size: 14px;
+	font-size: 13px;
 	color: #747474;
 }
 
@@ -69,6 +85,7 @@ table.automator_status_table td.help {
 	position: relative;
 	width: 26px;
 }
+
 table.automator_status_table td.help::before {
 	font-family: Dashicons;
 	font-weight: 400;
@@ -96,13 +113,16 @@ table.automator_status_table td.help::before {
 	font-size: 18px;
 	color: rgb(0 0 0 / 60%);
 }
+
 table.automator_status_table td.help.no-tooltip-text::before {
 	display: none;
 }
-table.automator_status_table td.help > span {
+
+table.automator_status_table td.help>span {
 	display: none;
 }
-table.automator_status_table td.help > span::before {
+
+table.automator_status_table td.help>span::before {
 	content: "";
 	height: 10px;
 	width: 10px;
@@ -113,16 +133,18 @@ table.automator_status_table td.help > span::before {
 	transform: rotate(45deg);
 	box-shadow: -0.5px -0.5px 0 0 #b7b7b7;
 }
-table.automator_status_table td.help > span:hover::before {
+
+table.automator_status_table td.help>span:hover::before {
 	box-shadow: -0.5px -0.5px 0 0 #0790e8;
 }
-table.automator_status_table td.help:hover > span {
+
+table.automator_status_table td.help:hover>span {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
 	position: absolute;
 	z-index: 999;
-	left: -71px;
+	left: -84px;
 	width: 160px;
 	text-align: center;
 	border-radius: 3px;
@@ -136,10 +158,12 @@ table.automator_status_table td.help:hover > span {
 	line-height: 1.4em;
 	font-size: 12px;
 }
-table.automator_status_table td.help:hover > span:hover {
+
+table.automator_status_table td.help:hover>span:hover {
 	color: #0790e8;
 	border: 1px solid #0790e8;
 }
+
 table.automator_status_table td.help:hover::before {
 	color: #0790e8;
 }
@@ -148,9 +172,11 @@ table.automator_status_table td.help:hover::before {
 table.automator_status_table td mark.error {
 	color: #a00;
 }
+
 table.automator_status_table td mark.yes {
-	color: #7ad03a;
+	color: #2dab09;
 }
+
 table.automator_status_table td mark {
 	background: none;
 }
@@ -158,13 +184,14 @@ table.automator_status_table td mark {
 /*Icons*/
 table.automator_status_table td .dashicons {
 	font-size: 16px;
-	margin-top: 5px;
+	margin-top: 1.25px;
 }
 
 /*Logs*/
 .uap ul.nav-tab-wrapper li {
 	margin: 0;
 }
+
 .uap ul.nav-tab-wrapper li.ui-state-active a {
 	background-color: #fff;
 }
@@ -178,17 +205,21 @@ table.automator_status_table td .dashicons {
 	justify-content: center;
 	cursor: help;
 }
+
 .automator-tooltip-help-wrap .dashicons {
 	color: #777;
 }
+
 .automator-tooltip-help-wrap:hover span.automator-tooltip-help-text-wrap {
 	display: block;
 }
+
 span.automator-tooltip-help-text-wrap {
 	position: absolute;
 	top: -10px;
 	display: none;
 }
+
 span.automator-tooltip-help-text {
 	position: relative;
 	width: 170px;
@@ -205,14 +236,18 @@ span.automator-tooltip-help-text {
 	cursor: default;
 	box-shadow: 0 2px 5px 0 rgb(0 0 0 / 10%);
 }
+
 span.automator-tooltip-help-text:hover {
 	color: #0790e8;
 	border: 1px solid #0790e8;
 }
+
 span.automator-tooltip-help-text:hover::before {
 	border-bottom-color: #0790e8;
 }
-span.automator-tooltip-help-text::before,span.automator-tooltip-help-text::after {
+
+span.automator-tooltip-help-text::before,
+span.automator-tooltip-help-text::after {
 	content: "\0020";
 	display: block;
 	position: absolute;
@@ -226,6 +261,7 @@ span.automator-tooltip-help-text::before,span.automator-tooltip-help-text::after
 	border-top: 0;
 	border-bottom-color: #fff;
 }
+
 span.automator-tooltip-help-text::before {
 	top: -9px;
 	z-index: 1;
@@ -258,6 +294,7 @@ span.automator-tooltip-help-text::before {
 	border-color: #b7b7b7;
 	color: #6c757d;
 }
+
 .automator-message .submit .button-primary:hover {
 
 	/*.uap .uap-btn--primary:hover*/

@@ -35,14 +35,15 @@ namespace Uncanny_Automator;
 
 		<div class="uap-settings-panel-bottom">
 
-			<div class="uap-settings-panel-bottom-left"><!--do nothing--></div>
-
-			<div class="uap-settings-panel-bottom-right">
+			<div class="uap-settings-panel-bottom-left">
 				<uo-button type="submit">
 					<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
 				</uo-button>
 			<div>
+
 		</div>
+
+	</div><!--.uap-settings-panel-->
 
 </form>
 

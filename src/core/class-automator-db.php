@@ -606,4 +606,76 @@ FROM {$wpdb->prefix}uap_recipe_log r
 
 		return $return;
 	}
+
+	/**
+	 * Returns the list of Automator views.
+	 *
+	 * @return array The list of Automator views.
+	 */
+	public static function get_views() {
+
+		global $wpdb;
+
+		return array(
+			'uap_recipe_logs_view'  => $wpdb->prefix . 'uap_recipe_logs_view',
+			'uap_trigger_logs_view' => $wpdb->prefix . 'uap_trigger_logs_view',
+			'uap_action_logs_view'  => $wpdb->prefix . 'uap_action_logs_view',
+			'uap_api_logs_view'     => $wpdb->prefix . 'uap_api_logs_view',
+		);
+
+	}
+
+	/**
+	 * Drops the selected view.
+	 *
+	 * @param string $view_name The name of the view.
+	 *
+	 * @return boolean True if view was dropped. Otherwise, false.
+	 */
+	public static function drop_view( $view_name = '' ) {
+
+		global $wpdb;
+
+		$dropped = false;
+
+		$views = self::get_views();
+
+		// Only allow dropping of view owned by Automator.
+		if ( in_array( $view_name, array_keys( $views ), true ) ) {
+
+			$dropped = $wpdb->query(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				str_replace(
+					"'",
+					'',
+					$wpdb->prepare(
+						'DROP VIEW IF EXISTS `%s`',
+						esc_sql( filter_var( $views[ $view_name ], FILTER_SANITIZE_FULL_SPECIAL_CHARS ) )
+					)
+				)
+			);
+
+		}
+
+		return $dropped;
+
+	}
+
+	public static function purge_tables() {
+
+		global $wpdb;
+
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_recipe_log`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_action_log`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_action_log_meta`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_closure_log`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_closure_log_meta`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_trigger_log`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_trigger_log_meta`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log`;" );
+
+		return true;
+
+	}
+
 }

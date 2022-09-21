@@ -475,6 +475,8 @@ class Automator_Load {
 
 		$classes['Admin_Menu']     = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
 		$classes['Prune_Logs']     = UA_ABSPATH . 'src/core/admin/class-prune-logs.php';
+		$classes['Admin_Logs']     = UA_ABSPATH . 'src/core/admin/admin-logs/admin-logs.php';
+		$classes['Admin_Tools']    = UA_ABSPATH . 'src/core/admin/admin-tools/admin-tools.php';
 		$classes['Admin_Settings'] = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
 
 		$classes['Api_Log'] = UA_ABSPATH . 'src/core/admin/api-log/class-api-log.php';
