@@ -221,7 +221,7 @@ class Copy_Recipe_Parts {
 				$val = $this->modify_conditions( $val, $post_id, $new_post_id );
 			}
 			$val = $this->modify_tokens( $val, $post_parent, $new_post_id );
-			$val = apply_filters( 'automator_recipe_part_meta_value', $val, $post_id, $new_post_id );
+			$val = apply_filters( 'automator_recipe_part_meta_value', $val, $post_id, $new_post_id, $key );
 			update_post_meta( $new_post_id, $key, $val );
 		}
 	}
@@ -250,6 +250,9 @@ class Copy_Recipe_Parts {
 
 		// Loop thru multiple triggers and update token's trigger ID based on that.
 		foreach ( $this->trigger_tokens as $prev_id => $new_id ) {
+			if ( is_array( $prev_id ) || is_array( $new_id ) || is_array( $content ) ) {
+				continue;
+			}
 			$content = preg_replace( '/{{' . $prev_id . ':/', '{{' . $new_id . ':', $content );
 		}
 

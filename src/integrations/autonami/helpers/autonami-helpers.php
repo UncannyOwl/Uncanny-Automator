@@ -76,7 +76,7 @@ class Autonami_Helpers {
 			);
 		}
 
-		usort( $lists, array( $this, 'sort_by_name' ) );
+		usort( $lists, 'automator_sort_options' );
 
 		return $lists;
 	}
@@ -131,21 +131,9 @@ class Autonami_Helpers {
 			);
 		}
 
-		usort( $tags, array( $this, 'sort_by_name' ) );
+		usort( $tags, 'automator_sort_options' );
 
 		return $tags;
-	}
-
-	/**
-	 * Method sortByName
-	 *
-	 * @param array $a
-	 * @param array $b
-	 *
-	 * @return void
-	 */
-	public function sort_by_name( $a, $b ) {
-		return strcmp( $a['text'], $b['text'] );
 	}
 
 	/**

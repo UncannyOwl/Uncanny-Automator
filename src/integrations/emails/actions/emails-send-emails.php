@@ -207,6 +207,10 @@ class EMAILS_SEND_EMAILS {
 			$content_type = 'text/html';
 		}
 
+		if ( empty( wp_strip_all_tags( $body ) ) ) {
+			$this->set_error_message( esc_html__( 'Cannot send email with an empty body.', 'uncanny-automator' ) );
+		}
+
 		$this->set_content_type( $content_type );
 		$data = array(
 			'to'        => isset( $parsed['EMAILTO'] ) ? $parsed['EMAILTO'] : '',

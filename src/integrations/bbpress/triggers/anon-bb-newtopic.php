@@ -124,6 +124,14 @@ class ANON_BB_NEWTOPIC {
 							$trigger_meta['meta_value'] = maybe_serialize( $anonymous_data['bbp_anonymous_email'] );
 							Automator()->insert_trigger_meta( $trigger_meta );
 
+							$trigger_meta['meta_key']   = 'ANONYMOUS_GUEST_NAME';
+							$trigger_meta['meta_value'] = maybe_serialize( $anonymous_data['bbp_anonymous_name'] );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							$trigger_meta['meta_key']   = 'ANONYMOUS_GUEST_WEBSITE';
+							$trigger_meta['meta_value'] = maybe_serialize( $anonymous_data['bbp_anonymous_website'] );
+							Automator()->insert_trigger_meta( $trigger_meta );
+
 							$trigger_meta['meta_key']   = 'BBTOPIC_ID';
 							$trigger_meta['meta_value'] = maybe_serialize( $topic_id );
 							Automator()->insert_trigger_meta( $trigger_meta );

@@ -69,7 +69,7 @@ class Recipe_Post_Metabox {
 
 						<!-- Placeholder content -->
 						<div class="uap-placeholder">
-							<div class="item item--trigger">
+							<div class="uap-item item item--trigger">
 								<div>
 									<div class="item-actions">
 										<div class="item-actions__btn">
@@ -117,7 +117,7 @@ class Recipe_Post_Metabox {
 
 						<!-- Placeholder content -->
 						<div class="uap-placeholder">
-							<div class="item item--action">
+							<div class="uap-item item item--action">
 								<div>
 									<div class="item-actions">
 										<div class="item-actions__btn">

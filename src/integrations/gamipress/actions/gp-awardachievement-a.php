@@ -86,6 +86,15 @@ class GP_AWARDACHIEVEMENT_A {
 	public function award_an_achievement( $user_id, $action_data, $recipe_id, $args ) {
 
 		$achievement_id = $action_data['meta'][ $this->action_meta ];
+
+		$earned = gamipress_achievement_user_exceeded_max_earnings( $user_id, $achievement_id );
+		if ( $earned ) {
+			$action_data['do-nothing']           = true;
+			$action_data['complete_with_errors'] = true;
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, __( 'Achievement maximum earnings reached.', 'uncanny-automator' ) );
+			return;
+		}
+
 		gamipress_award_achievement_to_user( absint( $achievement_id ), absint( $user_id ), get_current_user_id() );
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );

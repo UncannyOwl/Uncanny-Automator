@@ -29,6 +29,8 @@ namespace Uncanny_Automator;
 
 <?php
 
+$customer_email = isset( $site_data['customer_email'] ) ? $site_data['customer_email'] : '';
+
 // Check if they have a Free account connected
 if ( $site_is_connected ) {
 
@@ -40,7 +42,7 @@ if ( $site_is_connected ) {
 	>
 		<p>
 			<strong><?php esc_html_e( 'Account:', 'uncanny-automator' ); ?></strong> 
-			<?php echo esc_html( $site_data['customer_email'] ); ?>
+			<?php echo esc_html( $customer_email ); ?>
 		</p>
 
 		<uo-button size="small" color="secondary" href="<?php echo esc_url( $disconnect_site_url ); ?>">

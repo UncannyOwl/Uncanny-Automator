@@ -51,6 +51,7 @@ class Automator_Input_Parser {
 				'user_ip_address',
 				'reset_pass_link',
 				'user_reset_pass_url',
+				'current_date_and_time',
 			)
 		);
 		add_filter(
@@ -425,12 +426,21 @@ class Automator_Input_Parser {
 						}
 						break;
 
+					case 'current_date_and_time':
+						$format = sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) );
+						if ( function_exists( 'wp_date' ) ) {
+							$replaceable = wp_date( $format );
+						} else {
+							$replaceable = date_i18n( $format );
+						}
+						break;
+
 					case 'current_unix_timestamp':
-						$replaceable = current_time( 'timestamp' );
+						$replaceable = current_time( 'timestamp' ); //phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 						break;
 
 					case 'currentdate_unix_timestamp':
-						$replaceable = strtotime( date( 'Y-m-d' ), current_time( 'timestamp' ) );
+						$replaceable = strtotime( date_i18n( 'Y-m-d' ), current_time( 'timestamp' ) ); //phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 						break;
 
 					case 'current_blog_id':
@@ -483,7 +493,12 @@ class Automator_Input_Parser {
 
 					case 'user_ip_address':
 						$replaceable = 'N/A';
-						if ( isset( $_SERVER['HTTP_X_REAL_IP'] ) ) {
+						if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+							$replaceable = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
+						} elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+							$ip_array    = array_values( array_filter( explode( ',', $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) ); //phpcs:ignore
+							$replaceable = sanitize_text_field( wp_unslash( reset( $ip_array ) ) );
+						} elseif ( isset( $_SERVER['HTTP_X_REAL_IP'] ) ) {
 							$replaceable = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) );
 						} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
 							$replaceable = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );

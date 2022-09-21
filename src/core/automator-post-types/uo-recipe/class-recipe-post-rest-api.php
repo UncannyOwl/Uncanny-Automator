@@ -447,6 +447,20 @@ class Recipe_Post_Rest_Api {
 			$action_integration = Automator()->get->action_integration_from_action_code( $item_code );
 			update_post_meta( $post_id, 'integration', $action_integration );
 			update_post_meta( $post_id, 'uap_action_version', Utilities::automator_get_version() );
+
+			/**
+			 * @since 4.5
+			 */
+			$actions_order = $request->has_param( 'actions_order' ) ? $request->get_param( 'actions_order' ) : array();
+			if ( ! empty( $actions_order ) ) {
+				foreach ( $actions_order as $index => $__action_id ) {
+					if ( 'new_action' === $__action_id ) {
+						$__action_id             = $post_id;
+						$actions_order[ $index ] = $post_id;
+					}
+					Automator()->db->action->update_menu_order( $__action_id, ( $index + 1 ) * 10 );
+				}
+			}
 			/**
 			 * @param int $post_id Action ID
 			 * @param string $item_code Action item code
@@ -510,6 +524,12 @@ class Recipe_Post_Rest_Api {
 			$delete_posts = wp_delete_post( absint( $request->get_param( 'ID' ) ), true );
 
 			if ( $delete_posts ) {
+				$actions_order = $request->has_param( 'actions_order' ) ? $request->get_param( 'actions_order' ) : array();
+				if ( ! empty( $actions_order ) ) {
+					foreach ( $actions_order as $index => $__action_id ) {
+						Automator()->db->action->update_menu_order( $__action_id, ( $index + 1 ) * 10 );
+					}
+				}
 				Automator()->cache->clear_automator_recipe_part_cache( $request->get_param( 'ID' ) );
 
 				$return['message']        = 'Deleted!';
@@ -1151,19 +1171,21 @@ class Recipe_Post_Rest_Api {
 	public function update_actions_order( WP_REST_Request $request ) {
 
 		// Make sure we have a recipe ID and the newOrder
-		if ( $request->has_param( 'recipeID' ) && $request->has_param( 'newOrder' ) ) {
+		if ( $request->has_param( 'recipe_id' ) && $request->has_param( 'actions_order' ) ) {
 
-			$recipe_id = absint( $request->get_param( 'recipeID' ) );
-			$new_order = $request->get_param( 'newOrder' );
-
-			// Update the actions menu_order here
-			foreach ( $new_order as $index => $action_id ) {
-				Automator()->db->action->update_menu_order( $action_id, ( $index + 1 ) * 10 );
-			}
-
-			$return['message'] = 'Updated!';
-			$return['success'] = true;
+			$recipe_id         = absint( $request->get_param( 'recipe_id' ) );
+			$actions_order     = $request->has_param( 'actions_order' ) ? $request->get_param( 'actions_order' ) : array();
+			$return['message'] = 'The action order array is empty.';
+			$return['success'] = false;
 			$return['action']  = 'update_actions_order';
+			if ( ! empty( $actions_order ) ) {
+				// Update the actions menu_order here
+				foreach ( $actions_order as $index => $action_id ) {
+					Automator()->db->action->update_menu_order( $action_id, ( $index + 1 ) * 10 );
+				}
+				$return['message'] = 'Updated!';
+				$return['success'] = true;
+			}
 
 			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
@@ -1278,6 +1300,7 @@ class Recipe_Post_Rest_Api {
 		if ( ! $request->has_param( 'item_log_id' ) ) {
 			$return['success'] = false;
 			$return['message'] = __( 'Action Log ID is empty', 'uncanny-automator' );
+
 			return new WP_REST_Response( $return, 400 );
 		}
 
@@ -1298,6 +1321,7 @@ class Recipe_Post_Rest_Api {
 			$return['success'] = false;
 			$return['message'] = $e->getMessage();
 			automator_log( $e->getMessage() );
+
 			return new WP_REST_Response( $return, $e->getCode() );
 		}
 

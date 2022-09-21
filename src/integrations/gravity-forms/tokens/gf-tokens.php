@@ -17,7 +17,16 @@ class Gf_Tokens {
 	 * Gf_Tokens constructor.
 	 */
 	public function __construct() {
-		add_filter( 'automator_maybe_trigger_gf_gfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_gf_gfforms_tokens',
+			array(
+				$this,
+				'gf_possible_tokens',
+			),
+			20,
+			2
+		);
+
 		add_filter(
 			'automator_maybe_trigger_gf_' . strtolower( 'GF_SUBFORM_CODES_METADATA' ) . '_tokens',
 			array(
@@ -27,13 +36,64 @@ class Gf_Tokens {
 			20,
 			2
 		);
-		add_filter( 'automator_maybe_parse_token', array( $this, 'gf_token' ), 20, 6 );
-		add_filter( 'automator_maybe_parse_token', array( $this, 'gf_entry_tokens' ), 20, 6 );
-		add_filter( 'automator_maybe_trigger_gf_anongfforms_tokens', array( $this, 'gf_possible_tokens' ), 20, 2 );
-		add_filter( 'automator_maybe_trigger_gf_tokens', array( $this, 'gf_entry_possible_tokens' ), 20, 2 );
+
+		add_filter(
+			'automator_maybe_trigger_gf_' . strtolower( 'GF_SUBFORM_GROUPS_METADATA' ) . '_tokens',
+			array(
+				$this,
+				'gf_possible_tokens',
+			),
+			20,
+			2
+		);
+
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'gf_token',
+			),
+			20,
+			6
+		);
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'gf_entry_tokens',
+			),
+			20,
+			6
+		);
+		add_filter(
+			'automator_maybe_trigger_gf_anongfforms_tokens',
+			array(
+				$this,
+				'gf_possible_tokens',
+			),
+			20,
+			2
+		);
+		add_filter(
+			'automator_maybe_trigger_gf_tokens',
+			array(
+				$this,
+				'gf_entry_possible_tokens',
+			),
+			20,
+			2
+		);
 
 		// Save GF entry tokens, for v3 trigger.
-		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
+		add_action(
+			'automator_before_trigger_completed',
+			array(
+				$this,
+				'save_token_data',
+			),
+			20,
+			2
+		);
 	}
 
 	/**
@@ -48,19 +108,48 @@ class Gf_Tokens {
 			return;
 		}
 
-		$triggers = array( 'GF_SUBFORM_CODES' );
+		$triggers = array( 'GF_SUBFORM_CODES', 'GF_SUBFORM_GROUPS' );
 
 		if ( in_array( $args['entry_args']['code'], $triggers, true ) ) {
 
 			list( $entry, $form ) = $args['trigger_args'];
-			$code_fields          = Gravity_Forms_Helpers::get_code_fields( $entry, $form );
+			if ( 'GF_SUBFORM_CODES' === $args['entry_args']['code'] ) {
+				$code_fields = Gravity_Forms_Helpers::get_code_fields( $entry, $form );
+			} else {
+				$code_fields = Gravity_Forms_Helpers::get_code_fields_for_groups( $entry, $form );
+			}
 			if ( ! empty( $code_fields ) ) {
 				$code_field = array_shift( $code_fields );
 				if ( ! empty( $code_field ) && null !== $code_field ) {
-					$batch = Gravity_Forms_Helpers::get_batch_by_value( $code_field, $entry );
-					Automator()->db->token->save( 'UCBATCH', absint( $batch->code_group ), $args['trigger_entry'] );
+					if ( 'GF_SUBFORM_CODES' === $args['entry_args']['code'] ) {
+						$batch = Gravity_Forms_Helpers::get_batch_by_value( $code_field, $entry );
+						Automator()->db->token->save( 'UCBATCH', absint( $batch->code_group ), $args['trigger_entry'] );
+					} else {
+						$batch = Gravity_Forms_Helpers::get_batch_by_value_for_groups( $code_field, $entry );
+						Automator()->db->token->save( 'UCBATCH', absint( $batch->ld_group_id ), $args['trigger_entry'] );
+					}
 				}
 			}
+
+			if ( 'GF_SUBFORM_GROUPS' === $args['entry_args']['code'] ) {
+
+				foreach ( $form['fields'] as $field ) {
+					if ( 'ulgm_code' === $field->get_input_type() ) {
+						$group_key = rgar( $entry, $field->id );
+					}
+				}
+				$group_ld_id = Automator()->helpers->recipe->gravity_forms->options->get_ld_group_id_from_gf_entry( $group_key );
+				$group_id    = Automator()->helpers->recipe->gravity_forms->options->get_ld_group_id( $group_ld_id );
+
+				Automator()->db->token->save( 'GF_SUBFORM_GROUPS_METADATA_GROUPS', get_the_title( $group_id ), $args['trigger_entry'] );
+				Automator()->db->token->save( 'GF_SUBFORM_GROUPS_METADATA_GROUPS_URL', get_the_permalink( $group_id ), $args['trigger_entry'] );
+				Automator()->db->token->save( 'GF_SUBFORM_GROUPS_METADATA_GROUPS_THUMB_ID', get_post_thumbnail_id( $group_id ), $args['trigger_entry'] );
+				Automator()->db->token->save( 'GF_SUBFORM_GROUPS_METADATA_GROUPS_THUMB_URL', get_the_post_thumbnail_url( $group_id ), $args['trigger_entry'] );
+
+				Automator()->db->token->save( 'GFFORMID', $form['id'], $args['trigger_entry'] );
+				Automator()->db->token->save( 'GFFORMTITLE', $form['title'], $args['trigger_entry'] );
+			}
+
 			Automator()->db->token->save( 'GFENTRYID', $entry['id'], $args['trigger_entry'] );
 			Automator()->db->token->save( 'GFUSERIP', maybe_serialize( $entry['ip'] ), $args['trigger_entry'] );
 			Automator()->db->token->save( 'GFENTRYDATE', maybe_serialize( \GFCommon::format_date( $entry['date_created'], false, 'Y/m/d' ) ), $args['trigger_entry'] );
@@ -164,29 +253,74 @@ class Gf_Tokens {
 						}
 
 						foreach ( $field['inputs'] as $input ) {
-
 							$input_id    = $input['id'];
 							$input_title = GFCommon::get_label( $field, $input['id'] );
 							$input_type  = $this->get_field_type( $input );
 							$token_id    = "$form_id|$input_id";
-							$fields[]    = array(
+
+							if ( 'checkbox' === $field->type ) {
+
+								// Field (value).
+								$fields[] = array(
+									'tokenId'         => $token_id,
+									'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(value)', 'uncanny-automator' ) ),
+									'tokenType'       => $input_type,
+									'tokenIdentifier' => $trigger_meta,
+								);
+
+								// Field (label).
+								$fields[] = array(
+									'tokenId'         => $token_id . '|label',
+									'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(label)', 'uncanny-automator' ) ),
+									'tokenType'       => $input_type,
+									'tokenIdentifier' => $trigger_meta,
+								);
+
+							} else {
+
+								$fields[] = array(
+									'tokenId'         => $token_id,
+									'tokenName'       => $input_title,
+									'tokenType'       => $input_type,
+									'tokenIdentifier' => $trigger_meta,
+								);
+
+							}
+						}
+					} elseif ( ! rgar( $field, 'displayOnly' ) ) {
+
+						$input_id    = $field['id'];
+						$input_title = GFCommon::get_label( $field );
+						$token_id    = "$form_id|$input_id";
+						$input_type  = $this->get_field_type( $field );
+
+						// Add label/value combination for dropdown fields.
+						if ( in_array( $field->type, array( 'select', 'radio' ), true ) ) {
+
+							// Field (value).
+							$fields[] = array(
+								'tokenId'         => $token_id,
+								'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(value)', 'uncanny-automator' ) ),
+								'tokenType'       => $input_type,
+								'tokenIdentifier' => $trigger_meta,
+							);
+
+							// Field (label).
+							$fields[] = array(
+								'tokenId'         => $token_id . '|label',
+								'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(label)', 'uncanny-automator' ) ),
+								'tokenType'       => $input_type,
+								'tokenIdentifier' => $trigger_meta,
+							);
+
+						} else {
+							$fields[] = array(
 								'tokenId'         => $token_id,
 								'tokenName'       => $input_title,
 								'tokenType'       => $input_type,
 								'tokenIdentifier' => $trigger_meta,
 							);
 						}
-					} elseif ( ! rgar( $field, 'displayOnly' ) ) {
-						$input_id    = $field['id'];
-						$input_title = GFCommon::get_label( $field );
-						$token_id    = "$form_id|$input_id";
-						$input_type  = $this->get_field_type( $field );
-						$fields[]    = array(
-							'tokenId'         => $token_id,
-							'tokenName'       => $input_title,
-							'tokenType'       => $input_type,
-							'tokenIdentifier' => $trigger_meta,
-						);
 					}
 				}
 			}
@@ -268,7 +402,6 @@ class Gf_Tokens {
 	 * @return mixed|string|null
 	 */
 	public function gf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-
 		if ( empty( $pieces ) ) {
 			return $value;
 		}
@@ -277,6 +410,8 @@ class Gf_Tokens {
 			array(
 				'GF_SUBFORM_CODES',
 				'GF_SUBFORM_CODES_METADATA',
+				'GF_SUBFORM_GROUPS',
+				'GF_SUBFORM_GROUPS_METADATA',
 				'GFFORMSCODES',
 				'GFFORMS',
 				'ANONGFFORMS',
@@ -295,12 +430,32 @@ class Gf_Tokens {
 			return $value;
 		}
 
-		if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_CODES_METADATA' === $pieces[2] || 'GFFORMSCODES' === $pieces[2] || 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
+		if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_GROUPS' === $pieces[2] || 'GF_SUBFORM_CODES_METADATA' === $pieces[2] || 'GFFORMSCODES' === $pieces[2] || 'GFFORMS' === $pieces[2] || 'ANONGFFORMS' === $pieces[2] ) ) {
 			$t_data   = array_shift( $trigger_data );
 			$form_id  = $t_data['meta'][ $pieces[2] ];
 			$forminfo = RGFormsModel::get_form( $form_id );
 
 			return $forminfo->title;
+		}
+
+		if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_GROUPS_METADATA' === $pieces[2] ) ) {
+			$t_data     = array_shift( $trigger_data );
+			$form_id    = $t_data['meta'][ $pieces[2] ];
+			$forminfo   = RGFormsModel::get_form( $form_id );
+			$form_title = isset( $t_data['meta']['GF_SUBFORM_GROUPS_METADATA'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_GROUPS_METADATA'] ) ? $forminfo->title : Automator()->db->token->get( 'GFFORMTITLE', $replace_args );
+
+			return $form_title;
+		}
+
+		if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_GROUPS_METADATA_ID' === $pieces[2] ) ) {
+			$t_data  = array_shift( $trigger_data );
+			$form_id = isset( $t_data['meta']['GF_SUBFORM_GROUPS_METADATA_ID'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_GROUPS_METADATA_ID'] ) ? $t_data['meta']['GF_SUBFORM_GROUPS_METADATA_ID'] : Automator()->db->token->get( 'GFFORMID', $replace_args );
+
+			return $form_id;
+		}
+
+		if ( isset( $pieces[2] ) && ( 'GF_SUBFORM_GROUPS_METADATA_GROUPS' === $pieces[2] || 'GF_SUBFORM_GROUPS_METADATA_GROUPS_URL' === $pieces[2] || 'GF_SUBFORM_GROUPS_METADATA_GROUPS_THUMB_ID' === $pieces[2] || 'GF_SUBFORM_GROUPS_METADATA_GROUPS_THUMB_URL' === $pieces[2] ) ) {
+			return Automator()->db->token->get( $pieces[2], $replace_args );
 		}
 
 		if ( isset( $pieces[2] ) && 'GFFORMS_ID' === $pieces[2] ) {
@@ -313,6 +468,12 @@ class Gf_Tokens {
 			$t_data = array_shift( $trigger_data );
 
 			return $t_data['meta']['GF_SUBFORM_CODES_METADATA'];
+		}
+
+		if ( isset( $pieces[2] ) && 'GF_SUBFORM_GROUPS_METADATA_ID' === $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			return $t_data['meta']['GF_SUBFORM_GROUPS_METADATA'];
 		}
 
 		if ( isset( $pieces[2] ) && 'ANONGFFORMS_ID' === $pieces[2] ) {
@@ -342,6 +503,14 @@ class Gf_Tokens {
 			return $wpdb->get_var( $wpdb->prepare( "SELECT name FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
 		}
 
+		if ( isset( $pieces[2] ) && 'GF_SUBFORM_GROUPS_METADATA_GROUPS_ID' === (string) $pieces[2] ) {
+			$t_data = array_shift( $trigger_data );
+
+			$group_id = isset( $t_data['meta']['GF_SUBFORM_GROUPS_METADATA_GROUPS_ID'] ) && intval( '-1' ) !== intval( $t_data['meta']['GF_SUBFORM_GROUPS_METADATA_GROUPS_ID'] ) ? $t_data['meta']['GF_SUBFORM_GROUPS_METADATA_GROUPS_ID'] : absint( Automator()->db->token->get( 'UCBATCH', $replace_args ) );
+
+			return $group_id;
+		}
+
 		if ( isset( $pieces[2] ) && 'UNCANNYCODESBATCHEXPIRY' === (string) $pieces[2] ) {
 
 			global $wpdb;
@@ -369,39 +538,136 @@ class Gf_Tokens {
 		$token_info  = explode( '|', $token_piece );
 		$form_id     = $token_info[0];
 		$meta_key    = isset( $token_info[1] ) ? $token_info[1] : '';
+		$gf_form     = \GFAPI::get_form( $form_id );
+
 		// Get Entry ID from meta first
 		$entry_id = Automator()->db->token->get( 'GFENTRYID', $replace_args );
+
 		if ( empty( $entry_id ) ) {
-			$search_criteria                    = array();
-			$search_criteria['field_filters']   = array();
-			$search_criteria['field_filters'][] = array(
-				'key'   => 'created_by',
-				'value' => $user_id,
-			);
-
-			$sorting  = array(
-				'key'       => 'date_created',
-				'direction' => 'DESC',
-			);
-			$paging   = array(
-				'offset'    => 0,
-				'page_size' => 1,
-			);
-			$lead_ids = \GFAPI::get_entry_ids( $form_id, $search_criteria, $sorting, $paging );
-			if ( empty( $lead_ids ) ) {
-				return $value;
-			}
-			$entry_id = array_pop( $lead_ids );
+			$entry_id = $this->get_entry_id( $user_id, $form_id, $value );
 		}
-		$entry = \GFAPI::get_entry( $entry_id );
 
-		if ( $entry ) {
-			$field_value = rgar( $entry, $meta_key );
-			if ( ! empty( $field_value ) ) {
-				$value = $field_value;
-			}
-		}
+		$entry = (array) \GFAPI::get_entry( $entry_id );
+
+		$value = $this->should_fetch_label( $token_info ) ?
+			$this->get_field_label( $gf_form, $meta_key, $entry ) :
+			$this->get_field_value( $entry, $meta_key );
 
 		return $value;
+
 	}
+
+	/**
+	 * Checks if the token id is type of label. Identifiable by format int|int|string(label)
+	 *
+	 * @return boolean True if token is intended to fetch the label. Otherwise, false.
+	 */
+	private function should_fetch_label( $token_info = array() ) {
+
+		return 3 === count( $token_info ) && 'label' === $token_info[2];
+
+	}
+
+	/**
+	 * Retrieves the field value.
+	 *
+	 * @param array $entry The form entry.
+	 * @param string $meta_key The field id.
+	 *
+	 * @return string The value of the field from an entry.
+	 */
+	private function get_field_value( $entry = array(), $meta_key = '' ) {
+		//@see <https://docs.gravityforms.com/rgar/>
+		return rgar( $entry, $meta_key, '' );
+
+	}
+
+	/**
+	 * Retrieves the field label from GF form.
+	 *
+	 * @param array $gf_form The form props from \GFAPI::get_form( form_id );
+	 * @param string $meta_key The meta key of the field. This can be the ID of the field.
+	 * @param array $entry The form submission entry.
+	 *
+	 * @return string The field label if available. Otherwise, empty string.
+	 */
+	private function get_field_label( $gf_form = array(), $meta_key = '', $entry = array() ) {
+
+		foreach ( (array) $gf_form['fields'] as $field ) {
+
+			if ( absint( $meta_key ) === absint( $field->id ) ) {
+
+				if ( 'checkbox' === $field['type'] ) {
+
+					if ( ! empty( $field['inputs'] ) ) {
+
+						foreach ( $field['inputs'] as $input ) {
+
+							if ( $input['id'] === $meta_key ) {
+								return $input['label'];
+							}
+						}
+					}
+				}
+
+				if ( ! isset( $entry[ $field->id ] ) ) {
+					return '';
+				}
+
+				if ( ! empty( $field['choices'] ) ) {
+
+					foreach ( $field['choices'] as $choice ) {
+						// Evaluate $entry[$field->id] to string.
+						if ( $choice['value'] === (string) $entry[ $field->id ] ) {
+							return $choice['text'];
+						}
+					}
+				}
+			}
+		}
+
+		return '';
+
+	}
+
+	/**
+	 * Lookup entry ids from user, form, and value.
+	 *
+	 * @param int $user_id
+	 * @param int $form_id
+	 * @param mixed $value
+	 *
+	 * @return array The entry ids.
+	 */
+	private function get_entry_id( $user_id = 0, $form_id = 0, $value = null ) {
+
+		$search_criteria = array();
+
+		$search_criteria['field_filters'] = array();
+
+		$search_criteria['field_filters'][] = array(
+			'key'   => 'created_by',
+			'value' => $user_id,
+		);
+
+		$sorting = array(
+			'key'       => 'date_created',
+			'direction' => 'DESC',
+		);
+
+		$paging = array(
+			'offset'    => 0,
+			'page_size' => 1,
+		);
+
+		$lead_ids = \GFAPI::get_entry_ids( $form_id, $search_criteria, $sorting, $paging );
+
+		if ( empty( $lead_ids ) ) {
+			return $value;
+		}
+
+		return array_pop( $lead_ids );
+
+	}
+
 }

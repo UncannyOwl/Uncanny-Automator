@@ -188,18 +188,27 @@ class WP_USERCREATESPOST {
 			return;
 		}
 
+		$cron_enabled = apply_filters( 'automator_wp_user_creates_post_cron_enabled', '__return_true', $post_id, $post, $update, $post_before, $this );
+
+		// Allow people to disable cron processing.
+		if ( false === $cron_enabled ) {
+			// Immediately run post_publised if cron not enabled.
+			return $this->post_published( $post_id );
+		}
+
 		if ( wp_next_scheduled( 'uoa_wp_after_insert_post', array( $post_id ) ) ) {
 			return;
 		}
 
 		// Scheduling for 5 sec so that all tax/terms are stored
-		wp_schedule_single_event(
+		return wp_schedule_single_event(
 			apply_filters( 'automator_schedule_a_post_time', time() + 5, $post_id, $post, $update, $post_before ),
 			'uoa_wp_after_insert_post',
 			array(
 				$post_id,
 			)
 		);
+
 	}
 
 	/**
@@ -210,7 +219,7 @@ class WP_USERCREATESPOST {
 	public function post_published( $post_id ) {
 		$post                   = get_post( $post_id );
 		$this->post             = $post;
-		$user_id                = (int) $post->post_author;
+		$user_id                = absint( isset( $post->post_author ) ? $post->post_author : 0 );
 		$recipes                = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_post_type     = Automator()->get->meta_from_recipes( $recipes, 'WPPOSTTYPES' );
 		$required_post_taxonomy = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMIES' );
@@ -291,29 +300,34 @@ class WP_USERCREATESPOST {
 	 * @return void
 	 */
 	private function complete_trigger( $matched_recipe_ids, $user_id, $post ) {
-		foreach ( $matched_recipe_ids as $recipe_id => $trigger_id ) {
-			$recipe_id  = absint( $recipe_id );
-			$trigger_id = absint( $trigger_id );
-			$pass_args  = array(
-				'code'             => $this->trigger_code,
-				'meta'             => $this->trigger_meta,
-				'user_id'          => $user_id,
-				'recipe_to_match'  => $recipe_id,
-				'trigger_to_match' => $trigger_id,
-				'ignore_post_id'   => true,
-				'is_signed_in'     => true,
-			);
 
-			$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
-			if ( empty( $args ) ) {
-				continue;
-			}
-			foreach ( $args as $result ) {
-				if ( false === $result['result'] ) {
+		foreach ( $matched_recipe_ids as $recipe_trigger ) {
+
+			foreach ( $recipe_trigger as $recipe_id => $trigger_id ) {
+
+				$recipe_id  = absint( $recipe_id );
+				$trigger_id = absint( $trigger_id );
+				$pass_args  = array(
+					'code'             => $this->trigger_code,
+					'meta'             => $this->trigger_meta,
+					'user_id'          => $user_id,
+					'recipe_to_match'  => $recipe_id,
+					'trigger_to_match' => $trigger_id,
+					'ignore_post_id'   => true,
+					'is_signed_in'     => true,
+				);
+
+				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+				if ( empty( $args ) ) {
 					continue;
 				}
-				$this->store_tokens( $result, $user_id, $post, $recipe_id, $trigger_id );
-				Automator()->maybe_trigger_complete( $result['args'] );
+				foreach ( $args as $result ) {
+					if ( false === $result['result'] ) {
+						continue;
+					}
+					$this->store_tokens( $result, $user_id, $post, $recipe_id, $trigger_id );
+					Automator()->maybe_trigger_complete( $result['args'] );
+				}
 			}
 		}
 	}
@@ -512,8 +526,8 @@ class WP_USERCREATESPOST {
 				continue;
 			}
 			foreach ( $recipe['triggers'] as $trigger ) {
-				$trigger_id                       = absint( $trigger['ID'] );
-				$matched_recipe_ids[ $recipe_id ] = $trigger_id;
+				$trigger_id                         = absint( $trigger['ID'] );
+				$matched_recipe_ids[][ $recipe_id ] = $trigger_id;
 			}
 		}
 

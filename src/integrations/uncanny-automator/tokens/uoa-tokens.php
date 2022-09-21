@@ -165,13 +165,13 @@ class Uoa_Tokens {
 					$value = maybe_unserialize( $meta_value );
 
 					if ( 'UOAERRORS_recipe_log_url' === $meta_field || 'UOARECIPES_recipe_log_url' === $meta_field ) {
-						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-recipe-log&' . $value;
+						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-admin-logs&' . $value;
 					}
 					if ( 'UOAERRORS_trigger_log_url' === $meta_field || 'UOARECIPES_trigger_log_url' === $meta_field ) {
-						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-trigger-log&' . $value;
+						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-admin-logs&' . $value;
 					}
 					if ( 'UOAERRORS_action_log_url' === $meta_field || 'UOARECIPES_action_log_url' === $meta_field ) {
-						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-action-log&' . $value;
+						$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-admin-logs&' . $value;
 					}
 				}
 			}

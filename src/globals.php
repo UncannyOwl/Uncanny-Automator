@@ -48,8 +48,9 @@ if ( ! defined( 'AUTOMATOR_DEBUG_MODE' ) ) {
 	/**
 	 * Automator debug mode on/off
 	 */
-	define( 'AUTOMATOR_DEBUG_MODE', false );
+	define( 'AUTOMATOR_DEBUG_MODE', ! empty( get_option( 'automator_settings_debug_notices_enabled', false ) ) ? true : false );
 }
+
 
 if ( ! defined( 'LOAD_AUTOMATOR' ) ) {
 	/**

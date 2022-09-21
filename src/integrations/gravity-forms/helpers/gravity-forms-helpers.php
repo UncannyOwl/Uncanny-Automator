@@ -56,7 +56,7 @@ class Gravity_Forms_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function list_gravity_forms( $label = null, $option_code = 'GFFORMS', $args = array() ) {
+	public function list_gravity_forms( $label = null, $option_code = 'GFFORMS', $args = array(), $is_any = false ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -66,17 +66,24 @@ class Gravity_Forms_Helpers {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
-		$token                 = key_exists( 'token', $args ) ? $args['token'] : false;
-		$is_ajax               = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
-		$target_field          = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
-		$end_point             = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$uncanny_code_specific = key_exists( 'uncanny_code_specific', $args ) ? $args['uncanny_code_specific'] : '';
-		$options               = array();
+		$token                   = key_exists( 'token', $args ) ? $args['token'] : false;
+		$is_ajax                 = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$target_field            = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
+		$end_point               = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$uncanny_code_specific   = key_exists( 'uncanny_code_specific', $args ) ? $args['uncanny_code_specific'] : '';
+		$uncanny_groups_specific = key_exists( 'uncanny_groups_specific', $args ) ? $args['uncanny_groups_specific'] : '';
+		$options                 = array();
+
+		if ( true === $is_any ) {
+			$options[- 1] = esc_attr__( 'Any form', 'uncanny-automator' );
+		}
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			$forms = \GFAPI::get_forms();
 			if ( $uncanny_code_specific ) {
 				$forms = self::get_uncanny_codes_forms( $forms );
+			} elseif ( $uncanny_groups_specific ) {
+				$forms = self::get_uncanny_group_forms( $forms );
 			}
 			if ( $forms ) {
 				foreach ( $forms as $form ) {
@@ -147,6 +154,47 @@ class Gravity_Forms_Helpers {
 	}
 
 	/**
+	 * @param $forms
+	 *
+	 * @return mixed
+	 */
+	public static function get_uncanny_group_forms( $forms ) {
+
+		if ( empty( $forms ) ) {
+			return $forms;
+		}
+
+		foreach ( $forms as $k => $form ) {
+
+			$uo_group_fields = self::is_uncanny_group_field_exist( $form['fields'] );
+
+			if ( ! $uo_group_fields ) {
+				unset( $forms[ $k ] );
+			}
+		}
+
+		return $forms;
+	}
+
+	/**
+	 * @param $forms
+	 *
+	 * @return mixed
+	 */
+	public static function is_uncanny_group_field_exist( $fields ) {
+		$uo_groups_fields = false;
+		foreach ( $fields as $field ) {
+			if ( GF_SUBFORM_GROUPS::UO_GROUP_FIELD_TYPE !== $field->type ) {
+				continue;
+			}
+			$uo_groups_fields = true;
+			break;
+		}
+
+		return $uo_groups_fields;
+	}
+
+	/**
 	 * Get the batch object by code value.
 	 *
 	 * @param $code_field The code field entry inside Gravity forms object.
@@ -170,6 +218,30 @@ class Gravity_Forms_Helpers {
 		);
 	}
 
+	/**
+	 * Get the batch object by code value.
+	 *
+	 * @param $code_field The code field entry inside Gravity forms object.
+	 * @param $entry The GF entry passed from `gform_after_submission` action
+	 *     hook.
+	 *
+	 * @return object The batch.
+	 */
+	public static function get_batch_by_value_for_groups( $group_field, $entry ) {
+
+		global $wpdb;
+
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}ulgm_group_details as tbl_groups
+				INNER JOIN {$wpdb->prefix}ulgm_group_codes as tbl_batch
+				WHERE tbl_groups.ID = tbl_batch.group_id
+				AND tbl_batch.code = %s",
+				$entry[ $group_field->id ]
+			)
+		);
+	}
+
 
 	/**
 	 * Get all code fields via `gform_after_submission` action hook.
@@ -187,6 +259,62 @@ class Gravity_Forms_Helpers {
 		);
 
 		return $uo_codes_fields;
+
+	}
+
+	/**
+	 * Get all code fields via `gform_after_submission` action hook.
+	 *
+	 * @return array The code fields.
+	 */
+	public static function get_code_fields_for_groups( $entry, $form ) {
+
+		// Get all the codes field.
+		$uo_groups_fields = array_filter(
+			$form['fields'],
+			function ( $field ) use ( $entry ) {
+				return GF_SUBFORM_GROUPS::UO_GROUP_FIELD_TYPE === $field->type && ! empty( $entry[ $field->id ] );
+			}
+		);
+
+		return $uo_groups_fields;
+
+	}
+
+	/**
+	 * Get group_id from the group_key.
+	 *
+	 * @return integer group id.
+	 */
+	public static function get_ld_group_id_from_gf_entry( $group_key ) {
+
+		global $wpdb;
+
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT `group_id` FROM {$wpdb->prefix}ulgm_group_codes
+				WHERE `code` = %s",
+				$group_key
+			)
+		);
+
+	}
+
+	/**
+	 * Get group_id from the group_key.
+	 *
+	 * @return integer group id.
+	 */
+	public static function get_ld_group_id( $group_id ) {
+
+		global $wpdb;
+
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT `post_id` FROM $wpdb->postmeta WHERE meta_key = '_ulgm_code_group_id' AND  meta_value = '%d' LIMIT 1",
+				$group_id
+			)
+		);
 
 	}
 

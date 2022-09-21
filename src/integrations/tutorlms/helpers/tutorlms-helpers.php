@@ -34,6 +34,11 @@ class Tutorlms_Helpers {
 	public $load_any_options = true;
 
 	/**
+	 * @var bool
+	 */
+	public $load_all_options = false;
+
+	/**
 	 * Tutorlms_Helpers constructor.
 	 */
 	public function __construct() {
@@ -251,7 +256,6 @@ class Tutorlms_Helpers {
 
 	/**
 	 * Return all the specific fields of a form ID provided in ajax call
-	 *
 	 */
 	public function select_lesson_from_course_func() {
 
@@ -274,9 +278,17 @@ class Tutorlms_Helpers {
 		}
 
 		if ( absint( '-1' ) === absint( $course_id ) || true === (bool) $this->load_any_options ) {
+			// Use `Any lesson` for triggers.
+			$text = __( 'Any lesson', 'uncanny-automator' );
+
+			if ( true === $this->load_all_options ) {
+				// Use `All lessons` for this specific endpoint.
+				$text = __( 'All lessons', 'uncanny-automator' );
+			}
+
 			$fields[] = array(
 				'value' => '-1',
-				'text'  => 'Any lesson',
+				'text'  => $text,
 			);
 		}
 
@@ -304,8 +316,15 @@ class Tutorlms_Helpers {
 			}
 		}
 
+		// Remove `All lessons` option by resetting the $fields array if there are no lessons found.
+		if ( 1 === count( $fields ) && '-1' === current( array_column( $fields, 'value' ) ) ) {
+			$fields = array();
+		}
+
 		echo wp_json_encode( $fields );
+
 		die();
+
 	}
 
 }

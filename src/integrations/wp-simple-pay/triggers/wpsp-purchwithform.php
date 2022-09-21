@@ -59,6 +59,7 @@ class WPSP_PURCHWITHFORM {
 				'simple_pay_charge_created',
 			),
 			'options_callback'    => array( $this, 'load_options' ),
+			'is_deprecated'       => true,
 
 		);
 

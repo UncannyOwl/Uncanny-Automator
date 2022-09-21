@@ -177,15 +177,21 @@ class Actionify_Triggers {
 		if ( empty( $triggers ) || empty( $active_integrations ) ) {
 			return $actionified_triggers;
 		}
+		$active_add_actions = self::get_active_triggers();
 		foreach ( $triggers as $trigger ) {
 			if ( empty( $trigger['integration'] ) || empty( $trigger['action'] ) || empty( $trigger['validation_function'] ) ) {
 				continue;
 			}
 
-			$trigger_code                        = $trigger['code'];
+			$trigger_code         = $trigger['code'];
+			$do_action            = $trigger['action'];
+			$do_action_validation = is_array( $do_action ) ? $do_action : array( $do_action );
+			if ( ! array_intersect( $do_action_validation, $active_add_actions ) ) {
+				continue;
+			}
 			$actionified_triggers->$trigger_code = new \stdClass();
 
-			$actionified_triggers->$trigger_code->trigger_actions             = $trigger['action'];
+			$actionified_triggers->$trigger_code->trigger_actions             = $do_action;
 			$actionified_triggers->$trigger_code->trigger_validation_function = $trigger['validation_function'];
 			$actionified_triggers->$trigger_code->trigger_priority            = empty( $trigger['priority'] ) ? 10 : absint( $trigger['priority'] );
 			$actionified_triggers->$trigger_code->trigger_accepted_args       = empty( $trigger['accepted_args'] ) ? 1 : absint( $trigger['accepted_args'] );
@@ -193,4 +199,49 @@ class Actionify_Triggers {
 
 		return apply_filters( 'actionified_triggers', $actionified_triggers, $this );
 	}
+
+	/**
+	 * @return array
+	 */
+	public function get_active_triggers() {
+
+		global $wpdb;
+
+		$r = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT pm.meta_value
+					FROM $wpdb->postmeta pm
+					JOIN $wpdb->posts trigger_details ON trigger_details.ID = pm.post_id 
+						AND trigger_details.post_status = %s 
+						AND trigger_details.post_type = 'uo-trigger'
+					JOIN $wpdb->posts recipe_details ON recipe_details.ID = trigger_details.post_parent 
+						AND recipe_details.post_status = %s 
+						AND recipe_details.post_type = 'uo-recipe'
+					WHERE pm.meta_key = 'add_action'",
+				'publish',
+				'publish'
+			)
+		);
+
+		if ( empty( $r ) ) {
+			return array();
+		}
+
+		$active_add_actions = array();
+
+		foreach ( $r as $rr ) {
+			$rr = maybe_unserialize( $rr );
+			if ( is_array( $rr ) ) {
+				foreach ( $rr as $rrr ) {
+					$active_add_actions[] = (string) $rrr;
+				}
+			} else {
+				$active_add_actions[] = (string) $rr;
+			}
+		}
+
+		return array_unique( $active_add_actions );
+
+	}
+
 }

@@ -499,27 +499,29 @@ class Utilities {
 			return false;
 		}
 
-		$timestamp           = current_time( self::automator_get_date_time_format() ); //phpcs ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+		$timestamp           = current_time( 'Y-m-d H:i:s A' ); //phpcs ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 		$current_host        = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 		$current_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		$current_page_link   = "https://{$current_host}{$current_request_uri}";
-		$trace_start         = "\n===========================<<<< $timestamp >>>>===========================\n";
+		$trace_start         = "\n\n===========================<<<< $timestamp >>>>=======================\n\n";
 		$trace_heading       = "* Heading: $trace_heading \n* Current Page: $current_page_link \n";
-		//$trace_end         = "\n===========================<<<< TRACE END >>>>===========================\n";
 
-		$backtrace_start = "\n===========================<<<< BACKTRACE START >>>>===========================\n";
+		$backtrace_start = "\n\n===========================<<<< BACKTRACE START >>>>===========================\n\n";
 		$error_string    = print_r( ( new \Exception() )->getTraceAsString(), true );
-		$backtrace_end   = "\n===========================<<<< BACKTRACE END >>>>===========================\n";
+		$backtrace_end   = "\n\n===========================<<<< BACKTRACE END >>>>=============================\n\n";
 
-		$trace_msg_start = "\n===========================<<<< TRACE MESSAGE START >>>>===========================\n";
-		$trace_finish    = "\n===========================<<<< END >>>>===========================\n\n";
+		$trace_msg_start = "\n===========================<<<< TRACE MESSAGE START >>>>=========================\n\n";
+		$trace_finish    = "\n\n===========================<<<< TRACE MESSAGE END >>>>==========================\n\n\n";
 
 		$trace_message = print_r( $trace_message, true );
 		$log_directory = UA_DEBUG_LOGS_DIR;
+
 		if ( ! is_dir( $log_directory ) ) {
 			mkdir( $log_directory, 0755 );
 		}
-		$file = $log_directory . 'uo-' . $file_name . '.log';
+
+		$file = $log_directory . 'uo-' . sanitize_file_name( $file_name ) . '.log';
+
 		if ( ! $backtrace ) {
 			$complete_message = $trace_start . $trace_heading . $trace_msg_start . $trace_message . $trace_finish;
 		} else {
@@ -537,7 +539,7 @@ class Utilities {
 	 *
 	 */
 	public static function automator_get_debug_mode() {
-		return AUTOMATOR_DEBUG_MODE;
+		return ! empty( get_option( 'automator_settings_debug_enabled', false ) ) ? true : false;
 	}
 
 	/**

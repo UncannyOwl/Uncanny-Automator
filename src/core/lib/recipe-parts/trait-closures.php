@@ -48,7 +48,7 @@ trait Closure {
 		?>
 		<script>
 			let t = setTimeout(function () {
-					top.location.replace('<?php echo esc_url( $redirect_url ); ?>')
+					top.location.replace('<?php echo esc_url_raw( $redirect_url ); ?>')
 				},
 				1000
 			);

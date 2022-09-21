@@ -40,11 +40,11 @@ class Flsupport_Tokens {
 			$add_action   = (string) $args['triggers_meta']['add_action'];
 			$trigger_meta = (string) $args['meta'];
 
-			$ticket_token_actions = apply_filters( 'uap_fl_support_ticket_tokens', array( 'fluent_support/ticket_created', 'fluent_support/response_added_by_customer', 'fluent_support/ticket_closed_by_customer' ), $args );
+			$ticket_token_actions = apply_filters( 'uap_fl_support_ticket_tokens', array( 'fluent_support/ticket_created', 'fluent_support/response_added_by_customer', 'fluent_support/ticket_closed_by_customer', 'fluent_support/response_added_by_agent' ), $args );
 
-			$agent_token_actions = apply_filters( 'uap_fl_support_agent_tokens', array( 'fluent_support/response_added_by_customer', 'fluent_support/ticket_closed_by_customer' ), $args );
+			$agent_token_actions = apply_filters( 'uap_fl_support_agent_tokens', array( 'fluent_support/response_added_by_customer', 'fluent_support/ticket_closed_by_customer', 'fluent_support/response_added_by_agent' ), $args );
 
-			$ticket_response_token_actions = apply_filters( 'uap_fl_support_ticket_response_tokens', array( 'fluent_support/response_added_by_customer' ), $args );
+			$ticket_response_token_actions = apply_filters( 'uap_fl_support_ticket_response_tokens', array( 'fluent_support/response_added_by_customer', 'fluent_support/response_added_by_agent' ), $args );
 
 			if ( in_array( $add_action, $ticket_token_actions, true ) ) {
 

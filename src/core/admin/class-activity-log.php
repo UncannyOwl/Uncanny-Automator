@@ -149,9 +149,13 @@ class Activity_Log {
 			return;
 		}
 		?>
-		<div class="notice notice-success is-dismissible">
-			<p><?php echo esc_attr( $message ); ?></p>
-		</div>
+		<?php if ( 'uncanny-automator-admin-logs' === automator_filter_input( 'page' ) ) { ?>
+			<uo-alert heading="<?php echo esc_attr( $message ); ?>" type="error"></uo-alert>
+		<?php } else { ?>
+			<div class="updated notice is-dismissable">
+				<p><?php echo esc_html( $message ); ?></p>
+			</div>
+		<?php } ?>
 		<?php
 	}
 
