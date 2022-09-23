@@ -4,7 +4,7 @@ Tags: automation, zapier, google sheets, mailchimp, learndash
 Requires at least: 5.3
 Tested up to: 6.0.2
 Requires PHP: 5.6
-Stable tag: 4.5
+Stable tag: 4.5.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -129,8 +129,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WooCommerce ShipStation](https://automatorplugin.com/integration/woocommerce-shipstation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WooCommerce Subscriptions](https://automatorplugin.com/integration/woocommerce-subscriptions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WordPress](https://automatorplugin.com/integration/wordpress-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -241,6 +241,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 4.5.0.1 [2022-09-23] =
+
+**Fixed:**
+
+* Automator core - Triggers added before v3.0 (May 2021) in a recipe now trigger reliably #2661
+
 = 4.5 [2022-09-21] =
 
 **New Integrations:**
@@ -248,7 +254,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * [Advanced Ads](https://automatorplugin.com/integration/advanced-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2460
 * [JetFormBuilder](https://automatorplugin.com/integration/jetformbuilder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2599
 * [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2519
-* [WP Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2461
+* [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2461
 
 **New Triggers:**
 
@@ -258,7 +264,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * JetFormBuilder - A form is submitted #2533
 * JetFormBuilder - A user submits a form #2535
 * SureCart - A user purchases a product #2525
-* WP Download Manager - A specific file is downloaded #2497
+* WordPress Download Manager - A specific file is downloaded #2497
 * WP Simple Pay - A payment for a form is completed #2584
 * WordPress - A user logs out of a site #2594
 
