@@ -188,6 +188,7 @@ class WP_CREATEPOST {
 	 * @param $user_id
 	 * @param $action_data
 	 * @param $recipe_id
+	 * @param $args
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 

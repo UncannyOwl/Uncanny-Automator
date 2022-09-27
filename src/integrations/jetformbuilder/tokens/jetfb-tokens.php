@@ -63,9 +63,16 @@ class Jetfb_Tokens {
 
 					$label = ! empty( $form_field['label'] ) ? $form_field['label'] : $form_field['name'];
 
-					$tokens_renderable[ $form_field['name'] ] = array(
+					$token = array(
 						'name' => $label,
 					);
+
+					if ( isset( $form_field['field_type'] ) && 'email' === $form_field['field_type'] ) {
+						$token['type'] = 'email';
+					}
+
+					// Removed colons from the identifier by replacing it with empty string.
+					$tokens_renderable[ str_replace( ':', '', $form_field['name'] ) ] = $token;
 
 				}
 			}
@@ -111,7 +118,8 @@ class Jetfb_Tokens {
 
 		if ( ! empty( $form_fields ) ) {
 			foreach ( $form_fields as $name => $value ) {
-				$form_values[ $name ] = $this->format( $value );
+				// Remove colons from the identifier by replacing it with empty string.
+				$form_values[ str_replace( ':', '', $name ) ] = $this->format( $value );
 			}
 		}
 

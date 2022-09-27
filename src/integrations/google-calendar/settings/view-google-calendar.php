@@ -97,16 +97,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		</div>
 
-		<div class="uap-settings-panel-bottom">
+		<div class="uap-settings-panel-bottom" <?php echo $is_user_connected ? '' : 'has-arrow'; ?>>
 
 				<?php if ( ! $is_user_connected ) { ?>
 
 					<div class="uap-settings-panel-bottom-left">
 
-						<uo-button href="<?php echo esc_url( $authentication_url ); ?>">
-
-							<?php esc_html_e( 'Connect Google account', 'uncanny-automator' ); ?>
-
+						<uo-button class="uap-settings-button-google" href="<?php echo esc_url( $authentication_url ); ?>">
+							<uo-icon id="google"></uo-icon><?php esc_html_e( 'Sign in with Google', 'uncanny-automator' ); ?>
 						</uo-button>
 
 					</div> <!--.uap-settings-panel-bottom-left -->

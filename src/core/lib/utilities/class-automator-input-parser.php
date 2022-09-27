@@ -871,8 +871,38 @@ class Automator_Input_Parser {
 		if ( isset( $trigger_args['recipe_triggers'] ) ) {
 			$args['recipe_triggers'] = $trigger_args['recipe_triggers'];
 		}
+		if ( isset( $trigger_args['action_meta'] ) ) {
+			$args['action_meta'] = $trigger_args['action_meta'];
+		}
 
-		$return = apply_filters( 'automator_text_field_parsed', $this->parse_vars( $args, $trigger_args ), $args );
+		$field_text = apply_filters( 'automator_text_field_parsed', $this->parse_vars( $args, $trigger_args ), $args );
+
+		return $this->maybe_parse_shortcodes_in_fields( $field_text, $recipe_id, $user_id, $args );
+	}
+
+	/**
+	 * @param $field_text
+	 * @param $recipe_id
+	 * @param $user_id
+	 * @param $args
+	 *
+	 * @return mixed|string|null
+	 */
+	public function maybe_parse_shortcodes_in_fields( $field_text, $recipe_id = null, $user_id = null, $args = array() ) {
+		$skip_do_shortcode_actions = apply_filters(
+			'automator_skip_do_shortcode_parse_in_fields',
+			array(
+				'CREATEPOST',
+				'BULKUPDATE_CODE',
+			)
+		);
+
+		$action_meta_code = isset( $args['action_meta'] ) && isset( $args['action_meta']['code'] ) ? $args['action_meta']['code'] : '';
+
+		// If filter is set to true OR action meta matches
+		if ( in_array( $action_meta_code, $skip_do_shortcode_actions, true ) || true === apply_filters( 'automator_skip_do_action_field_parsing', $field_text, $recipe_id, $user_id, $args ) ) {
+			return apply_filters( 'automator_parse_token_parse_text', stripslashes( $field_text ), $args );
+		}
 
 		/**
 		 * May be run a do_shortcode on the field itself if it contains a shortcode?
@@ -880,7 +910,7 @@ class Automator_Input_Parser {
 		 *
 		 * @since 3.0
 		 */
-		return do_shortcode( apply_filters( 'automator_parse_token_parse_text', stripslashes( $return ), $args ) );
+		return do_shortcode( apply_filters( 'automator_parse_token_parse_text', stripslashes( $field_text ), $args ) );
 	}
 
 	/**
