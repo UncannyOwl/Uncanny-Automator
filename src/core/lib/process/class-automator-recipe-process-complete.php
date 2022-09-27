@@ -274,11 +274,17 @@ class Automator_Recipe_Process_Complete {
 					 */
 					$action_data = $this->parse_custom_value( $action_data, $user_id, $recipe_id, $args );
 
+					/**
+					 * @since 4.6 adding `action_meta` to args to deal the issue with do_shortcode filter
+					 */
+					$action_args                = $args;
+					$action_args['action_meta'] = isset( $action_data['meta'] ) ? $action_data['meta'] : array();
+
 					$action = array(
 						'user_id'     => $user_id,
 						'action_data' => $action_data,
 						'recipe_id'   => $recipe_id,
-						'args'        => $args,
+						'args'        => $action_args,
 					);
 
 					$action = apply_filters( 'automator_before_action_executed', $action );

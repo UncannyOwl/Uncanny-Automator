@@ -464,8 +464,8 @@ class Automator_Review {
 
 	public function get_review_banner_template() {
 
-		// 900 Credits remaining.
-		if ( $this->get_credits_remaining() <= 900 ) {
+		// 900 Credits remaining. Only shows if Automator Pro is not enabled.
+		if ( $this->get_credits_remaining() <= 900 && ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
 			// Show free credits template.
 
 			$this->get_template(

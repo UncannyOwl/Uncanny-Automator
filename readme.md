@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.0.2 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.5 \
+**Stable tag:** 4.5.0.2 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -265,6 +265,25 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.5.0.2 [2022-09-28]
+
+**Fixed:**
+
+* JetFormsBuilder: Handle `:` in dynamic tokens #2662
+* JetFormsBuilder: Email field in the forms now appear as email tokens #2662
+* WordPress - Create a post - Skip shortcode parsing when creating a post with the action #2667
+
+**Under the hood:**
+
+* Notification - Hide notification if Automator Pro is installed #2654
+* Google integrations - Sign in with Google branding #2679
+
+### 4.5.0.1 [2022-09-23]
+
+**Fixed:**
+
+* Automator core - Triggers added before v3.0 (May 2021) in a recipe now trigger reliably #2661
 
 ### 4.5 [2022-09-21]
 
