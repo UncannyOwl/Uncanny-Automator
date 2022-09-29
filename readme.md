@@ -1,6 +1,6 @@
 # Uncanny Automator – Automate everything with the #1 no-code Automation tool for WordPress
 
-**Contributors:** uncannyautomator, uncannyowl \
+**Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, zapier, google sheets, mailchimp, learndash \
 **Requires at least:** 5.3 \
 **Tested up to:** 6.0.2 \
@@ -266,18 +266,18 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
-### 4.5.0.2 [2022-09-28]
+### 4.5.0.2 [2022-09-29]
 
 **Fixed:**
 
-* JetFormsBuilder: Handle `:` in dynamic tokens #2662
-* JetFormsBuilder: Email field in the forms now appear as email tokens #2662
-* WordPress - Create a post - Skip shortcode parsing when creating a post with the action #2667
+* JetFormBuilder - Email fields in forms now appear as email tokens #2662
+* JetFormBuilder - Handle `:` in dynamic tokens #2662
+* WordPress - Create a post - Shortcodes are no longer parsed before the post content is saved #2667
 
 **Under the hood:**
 
 * Notification - Hide notification if Automator Pro is installed #2654
-* Google integrations - Sign in with Google branding #2679
+* Google integrations - Added "Sign in with Google" branding
 
 ### 4.5.0.1 [2022-09-23]
 
