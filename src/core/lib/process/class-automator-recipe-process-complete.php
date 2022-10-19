@@ -324,7 +324,7 @@ class Automator_Recipe_Process_Complete {
 	 * Complete the action for the user
 	 *
 	 * @param null $user_id
-	 * @param null $action_data
+	 * @param array $action_data
 	 * @param null $recipe_id
 	 * @param string $error_message
 	 * @param null $recipe_log_id
@@ -383,6 +383,7 @@ class Automator_Recipe_Process_Complete {
 			'3.0',
 			'automator_before_action_completed'
 		);
+
 		$do_action_args = array(
 			'user_id'       => $user_id,
 			'action_id'     => $action_id,
@@ -391,6 +392,7 @@ class Automator_Recipe_Process_Complete {
 			'recipe_log_id' => $recipe_log_id,
 			'args'          => $args,
 		);
+
 		do_action( 'automator_before_action_completed', $do_action_args );
 
 		$error_message = $this->get_action_error_message( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
@@ -402,6 +404,7 @@ class Automator_Recipe_Process_Complete {
 		}
 
 		Automator()->db->action->mark_complete( $action_id, $recipe_log_id, $action_data['completed'], $error_message );
+
 		$action_log_id = isset( $action_data['action_log_id'] ) ? absint( $action_data['action_log_id'] ) : null; // Doesn't exist for inactive, action not found situations
 
 		// The action is about to be completed
@@ -431,12 +434,22 @@ class Automator_Recipe_Process_Complete {
 
 		do_action( 'automator_action_created', $do_action_args );
 
+		/**
+		 * Inject `complete_with_notice` to $args.
+		 *
+		 * @since 4.6
+		 */
+		if ( ! empty( $action_data['complete_with_notice'] ) && true === $action_data['complete_with_notice'] ) {
+			$args['complete_with_notice'] = true;
+		}
+
 		$this->recipe( $recipe_id, $user_id, $recipe_log_id, $args );
+
 	}
 
 	/**
 	 * @param null $user_id
-	 * @param null $action_data
+	 * @param array $action_data
 	 * @param null $recipe_id
 	 * @param string $error_message
 	 * @param null $recipe_log_id
@@ -448,7 +461,9 @@ class Automator_Recipe_Process_Complete {
 
 		$message = '';
 
-		if ( ! empty( $error_message ) && key_exists( 'complete_with_errors', $action_data ) ) {
+		$has_action_data_defined_error = key_exists( 'complete_with_errors', $action_data ) || key_exists( 'complete_with_notice', $action_data );
+
+		if ( ! empty( $error_message ) && $has_action_data_defined_error ) {
 			$message = $error_message;
 		}
 
@@ -483,18 +498,32 @@ class Automator_Recipe_Process_Complete {
 		 * 7 = cancelled
 		 * 8 = skipped
 		 * 9 = completed, do nothing
+		 * 11 = completed with notice
 		 */
 		$completed = Automator_Status::NOT_COMPLETED;
 
+		// Completed with notice.
+		if ( is_array( $action_data ) && ! empty( $error_message ) && key_exists( 'complete_with_notice', $action_data ) ) {
+			$completed = Automator_Status::COMPLETED_WITH_NOTICE;
+		}
+
+		// Completed with errors.
 		if ( is_array( $action_data ) && ! empty( $error_message ) && key_exists( 'complete_with_errors', $action_data ) ) {
 			$completed = Automator_Status::COMPLETED_WITH_ERRORS;
-		} elseif ( ( is_array( $action_data ) && key_exists( 'do-nothing', $action_data ) ) ) {
+		}
+
+		// Completed, do nothing.
+		if ( is_array( $action_data ) && key_exists( 'do-nothing', $action_data ) ) {
 			$completed = Automator_Status::DID_NOTHING;
-		} elseif ( empty( $error_message ) ) {
+		}
+
+		// Completed.
+		if ( empty( $error_message ) ) {
 			$completed = Automator_Status::COMPLETED;
 		}
 
 		return apply_filters( 'automator_get_action_completed_status', $completed, $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+
 	}
 
 	/**
@@ -622,6 +651,8 @@ class Automator_Recipe_Process_Complete {
 		} elseif ( ( is_array( $args ) && key_exists( 'do-nothing', $args ) ) ) {
 			$completed  = Automator_Status::DID_NOTHING;
 			$run_number = 1;
+		} elseif ( ( is_array( $args ) && key_exists( 'complete_with_notice', $args ) ) ) {
+			$completed = Automator_Status::COMPLETED_WITH_NOTICE;
 		} else {
 			$completed = Automator_Status::COMPLETED;
 		}
@@ -665,6 +696,8 @@ class Automator_Recipe_Process_Complete {
 			} elseif ( Automator_Status::DID_NOTHING === (int) $complete ) {
 				$skip = true;
 			} elseif ( Automator_Status::SKIPPED === (int) $complete ) {
+				$skip = true;
+			} elseif ( Automator_Status::COMPLETED_WITH_NOTICE === (int) $complete ) {
 				$skip = true;
 			}
 

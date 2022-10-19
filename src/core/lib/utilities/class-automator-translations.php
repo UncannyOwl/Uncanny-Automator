@@ -147,7 +147,7 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneLink
 						'dateFormat'      => get_option( 'date_format' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.dateFormat
-						'today'           => date( get_option( 'date_format' ) ),
+						'today'           => date( get_option( 'date_format' ) ), //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 						// UncannyAutomator.i18n.action.asyncActions.modal.today
 						'timeFormat'      => get_option( 'time_format' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timeFormat
@@ -161,7 +161,7 @@ class Automator_Translations {
 						),
 
 					),
-
+					/* translators: Uncanny Automator Pro */
 					'unlockSchedule'         => sprintf( esc_attr__( 'Get %s to unlock delays/schedules', 'uncanny-automator' ), 'Uncanny Automator Pro' ),
 					// UncannyAutomator.i18n.action.asyncActions.unlockSchedule
 				),
@@ -172,6 +172,14 @@ class Automator_Translations {
 			'conditions'          => array(
 				'filter'                               => esc_html__( 'Filter', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.conditions.filter
+
+				'hasConditions'                        => esc_html__( 'Filtered', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.hasConditions
+				'hasConditionsTokensDisclaimer'        => esc_html__( "These tokens may be empty if the associated action's filter conditions are not met.", 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.hasConditionsTokensDisclaimer
+
+				'addFilter'                            => esc_html__( 'Add filter', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.conditions.addFilter
 
 				'unlockConditions'                     => sprintf( esc_attr__( 'Get %s to unlock conditions', 'uncanny-automator' ), 'Uncanny Automator Pro' ),
 				// UncannyAutomator.i18n.conditions.unlockConditions
@@ -554,6 +562,16 @@ class Automator_Translations {
 				// UncannyAutomator.i18n.tokens.addTokens
 				'addAllDescription'              => esc_attr__( 'On confirmation, all the tokens in the group "%1$s" will be added to the field  "%2$s".', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.tokens.addAllDescription
+
+				'isDelayed'                      => esc_html__( 'Delayed', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.isDelayed
+				'isDelayedTokensDisclaimer'      => esc_html__( 'These tokens may be empty if the associated action has not yet run when this action runs.', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.isDelayedTokensDisclaimer
+
+				'isScheduled'                    => esc_html__( 'Scheduled', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.isScheduled
+				'isScheduledTokensDisclaimer'    => esc_html__( 'These tokens may be empty if the associated action has not yet run when this action runs.', 'uncanny-automator' ),
+				// UncannyAutomator.i18n.tokens.isScheduledTokensDisclaimer
 			),
 			'integration'         => array(
 				/* translators: Verb conjugated in present-tense second-person singular */
@@ -784,7 +802,7 @@ class Automator_Translations {
 					'passwordDescription'              => sprintf( esc_attr__( 'If left empty, the user will need to reset their password to log in. Send an email containing the %1$s token to simplify the process.', 'uncanny-automator' ), '<em>' . esc_attr__( 'User reset password link', 'uncanny-automator' ) . '</em>' ),
 					// UncannyAutomator.i18n.userSelector.newUser.passwordDescription
 					/* translators: WordPress roles */
-					'roles'                            => esc_attr__( 'Roles', 'uncanny-automator' ),
+					'role'                             => esc_attr__( 'Role', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.newUser.role
 					'existingUserFieldLabel'           => esc_attr__( 'What to do if the user already exists', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.userSelector.newUser.existingUserFieldLabel

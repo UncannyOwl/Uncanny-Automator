@@ -625,7 +625,7 @@ class Automator_Load {
 		$classes['Trait_Closure_Setup'] = UA_ABSPATH . 'src/core/lib/recipe-parts/closures/trait-closure-setup.php';
 		$classes['Closures']            = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-closures.php';
 
-		//Tokens
+		// Tokens
 		$classes['Trait_Trigger_Tokens'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-trigger-tokens.php';
 
 		// Triggers
@@ -635,6 +635,9 @@ class Automator_Load {
 		$classes['Trait_Trigger_Conditions']     = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-conditions.php';
 		$classes['Trait_Trigger_Process']        = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-process.php';
 		$classes['Triggers']                     = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-triggers.php';
+
+		// Action Tokens
+		$classes['Trait_Action_Tokens'] = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-tokens.php';
 
 		// Actions
 		$classes['Trait_Action_Setup']         = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-setup.php';

@@ -27,7 +27,7 @@ namespace Uncanny_Automator;
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<uo-icon id="instagram"></uo-icon> <?php esc_html_e( 'Instagram', 'uncanny-automator' ); ?>
+				<uo-icon integration="INSTAGRAM"></uo-icon> <?php esc_html_e( 'Instagram', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
@@ -127,7 +127,7 @@ namespace Uncanny_Automator;
 
 									<?php echo esc_html( $facebook_user->name ); ?>
 
-									<uo-icon id="facebook"></uo-icon>
+									<uo-icon integration="FACEBOOK"></uo-icon>
 
 								</div>
 

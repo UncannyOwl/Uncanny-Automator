@@ -32,7 +32,7 @@ namespace Uncanny_Automator;
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<uo-icon id="gototraining"></uo-icon> <?php esc_html_e( 'GoTo Training', 'uncanny-automator-pro' ); ?>
+				<uo-icon integration="GTT"></uo-icon> <?php esc_html_e( 'GoTo Training', 'uncanny-automator-pro' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
@@ -144,7 +144,7 @@ namespace Uncanny_Automator;
 							<div class="uap-settings-panel-user-info__main">
 								<?php if ( ! empty( trim( $user_display_name ) ) ) { ?>
 									<?php echo esc_html( $user_display_name ); ?>
-									<uo-icon id="gototraining"></uo-icon>
+									<uo-icon integration="GTT"></uo-icon>
 								<?php } ?>
 							</div>
 							<div class="uap-settings-panel-user-info__additional">

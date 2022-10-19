@@ -232,7 +232,7 @@ class AutomatorInstagramSettings {
                 ${name}
             </span>
 
-            <uo-icon id="instagram"></uo-icon>
+            <uo-icon integration="INSTAGRAM"></uo-icon>
         `;
 
         // Check if connected.

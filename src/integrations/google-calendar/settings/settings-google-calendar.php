@@ -46,7 +46,7 @@ class Google_Calendar_Settings {
 
 		$this->set_id( 'google-calendar' );
 
-		$this->set_icon( 'google-calendar' );
+		$this->set_icon( 'GOOGLE_CALENDAR' );
 
 		$this->set_name( 'Google Calendar' );
 

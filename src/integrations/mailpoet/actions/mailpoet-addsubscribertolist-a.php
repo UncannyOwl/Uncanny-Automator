@@ -8,12 +8,15 @@
 
 namespace Uncanny_Automator;
 
+use MailPoet\Entities\SubscriberEntity;
+
 /**
  * Class MAILPOET_ADDSUBSCRIBERTOLIST_A
  *
  * @package Uncanny_Automator
  */
 class MAILPOET_ADDSUBSCRIBERTOLIST_A {
+
 
 	/**
 	 * Integration code
@@ -29,8 +32,8 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
-		$this->action_code = 'SUBSCRIBERTOLIST';
-		$this->action_meta = 'MAILPOETLISTS';
+		 $this->action_code = 'SUBSCRIBERTOLIST';
+		$this->action_meta  = 'MAILPOETLISTS';
 		$this->define_action();
 	}
 
@@ -38,7 +41,6 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	public function define_action() {
-
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/mailpoet/' ),
@@ -66,7 +68,6 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 * @return array[]
 	 */
 	public function load_options() {
-
 		$mailpoet  = \MailPoet\API\API::MP( 'v1' );
 		$all_lists = $mailpoet->getLists();
 
@@ -157,11 +158,17 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			// try to find if user is already a subscriber
 			$existing_subscriber = \MailPoet\Models\Subscriber::findOne( $subscriber['email'] );
 			if ( ! $existing_subscriber ) {
-				$mailpoet->addSubscriber( $subscriber, json_decode( $list_id ), array( 'send_confirmation_email' => $disable_confirmation_email ) );
-				Automator()->complete_action( $user_id, $action_data, $recipe_id );
+				$new_subscriber = $mailpoet->addSubscriber( $subscriber, json_decode( $list_id ), array( 'send_confirmation_email' => $disable_confirmation_email ) );
+				global $wpdb;
+				$table_name = $wpdb->prefix . 'mailpoet_subscribers';
+				$wpdb->update( $table_name, array( 'status' => $subscriber['status'] ), array( 'id' => $new_subscriber['id'] ) );
+				Automator()->complete->action( $user_id, $action_data, $recipe_id );
 			} else {
 				$mailpoet->subscribeToLists( $existing_subscriber->id, json_decode( $list_id ), array( 'send_confirmation_email' => $disable_confirmation_email ) );
-				Automator()->complete_action( $user_id, $action_data, $recipe_id );
+				global $wpdb;
+				$table_name = $wpdb->prefix . 'mailpoet_subscribers';
+				$wpdb->update( $table_name, array( 'status' => $subscriber['status'] ), array( 'id' => $existing_subscriber->id ) );
+				Automator()->complete->action( $user_id, $action_data, $recipe_id );
 			}
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
@@ -169,10 +176,8 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			$args['do-nothing']                  = true;
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		}
-
-		return;
 
 	}
 

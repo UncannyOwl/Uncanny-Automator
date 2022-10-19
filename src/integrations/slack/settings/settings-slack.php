@@ -40,7 +40,7 @@ class Slack_Settings {
 	 * Sets up the properties of the settings page
 	 */
 	protected function set_properties() {
-		
+
 		// Define the ID
 		// This should go first
 		$this->set_id( 'slack_api' );
@@ -48,17 +48,17 @@ class Slack_Settings {
 		// Set the icon
 		// This expects a valid <uo-icon> ID
 		// Check the Design Guidelines to see the list of valid IDs
-		$this->set_icon( 'slack' );
+		$this->set_icon( 'SLACK' );
 
 		// Set the name
 		// As this is the brand name, it probably shouldn't be translatable
 		$this->set_name( 'Slack' );
 
 		try {
-			$this->client = $this->helpers->get_slack_client();
+			$this->client       = $this->helpers->get_slack_client();
 			$this->is_connected = true;
-		} catch ( \Exception $e) {
-			$this->client = array();
+		} catch ( \Exception $e ) {
+			$this->client       = array();
 			$this->is_connected = false;
 		}
 
@@ -87,7 +87,7 @@ class Slack_Settings {
 		$slack_workspace = ! empty( $slack_user_data->name ) ? $slack_user_data->name : '';
 
 		// Get the Slack ID
-		$slack_id = ! empty( $slack_user_data->id ) ?  $slack_user_data->id : '';
+		$slack_id = ! empty( $slack_user_data->id ) ? $slack_user_data->id : '';
 
 		// Get the link to connect Slack
 		$connect_slack_url = $this->helpers->get_connect_url();

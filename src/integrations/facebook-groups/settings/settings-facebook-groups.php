@@ -49,7 +49,7 @@ class Facebook_Group_Settings {
 		$this->set_id( 'facebook-groups' );
 
 		// This has same icon as Facebook.
-		$this->set_icon( 'facebook' );
+		$this->set_icon( 'FACEBOOK' );
 
 		$this->set_name( 'Facebook Groups' );
 

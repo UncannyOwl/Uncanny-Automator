@@ -2,6 +2,7 @@ class AutomatorSlackSettings {
 	constructor() {
 		// Set default name
 		this.defaultName = 'Uncanny Automator';
+		this.defaultIcon = document.getElementById( 'uap-slack-preview-generator' ).dataset.icon;
 
 		// Listen fields
 		this.listenFields();
@@ -66,6 +67,9 @@ class AutomatorSlackSettings {
 
 		// Default name
 		config.name = ! _uo.utility.isEmpty( config.name ) ? config.name : this.defaultName;
+
+		// Default icon
+		config.icon = ! _uo.utility.isEmpty( config.icon ) ? config.icon : this.defaultIcon;
 
 		// Set the name
 		this.$lightModeName.innerText = config.name;

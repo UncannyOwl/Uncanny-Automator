@@ -3,11 +3,11 @@
 namespace Uncanny_Automator;
 
 /**
- * Class WPSP_ANONPURCHASEFORM
+ * Class WPSP_ANONSUBSCRIPTION
  *
  * @package Uncanny_Automator
  */
-class WPSP_ANONPURCHASEFORM {
+class WPSP_ANONSUBSCRIPTION {
 
 	/**
 	 * Integration code
@@ -15,16 +15,13 @@ class WPSP_ANONPURCHASEFORM {
 	 * @var string
 	 */
 	public static $integration = 'WPSIMPLEPAY';
-
-	private $trigger_code;
-	private $trigger_meta;
+	private $trigger_code      = 'WPSPANONSUBSCRIPTION';
+	private $trigger_meta      = 'WPSPFORMSUBSCRIPTION';
 
 	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code = 'WPSPANONPURCHAFORMS';
-		$this->trigger_meta = 'WPSPFORMS';
 		$this->define_trigger();
 	}
 
@@ -40,10 +37,10 @@ class WPSP_ANONPURCHASEFORM {
 			'code'                => $this->trigger_code,
 			'type'                => 'anonymous',
 			/* translators: Logged-in trigger - WP Simple Pay */
-			'sentence'            => sprintf( esc_attr__( 'A payment for {{a form:%1$s}} is completed', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A subscription for {{a form:%1$s}} is created', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WP Simple Pay */
-			'select_option_name'  => esc_attr__( 'A payment for {{a form}} is completed', 'uncanny-automator' ),
-			'action'              => 'simpay_webhook_payment_intent_succeeded',
+			'select_option_name'  => esc_attr__( 'A subscription for {{a form}} is created', 'uncanny-automator' ),
+			'action'              => 'simpay_webhook_subscription_created',
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'simple_pay_charge_created' ),
@@ -63,7 +60,10 @@ class WPSP_ANONPURCHASEFORM {
 					Automator()->helpers->recipe->wp_simple_pay->options->list_wp_simpay_forms(
 						null,
 						$this->trigger_meta,
-						array( 'is_any' => true )
+						array(
+							'is_any'          => true,
+							'is_subscription' => true,
+						)
 					),
 				),
 			)
@@ -84,7 +84,11 @@ class WPSP_ANONPURCHASEFORM {
 		if ( empty( $form_id ) ) {
 			return;
 		}
-
+		if ( ! isset( $object->latest_invoice ) ) {
+			return;
+		}
+		/** @var \SimplePay\Vendor\Stripe\Invoice $invoice */
+		$invoice       = $object->latest_invoice;
 		$user_id       = 0;
 		$billing_email = $object->customer->email;
 		if ( is_email( $billing_email ) ) {
@@ -134,10 +138,13 @@ class WPSP_ANONPURCHASEFORM {
 						);
 
 						Automator()->db->token->save( $this->trigger_meta . '_ID', $form_id, $trigger_meta );
-						Automator()->db->token->save( 'WPSPFORMS', $form_name, $trigger_meta );
+						Automator()->db->token->save( 'WPSPFORMSUBSCRIPTION', $form_name, $trigger_meta );
 						Automator()->db->token->save( 'meta_data', maybe_serialize( json_decode( wp_json_encode( $object->metadata ), true ) ), $trigger_meta );
 						Automator()->db->token->save( 'customer_data', maybe_serialize( json_decode( wp_json_encode( $object->customer ), true ) ), $trigger_meta );
-						Automator()->db->token->save( 'AMOUNT_PAID', $object->amount, $trigger_meta );
+						Automator()->db->token->save( 'invoice', maybe_serialize( json_decode( wp_json_encode( $invoice ), true ) ), $trigger_meta );
+						Automator()->db->token->save( 'AMOUNT_DUE', $invoice->amount_due, $trigger_meta );
+						Automator()->db->token->save( 'AMOUNT_PAID', $invoice->amount_paid, $trigger_meta );
+						Automator()->db->token->save( 'AMOUNT_REMAINING', $invoice->amount_remaining, $trigger_meta );
 
 						Automator()->maybe_trigger_complete( $result['args'] );
 					}

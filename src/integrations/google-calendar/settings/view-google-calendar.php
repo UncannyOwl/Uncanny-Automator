@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="google-calendar"></uo-icon> 
+				<uo-icon integration="GOOGLE_CALENDAR"></uo-icon> 
 
 				<?php esc_html_e( 'Google Calendar', 'uncanny-automator' ); ?>
 

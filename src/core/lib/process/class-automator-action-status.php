@@ -18,6 +18,7 @@ class Automator_Status {
 	const SKIPPED               = 8;
 	const DID_NOTHING           = 9;
 	const COMPLETED_AWAITING    = 10;
+	const COMPLETED_WITH_NOTICE = 11;
 
 	/**
 	 * Action status name
@@ -52,6 +53,9 @@ class Automator_Status {
 			case self::COMPLETED_AWAITING:
 				$output = esc_attr__( 'Completed, awaiting', 'uncanny-automator' );
 				break;
+			case self::COMPLETED_WITH_NOTICE:
+				$output = esc_attr__( 'Completed with notice', 'uncanny-automator' );
+				break;
 			default:
 				$output = $status;
 				break;
@@ -68,6 +72,7 @@ class Automator_Status {
 			self::CANCELLED,
 			self::SKIPPED,
 			self::DID_NOTHING,
+			self::COMPLETED_WITH_NOTICE,
 		);
 
 		return apply_filters( 'automator_status_finished', $finished_statuses );
@@ -85,6 +90,7 @@ class Automator_Status {
 				self::SKIPPED               => 'skipped',
 				self::DID_NOTHING           => 'completed-do-nothing',
 				self::COMPLETED_AWAITING    => 'completed-awaiting',
+				self::COMPLETED_WITH_NOTICE => 'completed-with-notice',
 			),
 			$status
 		);

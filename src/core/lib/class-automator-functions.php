@@ -40,6 +40,13 @@ class Automator_Functions {
 	/**
 	 * Collection of all integrations
 	 *
+	 * @since    4.6
+	 * @access   public
+	 */
+	public $all_integrations = array();
+	/**
+	 * Collection of active integrations
+	 *
 	 * @since    1.0.0
 	 * @access   public
 	 */
@@ -293,6 +300,17 @@ class Automator_Functions {
 	}
 
 	/**
+	 * @param $integration_code
+	 * @param $integration
+	 */
+	public function set_all_integrations( $integration_code, $integration ) {
+		if ( array_key_exists( $integration_code, $this->all_integrations ) ) {
+			return;
+		}
+		$this->all_integrations[ $integration_code ] = $integration;
+	}
+
+	/**
 	 * @param $trigger
 	 */
 	public function set_triggers( $trigger ) {
@@ -363,6 +381,14 @@ class Automator_Functions {
 		$this->integrations = apply_filters_deprecated( 'uap_integrations', array( $this->integrations ), '3.0', 'automator_integrations' );
 
 		return apply_filters( 'automator_integrations', $this->integrations );
+	}
+
+	/**
+	 * @return mixed|null
+	 */
+	public function get_all_integrations() {
+
+		return apply_filters( 'automator_all_integrations', $this->all_integrations );
 	}
 
 	/**
@@ -457,6 +483,7 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_recipes_data( $force_new_data_load = false, $recipe_id = null ) {
+
 		if ( ( false === $force_new_data_load ) && ! empty( $this->recipes_data ) && null === $recipe_id ) {
 			return $this->recipes_data;
 		}
@@ -480,38 +507,54 @@ class Automator_Functions {
 		$recipes = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, post_title, post_type, post_status, post_parent
-FROM $wpdb->posts
-WHERE post_type = %s
-  AND post_status NOT LIKE %s
-ORDER BY ID DESC
-LIMIT 0, 99999",
+					FROM $wpdb->posts
+					WHERE post_type = %s
+					AND post_status NOT LIKE %s
+					ORDER BY ID DESC
+					LIMIT 0, 99999",
 				'uo-recipe',
 				'trash'
 			)
 		);
+
 		if ( empty( $recipes ) ) {
 			return array();
 		}
+
 		$cached = Automator()->cache->get( 'get_recipe_type' );
+
 		//Extract Recipe IDs
 		$recipe_ids = array_column( (array) $recipes, 'ID' );
+
 		//Collective array of recipes triggers, actions, closures
 		$recipe_data = $this->pre_fetch_recipe_metas( $recipes );
+
 		//Collective array of users recipes completed status
 		$recipes_completed = $this->are_recipes_completed( null, $recipe_ids );
+
 		$recipes_completed = empty( $recipes_completed ) ? array() : $recipes_completed;
 
 		foreach ( $recipes as $recipe ) {
+
 			$recipe_id = $recipe->ID;
+
 			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'triggers', $recipe_data[ $recipe_id ] ) ) {
+				
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
 						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
-
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
+				
+				// Add action tokens to recipe_objects.
+				if ( ! empty( $recipe_data[ $recipe_id] ['actions'] )  ) {
+					foreach( $recipe_data[ $recipe_id] ['actions'] as $recipe_action_id => $recipe_action ) {
+						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'] );
+					}
+				}
+
 				$triggers = $recipe_data[ $recipe_id ]['triggers'];
 			} else {
 				$triggers = array();
@@ -1046,6 +1089,11 @@ WHERE pm.post_id
 			if ( 'uo-trigger' === $type ) {
 				$recipe_children_data[ $key ]['tokens'] = $this->tokens->trigger_tokens( $child_meta_single, $recipe_id );
 			}
+
+			if ( 'uo-action' === $type ) {
+				$recipe_children_data[ $key ]['tokens'] = $this->tokens->get_action_tokens_renderable( $child_meta_single );
+			}
+
 		}
 
 		return apply_filters(
@@ -1300,7 +1348,6 @@ WHERE pm.post_id
 	 *
 	 * @return array
 	 * @since  2.0
-	 * @deprecated 3.0
 	 * @author Saad S. on Nov 15th, 2019
 	 *
 	 * Added $maybe_simulate in order to avoid unnecessary recipe logs in database.
@@ -1311,6 +1358,7 @@ WHERE pm.post_id
 	 * Once trigger is validated.. I pass $maybe_simulate ID to $maybe_add_log_id
 	 * and insert recipe log at this point.
 	 *
+	 * @deprecated 3.0
 	 */
 	public function maybe_create_recipe_log_entry( $recipe_id, $user_id, $create_recipe = true, $args = array(), $maybe_simulate = false, $maybe_add_log_id = null ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {

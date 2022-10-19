@@ -132,11 +132,11 @@ if ( $dashboard->has_site_connected ) {
 									', ',
 									array(
 										// Integration names are not translatable
-										'<uo-icon id="slack"></uo-icon> <strong>Slack</strong>',
+										'<uo-icon integration="SLACK"></uo-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<uo-icon id="google-sheets"></uo-icon> <strong>Google Sheets</strong>',
+										'<uo-icon integration="GOOGLESHEET"></uo-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
-										'<uo-icon id="facebook"></uo-icon> <strong>Facebook</strong>',
+										'<uo-icon integration="FACEBOOK"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
 								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
@@ -155,11 +155,11 @@ if ( $dashboard->has_site_connected ) {
 									', ',
 									array(
 										// Integration names are not translatable
-										'<uo-icon id="slack"></uo-icon> <strong>Slack</strong>',
+										'<uo-icon integration="SLACK"></uo-icon> <strong>Slack</strong>',
 										// Integration names are not translatable
-										'<uo-icon id="google-sheets"></uo-icon> <strong>Google Sheets</strong>',
+										'<uo-icon integration="GOOGLESHEET"></uo-icon> <strong>Google Sheets</strong>',
 										// Integration names are not translatable
-										'<uo-icon id="facebook"></uo-icon> <strong>Facebook</strong>',
+										'<uo-icon integration="FACEBOOK"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
 								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',

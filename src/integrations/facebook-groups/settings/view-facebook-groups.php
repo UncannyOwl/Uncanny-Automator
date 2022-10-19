@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="facebook"></uo-icon> 
+				<uo-icon integration="FACEBOOK"></uo-icon> 
 
 				<?php esc_html_e( 'Facebook Groups', 'uncanny-automator' ); ?>
 
@@ -167,7 +167,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 								<?php echo esc_html( $facebook_user->name ); ?>
 
-								<uo-icon id="facebook"></uo-icon>
+								<uo-icon integration="FACEBOOK"></uo-icon>
 
 							</div>
 

@@ -41,13 +41,14 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$default         = $args['default'];
 		$token_name      = $args['token_name'];
 		$supports_tokens = $args['supports_tokens'];
+		$input_type      = $args['input_type'];
 
 		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'description'     => $description,
 			'placeholder'     => $placeholder,
-			'input_type'      => 'int',
+			'input_type'      => $input_type,
 			'required'        => $required,
 			'default_value'   => $default,
 			'token_name'      => $token_name,

@@ -23,7 +23,7 @@ namespace Uncanny_Automator;
 	<div class="uap-settings-panel-top">
 
 		<div class="uap-settings-panel-title">
-			<uo-icon id="twitter"></uo-icon> <?php esc_html_e( 'Twitter', 'uncanny-automator' ); ?>
+			<uo-icon integration="TWITTER"></uo-icon> <?php esc_html_e( 'Twitter', 'uncanny-automator' ); ?>
 		</div>
 
 		<div class="uap-settings-panel-content">
@@ -104,7 +104,7 @@ namespace Uncanny_Automator;
 	<div
 		class="uap-settings-panel-bottom"
 
-		<?php 
+		<?php
 
 		// Check if we have to add the arrow
 		if ( ! $this->is_connected ) {
@@ -139,7 +139,7 @@ namespace Uncanny_Automator;
 						<div class="uap-settings-panel-user-info">
 							<div class="uap-settings-panel-user-info__main">
 								<?php echo esc_html( $twitter_username ); ?>
-								<uo-icon id="twitter"></uo-icon>
+								<uo-icon integration="TWITTER"></uo-icon>
 							</div>
 							<div class="uap-settings-panel-user-info__additional">
 								<?php

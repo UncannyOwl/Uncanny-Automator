@@ -593,7 +593,7 @@ class Automator_Input_Parser {
 							} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 								$return = get_post_thumbnail_id( $post_id );
 							} elseif ( 'EXCERPT' === $sub_piece[1] ) {
-								$return = get_post( $post_id )->post_excerpt;
+								$return = get_the_excerpt( $post_id );
 							}
 						} else {
 							$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
@@ -631,7 +631,7 @@ class Automator_Input_Parser {
 									} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 										$return = get_post_thumbnail_id( $post_id );
 									} elseif ( 'EXCERPT' === $sub_piece[1] ) {
-										$return = get_post( $post_id )->post_excerpt;
+										$return = get_the_excerpt( $post_id );
 									}
 								} else {
 									$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
@@ -651,7 +651,7 @@ class Automator_Input_Parser {
 								} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 									$return = get_post_thumbnail_id( $trigger['meta'][ $piece ] );
 								} elseif ( 'EXCERPT' === $sub_piece[1] ) {
-									$return = get_post( $trigger['meta'][ $piece ] )->post_excerpt;
+									$return = get_the_excerpt( $trigger['meta'][ $piece ] );
 								}
 							} else {
 								$return = html_entity_decode( get_the_title( $trigger['meta'][ $piece ] ), ENT_QUOTES, 'UTF-8' );
@@ -729,13 +729,19 @@ class Automator_Input_Parser {
 
 		}
 
-		/**
-		 * Maybe run a do_shortcode on the field itself if it contains a shortcode?
-		 *
-		 * @ticket #2255
-		 * @since 3.0
-		 */
-		return do_shortcode( $return );
+		// Handle fatal error if in case the data ends up being an Array
+		if ( ! is_array( $return ) ) {
+			/**
+			 * Maybe run a do_shortcode on the field itself if it contains a shortcode?
+			 *
+			 * @ticket #2255
+			 * @since 3.0
+			 */
+			return do_shortcode( $return );
+		}
+
+		// Handle Array if in case the data ends up being an Array (Edge cases)
+		return join( ', ', $return );
 	}
 
 	/**
@@ -844,10 +850,12 @@ class Automator_Input_Parser {
 	 * @return null|string
 	 */
 	public function text( $field_text = null, $recipe_id = null, $user_id = null, $trigger_args = null ) {
+
 		// Sanity check that there was a $field_text passed
 		if ( null === $field_text ) {
 			return null;
 		}
+
 		$args = array(
 			'field_text'  => $field_text,
 			'meta_key'    => null,
@@ -855,6 +863,8 @@ class Automator_Input_Parser {
 			'action_data' => null,
 			'recipe_id'   => $recipe_id,
 		);
+
+		$args['field_text'] = apply_filters( 'automator_action_token_input_parser_text_field_text', $args['field_text'], $args, $trigger_args );
 
 		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {
 			$args['trigger_log_id'] = $trigger_args['trigger_log_id'];

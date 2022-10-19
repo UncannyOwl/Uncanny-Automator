@@ -1,5 +1,4 @@
 <?php
-
 namespace Uncanny_Automator;
 
 /**
@@ -56,9 +55,9 @@ class Automator_Recipe_Process_User {
 		);
 
 		if ( $is_webhook ) {
-			$recipes = Automator()->get->recipes_from_trigger_code( $check_trigger_code, $webhook_recipe );
+			$recipes = $this->recipes_from_trigger_code( $check_trigger_code, $webhook_recipe );
 		} else {
-			$recipes = Automator()->get->recipes_from_trigger_code( $check_trigger_code );
+			$recipes = $this->recipes_from_trigger_code( $check_trigger_code );
 		}
 
 		foreach ( $recipes as $recipe ) {
@@ -79,7 +78,7 @@ class Automator_Recipe_Process_User {
 			 * @version 2.5.1
 			 * @author  Saad
 			 */
-			if ( Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
+			if ( $this->is_recipe_completed( $recipe_id, $user_id ) ) {
 				continue;
 			}
 
@@ -220,13 +219,13 @@ class Automator_Recipe_Process_User {
 	public function maybe_create_recipe_log_entry( $recipe_id, $user_id, $create_recipe = true, $args = array(), $maybe_simulate = false, $maybe_add_log_id = null ) {
 		global $wpdb;
 
-		$recipe_log_id = $wpdb->get_var(
+		$recipe_log_id = $this->wpdb_get_var(
 			$wpdb->prepare(
 				"SELECT ID
-						FROM {$wpdb->prefix}uap_recipe_log
-						WHERE completed NOT IN (1,2,5,9,10)
-						AND automator_recipe_id = %d
-						AND user_id = %d",
+				FROM {$wpdb->prefix}uap_recipe_log
+				WHERE completed NOT IN (1,2,5,9,10,11)
+				AND automator_recipe_id = %d
+				AND user_id = %d",
 				$recipe_id,
 				$user_id
 			)
@@ -266,7 +265,7 @@ class Automator_Recipe_Process_User {
 					$wpdb->query( 'SET information_schema_stats_expiry = 0;' );
 				}
 
-				$recipe_log_id = $wpdb->get_var( "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{$wpdb->prefix}uap_recipe_log';" );
+				$recipe_log_id = $this->wpdb_get_var( "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{$wpdb->prefix}uap_recipe_log';" );
 
 				return array(
 					'existing'      => false,
@@ -298,10 +297,10 @@ class Automator_Recipe_Process_User {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'uap_recipe_log';
 
-		$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(completed) FROM {$wpdb->prefix}uap_recipe_log WHERE  completed = 1 AND user_id = %d AND automator_recipe_id = %d", $user_id, $recipe_id ) );
+		$results = $this->wpdb_get_var( $wpdb->prepare( "SELECT COUNT(completed) FROM {$wpdb->prefix}uap_recipe_log WHERE  completed = 1 AND user_id = %d AND automator_recipe_id = %d", $user_id, $recipe_id ) );
 
 		if ( 0 !== absint( $user_id ) ) {
-			$num_times_recipe_run = Automator()->utilities->recipe_number_times_completed( $recipe_id, $results );
+			$num_times_recipe_run = $this->recipe_number_times_completed( $recipe_id, $results );
 		} else {
 			$num_times_recipe_run = false;
 		}
@@ -392,7 +391,7 @@ class Automator_Recipe_Process_User {
 		$trigger_integration = $trigger['meta']['integration'];
 
 		// Skip completion if the plugin is not active
-		if ( 0 === Automator()->plugin_status->get( $trigger_integration ) ) {
+		if ( 0 === $this->get_plugin_status( $trigger_integration ) ) {
 			// The plugin for this trigger is NOT active
 			Automator()->error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
 
@@ -552,7 +551,7 @@ class Automator_Recipe_Process_User {
 		$trigger_integration = $trigger['meta']['integration'];
 
 		// Skip completion if the plugin is not active
-		if ( 0 === Automator()->plugin_status->get( $trigger_integration ) ) {
+		if ( 0 === $this->get_plugin_status( $trigger_integration ) ) {
 			// The plugin for this trigger is NOT active
 			Automator()->error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
 
@@ -564,7 +563,7 @@ class Automator_Recipe_Process_User {
 
 		// Stop here if the trigger was already completed
 		$process_recipe       = apply_filters( 'automator_get_trigger_log_id_process_recipe', false, $user_id, $trigger_id, $recipe_id, $recipe_log_id, $args );
-		$is_trigger_completed = Automator()->db->trigger->is_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $process_recipe, $args );
+		$is_trigger_completed = $this->is_trigger_completed( $user_id, $trigger_id, $recipe_id, $recipe_log_id, $process_recipe, $args );
 
 		if ( $is_trigger_completed ) {
 			return array(
@@ -577,7 +576,7 @@ class Automator_Recipe_Process_User {
 		if ( $check_trigger_code !== $trigger_code ) {
 			return array(
 				'result' => false,
-				'error'  => esc_html__( 'Trigger isn\'t matched.', 'uncanny-automator' ),
+				'error'  => esc_html__( 'Trigger is not matched.', 'uncanny-automator' ),
 			);
 		}
 
@@ -635,7 +634,7 @@ class Automator_Recipe_Process_User {
 		$run_number = Automator()->get->trigger_run_number( $trigger_id, $trigger_log_id, $user_id );
 
 		// How many times has this user triggered this trigger
-		$user_num_times = Automator()->get->trigger_meta( $user_id, $trigger['ID'], 'NUMTIMES', $trigger_log_id );
+		$user_num_times = $this->get_trigger_meta( $user_id, $trigger['ID'], 'NUMTIMES', $trigger_log_id );
 
 		$args = array(
 			'user_id'        => $user_id,
@@ -672,7 +671,7 @@ class Automator_Recipe_Process_User {
 		$trigger_data = Automator()->get->trigger_sentence( $trigger_id, 'trigger_detail' );
 		do_action( 'automator_complete_trigger_detail', $trigger_data, $args );
 
-		$sentence_human_readable = Automator()->get->trigger_sentence( $trigger_id, 'sentence_human_readable' );
+		$sentence_human_readable = $this->get_trigger_sentence( $trigger_id );
 
 		// Store trigger sentence details for the completion
 		if ( ! empty( $sentence_human_readable ) ) {
@@ -685,7 +684,8 @@ class Automator_Recipe_Process_User {
 				'meta_value'     => $sentence_human_readable,
 			);
 
-			Automator()->process->user->insert_trigger_meta( $save_meta );
+			$this->insert_trigger_meta( $save_meta );
+
 		}
 		/**  */
 
@@ -701,18 +701,12 @@ class Automator_Recipe_Process_User {
 		}
 
 		// If the trigger was hit the enough times then complete the trigger
-		if ( $user_num_times >= $num_times ) {
-			return array(
-				'result'     => true,
-				'error'      => 'Number of times condition met.',
-				'run_number' => $args['run_number'],
-			);
-		}
-
 		return array(
-			'result' => false,
-			'error'  => 'Default return. Something is wrong.',
+			'result'     => true,
+			'error'      => 'Number of times condition met.',
+			'run_number' => $args['run_number'],
 		);
+
 	}
 
 	/**
@@ -787,7 +781,7 @@ class Automator_Recipe_Process_User {
 			'trigger_log_id' => $trigger_log_id,
 		);
 
-		$meta_already_saved = Automator()->get->maybe_get_meta_id_from_trigger_log( $run_number, $trigger_id, $trigger_log_id, $trigger_meta, $user_id );
+		$meta_already_saved = $this->maybe_get_meta_id_from_trigger_log( $run_number, $trigger_id, $trigger_log_id, $trigger_meta, $user_id );
 
 		if ( ! $meta_already_saved ) {
 			return array(
@@ -942,12 +936,106 @@ class Automator_Recipe_Process_User {
 		}
 
 		global $wpdb;
-		$results = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}uap_trigger_log_meta WHERE user_id = %d AND meta_key LIKE %s AND automator_trigger_id = %d", $user_id, $meta_key, $trigger_id ) );
+		$results = $this->wpdb_get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}uap_trigger_log_meta WHERE user_id = %d AND meta_key LIKE %s AND automator_trigger_id = %d", $user_id, $meta_key, $trigger_id ) );
 
 		if ( null !== $results ) {
 			return (int) $results;
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * wpdb_get_var
+	 *
+	 * @param  string $query
+	 * @return mixed
+	 */
+	public function wpdb_get_var( $query ) {
+
+		global $wpdb;
+
+		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	}
+
+	/**
+	 * get_plugin_status
+	 *
+	 * @param  string $integration
+	 * @return bool
+	 */
+	public function get_plugin_status( $integration ) {
+		return Automator()->plugin_status->get( $integration );
+	}
+
+	/**
+	 * recipe_number_times_completed
+	 *
+	 * @param  mixed $recipe_id
+	 * @param  mixed $results
+	 * @return mixed
+	 */
+	public function recipe_number_times_completed( $recipe_id, $results ) {
+		return Automator()->utilities->recipe_number_times_completed( $recipe_id, $results );
+	}
+
+	/**
+	 * is_recipe_completed
+	 *
+	 * @param  mixed $recipe_id
+	 * @param  mixed $user_id
+	 * @return mixed
+	 */
+	public function is_recipe_completed( $recipe_id, $user_id ) {
+		return Automator()->is_recipe_completed( $recipe_id, $user_id );
+	}
+
+	/**
+	 * recipes_from_trigger_code
+	 *
+	 * @param  mixed $check_trigger_code
+	 * @param  mixed $webhook_recipe
+	 * @return mixed
+	 */
+	public function recipes_from_trigger_code( $check_trigger_code, $webhook_recipe = null ) {
+		return Automator()->get->recipes_from_trigger_code( $check_trigger_code, $webhook_recipe );
+	}
+
+	/**
+	 * get_trigger_meta
+	 *
+	 * @param  mixed $user_id
+	 * @param  mixed $trigger_id
+	 * @param  mixed $meta_key
+	 * @param  mixed $trigger_log_id
+	 * @return mixed
+	 */
+	public function get_trigger_meta( $user_id, $trigger_id, $meta_key, $trigger_log_id ) {
+		return Automator()->get->trigger_meta( $user_id, $trigger_id, $meta_key, $trigger_log_id );
+	}
+
+	/**
+	 * get_trigger_sentence
+	 *
+	 * @param  mixed $trigger_id
+	 * @return mixed
+	 */
+	public function get_trigger_sentence( $trigger_id ) {
+		return Automator()->get->trigger_sentence( $trigger_id, 'sentence_human_readable' );
+	}
+
+	/**
+	 * maybe_get_meta_id_from_trigger_log
+	 *
+	 * @param  mixed $run_number
+	 * @param  mixed $trigger_id
+	 * @param  mixed $trigger_log_id
+	 * @param  mixed $trigger_meta
+	 * @param  mixed $user_id
+	 * @return mixed
+	 */
+	public function maybe_get_meta_id_from_trigger_log( $run_number, $trigger_id, $trigger_log_id, $trigger_meta, $user_id ) {
+		return Automator()->get->maybe_get_meta_id_from_trigger_log( $run_number, $trigger_id, $trigger_log_id, $trigger_meta, $user_id );
 	}
 }

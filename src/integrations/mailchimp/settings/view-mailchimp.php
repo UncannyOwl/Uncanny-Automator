@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="mailchimp"></uo-icon>
+				<uo-icon integration="MAILCHIMP"></uo-icon>
 
 				<?php esc_html_e( 'Mailchimp', 'uncanny-automator' ); ?>
 
@@ -189,7 +189,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<div class="uap-settings-panel-user-info__main">
 									<?php echo esc_html( $this->client->login->login_name ); ?>
 
-									<uo-icon id="mailchimp"></uo-icon>
+									<uo-icon integration="MAILCHIMP"></uo-icon>
 
 								</div>
 

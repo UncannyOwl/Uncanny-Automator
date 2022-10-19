@@ -49,6 +49,30 @@ class Wpsp_Helpers {
 	}
 
 	/**
+	 * @return array|string[]
+	 */
+	public function get_forms() {
+		$options = array();
+		if ( function_exists( 'simpay_get_form_list_options' ) ) {
+			return simpay_get_form_list_options();
+		}
+
+		$forms = get_posts(
+			array(
+				'post_type'      => 'simple-pay',
+				'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'fields'         => 'ids',
+			)
+		);
+
+		foreach ( $forms as $form_id ) {
+			$options[ $form_id ] = get_the_title( $form_id );
+		}
+
+		return $options;
+	}
+
+	/**
 	 * @param string $label
 	 * @param string $option_code
 	 * @param array $args
@@ -56,35 +80,30 @@ class Wpsp_Helpers {
 	 * @return mixed
 	 */
 
-	public function list_wp_simpay_forms( $label = null, $option_code = 'WPSIMPAYFORMS', $args = array() ) {
+	public function list_wp_simpay_forms( $label = null, $option_code = 'WPSPFORMS', $args = array() ) {
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );
 		}
 
-		$token  = key_exists( 'token', $args ) ? $args['token'] : false;
-		$is_any = key_exists( 'is_any', $args ) ? $args['is_any'] : false;
-
-		if ( function_exists( 'simpay_get_form_list_options' ) ) {
-			$options = simpay_get_form_list_options();
-		} else {
-			$forms = get_posts(
-				array(
-					'post_type'      => 'simple-pay',
-					'posts_per_page' => 9999,
-					'fields'         => 'ids',
-				)
-			);
-
-			foreach ( $forms as $form_id ) {
-				$options[ $form_id ] = get_the_title( $form_id );
+		$token           = key_exists( 'token', $args ) ? $args['token'] : false;
+		$is_any          = key_exists( 'is_any', $args ) ? $args['is_any'] : false;
+		$is_subscription = key_exists( 'is_subscription', $args ) ? $args['is_subscription'] : false;
+		$options         = $this->get_forms();
+		if ( ! empty( $options ) ) {
+			foreach ( $options as $form_id => $form_title ) {
+				$form = simpay_get_form( $form_id );
+				if ( true === $is_subscription && ! isset( $form->plans ) ) {
+					unset( $options[ $form_id ] );
+				}
+				if ( false === $is_subscription && isset( $form->plans ) ) {
+					unset( $options[ $form_id ] );
+				}
 			}
 		}
-
 		if ( true === $is_any ) {
 			$options = array( '-1' => __( 'Any form', 'uncanny-automator' ) ) + $options;
 		}
-
 		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,

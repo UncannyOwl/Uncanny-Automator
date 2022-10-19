@@ -34,16 +34,13 @@
 		width: var(--uap-settings-slack-avatar-width);
 
 		border-radius: 4px;
-		background: #e8eef6;
 
 		overflow: hidden;
 
 		position: relative;
 	}
 
-		.uap-slack-preview--dark .uap-slack-preview-avatar {
-			background: rgba(255,255,255,.7);
-		}
+		.uap-slack-preview--dark .uap-slack-preview-avatar {}
 
 		/* Avatar */
 		.uap-slack-preview-avatar img {
@@ -52,21 +49,6 @@
 			width: 100%;
 			height: 100%;
 		}
-
-		/* Default avatar */
-		.uap-slack-preview-avatar img::before {
-			content: '';
-
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-
-			background: url( 'slack-avatar@2x.png' ) no-repeat center center;
-			background-size: contain;
-		}
-
 
 	.uap-slack-preview-details {
 		grid-area: Details;

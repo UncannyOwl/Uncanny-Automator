@@ -22,7 +22,11 @@ class Uncanny_Groups_Helpers {
 	/**
 	 * Uncanny_Groups_Helpers constructor.
 	 */
-	public function __construct() {
+	public function __construct( $load_action_hook = true ) {
+
+		if ( true === $load_action_hook ) {
+			add_filter( 'uap_option_all_ld_groups', array( $this, 'uog_filter_groups_list' ) );
+		}
 	}
 
 	/**
@@ -32,6 +36,20 @@ class Uncanny_Groups_Helpers {
 		$this->options = $options;
 	}
 
+
+	/**
+	 * Filter for group list
+	 *
+	 * @param $option
+	 *
+	 * @return array
+	 */
+	public function uog_filter_groups_list( $option = array() ) {
+		if ( is_array( $option ) && isset( $option['option_code'] ) && ( 'UOG_SEATSADDEDTOGROUP_META' === $option['option_code'] || 'UOG_SEATSREMOVEDFROMGROUP_META' === $option['option_code'] ) ) {
+			$option['relevant_tokens'] = array();
+		}
+		return $option;
+	}
 	/**
 	 * @param string $label
 	 * @param string $option_code
@@ -73,4 +91,30 @@ class Uncanny_Groups_Helpers {
 
 		return apply_filters( 'uap_option_all_ld_groups', $option );
 	}
+
+
+	/**
+	 * Getting all email addresses of group leaders
+	 *
+	 * @param $group_id
+	 *
+	 * @return mixed|void
+	 */
+	public function get_group_leaders_email_addresses( $group_id ) {
+
+		$group_leaders = learndash_get_groups_administrators( $group_id );
+
+		return ( is_array( array_column( $group_leaders, 'user_email' ) ) ) ? implode( ', ', array_column( $group_leaders, 'user_email' ) ) : array();
+
+	}
+
+	public function get_number_conditions_values( $key = '' ) {
+		if ( empty( $key ) ) {
+			return '';
+		}
+
+		return Automator()->helpers->recipe->field->less_or_greater_than()['options'][ $key ];
+	}
+
+
 }

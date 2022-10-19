@@ -23,7 +23,7 @@ namespace Uncanny_Automator;
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="whatsapp"></uo-icon> 
+				<uo-icon integration="WHATSAPP"></uo-icon> 
 
 				<?php esc_html_e( 'WhatsApp', 'uncanny-automator' ); ?>
 
@@ -225,7 +225,7 @@ namespace Uncanny_Automator;
 
 							<div class="uap-settings-panel-user-info__main">
 								<?php echo esc_html( $client['application'] ); ?>
-								<uo-icon id="whatsapp"></uo-icon>
+								<uo-icon integration="WHATSAPP"></uo-icon>
 							</div>
 
 							<div class="uap-settings-panel-user-info__additional">

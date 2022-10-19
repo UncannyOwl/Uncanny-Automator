@@ -73,7 +73,7 @@ class AutomatorFacebookGroupSettings {
                             ${group.text}
                         </a>
 
-                        <uo-icon id="facebook"></uo-icon>
+                        <uo-icon integration="FACEBOOK"></uo-icon>
                     </div>
                 `
             );

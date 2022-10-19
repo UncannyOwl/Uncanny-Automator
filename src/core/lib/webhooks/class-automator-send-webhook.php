@@ -350,9 +350,38 @@ class Automator_Send_Webhook {
 		}
 		foreach ( $fields as $field ) {
 			$key   = isset( $field['KEY'] ) ? $this->maybe_parse_tokens( $field['KEY'], $parsing_args ) : null;
+			$type  = isset( $field['VALUE_TYPE'] ) ? $this->maybe_parse_tokens( $field['VALUE_TYPE'], $parsing_args ) : 'text';
 			$value = isset( $field['VALUE'] ) ? $this->maybe_parse_tokens( $field['VALUE'], $parsing_args ) : null;
 			if ( ! is_null( $key ) && ! is_null( $value ) ) {
-				$prepared_data[ $key ] = $value;
+				switch ( $type ) {
+					case 'null':
+					case 'undefined':
+						$value = null;
+						break;
+					case 'int':
+						$value = absint( $value );
+						break;
+					case 'float':
+						$value = floatval( $value );
+						break;
+					case 'bool':
+						$value = str_replace( array( '"', '\'' ), '', html_entity_decode( $value ) );
+						if ( 'true' === strtolower( $value ) || 'false' === strtolower( $value ) ) {
+							$value = 'true' === strtolower( $value ) ? true : false;
+						} elseif ( is_numeric( $value ) && ( 0 === absint( $value ) || 1 === absint( $value ) ) ) {
+							$value = boolval( $value );
+						} else {
+							$value = (string) $value;
+						}
+						break;
+					case 'text':
+					default:
+						// Decode HTML entities and replace " and '
+						$value = str_replace( array( '"', '\'' ), '', html_entity_decode( $value ) );
+						$value = apply_filters( 'automator_outgoing_webhook_default_data_value', (string) $value, $key, $type, $this );
+						break;
+				}
+				$prepared_data[ $key ] = apply_filters( 'automator_outgoing_webhook_value', $value, $key, $type, $this );
 			}
 		}
 		$prepared_data = $this->create_tree( $prepared_data, $data_type );

@@ -19,6 +19,10 @@ namespace Uncanny_Automator;
  * $bot_icon             The icon of the bot
  */
 
+// The Slack icon. This is a preview, and it's not really the icon Automator sends to Slack
+// The one sent is bigger (this is 80x80, the one sent is 1024x1024)
+$default_icon_preview = plugins_url( 'assets/slack-avatar@2x.png', __FILE__ );
+
 ?>
 
 <form method="POST" action="options.php" warn-unsaved>
@@ -29,7 +33,7 @@ namespace Uncanny_Automator;
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<uo-icon id="slack"></uo-icon> <?php esc_html_e( 'Slack', 'uncanny-automator' ); ?>
+				<uo-icon integration="SLACK"></uo-icon> <?php esc_html_e( 'Slack', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
@@ -55,10 +59,10 @@ namespace Uncanny_Automator;
 
 				<?php } ?>
 
-				<?php 
+				<?php
 
 				// Check if Slack is NOT connected
-				if ( !  $this->is_connected ) {
+				if ( ! $this->is_connected ) {
 
 					?>
 
@@ -130,51 +134,61 @@ namespace Uncanny_Automator;
 							<div class="uap-settings-panel-content-subtitle">
 								<?php esc_html_e( 'Preview', 'uncanny-automator' ); ?>
 							</div>
-							
-							<div class="uap-slack-preview uap-spacing-top">
-								
-								<div class="uap-slack-preview-avatar">
-									<img src="<?php echo esc_attr( $bot_icon ); ?>" id="uap-slack-preview-light-icon">
+
+							<div id="uap-slack-preview-generator" data-icon="<?php echo esc_url( $default_icon_preview ); ?>">
+
+								<div class="uap-slack-preview uap-spacing-top">
+									
+									<div class="uap-slack-preview-avatar">
+										<img 
+											src="<?php echo ! empty( $bot_icon ) ? esc_url( $bot_icon ) : esc_url( $default_icon_preview ); ?>" 
+											id="uap-slack-preview-light-icon"
+										>
+									</div>
+									<div class="uap-slack-preview-details">
+										<span class="uap-slack-preview-details__name" id="uap-slack-preview-light-name">
+											<?php echo ! empty( $bot_name ) ? esc_attr( $bot_name ) : 'Uncanny Automator'; ?>
+										</span>
+
+										<span class="uap-slack-preview-details__tag">
+											<?php echo esc_html_x( 'APP', 'Slack', 'uncanny-automator' ); ?>
+										</span>
+
+										<span class="uap-slack-preview-details__date">
+											<?php esc_attr_e( date_i18n( 'g:i A' ) ); ?>
+										</span>
+									</div>
+									<div class="uap-slack-preview-body">
+										<?php esc_html_e( 'Hello, world!', 'uncanny-automator' ); ?>
+									</div>
+
 								</div>
-								<div class="uap-slack-preview-details">
-									<span class="uap-slack-preview-details__name" id="uap-slack-preview-light-name">
-										<?php echo ! empty( $bot_name ) ? esc_attr( $bot_name ) : 'Uncanny Automator'; ?>
-									</span>
 
-									<span class="uap-slack-preview-details__tag">
-										<?php echo esc_html_x( 'APP', 'Slack', 'uncanny-automator' ); ?>
-									</span>
+								<div class="uap-slack-preview uap-slack-preview--dark uap-spacing-top">
+									
+									<div class="uap-slack-preview-avatar">
+										<img 
+											src="<?php echo ! empty( $bot_icon ) ? esc_url( $bot_icon ) : esc_url( $default_icon_preview ); ?>" 
+											id="uap-slack-preview-dark-icon"
+										>
+									</div>
+									<div class="uap-slack-preview-details">
+										<span class="uap-slack-preview-details__name" id="uap-slack-preview-dark-name">
+											<?php echo ! empty( $bot_name ) ? esc_html( $bot_name ) : 'Uncanny Automator'; ?>
+										</span>
 
-									<span class="uap-slack-preview-details__date">
-										<?php esc_attr_e( date_i18n( 'g:i A' ) ); ?>
-									</span>
-								</div>
-								<div class="uap-slack-preview-body">
-									<?php esc_html_e( 'Hello, world!', 'uncanny-automator' ); ?>
-								</div>
+										<span class="uap-slack-preview-details__tag">
+											<?php echo esc_html_x( 'APP', 'Slack', 'uncanny-automator' ); ?>
+										</span>
 
-							</div>
+										<span class="uap-slack-preview-details__date">
+											<?php esc_attr_e( date_i18n( 'g:i A' ) ); ?>
+										</span>
+									</div>
+									<div class="uap-slack-preview-body">
+										<?php esc_html_e( 'Hello, world!', 'uncanny-automator' ); ?>
+									</div>
 
-							<div class="uap-slack-preview uap-slack-preview--dark uap-spacing-top">
-								
-								<div class="uap-slack-preview-avatar">
-									<img src="<?php echo esc_attr( $bot_icon ); ?>" id="uap-slack-preview-dark-icon">
-								</div>
-								<div class="uap-slack-preview-details">
-									<span class="uap-slack-preview-details__name" id="uap-slack-preview-dark-name">
-										<?php echo ! empty( $bot_name ) ? esc_html( $bot_name ) : 'Uncanny Automator'; ?>
-									</span>
-
-									<span class="uap-slack-preview-details__tag">
-										<?php echo esc_html_x( 'APP', 'Slack', 'uncanny-automator' ); ?>
-									</span>
-
-									<span class="uap-slack-preview-details__date">
-										<?php esc_attr_e( date_i18n( 'g:i A' ) ); ?>
-									</span>
-								</div>
-								<div class="uap-slack-preview-body">
-									<?php esc_html_e( 'Hello, world!', 'uncanny-automator' ); ?>
 								</div>
 
 							</div>
@@ -236,7 +250,7 @@ namespace Uncanny_Automator;
 									);
 
 									?>
-									<uo-icon id="slack"></uo-icon>
+									<uo-icon integration="SLACK"></uo-icon>
 								</div>
 								<div class="uap-settings-panel-user-info__additional">
 									<?php

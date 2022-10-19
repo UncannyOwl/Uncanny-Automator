@@ -97,6 +97,9 @@ class Gf_Tokens {
 	}
 
 	/**
+	 *
+	 * Method save_token_data
+	 *
 	 * @param $args
 	 * @param $trigger
 	 *
@@ -549,12 +552,23 @@ class Gf_Tokens {
 
 		$entry = (array) \GFAPI::get_entry( $entry_id );
 
-		$value = $this->should_fetch_label( $token_info ) ?
-			$this->get_field_label( $gf_form, $meta_key, $entry ) :
-			$this->get_field_value( $entry, $meta_key );
+		$label = $this->get_field_label( $gf_form, $meta_key, $entry );
+		$value = $this->get_field_value( $entry, $meta_key );
 
-		return $value;
+		$field_object = (array) \GFAPI::get_field( $gf_form, $meta_key );
+		$field_type   = ( isset( $field_object['type'] ) ) ? (string) $field_object['type'] : '';
 
+		if ( 'list' === $field_type && ! empty( $value ) ) {
+			$field_data = maybe_unserialize( $value );
+			$value      = is_array( $field_data ) ? join( ', ', $field_data ) : '';
+		}
+		if ( 'multiselect' === $field_type && ! empty( $value ) ) {
+			if ( Automator()->utilities->is_json_string( $value ) ) {
+				$value = join( ', ', json_decode( $value ) );
+			}
+		}
+
+		return $this->should_fetch_label( $token_info ) ? $label : $value;
 	}
 
 	/**

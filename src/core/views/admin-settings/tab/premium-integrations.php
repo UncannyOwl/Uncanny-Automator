@@ -95,7 +95,7 @@ namespace Uncanny_Automator;
 					?>
 
 					<uo-icon
-						id="<?php echo esc_attr( $integration_tab->icon ); ?>"
+						integration="<?php echo esc_attr( $integration_tab->icon ); ?>"
 					></uo-icon>
 
 					<?php
@@ -109,7 +109,6 @@ namespace Uncanny_Automator;
 			<?php
 
 		}
-
 	}
 
 	// Add tab panels
@@ -157,7 +156,6 @@ namespace Uncanny_Automator;
 			include Utilities::automator_get_view( 'admin-settings/tab/premium-integrations/none-selected.php' );
 
 		}
-
 	}
 
 	?>

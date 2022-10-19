@@ -12,6 +12,10 @@ class Copy_Recipe_Parts {
 	 * @var array
 	 */
 	public $trigger_tokens = array();
+	/**
+	 * @var array
+	 */
+	public $action_tokens = array();
 
 	/**
 	 * Copy_Recipe_Parts constructor.
@@ -81,6 +85,10 @@ class Copy_Recipe_Parts {
 		if ( automator_filter_has_var( 'return_to_recipe' ) ) {
 			wp_safe_redirect( admin_url( 'post.php?post=' . $new_id . '&action=edit' ) );
 		} else {
+			if ( false === $new_id ) {
+				wp_safe_redirect( admin_url( 'post.php?post=' . $recipe_id . '&action=edit' ) );
+				exit;
+			}
 			wp_safe_redirect( admin_url( 'edit.php?post_type=' . get_post_type( $recipe_id ) ) );
 		}
 		exit;
@@ -94,14 +102,20 @@ class Copy_Recipe_Parts {
 	public function copy_this_recipe( $recipe_id ) {
 		global $wpdb;
 
+		// Copy recipe post
 		$new_recipe_id = $this->copy( $recipe_id );
-		if ( $this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-trigger' ) ) {
-			$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-action' );
-			$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-closure' );
-
-			// Fallback to update tokens for Anonymous recipes that is stored in recipe's post meta itself
-			$this->copy_recipe_metas( $recipe_id, $new_recipe_id );
+		if ( is_wp_error( $new_recipe_id ) ) {
+			return false;
 		}
+		// Copy triggers
+		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-trigger' );
+		// Copy actions
+		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-action' );
+		// Copy closures
+		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-closure' );
+		// Fallback to update tokens for Anonymous recipes that is stored in recipe's post meta itself
+		$this->copy_recipe_metas( $recipe_id, $new_recipe_id );
+
 		$recipe_tax = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(object_id) AS total FROM $wpdb->term_relationships WHERE object_id = %d", $recipe_id ) );
 
 		if ( $recipe_tax > 0 ) {
@@ -145,11 +159,7 @@ class Copy_Recipe_Parts {
 				continue;
 			}
 
-			$new_id = $this->copy( $recipe_part->ID, $new_recipe_id );
-
-			if ( 'uo-trigger' === $recipe_part->post_type ) {
-				$this->trigger_tokens[ $recipe_part->ID ] = $new_id;
-			}
+			$this->copy( $recipe_part->ID, $new_recipe_id );
 		}
 
 		return true;
@@ -158,6 +168,7 @@ class Copy_Recipe_Parts {
 	/**
 	 * @param $post_id
 	 * @param int $post_parent
+	 * @param string $status
 	 *
 	 * @return false|int|\WP_Error
 	 */
@@ -173,8 +184,9 @@ class Copy_Recipe_Parts {
 		if ( 'uo-recipe' === $post->post_type ) {
 			$status = 'draft';
 		}
-		$post_title = 'uo-recipe' === $post->post_type ? $post->post_title . ' ' . __( '(Copy)', 'uncanny-automator' ) : $post->post_title;
-		$new_post   = array(
+		/* translators: Original Post title & Post ID */
+		$post_title  = 'uo-recipe' === $post->post_type ? sprintf( __( '%1$s (Duplicated from #%2$d)', 'uncanny-automator' ), $post->post_title, $post_id ) : $post->post_title;
+		$new_post    = array(
 			'menu_order'     => $post->menu_order,
 			'comment_status' => $post->comment_status,
 			'ping_status'    => $post->ping_status,
@@ -189,10 +201,20 @@ class Copy_Recipe_Parts {
 			'post_type'      => $post->post_type,
 			'post_date'      => current_time( 'mysql' ),
 		);
-
 		$new_post_id = wp_insert_post( $new_post );
+
 		if ( is_wp_error( $new_post_id ) ) {
 			wp_die( esc_html( $new_post_id->get_error_message() ) );
+		}
+
+		// Store previous => new trigger ID to replace in trigger tokens
+		if ( 'uo-trigger' === $post->post_type ) {
+			$this->trigger_tokens[ $post->ID ] = $new_post_id;
+		}
+
+		// Store previous => new trigger ID to replace in action tokens
+		if ( 'uo-action' === $post->post_type ) {
+			$this->action_tokens[ $post->ID ] = $new_post_id;
 		}
 
 		$this->copy_recipe_metas( $post_id, $new_post_id, $post_parent );
@@ -208,20 +230,35 @@ class Copy_Recipe_Parts {
 	 * @param int $post_parent
 	 */
 	public function copy_recipe_metas( $post_id, $new_post_id, $post_parent = 0 ) {
-		$recipe_meta = get_post_meta( $post_id );
+		$post_meta = get_post_meta( $post_id );
 		// Store the original recipe, trigger, action ID
 		update_post_meta( $new_post_id, 'automator_duplicated_from', $post_id );
-		foreach ( $recipe_meta as $key => $value ) {
+		foreach ( $post_meta as $key => $value ) {
 			if ( 'automator_duplicated_from' === $key ) {
 				continue;
 			}
-			$val = maybe_unserialize( $value[0] );
+
+			// Update Automator plugin version
+			if ( 'uap_recipe_version' === $key || 'uap_trigger_version' === $key || 'uap_action_version' === $key ) {
+				update_post_meta( $new_post_id, $key, AUTOMATOR_PLUGIN_VERSION );
+				continue;
+			}
+
+			// Updating Magic link and Magic button IDs
+			if ( 'ANONWPMAGICLINK' === $key || 'WPMAGICLINK' === $key || 'WPMAGICBUTTON' === $key || 'ANONWPMAGICBUTTON' === $key ) {
+				update_post_meta( $new_post_id, $key, $new_post_id );
+				continue;
+			}
+
+			$val = isset( $value[0] ) ? maybe_unserialize( $value[0] ) : '';
 			// Modify conditions
 			if ( 'actions_conditions' === $key ) {
 				$val = $this->modify_conditions( $val, $post_id, $new_post_id );
 			}
+			// Replace IDs in tokens
 			$val = $this->modify_tokens( $val, $post_parent, $new_post_id );
 			$val = apply_filters( 'automator_recipe_part_meta_value', $val, $post_id, $new_post_id, $key );
+			// any remaining meta
 			update_post_meta( $new_post_id, $key, $val );
 		}
 	}
@@ -244,16 +281,84 @@ class Copy_Recipe_Parts {
 			}
 		}
 
-		if ( empty( $this->trigger_tokens ) ) {
+		// Check if it's an array,
+		// i.e., 'extra_content' key
+		if ( is_array( $content ) ) {
 			return $content;
 		}
 
+		// Check if any replaceable token exists
+		if ( false === $this->token_exists_in_content( $content ) ) {
+			return $content;
+		}
+
+		// Replace if trigger token exists
+		if ( ! empty( $this->trigger_tokens ) ) {
+			$content = $this->replace_trigger_token_ids( $content );
+		}
+
+		// Replace if action token exists
+		if ( ! empty( $this->action_tokens ) ) {
+			$content = $this->replace_action_token_ids( $content );
+		}
+
+		return $content;
+	}
+
+	/**
+	 * @param $content
+	 *
+	 * @return bool
+	 */
+	public function token_exists_in_content( $content ) {
+		// check if content contains a replaceable token
+		if (
+			false === preg_match_all( '/{{(ACTION_(FIELD|META)\:)?\d+:\w.+?}}/', $content )
+			&& false === preg_match_all( '/{{id:(WPMAGICBUTTON|WPMAGICLINK)}}/', $content )
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param $content
+	 *
+	 * @return array|mixed|string|string[]|null
+	 */
+	public function replace_trigger_token_ids( $content ) {
 		// Loop thru multiple triggers and update token's trigger ID based on that.
 		foreach ( $this->trigger_tokens as $prev_id => $new_id ) {
-			if ( is_array( $prev_id ) || is_array( $new_id ) || is_array( $content ) ) {
+			// Sanity check
+			if ( is_array( $prev_id ) || is_array( $new_id ) ) {
 				continue;
 			}
-			$content = preg_replace( '/{{' . $prev_id . ':/', '{{' . $new_id . ':', $content );
+			// check if content contains a replaceable token by previous ID
+			if ( preg_match( '/{{' . $prev_id . '\:\w.+?}}/', $content ) ) {
+				$content = preg_replace( '/{{' . $prev_id . ':/', '{{' . $new_id . ':', $content );
+			}
+		}
+
+		return $content;
+	}
+
+	/**
+	 * @param $content
+	 *
+	 * @return array|mixed|string|string[]|null
+	 */
+	public function replace_action_token_ids( $content ) {
+		// Loop thru multiple actions and update token's action ID based on that.
+		foreach ( $this->action_tokens as $prev_id => $new_id ) {
+			// Sanity check
+			if ( is_array( $prev_id ) || is_array( $new_id ) ) {
+				continue;
+			}
+			// check if content contains a replaceable token by previous ID
+			if ( preg_match( '/{{(ACTION_(FIELD|META)\:)' . $prev_id . '\:\w.+?}}/', $content ) ) {
+				$content = preg_replace( '/{{ACTION_(FIELD|META)\:' . $prev_id . ':/', '{{ACTION_$1\:' . $new_id . ':', $content );
+			}
 		}
 
 		return $content;

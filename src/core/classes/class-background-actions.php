@@ -9,6 +9,19 @@ namespace Uncanny_Automator;
 class Background_Actions {
 
 	/**
+	 * @var
+	 */
+	public $action;
+	/**
+	 * @var
+	 */
+	public $action_code;
+
+	/**
+	 *
+	 */
+	const IS_USED_FOR_ACTION_TOKEN = 'is_used_for_action_token';
+	/**
 	 *
 	 */
 	const ENDPOINT = '/async_action/';
@@ -111,6 +124,7 @@ class Background_Actions {
 				->not_scheduled()
 				->can_process_further()
 				->should_process_in_background()
+				->action_tokens_not_used_in_other_actions()
 				->send_to_background();
 
 		} catch ( \Exception $e ) {
@@ -126,6 +140,7 @@ class Background_Actions {
 	 * Will throw an exception if the action is scheduled or delayed.
 	 *
 	 * @return $this
+	 * @throws \Exception
 	 */
 	public function not_scheduled() {
 
@@ -188,9 +203,24 @@ class Background_Actions {
 	}
 
 	/**
+	 * @return $this
+	 * @throws \Exception
+	 */
+	public function action_tokens_not_used_in_other_actions() {
+		$action_id             = $this->action['action_data']['ID'];
+		$action_tokens_used_in = get_post_meta( $action_id, self::IS_USED_FOR_ACTION_TOKEN, true );
+		if ( ! empty( $action_tokens_used_in ) && is_numeric( $action_tokens_used_in ) && 0 !== absint( $action_tokens_used_in ) ) {
+			/* translators: Action ID */
+			throw new \Exception( sprintf( __( "Action's token used in ID: %d action", 'uncanny-automator' ), $action_tokens_used_in ) );
+		}
+
+		return $this;
+	}
+
+	/**
 	 * bg_actions_enabled
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function bg_actions_enabled() {
 		$value = get_option( self::OPTION_NAME, '1' );
@@ -199,9 +229,7 @@ class Background_Actions {
 	}
 
 	/**
-	 * is_bg_action
-	 *
-	 * @return void
+	 * @return mixed|null
 	 */
 	public function is_bg_action() {
 
@@ -232,7 +260,7 @@ class Background_Actions {
 
 		// Call the endpoint to make sure that the process runs at the background.
 		// Store the response for unit tests simplification.
-		$this->last_response = wp_remote_post( $url, $request );
+		$this->last_response = $this->remote_post( $url, $request );
 
 		$this->action['process_further'] = false;
 
@@ -240,11 +268,23 @@ class Background_Actions {
 	}
 
 	/**
+	 * remote_post
+	 *
+	 * @param string $url
+	 * @param mixed $request
+	 *
+	 * @return mixed
+	 */
+	public function remote_post( $url, $request ) {
+		return wp_remote_post( $url, $request );
+	}
+
+	/**
 	 * test_endpoint
 	 *
 	 * Disable background actions if the endpoint is not reachable.
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function test_endpoint( $value ) {
 
@@ -289,7 +329,7 @@ class Background_Actions {
 		}
 
 		if ( 200 === wp_remote_retrieve_response_code( $this->last_response ) ) {
-			return;
+			return null;
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $this->last_response ), true );
@@ -367,7 +407,7 @@ class Background_Actions {
 	 *
 	 * @param mixed $action
 	 *
-	 * @return void
+	 * @return mixed
 	 */
 	public function get_action_code( $action ) {
 		return empty( $action['action_data']['meta']['code'] ) ? null : $action['action_data']['meta']['code'];

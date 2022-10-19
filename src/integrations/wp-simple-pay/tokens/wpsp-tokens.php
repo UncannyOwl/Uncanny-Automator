@@ -24,6 +24,15 @@ class Wpsp_Tokens {
 			30,
 			2
 		);
+		add_filter(
+			'automator_maybe_trigger_wpsimplepay_wpspanonsubscription_tokens',
+			array(
+				$this,
+				'wpsp_possible_tokens',
+			),
+			30,
+			2
+		);
 
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_wpsp_tokens' ), 9000, 6 );
 	}
@@ -35,14 +44,20 @@ class Wpsp_Tokens {
 	 * @return array
 	 */
 	public function wpsp_possible_tokens( $tokens = array(), $args = array() ) {
-
-		$form_id = absint( $args['triggers_meta']['WPSPFORMS'] );
-
-		if ( empty( $form_id ) ) {
-			return $tokens;
+		$plain   = true;
+		$form_id = isset( $args['triggers_meta']['WPSPFORMS'] ) ? absint( $args['triggers_meta']['WPSPFORMS'] ) : null;
+		if ( null === $form_id && isset( $args['triggers_meta']['WPSPFORMSUBSCRIPTION'] ) ) {
+			$form_id = absint( $args['triggers_meta']['WPSPFORMSUBSCRIPTION'] );
+			$plain   = false;
 		}
 
-		$form_fields = get_custom_fields( $form_id );
+		if ( null === $form_id ) {
+			return $tokens;
+		}
+		$form_fields = array();
+		if ( function_exists( 'SimplePay\Pro\Post_Types\Simple_Pay\Util\get_custom_fields' ) && intval( '-1' ) !== intval( $form_id ) ) {
+			$form_fields = \SimplePay\Pro\Post_Types\Simple_Pay\Util\get_custom_fields( $form_id );
+		}
 
 		$fields = array(
 			array(
@@ -113,29 +128,55 @@ class Wpsp_Tokens {
 				'card',
 			)
 		);
-		foreach ( $form_fields as $field ) {
-			if ( isset( $field['label'] ) && ! in_array( $field['type'], $skip_types ) ) {
-				$input_id = $field['id'];
-				$token_id = "simpay-form-$form_id-field-$input_id";
+		if ( ! empty( $form_fields ) ) {
+			foreach ( $form_fields as $field ) {
+				if ( isset( $field['label'] ) && ! in_array( $field['type'], $skip_types, true ) ) {
+					$input_id = $field['id'];
+					$token_id = "simpay-form-$form_id-field-$input_id";
 
-				$existing_tokens = array_column( $tokens, 'tokenId' );
-				if ( ! in_array( $token_id, $existing_tokens, false ) ) {
-					$fields[] = array(
-						'tokenId'         => $token_id,
-						'tokenName'       => empty( $field['label'] ) ? sprintf( 'Field ID #%s (no label)', $field['uid'] ) : $field['label'],
-						'tokenType'       => 'text',
-						'tokenIdentifier' => 'WPSPFORMFIELDS_META',
-					);
+					$existing_tokens = array_column( $tokens, 'tokenId' );
+					if ( ! in_array( $token_id, $existing_tokens, true ) ) {
+						$fields[] = array(
+							'tokenId'         => $token_id,
+							'tokenName'       => empty( $field['label'] ) ? sprintf( 'Field ID #%s (no label)', $field['uid'] ) : $field['label'],
+							'tokenType'       => 'text',
+							'tokenIdentifier' => 'WPSPFORMFIELDS_META',
+						);
+					}
 				}
 			}
 		}
-		$fields[] = array(
-			'tokenId'         => 'AMOUNT_PAID',
-			'tokenName'       => __( 'Amount paid', 'uncanny-automator' ),
-			'tokenType'       => 'text',
-			'tokenIdentifier' => 'WPSPFORMS',
-		);
-		$tokens   = array_merge( $tokens, $fields );
+		// Non subscription forms
+		if ( $plain ) {
+			$fields[] = array(
+				'tokenId'         => 'AMOUNT_PAID',
+				'tokenName'       => __( 'Amount paid', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPSPFORMS',
+			);
+		}
+		// Subscription forms
+		if ( ! $plain ) {
+			$fields[] = array(
+				'tokenId'         => 'AMOUNT_DUE',
+				'tokenName'       => __( 'Amount due', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_DUE',
+			);
+			$fields[] = array(
+				'tokenId'         => 'AMOUNT_PAID',
+				'tokenName'       => __( 'Amount paid', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_PAID',
+			);
+			$fields[] = array(
+				'tokenId'         => 'AMOUNT_REMAINING',
+				'tokenName'       => __( 'Amount remaining', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_REMAINING',
+			);
+		}
+		$tokens = array_merge( $tokens, $fields );
 
 		return $tokens;
 
@@ -157,17 +198,39 @@ class Wpsp_Tokens {
 			return $value;
 		}
 
-		$trigger_metas = array( 'WPSPFORMS', 'WPSPFORMFIELDS_META', 'WPSPFORMFIELDS_BILLING_FIELDS' );
+		$trigger_metas = array(
+			'WPSPFORMS',
+			'WPSPFORMSUBSCRIPTION',
+			'WPSPFORMFIELDS_META',
+			'WPSPFORMFIELDS_BILLING_FIELDS',
+			'WPSPFORMFIELDS_PLAN_AMOUNT_DUE',
+			'WPSPFORMFIELDS_PLAN_AMOUNT_PAID',
+			'WPSPFORMFIELDS_PLAN_AMOUNT_REMAINING',
+		);
 
 		if ( ! array_intersect( $trigger_metas, $pieces ) ) {
 			return $value;
 		}
 
 		$meta_key = $pieces[2];
+		// Form title
+		if ( 'WPSPFORMS' === $meta_key || 'WPSPFORMSUBSCRIPTION' === $meta_key ) {
+			$value = Automator()->db->token->get( "{$meta_key}_ID", $replace_args );
+			$form  = simpay_get_form( $value );
+			if ( $form ) {
+				return $form->company_name;
+			}
+
+			return __( 'N/A', 'uncanny-automator' );
+		}
+		// Form meta
 		if ( 'WPSPFORMFIELDS_META' === $pieces[1] ) {
 			$meta_data = maybe_unserialize( Automator()->db->token->get( 'meta_data', $replace_args ) );
-			$value     = is_array( $meta_data ) && array_key_exists( $meta_key, $meta_data ) ? $meta_data[ $meta_key ] : '';
-		} elseif ( 'WPSPFORMFIELDS_BILLING_FIELDS' === $pieces[1] ) {
+
+			return is_array( $meta_data ) && array_key_exists( $meta_key, $meta_data ) ? $meta_data[ $meta_key ] : '';
+		}
+		// Billing fields
+		if ( 'WPSPFORMFIELDS_BILLING_FIELDS' === $pieces[1] ) {
 			$customer_data = maybe_unserialize( Automator()->db->token->get( 'customer_data', $replace_args ) );
 			$customer_data = json_decode( wp_json_encode( $customer_data ), false );
 			switch ( $meta_key ) {
@@ -178,9 +241,6 @@ class Wpsp_Tokens {
 					$value = $customer_data->email;
 					break;
 				case 'BILLING_TELEPHONE':
-					$value = $customer_data->phone;
-					break;
-				case 'BILLING_TAX_ID':
 					$value = $customer_data->phone;
 					break;
 				case 'BILLING_STREET_ADDRESS':
@@ -199,8 +259,14 @@ class Wpsp_Tokens {
 					$value = $customer_data->address->country;
 					break;
 			}
-		} else {
-			$value = Automator()->db->token->get( $meta_key, $replace_args );
+
+			return $value;
+		}
+		// Other form tokens
+		$value = Automator()->db->token->get( $meta_key, $replace_args );
+		if ( preg_match( '/(AMOUNT)/', $meta_key ) ) {
+
+			return simpay_format_currency( $value );
 		}
 
 		return $value;

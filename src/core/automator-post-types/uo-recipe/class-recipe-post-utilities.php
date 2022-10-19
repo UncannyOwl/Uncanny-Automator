@@ -550,10 +550,12 @@ class Recipe_Post_Utilities {
 			),
 			'assets'              => array(
 				'global'        => array(
-					'style' => Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
+					'style'  => Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
+					'script' => Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
 				),
 				'recipeBuilder' => array(
-					'style' => Utilities::automator_get_recipe_dist( 'bundle.min.css' ),
+					'style'  => Utilities::automator_get_recipe_dist( 'bundle.min.css' ),
+					'script' => Utilities::automator_get_recipe_dist( 'bundle.min.js' ),
 				),
 			),
 		);

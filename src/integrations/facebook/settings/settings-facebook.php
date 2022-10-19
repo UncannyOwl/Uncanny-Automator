@@ -47,7 +47,7 @@ class Facebook_Settings {
 
 		$this->set_id( 'facebook-pages' );
 
-		$this->set_icon( 'facebook' );
+		$this->set_icon( 'FACEBOOK' );
 
 		$this->set_name( 'Facebook Pages' );
 

@@ -46,7 +46,7 @@ class LinkedIn_Settings {
 
 		$this->set_id( 'linkedin' );
 
-		$this->set_icon( 'linkedin' );
+		$this->set_icon( 'LINKEDIN' );
 
 		$this->set_name( 'LinkedIn Pages' );
 

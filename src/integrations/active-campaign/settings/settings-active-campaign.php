@@ -57,7 +57,7 @@ class Active_Campaign_Settings {
 
 		$this->set_id( 'active-campaign' );
 
-		$this->set_icon( 'active-campaign' );
+		$this->set_icon( 'ACTIVE_CAMPAIGN' );
 
 		$this->set_name( 'ActiveCampaign' );
 

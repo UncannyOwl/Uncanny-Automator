@@ -8,9 +8,14 @@ namespace Uncanny_Automator;
  */
 class FACEBOOK_PAGE_PUBLISH_POST {
 
-	use \Uncanny_Automator\Recipe\Actions;
+	use Recipe\Actions;
+	use Recipe\Action_Tokens;
 
 	const AJAX_ENDPOINT = 'fb_pages_wp_ajax_endpoint_post_page';
+
+	const ACTION_CODE = 'FACEBOOK_PAGE_PUBLISH_POST';
+
+	const ACTION_META = 'FACEBOOK_PAGE_PUBLISH_POST_META';
 
 	public function __construct() {
 
@@ -29,17 +34,22 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 	}
 
 	/**
-	 * Setup SENDEMAIL Automator Action.
+	 * Setup action.
 	 *
 	 * @return void.
 	 */
 	protected function setup_action() {
 
 		$this->set_integration( 'FACEBOOK' );
-		$this->set_action_code( 'FACEBOOK_PAGE_PUBLISH_POST' );
-		$this->set_action_meta( 'FACEBOOK_PAGE_PUBLISH_POST_META' );
+
+		$this->set_action_code( self::ACTION_CODE );
+
+		$this->set_action_meta( self::ACTION_META );
+
 		$this->set_is_pro( false );
+
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/facebook/' ) );
+
 		$this->set_requires_user( false );
 
 		/* translators: Action - WordPress */
@@ -50,10 +60,8 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		$options = array(
 			$this->get_action_meta() => array(
-				// Email From Field.
 				array(
 					'option_code'           => $this->get_action_meta(),
-					/* translators: Email field */
 					'label'                 => esc_attr__( 'Facebook Page', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'is_ajax'               => true,
@@ -76,6 +84,16 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		$this->set_background_processing( true );
 
+		$this->set_action_tokens(
+			array(
+				'POST_LINK' => array(
+					'name' => __( 'Link to Facebook post', 'uncanny-automator' ),
+					'type' => 'url',
+				),
+			),
+			$this->get_action_code()
+		);
+
 		$this->register_action();
 
 	}
@@ -96,7 +114,7 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		$facebook = Automator()->helpers->recipe->facebook->options;
 
-		$page_id = sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_POST_META'] );
+		$page_id = sanitize_text_field( $parsed[ self::ACTION_META ] );
 
 		// Post content editor adds BR tag if shift+enter. Enter key adds paragraph. Support both.
 		$message = sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_PAGE_MESSAGE'] ) );
@@ -109,7 +127,13 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		try {
 
-			$facebook->api_request( $page_id, $body, $action_data );
+			$response = $facebook->api_request( $page_id, $body, $action_data );
+
+			$post_id = isset( $response['data']['id'] ) ? $response['data']['id'] : 0;
+
+			if ( 0 !== $post_id ) {
+				$this->hydrate_tokens( array( 'POST_LINK' => 'https://www.facebook.com/' . $post_id ) );
+			}
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 

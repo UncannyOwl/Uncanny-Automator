@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="google-sheets"></uo-icon>
+				<uo-icon integration="GOOGLESHEET"></uo-icon>
 
 				<?php esc_html_e( 'Google Sheets', 'uncanny-automator' ); ?>
 

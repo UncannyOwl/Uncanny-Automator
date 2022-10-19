@@ -8,6 +8,8 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class TWITTER_POSTSTATUS_2 {
+
+	use Recipe\Action_Tokens;
 	/**
 	 * Integration code
 	 *
@@ -34,7 +36,6 @@ class TWITTER_POSTSTATUS_2 {
 		$this->action_code = 'TWITTERPOSTSTATUS2';
 		$this->action_meta = 'TWITTERSTATUS';
 		$this->define_action();
-
 	}
 
 	/**
@@ -83,7 +84,18 @@ class TWITTER_POSTSTATUS_2 {
 			'background_processing' => true,
 		);
 
+		$this->set_action_tokens(
+			array(
+				'POST_LINK' => array(
+					'name' => __( 'Link to Tweet', 'uncanny-automator' ),
+					'type' => 'url',
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
+
 	}
 
 	/**
@@ -100,7 +112,27 @@ class TWITTER_POSTSTATUS_2 {
 
 			$response = $this->statuses_update( $status, $media, $action_data );
 
+			$post_id = isset( $response['data']['id'] ) ? $response['data']['id'] : 0;
+
+			$has_screen_name = ! empty( $response['data']['user']['screen_name'] );
+
+			if ( 0 !== $post_id && $has_screen_name ) {
+
+				// The Tweet link.
+				$post_link = strtr(
+					'https://twitter.com/{{screen_name}}/status/{{post_id}}',
+					array(
+						'{{screen_name}}' => $response['data']['user']['screen_name'],
+						'{{post_id}}'     => $post_id,
+					)
+				);
+
+				$this->hydrate_tokens( array( 'POST_LINK' => $post_link ) );
+
+			}
+
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+
 			return;
 
 		} catch ( \Exception $e ) {
