@@ -46,7 +46,7 @@ class Google_Sheet_Settings {
 
 		$this->set_id( 'google-sheet' );
 
-		$this->set_icon( 'google-sheets' );
+		$this->set_icon( 'GOOGLESHEET' );
 
 		$this->set_name( 'Google Sheets' );
 

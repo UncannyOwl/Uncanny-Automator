@@ -9,43 +9,43 @@
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<uo-icon id="twilio"></uo-icon> <?php esc_html_e( 'Twilio', 'uncanny-automator' ); ?>
+				<uo-icon integration="TWILIO"></uo-icon> <?php esc_html_e( 'Twilio', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
 				
-					<?php 
-                        
-                        if ( automator_filter_has_var( 'connect' ) ) {
+					<?php
 
-                            $connect = automator_filter_input( 'connect' );
+					if ( automator_filter_has_var( 'connect' ) ) {
 
-                            $alert_heading = __( "There was an error connecting your Twilio account. Please try again or contact support.", 'uncanny-automator' );
-                            $alert_type = 'error';
-                            $alert_content = __( "Error: ", 'uncanny-automator' ) . $connect;
+						$connect = automator_filter_input( 'connect' );
 
-                            if ( 1 == $connect ) { 
-                                $alert_heading = __( 'You have successfully connected your Twilio account', 'uncanny-automator' );
-                                $alert_type = 'success';
-                                $alert_content = '';
-                            }
+						$alert_heading = __( 'There was an error connecting your Twilio account. Please try again or contact support.', 'uncanny-automator' );
+						$alert_type    = 'error';
+						$alert_content = __( 'Error: ', 'uncanny-automator' ) . $connect;
 
-                            ?>
+						if ( 1 == $connect ) {
+							$alert_heading = __( 'You have successfully connected your Twilio account', 'uncanny-automator' );
+							$alert_type    = 'success';
+							$alert_content = '';
+						}
 
-                            <uo-alert
-                                type="<?php echo esc_attr( $alert_type ); ?>"
-                                heading="<?php echo esc_attr( $alert_heading ); ?>"
-                                class="uap-spacing-bottom uap-spacing-top"
-                            ><?php echo esc_attr( $alert_content ); ?></uo-alert>
+						?>
 
-                            <?php
+							<uo-alert
+								type="<?php echo esc_attr( $alert_type ); ?>"
+								heading="<?php echo esc_attr( $alert_heading ); ?>"
+								class="uap-spacing-bottom uap-spacing-top"
+							><?php echo esc_attr( $alert_content ); ?></uo-alert>
 
-                        }
+							<?php
 
-                    ?>
+					}
 
-                <?php if ( ! $this->is_connected ) { ?>
-                    <div class="uap-settings-panel-content-subtitle">
+					?>
+
+				<?php if ( ! $this->is_connected ) { ?>
+					<div class="uap-settings-panel-content-subtitle">
 						<?php esc_html_e( 'Connect Uncanny Automator to Twilio', 'uncanny-automator' ); ?>
 					</div>
 
@@ -66,66 +66,66 @@
 					<div class="uap-settings-panel-content-separator"></div>
 
 					<uo-alert
-                        heading="<?php esc_attr_e( 'Setup instructions', 'uncanny-automator' ); ?>"
-                    >
-                        <?php
+						heading="<?php esc_attr_e( 'Setup instructions', 'uncanny-automator' ); ?>"
+					>
+						<?php
 
-                            echo sprintf(
-                            	/* translators: 1. Link to Automator knowledge base  */
-                                esc_html__( "Connecting to Twilio requires getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
-                                '<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twilio/', 'settings', 'twilio-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
-                            );
+							echo sprintf(
+								/* translators: 1. Link to Automator knowledge base  */
+								esc_html__( "Connecting to Twilio requires getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
+								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twilio/', 'settings', 'twilio-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+							);
 
-                        ?>
-                    </uo-alert>
+						?>
+					</uo-alert>
 
-                <?php } ?>
+				<?php } ?>
 
-                <uo-text-field
-                    id="uap_automator_twilio_api_account_sid"
-                    value="<?php echo esc_attr( $account_sid ); ?>"
-                    required
+				<uo-text-field
+					id="uap_automator_twilio_api_account_sid"
+					value="<?php echo esc_attr( $account_sid ); ?>"
+					required
 
-                    label="<?php esc_attr_e( 'Account SID', 'uncanny-automator' ); ?>"
+					label="<?php esc_attr_e( 'Account SID', 'uncanny-automator' ); ?>"
 
-                    class="uap-spacing-top"
+					class="uap-spacing-top"
 
-                    <?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
-                ></uo-text-field>
+					<?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
+				></uo-text-field>
 
-                <uo-text-field
-                    id="uap_automator_twilio_api_auth_token"
-                    value="<?php echo esc_attr( $auth_token ); ?>"
-                    required
+				<uo-text-field
+					id="uap_automator_twilio_api_auth_token"
+					value="<?php echo esc_attr( $auth_token ); ?>"
+					required
 
-                    label="<?php esc_attr_e( 'Auth token', 'uncanny-automator' ); ?>"
+					label="<?php esc_attr_e( 'Auth token', 'uncanny-automator' ); ?>"
 
-                    class="uap-spacing-top"
+					class="uap-spacing-top"
 
-                    <?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
-                ></uo-text-field>
+					<?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
+				></uo-text-field>
 
-                <?php 
+				<?php
 
-                $phone_number_helper = sprintf(
-                	/* translators: 1. URL */
-            		__( 'See your list of active phone numbers on the %1$s page.', 'uncanny-automator' ),
-            		'<a href="https://www.twilio.com/console/phone-numbers/incoming" target="_blank">' . __( 'Active numbers', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
-            	);
+				$phone_number_helper = sprintf(
+					/* translators: 1. URL */
+					__( 'See your list of active phone numbers on the %1$s page.', 'uncanny-automator' ),
+					'<a href="https://www.twilio.com/console/phone-numbers/incoming" target="_blank">' . __( 'Active numbers', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+				);
 
-                ?>
-                    
-                <uo-text-field
-                    id="uap_automator_twilio_api_phone_number"
-                    value="<?php echo esc_attr( $phone_number ); ?>"
-                    placeholder="+15017122661"
-                    required
+				?>
+					
+				<uo-text-field
+					id="uap_automator_twilio_api_phone_number"
+					value="<?php echo esc_attr( $phone_number ); ?>"
+					placeholder="+15017122661"
+					required
 
-                    label="<?php esc_attr_e( 'Active number', 'uncanny-automator' ); ?>"
-                    helper="<?php echo esc_attr( $phone_number_helper ); ?>"
+					label="<?php esc_attr_e( 'Active number', 'uncanny-automator' ); ?>"
+					helper="<?php echo esc_attr( $phone_number_helper ); ?>"
 
-                    class="uap-spacing-top"
-                ></uo-text-field>
+					class="uap-spacing-top"
+				></uo-text-field>
 
 			</div>
 
@@ -137,55 +137,55 @@
 
 					<?php
 
-                    // Check what button we have to add
-                    if ( $this->is_connected ) {
+					// Check what button we have to add
+					if ( $this->is_connected ) {
 
-                        // Check if we have the username and the ID
-                        if ( ! empty( $this->user['friendly_name'] ) ) {
-                            ?>
+						// Check if we have the username and the ID
+						if ( ! empty( $this->user['friendly_name'] ) ) {
+							?>
 
-                            <div class="uap-settings-panel-user">
+							<div class="uap-settings-panel-user">
 
-                                <div class="uap-settings-panel-user__avatar">
-                                    <?php echo esc_html( strtoupper( $this->user['friendly_name'][0] ) ); ?>
-                                </div>
+								<div class="uap-settings-panel-user__avatar">
+									<?php echo esc_html( strtoupper( $this->user['friendly_name'][0] ) ); ?>
+								</div>
 
-                                <div class="uap-settings-panel-user-info">
-                                    <div class="uap-settings-panel-user-info__main">
-                                        <?php echo esc_html( $this->user['friendly_name'] ); ?>
-                                        <uo-icon id="twilio"></uo-icon>
-                                    </div>
+								<div class="uap-settings-panel-user-info">
+									<div class="uap-settings-panel-user-info__main">
+										<?php echo esc_html( $this->user['friendly_name'] ); ?>
+										<uo-icon integration="TWILIO"></uo-icon>
+									</div>
 
-                                    <div class="uap-settings-panel-user-info__additional">
-                                    	<?php
+									<div class="uap-settings-panel-user-info__additional">
+										<?php
 
-                                    	printf(
-                                    		/* translators: 1. Phone number */
-                                    		esc_html__( 'Active number: %1$s', 'uncanny-automator' ),
-                                    		esc_html( $phone_number )
-                                    	);
+										printf(
+											/* translators: 1. Phone number */
+											esc_html__( 'Active number: %1$s', 'uncanny-automator' ),
+											esc_html( $phone_number )
+										);
 
-                                    	?>
-                                    </div>
-                                </div>
-                            </div>
+										?>
+									</div>
+								</div>
+							</div>
 
-                            <?php
+							<?php
 
-                        }
-                    } else {
+						}
+					} else {
 
-                    	?>
+						?>
 
-                    	<uo-button
+						<uo-button
 							type="submit"
 						>
 							<?php esc_html_e( 'Connect Twilio account', 'uncanny-automator' ); ?>
 						</uo-button>
 
-                    	<?php
+						<?php
 
-                    }
+					}
 
 					?>
 
@@ -193,7 +193,7 @@
 
 				<div class="uap-settings-panel-bottom-right">
 
-                <?php if ( $this->is_connected ) { ?>
+				<?php if ( $this->is_connected ) { ?>
 
 					<uo-button
 						href="<?php echo esc_url( $disconnect_uri ); ?>"
@@ -210,7 +210,7 @@
 						<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
 					</uo-button>
 
-                <?php } ?>
+				<?php } ?>
 					
 				</div>
 

@@ -11,6 +11,8 @@ use WP_User;
  */
 class WP_USERROLE {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -47,7 +49,17 @@ class WP_USERROLE {
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'user_role' ),
-			'options_callback'	  => array( $this, 'load_options' ),
+			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		$this->set_action_tokens(
+			array(
+				'USER_ROLES' => array(
+					'name' => __( "List of user's roles", 'uncanny-automator' ),
+					'type' => 'text',
+				),
+			),
+			$this->action_code
 		);
 
 		Automator()->register->action( $action );
@@ -59,16 +71,17 @@ class WP_USERROLE {
 	 * @return void
 	 */
 	public function load_options() {
-		
+
 		Automator()->helpers->recipe->wp->options->load_options = true;
 
 		$options = Automator()->utilities->keep_order_of_options(
-				array(
-				'options'            => array(
+			array(
+				'options' => array(
 					Automator()->helpers->recipe->wp->options->wp_user_roles(),
 				),
 			)
 		);
+
 		return $options;
 	}
 
@@ -83,14 +96,30 @@ class WP_USERROLE {
 
 		$role = $action_data['meta'][ $this->action_meta ];
 
-		$user_obj   = new WP_User( (int) $user_id );
+		$user_obj = new WP_User( (int) $user_id );
+
 		$user_roles = $user_obj->roles;
-		if ( ! in_array( 'administrator', $user_roles ) ) {
+
+		if ( ! in_array( 'administrator', $user_roles, true ) ) {
+
 			$user_obj->set_role( $role );
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+			// Hydrate the tokens with value.
+			$this->hydrate_tokens(
+				array(
+					'USER_ROLES' => ! empty( $user_obj->roles ) ? implode( ', ', array_values( $user_obj->roles ) ) : '',
+				)
+			);
+
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
+
 		} else {
+
 			$error_message = esc_attr__( 'For security, the change role action cannot be applied to administrators.', 'uncanny-automator' );
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+
+			$action_data['complete_with_errors'] = true;
+
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+
 		}
 	}
 }

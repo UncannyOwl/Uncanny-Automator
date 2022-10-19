@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon id="linkedin"></uo-icon> 
+				<uo-icon integration="LINKEDIN"></uo-icon> 
 
 				<?php esc_html_e( 'LinkedIn Pages', 'uncanny-automator' ); ?>
 
@@ -123,7 +123,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 										<?php echo esc_html( $display_name ); ?>
 
-										<uo-icon id="linkedin"></uo-icon>
+										<uo-icon integration="LINKEDIN"></uo-icon>
 
 									</div>
 

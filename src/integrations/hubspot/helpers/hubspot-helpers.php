@@ -46,8 +46,8 @@ class Hubspot_Helpers {
 	}
 
 	public function load_settings() {
-		$this->setting_tab   = 'hubspot-api';
-		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		$this->setting_tab = 'hubspot-api';
+		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 		include_once __DIR__ . '/../settings/settings-hubspot.php';
 		new Hubspot_Settings( $this );
 	}
@@ -68,7 +68,7 @@ class Hubspot_Helpers {
 		$tokens = get_option( '_automator_hubspot_settings', array() );
 
 		if ( empty( $tokens['access_token'] ) || empty( $tokens['refresh_token'] ) ) {
-			throw new \Exception( __( "HubSpot is not connected", 'uncanny-automator' ) );
+			throw new \Exception( __( 'HubSpot is not connected', 'uncanny-automator' ) );
 		}
 
 		$tokens = $this->maybe_refresh_token( $tokens );
@@ -182,7 +182,7 @@ class Hubspot_Helpers {
 
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => array(
+			'body'     => array(
 				'action' => 'refresh_token',
 				'client' => wp_json_encode( $tokens ),
 			),
@@ -283,13 +283,52 @@ class Hubspot_Helpers {
 	 */
 	public function check_for_errors( $response ) {
 
-		if ( 200 !== intval( $response['statusCode'] ) ) {		
+		if ( isset( $response['data']['status'] ) && 'error' === $response['data']['status'] ) {
+
+			$message = $this->extract_error_message( $response );
+
+			throw new \Exception( $message );
+		}
+
+		if ( 200 !== intval( $response['statusCode'] ) ) {
 			throw new \Exception( __( 'API returned an error: ', 'uncanny-automator' ) . $response['statusCode'], $response['statusCode'] );
 		}
 
-		if ( isset( $response['data']['status'] ) && 'error' === $response['data']['status'] ) {
-			throw new \Exception( $response['data']['message'] );
+	}
+
+	/**
+	 * extract_error_message
+	 *
+	 * @param  array $response
+	 * @return string
+	 */
+	public function extract_error_message( $response ) {
+
+		$message = __( 'API returned an error: ', 'uncanny-automator' ) . $response['statusCode'];
+
+		if ( ! empty( $response['data']['message'] ) ) {
+			$message = $response['data']['message'] . '<br>';
 		}
+
+		if ( ! empty( $response['data']['validationResults'] ) ) {
+
+			foreach ( $response['data']['validationResults'] as $result ) {
+
+				if ( ! empty( $result['error'] ) ) {
+					$message .= '(<strong>' . $result['error'] . '</strong>)';
+				}
+
+				if ( ! empty( $result['name'] ) ) {
+					$message .= ' Field: ' . $result['name'];
+				}
+
+				if ( ! empty( $result['message'] ) ) {
+					$message .= '<br>' . $result['message'] . ')';
+				}
+			}
+		}
+
+		return $message;
 	}
 
 	/**
@@ -326,8 +365,8 @@ class Hubspot_Helpers {
 
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
-			'body' => $body,
-			'action' => $action_data
+			'body'     => $body,
+			'action'   => $action_data,
 		);
 
 		if ( null !== $timeout ) {
@@ -360,8 +399,8 @@ class Hubspot_Helpers {
 			$response = $this->api_request( $request_params );
 
 			$fields[] = array(
-						'value' => '',
-						'text'  => __( 'Select a field', 'uncanny-automator' ),
+				'value' => '',
+				'text'  => __( 'Select a field', 'uncanny-automator' ),
 			);
 
 			foreach ( $response['data'] as $field ) {
@@ -379,7 +418,6 @@ class Hubspot_Helpers {
 					'text'  => $field['label'],
 				);
 			}
-
 		} catch ( \Exception $e ) {
 			$fields[] = array(
 				'value' => '',
@@ -422,7 +460,6 @@ class Hubspot_Helpers {
 					'text'  => $list['name'],
 				);
 			}
-
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
@@ -515,7 +552,7 @@ class Hubspot_Helpers {
 
 		$action       = 'authorization_request';
 		$redirect_url = rawurlencode( $this->tab_url );
-		$url   = $this->automator_api . "?action={$action}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
+		$url          = $this->automator_api . "?action={$action}&redirect_url={$redirect_url}&nonce={$nonce}&api_ver={$api_ver}&plugin_ver={$plugin_ver}";
 
 		return $url;
 	}

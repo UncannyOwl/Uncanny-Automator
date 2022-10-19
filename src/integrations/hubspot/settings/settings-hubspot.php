@@ -21,14 +21,14 @@ class Hubspot_Settings {
 	 */
 	use Settings\Premium_Integrations;
 
-    protected $helpers;
+	protected $helpers;
 
 	/**
 	 * Creates the settings page
 	 */
 	public function __construct( $helpers ) {
 
-        $this->helpers = $helpers;
+		$this->helpers = $helpers;
 
 		// Register the tab
 		$this->setup_settings();
@@ -40,22 +40,22 @@ class Hubspot_Settings {
 
 	}
 
-    /**
+	/**
 	 * Sets up the properties of the settings page
 	 */
 	protected function set_properties() {
 
 		$this->set_id( 'hubspot-api' );
 
-		$this->set_icon( 'hubspot' );
+		$this->set_icon( 'HUBSPOT' );
 
 		$this->set_name( 'Hubspot' );
 
 		try {
-			$this->client = $this->helpers->get_client();
+			$this->client       = $this->helpers->get_client();
 			$this->is_connected = true;
 		} catch ( \Exception $e ) {
-			$this->client = false;
+			$this->client       = false;
 			$this->is_connected = false;
 		}
 
@@ -70,11 +70,11 @@ class Hubspot_Settings {
 	 */
 	public function output() {
 
-        $connect_url = $this->helpers->connect_url();
+		$connect_url = $this->helpers->connect_url();
 
-        $disconnect_url = $this->helpers->disconnect_url();
+		$disconnect_url = $this->helpers->disconnect_url();
 
-        $token_info = $this->helpers->api_token_info();
+		$token_info = $this->helpers->api_token_info();
 
 		// Check if the user JUST connected the workspace and returned
 		// from the HubSpot connection page

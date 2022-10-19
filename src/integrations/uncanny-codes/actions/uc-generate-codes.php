@@ -12,12 +12,17 @@ use \uncanny_learndash_codes\Database;
  */
 class UC_GENERATE_CODES {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
 	 * @var string
 	 */
 	public static $integration = 'UNCANNYCODE';
+	/**
+	 * @var string
+	 */
 	private $action_code;
 
 	/**
@@ -49,12 +54,24 @@ class UC_GENERATE_CODES {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
+		$this->set_action_tokens(
+			array(
+				'BATCH_ID'        => array(
+					'name' => __( 'Batch ID', 'uncanny-automator' ),
+				),
+				'CODES_GENERATED' => array(
+					'name' => __( 'Generated codes', 'uncanny-automator' ),
+					'type' => 'text',
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
 	}
 
 	/**
 	 * load_options
-	 *
 	 */
 	public function load_options() {
 		$options = array(
@@ -134,7 +151,33 @@ class UC_GENERATE_CODES {
 
 			return;
 		}
+
+		$this->hydrate_tokens(
+			array(
+				'BATCH_ID'        => $group_id,
+				'CODES_GENERATED' => $this->get_generated_codes( $group_id ),
+			)
+		);
+
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+
+	}
+
+	/**
+	 * @param $group_id
+	 *
+	 * @return string
+	 */
+	private function get_generated_codes( $group_id ) {
+
+		global $wpdb;
+
+		$tbl_codes = $wpdb->prefix . \uncanny_learndash_codes\Config::$tbl_codes;
+
+		$codes = $wpdb->get_col( $wpdb->prepare( "SELECT `code` FROM $tbl_codes WHERE code_group = %d", $group_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return implode( ', ', $codes );
+
 	}
 
 }

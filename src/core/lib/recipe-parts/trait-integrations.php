@@ -7,8 +7,8 @@
  * @class   Integrations
  * @since   3.0
  * @version 3.0
- * @package Uncanny_Automator
  * @author  Saad S.
+ * @package Uncanny_Automator
  */
 
 
@@ -205,6 +205,14 @@ trait Integrations {
 				'settings_url' => $this->get_settings_url(),
 			)
 		);
+	}
+
+	/**
+	 * Placeholder function to be able to use protected method
+	 * @return string
+	 */
+	public function get_integration_icon() {
+		return $this->get_icon_url();
 	}
 
 	/**

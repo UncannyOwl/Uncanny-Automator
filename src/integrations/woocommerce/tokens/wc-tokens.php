@@ -69,6 +69,8 @@ class Wc_Tokens {
 			'order_qty'             => esc_attr__( 'Order quantity', 'uncanny-automator' ),
 			'order_products_links'  => esc_attr__( 'Order products links', 'uncanny-automator' ),
 			'order_summary'         => esc_attr__( 'Order summary', 'uncanny-automator' ),
+			'order_fees'            => esc_attr__( 'Order fees', 'uncanny-automator' ),
+			'order_shipping'        => esc_attr__( 'Order shipping', 'uncanny-automator' ),
 			'payment_method'        => esc_attr__( 'Payment method', 'uncanny-automator' ),
 		);
 
@@ -284,6 +286,7 @@ class Wc_Tokens {
 			'WCORDERSTATUS',
 			'WCORDERCOMPLETE',
 			'WCSHIPSTATIONSHIPPED',
+			'WOOPRODUCT_PRODUCT_PRICE',
 		);
 
 		if ( $pieces ) {
@@ -337,6 +340,10 @@ class Wc_Tokens {
 								case 'WOOPRODUCT_ID':
 									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
 									$value          = $this->get_woo_product_ids_from_items( $order, $value_to_match );
+									break;
+								case 'WOOPRODUCT_PRODUCT_PRICE':
+									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+									$value          = $this->get_woo_product_price_from_items( $order, $value_to_match );
 									break;
 								case 'WOOPRODUCT_URL':
 									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
@@ -492,6 +499,12 @@ class Wc_Tokens {
 									break;
 								case 'order_tax':
 									$value = strip_tags( wc_price( $order->get_total_tax() ) );
+									break;
+								case 'order_fees':
+									$value = wc_price( $order->get_total_fees() );
+									break;
+								case 'order_shipping':
+									$value = wc_price( $order->get_shipping_total() );
 									break;
 								case 'order_tax_raw':
 									$value = $order->get_total_tax();
@@ -668,6 +681,28 @@ class Wc_Tokens {
 		}
 
 		return join( ', ', $product_ids );
+	}
+
+	/**
+	 * @param \WC_Order $order
+	 * @param $value_to_match
+	 *
+	 * @return string
+	 */
+	public function get_woo_product_price_from_items( WC_Order $order, $value_to_match ) {
+		$items          = $order->get_items();
+		$product_prices = array();
+		if ( $items ) {
+			/** @var WC_Order_Item_Product $item */
+			foreach ( $items as $item ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+					$product          = $item->get_product();
+					$product_prices[] = wc_price( $product->get_price() );
+				}
+			}
+		}
+
+		return join( ', ', $product_prices );
 	}
 
 	/**

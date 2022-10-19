@@ -12,6 +12,7 @@ use Uncanny_Automator_Pro\Event_Tickets_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Event_Tickets_Helpers {
+
 	/**
 	 * @var Event_Tickets_Helpers
 	 */
@@ -31,7 +32,6 @@ class Event_Tickets_Helpers {
 	 * Event_Tickets_Helpers constructor.
 	 */
 	public function __construct() {
-
 		$this->load_options = true;
 	}
 
@@ -55,7 +55,7 @@ class Event_Tickets_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function all_ec_events( $label = null, $option_code = 'ECEVENTS' ) {
+	public function all_ec_events( $label = null, $option_code = 'ECEVENTS', $extra_args = array() ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -65,8 +65,12 @@ class Event_Tickets_Helpers {
 			$label = esc_attr__( 'Event', 'uncanny-automator' );
 		}
 
+		$is_ajax      = key_exists( 'is_ajax', $extra_args ) ? $extra_args['is_ajax'] : false;
+		$target_field = key_exists( 'target_field', $extra_args ) ? $extra_args['target_field'] : '';
+		$end_point    = key_exists( 'endpoint', $extra_args ) ? $extra_args['endpoint'] : '';
+
 		$args = array(
-			'posts_per_page' => 999,
+			'posts_per_page' => 9999,
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'tribe_events',
@@ -80,6 +84,9 @@ class Event_Tickets_Helpers {
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
+			'is_ajax'         => $is_ajax,
+			'fill_values_in'  => $target_field,
+			'endpoint'        => $end_point,
 			//'default_value'      => 'Any post',
 			'options'         => $all_events,
 			'relevant_tokens' => array(
@@ -111,7 +118,7 @@ class Event_Tickets_Helpers {
 		}
 
 		$args    = array(
-			'posts_per_page' => 999,
+			'posts_per_page' => 9999,
 			'orderby'        => 'title',
 			'order'          => 'DESC',
 			'post_type'      => 'tribe_events',

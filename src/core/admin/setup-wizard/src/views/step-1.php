@@ -9,7 +9,7 @@
 	<div class="center row-1">
 
 		<div class="automator-setup-wizard__branding">
-			<img width="380" src="<?php echo esc_url( plugins_url( '../../assets/images/logo.svg', __FILE__ ) ); ?>" alt="" />
+			<img width="380" src="<?php echo esc_url( Uncanny_Automator\Utilities::automator_get_asset( 'backend/dist/img/logo-horizontal.svg' ) ); ?>" alt="" />
 		</div>
 
 		<div class="automator-setup-wizard__steps">

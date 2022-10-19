@@ -22,7 +22,7 @@ class Add_Autonami_Integration {
 	 */
 	protected function setup() {
 		$this->set_integration( 'AUTONAMI' );
-		$this->set_name( 'Autonami' );
+		$this->set_name( 'FunnelKit Automations' );
 		$this->set_icon( __DIR__ . '/img/autonami-icon.svg' );
 
 		// By default, bwfan_contact_added_to_lists action passes a single list or an array of lists.

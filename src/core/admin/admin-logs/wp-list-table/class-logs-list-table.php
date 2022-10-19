@@ -74,6 +74,12 @@ class Logs_List_Table extends WP_List_Table {
 
 	}
 
+	/**
+	 * @param $provider
+	 * @param $tab
+	 *
+	 * @return mixed|string
+	 */
 	private function get_query_provider( $provider = '', $tab = 'recipe-log' ) {
 
 		$tabs_query = array(
@@ -102,6 +108,9 @@ class Logs_List_Table extends WP_List_Table {
 
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	private function get_query() {
 
 		return class_exists( '\Uncanny_Automator_Pro\Pro_Filters' ) ?
@@ -429,14 +438,24 @@ class Logs_List_Table extends WP_List_Table {
 				</div>';
 
 			// Recipe complation date
-			$recipe_date_completed = ( 1 === absint( $recipe->recipe_completed ) || 2 === absint( $recipe->recipe_completed ) || 9 === absint( $recipe->recipe_completed ) ) ? $recipe->recipe_date_time : '';
+			$recipe_date_completed = in_array(
+				absint( $recipe->recipe_completed ),
+				array(
+					Automator_Status::COMPLETED,
+					Automator_Status::COMPLETED_WITH_ERRORS,
+					Automator_Status::DID_NOTHING,
+					Automator_Status::COMPLETED_WITH_NOTICE,
+				)
+			) ?
+				$recipe->recipe_date_time :
+				'';
 
 			$recipe_datetime_completed = $this->get_datetime_formatted( $recipe_date_completed );
 
 			if ( false !== $recipe_datetime_completed ) {
 				$recipe_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-recipe-complation-date">'
-						. esc_html( $recipe_datetime_completed['date'] ) . ' 
+						. esc_html( $recipe_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ '
 						. esc_html( $recipe_datetime_completed['time'] ) . '
 						</span>
@@ -512,15 +531,15 @@ class Logs_List_Table extends WP_List_Table {
 			// Delete button
 			if ( true === apply_filters( 'automator_allow_users_to_delete_in_progress_recipe_runs', true, $recipe_id ) ) {
 
-				$delete_btn = '<uo-button 
+				$delete_btn = '<uo-button
 					class="uap-logs-action-button uap-logs-action-button--delete"
 					size="small"
 					color="transparent"
-					href="%1$s" 
+					href="%1$s"
 					uap-tooltip="' . esc_attr__( 'Delete row', 'uncanny-automator' ) . '"
-					needs-confirmation 
-					confirmation-heading="%2$s" 
-					confirmation-content="%3$s" 
+					needs-confirmation
+					confirmation-heading="%2$s"
+					confirmation-content="%3$s"
 					confirmation-button-label="%4$s">
 						<uo-icon id="trash"></uo-icon>
 					</uo-button>';
@@ -580,7 +599,7 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $trigger_datetime_completed ) {
 				$trigger_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-						esc_html( $trigger_datetime_completed['date'] ) . ' 
+						esc_html( $trigger_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ ' .
 							esc_html( $trigger_datetime_completed['time'] ) .
 						'</span>
@@ -593,11 +612,11 @@ class Logs_List_Table extends WP_List_Table {
 
 			$actions = '
 				<div class="uap-logs-action-buttons">
-					<uo-button 
-						class="uap-log-details uap-logs-action-button uap-logs-action-button--details" 
-						size="small" 
-						color="transparent" 
-						href="#" 
+					<uo-button
+						class="uap-log-details uap-logs-action-button uap-logs-action-button--details"
+						size="small"
+						color="transparent"
+						href="#"
 						uap-tooltip="' . esc_attr__( 'View details', 'uncanny-automator' ) . '"
 						data-lity-target="' . esc_url( $this->get_details_url( $trigger->automator_recipe_id, $run_number_log, $trigger->recipe_log_id ) ) . '"
 						>
@@ -801,11 +820,11 @@ class Logs_List_Table extends WP_List_Table {
 
 			$action_column = '
 				<div class="uap-logs-action-buttons">
-					<uo-button 
-						class="uap-log-details uap-logs-action-button uap-logs-action-button--details" 
-						size="small" 
-						color="transparent" 
-						href="#" 
+					<uo-button
+						class="uap-log-details uap-logs-action-button uap-logs-action-button--details"
+						size="small"
+						color="transparent"
+						href="#"
 						uap-tooltip="' . esc_attr__( 'View details', 'uncanny-automator' ) . '"
 						data-lity-target="' . esc_url( $this->get_details_url( $action->automator_recipe_id, $run_number_log, $action->recipe_log_id ) ) . '">
 						<uo-icon id="info-circle"></uo-icon>
@@ -855,7 +874,7 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $action_datetime_completed ) {
 				$action_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-						esc_html( $action_datetime_completed['date'] ) . ' 
+						esc_html( $action_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ ' .
 							esc_html( $action_datetime_completed['time'] ) . '
 						</span>
@@ -866,8 +885,9 @@ class Logs_List_Table extends WP_List_Table {
 			$error_message = apply_filters( 'automator_action_log_error', $action->error_message, $action );
 
 			/**
-			 * https://developer.wordpress.org/reference/functions/get_edit_post_link/
 			 * Replaced get_edit_post_link() to get_edit_link
+			 *
+			 * <https://developer.wordpress.org/reference/functions/get_edit_post_link/>
 			 *
 			 * The function get_edit_post_link is making a call to get_post() which is uncached.
 			 * Doing this will make Automator query every post just to construct an edit link.
@@ -1005,6 +1025,9 @@ class Logs_List_Table extends WP_List_Table {
 
 	}
 
+	/**
+	 * @return mixed|string[]|null
+	 */
 	protected function get_table_classes() {
 
 		$mode = get_user_setting( 'posts_list_mode', 'list' );
@@ -1076,57 +1099,75 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private function get_user_html( $object ) {
 
-		if ( empty( $object->display_name ) ) {
+		// Safely convert all user id to integer.
+		$user_id = absint( $object->user_id );
 
-			/* translators: User type */
-			$contructed_user_name = esc_attr_x( '—', 'User', 'uncanny-automator' );
-
-		} else {
-
-			$user_link = get_edit_user_link( absint( $object->user_id ), 80 );
-
-			$contructed_user_name = '
-				<a href="' . esc_url( $user_link ) . '">'
-					. esc_html( $object->display_name ) .
-				'</a><br>' .
-				esc_html( $object->user_email );
-
-			$contructed_user_name = '
-				<div class="uap-logs-user">
-					<div class="uap-logs-user__avatar-container">'
-						. get_avatar( $object->user_email, 80, '', '', array( 'class' => 'uap-logs-user__avatar' ) ) . '
-					</div>
-				<div class="uap-logs-user__info">
-					<a href="' . esc_url( $user_link ) . '" class="uap-logs-user__display-name">' . esc_html( $object->display_name ) . '</a>
-					<div class="uap-logs-user__email">' . esc_html( $object->user_email ) . '</div>
-				</div>';
+		// Handle 'everyone' recipe log.
+		if ( empty( $user_id ) ) {
+			return '&mdash;';
 		}
 
-		return $contructed_user_name;
+		$deleted = empty( $object->display_name ) && empty( $object->user_email ) && 0 !== absint( $user_id );
+
+		// Handle logs where user is deleted.
+		if ( $deleted ) {
+			return '
+            <div class="uap-logs-user">
+			    <div class="uap-logs-user__avatar-container">
+				    <img class="uap-logs-user__avatar" src="' . esc_url( Utilities::automator_get_asset( 'backend/dist/img/gravatar-user-deleted.svg' ) ) . '">
+				</div>
+			<div class="uap-logs-user__info">
+			    <div class="uap-logs-user__display-name--deleted-user">' . esc_html__( 'Deleted user', 'uncanny-automator' ) . '</div>'
+				   /* translators: Recipe log user ID column row value. */
+				   . '<div class="uap-logs-user__id">' . sprintf( esc_html__( 'User ID #%1$s', 'uncanny-automator' ), $user_id ) . '</div>
+			</div>';
+		}
+
+		// Otherwise, proceed with the normal flow.
+
+		$user_link = add_query_arg( 'user_id', $user_id, self_admin_url( 'user-edit.php' ) ); // Directly constructed the link to avoid extra query.
+
+		return '
+        <div class="uap-logs-user">
+			<div class="uap-logs-user__avatar-container">'
+			   . get_avatar( $user_id, 80, '', '', array( 'class' => 'uap-logs-user__avatar' ) ) . '
+			</div>
+		    <div class="uap-logs-user__info">
+			    <a href="' . esc_url( $user_link ) . '" class="uap-logs-user__display-name">' . esc_html( $object->display_name ) . '</a>
+		    <div class="uap-logs-user__email">' . esc_html( $object->user_email ) . '</div>
+		</div>';
 
 	}
 
+	/**
+	 * @param $status
+	 *
+	 * @return string
+	 */
 	private function get_status_name( $status ) {
-		// Handle else logic.
-		if ( empty( $status ) ) {
-			$status = 5;
-		}
 
 		return Automator_Status::name( $status );
 
 	}
 
+	/**
+	 * @param $status
+	 *
+	 * @return mixed
+	 */
 	private function get_status_class_name( $status ) {
-
-		// Handle else logic.
-		if ( empty( $status ) ) {
-			$status = 5;
-		}
 
 		return Automator_Status::get_class_name( $status );
 
 	}
 
+	/**
+	 * @param $recipe_id
+	 * @param $run_number_log
+	 * @param $recipe_log_id
+	 *
+	 * @return string
+	 */
 	private function get_details_url( $recipe_id = 0, $run_number_log = 0, $recipe_log_id = 0 ) {
 
 		return sprintf(
@@ -1183,6 +1224,11 @@ class Logs_List_Table extends WP_List_Table {
 	}
 
 
+	/**
+	 * @param $post_id
+	 *
+	 * @return string
+	 */
 	private function get_edit_link( $post_id = 0 ) {
 
 		return add_query_arg(

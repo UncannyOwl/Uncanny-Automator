@@ -45,7 +45,7 @@ class GoToWebinar_Settings {
 
 		$this->set_id( 'go-to-webinar' );
 
-		$this->set_icon( 'gotowebinar' );
+		$this->set_icon( 'GTW' );
 
 		$this->set_name( 'GoTo Webinar' );
 

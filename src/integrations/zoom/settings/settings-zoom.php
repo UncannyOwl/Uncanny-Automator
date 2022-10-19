@@ -47,7 +47,7 @@ class Zoom_Settings {
 
 		$this->set_id( 'zoom-api' );
 
-		$this->set_icon( 'zoom' );
+		$this->set_icon( 'ZOOM' );
 
 		$this->set_name( 'Zoom Meetings' );
 

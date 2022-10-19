@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class UOG_CREATEUNCANNYGROUP {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -57,6 +59,21 @@ class UOG_CREATEUNCANNYGROUP {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
+		$this->set_action_tokens(
+			array(
+				'GROUP_ID'            => array(
+					'name' => __( 'Group ID', 'uncanny-automator' ),
+				),
+				'GROUP_COURSES'       => array(
+					'name' => __( 'Group courses', 'uncanny-automator' ),
+				),
+				'GROUP_LEADER_EMAILS' => array(
+					'name' => __( 'Group Leader emails', 'uncanny-automator' ),
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
 	}
 
@@ -98,6 +115,7 @@ class UOG_CREATEUNCANNYGROUP {
 								'required'                 => true,
 								'supports_multiple_values' => true,
 								'options'                  => $options,
+								'token_name'               => esc_attr__( 'Group course IDs', 'uncanny-automator' ),
 							),
 							array(
 								'option_code' => 'UOGROUPNUMSEATS',
@@ -235,7 +253,37 @@ class UOG_CREATEUNCANNYGROUP {
 
 		do_action( 'uo_new_group_created', $group_id, $user_id );
 
+		$this->hydrate_tokens(
+			array(
+				'GROUP_ID'            => $group_id,
+				'GROUP_COURSES'       => $this->get_group_names( $group_id ),
+				'GROUP_LEADER_EMAILS' => $this->get_group_leaders_email_addresses( $group_id ),
+			)
+		);
+
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 	}
+
+	private function get_group_names( $group_id ) {
+
+		$groups = learndash_group_enrolled_courses( $group_id );
+
+		$group_names = array();
+
+		foreach ( $groups as $group_id ) {
+			$group_names[] = get_the_title( $group_id );
+		}
+
+		return implode( ', ', $group_names );
+	}
+
+	private function get_group_leaders_email_addresses( $group_id ) {
+
+		$group_leaders = learndash_get_groups_administrators( $group_id );
+
+		return ( is_array( array_column( $group_leaders, 'user_email' ) ) ) ? implode( ', ', array_column( $group_leaders, 'user_email' ) ) : array();
+
+	}
+
 }

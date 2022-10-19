@@ -215,6 +215,22 @@ class Set_Up_Automator {
 				$integration_code = method_exists( $i, 'get_integration' ) ? $i->get_integration() : $class::$integration;
 				$active           = method_exists( $i, 'get_integration' ) ? $i->plugin_active() : $i->plugin_active( 0, $integration_code );
 				$active           = apply_filters( 'automator_maybe_integration_active', $active, $integration_code );
+				/**
+				 * Store all the integrations, regardless of the status,
+				 * to get integration name and the icon
+				 * @since v4.6
+				 */
+				$integration_name = method_exists( $i, 'get_name' ) ? $i->get_name() : '';
+				$integration_icon = method_exists( $i, 'get_integration_icon' ) ? $i->get_integration_icon() : '';
+				if ( ! empty( $integration_icon ) && ! empty( $integration_name ) ) {
+					Automator()->set_all_integrations(
+						$integration_code,
+						array(
+							'name'     => $integration_name,
+							'icon_svg' => $integration_icon,
+						)
+					);
+				}
 				if ( true !== $active ) {
 					unset( $i );
 					continue;

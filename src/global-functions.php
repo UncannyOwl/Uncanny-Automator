@@ -26,10 +26,10 @@ function automator_get_recipe_id( $item_id ) {
  *
  * @return array|false
  * @since 3.0
+ * @version 3.0
  * @throws Automator_Exception
  *
  * @package Uncanny_Automator
- * @version 3.0
  */
 function automator_add_integration( $directory ) {
 	return Set_Up_Automator::read_directory( $directory );
@@ -43,8 +43,8 @@ function automator_add_integration( $directory ) {
  * @return bool
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_integration_exists( $integration ) {
 	$integration = strtolower( $integration );
@@ -63,8 +63,8 @@ function automator_integration_exists( $integration ) {
  * @return string
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_get_integration_by_name( $name ) {
 	$integration      = strtolower(
@@ -103,8 +103,8 @@ function automator_get_integration_by_name( $name ) {
  * @return bool
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_add_trigger( $path, $integration ) {
 	$integration = strtolower( $integration );
@@ -126,8 +126,8 @@ function automator_add_trigger( $path, $integration ) {
  * @return bool
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_add_action( $path, $integration ) {
 	$integration = strtolower( $integration );
@@ -149,8 +149,8 @@ function automator_add_action( $path, $integration ) {
  * @return bool
  *
  * @since 3.0
- * @throws Automator_Exception
  * @version 3.0
+ * @throws Automator_Exception
  * @package Uncanny_Automator
  */
 function automator_add_integration_directory( $integration_code, $directory ) {
@@ -185,15 +185,15 @@ function automator_add_integration_icon( $icon_path, $plugin_path = AUTOMATOR_BA
  * @return mixed
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
-function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = FILTER_SANITIZE_STRING ) {
+function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = FILTER_UNSAFE_RAW ) {
 	/*
 	 * View input types: https://www.php.net/manual/en/function.filter-input.php
 	 * View flags at: https://www.php.net/manual/en/filter.filters.sanitize.php
 	 */
-	return filter_input( $type, $variable, $flags );
+	return sanitize_text_field( filter_input( $type, $variable, $flags ) );
 }
 
 
@@ -207,8 +207,8 @@ function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = F
  * @return mixed
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_filter_has_var( $variable = null, $type = INPUT_GET ) {
 	return filter_has_var( $type, $variable );
@@ -224,13 +224,13 @@ function automator_filter_has_var( $variable = null, $type = INPUT_GET ) {
  * @return mixed
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_filter_input_array( $variable = null, $type = INPUT_GET, $flags = array() ) {
 	if ( empty( $flags ) ) {
 		$flags = array(
-			'filter' => FILTER_SANITIZE_STRING,
+			'filter' => FILTER_UNSAFE_RAW,
 			'flags'  => FILTER_REQUIRE_ARRAY,
 		);
 	}
@@ -251,10 +251,10 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
  * @param $code
  *
  * @since 3.0
+ * @version 3.0
  * @throws Automator_Exception
  *
  * @package Uncanny_Automator
- * @version 3.0
  */
 function automator_exception( $message, $code = 999 ) {
 	throw new Automator_Exception( $message, $code );
@@ -268,8 +268,8 @@ function automator_exception( $message, $code = 999 ) {
  * @param mixed $data
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_wp_error( $message, $error_code = 'something_wrong', $data = '' ) {
 	Automator()->error->add_error( $error_code, $message, $data );
@@ -282,8 +282,8 @@ function automator_wp_error( $message, $error_code = 'something_wrong', $data = 
  * @param $error_code
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_wp_error_messages( $error_code = '' ) {
 	Automator()->error->get_messages( $error_code );
@@ -295,8 +295,8 @@ function automator_wp_error_messages( $error_code = '' ) {
  * @param string|mixed $error_code
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_wp_error_get_message( $error_code = 'something_wrong' ) {
 	Automator()->error->get_message( $error_code );
@@ -310,8 +310,8 @@ function automator_wp_error_get_message( $error_code = 'something_wrong' ) {
  * @return bool
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function is_automator_error( $thing ) {
 	return $thing instanceof Automator_WP_Error;
@@ -338,8 +338,8 @@ function automator_db_view_exists( $type = 'recipe' ) {
  * @param false $backtrace
  *
  * @since 3.0
- * @package Uncanny_Automator
  * @version 3.0
+ * @package Uncanny_Automator
  */
 function automator_log( $message = '', $subject = '', $force_log = false, $log_file = 'debug', $backtrace = false ) {
 	Utilities::log( $message, $subject, $force_log, $log_file, $backtrace );

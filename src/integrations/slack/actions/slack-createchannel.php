@@ -8,6 +8,8 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class SLACK_CREATECHANNEL {
+
+	use Recipe\Action_Tokens;
 	/**
 	 * Integration code
 	 *
@@ -56,16 +58,28 @@ class SLACK_CREATECHANNEL {
 					Automator()->helpers->recipe->field->text_field( 'SLACKCHANNELNAME', esc_attr__( 'Channel name', 'uncanny-automator' ) ),
 					//Temporary fix for the UI
 					array(
-						'input_type'  => 'text',
-						'option_code' => 'SLACKCHANNELHIDDEN',
-						'is_hidden'   => true,
+						'input_type'      => 'text',
+						'option_code'     => 'SLACKCHANNELHIDDEN',
+						'is_hidden'       => true,
+						'relevant_tokens' => array(),
 					),
 				),
 			),
 			'background_processing' => true,
 		);
 
+		$this->set_action_tokens(
+			array(
+				'CHANNEL_ID' => array(
+					'name' => __( 'Channel ID', 'uncanny-automator' ),
+					'type' => 'text',
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
+
 	}
 
 	/**
@@ -86,14 +100,32 @@ class SLACK_CREATECHANNEL {
 		$error_msg = '';
 
 		try {
+
 			$response = Automator()->helpers->recipe->slack->conversations_create( $channel_name, $action_data );
+
+			if ( isset( $response['data']['error'] ) ) {
+				throw new \Exception( $response['data']['error'], 400 );
+			}
+
+			if ( isset( $response['data']['channel']['id'] ) ) {
+				$this->hydrate_tokens(
+					array(
+						'CHANNEL_ID' => $response['data']['channel']['id'],
+					)
+				);
+			}
 		} catch ( \Exception $e ) {
-			$error_msg                           = $e->getMessage();
-			$action_data['do-nothing']           = true;
+
+			$error_msg = $e->getMessage();
+
+			$action_data['do-nothing'] = true;
+
 			$action_data['complete_with_errors'] = true;
+
 		}
 
-		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-		return;
+		return Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+
 	}
+
 }

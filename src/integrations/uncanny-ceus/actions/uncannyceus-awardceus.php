@@ -103,7 +103,7 @@ class UNCANNYCEUS_AWARDCEUS {
 
 		$date   = Automator()->parse->text( $action_data['meta']['AWARDCEUSDATE'], $recipe_id, $user_id, $args );
 		$course = Automator()->parse->text( $action_data['meta']['AWARDCEUSCOURSE'], $recipe_id, $user_id, $args );
-		$ceus   = absint( Automator()->parse->text( $action_data['meta']['AWARDCEUS'], $recipe_id, $user_id, $args ) );
+		$ceus   = Automator()->parse->text( $action_data['meta']['AWARDCEUS'], $recipe_id, $user_id, $args );
 
 		// convert date from user input to accepted input
 		$date = date( 'F d Y, g:i:s a', strtotime( $date ) );

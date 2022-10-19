@@ -18,6 +18,14 @@ class Automator_Send_Webhook_Fields {
 	 * @var array
 	 */
 	private $data_format_types;
+	/**
+	 * @var array
+	 */
+	private $data_types = array();
+	/**
+	 * @var array
+	 */
+	private $data_types_key_store = array();
 
 	/**
 	 * Get instance
@@ -48,9 +56,12 @@ class Automator_Send_Webhook_Fields {
 				'xml'                   => 'XML',
 				'GraphQL'               => 'GraphQL',
 				'raw'                   => 'Raw',
-//				'binary'                => 'Binary',
 			)
 		);
+		$this->set_webhook_data_types( 'text', __( 'Text', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'float', __( 'Number', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'bool', __( 'Boolean', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'null', __( 'NULL', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -171,11 +182,19 @@ class Automator_Send_Webhook_Fields {
 					'description'     => sprintf( '<i>%s</i>', esc_html__( 'Separate keys with / to build nested data.', 'uncanny-automator' ) ),
 				),
 				array(
+					'option_code'     => 'VALUE_TYPE',
+					'label'           => __( 'Data type', 'uncanny-automator' ),
+					'input_type'      => 'select',
+					'required'        => false,
+					'options_show_id' => false,
+					'options'         => $this->get_webhook_data_types(),
+				),
+				array(
 					'input_type'      => 'text',
 					'option_code'     => 'VALUE',
 					'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
 					'supports_tokens' => true,
-					'required'        => true,
+					'required'        => false,
 				),
 			),
 
@@ -220,5 +239,28 @@ class Automator_Send_Webhook_Fields {
 				'modules'     => array( 'markdown' ),
 			),
 		);
+	}
+
+	/**
+	 * @param $data_type
+	 * @param $label
+	 *
+	 * @return void
+	 */
+	public function set_webhook_data_types( $data_type, $label ) {
+		if ( ! array_key_exists( $data_type, $this->data_types_key_store ) ) {
+			$this->data_types[] = array(
+				'value' => $data_type,
+				'text'  => $label,
+			);
+		}
+		$this->data_types_key_store[ $data_type ] = $label;
+	}
+
+	/**
+	 * @return mixed|null
+	 */
+	public function get_webhook_data_types() {
+		return apply_filters( 'automator_outgoing_webhook_data_types', $this->data_types );
 	}
 }

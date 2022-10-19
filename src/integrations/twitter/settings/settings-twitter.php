@@ -43,17 +43,17 @@ class Twitter_Settings {
 		// Set the icon
 		// This expects a valid <uo-icon> ID
 		// Check the Design Guidelines to see the list of valid IDs
-		$this->set_icon( 'twitter' );
+		$this->set_icon( 'TWITTER' );
 
 		// Set the name
 		// As this is the brand name, it probably shouldn't be translatable
 		$this->set_name( 'Twitter' );
 
 		try {
-			$this->client = $this->helpers->get_client();
+			$this->client       = $this->helpers->get_client();
 			$this->is_connected = true;
 		} catch ( \Exception $th ) {
-			$this->client = false;
+			$this->client       = false;
 			$this->is_connected = false;
 		}
 
@@ -86,7 +86,7 @@ class Twitter_Settings {
 
 		// Load view
 		include_once 'view-twitter.php';
-	}	
+	}
 }
 
 

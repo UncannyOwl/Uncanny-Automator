@@ -423,7 +423,7 @@ class Automator_Get_Data {
 	 *
 	 * @param null $action_code
 	 *
-	 * @return null|            |array String is the function is not within a class and array if it is
+	 * @return null|string|array String is the function is not within a class and array if it is
 	 */
 	public function action_execution_function_from_action_code( $action_code = null ) {
 
@@ -1389,4 +1389,31 @@ WHERE t.automator_trigger_id = %d
 
 	}
 
+	/**
+	 * @param $action_code
+	 *
+	 * @return bool|void|null
+	 */
+	public function action_has_background_processing( $action_code = null ) {
+
+		if ( null === $action_code || ! is_string( $action_code ) ) {
+			Automator()->error->add_error( 'action_integration_from_action_code', 'ERROR: You are trying to get a action integration code from a action code without providing an $action_code', $this );
+
+			return null;
+		}
+
+		// Load all default trigger settings
+		$system_actions = Automator()->get_actions();
+
+		if ( empty( $system_actions ) ) {
+			return null;
+		}
+
+		foreach ( $system_actions as $system_action ) {
+
+			if ( $system_action['code'] === $action_code ) {
+				return isset( $system_action['background_processing'] ) && true === $system_action['background_processing'];
+			}
+		}
+	}
 }

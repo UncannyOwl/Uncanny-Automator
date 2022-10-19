@@ -60,7 +60,7 @@ class Mailchimp_Settings {
 
 		$this->set_id( 'mailchimp_api' );
 
-		$this->set_icon( 'mailchimp' );
+		$this->set_icon( 'MAILCHIMP' );
 
 		$this->set_name( 'Mailchimp' );
 

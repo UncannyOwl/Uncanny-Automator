@@ -108,7 +108,7 @@ class WhatsApp_Settings {
 
 		$this->set_id( 'whatsapp' );
 
-		$this->set_icon( 'whatsapp' );
+		$this->set_icon( 'WHATSAPP' );
 
 		$this->set_name( 'WhatsApp' );
 

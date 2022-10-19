@@ -598,10 +598,24 @@ class Recipe_Post_Rest_Api {
 					foreach ( $meta_value as $meta_key => $meta_val ) {
 						$meta_val = Automator()->utilities->maybe_slash_json_value( $meta_val, true );
 						update_post_meta( $item_id, $meta_key, $meta_val );
+
+						/**
+						 * Added in case the action uses another action's token,
+						 * and it happens to use Background processing
+						 * @since 4.6
+						 */
+						$this->has_action_token( $item, $meta_val );
 					}
 				} else {
 					$meta_value = Automator()->utilities->maybe_slash_json_value( $meta_value, true );
 					update_post_meta( $item_id, $meta_key, $meta_value );
+
+					/**
+					 * Added in case the action uses another action's token,
+					 * and it happens to use Background processing
+					 * @since 4.6
+					 */
+					$this->has_action_token( $item, $meta_value );
 				}
 				Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
@@ -1329,5 +1343,49 @@ class Recipe_Post_Rest_Api {
 		$return['success'] = true;
 
 		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * @param $item
+	 * @param $meta_value
+	 *
+	 * @return void
+	 */
+	public function has_action_token( $item, $meta_value ) {
+		if ( 'uo-action' !== $item->post_type ) {
+			return;
+		}
+
+		// Match action tokens
+		preg_match_all( '/{{ACTION\_(FIELD|META)\:(.*?)}}/', $meta_value, $matches );
+		// Nothing matched
+		if ( empty( $matches ) || ! array_key_exists( 0, $matches ) || empty( $matches[0] ) ) {
+			return;
+		}
+		$already_updated = array();
+		foreach ( $matches[0] as $action_token ) {
+			/**
+			 * SAMPLE: {{ACTION_META:74046:FACEBOOK_GROUPS_PUBLISH_POST:POST_LINK}}
+			 * 0 = ACTION_META
+			 * 1 = 74046
+			 * 2 = FACEBOOK_GROUPS_PUBLISH_POST
+			 * 3 = POST_LINK
+			 */
+			$raw = explode( ':', str_replace( array( '{', '}' ), '', $action_token ) );
+			// Get action ID
+			$action_id = isset( $raw[1] ) ? absint( $raw[1] ) : null;
+			// Get action code
+			$action_code = isset( $raw[2] ) ? sanitize_text_field( $raw[2] ) : null;
+			// Check if the action has background processing set to true
+			$has_background_processing = Automator()->get->action_has_background_processing( $action_code );
+			if ( ! $has_background_processing ) {
+				continue;
+			}
+			if ( null !== $action_id && ! in_array( $action_id, $already_updated, true ) ) {
+				// Update that action's postmeta to skip background processing
+				update_post_meta( $action_id, Background_Actions::IS_USED_FOR_ACTION_TOKEN, $item->ID );
+				$already_updated[] = $action_id;
+			}
+		}
 	}
 }

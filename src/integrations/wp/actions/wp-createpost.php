@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class WP_CREATEPOST {
 
+	use Recipe\Action_Tokens;
+
 	public static $integration = 'WP';
 
 	private $action_code = 'CREATEPOST';
@@ -43,7 +45,26 @@ class WP_CREATEPOST {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
+		$this->set_action_tokens(
+			array(
+				'POST_ID'       => array(
+					'name' => __( 'Post ID', 'uncanny-automator' ),
+					'type' => 'int',
+				),
+				'POST_URL'      => array(
+					'name' => __( 'Post URL', 'uncanny-automator' ),
+					'type' => 'url',
+				),
+				'POST_URL_EDIT' => array(
+					'name' => __( 'Post edit URL', 'uncanny-automator' ),
+					'type' => 'url',
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
+
 	}
 
 	public function load_options() {
@@ -242,6 +263,21 @@ class WP_CREATEPOST {
 				}
 			}
 		}
+
+		// Hydrate the tokens with value.
+		$this->hydrate_tokens(
+			array(
+				'POST_ID'       => $post_id,
+				'POST_URL'      => get_permalink( $post_id ),
+				'POST_URL_EDIT' => add_query_arg(
+					array(
+						'post'   => $post_id,
+						'action' => 'edit',
+					),
+					admin_url( 'post.php' )
+				),
+			)
+		);
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 

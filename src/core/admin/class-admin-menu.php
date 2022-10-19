@@ -9,6 +9,9 @@ namespace Uncanny_Automator;
  */
 class Admin_Menu {
 
+	/**
+	 * @var null
+	 */
 	public static $instance = null;
 
 	/**
@@ -125,6 +128,9 @@ class Admin_Menu {
 
 	}
 
+	/**
+	 * @return Admin_Menu|null
+	 */
 	public static function get_instance() {
 
 		if ( null === self::$instance ) {
@@ -523,6 +529,9 @@ class Admin_Menu {
 		return false;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function maybe_redirect_to_first_settings_tab() {
 
 		if ( $this->is_pro_older_than_38() ) {
@@ -920,15 +929,15 @@ class Admin_Menu {
 	private function get_js_backend_inline_data( $hook ) {
 		// Set default data
 		$automator_backend_js = array(
-			'ajax'      => array(
+			'ajax'       => array(
 				'url'   => admin_url( 'admin-ajax.php' ),
 				'nonce' => \wp_create_nonce( 'uncanny_automator' ),
 			),
-			'rest'      => array(
+			'rest'       => array(
 				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			),
-			'i18n'      => array(
+			'i18n'       => array(
 				'error'     => array(
 					'request' => array(
 						'badRequest'   => array(
@@ -976,8 +985,13 @@ class Admin_Menu {
 					),
 				),
 			),
-			'debugging' => array(
+			'debugging'  => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
+			),
+			'components' => array(
+				'icon' => array(
+					'integrations' => $this->get_integrations_for_components(),
+				),
 			),
 		);
 
@@ -1343,4 +1357,45 @@ class Admin_Menu {
 		include Utilities::automator_get_view( 'admin-integrations/single.php' );
 	}
 
+	/**
+	 * @return array
+	 */
+	public function get_integrations_for_components() {
+		// List all integrations, active and not active
+		$integrations = Automator()->get_all_integrations();
+		if ( empty( $integrations ) ) {
+			return array();
+		}
+		$data = array();
+		foreach ( $integrations as $integration_id => $integration ) {
+			if ( array_key_exists( $integration_id, $data ) ) {
+				continue;
+			}
+			$data[ $integration_id ] = array(
+				'id'   => $integration_id,
+				'icon' => isset( $integration['icon_svg'] ) ? $integration['icon_svg'] : '',
+				'name' => isset( $integration['name'] ) ? $integration['name'] : '',
+			);
+		}
+
+		// fallback for legacy methods,
+		// where a trait method is not used
+		// to define integration. Mostly API integrations
+		$integrations = Automator()->get_integrations();
+		if ( empty( $integrations ) ) {
+			return $data;
+		}
+		foreach ( $integrations as $integration_id => $integration ) {
+			if ( array_key_exists( $integration_id, $data ) ) {
+				continue;
+			}
+			$data[ $integration_id ] = array(
+				'id'   => $integration_id,
+				'icon' => isset( $integration['icon_svg'] ) ? $integration['icon_svg'] : '',
+				'name' => isset( $integration['name'] ) ? $integration['name'] : '',
+			);
+		}
+
+		return $data;
+	}
 }

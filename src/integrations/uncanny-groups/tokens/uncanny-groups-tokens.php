@@ -3,19 +3,156 @@
 namespace Uncanny_Automator;
 
 /**
- *
+ * Tokens class for Uncanny Groups
  */
 class Uncanny_Groups_Tokens {
 
 	/**
 	 * Uncanny_Groups_Tokens constructor.
 	 */
-	public function __construct() {
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_uncanny_groups_token' ), 20, 6 );
-		add_filter( 'automator_maybe_trigger_uog_groupcreated_tokens', array( $this, 'group_possible_tokens' ), 20, 2 );
+	public function __construct( $load_action_hook = true ) {
+
+		if ( true === $load_action_hook ) {
+			add_filter( 'automator_maybe_parse_token', array( $this, 'parse_uncanny_groups_token' ), 20, 6 );
+			add_filter(
+				'automator_maybe_trigger_uog_groupcreated_tokens',
+				array(
+					$this,
+					'group_possible_tokens',
+				),
+				20,
+				2
+			);
+		}
+
 	}
 
 	/**
+	 * Tokens added for Seats added triggers.
+	 *
+	 * @return array[]
+	 */
+	public function seats_added_tokens() {
+
+		return array(
+			'GROUP_ID'            => array(
+				'name' => __( 'Group ID', 'uncanny-automator' ),
+			),
+			'GROUP_TITLE'         => array(
+				'name' => __( 'Group title', 'uncanny-automator' ),
+			),
+			'SEATS_ADDED'         => array(
+				'name' => __( 'Seats added', 'uncanny-automator' ),
+			),
+			'GROUP_LEADER_EMAILS' => array(
+				'name' => __( 'Group leader email(s)', 'uncanny-automator' ),
+			),
+		);
+	}
+
+	/**
+	 * Tokens added for Seats removed triggers.
+	 *
+	 * @return array[]
+	 */
+	public function seats_removed_tokens() {
+
+		return array(
+			'GROUP_ID'            => array(
+				'name' => __( 'Group ID', 'uncanny-automator' ),
+			),
+			'GROUP_TITLE'         => array(
+				'name' => __( 'Group title', 'uncanny-automator' ),
+			),
+			'SEATS_REMOVED'       => array(
+				'name' => __( 'Seats removed', 'uncanny-automator' ),
+			),
+			'GROUP_LEADER_EMAILS' => array(
+				'name' => __( 'Group leader email(s)', 'uncanny-automator' ),
+			),
+		);
+	}
+
+	/**
+	 * Hydrate token method for Seats added trigger.
+	 *
+	 * @param $parsed
+	 * @param $args
+	 * @param $trigger
+	 *
+	 * @return array
+	 */
+	public function seats_added_tokens_hydrate_tokens( $parsed, $args, $trigger ) {
+
+		list( $count, $ld_group_id ) = $args['trigger_args'];
+
+		return $parsed + array(
+			'NUMBERCOND'          => $this->get_trigger_option_selected_value( $args['trigger_entry']['trigger_to_match'], 'NUMBERCOND' ),
+			'GROUP_ID'            => absint( $ld_group_id ),
+			'GROUP_TITLE'         => get_the_title( absint( $ld_group_id ) ),
+			'SEATS_ADDED'         => absint( $count ),
+			'GROUP_LEADER_EMAILS' => Automator()->helpers->recipe->uncanny_groups->options->get_group_leaders_email_addresses( $ld_group_id ),
+		);
+
+	}
+
+	/**
+	 * Directly fetches the value from db.
+	 *
+	 * @return string The field value.
+	 */
+	private function get_trigger_option_selected_value( $trigger_id = 0, $meta_key = '' ) {
+
+		if ( empty( $trigger_id ) || empty( $meta_key ) ) {
+			return null;
+		}
+
+		global $wpdb;
+
+		$value = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s LIMIT 1",
+				$trigger_id,
+				$meta_key
+			)
+		);
+
+		if ( 'NUMBERCOND' === $meta_key ) {
+			return Automator()->helpers->recipe->uncanny_groups->options->get_number_conditions_values( $value );
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Hydrate token method for Seats removed trigger.
+	 *
+	 * @param $parsed
+	 * @param $args
+	 * @param $trigger
+	 *
+	 * @return array
+	 */
+	public function seats_removed_tokens_hydrate_tokens( $parsed, $args, $trigger ) {
+
+		list( $diff, $ld_group_id ) = $args['trigger_args'];
+
+		return $parsed + array(
+			'NUMBERCOND'          => $this->get_trigger_option_selected_value( $args['trigger_entry']['trigger_to_match'], 'NUMBERCOND' ),
+			'GROUP_ID'            => absint( $ld_group_id ),
+			'GROUP_TITLE'         => get_the_title( absint( $ld_group_id ) ),
+			'SEATS_REMOVED'       => absint( $diff ),
+			'GROUP_LEADER_EMAILS' => Automator()->helpers->recipe->uncanny_groups->options->get_group_leaders_email_addresses( $ld_group_id ),
+		);
+
+	}
+
+
+
+	/**
+	 * Uncanny groups possible tokens add
+	 *
 	 * @param $tokens
 	 * @param $args
 	 *
@@ -71,6 +208,8 @@ class Uncanny_Groups_Tokens {
 	}
 
 	/**
+	 * Parse tokens method
+	 *
 	 * @param $value
 	 * @param $pieces
 	 * @param $recipe_id

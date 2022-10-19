@@ -103,7 +103,7 @@ class MASTERSTUDY_COURSEDONE {
 
 		$total_progress = \STM_LMS_Lesson::get_total_progress( $user_id, $course_id );
 
-		if ( ! empty( $total_progress ) && $total_progress['course_completed'] ) {
+		if ( ! empty( $total_progress ) && 100 === absint( $progress ) ) {
 
 			$args = array(
 				'code'    => $this->trigger_code,

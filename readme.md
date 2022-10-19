@@ -1,11 +1,11 @@
 # Uncanny Automator – Automate everything with the #1 no-code Automation tool for WordPress
 
 **Contributors:** uncannyautomator, uncannyowl, smub \
-**Tags:** automation, zapier, google sheets, mailchimp, learndash \
+**Tags:** automation, google sheets, mailchimp, learndash, webhooks, woocommerce automation, marketing, twitter, facebook, whatsapp, buddyboss, tutor lms \
 **Requires at least:** 5.3 \
-**Tested up to:** 6.0.2 \
+**Tested up to:** 6.0.3 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.5.0.2 \
+**Stable tag:** 4.6 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -13,11 +13,11 @@ Uncanny Automator is the easiest and most powerful way to connect your WordPress
 
 ## Description
 
-Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and external apps together using billions of recipe combinations.
+Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and non-WordPress apps together using billions of recipe combinations.
 
 Here's how Uncanny Automator works:
 
-When one thing happens, Automator can make other things happen.
+When something happens, Automator can make other things happen.
 
 When a user buys a product, add them to a membership level, enroll them in a course and pass their information to Google Sheets.
 
@@ -25,11 +25,35 @@ It's that simple! Here's a video outlining how it all works.
 
 https://www.youtube.com/watch?v=LMR5YIPu2Kk
 
-If you've used Zapier or Integromat before, setting things up will be intuitive. And if not, that's okay too!
+If you've used Zapier, setting things up will be intuitive. And if not, that's okay too!
+
+### E-commerce Automation
+
+Improve customer engagement by having your purchases trigger marketing automation campaigns, award store credit, promote 5-star reviews, schedule time-limited bonus offers and offer profile-driven discounts. Or for advanced reporting and customer service, create WooCommerce automations that send purchase details to Google Sheets, Slack and ActiveCampaign. It’s all automatic and you can build these recipes in minutes!
+
+### Google Sheets Automation
+
+Build powerful reports and dashboards based on almost any WordPress activity or data with 1-click Google Sheets integration. Track purchases, course completions, blog post updates, forum posts and more. Not only can you create new rows for reports with Uncanny Automator, but you can update existing records, making it perfect for dashboard reporting.
+
+### Webhook Automation
+
+Looking for the most powerful and comprehensive webhook support to connect your WordPress site to other apps? Uncanny Automator has support for security headers, any request method and any data format (including nesting support, JSON, XML, arrays and more). Use our 1-click sample generation and debug records to simplify connecting to other sites and systems, and send unlimited outgoing webhooks with the free version.
+
+### E-Learning Automation
+
+Personalize student experiences and deliver better learning outcomes with no-code automations. Notify an instructor when users fail a quiz and enroll them in a remedial course–automatically. Add users to groups based on performance to allow easy collaboration. Automate student outreach when users fall behind in their coursework and offer easy learning interventions.
+
+### Social Media Automation
+
+Spend less time sharing your posts and announcements on social media with automatic posting. Automatically post anything you want to Facebook Pages, Facebook Groups, Twitter, LinkedIn and Instagram, including with images and links. Sign up for a free account to get 1,000 credits for social posting; Pro plugin users get unlimited posting.
+
+### BuddyBoss Automation
+
+Put your social community on autopilot with simple Automator recipes that promote sharing and collaboration. Sync groups with membership levels, share key accomplishments in your activity feeds, move users between groups as they progress in LearnDash courses.
 
 ### Free doesn't mean limited
 
-The free version of Automator is incredibly powerful and comes with built-in automation support for all of these popular WordPress plugins and apps:
+The free version of Automator is incredibly powerful and comes with built-in automation support for all of these popular apps and WordPress plugins:
 
 ### Supported apps
 
@@ -51,7 +75,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
-### Integrations
+### WordPress Plugins Integrations
 
 - [Advanced Ads](https://automatorplugin.com/integration/advanced-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Advanced Coupons](https://automatorplugin.com/integration/advanced-coupons/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -130,6 +154,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WooCommerce ShipStation](https://automatorplugin.com/integration/woocommerce-shipstation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WooCommerce Subscriptions](https://automatorplugin.com/integration/woocommerce-subscriptions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WordPress](https://automatorplugin.com/integration/wordpress-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WordPress Multisite](https://automatorplugin.com/integration/wordpress-multisite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -145,7 +170,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
-Over 250+ automation triggers and actions are available for the plugins listed above in the free version. There's simple documentation to follow in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
+Over 300 automation triggers and actions are available for the plugins listed above in the free version. There's straightforward documentation in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
 
 Beyond the plugin and API-based integrations, this free version of Uncanny Automator also supports common WP triggers and actions in automations:
 
@@ -167,11 +192,9 @@ All plugin triggers and actions included in Uncanny Automator come with a foreve
 - Tag contacts in ActiveCampaign based on their WP activity
 - and more
 
-Uncanny Automator does all of this with a single plugin; there's no need to invite conflicts and performance issues with lots of extra integration plugins!
-
 ### Take automation to the next level
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of non-WordPress integrations like Google Sheets and Twitter. It also almost triples the number of available triggers and actions.
+[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of non-WordPress integrations like Google Sheets and Twitter. It also triples the number of available triggers and actions.
 
 Here are some of the other really cool automations you can create with [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=create_really_cool_automations):
 
@@ -213,6 +236,14 @@ You can learn more about Uncanny Automator on our website at [https://automatorp
 
 Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=how_to_create_first_automation). Don't forget to watch the video there. Hopefully it will be the first recipe of many!
 
+### Will Uncanny Automator slow down my website?
+
+Uncanny Automator is built from the ground up for efficiency and performance. Automator adds negligible overhead to WordPress sites and has been rigorously tested across dozens of hosting environments.
+
+### What are the limits of your free version?
+
+All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include non-WordPress apps, like Twitter and Facebook, you can create a free account to unlock 1,000 credits to try out these integrations.
+
 ### Is Automator translation friendly?
 
 Absolutely! The plugin was created with translation in mind and tested with a variety of translation plugins. We will support any translation issues you run into.
@@ -225,9 +256,37 @@ The best thing you can do is reach out to the creator of the plugin that you wan
 
 Check out our developer documentation over at [https://developer.automatorplugin.com/](https://developer.automatorplugin.com/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=code_integration). Also consider reaching out to our team, maybe we can help or even turn it into an official integration!
 
+### Can I automatically share posts & updates on social media?
+
+Yes. It is easy to set up automation and share content on Social Media platforms. Set up integrations with Instagram, Facebook Pages, Facebook Groups, LinkedIn Pages and Twitter by creating a free account to unlock 1,000 free credits.
+
+### Do I need coding skills or help from a developer?
+
+No coding skills are required. Uncanny Automator is built for non-developers to build automations using our intuitive recipe builder.
+
+### Can I automate a WooCommerce site?
+
+Yes, Uncanny Automator is deeply integrated with WooCommerce! It can be used for product coss-selling and promotions. Create follow-up emails and coupons for strategic WooCommerce email marketing campaigns.
+
+### Does Uncanny Automator allow me to customize the look and design of the emails it sends?
+
+Yes, with WordPress's "Send Email" action, send rich text, plain text and raw HTML emails. Create follow-up emails with your own custom HTML templates.
+
+### Why should I consider upgrading to Uncanny Automator Pro?
+
+You can use the free version forever without purchasing the Uncanny Automator Pro version. However, with Uncanny Automator Pro, you'll get access to more automation triggers and actions, as well as unlimited credits for app integrations. Visit [our plans page](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_campaign=faq) to learn more.
+
+### Can I send automated WhatsApp messages?
+
+Absolutely! With Uncanny Automator, you can send WhatsApp messages and WhatsApp message templates with our powerful WhatsApp integration.
+
+### Can I send automated SMS messages?
+
+Yes! Send SMS messages with our Twilio integration. Send an SMS after a user submits a form, after a user makes a purchase with WooCommerce, or any other supported trigger.
+
 ### Who is Uncanny Owl?
 
-We're a Toronto-based WordPress company specializing in elearning and automation solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) (now used on over 30,000 elearning sites!) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=who_is_uncannyowl).
+We're a Toronto-based WordPress company specializing in elearning and automation solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=who_is_uncannyowl).
 
 ## Screenshots
 
@@ -265,6 +324,113 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.6 [2022-10-19]
+
+**New Feature:**
+
+* Action tokens - Actions now generate tokens for subsequent actions, enabling powerful automations where actions are linked and build upon each other #1312
+
+**New Triggers:**
+
+* Uncanny Groups - A number of seats greater than, less than, equal to, not equal to a specific number are added to an Uncanny group #2658
+* Uncanny Groups - A number of seats greater than, less than, equal to, not equal to a specific number are removed from an Uncanny group #2659
+* WP Simple Pay - A subscription for a form is created #2697
+
+**New Trigger Tokens:**
+
+* WooCommerce - Order fees, Order shipping #2670
+* WooCommerce - Product price in all Product triggers #2669
+
+**New Action Tokens:**
+
+* Facebook Groups #2741
+	* Publish a post to a Facebook group
+		* Link to Facebook post
+	* Publish a post with an image to a Facebook group
+		* Link to Facebook post
+	* Share a link with a message to a Facebook group
+		* Link to Facebook post
+* Facebook Pages #2742
+	* Publish a post to a Facebook page
+		* Link to Facebook post
+	* Publish a post with an image to a Facebook page
+		* Link to Facebook post
+	* Share a link with a message to a Facebook page
+		* Link to Facebook post
+* LearnDash #2723
+	* Create a group
+		* Group ID
+		* Group course IDs
+		* Group courses
+		* Group Leader emails
+* Slack #2720
+	* Create a channel
+		* Channel ID
+* Twitter #2744
+	* Post a tweet to Twitter
+		* Link to Tweet
+* Uncanny Groups #2721
+	* Create an Uncanny group
+		* Group ID
+		* Group course IDs
+		* Group courses
+		* Group Leader emails
+* Uncanny Codes #2722
+	* Generate a batch of codes for Automator
+		* Generated codes
+		* Batch ID
+* WordPress #2719
+	* Create a post
+		* Post ID
+		* Post URL
+		* Post edit URL
+	* Add a new role to the user's roles
+		* List of user's roles
+	* Change the user's role to a new role
+		* List of user's roles
+
+**Added:**
+
+* Duplicate recipe - Support for action tokens #2758
+* Outgoing Webhooks - "Data type" field added to define the type of the value #2673
+* Outgoing Webhooks - Now logs 20x, 30x, 40x and 50x statuses, if returned by the destination server #2672
+* Recipe UI - Support adding an empty conditions block before adding an action #2709
+
+**Updated:**
+
+* Autonami renamed to FunnelKit Automations #2739
+* HubSpot & Recipe logs - More descriptive error messages in logs #2737
+* The Event Calendar - Attendee tokens are now parsed reliably #2711
+* WordPress - Post excerpt token now auto-generates excerpt when no excerpt exists #2724
+
+**Fixed:**
+
+* CEU - Award a number of custom CEUs to the user - Decimal values now supported #2692
+* Gravity Forms - Fixed "list" and "multi-select" token parsing #2665
+* Elementor - Tokens only appear if the page is published #2718
+* MailPoet - Add a subscriber to a list - Do not send confirmation email checkbox now adds subscriber directly to list with "Subscribed" status
+* MailPoet - Add a subscriber to a list now adds the selected status #2761
+* MasterStudy LMS - A user completes a course - Not firing in some situations #2687
+* Recipe UI - User selector - "Role" field label missing #974
+
+**Known issues:**
+
+* MailPoet - Add a subscriber to a list - Email confirmation when subscribing a user to a list is bypassed even if the user is sent a confirmation email
+
+**Under the hood:**
+
+* Action logs - Fixed In progress status display in action #2701
+* Automator Free - Setup wizard - Updated branding #2674
+* Duplicate recipe - No longer breaks if there are no tokens in a recipe #2749
+* Duplicate recipe - Now duplicates actions in a recipe with no triggers #2753
+* Duplicate recipe - Now properly updates ID of the Magic button and Magic link triggers #2754
+* Input parser - Uncaught TypeError: `strpos()``: Argument #1 (``$haystack`) must be of type `string`, `array` given #2745
+* PHP Deprecated: Constant `FILTER_SANITIZE_STRING` is deprecated - PHP 8.1 #2751
+* Recipe Traits\Filters: Added PHPDoc Comments, and formatted ``$this->explain` to make clearer. Also supports number conditions #2703
+* Recipe UI Field - `create_field`'s `input_type` is hard-coded to `int` even when `float` is used #2733
+* Recipe logs - Display "Deleted user" message when a log entry references a user that was subsequently deleted #2685
+* Slack - Uncanny Automator App icon updated
 
 ### 4.5.0.2 [2022-09-29]
 
@@ -349,7 +515,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Automator Dashboard - Guest icon updated #2111
 * Automator UI - Some assets missing on new installs #2492
 * Automator web component - uo-button onclick does not honor return confirm #2532
-* Class Actionify_Triggers  - Reduced unnecessary do_action hooks when the trigger is in draft #2625
+* Class Actionify_Triggers - Reduced unnecessary do_action hooks when the trigger is in draft #2625
 * Dashboard - Reduced credit queries to the API #2605
 * Incoming premium triggers - Check if Pro license is active when an incoming trigger should be charged #2557
 * Recipe UI - Group actions by condition support for Automator Pro (Pro 4.5) #1414
@@ -559,7 +725,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 	* Post/Page author first name
 	* Post/Page author last name
 	* Post/Page author display name
-	* Post/Page author email 
+	* Post/Page author email
 
 **Added:**
 
@@ -641,7 +807,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WordPress Core - "A user publishes a type of post with a taxonomy term in a taxonomy" now displays all public and private post types #2169
 * Delay Modal - Hour selection is not displaying #2128
 * Premium API Integrations - Unnecessary HTTP API calls fixed when user is unauthenticated #2127
-* PHP Notices - "Attempt to read property of `post_type`" in a few triggers #2185 
+* PHP Notices - "Attempt to read property of `post_type`" in a few triggers #2185
 * Recipe UI Field - TinyMCE textarea is deleting content on save #2146
 * Remove extra spaces from some token names #2177
 
@@ -922,7 +1088,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Fixed:**
 
-* LearnDash – PHP error “is_ajax” not a function on some sites when Automator marks a course complete
+* LearnDash – PHP error "is_ajax" not a function on some sites when Automator marks a course complete
 
 ### 3.8 [2022-03-10]
 
@@ -985,58 +1151,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Uncanny Codes - A user redeems a code from a batch - Now fires more reliably
 * WordPress Core - PHP Warning: Attempt to read property "post_type" on null in wp-viewpost.php #1567
 * Database error: Column meta_value cannot be null #1565
-
-### 3.7.0.1 [2022-02-17]
-
-**Fixed:**
-
-* Twilio - Conflict related to moving integration out of Pro
-
-### 3.7 [2022-02-17]
-
-**New Integrations:**
-
-* [Amelia](https://automatorplugin.com/integration/amelia?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)
-* [Webhooks](https://automatorplugin.com/integration/webhooks?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)
-* [Twilio](https://automatorplugin.com/integration/twilio?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)
-
-**New Triggers:**
-
-* Amelia - An appointment is booked #1421
-* Amelia - A user books an appointment #1420
-
-**New Actions:**
-
-* Twilio - Send an SMS message to a number
-* Webhooks - Send data to a webhook (previously in Automator Core)
-
-**Updated:**
-
-* Facebook Pages - Changed "Share a photo to a Facebook page" to "Publish a post with an image to a Facebook page" #1431
-* The Events Calendar/Event Tickets - Added token support for attendee Information #1422
-* Tin Canny Reporting - Added support for "Any statement" and "Use a token/custom value" #1409
-* Tutor LMS - Improved compatibility with Tutor LMS 2.0+
-* Twitter - Renamed "Post a status to Twitter" to "Post a tweet to Twitter" #1404
-* WordPress Core - "Create a post" action - Added "Excerpt" field #1372
-* WPForms - Added token support for the "file upload" field type #1419
-* Common Token - Renamed "User reset password URL" to "User reset password link" #1499
-* Recipe UI - Simplified the UI of the condition pills #1448
-* Recipe UI - Changed "Use a custom value" to "Use a token/custom value" #1406
-* Recipe UI - When multiple triggers from the same integration are used in a recipe, tokens now show trigger ID to avoid ambiguity #979
-
-**Fixed:**
-
-* Elementor - "Error: site_inactive" using an Elementor form to add an attendee to a Zoom Webinar
-* Facebook - "Share a photo to a Facebook page" action now shows "completed with errors" when an invalid image URL is supplied #1425
-* GamiPress - Revoke points from the user not working on some sites #1515
-* Google Sheets - "COLUMN_NAME" erroneously conflicts with MySQL reserve keyword on some environments #1453
-* LearnDash - Triggers related to failing a quiz now fire reliably #1513
-* PHP Notice: Undefined index: integration_name in class-usage-reports.php:490 #1508
-* Webhooks - "Send data to a webhook" now parses tokens in the Webhook URL field #1465
-* WordPress Core - A user's post receives a comment now fires when an admin replies from /wp-admin #1490
-* WordPress Core - Send an email erroneously failing for non-wp_mail related errors #1423
-* WordPress Core - Post URL token now outputs permalink format based on permalink setting #1416
-* Recipe UI - Switch fields no longer show two labels in some situations #1410
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

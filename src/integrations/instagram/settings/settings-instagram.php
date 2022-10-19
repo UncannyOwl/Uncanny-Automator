@@ -50,7 +50,7 @@ class Instagram_Settings {
 
 		$this->set_id( 'instagram' );
 
-		$this->set_icon( 'instagram' );
+		$this->set_icon( 'INSTAGRAM' );
 
 		$this->set_name( 'Instagram' );
 

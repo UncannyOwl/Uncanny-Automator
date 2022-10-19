@@ -47,7 +47,7 @@ class Zoom_Webinar_Settings {
 
 		$this->set_id( 'zoom-webinar-api' );
 
-		$this->set_icon( 'zoom' );
+		$this->set_icon( 'ZOOMWEBINAR' );
 
 		$this->set_name( 'Zoom Webinars' );
 

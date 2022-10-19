@@ -10,6 +10,8 @@ class FACEBOOK_GROUP_PUBLISH_POST {
 
 	use Recipe\Actions;
 
+	use Recipe\Action_Tokens;
+
 	const INTEGRATION = 'FACEBOOK_GROUPS';
 
 	const CODE = 'FACEBOOK_GROUPS_PUBLISH_POST';
@@ -60,6 +62,16 @@ class FACEBOOK_GROUP_PUBLISH_POST {
 
 		$this->set_background_processing( true );
 
+		$this->set_action_tokens(
+			array(
+				'POST_LINK' => array(
+					'name' => __( 'Link to Facebook post', 'uncanny-automator' ),
+					'type' => 'url',
+				),
+			),
+			$this->get_action_code()
+		);
+
 		$this->register_action();
 
 	}
@@ -106,7 +118,13 @@ class FACEBOOK_GROUP_PUBLISH_POST {
 
 		try {
 
-			$helper->api_request( $body, $action_data );
+			$response = $helper->api_request( $body, $action_data );
+
+			$post_id = isset( $response['data']['id'] ) ? $response['data']['id'] : 0;
+
+			if ( 0 !== $post_id ) {
+				$this->hydrate_tokens( array( 'POST_LINK' => 'https://www.facebook.com/' . $post_id ) );
+			}
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
@@ -116,6 +134,7 @@ class FACEBOOK_GROUP_PUBLISH_POST {
 
 			// Log error if there are any error messages.
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+
 		}
 
 	}

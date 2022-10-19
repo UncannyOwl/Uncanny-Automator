@@ -222,4 +222,12 @@ class Automator_Tokens {
 
 		return apply_filters( 'automator_maybe_trigger_tokens', $tokens, $recipe_id );
 	}
+
+
+	public function get_action_tokens_renderable( $action ) {
+
+		return apply_filters( 'automator_action_' . $action['code'] . '_tokens_renderable', array() );
+
+	}
+
 }

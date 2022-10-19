@@ -47,7 +47,7 @@ class Twilio_Settings {
 
 		$this->set_id( 'twilio-api' );
 
-		$this->set_icon( 'twilio' );
+		$this->set_icon( 'TWILIO' );
 
 		$this->set_name( 'Twilio' );
 

@@ -8,7 +8,8 @@ namespace Uncanny_Automator;
  */
 class FACEBOOK_PAGE_PUBLISH_LINK {
 
-	use \Uncanny_Automator\Recipe\Actions;
+	use Recipe\Actions;
+	use Recipe\Action_Tokens;
 
 	const AJAX_ENDPOINT = 'fb_pages_wp_ajax_endpoint_post_link';
 
@@ -87,6 +88,16 @@ class FACEBOOK_PAGE_PUBLISH_LINK {
 
 		$this->set_background_processing( true );
 
+		$this->set_action_tokens(
+			array(
+				'POST_LINK' => array(
+					'name' => __( 'Link to Facebook post', 'uncanny-automator' ),
+					'type' => 'url',
+				),
+			),
+			$this->get_action_code()
+		);
+
 		$this->register_action();
 
 	}
@@ -119,7 +130,13 @@ class FACEBOOK_PAGE_PUBLISH_LINK {
 
 		try {
 
-			$facebook->api_request( $page_id, $body, $action_data );
+			$response = $facebook->api_request( $page_id, $body, $action_data );
+
+			$post_id = isset( $response['data']['id'] ) ? $response['data']['id'] : 0;
+
+			if ( 0 !== $post_id ) {
+				$this->hydrate_tokens( array( 'POST_LINK' => 'https://www.facebook.com/' . $post_id ) );
+			}
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 

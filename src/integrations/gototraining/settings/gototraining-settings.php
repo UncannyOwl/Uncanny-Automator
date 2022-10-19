@@ -46,7 +46,7 @@ class GoToTraining_Settings {
 
 		$this->set_id( 'go-to-training' );
 
-		$this->set_icon( 'gototraining' );
+		$this->set_icon( 'GTT' );
 
 		$this->set_name( 'GoTo Training' );
 

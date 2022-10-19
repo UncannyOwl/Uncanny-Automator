@@ -11,6 +11,8 @@ use WP_User;
  */
 class WP_ADDROLE {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -50,6 +52,16 @@ class WP_ADDROLE {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
+		$this->set_action_tokens(
+			array(
+				'USER_ROLES' => array(
+					'name' => __( "List of user's roles", 'uncanny-automator' ),
+					'type' => 'text',
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
 	}
 
@@ -86,6 +98,14 @@ class WP_ADDROLE {
 		$user_obj = new WP_User( (int) $user_id );
 		if ( $user_obj instanceof WP_User ) {
 			$user_obj->add_role( $role );
+
+			// Hydrate the tokens with value.
+			$this->hydrate_tokens(
+				array(
+					'USER_ROLES' => ! empty( $user_obj->roles ) ? implode( ', ', array_values( $user_obj->roles ) ) : '',
+				)
+			);
+
 			Automator()->complete->user->action( $user_id, $action_data, $recipe_id );
 		}
 	}
