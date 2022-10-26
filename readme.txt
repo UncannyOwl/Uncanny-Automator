@@ -4,7 +4,7 @@ Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce aut
 Requires at least: 5.3
 Tested up to: 6.0.3
 Requires PHP: 5.6
-Stable tag: 4.6
+Stable tag: 4.6.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -299,6 +299,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.6.0.1 [2022-10-26] =
+
+**Fixed:**
+
+* Webhooks - Receive data from a webhook (Automator Pro only) - Legacy tokens are shown as invalid in some situations #2785
 
 = 4.6 [2022-10-19] =
 
