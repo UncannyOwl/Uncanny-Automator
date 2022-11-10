@@ -80,7 +80,7 @@ class FCRM_USER_TO_LIST {
 	 * @param $action_data
 	 * @param $recipe_id
 	 */
-	public function list_to_user( $user_id, $action_data, $recipe_id ) {
+	public function list_to_user( $user_id, $action_data, $recipe_id, $args ) {
 
 		$lists     = array_map( 'intval', json_decode( $action_data['meta'][ $this->action_meta ] ) );
 		$user_info = get_userdata( $user_id );

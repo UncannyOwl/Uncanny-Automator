@@ -55,8 +55,21 @@ class Zoom_Settings {
 		$this->register_option( 'uap_automator_zoom_api_consumer_secret' );
 		$this->register_option( 'uap_automator_zoom_api_settings_timestamp' );
 
+		$this->register_option( 'uap_automator_zoom_api_account_id' );
+		$this->register_option( 'uap_automator_zoom_api_client_id' );
+		$this->register_option( 'uap_automator_zoom_api_client_secret' );
+
+		$this->register_option( 'uap_automator_zoom_api_settings_version' );
+
 		$this->api_key    = trim( get_option( 'uap_automator_zoom_api_consumer_key', '' ) );
 		$this->api_secret = trim( get_option( 'uap_automator_zoom_api_consumer_secret', '' ) );
+		$this->account_id = '';
+
+		if ( '3' === get_option( 'uap_automator_zoom_api_settings_version', false ) ) {
+			$this->account_id = trim( get_option( 'uap_automator_zoom_api_account_id', '' ) );
+			$this->api_key    = trim( get_option( 'uap_automator_zoom_api_client_id', '' ) );
+			$this->api_secret = trim( get_option( 'uap_automator_zoom_api_client_secret', '' ) );
+		}
 
 		$this->user = false;
 
@@ -82,8 +95,52 @@ class Zoom_Settings {
 
 		$disconnect_url = $this->helpers->disconnect_url();
 
-		include_once 'view-zoom.php';
+		if ( automator_filter_input( 'automator_zoom_jwt' ) ) {
+			include_once 'view-zoom-v2.php';
+			return;
+		}
 
+		// If old JWT app is connected, show old settings
+		if ( $this->helpers->jwt_mode() && $this->is_connected ) {
+			include_once 'view-zoom-v2.php';
+			return;
+		}
+
+		include_once 'view-zoom-v3.php';
+
+	}
+
+	public function settings_updated() {
+
+		try {
+
+			delete_option( 'uap_zoom_api_connected_user' );
+			delete_option( '_uncannyowl_zoom_settings' );
+
+			$this->user = $this->helpers->api_get_user_info();
+
+			$this->is_connected = true;
+			$this->set_status( 'success' );
+
+			$this->add_alert(
+				array(
+					'type'    => 'success',
+					'heading' => __( 'You have successfully connected your Zoom Meetings account', 'uncanny-automator' ),
+				)
+			);
+
+		} catch ( \Exception $e ) {
+			$this->is_connected = false;
+			$this->set_status( '' );
+			$this->add_alert(
+				array(
+					'type'    => 'error',
+					'heading' => 'Connection error',
+					'content' => __( 'There was an error connecting your Zoom Meetings account: ', 'uncanny-automator' ) . $e->getMessage(),
+				)
+			);
+			return;
+		}
 	}
 
 }

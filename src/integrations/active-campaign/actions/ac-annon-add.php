@@ -122,14 +122,12 @@ class AC_ANNON_ADD {
 				/* translators: First name */
 				'label'       => esc_attr__( 'First name', 'uncanny-automator' ),
 				'input_type'  => 'text',
-				'required'    => true,
 			),
 			array(
 				'option_code' => $this->prefix . '_LAST_NAME',
 				/* translators: Last name */
 				'label'       => esc_attr__( 'Last name', 'uncanny-automator' ),
 				'input_type'  => 'text',
-				'required'    => true,
 			),
 			array(
 				'option_code' => $this->prefix . '_PHONE',

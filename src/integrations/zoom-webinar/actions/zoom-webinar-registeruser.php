@@ -25,6 +25,7 @@ class ZOOM_WEBINAR_REGISTERUSER {
 	public function __construct() {
 		$this->action_code = 'ZOOMWEBINARREGISTERUSER';
 		$this->action_meta = 'ZOOMWEBINAR';
+		$this->helpers     = new Zoom_Webinar_Helpers();
 		$this->define_action();
 	}
 
@@ -40,6 +41,7 @@ class ZOOM_WEBINAR_REGISTERUSER {
 			//'is_deprecated'      => true,
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
+			/* translators: Webinar topic */
 			'sentence'              => sprintf( __( 'Add the user to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name'    => __( 'Add the user to {{a webinar}}', 'uncanny-automator' ),
 			'priority'              => 10,
@@ -67,14 +69,50 @@ class ZOOM_WEBINAR_REGISTERUSER {
 	 * @return void
 	 */
 	public function load_options() {
+
+		$account_users_field = array(
+			'option_code'           => 'ZOOMUSER',
+			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => false,
+			'is_ajax'               => true,
+			'endpoint'              => 'uap_zoom_api_get_webinars',
+			'fill_values_in'        => $this->action_meta,
+			'options'               => $this->helpers->get_account_user_options(),
+			'relevant_tokens'       => array(),
+			'supports_custom_value' => false,
+		);
+
+		$user_webinars_field = array(
+			'option_code'           => $this->action_meta,
+			'label'                 => __( 'Webinar', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => true,
+			'options'               => array(),
+			'supports_tokens'       => false,
+			'supports_custom_value' => false,
+		);
+
+		$option_fileds = array(
+			$account_users_field,
+			$user_webinars_field,
+			$this->helpers->get_webinar_questions_repeater(),
+		);
+
+		//Don't show the user dropdown to old credentials so it's easier to test the update
+		if ( $this->helpers->jwt_mode() ) {
+			$option_fileds = array(
+				Automator()->helpers->recipe->zoom_webinar->get_webinars_field( null, $this->action_meta ),
+				Automator()->helpers->recipe->zoom_webinar->get_webinar_questions_repeater(),
+			);
+		}
+
 		return array(
 			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->zoom_webinar->get_webinars( null, $this->action_meta ),
-					Automator()->helpers->recipe->zoom_webinar->get_webinar_questions_repeater(),
-				),
+				$this->action_meta => $option_fileds,
 			),
 		);
+
 	}
 
 	/**

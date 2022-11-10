@@ -30,6 +30,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'input_type'      => 'int',
 			'default'         => '',
 			'token_name'      => '',
+			'min_number'      => null,
+			'max_number'      => null,
 			'supports_tokens' => true,
 		);
 		$args            = wp_parse_args( $args, $defaults );
@@ -42,6 +44,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$token_name      = $args['token_name'];
 		$supports_tokens = $args['supports_tokens'];
 		$input_type      = $args['input_type'];
+		$min_number      = $args['min_number'];
+		$max_number      = $args['max_number'];
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -53,6 +57,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'default_value'   => $default,
 			'token_name'      => $token_name,
 			'supports_tokens' => $supports_tokens,
+			'min_number'      => $min_number,
+			'max_number'      => $max_number,
 		);
 
 		return apply_filters( 'automator_option_' . strtolower( $option_code ) . '_field', $option, $args );
@@ -75,6 +81,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'input_type'      => 'int',
 			'default'         => '',
 			'token_name'      => '',
+			'min_number'      => null,
+			'max_number'      => null,
 			'supports_tokens' => true,
 		);
 		$args     = wp_parse_args( $args, $defaults );
@@ -125,6 +133,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'input_type'      => 'float',
 			'default'         => '',
 			'token_name'      => '',
+			'min_number'      => null,
+			'max_number'      => null,
 			'supports_tokens' => true,
 		);
 		$args     = wp_parse_args( $args, $defaults );
@@ -175,6 +185,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'required'                  => true,
 			'tokens'                    => true,
 			'default'                   => null,
+			'min_number'                => null,
+			'max_number'                => null,
 			'supports_tinymce'          => null,
 			'supports_fullpage_editing' => null,
 			'token_name'                => '',
@@ -192,6 +204,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$supports_tinymce          = $args['supports_tinymce'];
 		$supports_fullpage_editing = $args['supports_fullpage_editing'];
 		$token_name                = $args['token_name'];
+		$min_number                = $args['min_number'];
+		$max_number                = $args['max_number'];
 
 		$option = array(
 			'option_code'               => $option_code,
@@ -205,6 +219,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'supports_tinymce'          => $supports_tinymce,
 			'supports_fullpage_editing' => $supports_fullpage_editing,
 			'token_name'                => $token_name,
+			'min_number'                => $min_number,
+			'max_number'                => $max_number,
 		);
 
 		// Enable TinyMCE by default for all textarea fields unless other specified
@@ -351,7 +367,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 
 				// Custom value description
 				// default: ''
-				$field_args['custom_value_description'] = isset( $args['custom_value_description'] ) ? $args['custom_value_description'] : true;
+				$field_args['custom_value_description'] = isset( $args['custom_value_description'] ) ? $args['custom_value_description'] : '';
 			}
 		}
 
@@ -497,11 +513,15 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	}
 
 	/**
-	 * @param $option_code
+	 * @param string $option_code
 	 * @param $label
-	 * @param $options
+	 * @param array $options
 	 * @param $default
-	 * @param $is_ajax
+	 * @param string $placeholder
+	 * @param bool $supports_token
+	 * @param bool $is_ajax
+	 * @param array $args
+	 * @param array $relevant_tokens
 	 *
 	 * @return mixed
 	 */
@@ -534,7 +554,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		if ( ! $label ) {
 			$label = esc_attr__( 'Option', 'uncanny-automator' );
 		}
-
+		$token_name               = isset( $args['token_name'] ) ? $args['token_name'] : '';
 		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$description              = key_exists( 'description', $args ) ? $args['description'] : null;
@@ -544,7 +564,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$supports_tokens       = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
 		$supports_tokens       = apply_filters_deprecated( 'uap_option_' . $option_code . '_select_field', array( $supports_tokens ), '3.0', 'automator_option_' . $option_code . '_select_field' );
 		$supports_tokens       = apply_filters( 'automator_option_' . $option_code . '_select_field', $supports_tokens );
-		$token_name            = apply_filters( 'automator_option_' . $option_code . '_select_field_token_name', '', $args );
+		$token_name            = apply_filters( 'automator_option_' . $option_code . '_select_field_token_name', $token_name, $args );
 		$options_show_id       = empty( $args['options_show_id'] ) ? true : $args['options_show_id'];
 		$options_show_id       = apply_filters( 'automator_options_show_id', $options_show_id, $this );
 		$option                = array(
@@ -566,7 +586,6 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'token_name'               => $token_name,
 			'options_show_id'          => $options_show_id,
 		);
-
 		if ( ! empty( $relevant_tokens ) ) {
 			$option['relevant_tokens'] = $relevant_tokens;
 		}

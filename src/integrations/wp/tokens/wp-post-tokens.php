@@ -146,31 +146,37 @@ class Wp_Post_Tokens {
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORFN',
-				'tokenName'       => __( 'Post author first name', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORLN',
-				'tokenName'       => __( 'Post author last name', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORDN',
-				'tokenName'       => __( 'Post author display name', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author display name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHOREMAIL',
-				'tokenName'       => __( 'Post author email', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author email', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'POSTAUTHORID',
+				'tokenName'       => __( 'Post author ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORURL',
-				'tokenName'       => __( 'Post author URL', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -245,73 +251,79 @@ class Wp_Post_Tokens {
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORFN',
-				'tokenName'       => __( 'Post author first name', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORLN',
-				'tokenName'       => __( 'Post author last name', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORDN',
-				'tokenName'       => __( 'Post author display name', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author display name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHOREMAIL',
-				'tokenName'       => __( 'Post author email', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author email', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'POSTAUTHORID',
+				'tokenName'       => __( 'Post author ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORURL',
-				'tokenName'       => __( 'Post author URL', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Post author URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTERNAME',
-				'tokenName'       => __( 'Commenter name', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Commenter name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTEREMAIL',
-				'tokenName'       => __( 'Commenter email', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Commenter email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTERWEBSITE',
-				'tokenName'       => __( 'Commenter website', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Commenter website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTCONTENT',
-				'tokenName'       => __( 'Comment content', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Comment content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTURL',
-				'tokenName'       => __( 'Comment URL', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Comment URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTDATE',
-				'tokenName'       => __( 'Comment submitted date', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Comment submitted date', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTSTATUS',
-				'tokenName'       => __( 'Comment status', 'uncanny-automator-pro' ),
+				'tokenName'       => __( 'Comment status', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -392,6 +404,10 @@ class Wp_Post_Tokens {
 			case 'POSTAUTHOREMAIL':
 				$author_id = get_post_field( 'post_author', $comment->comment_post_ID );
 				$value     = get_the_author_meta( 'user_email', $author_id );
+				break;
+			case 'POSTAUTHORID':
+				$author_id = get_post_field( 'post_author', $comment->comment_post_ID );
+				$value     = $author_id;
 				break;
 			case 'POSTAUTHORURL':
 				$author_id = get_post_field( 'post_author', $comment->comment_post_ID );
@@ -533,6 +549,9 @@ class Wp_Post_Tokens {
 				break;
 			case 'POSTAUTHOREMAIL':
 				$value = get_the_author_meta( 'user_email', $post->post_author );
+				break;
+			case 'POSTAUTHORID':
+				$value = $post->post_author;
 				break;
 			case 'POSTAUTHORURL':
 				$value = get_the_author_meta( 'url', $post->post_author );

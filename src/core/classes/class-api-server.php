@@ -214,13 +214,17 @@ class Api_Server {
 
 		$api->maybe_throw_exception( $response_body, $code );
 
-		if ( isset( $response_body['statusCode'] ) && array_key_exists( 'data', $response_body ) ) {
+		if ( ! isset( $response_body['statusCode'] ) ) {
+			throw new \Exception( 'Unrecognized API response', 500 );
+		}
+
+		if ( array_key_exists( 'data', $response_body ) ) {
 			return $response_body;
 		}
 
-		automator_log( var_export( $response_body, true ), 'Unrecognized API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+		automator_log( var_export( $response_body, true ), 'Empty API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 
-		throw new \Exception( 'Unrecognized API response', 500 );
+		throw new \Exception( 'API returned an empty response with error code ' . $response_body['statusCode'], $response_body['statusCode'] );
 	}
 
 	/**

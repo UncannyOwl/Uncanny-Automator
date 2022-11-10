@@ -808,7 +808,7 @@ class Google_Sheet_Helpers {
 	 */
 	public function disconnect_user() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING ), 'uo-google-user-disconnect' ) ) {
+		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), 'uo-google-user-disconnect' ) ) {
 
 			$this->api_revoke_access();
 

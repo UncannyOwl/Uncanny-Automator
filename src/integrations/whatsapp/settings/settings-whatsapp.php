@@ -12,10 +12,6 @@ namespace Uncanny_Automator;
 
 class WhatsApp_Settings {
 
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
 	use Settings\Premium_Integrations;
 
 	protected $helper = '';
@@ -183,7 +179,7 @@ class WhatsApp_Settings {
 			__( 'Learn more', 'uncanny-automator' )
 		);
 
-		$webhook_url = get_rest_url() . AUTOMATOR_REST_API_END_POINT . $this->get_helper()->get_webhook_url();
+		$webhook_url = $this->get_helper()->get_webhook_url();
 
 		$verify_token = $this->get_helper()->get_webhook_key();
 

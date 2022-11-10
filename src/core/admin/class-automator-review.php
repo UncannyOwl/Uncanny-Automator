@@ -3,8 +3,8 @@
  * @class   Admin_Review
  * @since   3.0
  * @version 4.2
- * @package Uncanny_Automator
  * @author  Saad S.
+ * @package Uncanny_Automator
  */
 
 namespace Uncanny_Automator;
@@ -18,8 +18,14 @@ use WP_REST_Response;
  */
 class Automator_Review {
 
+	/**
+	 *
+	 */
 	const REVIEW_BANNER_TMP_NUM_DAYS = 10;
 
+	/**
+	 *
+	 */
 	public function __construct() {
 
 		add_action( 'admin_init', array( $this, 'maybe_ask_review' ) );
@@ -34,6 +40,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function handle_feedback() {
 
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'feedback_banner' ) ) {
@@ -248,72 +257,12 @@ class Automator_Review {
 	 * @since 3.1
 	 */
 	public function get_recipes_using_credits() {
-
-		global $wpdb;
-
-		$integration_codes = array(
-			'GOOGLESHEET',
-			'SLACK',
-			'MAILCHIMP',
-			'TWITTER',
-			'FACEBOOK',
-			'INSTAGRAM',
-			'HUBSPOT',
-			'ACTIVE_CAMPAIGN',
-			'TWILIO',
-		);
-
-		$where_meta = array();
-		foreach ( $integration_codes as $code ) {
-			$where_meta[] = " `meta_value` LIKE '{$code}' ";
-		}
-
-		$meta          = implode( ' OR ', $where_meta );
-		$check_recipes = $wpdb->get_col( $wpdb->prepare( "SELECT rp.ID as ID FROM $wpdb->posts cp LEFT JOIN $wpdb->posts rp ON rp.ID = cp.post_parent WHERE cp.ID IN ( SELECT post_id FROM $wpdb->postmeta WHERE $meta ) AND cp.post_status LIKE %s AND rp.post_status LIKE %s", 'publish', 'publish' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-
 		// The rest response object
 		$response = (object) array();
 
 		$response->success = true;
 
-		$recipes = array();
-		if ( ! empty( $check_recipes ) ) {
-			foreach ( $check_recipes as $recipe_id ) {
-				// Get the title
-				$recipe_title = get_the_title( $recipe_id );
-				$recipe_title = ! empty( $recipe_title ) ? $recipe_title : sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $recipe_id );
-
-				// Get the URL
-				$recipe_edit_url = get_edit_post_link( $recipe_id );
-
-				// Get the recipe type
-				$recipe_type = Automator()->utilities->get_recipe_type( $recipe_id );
-
-				// Get the times per user
-				$recipe_times_per_user = '';
-				if ( $recipe_type == 'user' ) {
-					$recipe_times_per_user = get_post_meta( $recipe_id, 'recipe_completions_allowed', true );
-				}
-
-				// Get the total allowed completions
-				$recipe_allowed_completions_total = get_post_meta( $recipe_id, 'recipe_max_completions_allowed', true );
-
-				// Get the number of runs
-				$recipe_number_of_runs = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $recipe_id, 1 ) );
-
-				$recipes[] = array(
-					'id'                        => $recipe_id,
-					'title'                     => $recipe_title,
-					'url'                       => $recipe_edit_url,
-					'type'                      => $recipe_type,
-					'times_per_user'            => $recipe_times_per_user,
-					'allowed_completions_total' => $recipe_allowed_completions_total,
-					'completed_runs'            => $recipe_number_of_runs,
-				);
-			}
-		}
-
-		$response->recipes = $recipes;
+		$response->recipes = Automator()->get->recipes_using_credits();
 
 		$response = new \WP_REST_Response( $response, 200 );
 
@@ -462,6 +411,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function get_review_banner_template() {
 
 		// 900 Credits remaining. Only shows if Automator Pro is not enabled.
@@ -508,6 +460,12 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @param $template
+	 * @param $args
+	 *
+	 * @return void
+	 */
 	public function get_template( $template = '', $args = array() ) {
 
 		$vars = array_merge( $this->get_common_vars(), $args );
@@ -516,6 +474,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_common_vars() {
 
 		return array(
@@ -528,6 +489,12 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @param $args
+	 * @param $type
+	 *
+	 * @return string
+	 */
 	public function get_banner_url( $args = array(), $type = '' ) {
 
 		return add_query_arg(
@@ -542,6 +509,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_feedback_url() {
 
 		$is_pro = false;
@@ -599,6 +569,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return false|float
+	 */
 	public function get_banner_hidden_days() {
 
 		$date_updated = get_option( '_uncanny_automator_review_reminder_date', 0 );
@@ -611,14 +584,23 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_banner_hidden_temporarily() {
 		return 'maybe-later' === get_option( '_uncanny_automator_review_reminder' );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_banner_hidden_forever() {
 		return 'hide-forever' === get_option( '_uncanny_automator_review_reminder' );
 	}
 
+	/**
+	 * @return mixed|null
+	 */
 	public function get_credits_remaining() {
 
 		$credits = Api_Server::is_automator_connected();
@@ -634,34 +616,20 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return mixed|null
+	 */
 	public function get_sent_emails_count() {
 
 		return apply_filters( 'automator_review_get_sent_emails_count', absint( get_option( 'automator_sent_email_completed', 0 ) ), $this );
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function get_completed_recipes_count() {
-
-		$cached_n_completion = Automator()->cache->get( 'get_completed_recipes_count' );
-
-		if ( ! empty( $cached_n_completion ) ) {
-
-			return apply_filters( 'automator_review_get_completed_recipes_count', absint( $cached_n_completion ), $this );
-
-		}
-
-		global $wpdb;
-
-		$total_recipe_completion = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT SUM(completed) as total_recipe_completion FROM {$wpdb->prefix}uap_recipe_log WHERE completed = %d",
-				1 // Only count completed recipe, not completed with errors or other status.
-			)
-		);
-
-		Automator()->cache->set( 'get_completed_recipes_count', $total_recipe_completion );
-
-		return apply_filters( 'automator_review_get_completed_recipes_count', absint( $total_recipe_completion ), $this );
+		Automator()->get->completed_recipes_count();
 
 	}
 

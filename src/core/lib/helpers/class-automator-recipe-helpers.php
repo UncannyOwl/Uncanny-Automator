@@ -392,7 +392,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		// (#3)
 		//global $wp_rewrite;
 		//if ( null === $wp_rewrite ) {
-			//$wp_rewrite = new \WP_Rewrite(); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		//$wp_rewrite = new \WP_Rewrite(); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		//}
 
 		// (#4)
@@ -489,6 +489,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			'placeholder'   => $placeholder,
 			'input_type'    => 'int',
 			'default_value' => 1,
+			'min_number'    => 1,
 			'required'      => true,
 		);
 
@@ -582,8 +583,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		/**
 		 * Allow developers to modify $args
 		 *
-		 * @author  Saad
 		 * @version 2.6
+		 * @author  Saad
 		 */
 		$args = apply_filters( 'automator_wp_query_args', $args );
 
@@ -731,8 +732,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 				/**
 				 * Allow developers to modify transient times
 				 *
-				 * @author  Saad
 				 * @version 2.6
+				 * @author  Saad
 				 */
 				$transient_time = apply_filters( 'automator_transient_time', Automator()->cache->expires );
 				Automator()->cache->set( $transient_key, $options, 'automator', $transient_time );
@@ -871,8 +872,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @param string $limit
 	 *
 	 * @return array
-	 * @author  Saad
 	 * @version 2.6 - this function replaces wp's get_users()
+	 * @author  Saad
 	 */
 	public function wp_users( $limit = 99999 ) {
 		global $wpdb;

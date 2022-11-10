@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 use Uncanny_Automator_Pro\Pro_Filters;
@@ -37,6 +38,10 @@ class Logs_List_Table extends WP_List_Table {
 	 * $sortable_columns     ARRAY| Setting sortable table heading/columns
 	 */
 	private $sortable_columns;
+	/**
+	 * @var array
+	 */
+	private $trigger_action_integrations = array();
 
 	/**
 	 * Class constructor.
@@ -193,13 +198,19 @@ class Logs_List_Table extends WP_List_Table {
 
 		/* -- Fetch the items -- */
 		if ( 'recipe-log' === $this->tab ) {
-			$this->items = $this->format_recipe_data( $wpdb->get_results( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$recipes = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$this->fetch_triggers_actions_integrations( $recipes );
+			$this->items = $this->format_recipe_data( $recipes );
 		} elseif ( 'recipe-activity' === $this->tab ) {
 			$this->items = $this->format_recipe_activity_data( $wpdb->get_results( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		} elseif ( 'trigger-log' === $this->tab ) {
-			$this->items = $this->format_trigger_data( $wpdb->get_results( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$triggers = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$this->fetch_triggers_actions_integrations( $triggers );
+			$this->items = $this->format_trigger_data( $triggers );
 		} elseif ( 'action-log' === $this->tab ) {
-			$this->items = $this->format_action_data( $wpdb->get_results( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$actions = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$this->fetch_triggers_actions_integrations( $actions );
+			$this->items = $this->format_action_data( $actions );
 		}
 	}
 
@@ -405,9 +416,7 @@ class Logs_List_Table extends WP_List_Table {
 	private function format_recipe_data( $recipes ) {
 
 		$data = array();
-
 		foreach ( $recipes as $recipe ) {
-
 			$recipe_log_id = $recipe->recipe_log_id;
 
 			$recipe_link = '#';
@@ -423,7 +432,8 @@ class Logs_List_Table extends WP_List_Table {
 			$recipe_name = ! empty( $recipe->recipe_title ) ? $recipe->recipe_title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $recipe_id );
 
 			if ( '#' !== $recipe_link ) {
-				$recipe_name = '<a href="' . esc_url( $recipe_link ) . '" class="uap-log-table__recipe-name">' . esc_html( $recipe_name ) . '</a>';
+				//$recipe_name = '<a href="' . esc_url( $recipe_link ) . '" class="uap-log-table__recipe-name">' . esc_html( $recipe_name ) . '</a>';
+				$recipe_name = $this->build_recipe_title_with_icons( $recipe_id, $recipe_link, esc_html( $recipe_name ), 'uap-log-table__recipe-name', $recipe );
 			}
 
 			// User
@@ -434,7 +444,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$recipe_status = '
 				<div class="uap-logs-recipe-status ' . sanitize_html_class( $recipe_status_class ) . '">' .
-					esc_html( $this->get_status_name( (int) $recipe->recipe_completed ) ) . '
+							 esc_html( $this->get_status_name( (int) $recipe->recipe_completed ) ) . '
 				</div>';
 
 			// Recipe complation date
@@ -455,9 +465,9 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $recipe_datetime_completed ) {
 				$recipe_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-recipe-complation-date">'
-						. esc_html( $recipe_datetime_completed['date'] ) . '
+										 . esc_html( $recipe_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ '
-						. esc_html( $recipe_datetime_completed['time'] ) . '
+										 . esc_html( $recipe_datetime_completed['time'] ) . '
 						</span>
 					</div>';
 			}
@@ -467,7 +477,15 @@ class Logs_List_Table extends WP_List_Table {
 			$run_number = '&mdash;';
 
 			// Only show run numbers for non errors non in progress, or status with zero.
-			if ( ! in_array( absint( $recipe->recipe_completed ), array( 0, Automator_Status::COMPLETED_WITH_ERRORS, Automator_Status::IN_PROGRESS ), true ) ) {
+			if ( ! in_array(
+				absint( $recipe->recipe_completed ),
+				array(
+					0,
+					Automator_Status::COMPLETED_WITH_ERRORS,
+					Automator_Status::IN_PROGRESS,
+				),
+				true
+			) ) {
 
 				// Run #
 				$run_number = 'anonymous' === $current_type ? '&mdash;' : $recipe->run_number;
@@ -486,7 +504,7 @@ class Logs_List_Table extends WP_List_Table {
 					$run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">' .
-								esc_html( $run_number ) . '
+								  esc_html( $run_number ) . '
 							</div>
 						</div>';
 				}
@@ -599,10 +617,10 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $trigger_datetime_completed ) {
 				$trigger_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-						esc_html( $trigger_datetime_completed['date'] ) . '
+										  esc_html( $trigger_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ ' .
-							esc_html( $trigger_datetime_completed['time'] ) .
-						'</span>
+										  esc_html( $trigger_datetime_completed['time'] ) .
+										  '</span>
 					</div>';
 			}
 
@@ -630,12 +648,13 @@ class Logs_List_Table extends WP_List_Table {
 			$recipe_name = ! empty( $trigger->recipe_title ) ? $trigger->recipe_title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $trigger->automator_recipe_id );
 
 			if ( ! empty( $recipe_link ) ) {
-				$recipe_name = '<a href="' . esc_url( $recipe_link ) . '" class="uap-log-table__recipe-name">' . esc_html( $recipe_name ) . '</a>';
+				//$recipe_name = '<a href="' . esc_url( $recipe_link ) . '" class="uap-log-table__recipe-name">' . esc_html( $recipe_name ) . '</a>';
+				$recipe_name = $this->build_recipe_title_with_icons( $trigger->automator_recipe_id, $recipe_link, esc_html( $recipe_name ), 'uap-log-table__recipe-name', $trigger );
 			}
 
 			$recipe_status = '
 				<div class="uap-logs-recipe-status uap-logs-recipe-status--' . sanitize_html_class( $this->get_status_class_name( $trigger->recipe_completed ) ) . '">' .
-					esc_html( $this->get_status_name( $trigger->recipe_completed ) ) . '
+							 esc_html( $this->get_status_name( $trigger->recipe_completed ) ) . '
 				</div>';
 
 			$recipe_date_completed = ( 1 === absint( $trigger->recipe_completed ) || 2 === absint( $trigger->recipe_completed ) || 9 === absint( $trigger->recipe_completed ) ) ? $trigger->recipe_date_time : '';
@@ -674,17 +693,25 @@ class Logs_List_Table extends WP_List_Table {
 				$trigger_name = '
 					<div class="uap-logs-table-trigger">
 						<div class="uap-logs-table__item-main-sentence uap-logs-table__trigger-name">' .
-							$this->format_human_readable_sentence( $trigger_sentence ) .
-						'</div>
+								$this->format_human_readable_sentence( $trigger_sentence ) .
+								'</div>
 						<div class="uap-logs-table__trigger-run-number">' .
-							esc_html( $trigger_run_number_sentence ) . '
+								esc_html( $trigger_run_number_sentence ) . '
 						</div>
 					</div>';
 			}
 
 			$recipe_run_number = '&mdash;';
 
-			if ( ! in_array( absint( $trigger->recipe_completed ), array( 0, Automator_Status::COMPLETED_WITH_ERRORS, Automator_Status::IN_PROGRESS ), true ) ) {
+			if ( ! in_array(
+				absint( $trigger->recipe_completed ),
+				array(
+					0,
+					Automator_Status::COMPLETED_WITH_ERRORS,
+					Automator_Status::IN_PROGRESS,
+				),
+				true
+			) ) {
 
 				$recipe_run_number = 'anonymous' === (string) Automator()->utilities->get_recipe_type( absint( $trigger->automator_recipe_id ) ) ? '&mdash;' : absint( $trigger->recipe_run_number );
 
@@ -693,7 +720,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">' .
-								esc_html( $recipe_run_number ) . '
+										 esc_html( $recipe_run_number ) . '
 							</div>
 						</div>';
 				} else {
@@ -833,7 +860,7 @@ class Logs_List_Table extends WP_List_Table {
 			// Action status
 			$action_status_html = '
 				<div class="uap-logs-action-status uap-logs-action-status--' . sanitize_html_class( $this->get_status_class_name( $action->action_completed ) ) . '">' .
-					esc_html( $this->get_status_name( $action->action_completed ) ) . '
+								  esc_html( $this->get_status_name( $action->action_completed ) ) . '
 				</div>';
 
 			$action_code = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
@@ -861,7 +888,7 @@ class Logs_List_Table extends WP_List_Table {
 				$action_name = '
 					<div class="uap-logs-table-action">
 						<div class="uap-logs-table__item-main-sentence uap-logs-table__action-name">' .
-							$this->format_human_readable_sentence( $action_sentence ) . '
+							   $this->format_human_readable_sentence( $action_sentence ) . '
 						</div>
 					</div>';
 
@@ -874,9 +901,9 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $action_datetime_completed ) {
 				$action_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-						esc_html( $action_datetime_completed['date'] ) . '
+										 esc_html( $action_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ ' .
-							esc_html( $action_datetime_completed['time'] ) . '
+										 esc_html( $action_datetime_completed['time'] ) . '
 						</span>
 					</div>';
 			}
@@ -896,18 +923,27 @@ class Logs_List_Table extends WP_List_Table {
 			 */
 			$recipe_link = $this->get_edit_link( absint( $action->automator_recipe_id ) );
 
-			$recipe_name = '<a href="' . esc_url( $recipe_link ) . '" class="uap-log-table__recipe-name">' . esc_html( $action->recipe_title ) . '</a>';
+			//$recipe_name = '<a href="' . esc_url( $recipe_link ) . '" class="uap-log-table__recipe-name">' . esc_html( $action->recipe_title ) . '</a>';
+			$recipe_name = $this->build_recipe_title_with_icons( $action->automator_recipe_id, $recipe_link, esc_html( $action->recipe_title ), 'uap-log-table__recipe-name', $action );
 
 			$recipe_status = '
 				<div class="uap-logs-action-status uap-logs-action-status--' . sanitize_html_class( $this->get_status_class_name( $action->recipe_completed ) ) . '">' .
-					esc_html( $this->get_status_name( $action->recipe_completed ) ) . '
+							 esc_html( $this->get_status_name( $action->recipe_completed ) ) . '
 				</div>';
 
 			$recipe_date_completed = ( 1 === absint( $action->recipe_completed ) || 2 === absint( $action->recipe_completed ) || 9 === absint( $action->recipe_completed ) ) ? $action->recipe_date_time : '';
 
 			$recipe_run_number = '&mdash;';
 
-			if ( ! in_array( absint( $action->recipe_completed ), array( 0, Automator_Status::COMPLETED_WITH_ERRORS, Automator_Status::IN_PROGRESS ), true ) ) {
+			if ( ! in_array(
+				absint( $action->recipe_completed ),
+				array(
+					0,
+					Automator_Status::COMPLETED_WITH_ERRORS,
+					Automator_Status::IN_PROGRESS,
+				),
+				true
+			) ) {
 
 				$recipe_run_number = 'anonymous' === (string) Automator()->utilities->get_recipe_type( absint( $action->automator_recipe_id ) ) ? '&mdash;' : $action->recipe_run_number;
 
@@ -916,7 +952,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">' .
-								esc_html( $recipe_run_number ) . '
+										 esc_html( $recipe_run_number ) . '
 							</div>
 						</div>';
 
@@ -1000,12 +1036,14 @@ class Logs_List_Table extends WP_List_Table {
 			if ( class_exists( '\uncanny_automator_pro\Pro_Filters' ) ) {
 				echo Pro_Filters::activities_filters_html( $this->tab ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				do_action( 'automator_admin_logs_list_table_extra_nav_after' );
+
 				return;
 			}
 
 			// Otherwise, use placeholder.
 			include Utilities::automator_get_view( 'admin-logs/filters.php' );
 			do_action( 'automator_admin_logs_list_table_extra_nav_after' );
+
 			return;
 
 		}
@@ -1045,9 +1083,10 @@ class Logs_List_Table extends WP_List_Table {
 	/**
 	 * Generates content for a single row of the table.
 	 *
+	 * @param object|array $item The current item
+	 *
 	 * @since 3.1.0
 	 *
-	 * @param object|array $item The current item
 	 */
 	public function single_row( $item ) {
 
@@ -1061,7 +1100,7 @@ class Logs_List_Table extends WP_List_Table {
 		);
 
 		echo '<tr class="' . esc_attr( implode( ' ', $classes ) ) . '">';
-			$this->single_row_columns( $item );
+		$this->single_row_columns( $item );
 		echo '</tr>';
 	}
 
@@ -1095,6 +1134,7 @@ class Logs_List_Table extends WP_List_Table {
 	 * Constructs the user HTML of any log
 	 *
 	 * @param mixed $object The object.
+	 *
 	 * @return string The HTML of the user log.
 	 */
 	private function get_user_html( $object ) {
@@ -1171,9 +1211,8 @@ class Logs_List_Table extends WP_List_Table {
 	private function get_details_url( $recipe_id = 0, $run_number_log = 0, $recipe_log_id = 0 ) {
 
 		return sprintf(
-			'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&automator_minimal=1',
-			admin_url( 'edit.php' ),
-			'uo-recipe',
+			'%s?page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&automator_minimal=1',
+			admin_url( 'options.php' ),
 			'uncanny-automator-recipe-activity-details',
 			absint( $recipe_id ),
 			absint( $run_number_log ),
@@ -1199,7 +1238,7 @@ class Logs_List_Table extends WP_List_Table {
 			return 'DESC';
 		}
 
-		return filter_var( $order, FILTER_SANITIZE_STRING );
+		return filter_var( $order, FILTER_UNSAFE_RAW );
 
 	}
 
@@ -1219,7 +1258,7 @@ class Logs_List_Table extends WP_List_Table {
 			return 'recipe_date_time';
 		}
 
-		return filter_var( $order_by, FILTER_SANITIZE_STRING );
+		return filter_var( $order_by, FILTER_UNSAFE_RAW );
 
 	}
 
@@ -1240,4 +1279,111 @@ class Logs_List_Table extends WP_List_Table {
 		);
 	}
 
+	/**
+	 * @param $recipe_id
+	 * @param $recipe_link
+	 * @param $recipe_name
+	 * @param $recipe
+	 *
+	 * @return string
+	 */
+	private function build_recipe_title_with_icons( $recipe_id, $recipe_link, $recipe_name, $css_class, $recipe ) {
+		$recipe_name = sprintf(
+			'<div class="uap-log-table-recipe-container">
+						<a href="%s" class="%s">%s</a>
+						<div class="uap-log-table__recipe-integrations">
+							<div class="uap-log-table-recipe-integration-triggers">
+								%s
+							</div>
+							<div class="uap-log-table-recipe-integration-actions">
+								%s
+							</div>
+						</div>
+					</div>',
+			esc_url( $recipe_link ),
+			$css_class,
+			esc_html( $recipe_name ),
+			$this->trigger_icons( $recipe_id ),
+			$this->action_icons( $recipe_id )
+		);
+
+		return $recipe_name;
+	}
+
+	/**
+	 * @param $recipes
+	 *
+	 * @return void
+	 */
+	private function fetch_triggers_actions_integrations( $recipes ) {
+		if ( empty( $recipes ) ) {
+			return;
+		}
+		$recipe_ids = array_column( $recipes, 'automator_recipe_id' );
+		global $wpdb;
+		//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$sql     = $wpdb->prepare(
+			"SELECT p.post_parent, p.post_type, pm.meta_value AS integration
+FROM $wpdb->postmeta pm
+JOIN $wpdb->posts p
+ON p.ID = pm.post_id
+WHERE pm.meta_key = %s
+AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'integration'
+		);
+		$results = $wpdb->get_results( $sql ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		if ( empty( $results ) ) {
+			return;
+		}
+		$triggers = array();
+		$actions  = array();
+		foreach ( $results as $r ) {
+			if ( 'uo-action' === $r->post_type ) {
+				$actions[ $r->post_parent ][] = $r->integration;
+			}
+			if ( 'uo-trigger' === $r->post_type ) {
+				$triggers[ $r->post_parent ][] = $r->integration;
+			}
+		}
+		$this->trigger_action_integrations = array(
+			'triggers' => $triggers,
+			'actions'  => $actions,
+		);
+	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return string
+	 */
+	private function trigger_icons( $recipe_id ) {
+		$triggers = isset( $this->trigger_action_integrations['triggers'][ $recipe_id ] ) ? $this->trigger_action_integrations['triggers'][ $recipe_id ] : array();
+		if ( empty( $triggers ) ) {
+			return '';
+		}
+		$t_icons = array();
+		foreach ( $triggers as $integration ) {
+			$t_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-name></uo-icon>';
+		}
+
+		return join( PHP_EOL, $t_icons );
+	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return string
+	 */
+	private function action_icons( $recipe_id ) {
+		$actions = isset( $this->trigger_action_integrations['actions'][ $recipe_id ] ) ? $this->trigger_action_integrations['actions'][ $recipe_id ] : array();
+		if ( empty( $actions ) ) {
+			return '';
+		}
+		$a_icons = array();
+		foreach ( $actions as $integration ) {
+			$a_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-name></uo-icon>';
+		}
+
+		return join( PHP_EOL, $a_icons );
+	}
 }

@@ -116,5 +116,35 @@ class Uncanny_Groups_Helpers {
 		return Automator()->helpers->recipe->field->less_or_greater_than()['options'][ $key ];
 	}
 
+	/**
+	 * Validate an array of Group post IDs.
+	 *
+	 * @param array $group_ids Array of Groups post IDs to check.
+	 * @return array validated Group post IDS.
+	 */
+	public function learndash_validate_groups( $group_ids = array() ) {
+		if ( ( is_array( $group_ids ) ) && ( ! empty( $group_ids ) ) ) {
+			$groups_query_args = array(
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'post_type'              => learndash_get_post_type_slug( 'group' ),
+				'fields'                 => 'ids',
+				'orderby'                => 'title',
+				'order'                  => 'ASC',
+				'post__in'               => $group_ids,
+				'posts_per_page'         => -1,
+				'suppress_filters'       => true,
+			);
 
+			$groups_query_args = apply_filters( 'uap_option_learndash_validate_groups', $groups_query_args );
+
+			$groups_query = new \WP_Query( $groups_query_args );
+			if ( ( is_a( $groups_query, '\WP_Query' ) ) && ( property_exists( $groups_query, 'posts' ) ) ) {
+				return $groups_query->posts;
+			}
+		}
+
+		return array();
+	}
 }

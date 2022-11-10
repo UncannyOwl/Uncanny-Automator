@@ -25,6 +25,7 @@ class ZOOM_WEBINAR_UNREGISTERUSERLESS {
 	public function __construct() {
 		$this->action_code = 'ZOOMWEBINARUNREGISTERUSERLESS';
 		$this->action_meta = 'ZOOMWEBINAR';
+		$this->helpers     = new Zoom_Webinar_Helpers();
 		$this->define_action();
 	}
 
@@ -40,6 +41,7 @@ class ZOOM_WEBINAR_UNREGISTERUSERLESS {
 			'requires_user'         => false,
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
+			/* translators: Webinar topic */
 			'sentence'              => sprintf( __( 'Remove an attendee from {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name'    => __( 'Remove an attendee from {{a webinar}}', 'uncanny-automator' ),
 			'priority'              => 10,
@@ -73,14 +75,49 @@ class ZOOM_WEBINAR_UNREGISTERUSERLESS {
 
 		$email_field = Automator()->helpers->recipe->field->text( $email_field_options );
 
+		$account_users_field = array(
+			'option_code'           => 'ZOOMUSER',
+			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => false,
+			'is_ajax'               => true,
+			'endpoint'              => 'uap_zoom_api_get_meetings',
+			'fill_values_in'        => $this->action_meta,
+			'options'               => $this->helpers->get_account_user_options(),
+			'relevant_tokens'       => array(),
+			'supports_custom_value' => false,
+		);
+
+		$user_webinars_field = array(
+			'option_code'           => $this->action_meta,
+			'label'                 => __( 'Webinar', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => true,
+			'options'               => array(),
+			'supports_tokens'       => false,
+			'supports_custom_value' => false,
+		);
+
+		$option_fileds = array(
+			$email_field,
+			$account_users_field,
+			$user_webinars_field,
+		);
+
+		//Don't show the user dropdown to old credentials so it's easier to test the update
+		if ( $this->helpers->jwt_mode() ) {
+			$option_fileds = array(
+				$email_field,
+				$this->helpers->get_webinars_field(),
+			);
+		}
+
 		return array(
 			'options_group' => array(
-				$this->action_meta => array(
-					$email_field,
-					Automator()->helpers->recipe->zoom_webinar->get_webinars( null, $this->action_meta ),
-				),
+				$this->action_meta => $option_fileds,
 			),
 		);
+
 	}
 
 	/**

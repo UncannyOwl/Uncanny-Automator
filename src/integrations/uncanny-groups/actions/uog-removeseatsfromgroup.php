@@ -97,7 +97,7 @@ class UOG_REMOVESEATSFROMGROUP {
 		global $wpdb;
 
 		$uo_group_id = Automator()->parse->text( $action_data['meta']['UNCANNYGROUP'], $recipe_id, $user_id, $args );
-		$check_group = learndash_validate_groups( array( $uo_group_id ) );
+		$check_group = Automator()->helpers->recipe->uncanny_groups->options->learndash_validate_groups( array( $uo_group_id ) );
 		if ( empty( $check_group ) || ! is_array( $check_group ) ) {
 			$error_message                       = esc_html__( 'The selected group is not found.', 'uncanny-automator' );
 			$action_data['do-nothing']           = true;

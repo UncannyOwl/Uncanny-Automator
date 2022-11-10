@@ -184,24 +184,25 @@ class Utilities {
 		 * @since 3.0
 		 */
 		if ( ! empty( $file_name ) && is_dir( dirname( $file_name ) ) ) {
-			$icon = basename( $file_name ); // icon with extension.
-			if ( version_compare( PHP_VERSION, '7.0', '>=' ) ) {
-				$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
-			} else {
-				$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
+			$icon            = basename( $file_name ); // icon with extension.
+			$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
+			$path            = self::cleanup_icon_path( AUTOMATOR_BASE_FILE, $icon, $file_name ); // path relative to plugin.
+			$path            = apply_filters( 'automator_integration_icon_path', $path . $icon, $icon, $integration_dir, $plugin_path );
+			$base_path       = apply_filters( 'automator_integration_icon_base_path', $plugin_path, $path, $icon, $integration_dir );
+			if ( ! empty( $path ) && ! empty( $base_path ) ) {
+				return plugins_url( $path, $base_path );
 			}
-			$path      = self::cleanup_icon_path( AUTOMATOR_BASE_FILE, $icon, $file_name ); // path relative to plugin.
-			$path      = apply_filters( 'automator_integration_icon_path', $path . $icon, $icon, $integration_dir, $plugin_path );
-			$base_path = apply_filters( 'automator_integration_icon_base_path', $plugin_path, $path, $icon, $integration_dir );
-
-			return plugins_url( $path, $base_path );
 		}
 
 		// fallback
 		$path      = apply_filters( 'automator_integration_icon_path_legacy', 'src/recipe-ui/dist/media/integrations/' . $file_name, $file_name, $plugin_path );
 		$base_path = apply_filters( 'automator_integration_icon_base_path_legacy', WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $plugin_path, $file_name );
 
-		return plugins_url( $path, $base_path );
+		if ( ! empty( $path ) && ! empty( $base_path ) ) {
+			return plugins_url( $path, $base_path );
+		}
+
+		return '';
 	}
 
 	/**

@@ -416,8 +416,8 @@ class Automator_Utilities {
 		$filters = array(
 			'email'   => FILTER_VALIDATE_EMAIL,
 			'url'     => FILTER_VALIDATE_URL,
-			'name'    => FILTER_SANITIZE_STRING,
-			'address' => FILTER_SANITIZE_STRING,
+			'name'    => FILTER_UNSAFE_RAW,
+			'address' => FILTER_UNSAFE_RAW,
 		);
 		$options = array(
 			'email' => array(

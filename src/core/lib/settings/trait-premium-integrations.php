@@ -5,8 +5,8 @@
  * @class   Settings
  * @since   3.7
  * @version 3.7
- * @package Uncanny_Automator
  * @author  Agustin B.
+ * @package Uncanny_Automator
  */
 
 namespace Uncanny_Automator\Settings;
@@ -85,6 +85,13 @@ trait Premium_Integrations {
 	protected $css = '';
 
 	/**
+	 * An array of alerts to display on the current settings page
+	 *
+	 * @var array
+	 */
+	protected $alerts = array();
+
+	/**
 	 * Make this method mandatory
 	 * Sets up the properties of the settings page
 	 */
@@ -103,6 +110,10 @@ trait Premium_Integrations {
 		// Register the settings page
 		// Invoke this method last
 		$this->register_settings();
+
+		if ( $this->is_current_page_settings() ) {
+			$this->maybe_settings_updated();
+		}
 	}
 
 	/**
@@ -316,8 +327,8 @@ trait Premium_Integrations {
 	 */
 	public function is_current_page_settings() {
 		return automator_filter_input( 'page' ) === 'uncanny-automator-config'
-		       && automator_filter_input( 'tab' ) === 'premium-integrations'
-		       && automator_filter_input( 'integration' ) === $this->get_id();
+			   && automator_filter_input( 'tab' ) === 'premium-integrations'
+			   && automator_filter_input( 'integration' ) === $this->get_id();
 	}
 
 	/**
@@ -385,7 +396,7 @@ trait Premium_Integrations {
 
 	/**
 	 * Returns the option group user in settings_fields()
-	 * 
+	 *
 	 * @return String The option group
 	 */
 	public function get_settings_id() {
@@ -394,7 +405,7 @@ trait Premium_Integrations {
 
 	/**
 	 * Returns the nonce action
-	 * 
+	 *
 	 * @return String The nonce action
 	 */
 	public function get_nonce_action() {
@@ -441,5 +452,137 @@ trait Premium_Integrations {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Determines whether the current page settings were updated
+	 *
+	 * @return void
+	 */
+	public function maybe_settings_updated() {
+		if ( 'true' === automator_filter_input( 'settings-updated' ) ) {
+			$this->settings_updated();
+		}
+	}
+
+	/**
+	 * Override this method to run code when the settings were updated
+	 *
+	 * @return void
+	 */
+	public function settings_updated() {
+	}
+
+	/**
+	 * add_alert
+	 *
+	 * Add an alert to show on the settings page
+	 *
+	 * @param array $alert
+	 *
+	 * @return void
+	 */
+	public function add_alert( $alert ) {
+		$this->alerts[] = $alert;
+	}
+
+	/**
+	 * get_alerts
+	 *
+	 * Get all alerts
+	 *
+	 * @return array
+	 */
+	public function get_alerts() {
+		return $this->alerts;
+	}
+
+	/**
+	 * This method will output all the queued alerts HTML.
+	 *
+	 * @return void
+	 */
+	public function display_alerts() {
+
+		if ( ! empty( $this->get_alerts() ) ) {
+			foreach ( $this->get_alerts() as $alert ) {
+				$this->alert_html( $alert );
+			}
+		}
+	}
+
+	/**
+	 * alert_html
+	 *
+	 * Output the uo-alert HTML
+	 *
+	 * @param array $alert
+	 *
+	 * @return void
+	 */
+	public function alert_html( $alert ) {
+
+		$default = array(
+			'type'    => '',
+			'heading' => '',
+			'content' => '',
+		);
+
+		$alert = wp_parse_args( $alert, $default );
+
+		?>
+
+		<uo-alert
+			type="<?php echo esc_attr( $alert['type'] ); ?>"
+			heading="<?php echo esc_attr( $alert['heading'] ); ?>"
+			class="uap-spacing-bottom uap-spacing-top"
+		><?php echo( esc_attr( $alert['content'] ) ); ?></uo-alert>
+
+		<?php
+
+	}
+
+	/**
+	 * text_input_html
+	 *
+	 * Output the uo-text-input HTML
+	 *
+	 * @param array $input
+	 *
+	 * @return void
+	 */
+	public function text_input_html( $input ) {
+
+		$default = array(
+			'id'       => '',
+			'value'    => '',
+			'label'    => '',
+			'required' => '',
+			'class'    => '',
+			'hidden'   => '',
+			'disabled' => '',
+		);
+
+		$input = wp_parse_args( $input, $default );
+		?>
+
+		<uo-text-field
+			id="<?php echo esc_attr( $input['id'] ); ?>"
+			value="<?php echo esc_attr( $input['value'] ); ?>"
+			label="<?php echo esc_attr( $input['label'] ); ?>"
+			class="<?php echo esc_attr( $input['class'] ); ?>"
+			<?php
+			if ( ! empty( $input['required'] ) ) {
+				echo 'required ';
+			}
+			if ( ! empty( $input['hidden'] ) ) {
+				echo 'hidden ';
+			}
+			if ( ! empty( $input['disabled'] ) ) {
+				echo 'disabled ';
+			}
+			?>
+		></uo-text-field>
+		<?php
 	}
 }

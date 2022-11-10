@@ -415,9 +415,8 @@ class Logs_List_Table extends WP_List_Table {
 			}
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $recipe->run_number ) ? 1 : $recipe->run_number : $recipe->run_number;
 			$url            = sprintf(
-				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&automator_minimal=1',
-				admin_url( 'edit.php' ),
-				'uo-recipe',
+				'%s?page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&automator_minimal=1',
+				admin_url( 'options.php' ),
 				'uncanny-automator-recipe-activity-details',
 				$recipe_id,
 				$run_number_log,
@@ -525,7 +524,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $recipe->run_number ) ? 1 : $recipe->run_number : $recipe->run_number;
 
-			$url     = sprintf( '%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&automator_minimal=1', admin_url( 'edit.php' ), 'uo-recipe', 'uncanny-automator-recipe-activity-details', $recipe_id, $run_number_log, absint( $recipe_log_id ) );
+			$url     = sprintf( '%s?page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&automator_minimal=1', admin_url( 'options.php' ), 'uncanny-automator-recipe-activity-details', $recipe_id, $run_number_log, absint( $recipe_log_id ) );
 			$actions = array(
 				'view'  => sprintf( '<a href="%s" data-lity>%s</a>', $url, esc_attr__( 'Details', 'uncanny-automator' ) ),
 				'rerun' => sprintf( '<a href="%s" onclick="return confirm(\"%s\")">%s</a>', '#', esc_attr__( 'Are you sure you want to re-run this recipe?', 'uncanny-automator' ), esc_attr__( 'Re-run', 'uncanny-automator' ) ),

@@ -8,6 +8,7 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class Add_Active_Campaign_Integration {
+
 	use Recipe\Integrations;
 
 	/**
@@ -29,7 +30,7 @@ class Add_Active_Campaign_Integration {
 		return ! empty( $user ) && ! empty( $api_url ) && ! empty( $api_key );
 
 	}
-	
+
 	/**
 	 * Integration Set-up.
 	 */

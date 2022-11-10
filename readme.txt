@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce automation, marketing, twitter, facebook, whatsapp, buddyboss, tutor lms
 Requires at least: 5.3
-Tested up to: 6.0.3
+Tested up to: 6.1
 Requires PHP: 5.6
-Stable tag: 4.6.0.1
+Stable tag: 4.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -38,7 +38,7 @@ Build powerful reports and dashboards based on almost any WordPress activity or 
 
 Looking for the most powerful and comprehensive webhook support to connect your WordPress site to other apps? Uncanny Automator has support for security headers, any request method and any data format (including nesting support, JSON, XML, arrays and more). Use our 1-click sample generation and debug records to simplify connecting to other sites and systems, and send unlimited outgoing webhooks with the free version.
 
-= E-Learning Automation =
+= LearnDash and E-Learning Automation =
 
 Personalize student experiences and deliver better learning outcomes with no-code automations. Notify an instructor when users fail a quiz and enroll them in a remedial course–automatically. Add users to groups based on performance to allow easy collaboration. Automate student outreach when users fall behind in their coursework and offer easy learning interventions.
 
@@ -113,6 +113,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Integromat](https://automatorplugin.com/integration/integromat/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [JetEngine](https://automatorplugin.com/integration/jetengine/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [JetFormBuilder](https://automatorplugin.com/integration/jetformbuilder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Jetpack CRM](https://automatorplugin.com/integration/jetpack-crm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [KonnectzIT](https://automatorplugin.com/integration/konnectzit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnDash](https://automatorplugin.com/integration/learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnDash Achievements](https://automatorplugin.com/integration/learndash-achievements/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -155,6 +156,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WordPress](https://automatorplugin.com/integration/wordpress-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WordPress Multisite](https://automatorplugin.com/integration/wordpress-multisite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -263,6 +265,10 @@ Yes. It is easy to set up automation and share content on Social Media platforms
 
 No coding skills are required. Uncanny Automator is built for non-developers to build automations using our intuitive recipe builder.
 
+= Does Automator work with LearnDash? =
+
+Absolutely! LearnDash is our most popular integration. Automator provides an easy way to build powerful LearnDash activity reports, personalize learning paths, connect LearnDash to live events and more.
+
 = Can I automate a WooCommerce site? =
 
 Yes, Uncanny Automator is deeply integrated with WooCommerce! It can be used for product coss-selling and promotions. Create follow-up emails and coupons for strategic WooCommerce email marketing campaigns.
@@ -299,6 +305,66 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.7 [2022-11-10] =
+
+**New Integrations:**
+
+* [Jetpack CRM](https://automatorplugin.com/integration/jetpack-crm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2644
+* [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2760
+
+
+**New Triggers:**
+
+* Gravity Forms - An entry for a form is updated #2777
+* Jetpack CRM - A company is created #2765
+* Jetpack CRM - A contact is created #2682
+* MailPoet - A form is submitted #2790
+* WP All Import - A type of post is imported #2806
+
+**New Actions:**
+
+* Jetpack CRM - Add a tag to a company #2766
+* Jetpack CRM - Add a tag to a contact #2764
+* Jetpack CRM - Create a contact #2763
+
+**New Common Token:**
+
+* Site tagline #2828
+
+**New Trigger Token:**
+
+* WordPress - "A user publishes a type of post with a taxonomy term in a taxonomy" - Author ID #2791
+
+**Added:**
+
+* Recipe UI - Support for custom values in Conditions (Pro) #2550
+
+**Updated:**
+
+* ActiveCampaign - Add a contact to ActiveCampaign & Add the user to ActiveCampaign - First name and Last name fields are no longer required #2817
+* Recipe Logs - Added integrations icons #2677
+* Zoom - Convert integration to OAuth as JWT is being deprecated #2756
+
+**Fixed:**
+
+* FluentCRM - Add the user to a list - Error on PHP 8.x in some situations #2818
+* MailPoet - Add a subscriber to a list - Contact is now automatically set to subscribed status when selected, even if email confirmation is disabled #2768
+* Outgoing Webhooks - Leading hidden characters or space no longer causes header parameters to be merged #2809
+* Uncanny Groups - Improved reliability of LearnDash Group ID validation when WPML is enabled #2774
+* Uncanny Toolkit - A user's time in a course exceeds a specific number of minutes - Added LearnDash dependency check #2799
+* WhatsApp - Webhook parameter key not working if permalinks set to plain #2816
+* Zoom - PHP Error on some sites if a newer JWT library is available #2797
+
+**Under the hood:**
+
+* Redirect to Setup Wizard on activation instead of Dashboard if the site is not connected #2830
+* Actionify Triggers - Improved method for hooking into WordPress do_actions for triggers #2778
+* Automator Core - Improved PHP 8.1+ compatibility #2789
+* Automator Core - Several under the hood improvements #2805
+* Recipe UI Field - `int`/`float` - Support `min_number` and `max_number` attributes #2801
+* System status - Additional data added #2811
+* Trigger Traits: Added set_helper() method #2772
 
 = 4.6.0.1 [2022-10-26] =
 
@@ -1058,80 +1124,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * GoTo Training and GoTo Webinar - PHP Error on some site configurations #1684
 * Instagram - Improved error messaging when posting an image fails #1682
-
-= 3.8.0.2 [2022-03-11] =
-
-**Fixed:**
-
-* LearnDash - "A user completes a quiz" - Error on quiz submission on some sites
-
-= 3.8.0.1 [2022-03-10] =
-
-**Fixed:**
-
-* LearnDash – PHP error "is_ajax" not a function on some sites when Automator marks a course complete
-
-= 3.8 [2022-03-10] =
-
-**New Integrations:**
-
-* [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1551
-* [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1551
-* [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1510
-
-**New Triggers:**
-
-* MemberPress Courses - A user completes a course #1624
-* MemberPress Courses - A user completes a lesson #1623
-* Uncanny Groups - A user redeems a Group Key #1476
-* Uncanny Groups - A user is registered using a Group Key #1475
-
-**New Actions:**
-
-* BuddyBoss - Set the user's status to a specific status #1547
-* GoTo Webinar - Add the user to a webinar (moved from Pro) #1551
-* GoTo Webinar - Remove the user from a webinar (moved from Pro) #1551
-* GoTo Training - Add the user to a training session (moved from Pro) #1551
-* GoTo Training - Remove the user from a training session (moved from Pro) #1551
-* MemberPress Courses - Mark a course complete #1622
-* MemberPress Courses - Mark a lesson complete #1621
-
-**Added:**
-
-* Much improved settings page design and layout #1144
-* Amelia - PHP notices when parsing tokens in some instances
-* Google Sheets - automator_google_sheets_disable_tokens_html filter to strip all HTML tags #1604
-* Advanced token - Current date (Unix timestamp) #1593
-* Advanced token - Current time (Unix timestamp) #1592
-* Common token: User reset password URL #1500
-* Common token: User IP address - Note: IP address is not stored, and will return "N/A" in scheduled actions #1456
-* LearnDash - New token "Passing score %" - Returns value of "Passing score" quiz setting #1523
-* LearnDash - "A user completes a lesson" now fires when lesson manually completed by admin on edit user in /wp-admin #1492
-
-**Updated:**
-
-* Elementor - Improved performance of form queries #1590
-* Gravity Forms - Everyone trigger code update #1612
-* Gravity Forms - Logged-in trigger code update #1609
-* Instagram - "Publish a photo to an Instagram account" - Updated field labels
-* Modern Events Calendar - "A user's booking is completed" - Now fires when a user account is created at time of booking
-* Renamed GoToTraining/GoToWebinar to GoTo Training/GoTo Webinar
-
-**Fixed:**
-
-* Actions without conditions can now be dragged #1445
-* Scheduled/conditional actions - PHP error on PHP 8+ #1539
-* AffiliateWP - Tokens now appear in the Recipe UI #1582
-* Amelia - Removed duplicate tokens #1538
-* FluentCRM - Removed duplicate tokens #1626
-* Google Sheets - "Update a row" action - Now requires a value in the worksheet field #1630
-* Gravity Forms - Form ID token now works reliably #1598
-* Instagram - "Publish a photo to an Instagram account" - Recipe now runs if Description/Hashtags field is empty
-* Mailpoet action: "Add a subscriber to a list" - No longer indicates that user data is required #1605
-* Mailpoet action: "Add the user to the list" - No longer throws an exception on some sites #1548
-* Uncanny Codes - A user redeems a code from a batch - Now fires more reliably
-* WordPress Core - PHP Warning: Attempt to read property "post_type" on null in wp-viewpost.php #1567
-* Database error: Column meta_value cannot be null #1565
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

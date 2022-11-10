@@ -33,6 +33,7 @@ class Gravity_Forms_Helpers {
 	public function __construct() {
 
 		$this->load_options = true;
+
 	}
 
 	/**
@@ -311,10 +312,38 @@ class Gravity_Forms_Helpers {
 
 		return $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT `post_id` FROM $wpdb->postmeta WHERE meta_key = '_ulgm_code_group_id' AND  meta_value = '%d' LIMIT 1",
+				"SELECT `post_id` FROM $wpdb->postmeta WHERE meta_key = '_ulgm_code_group_id' AND  meta_value = %s LIMIT 1",
 				$group_id
 			)
 		);
+
+	}
+
+
+	/**
+	 * Retrieves all forms as option fields.
+	 *
+	 * @return array The list of option fields from Gravity forms.
+	 */
+	public function get_forms_as_option_fields() {
+
+		if ( ! class_exists( '\GFAPI' ) ) {
+
+			return array();
+
+		}
+
+		$forms = \GFAPI::get_forms();
+
+		$options[-1] = __( 'Any form', 'uncanny-automator' );
+
+		foreach ( $forms as $form ) {
+
+			$options[ absint( $form['id'] ) ] = $form['title'];
+
+		}
+
+		return ! empty( $options ) ? $options : array();
 
 	}
 

@@ -7,10 +7,9 @@
  * @class   Automator_Load
  * @since   3.0
  * @version 3.0
- * @package Uncanny_Automator
  * @author  Saad S.
+ * @package Uncanny_Automator
  */
-
 
 namespace Uncanny_Automator;
 
@@ -189,10 +188,16 @@ class Automator_Load {
 				return;
 			}
 
+			// If the site is not previously connected, let's redirect to Setup Wizard
+			if ( class_exists( '\Uncanny_Automator\Api_Server' ) && empty( Api_Server::get_license_key() ) ) {
+				wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-setup-wizard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+				exit();
+
+			}
+
+			// Else, redirect back to Dashboard
 			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
-
 			exit();
-
 		}
 	}
 
@@ -607,6 +612,7 @@ class Automator_Load {
 	public function load_migrations() {
 		require_once UA_ABSPATH . 'src/core/migrations/abstract-migration.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-schedules.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-triggers.php';
 	}
 
 	/**

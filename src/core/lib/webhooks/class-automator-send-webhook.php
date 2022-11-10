@@ -428,9 +428,9 @@ class Automator_Send_Webhook {
 		foreach ( $header_meta as $meta ) {
 			$key = isset( $meta['NAME'] ) ? $this->maybe_parse_tokens( $meta['NAME'], $parsing_args ) : null;
 			// remove colon if user added in NAME
-			$key             = str_replace( ':', '', $key );
+			$key             = trim( str_replace( ':', '', $key ) );
 			$value           = isset( $meta['VALUE'] ) ? $this->maybe_parse_tokens( $meta['VALUE'], $parsing_args ) : null;
-			$headers[ $key ] = $value;
+			$headers[ $key ] = trim( $value );
 		}
 
 		return array_unique( $headers );
@@ -449,7 +449,7 @@ class Automator_Send_Webhook {
 			return sanitize_text_field( $value );
 		}
 
-		return Automator()->parse->text( $value, $parsing_args['recipe_id'], $parsing_args['user_id'], $parsing_args['args'] );
+		return trim( Automator()->parse->text( $value, $parsing_args['recipe_id'], $parsing_args['user_id'], $parsing_args['args'] ) );
 	}
 
 	/**

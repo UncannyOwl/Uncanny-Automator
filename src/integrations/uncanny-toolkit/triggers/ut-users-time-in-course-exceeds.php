@@ -32,7 +32,7 @@ class UT_USERS_TIME_IN_COURSE_EXCEEDS {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-		if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
+		if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) || ! defined( 'LEARNDASH_VERSION' ) ) {
 			return;
 		}
 		$this->trigger_code = 'UTUSERSTIMEINCOURSEEXCEEDS';

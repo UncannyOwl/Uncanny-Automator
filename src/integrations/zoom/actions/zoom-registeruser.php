@@ -25,6 +25,7 @@ class ZOOM_REGISTERUSER {
 	public function __construct() {
 		$this->action_code = 'ZOOMREGISTERUSER';
 		$this->action_meta = 'ZOOMMEETING';
+		$this->helpers     = new Zoom_Helpers();
 		$this->define_action();
 	}
 
@@ -40,6 +41,7 @@ class ZOOM_REGISTERUSER {
 			//'is_deprecated'      => true,
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
+			/* translators: Meeting topic */
 			'sentence'              => sprintf( __( 'Add the user to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name'    => __( 'Add the user to {{a meeting}}', 'uncanny-automator' ),
 			'priority'              => 10,
@@ -67,12 +69,47 @@ class ZOOM_REGISTERUSER {
 	 * @return void
 	 */
 	public function load_options() {
+
+		$account_users_field = array(
+			'option_code'           => 'ZOOMUSER',
+			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => false,
+			'is_ajax'               => true,
+			'endpoint'              => 'uap_zoom_api_get_meetings',
+			'fill_values_in'        => $this->action_meta,
+			'options'               => $this->helpers->get_account_user_options(),
+			'relevant_tokens'       => array(),
+			'supports_custom_value' => false,
+		);
+
+		$user_meetings_field = array(
+			'option_code'           => $this->action_meta,
+			'label'                 => __( 'Meeting', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => true,
+			'options'               => array(),
+			'supports_tokens'       => false,
+			'supports_custom_value' => false,
+		);
+
+		$option_fileds = array(
+			$account_users_field,
+			$user_meetings_field,
+			$this->helpers->get_meeting_questions_repeater(),
+		);
+
+		//Don't show the user dropdown to old credentials so it's easier to test the update
+		if ( $this->helpers->jwt_mode() ) {
+			$option_fileds = array(
+				$this->helpers->get_meetings_field(),
+				$this->helpers->get_meeting_questions_repeater(),
+			);
+		}
+
 		return array(
 			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
-					Automator()->helpers->recipe->zoom->get_meeting_questions_repeater(),
-				),
+				$this->action_meta => $option_fileds,
 			),
 		);
 	}
@@ -85,8 +122,6 @@ class ZOOM_REGISTERUSER {
 	 * @param $recipe_id
 	 */
 	public function zoom_register_user( $user_id, $action_data, $recipe_id, $args ) {
-
-		$helpers = Automator()->helpers->recipe->zoom;
 
 		try {
 
@@ -117,10 +152,10 @@ class ZOOM_REGISTERUSER {
 			$meeting_user['first_name'] = empty( $meeting_user['first_name'] ) ? $email_parts[0] : $meeting_user['first_name'];
 
 			if ( ! empty( $action_data['meta']['MEETINGQUESTIONS'] ) ) {
-				$meeting_user = $helpers->add_custom_questions( $meeting_user, $action_data['meta']['MEETINGQUESTIONS'], $recipe_id, $user_id, $args );
+				$meeting_user = $this->helpers->add_custom_questions( $meeting_user, $action_data['meta']['MEETINGQUESTIONS'], $recipe_id, $user_id, $args );
 			}
 
-			$response = Automator()->helpers->recipe->zoom->add_to_meeting( $meeting_user, $meeting_key, $action_data );
+			$response = $this->helpers->add_to_meeting( $meeting_user, $meeting_key, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 

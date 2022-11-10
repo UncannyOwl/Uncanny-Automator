@@ -12,6 +12,7 @@ $active_plugins     = $report['active_plugins'];
 $inactive_plugins   = $report['inactive_plugins'];
 $dropins_mu_plugins = $report['dropins_mu_plugins'];
 $theme              = $report['theme'];
+$automator_stats    = $report['automator_stats'];
 ?>
 <script>
 	jQuery(function ($) {
@@ -92,7 +93,7 @@ $theme              = $report['theme'];
 				try {
 					$('#debug-report').css('display', 'block');
 					$('#debug-report').find('textarea').val('`' + report + '`').focus().select();
-					$(this).css('display','none');
+					$(this).css('display', 'none');
 					return false;
 				} catch (e) {
 					/* jshint devel: true */
@@ -160,7 +161,8 @@ $theme              = $report['theme'];
 
 <div class="uap-spacing-bottom">
 
-	<uo-alert type="info" heading="<?php esc_attr_e( 'Please copy and paste this information in your ticket when contacting support', 'uncanny-automator' ); ?>">
+	<uo-alert type="info"
+			  heading="<?php esc_attr_e( 'Please copy and paste this information in your ticket when contacting support', 'uncanny-automator' ); ?>">
 
 		<uo-button color="secondary" class="uap-spacing-top--small debug-report">
 
@@ -172,7 +174,8 @@ $theme              = $report['theme'];
 
 			<textarea readonly="readonly"></textarea>
 
-			<uo-button color="secondary" id="copy-for-support" href="#" data-tip="<?php esc_attr_e( 'Copied!', 'uncanny-automator' ); ?>">
+			<uo-button color="secondary" id="copy-for-support" href="#"
+					   data-tip="<?php esc_attr_e( 'Copied!', 'uncanny-automator' ); ?>">
 				<?php esc_html_e( 'Copy for support', 'uncanny-automator' ); ?>
 			</uo-button>
 
@@ -212,16 +215,27 @@ $theme              = $report['theme'];
 		<td><?php echo esc_html( $environment['home_url'] ); ?></td>
 	</tr>
 	<tr>
-		<td data-export-label="UA Version"><?php esc_html_e( 'Automator version', 'uncanny-automator' ); ?>:</td>
+		<td data-export-label="Automator Version"><?php esc_html_e( 'Automator version', 'uncanny-automator' ); ?>:</td>
 		<td class="help"><?php echo esc_html__( 'The version of Automator installed on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 		<td><?php echo esc_html( $environment['version'] ); ?></td>
 	</tr>
+	<?php if ( is_automator_pro_active() ) { ?>
+		<tr>
+			<td data-export-label="Automator Pro Version"><?php esc_html_e( 'Automator Pro version', 'uncanny-automator' ); ?>
+				:
+			</td>
+			<td class="help"><?php echo esc_html__( 'The version of Automator Pro installed on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+			<td><?php echo esc_html( $environment['pro_version'] ); ?></td>
+		</tr>
+	<?php } ?>
 	<tr>
 		<td data-export-label="REST API Path"><?php esc_html_e( 'Automator REST API path', 'uncanny-automator' ); ?>:
 		</td>
 		<td class="help"><?php echo esc_html__( 'The Automator REST API path on your site.', 'uncanny-automator' ); ?></td>
 		<td>
-			<mark class="yes"><uo-icon id="check"></uo-icon></mark>
+			<mark class="yes">
+				<uo-icon id="check"></uo-icon>
+			</mark>
 			<?php echo esc_url_raw( site_url() . '/wp-json/' . esc_html( AUTOMATOR_REST_API_END_POINT ) ); ?>
 		</td>
 	</tr>
@@ -300,7 +314,9 @@ $theme              = $report['theme'];
 		<td class="help"><?php echo esc_html__( 'Displays whether or not WordPress is in Debug Mode.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 		<td>
 			<?php if ( $environment['wp_debug_mode'] ) : ?>
-				<mark class="yes"><uo-icon id="check"></uo-icon></mark>
+				<mark class="yes">
+					<uo-icon id="check"></uo-icon>
+				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
 			<?php endif; ?>
@@ -311,7 +327,9 @@ $theme              = $report['theme'];
 		<td class="help"><?php echo esc_html__( 'Displays whether or not WP Cron Jobs are enabled.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 		<td>
 			<?php if ( $environment['wp_cron'] ) : ?>
-				<mark class="yes"><uo-icon id="check"></uo-icon></mark>
+				<mark class="yes">
+					<uo-icon id="check"></uo-icon>
+				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
 			<?php endif; ?>
@@ -329,7 +347,39 @@ $theme              = $report['theme'];
 		<td class="help"><?php echo esc_html__( 'Displays whether or not WordPress is using an external object cache.', 'uncanny-automator' ); ?></td>
 		<td>
 			<?php if ( $environment['external_object_cache'] ) : ?>
-				<mark class="yes"><uo-icon id="check"></uo-icon></mark>
+				<mark class="yes">
+					<uo-icon id="check"></uo-icon>
+				</mark>
+			<?php else : ?>
+				<mark class="no">&ndash;</mark>
+			<?php endif; ?>
+		</td>
+	</tr>
+	<tr>
+		<td data-export-label="Automator cache"><?php esc_html_e( 'Automator cache', 'uncanny-automator' ); ?>
+			:
+		</td>
+		<td class="help"><?php echo esc_html__( 'Displays whether or not Automator is using an internal cache.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php if ( $environment['automator_cache'] ) : ?>
+				<mark class="yes">
+					<uo-icon id="check"></uo-icon>
+				</mark>
+			<?php else : ?>
+				<mark class="no">&ndash;</mark>
+			<?php endif; ?>
+		</td>
+	</tr>
+	<tr>
+		<td data-export-label="Background actions"><?php esc_html_e( 'Background actions', 'uncanny-automator' ); ?>
+			:
+		</td>
+		<td class="help"><?php echo esc_html__( 'Displays whether or not Automator is using Background processing.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php if ( $environment['automator_bg_processing'] ) : ?>
+				<mark class="yes">
+					<uo-icon id="check"></uo-icon>
+				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
 			<?php endif; ?>
@@ -465,6 +515,56 @@ $theme              = $report['theme'];
 	</tr>
 	</tbody>
 </table>
+<table class="automator_status_table widefat" cellspacing="0">
+	<thead>
+	<tr>
+		<th colspan="3" data-export-label="Automator stats">
+			<h2><?php esc_html_e( 'Automator stats', 'uncanny-automator' ); ?></h2></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td data-export-label="Total recipes"><?php esc_html_e( 'Total recipes', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of recipes created on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['total_recipes'] ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Live recipes"><?php esc_html_e( 'Live recipes', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of live recipes on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['live_recipes'] ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Recipes completed"><?php esc_html_e( 'Recipes completed', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of recipes completed on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['completed_recipes'] ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Completed in last 7 days"><?php esc_html_e( 'Completed in last 7 days', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of recipes completed during the last 7 days on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['completed_last_week'] ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Recipe logs"><?php esc_html_e( 'Recipe logs', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of recipes logs created on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['recipe_logs_count'] ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Logs without completion status"><?php esc_html_e( 'Logs without completion status', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of recipes not completed successfully on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['not_completed_status'] ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Credits left"><?php esc_html_e( 'Credits left', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Available credits.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['credits_left'] ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Recipes using credits"><?php esc_html_e( 'Recipes using credits', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of recipes using credits on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td><?php echo esc_html( $automator_stats['credit_recipes'] ); ?></td>
+	</tr>
+	</tbody>
+</table>
 <table id="status-database" class="automator_status_table widefat" cellspacing="0">
 	<thead>
 	<tr>
@@ -480,7 +580,7 @@ $theme              = $report['theme'];
 	</thead>
 	<tbody>
 	<tr>
-		<td data-export-label="UA Database Version"><?php esc_html_e( 'Automator database version', 'uncanny-automator' ); ?>
+		<td data-export-label="Automator DB Version"><?php esc_html_e( 'Automator database version', 'uncanny-automator' ); ?>
 			:
 		</td>
 		<td class="help"><?php echo esc_html__( 'The database version of Automator.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
@@ -488,7 +588,7 @@ $theme              = $report['theme'];
 			/<?php echo esc_html( $database['automator_database_available_version'] ); ?></td>
 	</tr>
 	<tr>
-		<td data-export-label="UA Database Views Version"><?php esc_html_e( 'Automator database VIEWS version', 'uncanny-automator' ); ?>
+		<td data-export-label="Automator DB Views Version"><?php esc_html_e( 'Automator database VIEWS version', 'uncanny-automator' ); ?>
 			:
 		</td>
 		<td class="help"><?php echo esc_html__( 'The database VIEWS version of Automator.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
@@ -496,7 +596,7 @@ $theme              = $report['theme'];
 			/<?php echo esc_html( $database['automator_database_available_view_version'] ); ?></td>
 	</tr>
 	<tr>
-		<td data-export-label="UA Database Prefix"><?php esc_html_e( 'Database prefix', 'uncanny-automator' ); ?></td>
+		<td data-export-label="WP DB Prefix"><?php esc_html_e( 'Database prefix', 'uncanny-automator' ); ?></td>
 		<td class="help">&nbsp;</td>
 		<td>
 			<?php
@@ -713,7 +813,9 @@ if ( 0 < count( $dropins_mu_plugins['mu_plugins'] ) ) :
 			<td data-export-label="Child Theme"><?php esc_html_e( 'Child theme', 'uncanny-automator' ); ?>:</td>
 			<td class="help"><?php echo esc_html__( 'Displays whether or not the current theme is a child theme.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 			<td>
-				<mark class="yes"><uo-icon id="check"></uo-icon></mark>
+				<mark class="yes">
+					<uo-icon id="check"></uo-icon>
+				</mark>
 			</td>
 		</tr>
 	<?php } ?>

@@ -48,6 +48,14 @@ class Mailpoet_Helpers {
 		$this->pro = $pro;
 	}
 
+	/**
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
+	 *
+	 * @return array|mixed|null
+	 * @throws \Exception
+	 */
 	public function get_all_mailpoet_lists( $label = null, $option_code = 'MAILPOETLISTS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
@@ -92,6 +100,13 @@ class Mailpoet_Helpers {
 		return apply_filters( 'uap_option_get_all_mailpoet_lists', $option );
 	}
 
+	/**
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
+	 *
+	 * @return array|mixed|null
+	 */
 	public function get_all_mailpoet_subscribers( $label = null, $option_code = 'MAILPOETSUBSCRIBERS', $args = array() ) {
 		if ( ! $this->load_options ) {
 

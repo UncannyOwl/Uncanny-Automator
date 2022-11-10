@@ -825,7 +825,7 @@ class Mailchimp_Helpers {
 	 */
 	public function uo_mailchimp_disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING ), 'uo-mailchimp-disconnect' ) ) {
+		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), 'uo-mailchimp-disconnect' ) ) {
 			delete_option( '_uncannyowl_mailchimp_settings' );
 			delete_option( '_uncannyowl_mailchimp_settings_expired' );
 			delete_option( '_uncannyowl_mailchimp_settings_user_info' );
