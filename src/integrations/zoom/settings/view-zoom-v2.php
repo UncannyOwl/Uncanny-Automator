@@ -2,14 +2,14 @@
 	return;} ?>
 
 <form method="POST" action="options.php" warn-unsaved>
-	
+
 	<?php settings_fields( $this->get_settings_id() ); ?>
 
 	<div class="uap-settings-panel">
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<uo-icon integration="ZOOM"></uo-icon> <?php esc_html_e( 'Zoom Webinars', 'uncanny-automator' ); ?>
+				<uo-icon integration="ZOOM"></uo-icon> <?php esc_html_e( 'Zoom Meetings', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
@@ -20,12 +20,12 @@
 
 						$connect = automator_filter_input( 'connect' );
 
-						$alert_heading = __( 'There was an error connecting your Zoom Webinars account. Please try again or contact support.', 'uncanny-automator' );
+						$alert_heading = __( 'There was an error connecting your Zoom Meetings account. Please try again or contact support.', 'uncanny-automator' );
 						$alert_type    = 'error';
 						$alert_content = __( 'Error: ', 'uncanny-automator' ) . $connect;
 
-						if ( 1 == $connect ) {
-							$alert_heading = __( 'You have successfully connected your Zoom Webinars account', 'uncanny-automator' );
+						if ( 1 === absint( $connect ) ) {
+							$alert_heading = __( 'You have successfully connected your Zoom Meetings account', 'uncanny-automator' );
 							$alert_type    = 'success';
 							$alert_content = '';
 						}
@@ -46,16 +46,17 @@
 
 				<?php
 
+				// Check what button we have to add
 				if ( ! $this->is_connected ) {
 
 					?>
 
 					<div class="uap-settings-panel-content-subtitle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Zoom Webinars', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Connect Uncanny Automator to Zoom Meetings', 'uncanny-automator' ); ?>
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Automatically register users for Zoom Webinars when they complete actions on your site, such as completing a course, filling out a form, or even simply clicking a button!', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Automatically register users for Zoom Meetings when they complete actions on your site, such as completing a course, filling out a form, or even simply clicking a button!', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
@@ -64,16 +65,16 @@
 
 					<ul>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add an attendee to a webinar', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add an attendee to a meeting', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add the user to a webinar', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add the user to a meeting', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove an attendee to a webinar', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove an attendee to a meeting', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove the user from a webinar', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove the user from a meeting', 'uncanny-automator' ); ?>
 						</li>
 					</ul>
 
@@ -85,8 +86,8 @@
 						<?php
 
 							echo sprintf(
-								esc_html__( "Connecting to Zoom Webinars requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
-								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_webinar-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+								esc_html__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
+								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 							);
 
 						?>
@@ -99,7 +100,7 @@
 				?>
 
 				<uo-text-field
-					id="uap_automator_zoom_webinar_api_consumer_key"
+					id="uap_automator_zoom_api_consumer_key"
 					value="<?php echo esc_attr( $this->api_key ); ?>"
 
 					label="<?php esc_attr_e( 'API key', 'uncanny-automator' ); ?>"
@@ -111,7 +112,7 @@
 				></uo-text-field>
 
 				<uo-text-field
-					id="uap_automator_zoom_webinar_api_consumer_secret"
+					id="uap_automator_zoom_api_consumer_secret"
 					value="<?php echo esc_attr( $this->api_secret ); ?>"
 
 					label="<?php esc_attr_e( 'API secret', 'uncanny-automator' ); ?>"
@@ -125,21 +126,29 @@
 				<?php
 
 				if ( $this->is_connected ) {
-
 					?>
+					<uo-alert 
+						heading="<?php esc_attr_e( 'Uncanny Automator only supports connecting to one Zoom Meetings account.', 'uncanny-automator' ); ?>"
+					></uo-alert>
+					<br>
 
 					<uo-alert 
-						heading="<?php esc_attr_e( 'Uncanny Automator only supports connecting to one Zoom Webinars account.', 'uncanny-automator' ); ?>"
-					></uo-alert>
+						type="error" 
+						heading="WARNING"
+					>
+					<?php
+					echo sprintf(
+						// translators: Link to Zoom knowledgebase article
+						esc_html__( 'JWT apps for Zoom Meetings will be deprecated in June 2023. To keep your recipes running without interruption, please disconnect and then reconnect your account using the new Zoom app. %1$s.', 'uncanny-automator' ),
+						'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Learn More', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+					);
+					?>
+					</uo-alert>
 
 					<?php
-
 				}
-
 				?>
-
 			</div>
-
 		</div>
 
 		<div class="uap-settings-panel-bottom">
@@ -164,11 +173,7 @@
 										<uo-icon integration="ZOOM"></uo-icon>
 									</div>
 									<div class="uap-settings-panel-user-info__additional">
-										<?php
-
-											echo esc_html( $this->user['email'] );
-
-										?>
+										<?php echo esc_html( $this->user['email'] ); ?>
 									</div>
 								</div>
 							</div>
@@ -183,7 +188,7 @@
 						<uo-button
 							type="submit"
 						>
-							<?php esc_html_e( 'Connect Zoom Webinars account', 'uncanny-automator' ); ?>
+							<?php esc_html_e( 'Connect Zoom Meetings account', 'uncanny-automator' ); ?>
 						</uo-button>
 
 						<?php
@@ -206,11 +211,14 @@
 
 							<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 						</uo-button>
-					<?php } ?>
+
+						<?php
+					}
+					?>
 				</div>
 
 		</div>
 
 	</div>
-	<input type="hidden" name="uap_automator_zoom_webinar_api_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
+	<input type="hidden" name="uap_automator_zoom_api_settings_timestamp" value="<?php echo esc_attr( time() ); ?>" >
 </form>

@@ -147,7 +147,8 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneLink
 						'dateFormat'      => get_option( 'date_format' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.dateFormat
-						'today'           => date( get_option( 'date_format' ) ), //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+						'today'           => date( get_option( 'date_format' ) ),
+						//phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 						// UncannyAutomator.i18n.action.asyncActions.modal.today
 						'timeFormat'      => get_option( 'time_format' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timeFormat
@@ -317,6 +318,12 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.validation.field.int.invalid
 						'multipleTokens' => esc_attr__( 'This field only supports one token at a time.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.validation.field.int.multipleTokens
+						/* translators: 1. The min number */
+						'minValue'       => esc_attr__( 'Value must be greater than or equal to %1$s', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.validation.field.int.minValue
+						/* translators: 1. The max number */
+						'maxValue'       => esc_attr__( 'Value must be less than or equal to %1$s', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.validation.field.int.maxValue
 					),
 					'float'       => array(
 						'empty'          => esc_attr__( 'Please enter a number.', 'uncanny-automator' ),
@@ -325,6 +332,12 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.validation.field.float.invalid
 						'multipleTokens' => esc_attr__( 'This field only supports one token at a time.', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.validation.field.float.multipleTokens
+						/* translators: 1. The min number */
+						'minValue'       => esc_attr__( 'Value must be greater than or equal to %1$s', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.validation.field.float.minValue
+						/* translators: 1. The max number */
+						'maxValue'       => esc_attr__( 'Value must be less than or equal to %1$s', 'uncanny-automator' ),
+						// UncannyAutomator.i18n.validation.field.float.maxValue
 					),
 					'email'       => array(
 						'empty'    => esc_attr__( 'Please enter an email address.', 'uncanny-automator' ),
@@ -422,9 +435,14 @@ class Automator_Translations {
 					// UncannyAutomator.i18n.tokens.global.common
 					/* translators: Token name */
 					'siteName'                   => esc_attr_x( 'Site name', 'Token', 'uncanny-automator' ),
+					/* translators: Token name */
+					'siteTagline'                => esc_attr_x( 'Site tagline', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.siteName
 					/* translators: Token name */
 					'currentSiteName'            => esc_attr_x( 'Current site name', 'Token', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.tokens.global.currentSiteDescription
+					/* translators: Token name */
+					'currentSiteTagline'         => esc_attr_x( 'Current site tagline', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator.i18n.tokens.global.currentSiteName
 					/* translators: Token name */
 					'userID'                     => esc_attr_x( 'User ID', 'Token', 'uncanny-automator' ),

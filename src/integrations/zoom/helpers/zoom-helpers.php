@@ -45,13 +45,12 @@ class Zoom_Helpers {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		add_action( 'update_option_uap_automator_zoom_api_settings_timestamp', array( $this, 'settings_updated' ) );
-		add_action( 'add_option_uap_automator_zoom_api_settings_timestamp', array( $this, 'settings_updated' ) );
-
 		// Disconnect wp-ajax action.
 		add_action( 'wp_ajax_uap_automator_zoom_api_disconnect', array( $this, 'disconnect' ), 10 );
 
 		add_action( 'wp_ajax_uap_zoom_api_get_meeting_questions', array( $this, 'api_get_meeting_questions' ) );
+
+		add_action( 'wp_ajax_uap_zoom_api_get_meetings', array( $this, 'ajax_get_meetings' ), 10 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
 
@@ -98,7 +97,7 @@ class Zoom_Helpers {
 			return;
 		}
 
-		if ( 'uo-recipe' != get_current_screen()->post_type ) {
+		if ( 'uo-recipe' !== get_current_screen()->post_type ) {
 			return;
 		}
 
@@ -110,14 +109,14 @@ class Zoom_Helpers {
 	/**
 	 * @param Zoom_Helpers $options
 	 */
-	public function setOptions( Zoom_Helpers $options ) { //phpcs:ignore
+	public function setOptions( Zoom_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Zoom_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Zoom_Pro_Helpers $pro ) { // phpcs:ignore
+	public function setPro( \Uncanny_Automator_Pro\Zoom_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -128,7 +127,7 @@ class Zoom_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function get_meetings( $label = null, $option_code = 'ZOOMMEETINGS', $args = array() ) {
+	public function get_meetings_field( $label = null, $option_code = 'ZOOMMEETING', $args = array() ) {
 
 		if ( ! $label ) {
 			$label = __( 'Meeting', 'uncanny-automator' );
@@ -193,6 +192,49 @@ class Zoom_Helpers {
 		);
 
 		return apply_filters( 'uap_option_zoom_get_meetings', $option );
+	}
+
+	/**
+	 * @param string $label
+	 * @param string $option_code
+	 * @param array $args
+	 *
+	 * @return mixed
+	 */
+	public function get_account_user_options() {
+
+		try {
+
+			$options = array();
+
+			$body = array(
+				'action' => 'get_account_users',
+			);
+
+			$response = $this->api_request( $body );
+
+			if ( 200 !== $response['statusCode'] ) {
+				throw new \Exception( __( 'Could not fetch users from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+			}
+
+			if ( empty( $response['data']['users'] ) || count( $response['data']['users'] ) < 1 ) {
+				throw new \Exception( __( 'No users were found in your account', 'uncanny-automator' ) );
+			}
+
+			foreach ( $response['data']['users'] as $user ) {
+				$options[] = array(
+					'value' => $user['email'],
+					'text'  => $user['first_name'] . ' ' . $user['last_name'],
+				);
+			}
+		} catch ( \Exception $e ) {
+			$options[] = array(
+				'value' => '',
+				'text'  => $e->getMessage(),
+			);
+		}
+
+		return apply_filters( 'uap_option_zoom_get_account_users', $options );
 	}
 
 	/**
@@ -266,6 +308,61 @@ class Zoom_Helpers {
 			$error = new \WP_Error( $e->getCode(), $e->getMessage() );
 			wp_send_json_error( $error );
 		}
+
+		die();
+	}
+
+	/**
+	 * ajax_get_meetings
+	 *
+	 * @return void
+	 */
+	public function ajax_get_meetings() {
+
+		// Nonce and post object validation
+		Automator()->utilities->ajax_auth_check();
+
+		try {
+
+			$options = array();
+
+			$body = array(
+				'action'      => 'get_meetings',
+				'user'        => automator_filter_input( 'value', INPUT_POST ),
+				'page_number' => 1,
+				'page_size'   => 1000,
+				'type'        => 'upcoming',
+			);
+
+			$response = $this->api_request( $body );
+
+			if ( 200 !== $response['statusCode'] ) {
+				throw new \Exception( __( 'Could not fetch user meetings from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+			}
+
+			if ( empty( $response['data']['meetings'] ) ) {
+				throw new \Exception( __( 'User meetings were not found', 'uncanny-automator' ), $response['statusCode'] );
+			}
+
+			foreach ( $response['data']['meetings'] as $meeting ) {
+
+				if ( ! empty( $meeting['topic'] ) ) {
+
+					$options[] = array(
+						'text'  => $meeting['topic'],
+						'value' => $meeting['id'],
+					);
+
+				}
+			}
+		} catch ( \Exception $e ) {
+			$options[] = array(
+				'text'  => $e->getMessage(),
+				'value' => '',
+			);
+		}
+
+		wp_send_json( $options );
 
 		die();
 	}
@@ -392,6 +489,52 @@ class Zoom_Helpers {
 	}
 
 	/**
+	 * refresh_s2s_token
+	 *
+	 * @return void|bool
+	 */
+	public function refresh_s2s_token() {
+
+		$client = array();
+
+		// Get the API key and secret
+		$account_id    = trim( get_option( 'uap_automator_zoom_api_account_id', '' ) );
+		$client_id     = trim( get_option( 'uap_automator_zoom_api_client_id', '' ) );
+		$client_secret = trim( get_option( 'uap_automator_zoom_api_client_secret', '' ) );
+
+		if ( empty( $account_id ) || empty( $client_id ) || empty( $client_secret ) ) {
+			throw new \Exception( __( 'Zoom credentials are missing', 'uncanny-automator' ) );
+		}
+
+		$params = array(
+			'endpoint' => self::API_ENDPOINT,
+			'body'     => array(
+				'action'        => 'get_token',
+				'account_id'    => $account_id,
+				'client_id'     => $client_id,
+				'client_secret' => $client_secret,
+			),
+		);
+
+		$response = Api_Server::api_call( $params );
+
+		$this->check_for_errors( $response );
+
+		if ( 200 !== $response['statusCode'] ) {
+			throw new \Exception( __( 'Could not fetch the token. Please check the credentials.', 'uncanny-automator' ) );
+		}
+
+		$client['access_token'] = $response['data']['access_token'];
+		$client['expires']      = $response['data']['expires_in'];
+
+		// Cache it in settings
+		update_option( '_uncannyowl_zoom_settings', $client );
+
+		return $client;
+
+	}
+
+	/**
 	 * refresh_token
 	 *
 	 * @param array $client
@@ -399,6 +542,10 @@ class Zoom_Helpers {
 	 * @return void
 	 */
 	public function refresh_token() {
+
+		if ( '3' === get_option( 'uap_automator_zoom_api_settings_version', false ) ) {
+			return $this->refresh_s2s_token();
+		}
 
 		$client = array();
 
@@ -419,7 +566,7 @@ class Zoom_Helpers {
 		);
 
 		// Generate the access token using the JWT library
-		$token = JWT::encode( $payload, $consumer_secret );
+		$token = JWT::encode( $payload, $consumer_secret, 'HS256' );
 
 		$client['access_token']  = $token;
 		$client['refresh_token'] = $token;
@@ -448,6 +595,12 @@ class Zoom_Helpers {
 			delete_option( 'uap_zoom_api_connected_user' );
 
 			delete_transient( 'uap_automator_zoom_api_user_info' );
+
+			delete_option( 'uap_automator_zoom_api_account_id' );
+			delete_option( 'uap_automator_zoom_api_client_id' );
+			delete_option( 'uap_automator_zoom_api_client_secret' );
+			delete_option( 'uap_automator_zoom_api_settings_version' );
+			delete_option( 'uap_automator_zoom_api_settings_timestamp' );
 
 		}
 
@@ -522,7 +675,7 @@ class Zoom_Helpers {
 			$question_name  = $question['QUESTION_NAME'];
 			$question_value = Automator()->parse->text( $question['QUESTION_VALUE'], $recipe_id, $user_id, $args );
 
-			if ( in_array( $question_name, $this->default_questions ) ) {   // If it is one of the default questions
+			if ( in_array( $question_name, $this->default_questions, true ) ) {   // If it is one of the default questions
 				$user[ $question_name ] = $question_value;
 			} else {                                                            // If it's a custom question
 				$question_data              = array();
@@ -535,55 +688,7 @@ class Zoom_Helpers {
 		return $user;
 	}
 
-
-	/**
-	 * settings_updated
-	 *
-	 * @return void
-	 */
-	public function settings_updated() {
-
-		$redirect_url = $this->tab_url;
-
-		delete_option( '_uncannyowl_zoom_settings' );
-
-		$result = 1;
-
-		try {
-			$this->api_get_user_info();
-		} catch ( \Exception $e ) {
-			update_option( 'uap_zoom_api_connected_user', array() );
-			$result = $e->getMessage();
-		}
-
-		$redirect_url .= '&connect=' . $result;
-
-		wp_safe_redirect( $redirect_url );
-
-		exit;
-	}
-
-	/**
-	 * get_user
-	 *
-	 * @return void
-	 */
-	public function get_user() {
-
-		$users_option_exist = get_option( 'uap_zoom_api_connected_user', 'no' );
-
-		if ( 'no' !== $users_option_exist ) {
-			return $users_option_exist;
-		}
-
-		try {
-			$user = $this->api_get_user_info();
-		} catch ( \Exception $e ) {
-			$user = array();
-			update_option( 'uap_zoom_api_connected_user', $user );
-		}
-
-		return $user;
+	public function jwt_mode() {
+		return '3' !== get_option( 'uap_automator_zoom_api_settings_version', false );
 	}
 }
-

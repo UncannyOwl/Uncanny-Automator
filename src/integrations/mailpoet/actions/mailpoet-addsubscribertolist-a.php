@@ -25,16 +25,31 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 */
 	public static $integration = 'MAILPOET';
 
+	/**
+	 * @var string
+	 */
 	private $action_code;
+	/**
+	 * @var string
+	 */
 	private $action_meta;
 
 	/**
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
-		 $this->action_code = 'SUBSCRIBERTOLIST';
-		$this->action_meta  = 'MAILPOETLISTS';
+		$this->action_code = 'SUBSCRIBERTOLIST';
+		$this->action_meta = 'MAILPOETLISTS';
 		$this->define_action();
+		add_action(
+			'automator_mailpoet_subscribe_to_list',
+			array(
+				$this,
+				'subscribe_to_the_list',
+			),
+			99,
+			6
+		);
 	}
 
 	/**
@@ -70,7 +85,7 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	public function load_options() {
 		$mailpoet  = \MailPoet\API\API::MP( 'v1' );
 		$all_lists = $mailpoet->getLists();
-
+		$options   = array();
 		foreach ( $all_lists as $list ) {
 			$options[ $list['id'] ] = $list['name'];
 		}
@@ -154,31 +169,89 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			$disable_confirmation_email = 'true' === $disable_confirmation_email ? false : true;
 		}
 
+		$options = array(
+			'send_confirmation_email' => $disable_confirmation_email,
+			'schedule_welcome_email'  => true,
+		);
+
 		try {
 			// try to find if user is already a subscriber
 			$existing_subscriber = \MailPoet\Models\Subscriber::findOne( $subscriber['email'] );
 			if ( ! $existing_subscriber ) {
-				$new_subscriber = $mailpoet->addSubscriber( $subscriber, json_decode( $list_id ), array( 'send_confirmation_email' => $disable_confirmation_email ) );
-				global $wpdb;
-				$table_name = $wpdb->prefix . 'mailpoet_subscribers';
-				$wpdb->update( $table_name, array( 'status' => $subscriber['status'] ), array( 'id' => $new_subscriber['id'] ) );
-				Automator()->complete->action( $user_id, $action_data, $recipe_id );
+				$new_subscriber = $mailpoet->addSubscriber( $subscriber );
+				$subscriber_id  = $new_subscriber['id'];
 			} else {
-				$mailpoet->subscribeToLists( $existing_subscriber->id, json_decode( $list_id ), array( 'send_confirmation_email' => $disable_confirmation_email ) );
-				global $wpdb;
-				$table_name = $wpdb->prefix . 'mailpoet_subscribers';
-				$wpdb->update( $table_name, array( 'status' => $subscriber['status'] ), array( 'id' => $existing_subscriber->id ) );
-				Automator()->complete->action( $user_id, $action_data, $recipe_id );
+				$subscriber_id = $existing_subscriber->id;
 			}
+			if ( false === $disable_confirmation_email ) {
+				$this->update_status_manually( $subscriber['status'], $subscriber_id );
+			}
+			/**
+			 * Adding a cron here so that the
+			 * status 'subscribed' is properly delegated.
+			 * Else Welcome Emails linked to the list aren't sent.
+			 * @since 4.7
+			 */
+			$rr = wp_schedule_single_event(
+				time() + 5,
+				'automator_mailpoet_subscribe_to_list',
+				array(
+					$subscriber['email'],
+					maybe_serialize( json_decode( $list_id ) ),
+					maybe_serialize( $options ),
+					$user_id,
+					maybe_serialize( $action_data ),
+					$recipe_id,
+				),
+				true
+			);
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
-			$recipe_log_id                       = $action_data['recipe_log_id'];
-			$args['do-nothing']                  = true;
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 		}
 
+	}
+
+	/**
+	 * @param $status
+	 * @param $subscriber_id
+	 *
+	 * @return void
+	 */
+	public function update_status_manually( $status, $subscriber_id ) {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'mailpoet_subscribers';
+		$wpdb->update( $table_name, array( 'status' => $status ), array( 'id' => $subscriber_id ) );
+	}
+
+	/**
+	 * @param $email
+	 * @param $list_id
+	 * @param $options
+	 * @param $user_id
+	 * @param $action_data
+	 * @param $recipe_id
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function subscribe_to_the_list( $email, $list_id, $options, $user_id, $action_data, $recipe_id ) {
+		try {
+			$list_id             = maybe_unserialize( $list_id );
+			$options             = maybe_unserialize( $options );
+			$action_data         = maybe_unserialize( $action_data );
+			$mailpoet            = \MailPoet\API\API::MP( 'v1' );
+			$existing_subscriber = $mailpoet->getSubscriber( $email );
+			$r                   = $mailpoet->subscribeToLists( $existing_subscriber['id'], $list_id, $options );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
+		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
+			$error_message                       = $e->getMessage();
+			$action_data['do-nothing']           = true;
+			$action_data['complete_with_errors'] = true;
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+		}
 	}
 
 }

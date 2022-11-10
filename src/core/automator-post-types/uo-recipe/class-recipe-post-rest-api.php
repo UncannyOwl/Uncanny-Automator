@@ -602,6 +602,7 @@ class Recipe_Post_Rest_Api {
 						/**
 						 * Added in case the action uses another action's token,
 						 * and it happens to use Background processing
+						 *
 						 * @since 4.6
 						 */
 						$this->has_action_token( $item, $meta_val );
@@ -613,6 +614,7 @@ class Recipe_Post_Rest_Api {
 					/**
 					 * Added in case the action uses another action's token,
 					 * and it happens to use Background processing
+					 *
 					 * @since 4.6
 					 */
 					$this->has_action_token( $item, $meta_value );
@@ -759,6 +761,9 @@ class Recipe_Post_Rest_Api {
 				);
 
 				$updated = wp_update_post( $post );
+
+				// Fallback code to add add_action meta in < 3.0 triggers.
+				$this->process_post_migratable( $post_id );
 
 				if ( $updated ) {
 					$return['message'] = 'Updated!';
@@ -1388,4 +1393,70 @@ class Recipe_Post_Rest_Api {
 			}
 		}
 	}
+
+	/**
+	 * Processes migratable posts (e.g. Triggers that do not have `add_action` (pre 3.0)).
+	 *
+	 * @param integer $post_id The post ID.
+	 *
+	 * @return boolean True, always.
+	 */
+	private function process_post_migratable( $post_id ) {
+
+		// Check the current post type.
+		$object = get_post( $post_id );
+
+		if ( 'uo-action' === $object->post_type || 'uo-trigger' === $object->post_type ) {
+
+			$post_id = wp_get_post_parent_id( $post_id );
+
+		}
+
+		// Otherwise, assume $post_id is a recipe.
+		$triggers = $this->fetch_all_triggers_with_missing_hook_from_recipe( $post_id );
+
+		if ( ! empty( $triggers ) ) {
+			// If there are any missing `add_action` in the current recipe triggers, do migrate.
+			( new \Uncanny_Automator\Migrations\Migrate_Triggers() )->migrate();
+		}
+
+		return true;
+
+	}
+
+	/**
+	 * Fetches all triggers with a missing hook from a given recipe.
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return array The triggers that are missing `add_action` post_meta.
+	 */
+	private function fetch_all_triggers_with_missing_hook_from_recipe( $recipe_id ) {
+
+		global $wpdb;
+
+		// Retrieve all triggers first from current recipe.
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT posts.ID , pm.meta_value as trigger_code
+				FROM $wpdb->posts as posts
+				JOIN $wpdb->postmeta pm
+				ON posts.ID = pm.post_id and pm.meta_key = 'code'
+				WHERE posts.post_type = %s
+				AND posts.post_parent = %d
+				AND posts.post_type = 'uo-trigger'
+				AND NOT EXISTS ( 
+						SELECT * FROM $wpdb->postmeta
+						WHERE $wpdb->postmeta.meta_key = 'add_action' 
+						AND $wpdb->postmeta.post_id=posts.ID
+					) 
+				",
+				'uo-trigger',
+				$recipe_id
+			),
+			ARRAY_A
+		);
+
+	}
+
 }

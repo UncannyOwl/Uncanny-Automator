@@ -7,8 +7,8 @@
  * @class   Trigger_Setup
  * @since   3.0
  * @version 3.0
- * @package Uncanny_Automator
  * @author  Saad S.
+ * @package Uncanny_Automator
  */
 
 
@@ -117,6 +117,26 @@ trait Trigger_Setup {
 	 * @var
 	 */
 	protected $token_parser;
+
+	/**
+	 * Stores the Helper class
+	 * @var
+	 */
+	protected $helper;
+
+	/**
+	 * @return mixed
+	 */
+	public function get_helper() {
+		return $this->helper;
+	}
+
+	/**
+	 * @param mixed $helper
+	 */
+	public function set_helper( $helper ) {
+		$this->helper = $helper;
+	}
 
 	/**
 	 * @var bool

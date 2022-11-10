@@ -32,12 +32,12 @@ class Api_Log {
 	 */
 	public function register_options_menu_page() {
 
-		$parent_slug = 'edit.php?post_type=uo-recipe';
+		$parent_slug = 'options.php';
 		$function    = array( Admin_Menu::get_instance(), 'logs_options_menu_page_output' );
 		$title       = esc_attr__( 'API log', 'uncanny-automator' );
 
 		add_submenu_page(
-			null,
+			$parent_slug,
 			$title,
 			$title,
 			'manage_options',

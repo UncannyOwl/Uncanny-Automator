@@ -1,15 +1,29 @@
 <?php
+
 namespace Uncanny_Automator;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+/**
+ *
+ */
 class Setup_Wizard {
 
-	public $connect_url  = '';
+	/**
+	 * @var string
+	 */
+	public $connect_url = '';
+
+	/**
+	 * @var string
+	 */
 	public $connect_page = '';
 
+	/**
+	 * Set-ups action hooks.
+	 */
 	public function __construct() {
 
 		$this->connect_url  = AUTOMATOR_FREE_STORE_URL;
@@ -23,34 +37,55 @@ class Setup_Wizard {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function set_tried_connecting() {
 		self::set_has_tried_connecting( true );
 		die;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setup_menu_page() {
-		add_submenu_page(
-			null,
-			esc_attr__( 'Uncanny Automator Setup Wizard', 'uncanny-automator' ),
-			esc_attr__( 'Setup wizard', 'uncanny-automator' ),
-			'manage_options',
-			'uncanny-automator-setup-wizard',
-			array(
-				$this,
-				'setup_wizard_view',
-			),
-			0
-		);
+
+		$is_setup_wizard_page = 'uncanny-automator-setup-wizard' === automator_filter_input( 'page' );
+
+		// Only add the page if site is not connected OR the user is on the setup wizard page (confirmations etc).
+		if ( $is_setup_wizard_page || ! $this->is_user_connected() ) {
+			add_submenu_page(
+				'edit.php?post_type=uo-recipe',
+				esc_attr__( 'Uncanny Automator Setup Wizard', 'uncanny-automator' ),
+				esc_attr__( 'Setup wizard', 'uncanny-automator' ),
+				'manage_options',
+				'uncanny-automator-setup-wizard',
+				array(
+					$this,
+					'setup_wizard_view',
+				),
+				0
+			);
+		}
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_view_path() {
 		return UA_ABSPATH . 'src/core/admin/setup-wizard/src/views/';
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setup_wizard_view() {
 		include_once $this->get_view_path() . 'welcome.php';
 	}
 
+	/**
+	 * @return void
+	 */
 	public function enqueue_styles() {
 		$page = automator_filter_input( 'page' );
 		if ( 'uncanny-automator-setup-wizard' === $page ) {
@@ -64,6 +99,9 @@ class Setup_Wizard {
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_step() {
 
 		$step = absint( automator_filter_input( 'step' ) );
@@ -76,6 +114,9 @@ class Setup_Wizard {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_connect_button_uri() {
 
 		return add_query_arg(
@@ -87,6 +128,12 @@ class Setup_Wizard {
 
 	}
 
+	/**
+	 * @param $step
+	 * @param $is_method
+	 *
+	 * @return string
+	 */
 	public function get_dashboard_uri( $step = 1, $is_method = false ) {
 
 		$args = array(
@@ -105,14 +152,26 @@ class Setup_Wizard {
 		);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_checkout_uri() {
+
 		return 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=setup_wizard&utm_content=upgrade_to_pro_btn';
+
 	}
 
+	/**
+	 * @return false|null
+	 */
 	public function is_user_connected() {
-		return Api_Server::is_automator_connected();
+
+		return ! empty( Api_Server::get_license_key() );
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_steps() {
 
 		$steps           = array();
@@ -129,7 +188,7 @@ class Setup_Wizard {
 			$current_step = 1;
 		}
 
-		for ( $i = 1; $i <= $number_of_steps; $i++ ) {
+		for ( $i = 1; $i <= $number_of_steps; $i ++ ) {
 			$steps[ $i ] = array(
 				'label'   => esc_html( $i ),
 				'classes' => array( sprintf( $i ) ),
@@ -143,6 +202,9 @@ class Setup_Wizard {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_automator_dashboard_uri() {
 		return add_query_arg(
 			array(
@@ -153,6 +215,9 @@ class Setup_Wizard {
 		);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function redirect_if_connected() {
 
 		$page = automator_filter_input( 'page', INPUT_GET );
@@ -179,12 +244,21 @@ class Setup_Wizard {
 		}
 	}
 
+	/**
+	 * @return false|mixed|null
+	 */
 	public static function has_tried_connecting() {
 		return get_option( 'uoa_setup_wiz_has_connected', false );
 	}
 
+	/**
+	 * @param $bool
+	 *
+	 * @return bool
+	 */
 	public static function set_has_tried_connecting( $bool = false ) {
 		update_option( 'uoa_setup_wiz_has_connected', $bool );
+
 		return true;
 	}
 }

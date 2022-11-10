@@ -30,6 +30,7 @@ class Automator_System_Report {
 	 */
 	public function get() {
 		return array(
+			'automator_stats'    => $this->get_automator_stats(),
 			'environment'        => $this->get_environment_info(),
 			'database'           => $this->get_database_info(),
 			'active_plugins'     => $this->get_active_plugins(),
@@ -164,38 +165,40 @@ class Automator_System_Report {
 		}
 
 		$database_version = $this->get_server_database_version();
-		$environment      = array(
-			'home_url'               => get_option( 'home' ),
-			'site_url'               => get_option( 'siteurl' ),
-			'version'                => AUTOMATOR_PLUGIN_VERSION,
-			'log_directory'          => UA_DEBUG_LOGS_DIR,
-			'log_directory_writable' => is_writable( dirname( UA_DEBUG_LOGS_DIR . 'test.log' ) ),
-			'wp_version'             => get_bloginfo( 'version' ),
-			'wp_multisite'           => is_multisite(),
-			'wp_memory_limit'        => $wp_memory_limit,
-			'wp_debug_mode'          => ( defined( 'WP_DEBUG' ) && WP_DEBUG ),
-			'wp_cron'                => ! ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ),
-			'language'               => get_locale(),
-			'external_object_cache'  => wp_using_ext_object_cache(),
-			'server_info'            => isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '',
-			'php_version'            => phpversion(),
-			'php_post_max_size'      => $this->automator_string_to_num( ini_get( 'post_max_size' ) ),
-			'php_max_execution_time' => (int) ini_get( 'max_execution_time' ),
-			'php_max_input_vars'     => (int) ini_get( 'max_input_vars' ),
-			'curl_version'           => $curl_version,
-			'max_upload_size'        => wp_max_upload_size(),
-			'mysql_version'          => $database_version['number'],
-			'mysql_version_string'   => $database_version['string'],
-			'default_timezone'       => date_default_timezone_get(),
-			'mbstring_enabled'       => extension_loaded( 'mbstring' ),
-			'remote_post_successful' => $post_response_successful,
-			'remote_post_response'   => is_wp_error( $post_response_code ) ? $post_response_code->get_error_message() : $post_response_code,
-			'remote_get_successful'  => $get_response_successful,
-			'remote_get_response'    => is_wp_error( $get_response_code ) ? $get_response_code->get_error_message() : $get_response_code,
-		);
 
 		// Return all environment info. Described by JSON Schema.
-		return $environment;
+		return array(
+			'home_url'                => get_option( 'home' ),
+			'site_url'                => get_option( 'siteurl' ),
+			'version'                 => AUTOMATOR_PLUGIN_VERSION,
+			'pro_version'             => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : null,
+			'log_directory'           => UA_DEBUG_LOGS_DIR,
+			'log_directory_writable'  => is_writable( dirname( UA_DEBUG_LOGS_DIR . 'test.log' ) ),
+			'wp_version'              => get_bloginfo( 'version' ),
+			'wp_multisite'            => is_multisite(),
+			'wp_memory_limit'         => $wp_memory_limit,
+			'wp_debug_mode'           => ( defined( 'WP_DEBUG' ) && WP_DEBUG ),
+			'wp_cron'                 => ! ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ),
+			'language'                => get_locale(),
+			'external_object_cache'   => wp_using_ext_object_cache(),
+			'server_info'             => isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '',
+			'php_version'             => phpversion(),
+			'php_post_max_size'       => $this->automator_string_to_num( ini_get( 'post_max_size' ) ),
+			'php_max_execution_time'  => (int) ini_get( 'max_execution_time' ),
+			'php_max_input_vars'      => (int) ini_get( 'max_input_vars' ),
+			'curl_version'            => $curl_version,
+			'max_upload_size'         => wp_max_upload_size(),
+			'mysql_version'           => $database_version['number'],
+			'mysql_version_string'    => $database_version['string'],
+			'default_timezone'        => date_default_timezone_get(),
+			'mbstring_enabled'        => extension_loaded( 'mbstring' ),
+			'remote_post_successful'  => $post_response_successful,
+			'remote_post_response'    => is_wp_error( $post_response_code ) ? $post_response_code->get_error_message() : $post_response_code,
+			'remote_get_successful'   => $get_response_successful,
+			'remote_get_response'     => is_wp_error( $get_response_code ) ? $get_response_code->get_error_message() : $get_response_code,
+			'automator_cache'         => Automator()->cache->is_cache_enabled(),
+			'automator_bg_processing' => '1' === get_option( Background_Actions::OPTION_NAME, '1' ) ? true : false,
+		);
 	}
 
 	/**
@@ -577,5 +580,32 @@ class Automator_System_Report {
 				<?php
 			}
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_automator_stats() {
+		$dashboard = Admin_Menu::get_dashboard_details();
+		$credits   = 0;
+		if ( $dashboard->has_site_connected ) {
+			$credits = $dashboard->miscellaneous->free_credits;
+		} else {
+			$credits = __( 'Not connected', 'uncanny-automator' );
+		}
+		if ( $dashboard->is_pro ) {
+			$credits = __( 'Unlimited', 'uncanny-automator-pro' );
+		}
+
+		return array(
+			'total_recipes'        => Automator()->get->total_recipes(),
+			'live_recipes'         => Automator()->get->total_recipes( 'publish' ),
+			'completed_recipes'    => Automator()->get->completed_recipes_count(),
+			'completed_last_week'  => Automator()->get->completed_runs( WEEK_IN_SECONDS ),
+			'recipe_logs_count'    => Automator()->get->recipe_log_count(),
+			'not_completed_status' => Automator()->get->recipe_log_count( false ),
+			'credits_left'         => $credits,
+			'credit_recipes'       => Automator()->get->recipes_using_credits( true ),
+		);
 	}
 }

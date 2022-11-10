@@ -30,6 +30,7 @@ class Automator_Input_Parser {
 			'automator_pre_defined_tokens',
 			array(
 				'site_name',
+				'site_tagline',
 				'user_id',
 				'user_username',
 				'user_firstname',
@@ -371,6 +372,10 @@ class Automator_Input_Parser {
 				switch ( $match ) {
 					case 'site_name':
 						$replaceable = get_bloginfo( 'name' );
+						break;
+
+					case 'site_tagline':
+						$replaceable = get_bloginfo( 'description' );
 						break;
 
 					case 'user_username':

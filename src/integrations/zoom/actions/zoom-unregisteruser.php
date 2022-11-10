@@ -25,6 +25,7 @@ class ZOOM_UNREGISTERUSER {
 	public function __construct() {
 		$this->action_code = 'ZOOMUNREGISTERUSER';
 		$this->action_meta = 'ZOOMMEETING';
+		$this->helpers     = new Zoom_Helpers();
 		$this->define_action();
 	}
 
@@ -40,6 +41,7 @@ class ZOOM_UNREGISTERUSER {
 			//'is_deprecated'      => true,
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
+			/* translators: Meeting topic */
 			'sentence'              => sprintf( __( 'Remove the user from {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name'    => __( 'Remove the user from {{a meeting}}', 'uncanny-automator' ),
 			'priority'              => 10,
@@ -58,9 +60,45 @@ class ZOOM_UNREGISTERUSER {
 	 * @return void
 	 */
 	public function load_options() {
+
+		$account_users_field = array(
+			'option_code'           => 'ZOOMUSER',
+			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => false,
+			'is_ajax'               => true,
+			'endpoint'              => 'uap_zoom_api_get_meetings',
+			'fill_values_in'        => $this->action_meta,
+			'options'               => $this->helpers->get_account_user_options(),
+			'relevant_tokens'       => array(),
+			'supports_custom_value' => false,
+		);
+
+		$user_meetings_field = array(
+			'option_code'           => $this->action_meta,
+			'label'                 => __( 'Meeting', 'uncanny-automator' ),
+			'input_type'            => 'select',
+			'required'              => true,
+			'options'               => array(),
+			'supports_tokens'       => false,
+			'supports_custom_value' => false,
+		);
+
+		$option_fileds = array(
+			$account_users_field,
+			$user_meetings_field,
+		);
+
+		//Don't show the user dropdown to old credentials so it's easier to test the update
+		if ( $this->helpers->jwt_mode() ) {
+			$option_fileds = array(
+				$this->helpers->get_meetings_field(),
+			);
+		}
+
 		return array(
-			'options' => array(
-				Automator()->helpers->recipe->zoom->get_meetings( null, $this->action_meta ),
+			'options_group' => array(
+				$this->action_meta => $option_fileds,
 			),
 		);
 	}
@@ -91,7 +129,7 @@ class ZOOM_UNREGISTERUSER {
 			$user  = get_userdata( $user_id );
 			$email = $user->user_email;
 
-			$result = Automator()->helpers->recipe->zoom->unregister_user( $email, $meeting_key, $action_data );
+			$result = $this->helpers->unregister_user( $email, $meeting_key, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 

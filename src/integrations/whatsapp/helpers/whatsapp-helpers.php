@@ -547,7 +547,14 @@ class WhatsApp_Helpers {
 	 */
 	public function get_webhook_url() {
 
-		return $this->webhook_endpoint . '?key=' . $this->get_webhook_key();
+		return urldecode(
+			add_query_arg(
+				array(
+					'key' => $this->get_webhook_key(),
+				),
+				get_rest_url() . AUTOMATOR_REST_API_END_POINT . $this->webhook_endpoint
+			)
+		);
 
 	}
 

@@ -2,7 +2,7 @@
 	return;} ?>
 
 <form method="POST" action="options.php" warn-unsaved>
-	
+
 	<?php settings_fields( $this->get_settings_id() ); ?>
 
 	<div class="uap-settings-panel">
@@ -13,36 +13,6 @@
 			</div>
 
 			<div class="uap-settings-panel-content">
-
-					<?php
-
-					if ( automator_filter_has_var( 'connect' ) ) {
-
-						$connect = automator_filter_input( 'connect' );
-
-						$alert_heading = __( 'There was an error connecting your Zoom Meetings account. Please try again or contact support.', 'uncanny-automator' );
-						$alert_type    = 'error';
-						$alert_content = __( 'Error: ', 'uncanny-automator' ) . $connect;
-
-						if ( 1 == $connect ) {
-							$alert_heading = __( 'You have successfully connected your Zoom Meetings account', 'uncanny-automator' );
-							$alert_type    = 'success';
-							$alert_content = '';
-						}
-
-						?>
-
-							<uo-alert
-								type="<?php echo esc_attr( $alert_type ); ?>"
-								heading="<?php echo esc_attr( $alert_heading ); ?>"
-								class="uap-spacing-bottom uap-spacing-top"
-							><?php echo esc_attr( $alert_content ); ?></uo-alert>
-
-							<?php
-
-					}
-
-					?>
 
 				<?php
 
@@ -79,66 +49,81 @@
 					</ul>
 
 					<div class="uap-settings-panel-content-separator"></div>
-
-					<uo-alert
-						heading="<?php esc_attr_e( 'Setup instructions', 'uncanny-automator' ); ?>"
-					>
-						<?php
-
-							echo sprintf(
-								esc_html__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
-								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
-							);
-
-						?>
-					</uo-alert>
-
 					<?php
+				}
+
+				$this->display_alerts();
+
+				if ( ! $this->is_connected ) {
+
+					$this->alert_html(
+						array(
+							'heading' => __( 'Setup instructions', 'uncanny-automator' ),
+							'content' => sprintf(
+								esc_html__( "Connecting to Zoom requires setting up a Server-to-Server OAuth app and getting 3 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
+								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+							),
+						)
+					);
 
 				}
 
-				?>
+				$hide_fields = $this->is_connected ? true : '';
 
-				<uo-text-field
-					id="uap_automator_zoom_api_consumer_key"
-					value="<?php echo esc_attr( $this->api_key ); ?>"
+				$this->text_input_html(
+					array(
+						'id'       => 'uap_automator_zoom_api_account_id',
+						'value'    => $this->account_id,
+						'label'    => __( 'Account ID', 'uncanny-automator' ),
+						'required' => true,
+						'class'    => 'uap-spacing-top',
+						'hidden'   => $hide_fields,
+						'disabled' => $hide_fields,
+					)
+				);
 
-					label="<?php esc_attr_e( 'API key', 'uncanny-automator' ); ?>"
-					required
+				$this->text_input_html(
+					array(
+						'id'       => 'uap_automator_zoom_api_client_id',
+						'value'    => $this->api_key,
+						'label'    => __( 'Client ID', 'uncanny-automator' ),
+						'required' => true,
+						'class'    => 'uap-spacing-top',
+						'hidden'   => $hide_fields,
+						'disabled' => $hide_fields,
+					)
+				);
 
-					class="uap-spacing-top"
+				$this->text_input_html(
+					array(
+						'id'       => 'uap_automator_zoom_api_client_secret',
+						'value'    => $this->api_secret,
+						'label'    => __( 'Client secret', 'uncanny-automator' ),
+						'required' => true,
+						'class'    => 'uap-spacing-top',
+						'hidden'   => $hide_fields,
+						'disabled' => $hide_fields,
+					)
+				);
 
-					<?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
-				></uo-text-field>
-
-				<uo-text-field
-					id="uap_automator_zoom_api_consumer_secret"
-					value="<?php echo esc_attr( $this->api_secret ); ?>"
-
-					label="<?php esc_attr_e( 'API secret', 'uncanny-automator' ); ?>"
-					required
-
-					class="uap-spacing-top"
-
-					<?php echo $this->is_connected ? 'hidden disabled' : ''; ?>
-				></uo-text-field>
-
-				<?php
+				$this->text_input_html(
+					array(
+						'id'       => 'uap_automator_zoom_api_settings_version',
+						'value'    => '3',
+						'hidden'   => true,
+						'disabled' => true,
+					)
+				);
 
 				if ( $this->is_connected ) {
 
-					?>
-
-					<uo-alert 
-						heading="<?php esc_attr_e( 'Uncanny Automator only supports connecting to one Zoom Meetings account.', 'uncanny-automator' ); ?>"
-					></uo-alert>
-
-					<?php
-
+					$this->alert_html(
+						array(
+							'heading' => __( 'Uncanny Automator only supports connecting to one Zoom Meetings account.', 'uncanny-automator' ),
+						)
+					);
 				}
-
 				?>
-					
 			</div>
 
 		</div>
@@ -205,13 +190,11 @@
 						</uo-button>
 
 						<?php
-					} else {
-						;}
+					}
 					?>
 				</div>
 
 		</div>
 
 	</div>
-	<input type="hidden" name="uap_automator_zoom_api_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
 </form>

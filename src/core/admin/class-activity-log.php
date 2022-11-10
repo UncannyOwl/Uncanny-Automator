@@ -195,7 +195,7 @@ class Activity_Log {
 			return false;
 		}
 
-		if ( 'uo-recipe_page_uncanny-automator-recipe-activity-details' === $current_screen->id ) {
+		if ( 'admin_page_uncanny-automator-recipe-activity-details' === $current_screen->id ) {
 
 			// Remove sitewide notices.
 			remove_all_actions( 'network_admin_notices' );
@@ -254,25 +254,31 @@ class Activity_Log {
 		?>
 		<style>
 			.nav-tab-wrapper {
-				display : none !important ;
+				display: none !important;
 			}
+
 			html.wp-toolbar {
-				padding-top : 0 !important ;
+				padding-top: 0 !important;
 			}
+
 			.wrap.uap .uap-nav-tab-wrapper, .uap-logs .tablenav.top, #wpadminbar, #wpfooter, #uap-review-banner, #lity-container, .notice, .uap .uap-review-banner, div.uap-log-table-container div.error, #adminmenumain {
-				display : none !important ;
+				display: none !important;
 			}
+
 			#wpcontent, #wpfooter {
-				margin-left : 0 !important ;
+				margin-left: 0 !important;
 			}
+
 			.lity-container {
-				height : 80% !important ;
+				height: 80% !important;
 			}
+
 			.lity-content, .lity-iframe-container {
-				height : 100% !important ;
+				height: 100% !important;
 			}
+
 			#wpbody {
-				padding-top : 0 !important ;
+				padding-top: 0 !important;
 			}
 		</style>
 		<?php
@@ -283,10 +289,12 @@ class Activity_Log {
 	 * Add log scripts.
 	 */
 	public function add_log_scripts() {
-		if ( ! automator_filter_has_var( 'post_type' ) && 'uo-recipe' !== automator_filter_input( 'post_type' ) ) {
-			return;
-		}
-		if ( ! automator_filter_has_var( 'page' ) && 'uncanny-automator-recipe-activity' !== automator_filter_input( 'page' ) ) {
+		global $current_screen;
+		if (
+			( ! automator_filter_has_var( 'post_type' ) && 'uo-recipe' !== automator_filter_input( 'post_type' ) ) &&
+			( 'admin_page_uncanny-automator-recipe-activity-details' !== $current_screen->id ) &&
+			( ! automator_filter_has_var( 'page' ) && 'uncanny-automator-recipe-activity' !== automator_filter_input( 'page' ) )
+		) {
 			return;
 		}
 		//Added lity option for the iframe ligthbox

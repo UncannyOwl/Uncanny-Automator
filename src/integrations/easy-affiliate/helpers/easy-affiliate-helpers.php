@@ -45,7 +45,7 @@ class Easy_Affiliate_Helpers {
 			/* translators: HTTP request method */
 			'label'                 => esc_attr__( 'Affiliate', 'uncanny-automator' ),
 			'required'              => true,
-			'supports_custom_value' => false,
+			'supports_custom_value' => true,
 			'relevant_tokens'       => array(),
 			'options'               => $options,
 		);

@@ -45,7 +45,10 @@ class Admin_Menu {
 	 * @var
 	 */
 	public static $automator_connect_page = AUTOMATOR_FREE_STORE_CONNECT_URL;
-
+	/**
+	 * @var
+	 */
+	public $backend_enqueue_in;
 	/**
 	 * The Rest-API route
 	 *
@@ -62,7 +65,8 @@ class Admin_Menu {
 	 */
 	public function __construct() {
 		// Global assets
-		$this->enqueue_global_assets();
+		//$this->enqueue_global_assets();
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_global_assets' ), 99, 1 );
 
 		// Add inline JS data
 		$this->dashboard_inline_js_data();
@@ -126,6 +130,23 @@ class Admin_Menu {
 			1000
 		);
 
+		add_filter( 'admin_body_class', array( $this, 'add_legacy_activity_logs_css_class' ), 1, 1 );
+	}
+
+	/**
+	 * Adding legacy class name, since `null` is not an option in add_submenu_page()
+	 *
+	 * @param $classes
+	 *
+	 * @return mixed|string
+	 */
+	public function add_legacy_activity_logs_css_class( $classes ) {
+		global $current_screen;
+		if ( 'admin_page_uncanny-automator-recipe-activity-details' !== $current_screen->id ) {
+			return $classes;
+		}
+
+		return "$classes uo-recipe_page_uncanny-automator-recipe-activity-details";
 	}
 
 	/**
@@ -145,7 +166,7 @@ class Admin_Menu {
 	 *
 	 * @return void.
 	 */
-	function auto_optin_users() {
+	public function auto_optin_users() {
 
 		$option_key = 'automator_reporting';
 
@@ -157,8 +178,6 @@ class Admin_Menu {
 			// Opt-in the user automatically.
 			update_option( $option_key, true );
 		}
-
-		return;
 	}
 
 	/**
@@ -194,12 +213,12 @@ class Admin_Menu {
 	 * @return bool
 	 */
 	public function is_a_log( $hook ) {
-
 		$log_pages = apply_filters(
 			'automator_log_pages',
 			array(
 				'uncanny-automator-recipe-activity',
 				'uncanny-automator-recipe-activity-details',
+				'admin_page_uncanny-automator-recipe-activity-details',
 				'uncanny-automator-debug-log',
 				'uncanny-automator-recipe-log',
 				'uncanny-automator-trigger-log',
@@ -261,6 +280,7 @@ class Admin_Menu {
 		}
 
 		$parent_slug              = 'edit.php?post_type=uo-recipe';
+		$parent_slug_fake         = 'options.php';
 		$this->settings_page_slug = $parent_slug;
 		$function                 = array(
 			$this,
@@ -295,43 +315,14 @@ class Admin_Menu {
 		);
 
 		// Recipe details (modal).
-		add_submenu_page( null, esc_attr__( 'Recipe activity details', 'uncanny-automator' ), esc_attr__( 'Recipe activity details', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-activity-details', $function );
-		//@deprecated 4.5
-		#add_submenu_page( $parent_slug, esc_attr__( 'Recipe log', 'uncanny-automator' ), esc_attr__( 'Logs', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-recipe-log', $function );
-		//@deprecated 4.5
-		#add_submenu_page( null, esc_attr__( 'Trigger log', 'uncanny-automator' ), esc_attr__( 'Trigger log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-trigger-log', $function );
-		//@deprecated 4.5
-		#add_submenu_page( null, esc_attr__( 'Action log', 'uncanny-automator' ), esc_attr__( 'Action log', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-action-log', $function );
 		add_submenu_page(
-			null,
-			esc_attr__( 'Debug logs', 'uncanny-automator' ),
-			esc_attr__( 'Debug logs', 'uncanny-automator' ),
+			$parent_slug_fake,
+			esc_attr__( 'Recipe activity details', 'uncanny-automator' ),
+			esc_attr__( 'Recipe activity details', 'uncanny-automator' ),
 			'manage_options',
-			'uncanny-automator-debug-log',
-			array(
-				$this,
-				'debug_logs_options_menu_page_output',
-			)
+			'uncanny-automator-recipe-activity-details',
+			$function
 		);
-
-		/*
-		 * <@deprecated 4.5
-		   $function = array( $this, 'tools_menu_page_output' );
-		   add_submenu_page( $parent_slug, esc_attr__( 'Tools', 'uncanny-automator' ), esc_attr__( 'Tools', 'uncanny-automator' ), 'manage_options', 'uncanny-automator-tools', $function );
-		   />
-		*/
-		add_submenu_page(
-			null,
-			esc_attr__( 'Database tools', 'uncanny-automator' ),
-			esc_attr__( 'Database tools', 'uncanny-automator' ),
-			'manage_options',
-			'uncanny-automator-database-tools',
-			array(
-				$this,
-				'database_tools_menu_page_output',
-			)
-		);
-
 	}
 
 	/**
@@ -394,16 +385,31 @@ class Admin_Menu {
 	public function dashboard_menu_page_output() {
 
 		// Check connect and credits
+		$dashboard = self::get_dashboard_details();
+
+		?>
+
+		<div class="wrap uap">
+			<?php include UA_ABSPATH . 'src/core/views/admin-dashboard.php'; ?>
+		</div>
+
+		<?php
+	}
+
+	/**
+	 * @return object
+	 */
+	public static function get_dashboard_details() {
 		$is_connected = Api_Server::is_automator_connected( true );
 
-		$website      = preg_replace( '(^https?://)', '', get_home_url() );
+		//$website      = preg_replace( '(^https?://)', '', get_home_url() );
 		$redirect_url = admin_url( 'admin.php?page=uncanny-automator-dashboard' );
 		$connect_url  = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . urlencode( $redirect_url );
 
-		$license_data = false;
-		if ( $is_connected ) {
-			$license_data = get_option( 'uap_automator_free_license_data' );
-		}
+		//      $license_data = false;
+		//      if ( $is_connected ) {
+		//          $license_data = get_option( 'uap_automator_free_license_data' );
+		//      }
 
 		$is_pro_active = false;
 
@@ -422,7 +428,7 @@ class Admin_Menu {
 		$connected_sites = isset( $is_connected['license_id'] ) && isset( $is_connected['payment_id'] ) ? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id'] : '#';
 		$free_credits    = $is_connected ? ( $usage_limit - $paid_usage_count ) : 1000;
 
-		$dashboard = (object) array(
+		return (object) array(
 			// Check if the user is using Automator Pro
 			'is_pro'             => $is_pro_active,
 			// Is Pro connected
@@ -453,14 +459,6 @@ class Admin_Menu {
 				'site_url_without_protocol' => preg_replace( '(^https?://)', '', get_site_url() ),
 			),
 		);
-
-		?>
-
-		<div class="wrap uap">
-			<?php include UA_ABSPATH . 'src/core/views/admin-dashboard.php'; ?>
-		</div>
-
-		<?php
 	}
 
 	/**
@@ -826,13 +824,15 @@ class Admin_Menu {
 	/**
 	 * Enqueues global assets in the Automator pages
 	 */
-	private function enqueue_global_assets() {
+	public function enqueue_global_assets( $hook ) {
+		global $current_screen;
 		// List of pages where we have to add the assets
 		$this->backend_enqueue_in = apply_filters(
 			'automator_enqueue_global_assets',
 			array(
 				'post.php', // Has filter, check callback
 				'edit-tags.php',
+				'options.php',
 				'uncanny-automator-dashboard',
 				'uncanny-automator-integrations',
 				'uncanny-automator-config',
@@ -848,53 +848,67 @@ class Admin_Menu {
 		);
 
 		// Enqueue admin scripts
-		add_action(
-			'admin_enqueue_scripts',
-			function ( $hook ) {
-				$hooks_assets_loaded = array(
-					'post.php',
-					'edit.php',
-					'edit-tags.php', // Added in 4.2 for review banner
-				);
+		//add_action(
+		//	'admin_enqueue_scripts',
+		//function ( $hook ) {
 
-				// Add exception for the "post.php" hook
-				if ( in_array( $hook, $hooks_assets_loaded, true ) ) {
-					if ( 'uo-recipe' !== $this->get_current_screen_post_type() ) {
-						return;
-					}
-				}
-
-				// Check if the current page is one of the target pages
-				if ( in_array( str_replace( 'uo-recipe_page_', '', $hook ), $this->backend_enqueue_in, true ) ) {
-					// Enqueue main CSS
-					wp_enqueue_style(
-						'uap-admin',
-						Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
-						array(),
-						Utilities::automator_get_version()
-					);
-
-					// Register main JS
-					wp_register_script(
-						'uap-admin',
-						Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
-						array(),
-						Utilities::automator_get_version(),
-						true
-					);
-
-					// Get data for the main script
-					wp_localize_script(
-						'uap-admin',
-						'UncannyAutomatorBackend',
-						$this->get_js_backend_inline_data( $hook )
-					);
-
-					// Enqueue main JS
-					wp_enqueue_script( 'uap-admin' );
-				}
-			}
+		$hooks_assets_loaded = array(
+			'post.php',
+			'edit.php',
+			'edit-tags.php', // Added in 4.2 for review banner
 		);
+
+		// Add exception for the "post.php" hook
+		if ( in_array( $hook, $hooks_assets_loaded, true ) ) {
+			if (
+				'uo-recipe' !== $this->get_current_screen_post_type() &&
+				'admin_page_uncanny-automator-recipe-activity-details' !== $current_screen->id
+			) {
+				return;
+			}
+		}
+
+		// Check if the current page is one of the target pages
+		if ( ! in_array(
+			str_replace(
+				array(
+					'uo-recipe_page_',
+					'admin_page_',
+				),
+				'',
+				$hook
+			),
+			$this->backend_enqueue_in,
+			true
+		) ) {
+			return;
+		}
+		// Enqueue main CSS
+		wp_enqueue_style(
+			'uap-admin',
+			Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
+			array(),
+			Utilities::automator_get_version()
+		);
+
+		// Register main JS
+		wp_register_script(
+			'uap-admin',
+			Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
+			array(),
+			Utilities::automator_get_version(),
+			true
+		);
+
+		// Get data for the main script
+		wp_localize_script(
+			'uap-admin',
+			'UncannyAutomatorBackend',
+			$this->get_js_backend_inline_data( $hook )
+		);
+
+		// Enqueue main JS
+		wp_enqueue_script( 'uap-admin' );
 	}
 
 	/**
@@ -916,7 +930,6 @@ class Admin_Menu {
 		if ( ! empty( automator_filter_input( 'post_type' ) ) ) {
 			return automator_filter_input( 'post_type' );
 		}
-
 	}
 
 	/**

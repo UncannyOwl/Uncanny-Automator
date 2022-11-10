@@ -85,7 +85,7 @@ class Add_Zoom_Integration {
 		$zoom_client = get_option( '_uncannyowl_zoom_settings', array() );
 		$user        = get_option( 'uap_zoom_api_connected_user', '' );
 
-		if ( isset( $zoom_client['access_token'] ) && ! empty( $zoom_client['access_token'] ) && ! empty( $user ) ) {
+		if ( ! empty( $zoom_client['access_token'] ) && ! empty( $user ) ) {
 			$this->connected = true;
 		}
 
