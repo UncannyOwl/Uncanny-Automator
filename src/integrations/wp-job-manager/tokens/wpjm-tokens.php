@@ -106,7 +106,7 @@ class Wpjm_Tokens {
 			array(
 				'tokenId'         => 'WPJMJOBID',
 				'tokenName'       => __( 'Job ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
@@ -239,24 +239,24 @@ class Wpjm_Tokens {
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
-//			array(
-//				'tokenId'         => 'WPJMJOBTITLE',
-//				'tokenName'       => __( 'Job title', 'uncanny-automator' ),
-//				'tokenType'       => 'text',
-//				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-//			),
-//			array(
-//				'tokenId'         => 'WPJMJOBID',
-//				'tokenName'       => __( 'Job ID', 'uncanny-automator' ),
-//				'tokenType'       => 'text',
-//				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-//			),
-			array(
-				'tokenId'         => 'WPJMJOBLOCATION',
-				'tokenName'       => __( 'Location', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			),
+			//          array(
+			//              'tokenId'         => 'WPJMJOBTITLE',
+			//              'tokenName'       => __( 'Job title', 'uncanny-automator' ),
+			//              'tokenType'       => 'text',
+			//              'tokenIdentifier' => 'WPJMJOBAPPLICATION',
+			//          ),
+			//          array(
+			//              'tokenId'         => 'WPJMJOBID',
+			//              'tokenName'       => __( 'Job ID', 'uncanny-automator' ),
+			//              'tokenType'       => 'text',
+			//              'tokenIdentifier' => 'WPJMJOBAPPLICATION',
+			//          ),
+				array(
+					'tokenId'         => 'WPJMJOBLOCATION',
+					'tokenName'       => __( 'Location', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'WPJMJOBAPPLICATION',
+				),
 			array(
 				'tokenId'         => 'WPJMJOBDESCRIPTION',
 				'tokenName'       => __( 'Job description', 'uncanny-automator' ),

@@ -68,7 +68,7 @@ class Advanced_Ads_Tokens {
 				array(
 					'tokenId'         => 'AD_ID',
 					'tokenName'       => __( 'Ad ID', 'uncanny-automator' ),
-					'tokenType'       => 'text',
+					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(

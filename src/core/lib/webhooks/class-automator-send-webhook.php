@@ -376,11 +376,24 @@ class Automator_Send_Webhook {
 						break;
 					case 'text':
 					default:
-						// Decode HTML entities and replace " and '
-						$value = str_replace( array( '"', '\'' ), '', html_entity_decode( $value ) );
+						/**
+						 * Allows users to overwrite removal of qoutes.
+						 *
+						 * @see <https://secure.helpscout.net/conversation/2067343003/45133?folderId=2122433>
+						 */
+						$should_strip_qoutes = apply_filters( 'automator_send_webhook_get_fields_should_strip_qoutes', true );
+
+						if ( $should_strip_qoutes ) {
+							// Decode HTML entities and replace " and '
+							$value = str_replace( array( '"', '\'' ), '', html_entity_decode( $value ) );
+						}
+
 						$value = apply_filters( 'automator_outgoing_webhook_default_data_value', (string) $value, $key, $type, $this );
+
 						break;
+
 				}
+
 				$prepared_data[ $key ] = apply_filters( 'automator_outgoing_webhook_value', $value, $key, $type, $this );
 			}
 		}

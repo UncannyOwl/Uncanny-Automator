@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 class UOG_SEATSREMOVEDFROMGROUP {
@@ -12,10 +13,6 @@ class UOG_SEATSREMOVEDFROMGROUP {
 	 */
 	const TRIGGER_CODE = 'UOG_SEATSREMOVEDFROMGROUP';
 
-	protected $helper;
-
-	protected $uog_tokens = null;
-
 	/**
 	 * Trigger meta.
 	 *
@@ -27,19 +24,13 @@ class UOG_SEATSREMOVEDFROMGROUP {
 
 		if ( class_exists( '\Uncanny_Automator\Uncanny_Groups_Tokens' ) && class_exists( '\Uncanny_Automator\Uncanny_Groups_Helpers' ) ) {
 
-				$this->set_helper( new \Uncanny_Automator\Uncanny_Groups_Helpers( false ) );
+			$this->set_helper( new Uncanny_Groups_Helpers( false ) );
 
-				$this->uog_tokens = new \Uncanny_Automator\Uncanny_Groups_Tokens( false );
+			$this->set_tokens_class( new Uncanny_Groups_Tokens( false ) );
 
-				$this->setup_trigger();
+			$this->setup_trigger();
 
 		}
-
-	}
-
-	public function set_helper( $helper ) {
-
-		$this->helper = $helper;
 
 	}
 
@@ -69,9 +60,9 @@ class UOG_SEATSREMOVEDFROMGROUP {
 
 		$this->set_action_args_count( 3 );
 
-		if ( null !== $this->uog_tokens ) {
+		if ( null !== $this->get_tokens_class() ) {
 
-			$this->set_tokens( ( new Uncanny_Groups_Tokens( false ) )->seats_removed_tokens() );
+			$this->set_tokens( $this->get_tokens_class()->seats_removed_tokens() );
 
 		}
 
@@ -134,14 +125,16 @@ class UOG_SEATSREMOVEDFROMGROUP {
 	 */
 	public function parse_additional_tokens( $parsed, $args, $trigger ) {
 
-		return $this->uog_tokens->seats_removed_tokens_hydrate_tokens( $parsed, $args, $trigger );
+		return $this->get_tokens_class()->seats_removed_tokens_hydrate_tokens( $parsed, $args, $trigger );
 
 	}
 
 	/**
 	 * Check email subject against the trigger meta
 	 *
-	 * @param $args
+	 * @param mixed ...$args
+	 *
+	 * @return array
 	 */
 	public function validate_conditions( ...$args ) {
 

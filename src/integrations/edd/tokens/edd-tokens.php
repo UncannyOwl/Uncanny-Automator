@@ -57,7 +57,7 @@ class Edd_Tokens {
 			array(
 				'tokenId'         => 'EDDORDER_ID',
 				'tokenName'       => __( 'Order ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(

@@ -106,7 +106,7 @@ class Bdb_Tokens {
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_ID',
 				'tokenName'       => __( 'Activity ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
 			);
 			$fields[] = array(
@@ -134,7 +134,7 @@ class Bdb_Tokens {
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_ID',
 				'tokenName'       => __( 'Friend ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
@@ -160,7 +160,7 @@ class Bdb_Tokens {
 			$fields[]     = array(
 				'tokenId'         => 'FOLLOWER_ID',
 				'tokenName'       => __( 'Follower ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
@@ -413,7 +413,7 @@ class Bdb_Tokens {
 			array(
 				'tokenId'         => 'BDBTOPICID',
 				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
 			),
 			array(

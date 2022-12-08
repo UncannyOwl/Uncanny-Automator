@@ -44,6 +44,23 @@ class Automator_Translations {
 				// UncannyAutomator.i18n.trigger.name
 				'singularName'    => esc_attr__( 'Trigger', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.singularName
+				/* translators: 1. A condition */
+				'logic'           => array(
+					'runWhen'    => esc_html_x( 'Run recipe when', 'Triggers logic', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.trigger.logic.runWhen
+					/* translators: This string is appended after a dropdown that has the option "Any" selected */
+					'runWhenAny' => esc_html_x( 'of the following triggers is completed', 'Triggers logic', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.trigger.logic.runWhenAny
+					/* translators: This string is appended after a dropdown that has the option "All" selected */
+					'runWhenAll' => esc_html_x( 'of the following triggers are completed', 'Triggers logic', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.trigger.logic.runWhenAll
+					/* translators: Text of the "any" option. Full sentence: "ANY" of the following triggers is completed */
+					'any'        => esc_html_x( 'Any', 'Triggers logic', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.trigger.logic.any
+					/* translators: Text of the "all" option. Full sentence: "ALL" of the following triggers are completed */
+					'all'        => esc_html_x( 'All', 'Triggers logic', 'uncanny-automator' ),
+					// UncannyAutomator.i18n.trigger.logic.all
+				),
 				/* translators: Trigger type. Logged-in triggers are triggered only by logged-in users */
 				'userTriggers'    => esc_attr__( 'Logged-in triggers', 'uncanny-automator' ),
 				// UncannyAutomator.i18n.trigger.userTriggers
@@ -141,7 +158,7 @@ class Automator_Translations {
 						// UncannyAutomator.i18n.action.asyncActions.modal.scheduleNotice2
 						'timezone'        => esc_attr__( 'Timezone', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezone
-						'timezoneString'  => wp_timezone_string(),
+						'timezoneString'  => Automator()->get_timezone_string(),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneString
 						'timezoneLink'    => admin_url( 'options-general.php#timezone_string' ),
 						// UncannyAutomator.i18n.action.asyncActions.modal.timezoneLink
@@ -924,7 +941,8 @@ class Automator_Translations {
 					),
 
 					'notFound'     => array(
-						'title'          => esc_html__( 'Not found', 'uncanny-automator' ),
+						/* translators: 1. The name of the endpoint */
+						'title'          => esc_html__( 'Endpoint %1$s not found', 'uncanny-automator' ),
 						// UncannyAutomator.i18n.debugging.fatalErrorHandler.notFound.title
 						/* translators: 1. Link to "Site permalinks". 2. Link to "Uncanny Automator support" */
 						'content'        => esc_html__( 'A endpoint that Automator requires is missing. If your %1$s are set to Plain, please change them to something else. Otherwise, removing and reinstalling Automator plugins to rule out an upload issue is recommended, otherwise please contact %2$s.', 'uncanny-automator' ),

@@ -120,7 +120,7 @@ class Bp_Tokens {
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_ID',
 				'tokenName'       => __( 'Activity ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'BPUSERACTIVITY',
 			);
 			$fields[] = array(
@@ -148,7 +148,7 @@ class Bp_Tokens {
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_ID',
 				'tokenName'       => __( 'Friend ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(

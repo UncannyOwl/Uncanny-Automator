@@ -50,6 +50,8 @@ class Give_Tokens {
 			'GIVEWPMAKEDONATION_ID',
 			'ACTUALDONATEDAMOUNT',
 			'DONATIONFORM',
+			'DONATION_ID',
+			'PAYMENT_ID',
 		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {

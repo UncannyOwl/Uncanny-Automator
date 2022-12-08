@@ -3,9 +3,9 @@
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, mailchimp, learndash, webhooks, woocommerce automation, marketing, twitter, facebook, whatsapp, buddyboss, tutor lms \
 **Requires at least:** 5.3 \
-**Tested up to:** 6.1 \
+**Tested up to:** 6.1.1 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.7 \
+**Stable tag:** 4.8 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,10 +64,12 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Google Sheets](https://automatorplugin.com/integration/google-sheets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Help Scout](https://automatorplugin.com/integration/help-scout/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [HubSpot](https://automatorplugin.com/integration/hubspot/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Instagram](https://automatorplugin.com/integration/instagram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro 4.8+)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -169,6 +171,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP-Polls](https://automatorplugin.com/integration/wp-polls/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WPForms](https://automatorplugin.com/integration/wp-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WS Form LITE](https://automatorplugin.com/integration/ws-form-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
@@ -330,6 +333,87 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.8 [2022-12-08]
+
+**New App Integration:**
+
+* [Help Scout](https://automatorplugin.com/integration/help-scout/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2759
+
+**New Plugin Integration:**
+
+* [WS Form LITE](https://automatorplugin.com/integration/ws-form-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2864
+
+**New Feature:**
+
+* Recipe UI - Added support for choosing whether to run recipes when ALL triggers are completed or ANY trigger is completed (when recipes include at least 2 triggers; previously all triggers in a recipe had to be completed) #2515
+
+**New Triggers:**
+
+* Help Scout - A conversation receives a reply from a customer #2848
+* Help Scout - A conversation's tags are updated #2832
+* Help Scout - A note is added to a conversation #2888
+* Help Scout - A satisfaction rating is received #2849
+* WP All Import - An import is completed #2841
+* WS Form LITE - A form is submitted #2862
+* WS Form LITE - A user submits a form #2863
+
+**New Actions:**
+
+* Help Scout - Add a tag to a conversation #2833
+* Help Scout - Create a conversation in a mailbox #2850
+
+**New Tokens:**
+
+* Amelia - Coupon data #2891
+	* Coupon code
+	* Coupon service name
+	* Coupon time used
+	* Coupon usage limit
+	* Coupon expiration date
+	* Coupon event name
+	* Coupon deduction
+	* Coupon discount
+* GiveWP - A donation is made via a form - Donation & Payment ID #2826
+* WooCommerce - Shipping method #2869
+
+**Updated:**
+
+* Emails - Added description for "To" field #2925
+* Easy Affiliate - Record a sale for an affiliate in Pro - Affiliate action token now works #2858
+* Formidable - Split tokens for Name field #2945
+* GamiPress - A user attains a rank - Add Any rank option #2899
+* Mailchimp - Add a contact to an audience returning Completed, do nothing even though options are valid #2873
+* Recipe UI - Several ID tokens type switched to `int` instead of `text` for easier selection in Tokens dropdown #2957
+
+**Fixed:**
+
+* BuddyPress - Add the user to a group - Not working if the user is from the user selector #2901
+* WordPress - A user views a custom post type - Add a condition to check user id #2845
+* Zoom Webinar - Action dropdown fix #2953
+* Zoom settings pages hows escaped HTML messages #2844
+
+**Under the hood:**
+
+* Automator text domain (translation files) now loads reliably if user's language and site language are different #2892
+* PHP error on WordPress 5.2: Added fallback to `wp_timezone_string()` if it doesn't exist #2882
+* Purge - Purging now remove results more reliably #2889
+* Outgoing Webhooks - New filter to allow non-stripping of quotes
+	* `automator_send_webhook_get_fields_should_strip_quotes`  #2893
+* Action Traits - Add $helper method #2860
+* Add Upgrade to Pro menu entry #393
+* Automator core - Add a filter to override find_all matching criteria #2932
+* Allow external namespace to be used for plugin integrations #2927
+* LearnDash - Helpers updated to support new actions in Pro #2952
+* Recipe Logs - Now shows 'In progress' instead of Not completed #2940
+* Recipe Logs - Standardize error messages for Twitter integration #2909
+* Recipe UI - Prevent select2 scripts added by WooCommerce from loading #2877
+* Recipe UI - Item sentence - Now displays empty if the field has no value #1262
+* Recipe UI - Loading animation added when deleting a condition #1901
+* Remove automator.css if not used, or dequeue for non-admins #2883
+* Action tokens - Parsing as an empty string `''` when the value is `0`, `'0'`, `''`,  etc. #2955
+* Usage report - Fixed PHP error when running cron #2875
+* Add new parameters to Upgrade to pro links #2934
 
 ### 4.7 [2022-11-10]
 
@@ -497,9 +581,9 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Duplicate recipe - No longer breaks if there are no tokens in a recipe #2749
 * Duplicate recipe - Now duplicates actions in a recipe with no triggers #2753
 * Duplicate recipe - Now properly updates ID of the Magic button and Magic link triggers #2754
-* Input parser - Uncaught TypeError: `strpos()``: Argument #1 (``$haystack`) must be of type `string`, `array` given #2745
+* Input parser - Uncaught TypeError: `strpos()`: Argument #1 (`$haystack`) must be of type `string`, `array` given #2745
 * PHP Deprecated: Constant `FILTER_SANITIZE_STRING` is deprecated - PHP 8.1 #2751
-* Recipe Traits\Filters: Added PHPDoc Comments, and formatted ``$this->explain` to make clearer. Also supports number conditions #2703
+* Recipe Traits\Filters: Added PHPDoc Comments, and formatted `$this->explain` to make clearer. Also supports number conditions #2703
 * Recipe UI Field - `create_field`'s `input_type` is hard-coded to `int` even when `float` is used #2733
 * Recipe logs - Display "Deleted user" message when a log entry references a user that was subsequently deleted #2685
 * Slack - Uncanny Automator App icon updated
@@ -1113,42 +1197,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * LearnDash - "A user passes a quiz": Quiz ID and Quiz URL now parse reliably #1692
 * LifterLMS - A user is added to a course now fires when a new user registers #1752
 * WordPress - "A user publishes a type of post with a taxonomy term in a taxonomy" now runs reliably #1674
-
-### 3.8.1.1 [2022-03-21]
-
-**Fixed:**
-
-* GoTo Training and GoTo Webinar - PHP Error on some site configurations #1684
-
-### 3.8.1 [2022-03-15]
-
-**Added:**
-
-* BuddyBoss/BuddyPress - Several new tokens #1596
-	* Friendship trigger:
-		* Friend first name
-		* Friend last name
-		* Friend email
-		* Friend ID
-	* Follower trigger:
-		* Follower first name
-		* Follower last name
-		* Follower email
-		* Follower ID
-* Easy Digital Downloads - Several new tokens #1575
-	* Order subtotal
-	* Order tax
-	* Order total
-	* Order discounts
-	* Discount codes used
-	* License key (when software licensing is active)
-	* Payment method
-* WPLMS - Integration now works with v3.x and v4.x #1462
-
-**Fixed:**
-
-* GoTo Training and GoTo Webinar - PHP Error on some site configurations #1684
-* Instagram - Improved error messaging when posting an image fails #1682
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

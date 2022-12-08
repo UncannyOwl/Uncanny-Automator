@@ -521,4 +521,20 @@ AND r.run_number = %d;",
 			)
 		);
 	}
+
+	/**
+	 * Fetches the recipe triggers logic by its child ID.
+	 *
+	 * @param $child_id The trigger ID or action ID; Defaults to 0.
+	 *
+	 * @return string 'all' or 'any'.
+	 */
+	public function get_recipe_triggers_logic_by_child_id( $child_id = 0 ) {
+
+		$logic = get_post_meta( wp_get_post_parent_id( $child_id ), 'automator_trigger_logic', true );
+
+		return ! empty( $logic ) ? $logic : 'all';
+
+	}
+
 }

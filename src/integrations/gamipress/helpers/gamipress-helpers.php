@@ -299,6 +299,12 @@ class Gamipress_Helpers {
 
 			$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any awards', 'uncanny-automator' ) );
 
+			// Add any option.
+			$fields[] = array(
+				'value' => -1,
+				'text'  => esc_html__( 'Any rank', 'uncanny-automator-pro' ),
+			);
+
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = array(
 					'value' => $award_id,
@@ -306,7 +312,11 @@ class Gamipress_Helpers {
 				);
 			}
 		}
+
 		echo wp_json_encode( $fields );
+
 		die();
+
 	}
+
 }

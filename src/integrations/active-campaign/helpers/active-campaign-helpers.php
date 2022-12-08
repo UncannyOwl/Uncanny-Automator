@@ -924,7 +924,7 @@ class Active_Campaign_Helpers {
 			if ( 'datetime' === $type ) {
 
 				// Set the timezone to user's timezone in WordPress.
-				$date_tz = new \DateTime( $value, new \DateTimeZone( wp_timezone_string() ) );
+				$date_tz = new \DateTime( $value, new \DateTimeZone( Automator()->get_timezone_string() ) );
 				$date_tz->setTimezone( new \DateTimeZone( 'UTC' ) );
 				$date = $date_tz->format( 'm/d/Y H:i' );
 

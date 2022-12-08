@@ -586,6 +586,9 @@ class Automator_System_Report {
 	 * @return array
 	 */
 	public function get_automator_stats() {
+		if ( ! class_exists( '\Uncanny_Automator\Admin_Menu' ) ) {
+			include_once UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
+		}
 		$dashboard = Admin_Menu::get_dashboard_details();
 		$credits   = 0;
 		if ( $dashboard->has_site_connected ) {

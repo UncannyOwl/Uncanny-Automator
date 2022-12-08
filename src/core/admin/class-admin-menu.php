@@ -843,6 +843,7 @@ class Admin_Menu {
 				'uncanny-automator-recipe-activity-details',
 				'uncanny-automator-admin-logs',
 				'uncanny-automator-admin-tools',
+				'uncanny-automator-pro-upgrade',
 				'edit.php',
 			)
 		);

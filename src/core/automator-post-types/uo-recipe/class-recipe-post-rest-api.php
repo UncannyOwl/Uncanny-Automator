@@ -232,6 +232,16 @@ class Recipe_Post_Rest_Api {
 				'permission_callback' => array( $this, 'save_settings_permissions' ),
 			)
 		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/triggers_change_logic/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'triggers_change_logic' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
 	}
 
 	/**
@@ -1445,11 +1455,11 @@ class Recipe_Post_Rest_Api {
 				WHERE posts.post_type = %s
 				AND posts.post_parent = %d
 				AND posts.post_type = 'uo-trigger'
-				AND NOT EXISTS ( 
+				AND NOT EXISTS (
 						SELECT * FROM $wpdb->postmeta
-						WHERE $wpdb->postmeta.meta_key = 'add_action' 
+						WHERE $wpdb->postmeta.meta_key = 'add_action'
 						AND $wpdb->postmeta.post_id=posts.ID
-					) 
+					)
 				",
 				'uo-trigger',
 				$recipe_id
@@ -1459,4 +1469,30 @@ class Recipe_Post_Rest_Api {
 
 	}
 
+	/**
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function triggers_change_logic( WP_REST_Request $request ) {
+
+		// Make sure we have a recipe ID and the newOrder
+		if ( ! $request->has_param( 'recipe_id' ) || ! $request->has_param( 'trigger_logic' ) ) {
+			$return['message'] = 'Recipe or Trigger logic is not available';
+			$return['success'] = false;
+			$return['action']  = 'show_error';
+
+			return new WP_REST_Response( $return, 400 );
+		}
+
+		$recipe_id     = absint( $request->get_param( 'recipe_id' ) );
+		$trigger_logic = sanitize_text_field( $request->get_param( 'trigger_logic' ) );
+		update_post_meta( $recipe_id, 'automator_trigger_logic', $trigger_logic );
+		Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
+
+		$return            = array();
+		$return['success'] = true;
+
+		return new WP_REST_Response( $return, 200 );
+	}
 }

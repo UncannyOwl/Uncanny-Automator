@@ -374,6 +374,13 @@ class Recipe_Post_Utilities {
 	private function dequeue_conflictive_assets() {
 		// Set conflictive scripts
 		$conflictive_scripts = array(
+			// General
+			'select2',
+
+			// WooCommerce
+			'selectWoo',
+			'wc-enhanced-select',
+
 			// LearnDash
 			'learndash-select2-jquery-script',
 
@@ -392,6 +399,9 @@ class Recipe_Post_Utilities {
 		);
 
 		$conflictive_styles = array(
+			// General
+			'select2',
+
 			// LearnDash
 			'learndash-select2-jquery-style',
 
@@ -444,6 +454,10 @@ class Recipe_Post_Utilities {
 		$completions_allowed     = get_post_meta( $post_id, 'recipe_completions_allowed', true );
 		$max_completions_allowed = get_post_meta( $post_id, 'recipe_max_completions_allowed', true );
 		$recipe_type             = get_post_meta( $post_id, 'uap_recipe_type', true );
+		$trigger_logic           = get_post_meta( $post_id, 'automator_trigger_logic', true );
+		if ( empty( $trigger_logic ) ) {
+			$trigger_logic = 'all';
+		}
 
 		// Get source
 		$source = get_post_meta( $post_id, 'source', true );
@@ -453,7 +467,7 @@ class Recipe_Post_Utilities {
 			'newUser'      => array(),
 		);
 		// Check if the user defined a valid source
-		if ( in_array( $source, array( 'existingUser', 'newUser' ), false ) ) {
+		if ( in_array( $source, array( 'existingUser', 'newUser' ), true ) ) {
 			// If the user did it, then add the fields
 			$fields[ $source ] = get_post_meta( $post_id, 'fields', true );
 		}
@@ -466,8 +480,8 @@ class Recipe_Post_Utilities {
 
 		// Remove any cached extra options
 		delete_post_meta( $post_id, 'extra_options' );
-		$count     = Automator()->get->recipe_completed_times( $post_id );
-		$url       = add_query_arg(
+		$count = Automator()->get->recipe_completed_times( $post_id );
+		$url   = add_query_arg(
 			array(
 				'post_type' => 'uo-recipe',
 				'page'      => 'uncanny-automator-admin-logs',
@@ -475,6 +489,9 @@ class Recipe_Post_Utilities {
 			),
 			admin_url( 'edit.php' )
 		);
+
+		Automator()->automator_load_textdomain();
+
 		$api_setup = array(
 			'wp'                  => false,
 			'restURL'             => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
@@ -506,6 +523,7 @@ class Recipe_Post_Utilities {
 				'isLive'           => 'publish' === $post->post_status,
 				'requiresUserData' => Automator()->get->get_recipe_requires_user( $post_id ),
 				'errorMode'        => false,
+				'triggersLogic'    => $trigger_logic,
 				'isValid'          => false,
 				'userSelector'     => array(
 					'source'    => $source,

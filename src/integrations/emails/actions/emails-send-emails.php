@@ -115,6 +115,7 @@ class EMAILS_SEND_EMAILS {
 						'option_code' => 'EMAILTO',
 						/* translators: Email field */
 						'label'       => esc_attr__( 'To', 'uncanny-automator' ),
+						'description' => esc_attr__( 'Separate multiple email addresses with a comma', 'uncanny-automator' ),
 						'input_type'  => 'email',
 					)
 				),

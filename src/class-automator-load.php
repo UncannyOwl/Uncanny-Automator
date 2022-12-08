@@ -50,7 +50,12 @@ class Automator_Load {
 	public function __construct() {
 
 		// Load text domain
-		add_action( 'init', array( $this, 'automator_load_textdomain' ) );
+		add_action(
+			'init',
+			function () {
+				Automator()->automator_load_textdomain();
+			}
+		);
 
 		// Bailout if not php8 compatible.
 		if ( ! $this->is_php8_compat() ) {
@@ -391,15 +396,6 @@ class Automator_Load {
 	}
 
 	/**
-	 * Load plugin textdomain.
-	 *
-	 * @since 1.0.0
-	 */
-	public function automator_load_textdomain() {
-		load_plugin_textdomain( 'uncanny-automator', false, dirname( plugin_basename( AUTOMATOR_BASE_FILE ) ) . '/languages' );
-	}
-
-	/**
 	 * @param $args
 	 * @param $response
 	 */
@@ -483,6 +479,7 @@ class Automator_Load {
 		$classes['Admin_Logs']     = UA_ABSPATH . 'src/core/admin/admin-logs/admin-logs.php';
 		$classes['Admin_Tools']    = UA_ABSPATH . 'src/core/admin/admin-tools/admin-tools.php';
 		$classes['Admin_Settings'] = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
+		$classes['Pro_Upsell']     = UA_ABSPATH . 'src/core/admin/pro-upgrade/class-pro-upsell.php';
 
 		$classes['Api_Log'] = UA_ABSPATH . 'src/core/admin/api-log/class-api-log.php';
 

@@ -153,13 +153,14 @@ function automator_add_action( $path, $integration ) {
  * @throws Automator_Exception
  * @package Uncanny_Automator
  */
-function automator_add_integration_directory( $integration_code, $directory ) {
+function automator_add_integration_directory( $integration_code, $directory, $namespace = '' ) {
 	$int_directory = automator_add_integration( $directory );
 	if ( ! isset( $int_directory['main'] ) ) {
 		return false;
 	}
-	Set_Up_Automator::$auto_loaded_directories[]             = dirname( $int_directory['main'] );
-	Set_Up_Automator::$all_integrations[ $integration_code ] = $int_directory;
+	Set_Up_Automator::$auto_loaded_directories[]                            = dirname( $int_directory['main'] );
+	Set_Up_Automator::$all_integrations[ $integration_code ]                = $int_directory;
+	Set_Up_Automator::$external_integrations_namespace[ $integration_code ] = $namespace;
 
 	return true;
 }

@@ -81,7 +81,7 @@ class ZOOM_WEBINAR_UNREGISTERUSERLESS {
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
-			'endpoint'              => 'uap_zoom_api_get_meetings',
+			'endpoint'              => 'uap_zoom_api_get_webinars',
 			'fill_values_in'        => $this->action_meta,
 			'options'               => $this->helpers->get_account_user_options(),
 			'relevant_tokens'       => array(),

@@ -179,7 +179,7 @@ class Automator_Recipe_Process_Complete {
 	 * @return bool
 	 */
 	public function is_any_trigger_option_set( $recipe_id ) {
-		$value = get_post_meta( $recipe_id, 'run_when_any_trigger_complete', true );
+		$value = get_post_meta( $recipe_id, 'automator_trigger_logic', true );
 		if ( empty( $value ) ) {
 			return apply_filters( 'automator_recipe_any_trigger_complete', false, $recipe_id );
 		}
@@ -464,11 +464,26 @@ class Automator_Recipe_Process_Complete {
 		$has_action_data_defined_error = key_exists( 'complete_with_errors', $action_data ) || key_exists( 'complete_with_notice', $action_data );
 
 		if ( ! empty( $error_message ) && $has_action_data_defined_error ) {
+
 			$message = $error_message;
+
 		}
 
 		if ( key_exists( 'user_action_message', $args ) && ! empty( $args['user_action_message'] ) ) {
+
 			$message = $args['user_action_message'];
+
+			/**
+			 * Append the error message if there is user_action_message.
+			 *
+			 * The second IF condition `$message !== $error_message` is added to prevent duplicate message.
+			 *
+			 * @since 4.8
+			 * @see <https://secure.helpscout.net/conversation/2070532337/45265/>
+			 */
+			if ( ! empty( $error_message ) && $message !== $error_message ) {
+				$message .= ' &mdash; ' . $error_message;
+			}
 		}
 
 		return apply_filters( 'automator_get_action_error_message', $message, $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
@@ -789,7 +804,6 @@ class Automator_Recipe_Process_Complete {
 	 * @return array|mixed|void
 	 * @since 4.3
 	 * @author Saad
-	 *
 	 */
 	public function maybe_get_triggers_of_a_recipe( $args = array() ) {
 		if ( empty( $args ) ) {

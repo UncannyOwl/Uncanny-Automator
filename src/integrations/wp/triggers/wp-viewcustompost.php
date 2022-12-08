@@ -142,6 +142,9 @@ class WP_VIEWCUSTOMPOST {
 		if ( empty( $required_post ) ) {
 			return;
 		}
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
 		//Add where option is set to Any post / specific post
 		foreach ( $recipes as $recipe_id => $recipe ) {
 

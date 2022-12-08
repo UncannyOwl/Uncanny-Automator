@@ -13,14 +13,12 @@ class JETCRM_TAG_TO_CONTACT {
 
 	use Actions;
 
-	public $helper;
-
 	/**
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
 		$this->setup_action();
-		$this->helper = new Jet_Crm_Helpers();
+		$this->set_helpers( new Jet_Crm_Helpers() );
 	}
 
 	/**
@@ -49,7 +47,7 @@ class JETCRM_TAG_TO_CONTACT {
 			array(
 				'options_group' => array(
 					$this->get_action_meta() => array(
-						$this->helper->get_all_jetpack_tags( $this->get_action_meta() ),
+						$this->get_helpers()->get_all_jetpack_tags( $this->get_action_meta() ),
 						Automator()->helpers->recipe->field->text(
 							array(
 								'option_code' => 'CONTACT_EMAIL',
@@ -87,8 +85,8 @@ class JETCRM_TAG_TO_CONTACT {
 		global $wpdb;
 		$contact_id = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}zbs_contacts` WHERE zbsc_email LIKE %s", $contact_email ) );
 		if ( ! empty( $contact_id ) ) {
-			$tag = $this->helper->check_if_tag_exists( $tag, ZBS_TYPE_CONTACT );
-			$this->helper->link_tag_with_object( $tag, $contact_id, ZBS_TYPE_CONTACT );
+			$tag = $this->get_helpers()->check_if_tag_exists( $tag, ZBS_TYPE_CONTACT );
+			$this->get_helpers()->link_tag_with_object( $tag, $contact_id, ZBS_TYPE_CONTACT );
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 			return;

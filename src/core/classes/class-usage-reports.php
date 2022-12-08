@@ -290,7 +290,7 @@ class Usage_Reports {
 		$wp['multisite']       = $this->system_report['environment']['wp_multisite'];
 		$wp['sites']           = $wp['multisite'] ? $this->sites_count() : 1;
 		$wp['user_count']      = $this->get_user_count();
-		$wp['timezone_offset'] = wp_timezone_string();
+		$wp['timezone_offset'] = Automator()->get_timezone_string();
 		$wp['locale']          = get_locale();
 
 		$this->report['wp'] = $wp;

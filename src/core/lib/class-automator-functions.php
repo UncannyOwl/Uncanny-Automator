@@ -539,18 +539,18 @@ class Automator_Functions {
 			$recipe_id = $recipe->ID;
 
 			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'triggers', $recipe_data[ $recipe_id ] ) ) {
-				
+
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
-				
+
 				// Add action tokens to recipe_objects.
-				if ( ! empty( $recipe_data[ $recipe_id] ['actions'] )  ) {
-					foreach( $recipe_data[ $recipe_id] ['actions'] as $recipe_action_id => $recipe_action ) {
+				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
+					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
 						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'] );
 					}
 				}
@@ -1582,6 +1582,77 @@ WHERE pm.post_id
 	public function is_trigger_type( $type = '', $trigger_code = '' ) {
 
 		return (string) $type === (string) $this->get_trigger_type( $trigger_code );
+
+	}
+
+	/**
+	 * Load plugin textdomain.
+	 *
+	 * @since 1.0.0
+	 */
+	public function automator_load_textdomain() {
+		$locale = determine_locale();
+
+		/**
+		 * Filter to adjust the Uncanny Automator locale to use for translations.
+		 *
+		 * Note: the first-loaded translation file overrides any following ones if the same translation is present.
+		 *
+		 * Locales found in:
+		 *      - WP_LANG_DIR/uncanny-automator/uncanny-automator-LOCALE.mo
+		 *      - WP_LANG_DIR/plugins/uncanny-automator-LOCALE.mo
+		 */
+		$locale = apply_filters( 'plugin_locale', $locale, 'uncanny-automator' );
+
+		unload_textdomain( 'uncanny-automator' );
+		load_textdomain( 'uncanny-automator', WP_LANG_DIR . '/uncanny-automator/uncanny-automator-' . $locale . '.mo' );
+		load_plugin_textdomain( 'uncanny-automator', false, plugin_basename( dirname( AUTOMATOR_BASE_FILE ) ) . '/languages' );
+	}
+
+	/**
+	 * Retrieves the timezone of the site as a string.
+	 *
+	 * @return string PHP timezone name or a ±HH:MM offset.
+	 */
+	public function get_timezone_string() {
+
+		if ( function_exists( 'wp_timezone_string' ) ) {
+
+			return wp_timezone_string();
+
+		}
+
+		return $this->get_timezone_string_offset();
+
+	}
+
+	/**
+	 * Retrieves the timezone of the site as a string.
+	 *
+	 * Fallback function in-case `wp_timezone_string` is not available.
+	 *
+	 * @see https://developer.wordpress.org/reference/functions/wp_timezone_string/
+	 *
+	 * @return string PHP timezone name or a ±HH:MM offset.
+	 */
+	private function get_timezone_string_offset() {
+
+		$timezone_string = get_option( 'timezone_string' );
+
+		if ( $timezone_string ) {
+			return $timezone_string;
+		}
+
+		$offset  = (float) get_option( 'gmt_offset' );
+		$hours   = (int) $offset;
+		$minutes = ( $offset - $hours );
+
+		$sign      = ( $offset < 0 ) ? '-' : '+';
+		$abs_hour  = abs( $hours );
+		$abs_mins  = abs( $minutes * 60 );
+		$tz_offset = sprintf( '%s%02d:%02d', $sign, $abs_hour, $abs_mins );
+
+		return $tz_offset;
 
 	}
 

@@ -1,9 +1,10 @@
 <?php
-
 namespace Uncanny_Automator;
 
 /**
+ * Class Prune_Logs
  *
+ * @package Uncanny_Automator
  */
 class Prune_Logs {
 
@@ -101,9 +102,21 @@ class Prune_Logs {
 
 		$previous_time = gmdate( 'Y-m-d', strtotime( '-' . $prune_days_limit . ' days' ) );
 
-		$recipes = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `automator_recipe_id` FROM {$wpdb->prefix}uap_recipe_log WHERE `date_time` < %s AND ( `completed` = %d OR `completed` = %d  OR `completed` = %d )", $previous_time, 1, 2, 9 ) );
+		// Retrieves all recipes that are not `in progress`, and are not `completed with notice`.
+		$recipes = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT `ID`, `automator_recipe_id` 
+					FROM {$wpdb->prefix}uap_recipe_log 
+					WHERE `date_time` < %s 
+					AND ( `completed` <> %d AND `completed` <> %d )",
+				$previous_time,
+				Automator_Status::IN_PROGRESS,
+				Automator_Status::COMPLETED_WITH_NOTICE
+			)
+		);
 
 		if ( empty( $recipes ) ) {
+
 			update_option( 'automator_last_manual_prune_date', time() );
 
 			wp_safe_redirect(

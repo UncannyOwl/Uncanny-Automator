@@ -115,7 +115,7 @@ class Cf_Tokens {
 			array(
 				'tokenId'         => 'CFENTRYID',
 				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'CFENTRYTOKENS',
 			),
 			array(

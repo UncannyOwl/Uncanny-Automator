@@ -14,8 +14,6 @@ class JETFB_EVERYONE_FORM_SUBMIT {
 	 */
 	const TRIGGER_CODE = 'JETFB_EVERYONE_FORM_SUBMIT';
 
-	protected $helper;
-
 	/**
 	 * Trigger meta.
 	 *
@@ -32,13 +30,6 @@ class JETFB_EVERYONE_FORM_SUBMIT {
 		$this->setup_trigger();
 
 	}
-
-	public function set_helper( $helper ) {
-
-		$this->helper = $helper;
-
-	}
-
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
@@ -81,7 +72,7 @@ class JETFB_EVERYONE_FORM_SUBMIT {
 
 	public function load_options() {
 
-		return $this->helper->get_option_fields( $this );
+		return $this->get_helper()->get_option_fields( $this );
 
 	}
 

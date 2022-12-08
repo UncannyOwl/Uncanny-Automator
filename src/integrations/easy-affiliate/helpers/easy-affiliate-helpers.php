@@ -46,7 +46,6 @@ class Easy_Affiliate_Helpers {
 			'label'                 => esc_attr__( 'Affiliate', 'uncanny-automator' ),
 			'required'              => true,
 			'supports_custom_value' => true,
-			'relevant_tokens'       => array(),
 			'options'               => $options,
 		);
 

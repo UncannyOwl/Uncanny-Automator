@@ -129,7 +129,7 @@ class WhatsApp_Helpers {
 
 		$wp_current_datetime = current_time( 'mysql' );
 
-		$wp_current_datetime_object = new \DateTime( $wp_current_datetime, new \DateTimeZone( wp_timezone_string() ) );
+		$wp_current_datetime_object = new \DateTime( $wp_current_datetime, new \DateTimeZone( Automator()->get_timezone_string() ) );
 
 		if ( false === $wp_current_datetime_object ) {
 

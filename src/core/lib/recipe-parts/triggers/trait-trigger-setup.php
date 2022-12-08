@@ -125,18 +125,10 @@ trait Trigger_Setup {
 	protected $helper;
 
 	/**
-	 * @return mixed
+	 * Stores Token class
+	 * @var
 	 */
-	public function get_helper() {
-		return $this->helper;
-	}
-
-	/**
-	 * @param mixed $helper
-	 */
-	public function set_helper( $helper ) {
-		$this->helper = $helper;
-	}
+	protected $tokens_class;
 
 	/**
 	 * @var bool
@@ -467,7 +459,7 @@ trait Trigger_Setup {
 	/**
 	 * @param bool
 	 *
-	 * @return void
+	 * @return bool
 	 *
 	 */
 	public function get_uses_api() {
@@ -476,8 +468,35 @@ trait Trigger_Setup {
 
 
 	/**
+	 * @return mixed
+	 */
+	public function get_helper() {
+		return $this->helper;
+	}
+
+	/**
+	 * @param mixed $helper
+	 */
+	public function set_helper( $helper ) {
+		$this->helper = $helper;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_tokens_class() {
+		return $this->tokens_class;
+	}
+
+	/**
+	 * @param mixed $tokens_class
+	 */
+	public function set_tokens_class( $tokens_class ) {
+		$this->tokens_class = $tokens_class;
+	}
+	/**
 	 * Define and register the trigger by pushing it into the Automator object
-	 * @throws Automator_Exception
+	 * @throws Automator_Exception|\Exception
 	 */
 	protected function register_trigger() {
 

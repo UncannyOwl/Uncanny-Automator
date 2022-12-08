@@ -175,7 +175,7 @@ class Gf_Tokens {
 			array(
 				'tokenId'         => 'GFENTRYID',
 				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'GFENTRYTOKENS',
 			),
 			array(

@@ -41,17 +41,25 @@ class Give_Helpers {
 		$this->pro = $pro;
 	}
 
-	public function list_all_give_forms( $label = null, $option_code = 'MAKEDONATION', $args = array() ) {
+	public function list_all_give_forms( $label = null, $option_code = 'MAKEDONATION', $args = array(), $tokens = array() ) {
 
 		if ( ! $label ) {
 			$label = __( 'Form', 'uncanny-automator' );
 		}
 
-		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
-		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
-		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
-		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$options      = array();
+		$token          = key_exists( 'token', $args ) ? $args['token'] : false;
+		$is_ajax        = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
+		$target_field   = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
+		$end_point      = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		$default_tokens = array(
+			'ACTUALDONATEDAMOUNT' => esc_attr__( 'Donated amount', 'uncanny-automator' ),
+			$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
+			$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
+		);
+		if ( ! empty( $tokens ) ) {
+			$default_tokens = $default_tokens + $tokens;
+		}
+		$options = array();
 
 		$query_args = array(
 			'post_type'      => 'give_forms',
@@ -71,11 +79,7 @@ class Give_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-			'relevant_tokens' => array(
-				'ACTUALDONATEDAMOUNT' => esc_attr__( 'Donated amount', 'uncanny-automator' ),
-				$option_code          => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Form ID', 'uncanny-automator' ),
-			),
+			'relevant_tokens' => $default_tokens,
 		);
 
 		return apply_filters( 'uap_option_list_all_give_forms', $option );

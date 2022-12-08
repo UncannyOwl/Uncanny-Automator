@@ -95,6 +95,11 @@ trait Action_Setup {
 	protected $background_processing = false;
 
 	/**
+	 * @var
+	 */
+	protected $helpers;
+
+	/**
 	 * @return mixed
 	 */
 	public function get_integration() {
@@ -298,11 +303,26 @@ trait Action_Setup {
 	}
 
 	/**
-	 * @param mixed $set_background_processing
+	 * @param $background_processing
 	 */
 	public function set_background_processing( $background_processing ) {
 		$this->background_processing = $background_processing;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_helpers() {
+		return $this->helpers;
+	}
+
+	/**
+	 * @param mixed $helpers
+	 */
+	public function set_helpers( $helpers ) {
+		$this->helpers = $helpers;
+	}
+
 
 	/**
 	 * Define and register the action by pushing it into the Automator object

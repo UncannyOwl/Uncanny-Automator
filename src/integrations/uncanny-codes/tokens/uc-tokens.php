@@ -61,7 +61,7 @@ class Uc_Tokens {
 			array(
 				'tokenId'         => 'UNCANNYCODESBATCH_ID',
 				'tokenName'       => __( 'Batch ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(

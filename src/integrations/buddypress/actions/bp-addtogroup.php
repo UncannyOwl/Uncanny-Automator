@@ -52,7 +52,9 @@ class BP_ADDTOGROUP {
 	}
 
 	/**
-	 * @return array[]
+	 * Loads the options.
+	 *
+	 * @return array The options.
 	 */
 	public function load_options() {
 
@@ -79,11 +81,29 @@ class BP_ADDTOGROUP {
 	 */
 	public function add_to_bp_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		$add_to_bp_group = $action_data['meta'][ $this->action_meta ];
+		$group_id = absint( $action_data['meta'][ $this->action_meta ] );
 
-		groups_join_group( $add_to_bp_group, $user_id );
+		$has_joined_groups = groups_join_group( $group_id, $user_id );
 
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		if ( true !== $has_joined_groups ) {
+
+			$action_data['complete_with_errors'] = true;
+
+			return Automator()->complete->action(
+				$user_id,
+				$action_data,
+				$recipe_id,
+				sprintf(
+					/* translators: Error message */
+					esc_html__( 'Failed to add member into the group. User ID: %1$d | Group ID %2$d', 'uncanny-automator' ),
+					$user_id,
+					$group_id
+				)
+			);
+		}
+
+		return Automator()->complete->action( $user_id, $action_data, $recipe_id );
+
 	}
 
 }

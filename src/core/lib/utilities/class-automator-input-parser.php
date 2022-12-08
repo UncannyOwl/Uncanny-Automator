@@ -312,7 +312,7 @@ class Automator_Input_Parser {
 								if ( isset( $args['recipe_triggers'] ) ) {
 									$replace_args['recipe_triggers'] = $args['recipe_triggers'];
 								}
-								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
+								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args, $trigger_id );
 								break;
 						}
 					}
@@ -358,7 +358,7 @@ class Automator_Input_Parser {
 							if ( isset( $args['recipe_triggers'] ) ) {
 								$replace_args['recipe_triggers'] = $args['recipe_triggers'];
 							}
-							$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args );
+							$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args, $trigger_id );
 						}
 					}
 				}
@@ -534,10 +534,16 @@ class Automator_Input_Parser {
 	 *
 	 * @return string
 	 */
-	public function replace_recipe_variables( $replace_args, $args = array() ) {
-		$pieces         = $this->sanitize_token_pieces( $this->parse_inner_token( $replace_args['pieces'], $replace_args ) );
-		$recipe_id      = $this->get_recipe_id( $args );
-		$trigger_id     = absint( $pieces[0] );
+	public function replace_recipe_variables( $replace_args, $args = array(), $source_trigger_id = 0 ) {
+		$pieces     = $this->sanitize_token_pieces( $this->parse_inner_token( $replace_args['pieces'], $replace_args ) );
+		$recipe_id  = $this->get_recipe_id( $args );
+		$trigger_id = absint( $pieces[0] );
+
+		// Skips processing for recipe trigger logic: `any` if the source trigger ID does not match the token's ID.
+		if ( $this->should_bail_for_logic_any( $trigger_id, $source_trigger_id ) ) {
+			return null;
+		}
+
 		$trigger_log_id = $this->get_trigger_log_id( $replace_args, $trigger_id );
 		$run_number     = $this->get_run_number( $replace_args );
 		$user_id        = $this->get_user_id( $replace_args );
@@ -1060,4 +1066,26 @@ class Automator_Input_Parser {
 			)
 		);
 	}
+
+	/**
+	 * Determines whether should bail processing for `any` logic types of triggers.
+	 *
+	 * @param int $trigger_id The token's trigger ID.
+	 * @param int $source_trigger_id The token's trigger `source`. The ID of the trigger where the token is processed for.
+	 *
+	 * @return boolean True if should bail. Otherwise, false.
+	 */
+	protected function should_bail_for_logic_any( $trigger_id = 0, $source_trigger_id = 0 ) {
+
+		// Determines whether the token's trigger ID matches the 'source' trigger ID.
+		$is_source_trigger_matches_token_trigger = ( $trigger_id === $source_trigger_id );
+
+		// Determines whether the recipe trigger token matches 'any'.
+		$is_recipe_logic_any = 'any' === Automator()->db->trigger->get_recipe_triggers_logic_by_child_id( $source_trigger_id );
+
+		// Return true if source trigger does not match the token's trigger ID `and` recipe logic is equals to `any`.
+		return ! $is_source_trigger_matches_token_trigger && $is_recipe_logic_any;
+
+	}
+
 }
