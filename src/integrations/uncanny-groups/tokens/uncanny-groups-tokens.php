@@ -174,7 +174,7 @@ class Uncanny_Groups_Tokens {
 			array(
 				'tokenId'         => 'UNCANNYGROUP_ID',
 				'tokenName'       => __( 'Group ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(

@@ -333,7 +333,7 @@ trait Action_Tokens {
 
 		$tokens = json_decode( Automator()->db->action->get_meta( $action_log_id, $this->meta_key ), true );
 
-		return ! empty( $tokens[ $action_meta_key ] ) ? $tokens[ $action_meta_key ] : '';
+		return isset( $tokens[ $action_meta_key ] ) ? $tokens[ $action_meta_key ] : '';
 
 	}
 

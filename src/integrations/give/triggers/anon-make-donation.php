@@ -64,7 +64,15 @@ class ANON_MAKE_DONATION {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->give->options->list_all_give_forms( __( 'Form', 'uncanny-automator' ), $this->trigger_meta ),
+					Automator()->helpers->recipe->give->options->list_all_give_forms(
+						__( 'Form', 'uncanny-automator' ),
+						$this->trigger_meta,
+						array(),
+						array(
+							'DONATION_ID' => esc_attr__( 'Donation ID', 'uncanny-automator' ),
+							'PAYMENT_ID'  => esc_attr__( 'Payment ID', 'uncanny-automator' ),
+						)
+					),
 				),
 			)
 		);
@@ -185,6 +193,9 @@ class ANON_MAKE_DONATION {
 						$trigger_meta['meta_key']   = 'payment_data';
 						$trigger_meta['meta_value'] = maybe_serialize( $payment_data );
 						Automator()->insert_trigger_meta( $trigger_meta );
+
+						Automator()->db->token->save( 'DONATION_ID', $payment->number, $trigger_meta );
+						Automator()->db->token->save( 'PAYMENT_ID', $payment_id, $trigger_meta );
 
 						Automator()->maybe_trigger_complete( $result['args'] );
 					}

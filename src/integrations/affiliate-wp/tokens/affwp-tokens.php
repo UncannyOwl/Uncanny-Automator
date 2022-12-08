@@ -48,7 +48,7 @@ class Affwp_Tokens {
 				array(
 					'tokenId'         => 'AFFILIATEWPID',
 					'tokenName'       => __( 'Affiliate ID', 'uncanny-automator' ),
-					'tokenType'       => 'text',
+					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
@@ -136,7 +136,7 @@ class Affwp_Tokens {
 			array(
 				'tokenId'         => 'AFFILIATEWPID',
 				'tokenName'       => __( 'Affiliate ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(

@@ -55,8 +55,6 @@ class GCALENDAR_ADDEVENT {
 
 		$date_format_wp = get_option( 'date_format', 'F j, Y' );
 
-		$timezone_wp = wp_timezone_string();
-
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Add {{an event}} to {{a Google Calendar}}', 'uncanny-automator' ) );
 
@@ -282,7 +280,7 @@ class GCALENDAR_ADDEVENT {
 			'notification_popup'      => $notification_popup,
 			'notification_time_email' => $notification_time_email,
 			'notification_time_popup' => $notification_time_popup,
-			'timezone'                => apply_filters( 'automator_google_calendar_add_event_timezone', wp_timezone_string() ),
+			'timezone'                => apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
 			'date_format'             => 'Y-m-d',
 		);
 

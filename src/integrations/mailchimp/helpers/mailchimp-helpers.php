@@ -888,7 +888,6 @@ class Mailchimp_Helpers {
 	 * @return void
 	 */
 	public function complete_with_error( $error_msg, $user_id, $action_data, $recipe_id ) {
-		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
 		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 	}

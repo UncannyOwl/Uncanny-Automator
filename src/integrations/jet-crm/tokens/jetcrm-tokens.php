@@ -362,7 +362,7 @@ class Jetcrm_Tokens {
 
 		$trigger_meta_validations = apply_filters(
 			'automator_jet_crm_validate_common_triggers_tokens_parse',
-			array( 'JETCRM_CONTACT_CREATED', 'JETCRM_CONTACT_STATUS_UPDATED', 'JETCRM_COMPANY_CREATED' ),
+			array( 'JETCRM_CONTACT_CREATED', 'JETCRM_CONTACT_STATUS_UPDATED' ),
 			array(
 				'pieces'       => $pieces,
 				'recipe_id'    => $recipe_id,
@@ -372,7 +372,19 @@ class Jetcrm_Tokens {
 			)
 		);
 
-		if ( ! array_intersect( $trigger_meta_validations, $pieces ) ) {
+		$companies_trigger_metas = apply_filters(
+			'automator_jet_crm_validate_common_companies_triggers_tokens_parse',
+			array( 'JETCRM_COMPANY_CREATED' ),
+			array(
+				'pieces'       => $pieces,
+				'recipe_id'    => $recipe_id,
+				'trigger_data' => $trigger_data,
+				'user_id'      => $user_id,
+				'replace_args' => $replace_args,
+			)
+		);
+
+		if ( ! array_intersect( $trigger_meta_validations, $pieces ) && ! array_intersect( $companies_trigger_metas, $pieces ) ) {
 			return $value;
 		}
 
@@ -380,7 +392,7 @@ class Jetcrm_Tokens {
 		$to_replace = $pieces[2];
 		$contact_id = Automator()->db->token->get( 'object_id', $replace_args );
 		$contact    = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}zbs_contacts` WHERE ID = %d", $contact_id ) );
-		if ( 'JETCRM_COMPANY_CREATED' === $pieces[1] ) {
+		if ( array_intersect( $companies_trigger_metas, $pieces ) ) {
 			$contact = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}zbs_companies` WHERE ID = %d", $contact_id ) );
 		}
 

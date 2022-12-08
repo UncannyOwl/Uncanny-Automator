@@ -94,7 +94,7 @@ class Esaf_Tokens {
 				array(
 					'tokenId'         => 'AFFILIATE_ID',
 					'tokenName'       => __( 'Affiliate ID', 'uncanny-automator' ),
-					'tokenType'       => 'text',
+					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(

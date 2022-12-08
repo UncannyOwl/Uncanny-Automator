@@ -136,14 +136,53 @@ class TWITTER_POSTSTATUS_2 {
 			return;
 
 		} catch ( \Exception $e ) {
-			$error_msg                           = $e->getMessage();
-			$action_data['do-nothing']           = true;
+
+			$error_msg                           = $this->parse_errors( $e->getMessage() );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
 			return;
 		}
 
+	}
+
+	/**
+	 * parse_errors
+	 *
+	 * @param  string $error_msg
+	 * @return string
+	 */
+	public function parse_errors( $error_msg ) {
+
+		$output = array();
+
+		// The message has several lines, parse them into array.
+		$lines = explode( "\n", $error_msg );
+
+		// The second line usually has a json string, but let's loop through all of them just in case.
+		foreach ( $lines as $line ) {
+
+			$error_array = json_decode( $line, true );
+
+			if ( ! empty( $error_array['errors'] ) ) {
+
+				foreach ( $error_array['errors'] as $error ) {
+
+					if ( empty( $error['code'] ) || empty( $error['message'] ) ) {
+						continue;
+					}
+
+					$output[] = 'Error code ' . $error['code'] . ': ' . $error['message'];
+				}
+			}
+		}
+
+		// Return the original string if no errors were parsed.
+		if ( empty( $output ) ) {
+			return $error_msg;
+		}
+
+		return implode( '<br>', $output );
 	}
 
 	/**

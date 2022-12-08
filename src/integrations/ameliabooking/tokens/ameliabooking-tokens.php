@@ -44,7 +44,7 @@ class AMELIABOOKING_TOKENS {
 			add_filter( 'automator_maybe_trigger_ameliabooking_' . strtolower( $trigger_code ) . '_tokens', array( $this, 'register_reservation_tokens' ), 20, 2 );
 		}
 
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_tokens' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_tokens' ), 40, 6 );
 
 		// Parse reservation tokens.
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_tokens_reservation' ), 20, 6 );
@@ -71,6 +71,7 @@ class AMELIABOOKING_TOKENS {
 		$tokens_collection = array_merge(
 			$this->get_appointment_tokens(),
 			$this->get_booking_tokens(),
+			$this->get_coupon_tokens(),
 			$this->get_customer_tokens(),
 			$this->get_additional_tokens()
 		);
@@ -106,6 +107,7 @@ class AMELIABOOKING_TOKENS {
 
 		$tokens_collection = array_merge(
 			$this->get_reservation_tokens(),
+			$this->get_coupon_tokens(),
 			$this->get_reservation_tokens_pro()
 		);
 
@@ -144,6 +146,8 @@ class AMELIABOOKING_TOKENS {
 		// Check if trigger code is for Amelia.
 		if ( in_array( $args['entry_args']['code'], self::APPOINTMENT_BOOKING_TOKENS_TRIGGERS, true ) ) {
 
+			$helper = Automator()->helpers->recipe->ameliabooking->options;
+
 			$booking_data_arr = array_shift( $args['trigger_args'] );
 
 			// Add the category name.
@@ -163,6 +167,14 @@ class AMELIABOOKING_TOKENS {
 					$booking_data_arr['customer']['wpUserId'] = $wp_user->ID;
 				}
 			}
+
+			// Insert the `coupon` node.
+			$coupon_id = isset( $booking_data_arr['booking']['couponId'] ) ? absint( $booking_data_arr['booking']['couponId'] ) : 0;
+
+			$booking_data_arr['coupon']               = $helper->get_coupon( $coupon_id );
+			$booking_data_arr['coupon']['events']     = $helper->get_coupon_events( $coupon_id );
+			$booking_data_arr['coupon']['services']   = $helper->get_coupon_services( $coupon_id );
+			$booking_data_arr['coupon']['usageCount'] = $helper->get_coupon_usage_count( $coupon_id );
 
 			$booking_data = wp_json_encode( $booking_data_arr );
 
@@ -199,6 +211,14 @@ class AMELIABOOKING_TOKENS {
 			$reservation['event']['staff'] = $helper->get_event_staff( $reservation );
 
 			$reservation['event']['organizer'] = $helper->get_event_organizer( $reservation['event']['organizerId'] );
+
+			// Insert the `coupon` node.
+			$coupon_id = absint( $reservation['booking']['couponId'] ) ? absint( $reservation['booking']['couponId'] ) : 0;
+
+			$reservation['coupon']               = $helper->get_coupon( $coupon_id );
+			$reservation['coupon']['events']     = $helper->get_coupon_events( $coupon_id );
+			$reservation['coupon']['services']   = $helper->get_coupon_services( $coupon_id );
+			$reservation['coupon']['usageCount'] = $helper->get_coupon_usage_count( $coupon_id );
 
 			Automator()->db->token->save( 'AMELIA_RESERVATION_DATA', wp_json_encode( $reservation ), $args['trigger_entry'] );
 
@@ -240,10 +260,18 @@ class AMELIABOOKING_TOKENS {
 		$booking_data = json_decode( Automator()->db->token->get( 'AMELIA_BOOKING_DATA', $replace_args ), true );
 
 		// Add a check to prevent notice.
-		if ( isset( $token_id_parts[0] ) && isset( $token_id_parts[1] ) ) {
+		if ( 2 === count( $token_id_parts ) ) {
 			// Example: $booking_data['appointment']['id].
 			if ( isset( $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ] ) ) {
 				$value = $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ];
+			}
+		}
+
+		// Supports 3rd level.
+		if ( 3 === count( $token_id_parts ) ) {
+			// Example: $booking_data['booking']['coupon']['code'].
+			if ( isset( $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ][ $token_id_parts[2] ] ) ) {
+				$value = $booking_data[ $token_id_parts[0] ][ $token_id_parts[1] ][ $token_id_parts[2] ];
 			}
 		}
 
@@ -409,6 +437,54 @@ class AMELIABOOKING_TOKENS {
 				'id'   => 'appointment_status',
 			),
 		);
+	}
+
+	/**
+	 * Get coupon tokens.
+	 *
+	 * @return array The coupon tokens.
+	 */
+	public function get_coupon_tokens() {
+
+		return array(
+			array(
+				'name' => esc_html__( 'Coupon code', 'uncanny-automator' ),
+				'id'   => 'coupon_code',
+			),
+			array(
+				'name' => esc_html__( 'Coupon service name', 'uncanny-automator' ),
+				'id'   => 'coupon_services',
+			),
+			array(
+				'name' => esc_html__( 'Coupon time used', 'uncanny-automator' ),
+				'id'   => 'coupon_usageCount',
+			),
+			array(
+				'name' => esc_html__( 'Coupon usage limit', 'uncanny-automator' ),
+				'id'   => 'coupon_limit',
+			),
+			array(
+				'name' => esc_html__( 'Coupon expiration date', 'uncanny-automator' ),
+				'id'   => 'coupon_expirationDate',
+			),
+			array(
+				'name' => esc_html__( 'Coupon event name', 'uncanny-automator' ),
+				'id'   => 'coupon_events',
+			),
+			array(
+				'name' => esc_html__( 'Coupon deduction', 'uncanny-automator' ),
+				'id'   => 'coupon_deduction',
+			),
+			array(
+				'name' => esc_html__( 'Coupon discount', 'uncanny-automator' ),
+				'id'   => 'coupon_discount',
+			),
+			array(
+				'name' => esc_html__( 'Coupon ID', 'uncanny-automator' ),
+				'id'   => 'coupon_id',
+			),
+		);
+
 	}
 
 	/**

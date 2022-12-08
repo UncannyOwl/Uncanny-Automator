@@ -1186,6 +1186,10 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private function get_status_name( $status ) {
 
+		if ( 0 === absint( $status ) ) {
+			$status = Automator_Status::IN_PROGRESS;
+		}
+
 		return Automator_Status::name( $status );
 
 	}
@@ -1196,6 +1200,10 @@ class Logs_List_Table extends WP_List_Table {
 	 * @return mixed
 	 */
 	private function get_status_class_name( $status ) {
+
+		if ( 0 === absint( $status ) ) {
+			$status = Automator_Status::IN_PROGRESS;
+		}
 
 		return Automator_Status::get_class_name( $status );
 

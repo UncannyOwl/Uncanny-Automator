@@ -362,4 +362,103 @@ class Ameliabooking_Helpers {
 		return $results;
 	}
 
+	/**
+	 * Fetches a single coupon from `amelia_coupons` table.
+	 *
+	 * Amelia does not provide reliable way to retrieve the coupon properties in the Trigger.
+	 *
+	 * @param int $coupon_id The ID of the coupon.
+	 *
+	 * @return array The coupon.
+	 */
+	public function get_coupon( $coupon_id ) {
+
+		global $wpdb;
+
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}amelia_coupons WHERE id = %d",
+				$coupon_id
+			),
+			ARRAY_A
+		);
+
+	}
+
+	/**
+	 * Fetches the coupon events with coupon ID.
+	 *
+	 * @param int $coupon_id The coupon ID.
+	 *
+	 * @return string The events associated with the coupon. Separated by comma.
+	 */
+	public function get_coupon_events( $coupon_id ) {
+
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT name FROM {$wpdb->prefix}amelia_coupons_to_events as coupons
+					INNER JOIN {$wpdb->prefix}amelia_events as events 
+					ON coupons.eventId = events.id
+					WHERE couponId = %d",
+				$coupon_id
+			),
+			ARRAY_A
+		);
+
+		return implode( ', ', array_column( $results, 'name' ) );
+
+	}
+
+	/**
+	 * Fetches the coupon services with service ID.
+	 *
+	 * @param int $coupon_id The coupon ID.
+	 *
+	 * @return string The services associated with the coupon. Separated by comma.
+	 */
+	public function get_coupon_services( $coupon_id ) {
+
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT name FROM {$wpdb->prefix}amelia_coupons_to_events as coupons
+					INNER JOIN {$wpdb->prefix}amelia_services as services 
+					ON coupons.eventId = services.id
+					WHERE couponId = %d",
+				$coupon_id
+			),
+			ARRAY_A
+		);
+
+		return implode( ', ', array_column( $results, 'name' ) );
+
+	}
+
+	/**
+	 * Fetches the total coupon usage.
+	 *
+	 * @param int $coupon_id The coupon ID.
+	 *
+	 * @return int The number of coupons left.
+	 */
+	public function get_coupon_usage_count( $coupon_id ) {
+
+		global $wpdb;
+
+		$results = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT count(*) as total FROM {$wpdb->prefix}amelia_customer_bookings 
+					WHERE couponId = %d",
+				$coupon_id
+			),
+			ARRAY_A
+		);
+
+		return isset( $results['total'] ) ? absint( $results['total'] ) : 0;
+
+	}
+
 }

@@ -289,7 +289,7 @@ class Wpf_Tokens {
 			array(
 				'tokenId'         => 'WPFENTRYID',
 				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPFENTRYTOKENS',
 			),
 			array(

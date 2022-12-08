@@ -60,13 +60,14 @@ class ZOOM_WEBINAR_UNREGISTERUSER {
 	 * @return void
 	 */
 	public function load_options() {
+
 		$account_users_field = array(
 			'option_code'           => 'ZOOMUSER',
 			'label'                 => __( 'Account user', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
-			'endpoint'              => 'uap_zoom_api_get_meetings',
+			'endpoint'              => 'uap_zoom_api_get_webinars',
 			'fill_values_in'        => $this->action_meta,
 			'options'               => $this->helpers->get_account_user_options(),
 			'relevant_tokens'       => array(),

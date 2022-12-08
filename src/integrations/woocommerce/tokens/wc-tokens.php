@@ -72,6 +72,7 @@ class Wc_Tokens {
 			'order_fees'            => esc_attr__( 'Order fees', 'uncanny-automator' ),
 			'order_shipping'        => esc_attr__( 'Order shipping', 'uncanny-automator' ),
 			'payment_method'        => esc_attr__( 'Payment method', 'uncanny-automator' ),
+			'shipping_method'       => esc_attr__( 'Shipping method', 'uncanny-automator' ),
 		);
 
 		add_action(
@@ -569,6 +570,9 @@ class Wc_Tokens {
 									break;
 								case 'payment_method':
 									$value = $order->get_payment_method_title();
+									break;
+								case 'shipping_method':
+									$value = $order->get_shipping_method();
 									break;
 								case 'product_sku':
 									$value = $this->get_products_skus( $order );

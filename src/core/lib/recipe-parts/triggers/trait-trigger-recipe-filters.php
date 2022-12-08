@@ -1,11 +1,12 @@
 <?php
+
 namespace Uncanny_Automator\Recipe;
 
 /**
  * Trait Trigger_Recipe_Filters
  *
- * @package Uncanny_Automator\Recipe\Trigger_Recipe_Filters
  * @since 4.2
+ * @package Uncanny_Automator\Recipe\Trigger_Recipe_Filters
  */
 trait Trigger_Recipe_Filters {
 
@@ -220,7 +221,7 @@ trait Trigger_Recipe_Filters {
 
 		$n_where = count( $this->get_where_conditions() );
 
-		for ( $i = 0; $i < $n_where; $i++ ) {
+		for ( $i = 0; $i < $n_where; $i ++ ) {
 
 			// Set default format to default callable format.
 			if ( empty( $compare[ $i ] ) ) {
@@ -245,7 +246,7 @@ trait Trigger_Recipe_Filters {
 
 		$n_where = count( $this->get_where_conditions() );
 
-		for ( $i = 0; $i < $n_where; $i++ ) {
+		for ( $i = 0; $i < $n_where; $i ++ ) {
 
 			// Set default format to default callable format.
 			if ( ! isset( $conditions_format[ $i ] ) ) {
@@ -373,6 +374,24 @@ trait Trigger_Recipe_Filters {
 		// Otherwise, process with equality sign.
 		$condition_matched = $this->match_condition( $notation, $where, $condition );
 
+		/**
+		 * Allow external developers to manipulate the true/false based on specific criteria.
+		 *
+		 * WARNING: THIS IS A CORE FUNCTIONALITY THAT MATCHES A VALUE BASED ON A CRITERIA, E.X.,
+		 * A USER ENTERED A SPECIFIC VALUE IN A FIELD.
+		 * OVERRIDING THE LOGIC INCORRECTLY WILL RESULT IN FAILED RECIPE RUNS. USE IT WISELY!
+		 *
+		 * add_filter( 'automator_trigger_filter_condition_matched', function($condition_matched, $notation, $where, $condition, $recipe_id) {
+		 *     // doing something;
+		 *     return $condition_matched; // Must return boolean True or False.
+		 * }, 99, 5 );
+		 *
+		 * @since v4.8
+		 * @author Saad S.
+		 * @author Joseph G.
+		 */
+		$condition_matched = apply_filters( 'automator_trigger_filter_condition_matched_' . $recipe_id, $condition_matched, $notation, $where, $condition, $recipe_id );
+
 		$this->push_log(
 			'Asserting field option with value ' . gettype( $where ) . ":{$where} {$notation} " .
 			'given value ' . gettype( $condition ) . ":$condition | Result: " .
@@ -455,7 +474,7 @@ trait Trigger_Recipe_Filters {
 			$this->push_log( "with trigger id: {$trigger_id} from option_code: {$trigger_option_code}", 'recipe_trigger_field_values', $recipe_id );
 
 			// Handle 'Any' automatically.
-			if ( intval( -1 ) === intval( $where_value ) ) {
+			if ( intval( - 1 ) === intval( $where_value ) ) {
 
 				// Make the where value equals to match condition automatically so it becomes valid.
 				$where_value = $this->match_conditions[ $i ];
@@ -569,7 +588,7 @@ trait Trigger_Recipe_Filters {
 	protected function has_number_condition() {
 
 		return ! empty( $this->get_number_condition_value_from_field() ) &&
-			! empty( $this->get_number_condition_value_to_compare() );
+			   ! empty( $this->get_number_condition_value_to_compare() );
 
 	}
 

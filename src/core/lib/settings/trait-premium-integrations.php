@@ -530,13 +530,23 @@ trait Premium_Integrations {
 
 		$alert = wp_parse_args( $alert, $default );
 
+		$allowed_html = array(
+			'a'       => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+			'uo-icon' => array(
+				'id' => array(),
+			),
+		);
+
 		?>
 
 		<uo-alert
 			type="<?php echo esc_attr( $alert['type'] ); ?>"
 			heading="<?php echo esc_attr( $alert['heading'] ); ?>"
 			class="uap-spacing-bottom uap-spacing-top"
-		><?php echo( esc_attr( $alert['content'] ) ); ?></uo-alert>
+		><?php echo( wp_kses( $alert['content'], $allowed_html ) ); ?></uo-alert>
 
 		<?php
 

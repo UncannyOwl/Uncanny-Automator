@@ -1404,6 +1404,18 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Anonymous trigger - Jetpack CRM */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A tag}} is added to a company", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					/* translators: Anonymous trigger - Jetpack CRM */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A tag}} is added to a contact", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					/* translators: Anonymous trigger - Jetpack CRM */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A transaction is deleted", 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
@@ -1501,8 +1513,19 @@ function automator_pro_items_list() {
 					'name' => __( "A user's access to {{a course}} expires", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
+				array(
+					/* translators: Anonymous trigger - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A course}} is added to {{a group}}", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
 			),
 			'actions'  => array(
+				array(
+					/* translators: Action - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add {{a course}} to {{a group}}", 'uncanny-automator' ),
+				),
 				array(
 					/* translators: Action - LearnDash */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
@@ -1517,6 +1540,11 @@ function automator_pro_items_list() {
 					/* translators: Action - LearnDash */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Mark {{a topic}} not complete for the user", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Remove {{a course}} from {{a group}}", 'uncanny-automator' ),
 				),
 				array(
 					/* translators: Action - LearnDash */
@@ -2869,6 +2897,23 @@ function automator_pro_items_list() {
 					'type' => 'logged-in',
 				),
 			),
+			'actions'  => array(
+				array(
+					/* translators: Action - WordPress Multisite */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add the user to {{a subsite}}", 'uncanny-automator' ),
+				),
+			),
+		),
+		'WPAI'             => array(
+			'triggers' => array(
+				array(
+					/* translators: Anonymous trigger - WP All Import */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "An import fails", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
 			'actions'  => array(),
 		),
 		'WPCW'             => array(
@@ -3093,6 +3138,12 @@ function automator_pro_items_list() {
 					/* translators: Logged-in trigger - WPForms */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - WPForms */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}} with PayPal payment", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(

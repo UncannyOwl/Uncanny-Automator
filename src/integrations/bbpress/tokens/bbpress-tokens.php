@@ -14,7 +14,7 @@ class Bbpress_Tokens {
 	 */
 	public function __construct() {
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_bbpress_tokens' ), 999, 6 );
-		add_filter( 'automator_maybe_trigger_bb_bbforums_tokens', array( $this, 'bb_possible_tokens', ), 20, 2 );
+		add_filter( 'automator_maybe_trigger_bb_bbforums_tokens', array( $this, 'bb_possible_tokens' ), 20, 2 );
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Bbpress_Tokens {
 				array(
 					'tokenId'         => 'BBTOPIC_ID',
 					'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
-					'tokenType'       => 'text',
+					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(

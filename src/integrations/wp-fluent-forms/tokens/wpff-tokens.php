@@ -312,7 +312,7 @@ class Wpff_Tokens {
 			array(
 				'tokenId'         => 'WPFFENTRYID',
 				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPFFENTRYTOKENS',
 			),
 			array(

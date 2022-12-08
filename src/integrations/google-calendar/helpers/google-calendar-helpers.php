@@ -224,7 +224,7 @@ class Google_Calendar_Helpers {
 				array(
 					'action'      => 'list_events',
 					'calendar_id' => automator_filter_input( 'value', INPUT_POST ),
-					'timezone'    => wp_timezone_string(),
+					'timezone'    => Automator()->get_timezone_string(),
 				)
 			);
 
@@ -246,7 +246,7 @@ class Google_Calendar_Helpers {
 							$type       = 'date';
 						}
 
-						$date = new \DateTime( $date_start, new \DateTimeZone( wp_timezone_string() ) );
+						$date = new \DateTime( $date_start, new \DateTimeZone( Automator()->get_timezone_string() ) );
 
 						$date_string = $date->format( 'F j, Y' );
 

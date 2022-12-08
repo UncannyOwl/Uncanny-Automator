@@ -14,8 +14,6 @@ class JETFB_USER_FORM_SUBMIT {
 	 */
 	const TRIGGER_CODE = 'JETFB_USER_FORM_SUBMIT';
 
-	protected $helper;
-
 	/**
 	 * Trigger meta.
 	 *
@@ -30,12 +28,6 @@ class JETFB_USER_FORM_SUBMIT {
 			$this->jetfb_tokens = new Jetfb_Tokens();
 
 			$this->setup_trigger();
-
-	}
-
-	public function set_helper( $helper ) {
-
-		$this->helper = $helper;
 
 	}
 
@@ -81,7 +73,7 @@ class JETFB_USER_FORM_SUBMIT {
 
 	public function load_options() {
 
-		return $this->helper->get_option_fields( $this );
+		return $this->get_helper()->get_option_fields( $this );
 
 	}
 

@@ -105,7 +105,7 @@ class Wp_Post_Tokens {
 			array(
 				'tokenId'         => $post_id,
 				'tokenName'       => __( 'Post ID', 'uncanny_automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
@@ -141,7 +141,7 @@ class Wp_Post_Tokens {
 			array(
 				'tokenId'         => 'POSTIMAGEID',
 				'tokenName'       => __( 'Post featured image ID', 'uncanny_automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
@@ -171,7 +171,7 @@ class Wp_Post_Tokens {
 			array(
 				'tokenId'         => 'POSTAUTHORID',
 				'tokenName'       => __( 'Post author ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
@@ -210,7 +210,7 @@ class Wp_Post_Tokens {
 			array(
 				'tokenId'         => 'POSTID',
 				'tokenName'       => __( 'Post ID', 'uncanny_automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
@@ -246,7 +246,7 @@ class Wp_Post_Tokens {
 			array(
 				'tokenId'         => 'POSTIMAGEID',
 				'tokenName'       => __( 'Post featured image ID', 'uncanny_automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
@@ -276,7 +276,7 @@ class Wp_Post_Tokens {
 			array(
 				'tokenId'         => 'POSTAUTHORID',
 				'tokenName'       => __( 'Post author ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
+				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(

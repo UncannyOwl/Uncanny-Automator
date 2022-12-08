@@ -37,6 +37,12 @@ class Set_Up_Automator {
 	 * @var array
 	 */
 	public static $all_integrations = array();
+
+	/**
+	 * Store namespaces of external integrations
+	 * @var array
+	 */
+	public static $external_integrations_namespace = array();
 	/**
 	 * @var array
 	 */
@@ -202,8 +208,7 @@ class Set_Up_Automator {
 				if ( is_array( $file ) ) {
 					continue;
 				}
-
-				$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file ), $file );
+				$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file, false, $dir_name ), $file );
 				if ( class_exists( $class, false ) ) {
 					continue;
 				}
@@ -320,15 +325,19 @@ class Set_Up_Automator {
 					continue;
 				}
 
-				$class = apply_filters( 'automator_helpers_class_name', $this->get_class_name( $file ), $file );
+				$class = apply_filters( 'automator_helpers_class_name', $this->get_class_name( $file, false, $dir_name ), $file );
 				if ( ! class_exists( $class, false ) ) {
 					if ( ! is_file( $file ) ) {
 						continue;
 					}
 					include_once $file;
-					$mod = str_replace( '-', '_', $dir_name );
+					$mod            = str_replace( '-', '_', $dir_name );
+					$class_instance = new $class();
 					// Todo: Do not initiate helpers class.
-					Utilities::add_helper_instance( $mod, new $class() );
+					Utilities::add_helper_instance( $mod, $class_instance );
+					if ( method_exists( $class_instance, 'load_hooks' ) ) {
+						$class_instance->load_hooks();
+					}
 				}
 			}
 		}
@@ -342,6 +351,10 @@ class Set_Up_Automator {
 		if ( empty( $this->active_directories ) ) {
 			return;
 		}
+
+		// Adding textdomain fix trigger/action
+		// sentences not getting translated
+		Automator()->automator_load_textdomain();
 
 		foreach ( $this->active_directories as $dir_name => $object ) {
 			$mod = $dir_name;
@@ -365,7 +378,7 @@ class Set_Up_Automator {
 				if ( is_array( $file ) ) {
 					continue;
 				}
-				$class = apply_filters( 'automator_recipe_parts_class_name', $this->get_class_name( $file, true ), $file );
+				$class = apply_filters( 'automator_recipe_parts_class_name', $this->get_class_name( $file, true, $mod ), $file );
 				if ( ! class_exists( $class, false ) ) {
 					if ( ! is_file( $file ) ) {
 						continue;
@@ -382,10 +395,11 @@ class Set_Up_Automator {
 	 *
 	 * @param $file
 	 * @param bool $uppercase
+	 * @param string $integration_name
 	 *
 	 * @return mixed|void
 	 */
-	public function get_class_name( $file, $uppercase = false ) {
+	public function get_class_name( $file, $uppercase = false, $integration_name = '' ) {
 		// Remove file extension my-class-name.php to my-class-name
 		$file_name = basename( $file, '.php' );
 		// Implode array into class name - eg. array( 'My', 'Class', 'Name') to MyClassName
@@ -398,6 +412,13 @@ class Set_Up_Automator {
 		$pattern = '/(' . addcslashes( $this->integrations_directory_path, '/-:\\' ) . ')/';
 		if ( preg_match( $pattern, $file ) ) {
 			$class_name = __NAMESPACE__ . '\\' . $class_name;
+		} else {
+			$custom_namespace = isset( self::$external_integrations_namespace[ $integration_name ] ) ? self::$external_integrations_namespace[ $integration_name ] : '';
+			$custom_namespace = apply_filters( 'automator_external_class_namespace', $custom_namespace, $class_name, $file_name, $file );
+			$class_name       = apply_filters( 'automator_external_class_with_namespace', $custom_namespace . '\\' . $class_name, $class_name, $file_name, $file );
+			if ( self::validate_namespace( $class_name, $file_name, $file, $integration_name ) ) {
+				return $class_name;
+			}
 		}
 
 		return apply_filters( 'automator_recipes_class_name', $class_name, $file, $file_name );
@@ -409,37 +430,36 @@ class Set_Up_Automator {
 	 * @param $class_name
 	 * @param $file_name
 	 * @param $file
+	 * @param string $integration_name
 	 *
 	 * @return mixed|string
-	 * @deprecated 4.2
 	 */
-	public static function validate_namespace( $class_name, $file_name, $file ) {
+	public static function validate_namespace( $class_name, $file_name, $file, $integration_name = '' ) {
 		$class_name = strtoupper( $class_name );
-		try {
-			$is_free = new ReflectionClass( 'Uncanny_Automator\\' . $class_name );
-			if ( $is_free->inNamespace() ) {
-				return 'Uncanny_Automator\\' . $class_name;
-			}
-		} catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-		}
+		//		try {
+		//          $is_free = new ReflectionClass( 'Uncanny_Automator\\' . $class_name );
+		//          if ( $is_free->inNamespace() ) {
+		//              return 'Uncanny_Automator\\' . $class_name;
+		//          }
+		//      } catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		//      }
+		//
+		//      try {
+		//          $is_pro = new ReflectionClass( 'Uncanny_Automator_Pro\\' . $class_name );
+		//          if ( $is_pro->inNamespace() ) {
+		//              return 'Uncanny_Automator_Pro\\' . $class_name;
+		//          }
+		//      } catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		//      }
 
 		try {
-			$is_pro = new ReflectionClass( 'Uncanny_Automator_Pro\\' . $class_name );
-			if ( $is_pro->inNamespace() ) {
-				return 'Uncanny_Automator_Pro\\' . $class_name;
-			}
-		} catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-		}
-
-		try {
-			$custom_namespace = apply_filters( 'automator_class_namespace', __NAMESPACE__, $class_name, $file_name, $file );
-			$is_custom        = new ReflectionClass( $custom_namespace . '\\' . $class_name );
+			$is_custom = new ReflectionClass( $class_name );
 			if ( $is_custom->inNamespace() ) {
-				return $custom_namespace . '\\' . $class_name;
+				return true;
 			}
 		} catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 		}
 
-		return $class_name;
+		return false;
 	}
 }

@@ -12,14 +12,12 @@ class JETCRM_CREATE_CONTACT {
 	use Recipe\Actions;
 	use Recipe\Action_Tokens;
 
-	public $helper;
-
 	/**
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
 		$this->setup_action();
-		$this->helper = new Jet_Crm_Helpers();
+		$this->set_helpers( new Jet_Crm_Helpers() );
 	}
 
 	/**
@@ -55,9 +53,9 @@ class JETCRM_CREATE_CONTACT {
 	 */
 	public function load_options() {
 
-		$fields_meta_label = $this->helper->get_contact_fields();
+		$fields_meta_label = $this->get_helpers()->get_contact_fields();
 		$fields            = array(
-			$this->helper->contact_statuses( 'status' ),
+			$this->get_helpers()->contact_statuses( 'status' ),
 		);
 		foreach ( $fields_meta_label as $meta => $label ) {
 			$fields[] = Automator()->helpers->recipe->field->text(
@@ -68,8 +66,8 @@ class JETCRM_CREATE_CONTACT {
 				)
 			);
 		}
-		$fields[] = $this->helper->get_all_jetpack_tags( 'tags', false, array(), ZBS_TYPE_CONTACT, true );
-		$fields[] = $this->helper->get_all_jetpack_companies( 'companies', false, false, true );
+		$fields[] = $this->get_helpers()->get_all_jetpack_tags( 'tags', false, array(), ZBS_TYPE_CONTACT, true );
+		$fields[] = $this->get_helpers()->get_all_jetpack_companies( 'companies', false, false, true );
 
 		return Automator()->utilities->keep_order_of_options(
 			array(
@@ -94,7 +92,7 @@ class JETCRM_CREATE_CONTACT {
 	 * @throws \Exception
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-		$fields_meta = $this->helper->get_contact_fields();
+		$fields_meta = $this->get_helpers()->get_contact_fields();
 		foreach ( $fields_meta as $meta => $label ) {
 			$contact_details['data'][ $meta ] = isset( $parsed[ $meta ] ) ? sanitize_text_field( $parsed[ $meta ] ) : '';
 		}
