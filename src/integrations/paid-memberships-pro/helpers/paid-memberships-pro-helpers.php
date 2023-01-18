@@ -50,7 +50,7 @@ class Paid_Memberships_Pro_Helpers {
 	}
 
 	/**
-	 * @param null   $label
+	 * @param null $label
 	 * @param string $option_code
 	 *
 	 * @return mixed|void
@@ -83,8 +83,17 @@ class Paid_Memberships_Pro_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'Membership title', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'Membership ID', 'uncanny-automator' ),
+				$option_code                          => esc_attr__( 'Membership title', 'uncanny-automator' ),
+				$option_code . '_ID'                  => esc_attr__( 'Membership ID', 'uncanny-automator' ),
+				$option_code . '_USER_ID'             => esc_attr__( 'User ID', 'uncanny-automator' ),
+				$option_code . '_DISCOUNT_CODE'       => esc_attr__( 'Discount code', 'uncanny-automator' ),
+				$option_code . '_DISCOUNT_CODE_ID'    => esc_attr__( 'Discount code ID', 'uncanny-automator' ),
+				$option_code . '_SUBSCRIPTION_ID'     => esc_attr__( 'Subscription ID', 'uncanny-automator' ),
+				$option_code . '_SUBSCRIPTION_AMOUNT' => esc_attr__( 'Subscription amount', 'uncanny-automator' ),
+				$option_code . '_SUBSCRIPTION_PERIOD' => esc_attr__( 'Subscription period', 'uncanny-automator' ),
+				$option_code . '_SUBSCRIPTION_CYCLE'  => esc_attr__( 'Subscription cycle number', 'uncanny-automator' ),
+				$option_code . '_SUBSCRIPTION_START'  => esc_attr__( 'Subscription start date', 'uncanny-automator' ),
+				$option_code . '_SUBSCRIPTION_END'    => esc_attr__( 'Subscription end date', 'uncanny-automator' ),
 			),
 		);
 

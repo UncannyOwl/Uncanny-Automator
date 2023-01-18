@@ -68,14 +68,15 @@ class HS_CONVERSATION_CUSTOMER_REPLY_RECEIVED {
 		$this->set_sentence(
 			sprintf(
 				/* Translators: Trigger sentence */
-				esc_html__( '{{A conversation:%1$s}} receives a reply from a customer', 'uncanny-automator' ),
-				$this->get_trigger_meta()
+				esc_html__( '{{A conversation:%1$s}} in {{a mailbox:%2$s}} receives a reply from a customer', 'uncanny-automator' ),
+				$this->get_trigger_meta(),
+				'MAILBOX:' . $this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
 			/* Translators: Trigger sentence */
-			esc_html__( '{{A conversation}} receives a reply from a customer', 'uncanny-automator' )
+			esc_html__( '{{A conversation}} in {{a mailbox}} receives a reply from a customer', 'uncanny-automator' )
 		);
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
@@ -149,7 +150,7 @@ class HS_CONVERSATION_CUSTOMER_REPLY_RECEIVED {
 		$matching_recipes_triggers = $this->find_all( $this->trigger_recipes() )
 			->where( array( $this->get_trigger_meta(), 'MAILBOX' ) )
 			->match( array( absint( $params['id'] ), absint( $params['mailboxId'] ) ) )
-			->format( array( 'intval' ) )
+			->format( array( 'intval', 'intval' ) )
 			->get();
 
 		return $matching_recipes_triggers;

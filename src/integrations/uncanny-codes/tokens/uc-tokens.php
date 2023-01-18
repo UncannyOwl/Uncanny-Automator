@@ -21,6 +21,17 @@ class Uc_Tokens {
 	 */
 	public function __construct() {
 
+		// Adding code token for logged-in triggers
+		add_filter(
+			'automator_maybe_trigger_uncannycode_tokens',
+			array(
+				$this,
+				'uc_codes_code_token',
+			),
+			20,
+			2
+		);
+
 		//Adding Batch Codes tokens
 		add_filter(
 			'automator_maybe_trigger_uncannycode_anoncodebatchcreated_tokens',
@@ -41,6 +52,34 @@ class Uc_Tokens {
 			20,
 			6
 		);
+	}
+
+	public function uc_codes_code_token( $tokens = array(), $args = array() ) {
+
+		$trigger_code = $args['triggers_meta']['code'];
+
+		$trigger_meta_validations = apply_filters(
+			'automator_uncannycodes_validate_triggers_for_code_token',
+			array( 'CODEREDEEMED', 'UCBATCH', 'UCPREFIX', 'UCSUFFIX' ),
+			$args
+		);
+
+		if ( in_array( $trigger_code, $trigger_meta_validations, true ) ) {
+
+			$fields = array(
+				array(
+					'tokenId'         => 'CODE_REDEEMED',
+					'tokenName'       => __( 'Code', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				),
+			);
+
+			$tokens = array_merge( $tokens, $fields );
+		}
+
+		return $tokens;
+
 	}
 
 	/**
@@ -164,6 +203,7 @@ class Uc_Tokens {
 			'UNCANNYCODESCODES_GENERATED',
 			'UNCANNYCODESEXPIRY_DATE',
 			'UNCANNYCODESLIST_OF_CODES',
+			'CODE_REDEEMED',
 		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {
@@ -218,6 +258,9 @@ class Uc_Tokens {
 								break;
 							case 'UNCANNYCODESLIST_OF_CODES':
 								$value = Automator()->db->token->get( 'UNCANNYCODESLIST_OF_CODES', $replace_args );
+								break;
+							case 'CODE_REDEEMED':
+								$value = Automator()->db->token->get( 'CODE_REDEEMED', $replace_args );
 								break;
 							default:
 								$value = isset( $trigger['meta'][ $meta_field ] ) ? $trigger['meta'][ $meta_field ] : '';

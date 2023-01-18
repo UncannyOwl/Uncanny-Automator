@@ -162,9 +162,17 @@ class Helpscout_Helpers {
 			}
 		} catch ( \Exception $e ) {
 
+			$error_message = json_decode( $e->getMessage(), true );
+
+			if ( isset( $error_message['data']['_embedded']['errors'] ) ) {
+
+				$error_message = implode( '. ', array_column( $error_message['data']['_embedded']['errors'], 'message' ) );
+
+			}
+
 			$data = array(
 				array(
-					'text'  => $e->getMessage(),
+					'text'  => 'An unexpected error has been encountered. ' . $error_message,
 					'value' => 'Error: ' . $e->getCode(),
 				),
 			);
@@ -176,11 +184,20 @@ class Helpscout_Helpers {
 
 	public function fetch_conversations() {
 
-		$selected_mailbox = filter_input( INPUT_POST, 'value' );
+		$selected_mailbox = intval( filter_input( INPUT_POST, 'value' ) );
 
-		$data = array();
+		$data = array(
+			array(
+				'text'  => esc_html__( 'Any conversation', 'uncanny-automator' ),
+				'value' => -1,
+			),
+		);
 
 		try {
+
+			if ( -1 === $selected_mailbox ) {
+				wp_send_json( $data );
+			}
 
 			$response = $this->api_request(
 				array(
@@ -549,7 +566,11 @@ class Helpscout_Helpers {
 
 	public function request_mailboxes() {
 
+		$options = array();
+
 		try {
+
+			$options[-1] = esc_html__( 'Any mailbox', 'uncanny-automator' );
 
 			$response = $this->api_request(
 				array(

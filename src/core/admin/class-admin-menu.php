@@ -952,7 +952,7 @@ class Admin_Menu {
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			),
 			'i18n'       => array(
-				'error'     => array(
+				'error'           => array(
 					'request' => array(
 						'badRequest'   => array(
 							'title' => __( 'Bad request', 'uncanny-automator' ),
@@ -983,12 +983,12 @@ class Admin_Menu {
 						),
 					),
 				),
-				'proLabel'  => array(
+				'proLabel'        => array(
 					'pro' => __( 'Pro', 'uncanny-automator' ),
 				),
-				'notSaved'  => __( 'Changes you made may not be saved.', 'uncanny-automator' ),
+				'notSaved'        => __( 'Changes you made may not be saved.', 'uncanny-automator' ),
 
-				'utilities' => array(
+				'utilities'       => array(
 					'confirm' => array(
 						'heading'            => __( 'Are you sure?', 'uncanny-automator' ),
 						// UncannyAutomatorBackend.i18n.utilities.confirm.heading
@@ -998,6 +998,9 @@ class Admin_Menu {
 						// UncannyAutomatorBackend.i18n.utilities.confirm.cancelButtonLabel
 					),
 				),
+
+				'copyToClipboard' => esc_html__( 'Copy to clipboard', 'uncanny-automator' ),
+				// UncannyAutomatorBackend.i18n.copyToClipboard
 			),
 			'debugging'  => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,

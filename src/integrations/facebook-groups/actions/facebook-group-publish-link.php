@@ -67,6 +67,8 @@ class FACEBOOK_GROUP_PUBLISH_LINK {
 
 		$this->set_background_processing( true );
 
+		$this->set_wpautop( false );
+
 		$this->set_action_tokens(
 			array(
 				'POST_LINK' => array(
@@ -94,7 +96,7 @@ class FACEBOOK_GROUP_PUBLISH_LINK {
 		$group_id = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
 
 		// Message.
-		$message = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_LINK_MESSAGE'] ) ? sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_GROUPS_PUBLISH_LINK_MESSAGE'] ) ) : '';
+		$message = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_LINK_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_GROUPS_PUBLISH_LINK_MESSAGE'] ) : '';
 
 		// Link.
 		$link = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_LINK_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_GROUPS_PUBLISH_LINK_URL'] ) : '';

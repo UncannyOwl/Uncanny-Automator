@@ -127,6 +127,16 @@ class Wc_Tokens {
 			6
 		);
 
+		add_filter(
+			'automator_maybe_parse_token',
+			array(
+				$this,
+				'wc_non_ordertotal_tokens',
+			),
+			200,
+			6
+		);
+
 		//Adding WC tokens
 		add_filter(
 			'automator_maybe_trigger_wc_wcshipstationshipped_tokens',
@@ -206,9 +216,16 @@ class Wc_Tokens {
 			return $tokens;
 		}
 
-		$fields          = array();
-		$trigger_meta    = $args['meta'];
-		$possible_tokens = apply_filters( 'automator_woocommerce_possible_tokens', $this->possible_order_fields );
+		$fields           = array();
+		$trigger_meta     = $args['meta'];
+		$add_order_tokens = true;
+		if ( isset( $args['triggers_meta']['code'] ) && 'VIEWWOOPRODUCT' === $args['triggers_meta']['code'] ) {
+			$add_order_tokens = false;
+		}
+		$possible_tokens = array();
+		if ( $add_order_tokens ) {
+			$possible_tokens = apply_filters( 'automator_woocommerce_possible_tokens', $this->possible_order_fields );
+		}
 		foreach ( $possible_tokens as $token_id => $input_title ) {
 			if ( 'billing_email' === (string) $token_id || 'shipping_email' === (string) $token_id ) {
 				$input_type = 'email';
@@ -288,12 +305,41 @@ class Wc_Tokens {
 			'WCORDERCOMPLETE',
 			'WCSHIPSTATIONSHIPPED',
 			'WOOPRODUCT_PRODUCT_PRICE',
+			'WOOPRODUCT_PRODUCT_PRICE_UNFORMATTED',
+			'WOOPRODUCT_PRODUCT_SALE_PRICE',
+			'WOOPRODUCT_PRODUCT_SALE_PRICE_UNFORMATTED',
 		);
+		if ( empty( $pieces ) ) {
+			return $value;
+		}
 
-		if ( $pieces ) {
-			if ( array_intersect( $to_match, $pieces ) ) {
-				$value = $this->replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
-			}
+		if ( array_intersect( $to_match, $pieces ) ) {
+			$value = $this->replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return array|mixed|string|null
+	 */
+	public function wc_non_ordertotal_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		$to_match = array(
+			'VIEWWOOPRODUCT',
+		);
+		if ( empty( $pieces ) ) {
+			return $value;
+		}
+
+		if ( array_intersect( $to_match, $pieces ) ) {
+			$value = $this->replace_product_only_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 		}
 
 		return $value;
@@ -310,335 +356,344 @@ class Wc_Tokens {
 	 * @return array|string|null
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-
-		$trigger_meta         = $pieces[1];
+		if ( empty( $trigger_data ) || empty( $replace_args ) ) {
+			return $value;
+		}
 		$parse                = $pieces[2];
 		$multi_line_separator = apply_filters( 'automator_woo_multi_item_separator', ' | ', $pieces );
-		$recipe_log_id        = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
-		if ( $trigger_data && $recipe_log_id ) {
-			foreach ( $trigger_data as $trigger ) {
-				if ( ! is_array( $trigger ) || empty( $trigger ) ) {
-					continue;
-				}
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) || ( isset( $trigger['meta']['code'] ) && $trigger_meta === $trigger['meta']['code'] ) ) {
-					$trigger_id     = $trigger['ID'];
-					$trigger_log_id = $replace_args['trigger_log_id'];
-					$order_id       = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'order_id', $trigger_id, $trigger_log_id, $user_id );
-					if ( ! empty( $order_id ) ) {
-						$order = wc_get_order( $order_id );
-						if ( $order && $order instanceof WC_Order ) {
-							switch ( $parse ) {
-								case 'order_id':
-									$value = $order_id;
+		foreach ( $trigger_data as $trigger ) {
+			if ( ! is_array( $trigger ) || empty( $trigger ) ) {
+				continue;
+			}
+			$trigger_id     = $trigger['ID'];
+			$trigger_log_id = $replace_args['trigger_log_id'];
+			$order          = null;
+			$order_id       = Automator()->db->token->get( 'order_id', $replace_args );
+			if ( ! empty( $order_id ) ) {
+				$order = wc_get_order( $order_id );
+			}
+			if ( $order instanceof WC_Order ) {
+				switch ( $parse ) {
+					case 'order_id':
+						$value = $order_id;
+						break;
+					case 'WCORDERSTATUS':
+						$value = $order->get_status();
+						break;
+					case 'WOOPRODUCT':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_names_from_items( $order, $value_to_match );
+						break;
+					case 'WOOPRODUCT_ID':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_ids_from_items( $order, $value_to_match );
+						break;
+					case 'WOOPRODUCT_PRODUCT_PRICE':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match );
+						break;
+					case 'WOOPRODUCT_PRODUCT_PRICE_UNFORMATTED':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match, true );
+						break;
+					case 'WOOPRODUCT_PRODUCT_SALE_PRICE':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match, false, true );
+						break;
+					case 'WOOPRODUCT_PRODUCT_SALE_PRICE_UNFORMATTED':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match, true, true );
+						break;
+					case 'WOOPRODUCT_URL':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_urls_from_items( $order, $value_to_match );
+						break;
+					case 'WOOPRODUCT_THUMB_ID':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_image_ids_from_items( $order, $value_to_match );
+						break;
+					case 'WOOPRODUCT_THUMB_URL':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_image_urls_from_items( $order, $value_to_match );
+						break;
+					case 'WOOPRODUCT_ORDER_QTY':
+						$product_id   = isset( $trigger['meta']['WOOPRODUCT'] ) ? intval( $trigger['meta']['WOOPRODUCT'] ) : - 1;
+						$items        = $order->get_items();
+						$product_qtys = array();
+						if ( $items ) {
+							/** @var WC_Order_Item_Product $item */
+							foreach ( $items as $item ) {
+								$product = $item->get_product();
+								if ( $product_id === $product->get_id() || ( intval( '-1' ) === intval( $product_id ) && 1 === count( $items ) ) ) {
+									$value = $item->get_quantity();
 									break;
-								case 'WCORDERSTATUS':
-									$value = $order->get_status();
-									break;
-								case 'WOOPRODUCT':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_names_from_items( $order, $value_to_match );
-									break;
-								case 'WOOPRODUCT_ID':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_ids_from_items( $order, $value_to_match );
-									break;
-								case 'WOOPRODUCT_PRODUCT_PRICE':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_price_from_items( $order, $value_to_match );
-									break;
-								case 'WOOPRODUCT_URL':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_urls_from_items( $order, $value_to_match );
-									break;
-								case 'WOOPRODUCT_THUMB_ID':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_image_ids_from_items( $order, $value_to_match );
-									break;
-								case 'WOOPRODUCT_THUMB_URL':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_image_urls_from_items( $order, $value_to_match );
-									break;
-								case 'WOOPRODUCT_ORDER_QTY':
-									$product_id   = isset( $trigger['meta']['WOOPRODUCT'] ) ? intval( $trigger['meta']['WOOPRODUCT'] ) : - 1;
-									$items        = $order->get_items();
-									$product_qtys = array();
-									if ( $items ) {
-										/** @var WC_Order_Item_Product $item */
-										foreach ( $items as $item ) {
-											$product = $item->get_product();
-											if ( $product_id === $product->get_id() || ( intval( '-1' ) === intval( $product_id ) && 1 === count( $items ) ) ) {
-												$value = $item->get_quantity();
-												break;
-											} elseif ( intval( '-1' ) === intval( $product_id ) ) {
-												$product_qtys[] = $item->get_name() . ' x ' . $item->get_quantity();
-											}
-										}
-									}
-									if ( ! empty( $product_qtys ) ) {
-										$value = join( $multi_line_separator, $product_qtys );
-									}
-									break;
-								case 'WOORDERTOTAL':
-									$value = wp_strip_all_tags( wc_price( $order->get_total() ) );
-									break;
-								case 'NUMBERCOND':
-									$val = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '';
-									switch ( $val ) {
-										case '<':
-											$value = esc_attr__( 'less than', 'uncanny-automator' );
-											break;
-										case '>':
-											$value = esc_attr__( 'greater than', 'uncanny-automator' );
-											break;
-										case '=':
-											$value = esc_attr__( 'equal to', 'uncanny-automator' );
-											break;
-										case '!=':
-											$value = esc_attr__( 'not equal to', 'uncanny-automator' );
-											break;
-										case '>=':
-											$value = esc_attr__( 'greater or equal to', 'uncanny-automator' );
-											break;
-										case '<=':
-											$value = esc_attr__( 'less or equal to', 'uncanny-automator' );
-											break;
-										default:
-											$value = '';
-											break;
-									}
-									break;
-								case 'NUMTIMES':
-									$value = absint( $replace_args['run_number'] );
-									break;
-								case 'billing_first_name':
-									$value = $order->get_billing_first_name();
-									break;
-								case 'billing_last_name':
-									$value = $order->get_billing_last_name();
-									break;
-								case 'billing_company':
-									$value = $order->get_billing_company();
-									break;
-								case 'billing_country':
-									$value = $order->get_billing_country();
-									break;
-								case 'billing_address_1':
-									$value = $order->get_billing_address_1();
-									break;
-								case 'billing_address_2':
-									$value = $order->get_billing_address_2();
-									break;
-								case 'billing_city':
-									$value = $order->get_billing_city();
-									break;
-								case 'billing_state':
-									$value = $order->get_billing_state();
-									break;
-								case 'billing_postcode':
-									$value = $order->get_billing_postcode();
-									break;
-								case 'billing_phone':
-									$value = $order->get_billing_phone();
-									break;
-								case 'billing_email':
-									$value = $order->get_billing_email();
-									break;
-								case 'order_date':
-									$value = $order->get_date_created()->format( get_option( 'date_format', 'F j, Y' ) );
-									break;
-								case 'shipping_first_name':
-									$value = $order->get_shipping_first_name();
-									break;
-								case 'shipping_last_name':
-									$value = $order->get_shipping_last_name();
-									break;
-								case 'shipping_company':
-									$value = $order->get_shipping_company();
-									break;
-								case 'shipping_country':
-									$value = $order->get_shipping_country();
-									break;
-								case 'shipping_address_1':
-									$value = $order->get_shipping_address_1();
-									break;
-								case 'shipping_address_2':
-									$value = $order->get_shipping_address_2();
-									break;
-								case 'shipping_city':
-									$value = $order->get_shipping_city();
-									break;
-								case 'shipping_state':
-									$value = $order->get_shipping_state();
-									break;
-								case 'shipping_postcode':
-									$value = $order->get_shipping_postcode();
-									break;
-								case 'shipping_phone':
-									$value = get_post_meta( $order_id, 'shipping_phone', true );
-									break;
-								case 'order_comments':
-									$comments = $order->get_customer_note();
-									if ( is_array( $comments ) ) {
-										$comments = join( $multi_line_separator, $comments );
-									}
-									$value = ! empty( $comments ) ? $comments : '';
-									break;
-								case 'order_status':
-									$value = $order->get_status();
-									break;
-								case 'order_total':
-									$value = strip_tags( wc_price( $order->get_total() ) );
-									break;
-								case 'order_total_raw':
-									$value = $order->get_total();
-									break;
-								case 'order_subtotal':
-									$value = strip_tags( wc_price( $order->get_subtotal() ) );
-									break;
-								case 'order_subtotal_raw':
-									$value = $order->get_subtotal();
-									break;
-								case 'order_tax':
-									$value = strip_tags( wc_price( $order->get_total_tax() ) );
-									break;
-								case 'order_fees':
-									$value = wc_price( $order->get_total_fees() );
-									break;
-								case 'order_shipping':
-									$value = wc_price( $order->get_shipping_total() );
-									break;
-								case 'order_tax_raw':
-									$value = $order->get_total_tax();
-									break;
-								case 'order_discounts':
-									$value = strip_tags( wc_price( $order->get_discount_total() * - 1 ) );
-									break;
-								case 'order_discounts_raw':
-									$value = ( $order->get_discount_total() * - 1 );
-									break;
-								case 'order_coupons':
-									$coupons = $order->get_coupon_codes();
-									$value   = join( ', ', $coupons );
-									break;
-								case 'order_products':
-									$items = $order->get_items();
-									$prods = array();
-									if ( $items ) {
-										/** @var WC_Order_Item_Product $item */
-										foreach ( $items as $item ) {
-											$product = $item->get_product();
-											$prods[] = $product->get_title();
-										}
-									}
-									$value = join( $multi_line_separator, $prods );
-
-									break;
-								case 'order_products_qty':
-									$items = $order->get_items();
-									$prods = array();
-									if ( $items ) {
-										/** @var WC_Order_Item_Product $item */
-										foreach ( $items as $item ) {
-											$product = $item->get_product();
-											$prods[] = $product->get_title() . ' x ' . $item->get_quantity();
-										}
-									}
-									$value = implode( $multi_line_separator, $prods );
-
-									break;
-								case 'order_qty':
-									$qty = 0;
-									/** @var WC_Order_Item_Product $item */
-									$items = $order->get_items();
-									foreach ( $items as $item ) {
-										$qty = $qty + $item->get_quantity();
-									}
-									$value = $qty;
-									break;
-								case 'order_products_links':
-									$items = $order->get_items();
-									$prods = array();
-									if ( $items ) {
-										/** @var WC_Order_Item_Product $item */
-										foreach ( $items as $item ) {
-											$product = $item->get_product();
-											$prods[] = '<a href="' . $product->get_permalink() . '">' . $product->get_title() . '</a>';
-										}
-									}
-
-									$value = join( $multi_line_separator, $prods );
-									break;
-								case 'payment_method':
-									$value = $order->get_payment_method_title();
-									break;
-								case 'shipping_method':
-									$value = $order->get_shipping_method();
-									break;
-								case 'product_sku':
-									$value = $this->get_products_skus( $order );
-									break;
-								case 'WOOPRODUCT_CATEGORIES':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_categories_from_items( $order, $value_to_match );
-									break;
-								case 'WOOPRODUCT_TAGS':
-									$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-									$value          = $this->get_woo_product_tags_from_items( $order, $value_to_match );
-									break;
-								case 'CARRIER':
-									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_CARRIER', $trigger_id, $trigger_log_id, $user_id );
-									break;
-								case 'TRACKING_NUMBER':
-									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_TRACKING_NUMBER', $trigger_id, $trigger_log_id, $user_id );
-									break;
-								case 'SHIP_DATE':
-									$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
-									$value = $value ? date( 'Y-m-d H:i:s', $value ) : ''; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
-									break;
-								case 'order_summary':
-									$value = $this->build_summary_style_html( $order );
-									break;
-								default:
-									if ( preg_match( '/custom_order_meta/', $parse ) ) {
-										$custom_meta = explode( '|', $parse );
-										if ( ! empty( $custom_meta ) && count( $custom_meta ) > 1 && 'custom_order_meta' === $custom_meta[0] ) {
-											$meta_key = $custom_meta[1];
-											if ( $order->meta_exists( $meta_key ) ) {
-												$value = $order->get_meta( $meta_key );
-												if ( is_array( $value ) ) {
-													$value = join( $multi_line_separator, $value );
-												}
-											}
-											$value = apply_filters( 'automator_woocommerce_custom_order_meta_token_parser', $value, $meta_key, $pieces, $order );
-										}
-									}
-									if ( preg_match( '/custom_item_meta/', $parse ) ) {
-										$custom_meta = explode( '|', $parse );
-										if ( ! empty( $custom_meta ) && count( $custom_meta ) > 1 && 'custom_item_meta' === $custom_meta[0] ) {
-											$meta_key = $custom_meta[1];
-											$items    = $order->get_items();
-											if ( $items ) {
-												/** @var WC_Order_Item_Product $item */
-												foreach ( $items as $item ) {
-													if ( $item->meta_exists( $meta_key ) ) {
-														$value = $item->get_meta( $meta_key );
-													}
-													$value = apply_filters( 'automator_woocommerce_custom_item_meta_token_parser', $value, $meta_key, $pieces, $order, $item );
-												}
-											}
-										}
-									}
-									break;
+								} elseif ( intval( '-1' ) === intval( $product_id ) ) {
+									$product_qtys[] = $item->get_name() . ' x ' . $item->get_quantity();
+								}
 							}
-							$token        = $parse;
-							$token_pieces = $pieces;
-							/**
-							 * @since 3.2
-							 */
-							$value = apply_filters( 'automator_woocommerce_token_parser', $value, $token, $token_pieces, $order );
 						}
-					}
+						if ( ! empty( $product_qtys ) ) {
+							$value = join( $multi_line_separator, $product_qtys );
+						}
+						break;
+					case 'WOORDERTOTAL':
+						$value = wp_strip_all_tags( wc_price( $order->get_total() ) );
+						break;
+					case 'NUMBERCOND':
+						$val = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '';
+						switch ( $val ) {
+							case '<':
+								$value = esc_attr__( 'less than', 'uncanny-automator' );
+								break;
+							case '>':
+								$value = esc_attr__( 'greater than', 'uncanny-automator' );
+								break;
+							case '=':
+								$value = esc_attr__( 'equal to', 'uncanny-automator' );
+								break;
+							case '!=':
+								$value = esc_attr__( 'not equal to', 'uncanny-automator' );
+								break;
+							case '>=':
+								$value = esc_attr__( 'greater or equal to', 'uncanny-automator' );
+								break;
+							case '<=':
+								$value = esc_attr__( 'less or equal to', 'uncanny-automator' );
+								break;
+							default:
+								$value = '';
+								break;
+						}
+						break;
+					case 'NUMTIMES':
+						$value = absint( $replace_args['run_number'] );
+						break;
+					case 'billing_first_name':
+						$value = $order->get_billing_first_name();
+						break;
+					case 'billing_last_name':
+						$value = $order->get_billing_last_name();
+						break;
+					case 'billing_company':
+						$value = $order->get_billing_company();
+						break;
+					case 'billing_country':
+						$value = $order->get_billing_country();
+						break;
+					case 'billing_address_1':
+						$value = $order->get_billing_address_1();
+						break;
+					case 'billing_address_2':
+						$value = $order->get_billing_address_2();
+						break;
+					case 'billing_city':
+						$value = $order->get_billing_city();
+						break;
+					case 'billing_state':
+						$value = $order->get_billing_state();
+						break;
+					case 'billing_postcode':
+						$value = $order->get_billing_postcode();
+						break;
+					case 'billing_phone':
+						$value = $order->get_billing_phone();
+						break;
+					case 'billing_email':
+						$value = $order->get_billing_email();
+						break;
+					case 'order_date':
+						$value = $order->get_date_created()->format( get_option( 'date_format', 'F j, Y' ) );
+						break;
+					case 'shipping_first_name':
+						$value = $order->get_shipping_first_name();
+						break;
+					case 'shipping_last_name':
+						$value = $order->get_shipping_last_name();
+						break;
+					case 'shipping_company':
+						$value = $order->get_shipping_company();
+						break;
+					case 'shipping_country':
+						$value = $order->get_shipping_country();
+						break;
+					case 'shipping_address_1':
+						$value = $order->get_shipping_address_1();
+						break;
+					case 'shipping_address_2':
+						$value = $order->get_shipping_address_2();
+						break;
+					case 'shipping_city':
+						$value = $order->get_shipping_city();
+						break;
+					case 'shipping_state':
+						$value = $order->get_shipping_state();
+						break;
+					case 'shipping_postcode':
+						$value = $order->get_shipping_postcode();
+						break;
+					case 'shipping_phone':
+						$value = get_post_meta( $order_id, 'shipping_phone', true );
+						break;
+					case 'order_comments':
+						$comments = $order->get_customer_note();
+						if ( is_array( $comments ) ) {
+							$comments = join( $multi_line_separator, $comments );
+						}
+						$value = ! empty( $comments ) ? $comments : '';
+						break;
+					case 'order_status':
+						$value = $order->get_status();
+						break;
+					case 'order_total':
+						$value = strip_tags( wc_price( $order->get_total() ) );
+						break;
+					case 'order_total_raw':
+						$value = $order->get_total();
+						break;
+					case 'order_subtotal':
+						$value = strip_tags( wc_price( $order->get_subtotal() ) );
+						break;
+					case 'order_subtotal_raw':
+						$value = $order->get_subtotal();
+						break;
+					case 'order_tax':
+						$value = strip_tags( wc_price( $order->get_total_tax() ) );
+						break;
+					case 'order_fees':
+						$value = wc_price( $order->get_total_fees() );
+						break;
+					case 'order_shipping':
+						$value = wc_price( $order->get_shipping_total() );
+						break;
+					case 'order_tax_raw':
+						$value = $order->get_total_tax();
+						break;
+					case 'order_discounts':
+						$value = strip_tags( wc_price( $order->get_discount_total() * - 1 ) );
+						break;
+					case 'order_discounts_raw':
+						$value = ( $order->get_discount_total() * - 1 );
+						break;
+					case 'order_coupons':
+						$coupons = $order->get_coupon_codes();
+						$value   = join( ', ', $coupons );
+						break;
+					case 'order_products':
+						$items = $order->get_items();
+						$prods = array();
+						if ( $items ) {
+							/** @var WC_Order_Item_Product $item */
+							foreach ( $items as $item ) {
+								$product = $item->get_product();
+								$prods[] = $product->get_title();
+							}
+						}
+						$value = join( $multi_line_separator, $prods );
+
+						break;
+					case 'order_products_qty':
+						$items = $order->get_items();
+						$prods = array();
+						if ( $items ) {
+							/** @var WC_Order_Item_Product $item */
+							foreach ( $items as $item ) {
+								$product = $item->get_product();
+								$prods[] = $product->get_title() . ' x ' . $item->get_quantity();
+							}
+						}
+						$value = implode( $multi_line_separator, $prods );
+
+						break;
+					case 'order_qty':
+						$qty = 0;
+						/** @var WC_Order_Item_Product $item */
+						$items = $order->get_items();
+						foreach ( $items as $item ) {
+							$qty = $qty + $item->get_quantity();
+						}
+						$value = $qty;
+						break;
+					case 'order_products_links':
+						$items = $order->get_items();
+						$prods = array();
+						if ( $items ) {
+							/** @var WC_Order_Item_Product $item */
+							foreach ( $items as $item ) {
+								$product = $item->get_product();
+								$prods[] = '<a href="' . $product->get_permalink() . '">' . $product->get_title() . '</a>';
+							}
+						}
+
+						$value = join( $multi_line_separator, $prods );
+						break;
+					case 'payment_method':
+						$value = $order->get_payment_method_title();
+						break;
+					case 'shipping_method':
+						$value = $order->get_shipping_method();
+						break;
+					case 'product_sku':
+						$value = $this->get_products_skus( $order );
+						break;
+					case 'WOOPRODUCT_CATEGORIES':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_categories_from_items( $order, $value_to_match );
+						break;
+					case 'WOOPRODUCT_TAGS':
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value          = $this->get_woo_product_tags_from_items( $order, $value_to_match );
+						break;
+					case 'CARRIER':
+						$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_CARRIER', $trigger_id, $trigger_log_id, $user_id );
+						break;
+					case 'TRACKING_NUMBER':
+						$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_TRACKING_NUMBER', $trigger_id, $trigger_log_id, $user_id );
+						break;
+					case 'SHIP_DATE':
+						$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
+						$value = $value ? date( 'Y-m-d H:i:s', $value ) : ''; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+						break;
+					case 'order_summary':
+						$value = $this->build_summary_style_html( $order );
+						break;
+					default:
+						if ( preg_match( '/custom_order_meta/', $parse ) ) {
+							$custom_meta = explode( '|', $parse );
+							if ( ! empty( $custom_meta ) && count( $custom_meta ) > 1 && 'custom_order_meta' === $custom_meta[0] ) {
+								$meta_key = $custom_meta[1];
+								if ( $order->meta_exists( $meta_key ) ) {
+									$value = $order->get_meta( $meta_key );
+									if ( is_array( $value ) ) {
+										$value = join( $multi_line_separator, $value );
+									}
+								}
+								$value = apply_filters( 'automator_woocommerce_custom_order_meta_token_parser', $value, $meta_key, $pieces, $order );
+							}
+						}
+						if ( preg_match( '/custom_item_meta/', $parse ) ) {
+							$custom_meta = explode( '|', $parse );
+							if ( ! empty( $custom_meta ) && count( $custom_meta ) > 1 && 'custom_item_meta' === $custom_meta[0] ) {
+								$meta_key = $custom_meta[1];
+								$items    = $order->get_items();
+								if ( $items ) {
+									/** @var WC_Order_Item_Product $item */
+									foreach ( $items as $item ) {
+										if ( $item->meta_exists( $meta_key ) ) {
+											$value = $item->get_meta( $meta_key );
+										}
+										$value = apply_filters( 'automator_woocommerce_custom_item_meta_token_parser', $value, $meta_key, $pieces, $order, $item );
+									}
+								}
+							}
+						}
+						break;
 				}
+				$token        = $parse;
+				$token_pieces = $pieces;
+				/**
+				 * @since 3.2
+				 */
+				$value = apply_filters( 'automator_woocommerce_token_parser', $value, $token, $token_pieces, $order );
 			}
 		}
 
@@ -690,18 +745,24 @@ class Wc_Tokens {
 	/**
 	 * @param \WC_Order $order
 	 * @param $value_to_match
+	 * @param bool $unformatted
+	 * @param bool $sale
 	 *
 	 * @return string
 	 */
-	public function get_woo_product_price_from_items( WC_Order $order, $value_to_match ) {
+	public function get_woo_product_price_from_items( WC_Order $order, $value_to_match, $unformatted = false, $sale = false ) {
 		$items          = $order->get_items();
 		$product_prices = array();
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
 				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
-					$product          = $item->get_product();
-					$product_prices[] = wc_price( $product->get_price() );
+					$product = $item->get_product();
+					if ( $unformatted ) {
+						$product_prices[] = ! $sale ? $product->get_price() : $product->get_sale_price();
+					} else {
+						$product_prices[] = ! $sale ? wc_price( $product->get_price() ) : wc_price( $product->get_sale_price() );
+					}
 				}
 			}
 		}
@@ -1021,5 +1082,89 @@ class Wc_Tokens {
 
 		return $term->name;
 
+	}
+
+
+	/**
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return false|int|mixed|string|null
+	 */
+	public function replace_product_only_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( empty( $trigger_data ) || empty( $replace_args ) ) {
+			return $value;
+		}
+		$meta_key   = $pieces[2];
+		$product_id = Automator()->db->token->get( 'product_id', $replace_args );
+		if ( empty( $product_id ) ) {
+			return $value;
+		}
+		$product = wc_get_product( $product_id );
+		if ( ! $product instanceof \WC_Product ) {
+			return $value;
+		}
+		switch ( $meta_key ) {
+			case 'WOOPRODUCT':
+			case 'WOOPRODUCT_ID':
+				$value = $product_id;
+				break;
+			case 'WOOPRODUCT_PRODUCT_PRICE':
+				$value = wc_price( $product->get_price() );
+				break;
+			case 'WOOPRODUCT_PRODUCT_PRICE_UNFORMATTED':
+				$value = $product->get_price();
+				break;
+			case 'WOOPRODUCT_PRODUCT_SALE_PRICE':
+				$value = wc_price( $product->get_sale_price() );
+				break;
+			case 'WOOPRODUCT_PRODUCT_SALE_PRICE_UNFORMATTED':
+				$value = $product->get_sale_price();
+				break;
+			case 'WOOPRODUCT_SKU':
+				$value = $product->get_sku();
+				break;
+			case 'WOOPRODUCT_URL':
+				$value = get_permalink( $product_id );
+				break;
+			case 'WOOPRODUCT_THUMB_ID':
+				$value = get_post_thumbnail_id( $product_id );
+				break;
+			case 'WOOPRODUCT_THUMB_URL':
+				$value = get_the_post_thumbnail_url( $product_id, 'full' );
+				break;
+			case 'NUMTIMES':
+				$value = absint( $replace_args['run_number'] );
+				break;
+			case 'WOOPRODUCT_CATEGORIES':
+				$return = array();
+				$terms  = wp_get_post_terms( $product_id, 'product_cat' );
+				if ( $terms ) {
+					foreach ( $terms as $term ) {
+						$return[] = $term->name;
+					}
+				}
+				$value = join( ', ', $return );
+				break;
+			case 'WOOPRODUCT_TAGS':
+				$return = array();
+				$terms  = wp_get_post_terms( $product_id, 'product_tag' );
+				if ( $terms ) {
+					foreach ( $terms as $term ) {
+						$return[] = $term->name;
+					}
+				}
+				$value = join( ', ', $return );
+				break;
+			default:
+				$value = apply_filters( 'automator_woocommerce_product_meta_token_parser', $value, $meta_key, $pieces, $product );
+				break;
+		}
+
+		return $value;
 	}
 }

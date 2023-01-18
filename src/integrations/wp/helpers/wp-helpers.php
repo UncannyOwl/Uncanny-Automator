@@ -600,6 +600,7 @@ class Wp_Helpers {
 			'endpoint'            => '',
 			'options_show_id'     => true,
 			'use_zero_as_default' => intval( '-1' ),
+			'default_value'       => null,
 		);
 
 		// For backwards compatiblity.
@@ -670,6 +671,7 @@ class Wp_Helpers {
 			'options'         => $options,
 			'relevant_tokens' => ! empty( $args['relevant_tokens'] ) ? $args['relevant_tokens'] : array(),
 			'options_show_id' => $args['options_show_id'],
+			'default_value'   => $args['default_value'],
 		);
 
 		return apply_filters( 'uap_option_all_wp_post_types', $option );

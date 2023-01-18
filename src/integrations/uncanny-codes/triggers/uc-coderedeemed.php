@@ -74,6 +74,27 @@ class UC_CODEREDEEMED {
 			'user_id'        => $user_id,
 		);
 
-		Automator()->maybe_add_trigger_entry( $args );
+		$args = Automator()->maybe_add_trigger_entry( $args, false );
+
+		// Save trigger meta
+		if ( $args ) {
+			foreach ( $args as $res ) {
+				if ( true === $res['result'] && $res['args']['trigger_id'] && $res['args']['get_trigger_id'] ) {
+
+					$run_number = Automator()->get->trigger_run_number( $res['args']['trigger_id'], $res['args']['get_trigger_id'], $user_id );
+					$save_meta  = array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $res['args']['trigger_id'],
+						'run_number'     => $run_number, //get run number
+						'trigger_log_id' => $res['args']['get_trigger_id'],
+					);
+
+					$code = Automator()->helpers->recipe->uncanny_codes->options->uc_get_code_redeemed( $coupon_id );
+					Automator()->db->token->save( 'CODE_REDEEMED', $code, $save_meta );
+
+					Automator()->maybe_trigger_complete( $res['args'] );
+				}
+			}
+		}
 	}
 }

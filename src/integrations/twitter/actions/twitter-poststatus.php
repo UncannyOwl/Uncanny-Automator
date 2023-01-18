@@ -8,6 +8,8 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 class TWITTER_POSTSTATUS {
+
+	use Recipe\Action_Tokens;
 	/**
 	 * Integration code
 	 *
@@ -31,10 +33,10 @@ class TWITTER_POSTSTATUS {
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
-		$this->action_code = 'TWITTERPOSTSTATUS';
+		$this->action_code = 'TWITTERPOSTSTATUS2';
 		$this->action_meta = 'TWITTERSTATUS';
+		$this->functions   = new Twitter_Functions();
 		$this->define_action();
-
 	}
 
 	/**
@@ -47,16 +49,16 @@ class TWITTER_POSTSTATUS {
 			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/twitter/' ),
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
+			/* translators: Tweet text */
 			'sentence'              => sprintf( __( 'Post {{a tweet:%1$s}} to Twitter', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name'    => __( 'Post {{a tweet}} to Twitter', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
-			'is_deprecated'         => true,
 			'requires_user'         => false,
 			'execution_function'    => array( $this, 'post_status' ),
 			'options_group'         => array(
 				$this->action_meta => array(
-					Automator()->helpers->recipe->twitter->textarea_field(
+					$this->functions->textarea_field(
 						'TWITTERSTATUSCONTENT',
 						esc_attr__( 'Status', 'uncanny-automator' ),
 						true,
@@ -67,12 +69,35 @@ class TWITTER_POSTSTATUS {
 						__( 'Enter the message', 'uncanny-automator' ),
 						278
 					),
+					// Image field.
+					Automator()->helpers->recipe->field->text(
+						array(
+							'option_code' => 'TWITTERSTATUSIMAGE',
+							/* translators: Image field */
+							'label'       => esc_attr__( 'Image URL', 'uncanny-automator' ),
+							'input_type'  => 'text',
+							'default'     => '',
+							'description' => 'Supported image formats include JPG, PNG, GIF, WEBP. Images posted to Twitter have a 5MB limit.',
+							'required'    => false,
+						)
+					),
 				),
 			),
 			'background_processing' => true,
 		);
 
+		$this->set_action_tokens(
+			array(
+				'POST_LINK' => array(
+					'name' => __( 'Link to Tweet', 'uncanny-automator' ),
+					'type' => 'url',
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
+
 	}
 
 	/**
@@ -87,63 +112,38 @@ class TWITTER_POSTSTATUS {
 
 		try {
 
-			$response = $this->statuses_update( $status );
+			$response = $this->functions->statuses_update( $status, $media, $action_data );
+
+			$post_id = isset( $response['data']['id'] ) ? $response['data']['id'] : 0;
+
+			$has_screen_name = ! empty( $response['data']['user']['screen_name'] );
+
+			if ( 0 !== $post_id && $has_screen_name ) {
+
+				// The Tweet link.
+				$post_link = strtr(
+					'https://twitter.com/{{screen_name}}/status/{{post_id}}',
+					array(
+						'{{screen_name}}' => $response['data']['user']['screen_name'],
+						'{{post_id}}'     => $post_id,
+					)
+				);
+
+				$this->hydrate_tokens( array( 'POST_LINK' => $post_link ) );
+
+			}
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
+
 			return;
 
 		} catch ( \Exception $e ) {
-			$error_msg                           = $e->getMessage();
-			$action_data['do-nothing']           = true;
+
+			$error_msg                           = $this->functions->parse_errors( $e->getMessage() );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
 			return;
 		}
-
 	}
-
-	/**
-	 * Send data to Automator API.
-	 *
-	 * @param string $status
-	 *
-	 * @return mixed
-	 */
-	public function statuses_update( $status, $media_id = '' ) {
-
-		// Get twitter credentials.
-		$request_body = Automator()->helpers->recipe->twitter->get_client();
-
-		$url = AUTOMATOR_API_URL . 'twitter/';
-
-		$request_body['action']    = 'twitter_statuses_update';
-		$request_body['status']    = $status;
-		$request_body['media_ids'] = $media_id;
-
-		$args         = array();
-		$args['body'] = $request_body;
-
-		$response = wp_remote_post( $url, $args );
-
-		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-			$body = json_decode( wp_remote_retrieve_body( $response ) );
-			if ( ! isset( $body->errors ) ) {
-				return $body;
-			} else {
-				$error_msg = '';
-
-				foreach ( $body->errors as $error ) {
-					$error_msg .= $error->code . ': ' . $error->message . PHP_EOL;
-				}
-
-				throw new \Exception( $error_msg );
-			}
-		} else {
-			$error_msg = $response->get_error_message();
-			throw new \Exception( $error_msg );
-		}
-
-	}
-
 }

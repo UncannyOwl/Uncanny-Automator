@@ -138,7 +138,7 @@ class Wpf_Tokens {
 			return $value;
 		}
 		if ( ! in_array( 'WPFFORMS', $pieces, true ) && ! in_array( 'ANONWPFFORMS', $pieces, true )
-			&& ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
+			 && ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -218,7 +218,7 @@ class Wpf_Tokens {
 	 * @return void
 	 */
 	public function wpf_form_save_entry( $fields, $form_data, $recipes, $args ) {
-		if ( ! is_array( $args ) ) {
+		if ( ! is_array( $args ) || empty( $fields ) ) {
 			return;
 		}
 		foreach ( $args as $trigger_result ) {
@@ -245,7 +245,9 @@ class Wpf_Tokens {
 					$data         = array();
 
 					foreach ( $fields as $field ) {
-
+						if ( ! is_array( $field ) ) {
+							continue;
+						}
 						$field_id     = $field['id'];
 						$key          = "{$meta_key}:{$form_id}|{$field_id}";
 						$data[ $key ] = $field['value'];

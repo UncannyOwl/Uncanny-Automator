@@ -22,6 +22,8 @@ class Hubspot_Settings {
 	use Settings\Premium_Integrations;
 
 	protected $helpers;
+	protected $client;
+	protected $is_connected;
 
 	/**
 	 * Creates the settings page

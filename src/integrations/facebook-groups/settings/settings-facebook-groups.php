@@ -91,6 +91,8 @@ class Facebook_Group_Settings {
 
 		$facebook_user = $this->get_user();
 
+		$user_info = $this->extract_user_info( $facebook_user );
+
 		$is_user_connected = $this->get_helper()->is_user_connected();
 
 		$login_dialog_uri = $this->get_helper()->get_login_dialog_uri();
@@ -111,6 +113,27 @@ class Facebook_Group_Settings {
 	public function get_user() {
 
 		return (object) $this->get_helper()->get_user_connected();
+
+	}
+
+	/**
+	 * Extracts user info from Facebook user.
+	 *
+	 * @return array The user info.
+	 */
+	private function extract_user_info( $facebook_user ) {
+
+		$facebook_user = (array) $facebook_user;
+
+		$defaults = array(
+			'picture' => '',
+			'name'    => '',
+			'user_id' => '',
+		);
+
+		$user_info = isset( $facebook_user['user-info'] ) ? $facebook_user['user-info'] : array();
+
+		return wp_parse_args( $user_info, $defaults );
 
 	}
 }

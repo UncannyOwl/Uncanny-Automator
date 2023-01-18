@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             4.8
+ * Version:             4.9
  * Requires at least:   5.3
  * Requires PHP:        5.6
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '4.8' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '4.9' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {

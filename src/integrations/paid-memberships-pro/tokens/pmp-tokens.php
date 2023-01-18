@@ -20,12 +20,6 @@ class Pmp_Tokens {
 	 * Pmp_Tokens constructor.
 	 */
 	public function __construct() {
-		//*************************************************************//
-		// See this filter generator AT automator-get-data.php
-		// in function recipe_trigger_tokens()
-		//*************************************************************//
-		//add_filter( 'automator_maybe_trigger_pmp_tokens', [ $this, 'pmp_general_tokens' ], 20, 2 );
-		//add_filter( 'automator_maybe_trigger_pmp_pmpmembership_tokens', [ $this, 'pmp_possible_tokens' ], 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'pmp_token' ), 20, 6 );
 		add_action( 'uap_save_pmp_membership_level', array( $this, 'uap_save_pmp_membership_level' ), 10, 4 );
 	}
@@ -53,27 +47,53 @@ class Pmp_Tokens {
 
 	public function uap_save_pmp_membership_level( $membership_id, $args, $user_id, $meta ) {
 
+		$membership_level_details = pmpro_getSpecificMembershipLevelForUser( $user_id, $membership_id );
+
+		$subscription_id = $membership_level_details->subscription_id;
+		$code_id         = $membership_level_details->code_id;
+		$name            = $membership_level_details->name;
+		$billing_cycle   = $membership_level_details->cycle_number;
+		$billing_period  = $membership_level_details->cycle_period;
+		$billing_amount  = $membership_level_details->billing_amount;
+		$billing_start   = $membership_level_details->startdate;
+		$billing_end     = $membership_level_details->enddate;
+		global $wpdb;
+		$code = $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM $wpdb->pmpro_discount_codes WHERE id = %d", $code_id ) );
+
+		$tokens = array(
+			$meta                          => $name,
+			$meta . '_ID'                  => $membership_id,
+			$meta . '_USER_ID'             => $user_id,
+			$meta . '_DISCOUNT_CODE'       => $code,
+			$meta . '_DISCOUNT_CODE_ID'    => $code_id,
+			$meta . '_SUBSCRIPTION_ID'     => $subscription_id,
+			$meta . '_SUBSCRIPTION_AMOUNT' => $billing_amount,
+			$meta . '_SUBSCRIPTION_PERIOD' => $billing_period,
+			$meta . '_SUBSCRIPTION_CYCLE'  => $billing_cycle,
+			$meta . '_SUBSCRIPTION_START'  => ! empty( $billing_start ) ? date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $billing_start ) : '',
+			$meta . '_SUBSCRIPTION_END'    => ! empty( $billing_end ) ? date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $billing_start ) : '',
+		);
+
 		$args = array(
 			'user_id'        => $user_id,
 			'trigger_id'     => $args['trigger_id'],
 			'meta_key'       => $meta,
 			'meta_value'     => $membership_id,
 			'run_number'     => $args['run_number'], //get run number
-			'trigger_log_id' => $args['get_trigger_id'],
+			'trigger_log_id' => $args['trigger_log_id'],
 		);
 
 		Automator()->insert_trigger_meta( $args );
-	}
+		$args = array(
+			'user_id'        => $user_id,
+			'trigger_id'     => $args['trigger_id'],
+			'meta_key'       => 'membership_details',
+			'meta_value'     => maybe_serialize( $tokens ),
+			'run_number'     => $args['run_number'], //get run number
+			'trigger_log_id' => $args['trigger_log_id'],
+		);
 
-	/**
-	 * @param array $tokens
-	 * @param array $args
-	 *
-	 * @return array
-	 */
-	public function pmp_possible_tokens( $tokens = array(), $args = array() ) {
-
-		return $tokens;
+		Automator()->insert_trigger_meta( $args );
 	}
 
 	/**
@@ -87,43 +107,15 @@ class Pmp_Tokens {
 	 * @return string|null
 	 */
 	public function pmp_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		if ( empty( $pieces ) ) {
+			return $value;
+		}
+		if ( ( isset( $pieces[2] ) && preg_match( '/PMPMEMBERSHIP(\_)?/', $pieces[2] ) ) ) {
 
-		if ( $pieces ) {
-
-			if ( in_array( 'PMPMEMBERSHIP', $pieces, true ) ) {
-
-				global $wpdb;
-
-				$trigger_id     = $pieces[0];
-				$field          = $pieces[2];
-				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-
-				$entry = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT meta_value
-						FROM {$wpdb->prefix}uap_trigger_log_meta
-						WHERE meta_key = %s
-						AND automator_trigger_log_id = %d
-						AND automator_trigger_id = %d
-						LIMIT 0,1",
-						$field,
-						$trigger_log_id,
-						$trigger_id
-					)
-				);
-
-				$entry = maybe_unserialize( $entry );
-
-				if ( $entry ) {
-					$level = pmpro_getLevel( $entry );
-					if ( $level ) {
-						if ( 'PMPMEMBERSHIP' === $field ) {
-							$value = $level->name;
-						} elseif ( 'PMPMEMBERSHIP_ID' === $field ) {
-							$value = $entry;
-						}
-					}
-				}
+			$field = $pieces[2];
+			$entry = maybe_unserialize( Automator()->db->token->get( 'membership_details', $replace_args ) );
+			if ( $entry && isset( $entry[ $field ] ) ) {
+				$value = $entry[ $field ];
 			}
 		}
 

@@ -32,6 +32,16 @@ class Hubspot_Helpers {
 	public $load_options;
 
 	/**
+	 * @var string
+	 */
+	public $tab_url;
+
+	/**
+	 * @var string
+	 */
+	public $automator_api;
+
+	/**
 	 * Hubspot_Helpers constructor.
 	 */
 	public function __construct() {
@@ -191,7 +201,7 @@ class Hubspot_Helpers {
 		$last_call = get_option( '_automator_hubspot_last_refresh_token_call', 0 );
 
 		// Rate limit token refresh calls if they fail
-		if ( time() - $last_call < 10 ) {
+		if ( time() - $last_call < 60 ) {
 			throw new \Exception( __( 'HubSpot token refresh timeout, please try to reconnect HubSpot from settings', 'uncanny-automator' ) );
 		}
 
@@ -199,6 +209,17 @@ class Hubspot_Helpers {
 
 		if ( empty( $response['data']['access_token'] ) ) {
 
+			$failed_attempt = get_option( '_automator_hubspot_refresh_token_failed_attempts', 0 ) + 1;
+
+			if ( $failed_attempt > 10 ) {
+				// Something is wrong with the token. Disconnect HubSpot after 10 attempts.
+				delete_option( '_automator_hubspot_settings' );
+				delete_option( '_automator_hubspot_refresh_token_attempts' );
+				delete_option( '_automator_hubspot_last_refresh_token_call' );
+				throw new \Exception( __( 'HubSpot token refresh failed, please reconnect HubSpot from settings', 'uncanny-automator' ) );
+			}
+
+			update_option( '_automator_hubspot_refresh_token_failed_attempts', $failed_attempt );
 			update_option( '_automator_hubspot_last_refresh_token_call', time() );
 
 			$error_msg = __( 'Could not refresh HubSpot token.', 'uncanny-automator' );
@@ -209,6 +230,8 @@ class Hubspot_Helpers {
 
 			throw new \Exception( $error_msg, $response['statusCode'] );
 		}
+
+		delete_option( '_automator_hubspot_refresh_token_failed_attempts' );
 
 		$tokens = $this->store_client( $response['data'] );
 
@@ -342,8 +365,6 @@ class Hubspot_Helpers {
 	 * @return void
 	 */
 	public function log_action_error( $error, $user_id, $action_data, $recipe_id ) {
-
-		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
 		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error );
 	}

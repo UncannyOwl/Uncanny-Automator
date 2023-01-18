@@ -281,7 +281,8 @@ class GCALENDAR_ADDEVENT {
 			'notification_time_email' => $notification_time_email,
 			'notification_time_popup' => $notification_time_popup,
 			'timezone'                => apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
-			'date_format'             => 'Y-m-d',
+			// Google Calendar endpoint is written so the date format can be changed from the Client.
+			'date_format'             => get_option( 'date_format', 'F j, Y' ),
 		);
 
 		try {

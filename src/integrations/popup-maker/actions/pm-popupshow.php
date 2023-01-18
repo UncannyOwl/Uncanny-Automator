@@ -69,7 +69,7 @@ class PM_POPUPSHOW {
 
 		$args = array(
 			'post_type'      => 'popup',
-			'posts_per_page' => 99,
+			'posts_per_page' => 999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
@@ -168,9 +168,23 @@ class PM_POPUPSHOW {
 
 			return;
 		}
+		if ( 0 !== (int) $user_id ) {
+			update_user_meta( $user_id, 'display_pop_up_' . $popup_id, $popup_id );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
-		update_user_meta( $user_id, 'display_pop_up_' . $popup_id, $popup_id );
-		Automator()->complete->action( $user_id, $action_data, $recipe_id );
+			return;
+		} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			$md5 = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
+			update_option( 'automator_display_popup_' . $md5, $popup_id );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
+
+			return;
+		}
+
+		$error_message                       = sprintf( '%s: %d', __( 'The popup failed to display. Popup ID', 'uncanny-automator' ), $popup_id );
+		$action_data['complete_with_errors'] = true;
+		$action_data['do_nothing']           = true;
+		Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 	}
 
 	/**

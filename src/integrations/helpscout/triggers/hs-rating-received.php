@@ -68,13 +68,14 @@ class HS_RATING_RECEIVED {
 		$this->set_sentence(
 			sprintf(
 				/* Translators: Trigger sentence */
-				esc_html__( 'A satisfaction rating is received', 'uncanny-automator' )
+				esc_html__( 'A conversation receives {{a specific rating:%1$s}}', 'uncanny-automator' ),
+				$this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
 			/* Translators: Trigger sentence */
-			esc_html__( 'A satisfaction rating is received', 'uncanny-automator' )
+			esc_html__( 'A conversation receives {{a specific rating}}', 'uncanny-automator' )
 		);
 
 		$this->set_tokens(
@@ -96,9 +97,36 @@ class HS_RATING_RECEIVED {
 			)
 		);
 
+		$this->set_options_callback( array( $this, 'load_options' ) );
+
 		// Register the trigger.
 		$this->register_trigger();
 
+	}
+
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => array(
+					$this->get_trigger_meta() => array(
+						array(
+							'option_code'           => $this->get_trigger_meta(),
+							'label'                 => esc_attr__( 'Rating', 'uncanny-automator' ),
+							'input_type'            => 'select',
+							'options'               => array(
+								'-1'       => esc_html__( 'Any rating', 'uncanny-automator' ),
+								'great'    => esc_html__( 'Great', 'uncanny-automator' ),
+								'okay'     => esc_html__( 'Okay', 'uncanny-automator' ),
+								'not_good' => esc_html__( 'Not Good', 'uncanny-automator' ),
+							),
+							'supports_custom_value' => false,
+							'required'              => true,
+							'options_show_id'       => false,
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -125,7 +153,21 @@ class HS_RATING_RECEIVED {
 	 */
 	public function prepare_to_run( $data ) {
 
-		$this->set_conditional_trigger( false );
+		$this->set_conditional_trigger( true );
+
+	}
+
+	public function validate_conditions( ...$args ) {
+
+		$params = array_shift( $args[0] );
+
+		$matching_recipes_triggers = $this->find_all( $this->trigger_recipes() )
+			->where( array( $this->get_trigger_meta() ) )
+			->match( array( $params['rating'] ) )
+			->format( array( 'trim' ) )
+			->get();
+
+		return $matching_recipes_triggers;
 
 	}
 

@@ -107,13 +107,23 @@ class Add_Popup_Maker_Integration {
 		if ( ! isset( $recipes_enabled_in_popups[ $pop_id ] ) || empty( array_intersect( $recipes_enabled_in_popups[ $pop_id ], $automator_popups ) ) ) {
 			return $loadable;
 		}
-
-		$is_action_popup_ids_enabled = get_user_meta( get_current_user_id(), 'display_pop_up_' . $pop_id, false );
-
+		$user_id = get_current_user_id();
+		if ( 0 !== $user_id ) {
+			$is_action_popup_ids_enabled = get_user_meta( $user_id, 'display_pop_up_' . $pop_id, false );
+		} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			$md5                         = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
+			$is_action_popup_ids_enabled = get_option( 'automator_display_popup_' . $md5, array() );
+			$is_action_popup_ids_enabled = array( $is_action_popup_ids_enabled );
+		}
 		// if an this action was competed then a meta value was stores for this pop up.
 		if ( is_array( $is_action_popup_ids_enabled ) && in_array( (string) $pop_id, $is_action_popup_ids_enabled, true ) ) {
 			// delete the user meta so further recipes can run.
-			delete_user_meta( get_current_user_id(), 'display_pop_up_' . $pop_id );
+			if ( 0 !== $user_id ) {
+				delete_user_meta( $user_id, 'display_pop_up_' . $pop_id );
+			} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+				$md5 = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
+				delete_option( 'automator_display_popup_' . $md5 );
+			}
 
 			return true;
 		}

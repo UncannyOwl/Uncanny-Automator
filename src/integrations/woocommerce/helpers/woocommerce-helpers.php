@@ -51,12 +51,59 @@ class Woocommerce_Helpers {
 	 * @param string $label
 	 * @param string $option_code
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	public function all_wc_products( $label = null, $option_code = 'WOOPRODUCT' ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
+
+		$relevant_tokens                                = array(
+			$option_code                                => esc_attr__( 'Product title', 'uncanny-automator' ),
+			$option_code . '_ID'                        => esc_attr__( 'Product ID', 'uncanny-automator' ),
+			$option_code . '_URL'                       => esc_attr__( 'Product URL', 'uncanny-automator' ),
+			$option_code . '_THUMB_ID'                  => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
+			$option_code . '_THUMB_URL'                 => esc_attr__( 'Product featured image URL', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_PRICE'             => esc_attr__( 'Product price', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_PRICE_UNFORMATTED' => esc_attr__( 'Product price (unformatted)', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_SALE_PRICE'        => esc_attr__( 'Product sale price', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_SALE_PRICE_UNFORMATTED' => esc_attr__( 'Product sale price (unformatted)', 'uncanny-automator' ),
+		);
+		$relevant_tokens[ $option_code . '_ORDER_QTY' ] = esc_attr__( 'Product quantity', 'uncanny-automator' );
+
+		return $this->load_products( $label, $option_code, $relevant_tokens );
+	}
+
+	/**
+	 * @param $label
+	 * @param $option_code
+	 *
+	 * @return array
+	 */
+	public function all_wc_view_products( $label = null, $option_code = 'WOOPRODUCT' ) {
+		$relevant_tokens                                 = array(
+			$option_code                                => esc_attr__( 'Product title', 'uncanny-automator' ),
+			$option_code . '_ID'                        => esc_attr__( 'Product ID', 'uncanny-automator' ),
+			$option_code . '_URL'                       => esc_attr__( 'Product URL', 'uncanny-automator' ),
+			$option_code . '_THUMB_ID'                  => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
+			$option_code . '_THUMB_URL'                 => esc_attr__( 'Product featured image URL', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_PRICE'             => esc_attr__( 'Product price', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_PRICE_UNFORMATTED' => esc_attr__( 'Product price (unformatted)', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_SALE_PRICE'        => esc_attr__( 'Product sale price', 'uncanny-automator' ),
+			$option_code . '_PRODUCT_SALE_PRICE_UNFORMATTED' => esc_attr__( 'Product sale price (unformatted)', 'uncanny-automator' ),
+		);
+		$relevant_tokens[ $option_code . '_SKU' ]        = esc_attr__( 'Product SKU', 'uncanny-automator' );
+		$relevant_tokens[ $option_code . '_CATEGORIES' ] = esc_attr__( 'Product categories', 'uncanny-automator' );
+		$relevant_tokens[ $option_code . '_TAGS' ]       = esc_attr__( 'Product tags', 'uncanny-automator' );
+
+		return $this->load_products( $label, $option_code, $relevant_tokens );
+	}
+
+	/**
+	 * @param $label
+	 * @param $option_code
+	 * @param $relevant_tokens
+	 *
+	 * @return mixed|null
+	 */
+	public function load_products( $label = null, $option_code = 'WOOPRODUCT', $relevant_tokens = array() ) {
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Product', 'uncanny-automator' );
@@ -64,29 +111,20 @@ class Woocommerce_Helpers {
 
 		$args = array(
 			'post_type'      => 'product',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999999,
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any product', 'uncanny-automator' ) );
-
-		$option = array(
+		$option  = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code                    => esc_attr__( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'            => esc_attr__( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL'           => esc_attr__( 'Product URL', 'uncanny-automator' ),
-				$option_code . '_THUMB_ID'      => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
-				$option_code . '_THUMB_URL'     => esc_attr__( 'Product featured image URL', 'uncanny-automator' ),
-				$option_code . '_ORDER_QTY'     => esc_attr__( 'Product quantity', 'uncanny-automator' ),
-				$option_code . '_PRODUCT_PRICE' => esc_attr__( 'Product price', 'uncanny-automator' ),
-			),
+			'relevant_tokens' => $relevant_tokens,
 		);
 
 		return apply_filters( 'uap_option_all_wc_products', $option );

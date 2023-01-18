@@ -554,6 +554,7 @@ class Recipe_Post_Utilities {
 					'copyToDraft'            => sprintf( '%s?action=%s&post=%d&return_to_recipe=yes&_wpnonce=%s', admin_url( 'edit.php' ), 'copy_recipe_parts', $post_id, wp_create_nonce( 'Aut0Mat0R' ) ),
 				),
 			),
+			'isRTL'               => is_rtl(),
 			'format'              => array(
 				'date' => get_option( 'date_format' ),
 				'time' => get_option( 'time_format' ),

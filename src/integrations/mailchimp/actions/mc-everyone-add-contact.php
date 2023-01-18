@@ -407,14 +407,14 @@ class MC_EVERYONE_ADD_CONTACT {
 
 			$existing_user = $helpers->get_list_user( $list_id, $user_hash );
 
+			$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list );
+
 			// If the user already exists in this list
 			if ( false !== $existing_user ) {
 
 				if ( 'no' === $update_existing ) {
 					throw new \Exception( __( 'User already subscribed to the list.', 'uncanny-automator' ) );
 				}
-
-				$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list );
 			}
 
 			// Now create an audience

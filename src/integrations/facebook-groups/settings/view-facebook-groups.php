@@ -81,9 +81,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<?php } else { ?>
 
-						<uo-alert class="uap-spacing-bottom" type="error" heading="<?php esc_attr_e( 'Error 403', 'uncanny-automator' ); ?>">
+						<uo-alert class="uap-spacing-bottom" type="error" heading="<?php esc_attr_e( 'An error has occured', 'uncanny-automator' ); ?>">
 
-							<?php esc_html_e( 'An unexpected error was encountered while authenticating. Permission is denied.', 'uncanny-automator' ); ?>
+							<?php esc_html_e( 'Permission was denied, or an unexpected error was encountered while authenticating. Please try again later.', 'uncanny-automator' ); ?>
 
 						</uo-alert>
 
@@ -157,7 +157,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 						<div class="uap-settings-panel-user__avatar">
 
-							<img src="<?php echo esc_url( $facebook_user->picture ); ?>" alt="<?php echo esc_attr( $facebook_user->name ); ?>" />
+							<?php if ( ! empty( $user_info['picture'] ) ) { ?>
+								<img src="<?php echo esc_url( $user_info['picture'] ); ?>" alt="<?php echo esc_attr( $user_info['name'] ); ?>" />
+							<?php } ?>
 
 						</div>
 
@@ -165,22 +167,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 							<div class="uap-settings-panel-user-info__main">
 
-								<?php echo esc_html( $facebook_user->name ); ?>
-
-								<uo-icon integration="FACEBOOK"></uo-icon>
+								<?php if ( ! empty( $user_info['name'] ) ) { ?>
+									<?php echo esc_html( $user_info['name'] ); ?>
+									<uo-icon integration="FACEBOOK"></uo-icon>
+								<?php } ?>
 
 							</div>
 
 							<div class="uap-settings-panel-user-info__additional">
 								<?php
+								if ( ! empty( $user_info['user_id'] ) ) {
 									echo esc_html(
 										sprintf(
 											/* translators: 1. ID */
 											__( 'ID: %1$d', 'uncanny-automator' ),
-											$facebook_user->user_id
+											$user_info['user_id']
 										)
 									);
-
+								}
 								?>
 							</div>
 

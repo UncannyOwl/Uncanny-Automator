@@ -72,9 +72,9 @@ class UC_CODESSUFFIX {
 	/**
 	 * @param $user_id
 	 * @param $coupon_id
-	 * @param $result
+	 * @param $res
 	 */
-	public function user_redeemed_code_suffix( $user_id, $coupon_id, $result ) {
+	public function user_redeemed_code_suffix( $user_id, $coupon_id, $res ) {
 		global $wpdb;
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
@@ -116,6 +116,9 @@ class UC_CODESSUFFIX {
 											'run_number' => $result['args']['run_number'],
 										);
 
+										$code = Automator()->helpers->recipe->uncanny_codes->options->uc_get_code_redeemed( $coupon_id );
+										Automator()->db->token->save( 'CODE_REDEEMED', $code, $trigger_meta );
+
 										$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':' . $this->trigger_meta;
 										$trigger_meta['meta_value'] = maybe_serialize( $suffix );
 										Automator()->insert_trigger_meta( $trigger_meta );
@@ -129,8 +132,6 @@ class UC_CODESSUFFIX {
 				}
 			}
 		}
-
-		return;
 
 	}
 

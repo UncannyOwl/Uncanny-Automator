@@ -84,6 +84,9 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 
 		$this->set_background_processing( true );
 
+		// Disables wpautop.
+		$this->set_wpautop( false );
+
 		$this->set_action_tokens(
 			array(
 				'POST_LINK' => array(
@@ -117,7 +120,7 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 		$page_id = sanitize_text_field( $parsed[ self::ACTION_META ] );
 
 		// Post content editor adds BR tag if shift+enter. Enter key adds paragraph. Support both.
-		$message = sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_PAGE_MESSAGE'] ) );
+		$message = sanitize_textarea_field( $parsed['FACEBOOK_PAGE_MESSAGE'] );
 
 		$body = array(
 			'action'  => 'post-to-page',

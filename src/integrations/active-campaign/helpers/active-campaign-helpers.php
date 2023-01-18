@@ -577,8 +577,6 @@ class Active_Campaign_Helpers {
 		$has_items      = true;
 		$available_tags = array();
 
-		$api_url = '';
-
 		while ( $has_items ) {
 
 			$response = wp_safe_remote_get(
@@ -590,15 +588,26 @@ class Active_Campaign_Helpers {
 				)
 			);
 
+			// Logs wp related errors.
 			if ( is_wp_error( $response ) ) {
-				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_tags Error' );
-				return $response;
+				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_tags Error', true, 'activecampaign' );
+				return false;
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+			// Logs generic http error response.
+			if ( 200 !== $status_code ) {
+				automator_log( 'ActiveCampaign API has responded with status code: ' . $status_code, 'ActiveCampaign::sync_tags Error', true, 'activecampaign' );
+				return false;
 			}
 
 			$response = json_decode( wp_remote_retrieve_body( $response ) );
 
-			foreach ( $response->tags as $tag ) {
-				$available_tags[ $tag->id ] = $tag->tag;
+			if ( isset( $response->tags ) ) {
+
+				foreach ( $response->tags as $tag ) {
+					$available_tags[ $tag->id ] = $tag->tag;
+				}
 			}
 
 			if ( empty( $response->tags ) || count( $response->tags ) < $limit ) {
@@ -663,9 +672,18 @@ class Active_Campaign_Helpers {
 				)
 			);
 
+			// Logs wp related errors.
 			if ( is_wp_error( $response ) ) {
-				automator_log( $response->get_error_message(), 'ActiveCampaign sync contact fields error.' );
-				return $response;
+				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_contact_fields Error', true, 'activecampaign' );
+				return false;
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+
+			// Logs generic http error response.
+			if ( 200 !== $status_code ) {
+				automator_log( 'ActiveCampaign API has responded with status code: ' . $status_code, 'ActiveCampaign::sync_contact_fields Error', true, 'activecampaign' );
+				return false;
 			}
 
 			$response = json_decode( wp_remote_retrieve_body( $response ) );
@@ -765,19 +783,33 @@ class Active_Campaign_Helpers {
 				)
 			);
 
+			// Logs wp related errors.
 			if ( is_wp_error( $response ) ) {
-				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_lists Error' );
+				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_lists Error', true, 'activecampaign' );
+				// Exits the loop and return with false.
+				return false;
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+
+			// Logs generic http error response.
+			if ( 200 !== $status_code ) {
+				automator_log( 'ActiveCampaign API has responded with status code: ' . $status_code, 'ActiveCampaign::sync_lists Error', true, 'activecampaign' );
+				// Exits the loop and return with false.
 				return false;
 			}
 
 			$response = json_decode( wp_remote_retrieve_body( $response ) );
 
-			foreach ( $response->lists as $list ) {
-				$available_lists[ $list->id ] = $list->name;
-			}
+			if ( isset( $response->lists ) ) {
 
-			if ( count( $response->lists ) < $limit ) {
-				$has_items = false;
+				foreach ( $response->lists as $list ) {
+					$available_lists[ $list->id ] = $list->name;
+				}
+
+				if ( count( $response->lists ) < $limit ) {
+					$has_items = false;
+				}
 			}
 
 			$offset += $limit;
