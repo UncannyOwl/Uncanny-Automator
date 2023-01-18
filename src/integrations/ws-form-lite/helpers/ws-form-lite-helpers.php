@@ -72,11 +72,11 @@ class Ws_Form_Lite_Helpers {
 	 * Return all the specific fields of a form ID provided in ajax call
 	 */
 	public function select_form_fields_func() {
-		Automator()->utilities->ajax_auth_check( $_POST );
+		Automator()->utilities->ajax_auth_check();
 
 		$fields = array();
-		if ( isset( $_POST ) ) {
-			$form_id     = $_POST['value'];
+		if ( automator_filter_has_var( 'value', INPUT_POST ) ) {
+			$form_id     = automator_filter_input( 'value', INPUT_POST );
 			$form_fields = $this->get_form_fields( $form_id );
 			if ( is_array( $form_fields ) ) {
 				foreach ( $form_fields as $field ) {

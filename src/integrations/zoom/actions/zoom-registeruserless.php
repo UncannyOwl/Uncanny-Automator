@@ -18,6 +18,7 @@ class ZOOM_REGISTERUSERLESS {
 
 	private $action_code;
 	private $action_meta;
+	private $helpers;
 
 	/**
 	 * Set up Automator action constructor.
@@ -128,8 +129,22 @@ class ZOOM_REGISTERUSERLESS {
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
-			'supports_tokens'       => false,
-			'supports_custom_value' => false,
+			'supports_tokens'       => true,
+			'supports_custom_value' => true,
+			'is_ajax'               => true,
+			'endpoint'              => 'uap_zoom_api_get_meeting_occurrences',
+			'fill_values_in'        => 'OCCURRENCES',
+		);
+
+		$meeting_occurrences_field = array(
+			'option_code'              => 'OCCURRENCES',
+			'label'                    => __( 'Occurrences', 'uncanny-automator' ),
+			'input_type'               => 'select',
+			'required'                 => false,
+			'options'                  => array(),
+			'supports_tokens'          => true,
+			'supports_custom_value'    => true,
+			'supports_multiple_values' => true,
 		);
 
 		$option_fileds = array(
@@ -138,6 +153,7 @@ class ZOOM_REGISTERUSERLESS {
 			$last_name_field,
 			$account_users_field,
 			$user_meetings_field,
+			$meeting_occurrences_field,
 			$this->helpers->get_meeting_questions_repeater(),
 		);
 
@@ -199,12 +215,17 @@ class ZOOM_REGISTERUSERLESS {
 				$meeting_user = $this->helpers->add_custom_questions( $meeting_user, $action_data['meta']['MEETINGQUESTIONS'], $recipe_id, $user_id, $args );
 			}
 
-			$response = $this->helpers->add_to_meeting( $meeting_user, $meeting_key, $action_data );
+			$meeting_occurrences = array();
+
+			if ( ! empty( $action_data['meta']['OCCURRENCES'] ) ) {
+				$meeting_occurrences = json_decode( $action_data['meta']['OCCURRENCES'] );
+			}
+
+			$response = $this->helpers->add_to_meeting( $meeting_user, $meeting_key, $meeting_occurrences, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 		} catch ( \Exception $e ) {
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}

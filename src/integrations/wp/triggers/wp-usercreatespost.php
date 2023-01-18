@@ -142,6 +142,7 @@ class WP_USERCREATESPOST {
 				'target_field'        => 'WPTAXONOMIES',
 				'endpoint'            => 'select_post_type_taxonomies',
 				'use_zero_as_default' => true,
+				'default_value'       => 'post',
 			)
 		);
 

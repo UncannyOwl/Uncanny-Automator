@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.1.1 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.8 \
+**Stable tag:** 4.9 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -58,6 +58,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 ### Supported apps
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Calendar](https://automatorplugin.com/integration/google-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -142,6 +144,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Thrive Leads](https://automatorplugin.com/integration/thrive-leads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tin Canny Reporting](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -333,6 +337,87 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.9 [2023-01-18]
+
+**New App Integrations:**
+
+* ConvertKit #3042
+* Drip #3041
+
+**New Plugin Integrations:**
+
+* Thrive Apprentice #3044
+* Thrive Leads #3043
+
+**New Triggers:**
+
+* Thrive Apprentice - A user completes a lesson in a course #3063
+* Thrive Apprentice - A user completes a module in a course #3064
+* Thrive Leads - A form is submitted #3053
+* Thrive Leads - A registration form is submitted #3074
+* Thrive Leads - A user submits a form #3076
+
+**New Actions:**
+
+* ConvertKit - Add a subscriber to a form #3048
+* ConvertKit - Add a subscriber to a sequence #3062
+* ConvertKit - Add a tag to a subscriber #3051
+* ConvertKit - Remove a tag from a subscriber #3052
+* Drip - Add a subscriber to a campaign #3124
+* Drip - Add a tag to a subscriber #3056
+* Drip - Create or update a subscriber #3055
+* Drip - Delete a subscriber #3059
+* Drip - Remove a subscriber from a campaign #3060
+* Drip - Remove a tag from a subscriber #3057
+* Drip - Unsubscribe a subscriber from all the mailings #3058
+
+**New Tokens:**
+
+* Paid Membership Pro - Additional Membership tokens added #3029
+	* Membership title
+	* Membership ID
+	* User ID
+	* Discount code
+	* Discount code ID
+	* Subscription ID
+	* Subscription amount
+	* Subscription period
+	* Subscription cycle number
+	* Subscription start date
+	* Subscription end date
+* Uncanny Codes  #3005
+	* Code 
+
+**Updated:**
+
+* WP Mail SMTP Pro - Integration now only shows if WP Mail SMTP Pro is active #3119
+* Facebook, Instagram and LinkedIn - Now supports multiple line breaks #3035
+* Help Scout - A conversation receives a reply from a customer - Add "Any conversation" option #2982
+* Help Scout - A conversation receives a reply from a customer - Update sentence to "A conversation in a specific mailbox receives a reply from a customer" #2983
+* Help Scout - A satisfaction rating is received - Add option to select the rating AND update sentence #2984
+* Popup Maker - Convert action to require user data #3007
+* Twitter - Optionally use your own app instead of Automator for a higher rate limit #2992
+* WordPress - A user publishes a post in a taxonomy - Change default post type to post #2976
+* Zoom - Support for recurring Meetings and Webinars #3131
+
+**Fixed:**
+
+* WooCommerce triggers - The Product price token is empty in "A user views a product" and it is returning a string in "A user completes, pays for, lands on a thank you page for an order with a product" #2975
+* ActiveCampaign - PHP 8  Error when tags are empty #3090
+* Google Calendar - Date is no longer 'Y-m-d' format but uses WP settings #3050
+* HubSpot - Refresh token no longer generate multiple requests on page load when not connected #3071
+* Mailchimp - Add a contact to an audience - Group field not working when user exists #3047
+* WPForms - Several PHP notices #2987
+
+**Under the hood:**
+
+* Closure - Added filter `automator_run_closure_uoa_redirect` to optionally not load redirect script #3094
+* Facebook Groups - User info endpoint route updated #3125
+* Facebook Pages - User info endpoint route updated #3129
+* Recipe Builder - Close button on Select a recipe type modal #2922
+* Recipe Builder - Fix inconsistent behaviour with RTL languages in trigger, action and condition sentences #2971
+* Settings UI - Added an option to copy values to the clipboard on some Settings pages #2947
 
 ### 4.8 [2022-12-08]
 
@@ -1115,88 +1200,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Automator Core - Number of times token now parses reliably in certain situations #1918
 * Automator Core - Option to define alternate label for a token added in Automator fields #1919
 * Automator API - API request timeout for Facebook Pages and Google Sheets changed from 5 to 10 seconds #1921
-
-### 3.9.1.1 [2022-04-14]
-
-**Fixed:**
-
-* FluentCRM - PHP error in Add a contact action on PHP 8.x+ #1840
-
-### 3.9.1 [2022-04-13]
-
-**New Actions:**
-
-* FluentCRM - Add a contact #1573
-
-**Updated:**
-
-* Improved performance with Uncanny Automator Pro < 3.9 #1835
-
-**Fixed:**
-
-* PHP Notice: array_values() expects parameter 1 to be array on some sites with no live recipes #1825
-* HTTP request on every page load when a premium integration credential expires or is invalid #1804
-
-### 3.9.0.2 [2022-04-08]
-
-**Fixed:**
-
-* WPForms - PHP error on some sites when a form is submitted with WP Forms lite using Automator 3.9 or 3.9.0.1 #1821
-
-### 3.9.0.1 [2022-04-08]
-
-**Fixed:**
-
-* WooCommerce - Payment methods do not load when using Uncanny Automator Pro in some situations #1811
-
-### 3.9 [2022-04-07]
-
-**New Integration:**
-
-* [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1518
-
-**New Triggers:**
-
-* PeepSo - A user updates their avatar #1769
-* PeepSo - A user follows another PeepSo member #1768
-
-**New Actions:**
-
-* PeepSo - Follow a user #1767
-* Uncanny Groups - Remove a number of seats from an Uncanny group #1340
-* Uncanny Groups - Add a number of seats to an Uncanny group #1339
-
-**Added:**
-
-* Automator API - External integrations migrated to centralized communication class #1463
-* bbPress - Topic ID, Topic URL, Topic title and Topic content tokens #1709
-* Caldera Forms - Entry ID and Entry submission date tokens #1780
-* Fluent Forms - Entry ID, User IP, Entry submission date and Entry source URL tokens #1779
-* Formidable Forms - Entry ID, User IP, Entry submission date, Entry source URL tokens #1778
-* GiveWP - Form ID token #1762
-* Gravity Forms - Entry ID, User IP, Entry submission date and Entry source URL tokens #1777
-* MailChimp - Use a token/custom value option for tag-based actions #1695
-* WordPress Core - "Send an email" - Support for selecting HTML or plain text format #1729
-* WPForms - Entry ID, User IP and Entry submission date tokens #1781
-* Zoom Meetings & Webinars - Support for custom registration fields #1352
-
-**Updated:**
-
-* Easy Digital Downloads - Number formatting added to amount tokens #1738
-* WordPress Core - "A user views a custom post type" - "Any" option added to second dropdown #1749
-* Core - Several architectural performance updates #1736 #1721 #1405
-
-**Fixed:**
-
-* Recipe Logs - Moved `load_minimal_admin` from `admin_init` to `admin_head` to avoid conflicts #1693
-* BuddyBoss - "Send a notification to all members of a group" now lists private and hidden groups #1764
-* Easy Digital Downloads - Token "Discount codes" renamed to "Discount codes used" #1701
-* Google Sheets - Re-added migration script #1782
-* FluentCRM - Do not complete with errors if contact has existing tags #1756
-* FluentCRM - "A tag is added to a contact" now fires if the contact is not a WP user #1713
-* LearnDash - "A user passes a quiz": Quiz ID and Quiz URL now parse reliably #1692
-* LifterLMS - A user is added to a course now fires when a new user registers #1752
-* WordPress - "A user publishes a type of post with a taxonomy term in a taxonomy" now runs reliably #1674
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

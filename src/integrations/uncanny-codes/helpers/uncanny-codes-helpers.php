@@ -239,4 +239,18 @@ class Uncanny_Codes_Helpers {
 
 	}
 
+	/**
+	 * @param $coupon_id
+	 *
+	 * @return string code
+	 */
+	public function uc_get_code_redeemed( $coupon_id ) {
+		global $wpdb;
+		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
+		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM {$tbl_codes} WHERE `ID` = %d", $coupon_id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $code;
+
+	}
+
 }

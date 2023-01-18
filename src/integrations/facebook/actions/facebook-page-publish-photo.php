@@ -43,6 +43,9 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/facebook/' ) );
 		$this->set_requires_user( false );
 
+		// Disables wpautop.
+		$this->set_wpautop( false );
+
 		/* translators: Action - WordPress */
 		$this->set_sentence( sprintf( esc_attr__( 'Publish a post with an image to {{a Facebook page:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
 
@@ -120,7 +123,7 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 		$image_url = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
 
 		// Post content editor adds BR tag if shift+enter. Enter key adds paragraph. Support both.
-		$message = isset( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ) : '';
+		$message = isset( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) : '';
 
 		$body = array(
 			'action'    => 'image-to-page',

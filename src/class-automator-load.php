@@ -434,7 +434,16 @@ class Automator_Load {
 		if ( empty( $check_closure ) ) {
 			return;
 		}
-		$user_id   = wp_get_current_user()->ID;
+		$user_id = wp_get_current_user()->ID;
+
+		// Filter to optionally bail out
+		global $post;
+		$is_uoa_redirect = (bool) apply_filters( 'automator_run_closure_uoa_redirect', true, $post, $user_id );
+
+		if ( true !== $is_uoa_redirect ) {
+			return;
+		}
+
 		$api_setup = array(
 			'root'              => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT . '/uoa_redirect/' ),
 			'nonce'             => wp_create_nonce( 'wp_rest' ),

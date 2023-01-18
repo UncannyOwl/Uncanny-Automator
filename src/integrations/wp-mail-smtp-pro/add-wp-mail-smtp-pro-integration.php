@@ -26,6 +26,7 @@ class Add_Wp_Mail_Smtp_Pro_Integration {
 		$this->set_name( 'WP Mail SMTP Pro' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_icon( 'wp-mail-smtp-icon.svg' );
+		$this->set_plugin_file_path( 'wp-mail-smtp-pro/wp-mail-smtp.php' );
 	}
 
 	/**
@@ -34,6 +35,10 @@ class Add_Wp_Mail_Smtp_Pro_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return function_exists( 'wp_mail_smtp' );
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		return is_plugin_active( 'wp-mail-smtp-pro/wp_mail_smtp.php' );
 	}
 }

@@ -80,9 +80,14 @@ class Facebook_Groups_Helpers {
 		// Check if token is still valid or not.
 		add_action( 'admin_init', array( $this, 'maybe_add_admin_notice' ) );
 
-		require_once __DIR__ . '/../settings/settings-facebook-groups.php';
-
-		new Facebook_Group_Settings( $this );
+		// Defer loading of settings page to current_screen so we can check if its recipe page.
+		add_action(
+			'current_screen',
+			function() {
+				require_once __DIR__ . '/../settings/settings-facebook-groups.php';
+				new Facebook_Group_Settings( $this );
+			}
+		);
 
 	}
 
@@ -292,14 +297,17 @@ class Facebook_Groups_Helpers {
 
 		}
 
-		delete_transient( 'uo-fb-group-transient-user-connected' );
-
 		delete_transient( 'ua_facebook_group_items' );
 
 		// Only update the record when there is a valid user.
 		if ( isset( $settings['user']['id'] ) && isset( $settings['user']['token'] ) ) {
+
+			// Append user info to settings option.
+			$settings['user-info'] = $this->get_user_information( $settings['user']['id'], $settings['user']['token'] );
+
 			// Updates the option value to settings.
 			update_option( self::OPTION_KEY, $settings );
+
 		}
 
 		wp_safe_redirect( $this->get_settings_page_url() . '&connection=new' );
@@ -322,18 +330,7 @@ class Facebook_Groups_Helpers {
 
 				$this->deauthorized_app( get_option( self::OPTION_KEY, false ) );
 
-				// Delete the option key.
-				delete_option( self::OPTION_KEY );
-
-				// Delete the token info.
-				delete_option( self::TOKEN_INFO );
-
-				// Delete transients.
-				delete_transient( self::TOKEN_INFO );
-
-				delete_transient( 'uo-fb-group-transient-user-connected' );
-
-				delete_transient( 'ua_facebook_group_items' );
+				$this->remove_credentials();
 
 				// Redirect.
 				wp_safe_redirect( $this->get_settings_page_url() );
@@ -341,6 +338,9 @@ class Facebook_Groups_Helpers {
 				exit;
 
 			} catch ( \Exception $e ) {
+
+				// Something went wrong?
+				$this->remove_credentials();
 
 				// Otherwise, redirect with an error message.
 				wp_safe_redirect(
@@ -433,94 +433,106 @@ class Facebook_Groups_Helpers {
 	/**
 	 * Check if the user is connected.
 	 *
+	 * This method is used to determine whether the user has connected or not.
+	 *
 	 * @return bool
 	 */
 	public function is_user_connected() {
+
+		// Bail out if we dont need user request.
+		if ( ! $this->is_user_request_needed() ) {
+			return false;
+		}
 
 		$settings = get_option( self::OPTION_KEY );
 
 		$user_connected = $this->get_user_connected();
 
-		return $settings && ( isset( $user_connected ) && ! empty( $user_connected['user_id'] ) );
+		return ! empty( $settings ) && ! empty( $user_connected['user']['id'] );
 
 	}
 
 	/**
 	 * Get the user connected.
 	 *
+	 * Gets called on the settings page.
+	 *
 	 * @return array|mixed
 	 */
 	public function get_user_connected() {
 
-		$graph = get_option( self::OPTION_KEY );
-
-		$response = array(
-			'user_id' => 0,
-			'picture' => false,
-			'name'    => false,
-		);
-
-		if ( ! empty( $graph ) ) {
-
-			$response = $this->transient_get_user_connected( $graph['user']['id'], $graph['user']['token'] );
-
+		// Bail out if we dont need user request.
+		if ( ! $this->is_user_request_needed() ) {
+			return false;
 		}
 
-		return $response;
+		return get_option( self::OPTION_KEY );
+
 	}
 
 	/**
-	 * Get the connected user via transient.
+	 * Removes credentials and attempts from options table.
+	 *
+	 * @return bool True. always.
+	 */
+	private function remove_credentials() {
+
+		// Delete the option key.
+		delete_option( self::OPTION_KEY );
+
+		// Delete the token info.
+		delete_option( self::TOKEN_INFO );
+
+		// Delete transients.
+		delete_transient( self::TOKEN_INFO );
+
+		delete_transient( 'ua_facebook_group_items' );
+
+		// Refresh the last requested option.
+		delete_option( '_automator_facebook_groups_last_requested' );
+
+		return true;
+
+	}
+	/**
+	 * Get the connected user information.
 	 *
 	 * @param $user_id
 	 * @param $token
 	 *
 	 * @return array|mixed
 	 */
-	public function transient_get_user_connected( $user_id, $token ) {
+	public function get_user_information( $user_id, $token ) {
 
-		$response = array(
-			'user_id' => 0,
-			'name'    => '',
-			'picture' => '',
-		);
+		try {
 
-		$transient_key = 'uo-fb-group-transient-user-connected';
+			$params = array(
+				'action'       => 'get_user',
+				'user_id'      => $user_id,
+				'access_token' => $token,
+			);
 
-		$transient_user_connected = get_transient( $transient_key );
+			$response = $this->api_request( $params, null );
 
-		if ( false !== $transient_user_connected ) {
+			$response['user_id'] = isset( $response['data']['id'] ) ? $response['data']['id'] : '';
+			$response['name']    = isset( $response['data']['name'] ) ? $response['data']['name'] : '';
+			$response['picture'] = isset( $response['data']['picture']['data']['url'] )
+				? $response['data']['picture']['data']['url'] :
+				'';
 
-			return $transient_user_connected;
+		} catch ( \Exception $e ) {
 
-		}
+			// Reset the connection if something is wrong.
+			$this->remove_credentials();
 
-		$request = wp_remote_get(
-			'https://graph.facebook.com/v11.0/' . $user_id,
-			array(
-				'body' => array(
-					'access_token' => $token,
-					'fields'       => 'id,name,picture',
-				),
-			)
-		);
+			wp_safe_redirect( $this->get_settings_page_url() . '&status=error' );
 
-		$graph_response = wp_remote_retrieve_body( $request );
-
-		if ( ! is_wp_error( $graph_response ) ) {
-
-			$graph_response = json_decode( $graph_response );
-
-			$response['user_id'] = isset( $graph_response->id ) ? $graph_response->id : '';
-			$response['name']    = isset( $graph_response->name ) ? $graph_response->name : '';
-			$response['picture'] = isset( $graph_response->picture->data->url ) ? $graph_response->picture->data->url : '';
-
-			// Cache the request with 1 day lifetime.
-			set_transient( $transient_key, $response, DAY_IN_SECONDS );
+			die;
 
 		}
 
 		return $response;
+
 	}
 
 	/**
@@ -681,7 +693,7 @@ class Facebook_Groups_Helpers {
 			'endpoint' => self::API_ENDPOINT,
 			'body'     => $body,
 			'action'   => $action_data,
-			'timeout'  => apply_filters( 'automator_integration_facebook_groups_api_request_timeout', 10 ), // Apply generous 15 seconds timeout.
+			'timeout'  => apply_filters( 'automator_integration_facebook_groups_api_request_timeout', 15 ), // Apply generous 15 seconds timeout.
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -813,6 +825,35 @@ class Facebook_Groups_Helpers {
 		}
 
 		return ceil( $time_remaining );
+
+	}
+
+	/**
+	 * Determines if user request is needed or not.
+	 *
+	 * @return bool True if current
+	 */
+	private function is_user_request_needed() {
+
+		// Bail immediately if on front-end screen.
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		// Checks if on Facebook Groups settings (e.g. Premium Integrations).
+		$is_facebook_groups_settings = 'uncanny-automator-config' === automator_filter_input( 'page' );
+
+		// Determine if user is connecting Facebook groups.
+		$is_capturing_token = wp_doing_ajax()
+			&& 'automator_integration_facebook_group_capture_token_token_capture' === automator_filter_input( 'action' );
+
+		// Checks if from recipe edit page.
+		$current_screen           = get_current_screen();
+		$is_automator_recipe_page = isset( $current_screen->id )
+			&& 'uo-recipe' === $current_screen->id
+			&& 'edit' === automator_filter_input( 'action' );
+
+		return $is_facebook_groups_settings || $is_capturing_token || $is_automator_recipe_page;
 
 	}
 

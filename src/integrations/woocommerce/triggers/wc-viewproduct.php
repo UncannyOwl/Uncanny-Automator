@@ -66,7 +66,7 @@ class WC_VIEWPRODUCT {
 
 		$options = array(
 			'options' => array(
-				Automator()->helpers->recipe->woocommerce->options->all_wc_products(),
+				Automator()->helpers->recipe->woocommerce->options->all_wc_view_products(),
 				Automator()->helpers->recipe->options->number_of_times(),
 			),
 		);
@@ -101,6 +101,16 @@ class WC_VIEWPRODUCT {
 		if ( $arr ) {
 			foreach ( $arr as $result ) {
 				if ( true === $result['result'] ) {
+					$trigger_meta = array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'trigger_log_id' => $result['args']['trigger_log_id'],
+						'run_number'     => $result['args']['run_number'],
+					);
+
+					// product_id Token
+					Automator()->db->token->save( 'product_id', $post->ID, $trigger_meta );
+
 					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}

@@ -93,6 +93,7 @@ namespace Uncanny_Automator;
 							label="<?php esc_attr_e( 'Redirect URL', 'uncanny-automator' ); ?>"
 							helper="<?php esc_attr_e( "You'll be asked to enter a redirect URL.", 'uncanny-automator' ); ?>"
 
+							copy-to-clipboard
 							disabled
 						></uo-text-field>
 

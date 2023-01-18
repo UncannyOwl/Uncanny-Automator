@@ -42,6 +42,8 @@ class LINKEDIN_POST_PUBLISH {
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
+		$this->set_wpautop( false );
+
 		$this->register_action();
 
 	}

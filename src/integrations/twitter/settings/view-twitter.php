@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	return;
+}
+
 /**
  * Twitter Settings
  * Settings > Premium Integrations > Twitter
@@ -17,6 +21,21 @@ namespace Uncanny_Automator;
  * $disconnect_twitter_url URL to disconnect Twitter
  */
 
+// Get the Twitter username
+$twitter_username = ! empty( $this->client['screen_name'] ) ? $this->client['screen_name'] : '';
+// Get the Twitter ID
+$twitter_id = ! empty( $this->client['user_id'] ) ? $this->client['user_id'] : '';
+
+	// Get the link to connect Twitter
+$connect_twitter_url = $this->functions->get_connect_url();
+
+// Get the link to disconnect Twitter
+$disconnect_twitter_url = $this->functions->get_disconnect_url();
+
+// Check if the user JUST connected the workspace and returned
+// from the Slack connection page
+$user_just_connected_site = automator_filter_input( 'connect' ) === '1';
+
 ?>
 
 <div class="uap-settings-panel">
@@ -28,39 +47,43 @@ namespace Uncanny_Automator;
 
 		<div class="uap-settings-panel-content">
 
-			<?php if ( $user_just_connected_site ) { ?>
+			<?php
+			if ( $user_just_connected_site ) {
 
-				<?php
 
-				// Alert title
-				$alert_title = sprintf(
-					/* translators: 1. The account username */
-					_x( 'Your account "%1$s" has been connected successfully!', 'Twitter', 'uncanny-automator' ),
-					$twitter_username
+				$this->alert_html(
+					array(
+						'type'    => 'success',
+						'heading' => sprintf(
+							/* translators: 1. The account username */
+							_x( 'Your account "%1$s" has been connected successfully!', 'Twitter', 'uncanny-automator' ),
+							$twitter_username
+						),
+					)
 				);
 
-				?>
-
-				<uo-alert
-					type="success"
-					heading="<?php echo esc_attr( $alert_title ); ?>"
-					class="uap-spacing-bottom"
-				></uo-alert>
-
-			<?php } ?>
-
-			<?php
+			}
 
 			// Check if Twitter is connected
 			if ( $this->is_connected ) {
 
-				?>
+				$this->alert_html(
+					array(
+						'content' => esc_html__( 'Uncanny Automator only supports connecting to one Twitter account at a time.', 'uncanny-automator' ),
+					)
+				);
 
-				<uo-alert
-					heading="<?php esc_html_e( 'Uncanny Automator only supports connecting to one Twitter account at a time.', 'uncanny-automator' ); ?>"
-				></uo-alert>
-				
-				<?php
+				// $this->alert_html(
+				// 	array(
+				// 		'type'    => 'error',
+				// 		'heading' => __( 'Warning!', 'uncanny-automator' ),
+				// 		'content' => sprintf(
+				// 			// translators: Link to Tweitter knowledgebase article
+				// 			esc_html__( 'Please reconnect your site to Twitter to address the recent API issues. %1$s.', 'uncanny-automator' ),
+				// 			'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twitter/', 'settings', 'twitter-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Learn More', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+				// 		),
+				// 	)
+				// );
 
 			}
 
@@ -101,18 +124,7 @@ namespace Uncanny_Automator;
 
 	</div>
 
-	<div
-		class="uap-settings-panel-bottom"
-
-		<?php
-
-		// Check if we have to add the arrow
-		if ( ! $this->is_connected ) {
-			// echo 'has-arrow';
-		}
-
-		?>
-	>
+	<div class="uap-settings-panel-bottom">
 
 		<?php
 

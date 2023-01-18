@@ -20,9 +20,9 @@ class Twitter_Settings {
 	/**
 	 * Creates the settings page
 	 */
-	public function __construct( $helpers ) {
+	public function __construct() {
 
-		$this->helpers = $helpers;
+		$this->functions = new Twitter_Functions();
 		// Register the tab
 		$this->setup_settings();
 
@@ -49,8 +49,13 @@ class Twitter_Settings {
 		// As this is the brand name, it probably shouldn't be translatable
 		$this->set_name( 'Twitter' );
 
+		$this->register_option( 'automator_twitter_api_key' );
+		$this->register_option( 'automator_twitter_api_secret' );
+		$this->register_option( 'automator_twitter_access_token' );
+		$this->register_option( 'automator_twitter_access_token_secret' );
+
 		try {
-			$this->client       = $this->helpers->get_client();
+			$this->client       = $this->functions->get_client();
 			$this->is_connected = true;
 		} catch ( \Exception $th ) {
 			$this->client       = false;
@@ -68,24 +73,62 @@ class Twitter_Settings {
 	 */
 	public function output() {
 
-		// Get the Twitter username
-		$twitter_username = ! empty( $this->client['screen_name'] ) ? $this->client['screen_name'] : '';
+		if ( '1' === automator_filter_input( 'allow-user-app' ) || $this->functions->is_user_app_connected() ) {
 
-		// Get the Twitter ID
-		$twitter_id = ! empty( $this->client['user_id'] ) ? $this->client['user_id'] : '';
-
-		// Get the link to connect Twitter
-		$connect_twitter_url = $this->helpers->get_connect_url();
-
-		// Get the link to disconnect Twitter
-		$disconnect_twitter_url = $this->helpers->get_disconnect_url();
-
-		// Check if the user JUST connected the workspace and returned
-		// from the Slack connection page
-		$user_just_connected_site = automator_filter_input( 'connect' ) === '1';
+			include_once 'view-twitter-user-app.php';
+			return;
+		}
 
 		// Load view
 		include_once 'view-twitter.php';
+	}
+
+	/**
+	 * settings_updated
+	 *
+	 * @return void
+	 */
+	public function settings_updated() {
+
+		try {
+			$client = array(
+				'api_key'            => get_option( 'automator_twitter_api_key', '' ),
+				'api_secret'         => get_option( 'automator_twitter_api_secret', '' ),
+				'oauth_token'        => get_option( 'automator_twitter_access_token', '' ),
+				'oauth_token_secret' => get_option( 'automator_twitter_access_token_secret', '' ),
+			);
+
+			$user = $this->functions->verify_credentials( $client );
+
+			update_option( '_uncannyowl_twitter_settings', $client );
+			update_option( 'automator_twitter_user', $user );
+
+			$this->add_alert(
+				array(
+					'type'    => 'success',
+					'heading' => __( 'You have successfully connected your Twitter account.', 'uncanny-automator' ),
+				)
+			);
+
+			$this->is_connected = true;
+
+		} catch ( \Exception $e ) {
+			$error              = $this->functions->parse_errors( $e->getMessage() );
+			$this->is_connected = false;
+			$this->set_status( '' );
+			$this->add_alert(
+				array(
+					'type'    => 'error',
+					'heading' => 'Connection error',
+					'content' => __( 'There was an error connecting your Twitter account: ', 'uncanny-automator' ) . $error,
+				)
+			);
+
+			delete_option( '_uncannyowl_twitter_settings' );
+			delete_option( 'automator_twitter_user' );
+
+			return;
+		}
 	}
 }
 

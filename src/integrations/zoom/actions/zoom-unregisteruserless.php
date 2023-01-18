@@ -18,6 +18,7 @@ class ZOOM_UNREGISTERUSERLESS {
 
 	private $action_code;
 	private $action_meta;
+	private $helpers;
 
 	/**
 	 * Set up Automator action constructor.
@@ -142,7 +143,6 @@ class ZOOM_UNREGISTERUSERLESS {
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 		} catch ( \Exception $e ) {
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}

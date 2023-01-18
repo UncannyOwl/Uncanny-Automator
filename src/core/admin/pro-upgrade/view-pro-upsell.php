@@ -56,13 +56,13 @@
 										?>
 
 										<a href="<?php echo esc_url( $link ); ?>" target="_blank">
-											<?php echo $feature['label']; ?>
+											<?php echo esc_html( $feature['label'] ); ?>
 											<uo-icon id="external-link"></uo-icon>
 										</a>
 
 									<?php } else { ?>
 
-										<?php echo $feature['label']; ?>
+										<?php echo esc_html( $feature['label'] ); ?>
 
 									<?php } ?>
 

@@ -38,6 +38,9 @@ class Zoom_Helpers {
 	 */
 	public $load_options;
 
+	private $default_questions;
+	private $tab_url;
+
 	/**
 	 * Zoom_Helpers constructor.
 	 */
@@ -51,6 +54,7 @@ class Zoom_Helpers {
 		add_action( 'wp_ajax_uap_zoom_api_get_meeting_questions', array( $this, 'api_get_meeting_questions' ) );
 
 		add_action( 'wp_ajax_uap_zoom_api_get_meetings', array( $this, 'ajax_get_meetings' ), 10 );
+		add_action( 'wp_ajax_uap_zoom_api_get_meeting_occurrences', array( $this, 'ajax_get_meeting_occurrences' ), 10 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
 
@@ -348,7 +352,10 @@ class Zoom_Helpers {
 
 				if ( ! empty( $meeting['topic'] ) ) {
 
-					$options[] = array(
+					// The Zoom API response lists one item for each meeting occurrence.
+					// To prevent duplicates in the dropdown, we store the meeting ID as the $options array key,
+					// But later we remove those keys as they are not needed.
+					$options[ $meeting['id'] ] = array(
 						'text'  => $meeting['topic'],
 						'value' => $meeting['id'],
 					);
@@ -361,6 +368,9 @@ class Zoom_Helpers {
 				'value' => '',
 			);
 		}
+
+		// Remove meeting ID keys (see the previous comment)
+		$options = array_values( $options );
 
 		wp_send_json( $options );
 
@@ -375,7 +385,7 @@ class Zoom_Helpers {
 	 * @param  mixed $action_data
 	 * @return void
 	 */
-	public function add_to_meeting( $user, $meeting_key, $action_data ) {
+	public function add_to_meeting( $user, $meeting_key, $meeting_occurrences, $action_data ) {
 
 		if ( empty( $user['email'] ) || false === is_email( $user['email'] ) ) {
 			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
@@ -393,6 +403,10 @@ class Zoom_Helpers {
 			'action'      => 'register_meeting_user',
 			'meeting_key' => $meeting_key,
 		);
+
+		if ( ! empty( $meeting_occurrences ) ) {
+			$body['occurrences'] = implode( ',', $meeting_occurrences );
+		}
 
 		$body = array_merge( $body, $user );
 
@@ -690,5 +704,67 @@ class Zoom_Helpers {
 
 	public function jwt_mode() {
 		return '3' !== get_option( 'uap_automator_zoom_api_settings_version', false );
+	}
+
+	/**
+	 * ajax_get_meeting_occurrences
+	 *
+	 * @return void
+	 */
+	public function ajax_get_meeting_occurrences() {
+
+		// Nonce and post object validation
+		Automator()->utilities->ajax_auth_check();
+
+		try {
+
+			$options = array();
+
+			$body = array(
+				'action'     => 'get_meeting',
+				'meeting_id' => automator_filter_input( 'value', INPUT_POST ),
+			);
+
+			$response = $this->api_request( $body );
+
+			if ( 200 !== $response['statusCode'] ) {
+				throw new \Exception( __( 'Could not fetch meeting occurrences from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+			}
+
+			if ( ! empty( $response['data']['occurrences'] ) ) {
+				foreach ( $response['data']['occurrences'] as $occurrence ) {
+					$options[] = array(
+						'text'  => $this->convert_datetime( $occurrence['start_time'] ),
+						'value' => $occurrence['occurrence_id'],
+					);
+				}
+			} else {
+				$options[] = array(
+					'text'  => $response['data']['start_time'],
+					'value' => '',
+				);
+			}
+		} catch ( \Exception $e ) {
+			$options[] = array(
+				'text'  => $e->getMessage(),
+				'value' => '',
+			);
+		}
+
+		wp_send_json( $options );
+
+		die();
+	}
+
+	public function convert_datetime( $str ) {
+
+		$timezone    = wp_timezone();
+		$date_format = get_option( 'date_format' );
+		$time_format = get_option( 'time_format' );
+
+		$date = new \DateTime( $str );
+		$date->setTimezone( $timezone );
+
+		return $date->format( $time_format . ', ' . $date_format );
 	}
 }
