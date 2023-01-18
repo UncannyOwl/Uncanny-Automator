@@ -56,13 +56,13 @@
 										?>
 
 										<a href="<?php echo esc_url( $link ); ?>" target="_blank">
-											<?php echo esc_html( $feature['label'] ); ?>
+											<?php echo $feature['label']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 											<uo-icon id="external-link"></uo-icon>
 										</a>
 
 									<?php } else { ?>
 
-										<?php echo esc_html( $feature['label'] ); ?>
+										<?php echo $feature['label']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 									<?php } ?>
 
