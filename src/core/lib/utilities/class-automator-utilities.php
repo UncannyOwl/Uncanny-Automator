@@ -381,22 +381,38 @@ class Automator_Utilities {
 
 	/**
 	 * @param $data
-	 * @param $type
+	 * @param string $type
+	 * @param string $meta_key
+	 * @param array $options
 	 *
 	 * @return mixed|string
 	 */
-	public function automator_sanitize( $data, $type = 'text' ) {
+	public function automator_sanitize( $data, $type = 'text', $meta_key = '', $options = array() ) {
+		// If it's an array, handle it early and return data
+		if ( is_array( $data ) ) {
+			return $this->automator_sanitize_array( $data, $meta_key, $options );
+		}
+		$type_before = $type;
+		// Maybe identify field type
+		if ( empty( $type ) || 'mixed' === $type ) {
+			$type = $this->maybe_get_field_type( $meta_key, $options );
+		}
+
 		switch ( $type ) {
+			case 'textarea':
+				$data = sanitize_textarea_field( $data );
+				break;
+			case 'html':
+				// not sanitization
+				break;
+			case 'text':
+				$data = sanitize_text_field( $data );
+				break;
 			case 'mixed':
-			case 'array':
-				if ( is_array( $data ) ) {
-					$this->automator_sanitize_array( $data );
-				} else {
+			default:
+				if ( wp_strip_all_tags( $data ) === $data ) {
 					$data = sanitize_text_field( $data );
 				}
-				break;
-			default:
-				$data = sanitize_text_field( $data );
 				break;
 		}
 
@@ -441,14 +457,16 @@ class Automator_Utilities {
 	 * Recursively calls itself if children has arrays as well
 	 *
 	 * @param $data
+	 * @param string $meta_key
+	 * @param array $options
 	 *
 	 * @return mixed
 	 */
-	public function automator_sanitize_array( $data ) {
+	public function automator_sanitize_array( $data, $meta_key = '', $options = array() ) {
 		foreach ( $data as $k => $v ) {
 			$k = esc_attr( $k );
 			if ( is_array( $v ) ) {
-				$data[ $k ] = $this->automator_sanitize( $v, 'array' );
+				$data[ $k ] = $this->automator_sanitize( $v, 'array', $meta_key, $options );
 			} else {
 				switch ( $k ) {
 					case 'EMAILFROM':
@@ -468,7 +486,8 @@ class Automator_Utilities {
 						$data[ $k ] = wp_kses_post( $v );
 						break;
 					default:
-						$data[ $k ] = sanitize_text_field( $v );
+						$field_type = $this->maybe_get_field_type( $k, $options );
+						$data[ $k ] = $this->automator_sanitize( $v, $field_type );
 						break;
 				}
 			}
@@ -570,5 +589,31 @@ class Automator_Utilities {
 		}
 
 		return $meta_value;
+	}
+
+	/**
+	 * @param $option_code
+	 * @param $options
+	 *
+	 * @return string
+	 */
+	public function maybe_get_field_type( $option_code, $options ) {
+		// if nothing is set, return text
+		if ( empty( $options ) || ! isset( $options['fields'] ) || ! isset( $options['fields'][ $option_code ] ) ) {
+			return 'text';
+		}
+
+		// if tinymce is set to yes, return HTML
+		if ( isset( $options['fields'][ $option_code ]['supports_tinymce'] ) && 'true' === (string) $options['fields'][ $option_code ]['supports_tinymce'] ) {
+			return 'html';
+		}
+
+		// No type found
+		if ( ! isset( $options['fields'][ $option_code ]['type'] ) || empty( $options['fields'][ $option_code ]['type'] ) ) {
+			return 'text';
+		}
+
+		// Return type
+		return (string) $options['fields'][ $option_code ]['type'];
 	}
 }

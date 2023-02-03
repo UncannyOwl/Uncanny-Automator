@@ -612,7 +612,8 @@ class Logs_List_Table extends WP_List_Table {
 
 			$trigger_date_completed = $trigger->trigger_date;
 
-			$trigger_datetime_completed = $this->get_datetime_formatted( $trigger->trigger_date );
+			// Show trigger run time instead of the completeion date.
+			$trigger_datetime_completed = $this->get_datetime_formatted( $trigger->trigger_run_time );
 
 			if ( false !== $trigger_datetime_completed ) {
 				$trigger_date_completed = '
@@ -1086,7 +1087,6 @@ class Logs_List_Table extends WP_List_Table {
 	 * @param object|array $item The current item
 	 *
 	 * @since 3.1.0
-	 *
 	 */
 	public function single_row( $item ) {
 

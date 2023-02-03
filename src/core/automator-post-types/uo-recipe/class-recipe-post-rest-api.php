@@ -569,13 +569,12 @@ class Recipe_Post_Rest_Api {
 	 * @return WP_REST_Response
 	 */
 	public function update( WP_REST_Request $request ) {
-
 		if ( $request->has_param( 'itemId' ) && is_numeric( $request->get_param( 'itemId' ) ) && $request->has_param( 'optionCode' ) && $request->has_param( 'optionValue' ) ) {
-
 			$item_id    = absint( $request->get_param( 'itemId' ) );
 			$recipe_id  = Automator()->get->maybe_get_recipe_id( $item_id );
 			$meta_key   = (string) Automator()->utilities->automator_sanitize( $request->get_param( 'optionCode' ) );
-			$meta_value = Automator()->utilities->automator_sanitize( $request->get_param( 'optionValue' ), 'mixed' );
+			$meta_value = $request->get_param( 'optionValue' );
+			$meta_value = Automator()->utilities->automator_sanitize( $meta_value, 'mixed', $meta_key, $request->get_param( 'options' ) );
 
 			/*
 			 * Save human readable sentence that will be stored as trigger and action meta.
@@ -1343,6 +1342,8 @@ class Recipe_Post_Rest_Api {
 		}
 
 		$params = maybe_unserialize( $api_request->params );
+
+		$params['resend'] = true;
 
 		try {
 			$response = Api_Server::api_call( $params );

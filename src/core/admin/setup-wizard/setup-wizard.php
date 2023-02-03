@@ -7,7 +7,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- *
+ * Handles Setup Wizard related functionalities.
  */
 class Setup_Wizard {
 
@@ -162,11 +162,24 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Determines whether the user is connected or not.
+	 *
 	 * @return false|null
 	 */
 	public function is_user_connected() {
 
+		$page = automator_filter_input( 'page' );
+
+		$post_type = automator_filter_input( 'post_type' );
+
+		// Pull data from licensing server if user is from set-up wizard.
+		if ( 'uo-recipe' === $post_type && 'uncanny-automator-setup-wizard' === $page ) {
+			return Api_Server::is_automator_connected( true ); // Pass force refresh to true.
+		}
+
+		// Otherwise pull data from local db to avoid multiple calls.
 		return ! empty( Api_Server::get_license_key() );
+
 	}
 
 	/**

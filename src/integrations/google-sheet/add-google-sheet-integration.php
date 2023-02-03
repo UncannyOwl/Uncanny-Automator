@@ -23,9 +23,7 @@ class Add_Google_Sheet_Integration {
 	 */
 	public function __construct() {
 
-		$client = get_option( '_uncannyowl_google_sheet_settings', array() );
-
-		if ( ! empty( $client['refresh_token'] ) ) {
+		if ( false !== $this->get_google_client() ) {
 
 			$this->is_connected = true;
 
@@ -131,5 +129,21 @@ class Add_Google_Sheet_Integration {
 		}
 
 		return $has_missing_scope;
+	}
+
+	/**
+	 * Get Google Client object
+	 *
+	 * @return false|array
+	 */
+	public function get_google_client() {
+
+		$access_token = get_option( '_uncannyowl_google_sheet_settings', array() );
+
+		if ( empty( $access_token ) || ! isset( $access_token['access_token'] ) ) {
+			return false;
+		}
+
+		return $access_token;
 	}
 }

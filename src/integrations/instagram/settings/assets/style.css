@@ -10,11 +10,23 @@
 
 .uap-instagram-account {
 	padding: 10px;
+
+	display: flex;
+	align-items: center;
+	gap: 15px;
 }
 
 .uap-instagram-account-no-account {
 	color: var(--uap-font-color-secondary);
 	font-style: italic;
+}
+
+.uap-instagram-account-content {
+	flex: 1 1 auto;
+}
+
+.uap-instagram-account-actions {
+	flex: 0 0 auto;
 }
 
 /* Instagram pill */

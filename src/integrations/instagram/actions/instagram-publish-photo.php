@@ -74,7 +74,7 @@ class INSTAGRAM_PUBLISH_PHOTO {
 					'input_type'  => 'url',
 					'required'    => true,
 					'placeholder' => esc_html__( 'https://pathtoimage/image.jpg', 'uncanny-automator' ),
-					'description' => esc_html__( 'The image just be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported.', 'uncanny-automator' ),
+					'description' => esc_html__( 'The image must be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported.', 'uncanny-automator' ),
 				),
 				// The hashtags.
 				array(

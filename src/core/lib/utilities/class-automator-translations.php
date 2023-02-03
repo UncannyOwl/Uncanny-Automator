@@ -1121,6 +1121,10 @@ class Automator_Translations {
 					'minute'           => esc_attr_x( 'Minute', 'Date format', 'uncanny-automator' ),
 				),
 			),
+			'refresh'             => esc_attr__( 'Refresh', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.refresh
+			'refreshOptions'      => esc_attr__( 'Refresh options', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.refreshOptions
 			'noResults'           => esc_attr__( 'No results found', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.noResults
 			/* translators: Character to separate items */
@@ -1132,6 +1136,8 @@ class Automator_Translations {
 			/* translators: Non-personal infinitive verb */
 			'search'              => esc_attr__( 'Search', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.search
+			'searchEllipsis'      => esc_attr__( 'Search...', 'uncanny-automator' ),
+			// UncannyAutomator.i18n.searchEllipsis
 			'searching'           => esc_attr__( 'Searching', 'uncanny-automator' ),
 			// UncannyAutomator.i18n.searching
 			/* translators: Non-personal infinitive verb */

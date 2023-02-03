@@ -483,14 +483,15 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 
 		$option = array(
-			'option_code'   => 'NUMTIMES',
-			'label'         => $label,
-			'description'   => $description,
-			'placeholder'   => $placeholder,
-			'input_type'    => 'int',
-			'default_value' => 1,
-			'min_number'    => 1,
-			'required'      => true,
+			'option_code'            => 'NUMTIMES',
+			'label'                  => $label,
+			'show_label_in_sentence' => false,
+			'description'            => $description,
+			'placeholder'            => $placeholder,
+			'input_type'             => 'int',
+			'default_value'          => 1,
+			'min_number'             => 1,
+			'required'               => true,
 		);
 
 		$option = apply_filters_deprecated( 'uap_option_number_of_times', array( $option ), '3.0', 'automator_option_number_of_times' );

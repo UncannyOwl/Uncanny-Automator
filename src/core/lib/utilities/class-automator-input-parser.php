@@ -535,11 +535,19 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function replace_recipe_variables( $replace_args, $args = array(), $source_trigger_id = 0 ) {
-		$pieces     = $this->sanitize_token_pieces( $this->parse_inner_token( $replace_args['pieces'], $replace_args ) );
-		$recipe_id  = $this->get_recipe_id( $args );
+		$pieces    = $this->sanitize_token_pieces( $this->parse_inner_token( $replace_args['pieces'], $replace_args ) );
+		$recipe_id = $this->get_recipe_id( $args );
+
+		/**
+		 * Global tokens do not have Trigger ID. (e.g. POSTMETA:<POST_ID>:<POST_META>)
+		 **/
 		$trigger_id = absint( $pieces[0] );
 
-		// Skips processing for recipe trigger logic: `any` if the source trigger ID does not match the token's ID.
+		/**
+		 * Skips processing for recipe trigger logic: `any` if the source trigger ID does not match the token's ID
+		 *
+		 * Continues the process when the token has no trigger ID.
+		 */
 		if ( $this->should_bail_for_logic_any( $trigger_id, $source_trigger_id ) ) {
 			return null;
 		}
@@ -560,11 +568,11 @@ class Automator_Input_Parser {
 		}
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
-			if ( strpos( $piece, '_ID' ) !== false ||
-				 strpos( $piece, '_URL' ) !== false ||
-				 strpos( $piece, '_EXCERPT' ) !== false ||
-				 strpos( $piece, '_THUMB_URL' ) !== false ||
-				 strpos( $piece, '_THUMB_ID' ) !== false ) {
+			if ( strpos( $piece, '_ID' ) !== false
+				|| strpos( $piece, '_URL' ) !== false
+				|| strpos( $piece, '_EXCERPT' ) !== false
+				|| strpos( $piece, '_THUMB_URL' ) !== false
+				|| strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -1076,6 +1084,18 @@ class Automator_Input_Parser {
 	 * @return boolean True if should bail. Otherwise, false.
 	 */
 	protected function should_bail_for_logic_any( $trigger_id = 0, $source_trigger_id = 0 ) {
+
+		/**
+		 * Account for tokens that has no Trigger ID. (e.g POSTMETA:<POST_ID>:<META_KEY>)
+		 *
+		 * Global tokens should be parsed regardless whether they are coming from Trigger or not,
+		 * and they should be parse regardless of Any or And.
+		 *
+		 * Return false immediately if that is the case.
+		 */
+		if ( 0 === $trigger_id ) {
+			return false;
+		}
 
 		// Determines whether the token's trigger ID matches the 'source' trigger ID.
 		$is_source_trigger_matches_token_trigger = ( $trigger_id === $source_trigger_id );

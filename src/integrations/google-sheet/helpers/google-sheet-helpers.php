@@ -128,6 +128,8 @@ class Google_Sheet_Helpers {
 		add_action( 'wp_ajax_get_worksheet_ROWS_GOOGLESHEETS', array( $this, 'get_worksheet_rows_gsspreadsheet' ) );
 		add_action( 'wp_ajax_uo_google_disconnect_user', array( $this, 'disconnect_user' ) );
 
+		add_filter( 'automator_google_api_call', array( $this, 'resend_with_current_credentials' ) );
+
 		// Load the settings page.
 		require_once __DIR__ . '/../settings/settings-google-sheet.php';
 
@@ -1354,5 +1356,34 @@ class Google_Sheet_Helpers {
 
 		return $response;
 
+	}
+
+	/**
+	 * resend_with_current_credentials
+	 *
+	 * Make sure request replays are done with the current credentials.
+	 *
+	 * @param  array $params
+	 * @return array
+	 */
+	public function resend_with_current_credentials( $params ) {
+
+		// If it is not a resend, proceed as usual
+		if ( empty( $params['resend'] ) ) {
+			return $params;
+		}
+
+		// If the request didn't carry access token in the first place, proceed with no changes
+		if ( empty( $params['body']['access_token'] ) ) {
+			return $params;
+		}
+
+		try {
+			$params['body']['access_token'] = $this->get_google_client();
+		} catch ( \Exception $e ) {
+			//If Google is not connected, proceed with the recorded credentials
+		}
+
+		return $params;
 	}
 }

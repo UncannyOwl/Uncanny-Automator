@@ -98,6 +98,7 @@ class Api_Server {
 	 */
 	public static function get_license_key() {
 		$license_type = self::get_license_type();
+
 		return get_option( 'uap_automator_' . $license_type . '_license_key' );
 	}
 
@@ -127,6 +128,7 @@ class Api_Server {
 
 	/**
 	 * Method get_site_name
+	 * For sites like https://your-site:8888/
 	 *
 	 * @return string
 	 */

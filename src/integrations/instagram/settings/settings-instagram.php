@@ -123,6 +123,7 @@ class Instagram_Settings {
 					'noInstagram'             => esc_html__( 'No Instagram Business or Professional account connected to this Facebook page.', 'uncanny-automator' ),
 					/* translators: 1. Number of followers */
 					'followers'               => esc_html_x( '%1$s followers', 'Instagram', 'uncanny-automator' ),
+					'refresh'                 => esc_html__( 'Refresh', 'uncanny-automator' ),
 				);
 
 				return $data;

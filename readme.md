@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.1.1 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.9 \
+**Stable tag:** 4.9.0.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -337,6 +337,27 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.9.0.1 [2023-02-02]
+
+**Fixed:** 
+
+* Google Sheets - Settings page now uses same connection status function as Recipe UI #3162
+* Google Sheets - Resend data button now uses updated access token with each request #3189
+* Twitter - Re-added deprecated action removed in v4.9 #3165
+* Set-up Wizard - No longer shows site as connected when not connected in some situations #3019
+* Recipe Logs - Shows trigger completion time instead of recipe completion time when the trigger is run multiple times #3182
+* Recipe UI - Unable to remove missing conditions (Automator Pro) #3102
+
+**Under the hood:**
+
+* Instagram - Now loads Instagram accounts in order; added "refresh" button #3099
+* Tokens - Postmeta - Fixes parsing of tokens without Trigger ID #3170
+* Recipe UI - Can't select "any" option, stuck on default "all" in Safari #3156
+* Recipe UI - Field: `is_hidden` doesn't hide column in repeater field #3002
+* Recipe UI - Several enhancements to AJAX fields for future releases #3082
+* Recipe UI - Show field labels in conditions (Automator Pro) #2821
+* Field sanitization is now based on the field type #3150
 
 ### 4.9 [2023-01-18]
 

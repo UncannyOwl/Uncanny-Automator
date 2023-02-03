@@ -183,6 +183,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'placeholder'               => '',
 			'description'               => '',
 			'required'                  => true,
+			'show_label_in_sentence'    => true,
 			'tokens'                    => true,
 			'default'                   => null,
 			'min_number'                => null,
@@ -195,6 +196,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$args                      = wp_parse_args( $args, $defaults );
 		$option_code               = $args['option_code'];
 		$label                     = $args['label'];
+		$show_label_in_sentence    = $args['show_label_in_sentence'];
 		$description               = $args['description'];
 		$placeholder               = $args['placeholder'];
 		$tokens                    = $args['tokens'];
@@ -221,6 +223,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'token_name'                => $token_name,
 			'min_number'                => $min_number,
 			'max_number'                => $max_number,
+			'show_label_in_sentence'    => $show_label_in_sentence,
 		);
 
 		// Enable TinyMCE by default for all textarea fields unless other specified
@@ -295,6 +298,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 				$field_args['label'] = $args['label'];
 			}
 
+			// Show label in the trigger/action/condition sentence
+			if ( isset( $args['show_label_in_sentence'] ) ) {
+				$field_args['show_label_in_sentence'] = $args['show_label_in_sentence'];
+			}
+
 			// Description
 			if ( isset( $args['description'] ) ) {
 				$field_args['description'] = $args['description'];
@@ -320,6 +328,11 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			// Relevant tokens
 			if ( isset( $args['relevant_tokens'] ) && is_array( $args['relevant_tokens'] ) ) {
 				$field_args['relevant_tokens'] = $args['relevant_tokens'];
+			}
+
+			// AJAX
+			if ( isset( $args['ajax'] ) && is_array( $args['ajax'] ) && isset( $args['ajax']['endpoint'] ) && isset( $args['ajax']['event'] ) ) {
+				$field_args['ajax'] = $args['ajax'];
 			}
 
 			// Is AJAX
