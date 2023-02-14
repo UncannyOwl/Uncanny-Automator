@@ -13,39 +13,15 @@ namespace Uncanny_Automator;
 /**
  * Hubspot Settings
  */
-class Hubspot_Settings {
+class Hubspot_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helpers;
 	protected $client;
 	protected $is_connected;
 
 	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helpers ) {
-
-		$this->helpers = $helpers;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-	}
-
-	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'hubspot-api' );
 
@@ -53,16 +29,18 @@ class Hubspot_Settings {
 
 		$this->set_name( 'Hubspot' );
 
+	}
+
+	public function get_status() {
+
 		try {
-			$this->client       = $this->helpers->get_client();
-			$this->is_connected = true;
+			$this->helpers->get_client();
+			$is_connected = true;
 		} catch ( \Exception $e ) {
-			$this->client       = false;
-			$this->is_connected = false;
+			$is_connected = false;
 		}
 
-		$this->set_status( false === $this->is_connected ? '' : 'success' );
-
+		return false === $is_connected ? '' : 'success';
 	}
 
 	/**
@@ -71,6 +49,14 @@ class Hubspot_Settings {
 	 * @return void.
 	 */
 	public function output() {
+
+		try {
+			$this->client       = $this->helpers->get_client();
+			$this->is_connected = true;
+		} catch ( \Exception $e ) {
+			$this->client       = false;
+			$this->is_connected = false;
+		}
 
 		$connect_url = $this->helpers->connect_url();
 

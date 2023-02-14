@@ -9,9 +9,7 @@ namespace Uncanny_Automator;
 /**
  * ConvertKit_Settings Settings
  */
-class ConvertKit_Settings {
-
-	use Settings\Premium_Integrations;
+class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 
 	const OPTIONS_API_KEY = 'automator_convertkit_api_key';
 
@@ -19,19 +17,35 @@ class ConvertKit_Settings {
 
 	const OPTIONS_CLIENT = 'automator_convertkit_client';
 
-	protected $helper = null;
-
 	protected $is_connected = false;
 
 	/**
-	 * Creates the settings page
+	 * Sets up the properties of the settings page
 	 */
-	public function __construct( $helper ) {
+	public function get_status() {
 
-		$this->helper = $helper;
+		$is_connected = null !== $this->helpers->get_client() ? true : false;
 
-		// Registers the tab.
-		$this->setup_settings();
+		return $is_connected ? 'success' : '';
+
+	}
+
+	/**
+	 * set_properties
+	 *
+	 * @return void
+	 */
+	public function set_properties() {
+
+		$this->set_id( 'convertkit' );
+
+		$this->set_icon( 'CONVERTKIT' );
+
+		$this->set_name( 'ConvertKit' );
+
+		$this->register_option( self::OPTIONS_API_KEY );
+
+		$this->register_option( self::OPTIONS_API_SECRET );
 
 		// Validates the API Key.
 		add_filter( 'sanitize_option_' . self::OPTIONS_API_KEY, array( $this, 'validate_api_key' ), 10, 3 );
@@ -62,7 +76,7 @@ class ConvertKit_Settings {
 
 		try {
 
-			$this->helper->verify_api_key( $sanitized_input );
+			$this->helpers->verify_api_key( $sanitized_input );
 
 			return $sanitized_input;
 
@@ -107,12 +121,12 @@ class ConvertKit_Settings {
 
 		try {
 
-			$response = $this->helper->verify_api_secret( $sanitized_input );
+			$response = $this->helpers->verify_api_secret( $sanitized_input );
 
 			// At this point, both API Key and API Secret are good to go. Save the Client in the DB.
 			update_option( self::OPTIONS_CLIENT, $response, false );
 
-			$client = $this->helper->get_client();
+			$client = $this->helpers->get_client();
 
 			/* translators: Settings flash message */
 			$heading = sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client['primary_email_address'] );
@@ -135,42 +149,23 @@ class ConvertKit_Settings {
 	}
 
 	/**
-	 * Sets up the properties of the settings page
-	 */
-	protected function set_properties() {
-
-		$this->set_id( 'convertkit' );
-
-		$this->set_icon( 'CONVERTKIT' );
-
-		$this->set_name( 'ConvertKit' );
-
-		$this->register_option( self::OPTIONS_API_KEY );
-
-		$this->register_option( self::OPTIONS_API_SECRET );
-
-		$this->is_connected = null !== $this->helper->get_client() ? true : false;
-
-		$this->set_js( '/convertkit/settings/assets/script.js' );
-
-		$this->set_status( $this->is_connected ? 'success' : '' );
-
-	}
-
-	/**
 	 * Creates the output of the settings page
 	 *
 	 * @return void.
 	 */
 	public function output() {
 
+		$this->load_js( '/convertkit/settings/assets/script.js' );
+
+		$this->is_connected = null !== $this->helpers->get_client() ? true : false;
+
 		$vars = array(
 			'is_connected'   => $this->is_connected,
 			'api_key'        => get_option( self::OPTIONS_API_KEY, '' ),
 			'api_secret'     => get_option( self::OPTIONS_API_SECRET, '' ),
 			'alerts'         => (array) get_settings_errors( 'automator_convertkit_connection_alerts' ),
-			'client'         => $this->helper->get_client(),
-			'disconnect_url' => $this->helper->get_disconnect_url(),
+			'client'         => $this->helpers->get_client(),
+			'disconnect_url' => $this->helpers->get_disconnect_url(),
 		);
 
 		$vars['actions'] = array(

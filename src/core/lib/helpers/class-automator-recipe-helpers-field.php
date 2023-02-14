@@ -191,6 +191,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'supports_tinymce'          => null,
 			'supports_fullpage_editing' => null,
 			'token_name'                => '',
+			'read_only'                 => false,
+			'is_hidden'                 => false,
 		);
 
 		$args                      = wp_parse_args( $args, $defaults );
@@ -208,6 +210,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$token_name                = $args['token_name'];
 		$min_number                = $args['min_number'];
 		$max_number                = $args['max_number'];
+		$read_only                 = $args['read_only'];
+		$is_hidden                 = $args['is_hidden'];
 
 		$option = array(
 			'option_code'               => $option_code,
@@ -224,6 +228,8 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'min_number'                => $min_number,
 			'max_number'                => $max_number,
 			'show_label_in_sentence'    => $show_label_in_sentence,
+			'read_only'                 => $read_only,
+			'is_hidden'                 => $is_hidden,
 		);
 
 		// Enable TinyMCE by default for all textarea fields unless other specified

@@ -11,7 +11,7 @@
  * $facebook_pages_settings_uri     The uri of the Facebook Pages settings.
  * $disconnect_uri                  The Facebook Pages disconnect uri.
  * $facebook_pages_oauth_dialog_uri The Facebook Pages Oauth dialog uri.
- * $facebook_user                   The Connected Facebook User.
+ * $user_info                       The Connected Facebook User.
  */
 
 namespace Uncanny_Automator;
@@ -117,7 +117,9 @@ namespace Uncanny_Automator;
 
 							<div class="uap-settings-panel-user__avatar">
 
-								<img src="<?php echo esc_url( $facebook_user->picture ); ?>" alt="<?php echo esc_attr( $facebook_user->name ); ?>" />
+								<?php if ( ! empty( $user_info['name'] ) ) { ?>
+									<img src="<?php echo esc_url( $user_info['picture'] ); ?>" alt="<?php echo esc_attr( $user_info['name'] ); ?>" />
+								<?php } ?>
 
 							</div>
 
@@ -125,22 +127,25 @@ namespace Uncanny_Automator;
 
 								<div class="uap-settings-panel-user-info__main">
 
-									<?php echo esc_html( $facebook_user->name ); ?>
+								<?php if ( ! empty( $user_info['name'] ) ) { ?>
+
+									<?php echo esc_html( $user_info['name'] ); ?>
 
 									<uo-icon integration="FACEBOOK"></uo-icon>
+
+								<?php } ?>
 
 								</div>
 
 								<div class="uap-settings-panel-user-info__additional">
-									<?php
-										echo esc_html(
-											sprintf(
-												/* translators: 1. ID */
-												__( 'ID: %1$d', 'uncanny-automator' ),
-												$facebook_user->user_id
-											)
-										);
-									?>
+
+									<?php if ( ! empty( $user_info['user_id'] ) ) { ?>
+
+										<?php /* translators: 1. ID */ ?>
+										<?php echo esc_html( sprintf( __( 'ID: %1$d', 'uncanny-automator' ), $user_info['user_id'] ) ); ?>
+
+									<?php } ?>
+
 								</div>
 
 							</div>

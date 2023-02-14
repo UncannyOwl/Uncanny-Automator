@@ -156,38 +156,92 @@ class LD_TOPICDONE {
 		$lesson = $data['lesson'];
 		$course = $data['course'];
 
-		$args = array(
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => $topic->ID,
-			'user_id' => $user->ID,
-		);
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 
-		$args = Automator()->maybe_add_trigger_entry( $args, false );
-		if ( $args ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] ) {
-					Automator()->insert_trigger_meta(
-						array(
-							'user_id'        => $user->ID,
-							'trigger_id'     => $result['args']['trigger_id'],
-							'meta_key'       => 'LDCOURSE',
-							'meta_value'     => $course->ID,
-							'trigger_log_id' => $result['args']['get_trigger_id'],
-							'run_number'     => $result['args']['run_number'],
-						)
+		if ( empty( $recipes ) ) {
+			return;
+		}
+
+		$course_id = absint( $course->ID );
+		$lesson_id = absint( $lesson->ID );
+		$topic_id  = absint( $topic->ID );
+
+		$course_ids = Automator()->get->meta_from_recipes( $recipes, 'LDCOURSE' );
+		$lesson_ids = Automator()->get->meta_from_recipes( $recipes, 'LDLESSON' );
+		$topic_ids  = Automator()->get->meta_from_recipes( $recipes, 'LDTOPIC' );
+		if ( empty( $course_ids ) || empty( $lesson_ids ) || empty( $topic_ids ) ) {
+			return; // bailout
+		}
+
+		$matched_recipe_ids = array();
+
+		foreach ( $recipes as $recipe_id => $recipe ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id = $trigger['ID'];
+
+				$r_course_id = (int) $course_ids[ $recipe_id ][ $trigger_id ];
+				$r_lesson_id = (int) $lesson_ids[ $recipe_id ][ $trigger_id ];
+				$r_topic_id  = (int) $topic_ids[ $recipe_id ][ $trigger_id ];
+
+				if ( ( intval( '-1' ) === intval( $r_course_id ) || (int) $course_id === (int) $r_course_id )
+					&&
+					( intval( '-1' ) === intval( $r_lesson_id ) || (int) $lesson_id === (int) $r_lesson_id )
+					&&
+					( intval( '-1' ) === intval( $r_topic_id ) || (int) $topic_id === (int) $r_topic_id )
+				) {
+					$matched_recipe_ids[] = array(
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+						'course_id'  => $course_id,
+						'lesson_id'  => $lesson_id,
+						'topic_id'   => $topic_id,
 					);
-					Automator()->insert_trigger_meta(
-						array(
-							'user_id'        => $user->ID,
-							'trigger_id'     => $result['args']['trigger_id'],
-							'meta_key'       => 'LDLESSON',
-							'meta_value'     => $lesson->ID,
-							'trigger_log_id' => $result['args']['get_trigger_id'],
-							'run_number'     => $result['args']['run_number'],
-						)
-					);
-					Automator()->maybe_trigger_complete( $result['args'] );
+				}
+			}
+		}
+
+		if ( empty( $matched_recipe_ids ) ) {
+			return;
+		}
+
+		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+
+			$pass_args = array(
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'post_id'          => $topic->ID,
+				'user_id'          => $user->ID,
+				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+				'trigger_to_match' => $matched_recipe_id['trigger_id'],
+			);
+
+			$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+
+			if ( $args ) {
+				foreach ( $args as $result ) {
+					if ( true === $result['result'] ) {
+						Automator()->insert_trigger_meta(
+							array(
+								'user_id'        => $user->ID,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'meta_key'       => 'LDCOURSE',
+								'meta_value'     => $course->ID,
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							)
+						);
+						Automator()->insert_trigger_meta(
+							array(
+								'user_id'        => $user->ID,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'meta_key'       => 'LDLESSON',
+								'meta_value'     => $lesson->ID,
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							)
+						);
+						Automator()->maybe_trigger_complete( $result['args'] );
+					}
 				}
 			}
 		}

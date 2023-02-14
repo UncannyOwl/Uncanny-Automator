@@ -13,44 +13,15 @@ namespace Uncanny_Automator;
 /**
  * Facebook Settings
  */
-class Mailchimp_Settings {
+class Mailchimp_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helper = '';
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helpers ) {
-
-		$this->helpers = $helpers;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-	}
+	protected $client;
+	protected $is_connected;
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
-
-		try {
-			$this->client       = $this->helpers->get_mailchimp_client();
-			$this->is_connected = true;
-		} catch ( \Exception $e ) {
-			$this->client       = array();
-			$this->is_connected = false;
-		}
+	public function set_properties() {
 
 		$this->register_option( 'uap_mailchimp_api_url' );
 
@@ -64,12 +35,19 @@ class Mailchimp_Settings {
 
 		$this->set_name( 'Mailchimp' );
 
-		$this->set_status( $this->is_connected ? 'success' : '' );
+	}
 
-		$this->set_js( '/mailchimp/settings/assets/script.js' );
+	public function get_status() {
 
-		$this->set_css( '/mailchimp/settings/assets/style.css' );
+		try {
+			$client       = $this->helpers->get_mailchimp_client();
+			$is_connected = true;
+		} catch ( \Exception $e ) {
+			$client       = array();
+			$is_connected = false;
+		}
 
+		return $is_connected ? 'success' : '';
 	}
 
 	/**
@@ -78,6 +56,18 @@ class Mailchimp_Settings {
 	 * @return void.
 	 */
 	public function output() {
+
+		try {
+			$this->client       = $this->helpers->get_mailchimp_client();
+			$this->is_connected = true;
+		} catch ( \Exception $e ) {
+			$this->client       = array();
+			$this->is_connected = false;
+		}
+
+		$this->load_js( '/mailchimp/settings/assets/script.js' );
+
+		$this->load_css( '/mailchimp/settings/assets/style.css' );
 
 		// Set the transient when page is viewed.
 		set_transient( 'automator_api_mailchimp_authorize_nonce', wp_create_nonce( 'automator_api_mailchimp_authorize' ), 3600 );

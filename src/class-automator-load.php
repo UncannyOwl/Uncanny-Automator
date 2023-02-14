@@ -630,6 +630,8 @@ class Automator_Load {
 		// Settings
 		$classes['Trait_Settings_Premium_Integrations'] = UA_ABSPATH . 'src/core/lib/settings/trait-premium-integrations.php';
 
+		$classes['Premium_Integration_Settings'] = UA_ABSPATH . 'src/core/lib/settings/premium-integration-settings.php';
+
 		// Integrations
 		$classes['Integrations'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-integrations.php';
 

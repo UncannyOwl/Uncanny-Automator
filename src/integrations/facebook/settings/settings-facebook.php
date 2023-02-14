@@ -13,37 +13,12 @@ namespace Uncanny_Automator;
 /**
  * Facebook Settings
  */
-class Facebook_Settings {
-
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helper = '';
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helper ) {
-
-		$this->helper = $helper;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-	}
+class Facebook_Settings extends Settings\Premium_Integration_Settings {
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
-
-		$is_user_connected = $this->get_helper()->is_user_connected();
+	public function set_properties() {
 
 		$this->set_id( 'facebook-pages' );
 
@@ -51,14 +26,10 @@ class Facebook_Settings {
 
 		$this->set_name( 'Facebook Pages' );
 
-		$this->set_status( $is_user_connected ? 'success' : '' );
+	}
 
-		if ( $is_user_connected ) {
-			$this->set_js( '/facebook/settings/assets/script.js' );
-		}
-
-		$this->set_css( '/facebook/settings/assets/style.css' );
-
+	public function get_status() {
+		return $this->get_helper()->is_user_connected() ? 'success' : '';
 	}
 
 	/**
@@ -68,7 +39,7 @@ class Facebook_Settings {
 	 */
 	public function get_helper() {
 
-		return $this->helper;
+		return $this->helpers;
 
 	}
 
@@ -80,6 +51,12 @@ class Facebook_Settings {
 	public function output() {
 
 		$is_user_connected = $this->get_helper()->is_user_connected();
+
+		if ( $is_user_connected ) {
+			$this->load_js( '/facebook/settings/assets/script.js' );
+		}
+
+		$this->load_css( '/facebook/settings/assets/style.css' );
 
 		$error_status = automator_filter_input( 'status' );
 

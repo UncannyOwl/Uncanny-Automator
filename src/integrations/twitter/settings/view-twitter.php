@@ -20,6 +20,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * $connect_twitter_url    URL to connect Twitter
  * $disconnect_twitter_url URL to disconnect Twitter
  */
+try {
+	$this->client       = $this->functions->get_client();
+	$this->is_connected = true;
+} catch ( \Exception $th ) {
+	$this->client       = false;
+	$this->is_connected = false;
+}
 
 // Get the Twitter username
 $twitter_username = ! empty( $this->client['screen_name'] ) ? $this->client['screen_name'] : '';

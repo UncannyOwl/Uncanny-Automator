@@ -606,6 +606,13 @@ class WhatsApp_Helpers {
 					'access_token' => $access_token,
 					'input_token'  => $access_token,
 				),
+				/**
+				 * We're validating the provided access token to the Facebook Graph directly.
+				 * At this point, the user is not connected and they would use their own application.
+				 * The debug_token endpoint is a generic endpoint which would work for all of the Meta API services.
+				 *
+				 * We can move this to our API and provide an access token debugger service. (e.g /v2/meta?action=token_debugger)
+				 **/
 				self::GRAPH_URL
 			)
 		);

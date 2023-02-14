@@ -315,7 +315,7 @@ class Linkedin_Helpers {
 			'endpoint' => self::API_ENDPOINT,
 			'body'     => $body,
 			'action'   => $action,
-			'timeout'  => 15,
+			'timeout'  => 45,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -399,7 +399,7 @@ class Linkedin_Helpers {
 			return;
 		}
 
-		$error_message = 'API Error: ' . implode( '. ', array_values( $response['data'] ) );
+		$error_message = 'API Error: ' . wp_json_encode( $response['data'] );
 
 		throw new \Exception( $error_message, $response['statusCode'] );
 

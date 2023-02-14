@@ -90,6 +90,38 @@ class Facebook_Helpers {
 			}
 		);
 
+		// Fixes the credentials that are sent into our API when the re-send button if clicked.
+		add_filter( 'automator_facebook_api_call', array( $this, 'resend_with_current_credentials' ) );
+
+	}
+
+	/**
+	 * Resend the credentials with current values stored in the db.
+	 *
+	 * @param array $params The action parameters.
+	 *
+	 * @return array The action parameters.
+	 */
+	public function resend_with_current_credentials( $params ) {
+
+		// Bail when request is not coming from the re-send button.
+		if ( empty( $params['resend'] ) ) {
+			return $params;
+		}
+
+		// Bail when access token is empty.
+		if ( empty( $params['body']['access_token'] ) || empty( $params['body']['page_id'] ) ) {
+			return $params;
+		}
+
+		$access_token = $this->get_user_page_access_token( $params['body']['page_id'] );
+
+		if ( ! empty( $access_token ) ) {
+			$params['body']['access_token'] = $access_token;
+		}
+
+		return $params;
+
 	}
 
 	/**

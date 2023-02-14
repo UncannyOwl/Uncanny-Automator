@@ -95,7 +95,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<div class="uap-settings-panel-bottom-left">
 
-						<uo-button href="<?php echo esc_url( $this->helper->get_authentication_url() ); ?>">
+						<uo-button href="<?php echo esc_url( $this->helpers->get_authentication_url() ); ?>">
 
 							<?php esc_html_e( 'Connect LinkedIn account', 'uncanny-automator' ); ?>
 
@@ -142,7 +142,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<div class="uap-settings-panel-bottom-right">
 
-						<uo-button color="danger" href="<?php echo esc_url( $this->helper->get_disconnect_url() ); ?>">
+						<uo-button color="danger" href="<?php echo esc_url( $this->helpers->get_disconnect_url() ); ?>">
 							<uo-icon id="sign-out"></uo-icon>
 							<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 						</uo-button>

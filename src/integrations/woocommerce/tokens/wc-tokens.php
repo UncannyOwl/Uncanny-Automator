@@ -1110,6 +1110,8 @@ class Wc_Tokens {
 		}
 		switch ( $meta_key ) {
 			case 'WOOPRODUCT':
+				$value = get_the_title( $product_id );
+				break;
 			case 'WOOPRODUCT_ID':
 				$value = $product_id;
 				break;

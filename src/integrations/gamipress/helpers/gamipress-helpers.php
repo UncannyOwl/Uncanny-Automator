@@ -262,7 +262,7 @@ class Gamipress_Helpers {
 				'post_status'    => 'publish',
 			);
 
-			$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any achievement', 'uncanny-automator' ) );
+			$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any award', 'uncanny-automator' ) );
 
 			foreach ( $options as $award_id => $award_name ) {
 				$fields[] = array(

@@ -19,7 +19,7 @@ class Fi_Tokens {
 		add_filter( 'automator_maybe_parse_token', array( $this, 'fi_token' ), 40, 6 );
 		// Entry tokens
 		add_filter( 'automator_maybe_trigger_fi_tokens', array( $this, 'fi_entry_possible_tokens' ), 20, 2 );
-		add_filter( 'automator_maybe_parse_token', array( $this, 'fi_entry_tokens' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'fi_entry_tokens' ), 40, 6 );
 	}
 
 	/**
@@ -31,17 +31,21 @@ class Fi_Tokens {
 	 * @return array
 	 */
 	public function fi_possible_tokens( $tokens = array(), $args = array() ) {
+
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
+
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
 		$form_ids = array();
+
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 
 			$form = FrmForm::getOne( $form_id );
+
 			if ( $form ) {
 				$form_ids[] = $form->id;
 			}
@@ -52,11 +56,16 @@ class Fi_Tokens {
 		}
 
 		if ( ! empty( $form_ids ) ) {
+
 			foreach ( $form_ids as $form_id ) {
+
 				$fields = array();
 				$meta   = FrmField::get_all_for_form( $form_id );
+
 				if ( is_array( $meta ) ) {
+
 					foreach ( $meta as $field ) {
+
 						$input_id    = $field->id;
 						$input_title = $field->name . ( '' !== $field->description ? ' (' . $field->description . ') ' : '' );
 						$token_id    = "$form_id|$input_id";
@@ -98,6 +107,7 @@ class Fi_Tokens {
 	/**
 	 * Parse the token.
 	 *
+	 * @todo Maybe convert the trigger into traits and use new token arch to handle this before it gets more complex.
 	 * @param string $value .
 	 * @param array $pieces .
 	 * @param string $recipe_id .
@@ -105,40 +115,54 @@ class Fi_Tokens {
 	 * @return null|string
 	 */
 	public function fi_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+
 		if ( $pieces ) {
 
-			if ( in_array( 'FIFORM', $pieces, true )
-				|| in_array( 'ANONFIFORM', $pieces, true )
-				|| in_array( 'ANONFISUBMITFORM', $pieces, true ) ) {
+			if ( in_array( 'FIFORM', $pieces, true ) || in_array( 'ANONFIFORM', $pieces, true ) || in_array( 'ANONFISUBMITFORM', $pieces, true ) ) {
 
 				if ( 'FIFORM' === $pieces[2] ) {
+
+					// Sends readable FIFORM value backs.
 					if ( isset( $trigger_data[0]['meta']['FIFORM_readable'] ) ) {
 						$value = $trigger_data[0]['meta']['FIFORM_readable'];
 					}
 				} elseif ( 'ANONFIFORM' === $pieces[2] ) {
+
+					// Sends readable ANONFIFORM value backs.
 					if ( isset( $trigger_data[0]['meta']['ANONFIFORM_readable'] ) ) {
 						$value = $trigger_data[0]['meta']['ANONFIFORM_readable'];
 					}
 				} elseif ( 'ANONFIFORM_ID' === $pieces[2] ) {
+
+					// Sends readable ANONFIFORM ID value back.
 					if ( isset( $trigger_data[0]['meta']['ANONFIFORM'] ) ) {
 						$value = $trigger_data[0]['meta']['ANONFIFORM'];
 					}
 				} else {
 
+					// Processes entry token fields.
 					$token_info = explode( '|', $pieces[2] );
 
 					$form_id  = $token_info[0];
 					$meta_key = $token_info[1];
-					//$user_id               = get_current_user_id();
-					$s_query               = array();
-					$s_query['it.form_id'] = $form_id;
-					$s_query['it.user_id'] = $user_id;
-					$order                 = ' ORDER BY id DESC ';
-					$entries               = FrmEntry::getAll( $s_query, $order, 1, true, false );
-					$fields                = FrmField::get_all_for_form( $form_id );
+					$fields   = FrmField::get_all_for_form( $form_id );
 
-					// Collect all file field types
+					$entry_id = absint( Automator()->db->token->get( 'FIENTRYID', $replace_args ) );
+
+					$entries = array();
+
+					/**
+					 * Pushes entry into the entry_id index. Supports legacy handling of entry.
+					 *
+					 * Avoids unreliable fetching.
+					 *
+					 * @ticket 2100575229
+					 */
+					$entries[ $entry_id ] = FrmEntry::getOne( $entry_id, true );
+
+					// Collects all file field types.
 					$file_fields = array();
+
 					foreach ( $fields as $field ) {
 						if ( isset( $field->type ) && 'file' === $field->type ) {
 							$file_fields[] = $field->id;
@@ -162,8 +186,11 @@ class Fi_Tokens {
 
 							// It means its a split name if it has two parts.
 							if ( ! empty( $name_split_meta_key ) && 2 === count( $name_split_meta_key ) ) {
+
 								list( $field_id, $name_part ) = $name_split_meta_key;
+
 								return ! empty( $entry->metas[ $field_id ][ $name_part ] ) ? $entry->metas[ $field_id ][ $name_part ] : null;
+
 							}
 
 							if ( isset( $entry->metas ) && isset( $entry->metas[ $meta_key ] ) ) {
@@ -187,6 +214,7 @@ class Fi_Tokens {
 									$media_id = $entry->metas[ $meta_key ];
 
 									$attachment = get_post( $media_id );
+
 									if ( ! $attachment ) {
 										$value = $entry->metas[ $meta_key ];
 									}
@@ -198,9 +226,13 @@ class Fi_Tokens {
 										$value = esc_url( wp_get_attachment_url( $media_id ) );
 									}
 								} else {
+
 									$value = $entry->metas[ $meta_key ];
+
 								}
+
 								break;
+
 							}
 						}
 					}

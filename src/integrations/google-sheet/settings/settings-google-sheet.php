@@ -13,36 +13,14 @@ namespace Uncanny_Automator;
 /**
  * Google_Sheet_Settings Settings
  */
-class Google_Sheet_Settings {
+class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helper = '';
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helper ) {
-
-		$this->helper = $helper;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-	}
+	protected $client;
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'google-sheet' );
 
@@ -50,17 +28,20 @@ class Google_Sheet_Settings {
 
 		$this->set_name( 'Google Sheets' );
 
-		$this->client = false;
+	}
+
+	public function get_status() {
+
+		$client = false;
 
 		try {
 			// The connection must have a Google credentials and must not have any missing scope.
-			$this->client = $this->helper->get_google_client() && ! $this->helper->has_missing_scope();
+			$client = $this->helpers->get_google_client() && ! $this->helpers->has_missing_scope();
 		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing
 		}
 
-		$this->set_status( false === $this->client ? '' : 'success' );
-
+		return false === $client ? '' : 'success';
 	}
 
 	/**
@@ -70,7 +51,7 @@ class Google_Sheet_Settings {
 	 */
 	public function get_helper() {
 
-		return $this->helper;
+		return $this->helpers;
 
 	}
 
@@ -145,6 +126,15 @@ class Google_Sheet_Settings {
 		$user_info = $helper->get_user_info();
 
 		$connect = absint( automator_filter_input( 'connect' ) );
+
+		$this->client = false;
+
+		try {
+			// The connection must have a Google credentials and must not have any missing scope.
+			$this->client = $this->helpers->get_google_client() && ! $this->helpers->has_missing_scope();
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Do nothing
+		}
 
 		include_once 'view-google-sheet.php';
 

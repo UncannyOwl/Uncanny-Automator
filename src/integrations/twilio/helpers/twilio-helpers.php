@@ -315,4 +315,26 @@ class Twilio_Helpers {
 
 		return $this->get_twilio_accounts_connected();
 	}
+
+	public function integration_status() {
+
+		$user = false;
+
+		try {
+
+			$client = $this->get_client();
+			$user   = get_option( 'uap_twilio_connected_user', array() );
+
+			if ( empty( $user['sid'] ) ) {
+				throw new \Exception( __( 'User account error', 'uncanny-automator' ) );
+			}
+
+			$is_connected = true;
+		} catch ( \Exception $e ) {
+			$user         = array();
+			$is_connected = false;
+		}
+
+		return $is_connected ? 'success' : '';
+	}
 }

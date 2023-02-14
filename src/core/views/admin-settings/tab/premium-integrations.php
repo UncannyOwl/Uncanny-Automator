@@ -38,6 +38,12 @@ namespace Uncanny_Automator;
 		// Create tabs
 		foreach ( $integrations_tabs as $tab_key => $integration_tab ) {
 
+			$integration_tab = (object) $integration_tab;
+
+			if ( empty( $integration_tab->preload ) ) {
+				$integration_tab->preload = false;
+			}
+
 			?>
 
 			<uo-tab
@@ -113,6 +119,9 @@ namespace Uncanny_Automator;
 
 	// Add tab panels
 	foreach ( $integrations_tabs as $tab_key => $integration_tab ) {
+
+		$integration_tab = (object) $integration_tab;
+
 		// Check if we have to load the content
 		// The content will load if one of these conditions are meet
 		// 1. If the tab is selected

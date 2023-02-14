@@ -13,37 +13,16 @@ namespace Uncanny_Automator;
 /**
  * Twilio Settings
  */
-class Twilio_Settings {
+class Twilio_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helpers;
-
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helpers ) {
-
-		$this->helpers = $helpers;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-	}
+	protected $client;
+	protected $user;
+	protected $is_connected;
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'twilio-api' );
 
@@ -55,6 +34,19 @@ class Twilio_Settings {
 		$this->register_option( 'uap_automator_twilio_api_auth_token' );
 		$this->register_option( 'uap_automator_twilio_api_phone_number' );
 		$this->register_option( 'uap_automator_twilio_api_settings_timestamp' );
+
+	}
+
+	public function get_status() {
+		return $this->helpers->integration_status();
+	}
+
+	/**
+	 * Creates the output of the settings page
+	 *
+	 * @return void.
+	 */
+	public function output() {
 
 		$this->user = false;
 
@@ -72,17 +64,6 @@ class Twilio_Settings {
 			$this->user         = array();
 			$this->is_connected = false;
 		}
-
-		$this->set_status( $this->is_connected ? 'success' : '' );
-
-	}
-
-	/**
-	 * Creates the output of the settings page
-	 *
-	 * @return void.
-	 */
-	public function output() {
 
 		$account_sid  = ! empty( $this->client['account_sid'] ) ? $this->client['account_sid'] : '';
 		$auth_token   = ! empty( $this->client['auth_token'] ) ? $this->client['auth_token'] : '';

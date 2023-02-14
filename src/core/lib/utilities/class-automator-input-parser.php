@@ -569,10 +569,10 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false
-				|| strpos( $piece, '_URL' ) !== false
-				|| strpos( $piece, '_EXCERPT' ) !== false
-				|| strpos( $piece, '_THUMB_URL' ) !== false
-				|| strpos( $piece, '_THUMB_ID' ) !== false ) {
+				 || strpos( $piece, '_URL' ) !== false
+				 || strpos( $piece, '_EXCERPT' ) !== false
+				 || strpos( $piece, '_THUMB_URL' ) !== false
+				 || strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -612,7 +612,7 @@ class Automator_Input_Parser {
 							} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 								$return = get_post_thumbnail_id( $post_id );
 							} elseif ( 'EXCERPT' === $sub_piece[1] ) {
-								$return = get_the_excerpt( $post_id );
+								$return = Automator()->utilities->automator_get_the_excerpt( $post_id );
 							}
 						} else {
 							$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
@@ -650,7 +650,7 @@ class Automator_Input_Parser {
 									} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 										$return = get_post_thumbnail_id( $post_id );
 									} elseif ( 'EXCERPT' === $sub_piece[1] ) {
-										$return = get_the_excerpt( $post_id );
+										$return = Automator()->utilities->automator_get_the_excerpt( $post_id );
 									}
 								} else {
 									$return = html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
@@ -670,7 +670,7 @@ class Automator_Input_Parser {
 								} elseif ( 'THUMB_ID' === $sub_piece[1] ) {
 									$return = get_post_thumbnail_id( $trigger['meta'][ $piece ] );
 								} elseif ( 'EXCERPT' === $sub_piece[1] ) {
-									$return = get_the_excerpt( $trigger['meta'][ $piece ] );
+									$return = Automator()->utilities->automator_get_the_excerpt( $trigger['meta'][ $piece ] );
 								}
 							} else {
 								$return = html_entity_decode( get_the_title( $trigger['meta'][ $piece ] ), ENT_QUOTES, 'UTF-8' );

@@ -13,35 +13,12 @@ use Uncanny_Automator\Settings;
 /**
  * Facebook Settings
  */
-class GoToWebinar_Settings {
-
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helper = '';
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helper ) {
-
-		$this->helper = $helper;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-	}
+class GoToWebinar_Settings extends Settings\Premium_Integration_Settings {
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'go-to-webinar' );
 
@@ -49,13 +26,15 @@ class GoToWebinar_Settings {
 
 		$this->set_name( 'GoTo Webinar' );
 
-		$this->set_status( false !== get_option( '_uncannyowl_gtw_settings', false ) ? 'success' : '' );
-
 		// Add settings (optional)
 		$this->register_option( 'uap_automator_gtw_api_consumer_key' );
 
 		$this->register_option( 'uap_automator_gtw_api_consumer_secret' );
 
+	}
+
+	public function get_status() {
+		return false !== get_option( '_uncannyowl_gtw_settings', false ) ? 'success' : '';
 	}
 
 	/**
@@ -65,7 +44,7 @@ class GoToWebinar_Settings {
 	 */
 	public function get_helper() {
 
-		return $this->helper;
+		return $this->helpers;
 
 	}
 

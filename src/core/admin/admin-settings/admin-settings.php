@@ -15,31 +15,25 @@ class Admin_Settings {
 	 * Class constructor
 	 */
 	public function __construct() {
-		// Register the options menu
-		$this->submenu_page();
 
-		// Load tabs
-		$this->load_tabs();
+		add_action( 'admin_menu', array( $this, 'submenu_page' ) );
+
 	}
 
 	/**
 	 * Adds the "Settings" submenu page
 	 */
-	private function submenu_page() {
-		add_action(
-			'admin_menu',
-			function() {
-				// Add submenu
-				add_submenu_page(
-					'edit.php?post_type=uo-recipe',
-					/* translators: 1. Trademarked term */
-					sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' ),
-					esc_attr__( 'Settings', 'uncanny-automator' ),
-					'manage_options',
-					'uncanny-automator-config',
-					array( $this, 'submenu_page_output' )
-				);
-			}
+	public function submenu_page() {
+
+		// Add submenu
+		add_submenu_page(
+			'edit.php?post_type=uo-recipe',
+			/* translators: 1. Trademarked term */
+			sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' ),
+			esc_attr__( 'Settings', 'uncanny-automator' ),
+			'manage_options',
+			'uncanny-automator-config',
+			array( $this, 'submenu_page_output' )
 		);
 	}
 
@@ -66,6 +60,10 @@ class Admin_Settings {
 	 * Creates the output of the "Settings" page
 	 */
 	public function submenu_page_output() {
+
+		// Load tabs
+		$this->load_tabs();
+
 		// Get the tabs
 		$tabs = $this->get_top_level_tabs();
 

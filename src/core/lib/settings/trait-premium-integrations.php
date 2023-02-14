@@ -341,57 +341,47 @@ trait Premium_Integrations {
 		}
 
 		// Add the tab using the filter
-		$this->add_tab();
+		//$this->add_tab();
+		add_filter( 'automator_settings_premium_integrations_tabs', array( $this, 'add_tab' ) );
 
 		// Register the options/settings
-		$this->add_wordpress_settings();
+		//$this->add_wordpress_settings();
+		add_filter( 'admin_init', array( $this, 'add_wordpress_settings' ) );
 
 		// Enqueue the assets
-		$this->enqueue_assets();
+		//$this->enqueue_assets();
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
 	/**
 	 * Adds the tab and the function that outputs the content to the Settings page
 	 */
-	private function add_tab() {
+	public function add_tab( $tabs ) {
 		// Check if the ID is defined
-		// Add it using the filter
-		add_filter(
-			'automator_settings_premium_integrations_tabs',
-			function ( $tabs ) {
-
-				// Create the tab
-				$tabs[ $this->get_id() ] = (object) array(
-					'name'     => $this->get_name(),
-					'icon'     => $this->get_icon(),
-					'status'   => $this->get_status(),
-					'preload'  => $this->get_preload(),
-					'function' => array( $this, 'output' ),
-				);
-
-				return $tabs;
-			}
+		// Create the tab
+		$tabs[ $this->get_id() ] = (object) array(
+			'name'     => $this->get_name(),
+			'icon'     => $this->get_icon(),
+			'status'   => $this->get_status(),
+			'preload'  => $this->get_preload(),
+			'function' => array( $this, 'output' ),
 		);
+
+		return $tabs;
 	}
 
 	/**
 	 * Registers the options
 	 */
-	private function add_wordpress_settings() {
+	public function add_wordpress_settings() {
 		// Check if it has options
 		if ( empty( $this->get_options() ) ) {
 			return;
 		}
 
-		// Register the options/settings
-		add_action(
-			'admin_init',
-			function () {
-				foreach ( $this->get_options() as $option_name ) {
-					register_setting( $this->get_settings_id(), $option_name );
-				}
-			}
-		);
+		foreach ( $this->get_options() as $option_name ) {
+			register_setting( $this->get_settings_id(), $option_name );
+		}
 	}
 
 	/**
@@ -415,43 +405,38 @@ trait Premium_Integrations {
 	/**
 	 * Enqueue the assets
 	 */
-	private function enqueue_assets() {
+	public function enqueue_assets() {
 		// Check if there are assets defined
 		if ( ! $this->get_css() && ! $this->get_js() ) {
 			return;
 		}
 
-		// Enqueue assets
-		add_action(
-			'admin_enqueue_scripts',
-			function () {
-				// Only enqueue the assets of this integration on its own settings page
-				if ( ! $this->is_current_page_settings() ) {
-					return;
-				}
+		// Only enqueue the assets of this integration on its own settings page
+		if ( ! $this->is_current_page_settings() ) {
+			return;
+		}
 
-				// Enqueue the CSS
-				if ( $this->get_css() ) {
-					wp_enqueue_style(
-						'uap-premium-integration-' . $this->get_id(),
-						plugins_url( '/src/integrations/' . $this->get_css(), AUTOMATOR_BASE_FILE ),
-						array( 'uap-admin' ),
-						AUTOMATOR_PLUGIN_VERSION
-					);
-				}
+		// Enqueue the CSS
+		if ( $this->get_css() ) {
+			wp_enqueue_style(
+				'uap-premium-integration-' . $this->get_id(),
+				plugins_url( '/src/integrations/' . $this->get_css(), AUTOMATOR_BASE_FILE ),
+				array( 'uap-admin' ),
+				AUTOMATOR_PLUGIN_VERSION
+			);
+		}
 
-				// Enqueue the JS
-				if ( $this->get_js() ) {
-					wp_enqueue_script(
-						'uap-premium-integration-' . $this->get_id(),
-						plugins_url( '/src/integrations/' . $this->get_js(), AUTOMATOR_BASE_FILE ),
-						array( 'uap-admin' ),
-						AUTOMATOR_PLUGIN_VERSION,
-						true
-					);
-				}
-			}
-		);
+		// Enqueue the JS
+		if ( $this->get_js() ) {
+			wp_enqueue_script(
+				'uap-premium-integration-' . $this->get_id(),
+				plugins_url( '/src/integrations/' . $this->get_js(), AUTOMATOR_BASE_FILE ),
+				array( 'uap-admin' ),
+				AUTOMATOR_PLUGIN_VERSION,
+				true
+			);
+		}
+
 	}
 
 	/**

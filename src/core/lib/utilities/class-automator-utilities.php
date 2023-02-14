@@ -616,4 +616,33 @@ class Automator_Utilities {
 		// Return type
 		return (string) $options['fields'][ $option_code ]['type'];
 	}
+
+	/**
+	 * @param $post_id
+	 * @param $length
+	 *
+	 * @return mixed|null
+	 */
+	public function automator_get_the_excerpt( $post_id, $length = 15 ) {
+		$post = get_post( $post_id );
+		if ( ! $post instanceof \WP_Post ) {
+			return '';
+		}
+		$post_content = $post->post_content;
+		$post_excerpt = $post->post_excerpt;
+		if ( ! empty( $post_excerpt ) ) {
+			$post_content = $post_excerpt;
+		}
+		$length  = apply_filters( 'automator_get_the_excerpt_length', $length );
+		$excerpt = sanitize_text_field( strip_shortcodes( wp_strip_all_tags( $post_content ) ) );
+		if ( str_word_count( $excerpt, 0 ) <= $length ) {
+			return apply_filters( 'automator_get_the_excerpt', $excerpt, $post_content, $post_id, $length );
+		}
+		$words   = str_word_count( $excerpt, 1 );
+		$len     = min( $length, count( $words ) );
+		$excerpt = array_slice( $words, 0, $len );
+		$excerpt = join( ' ', $excerpt ) . apply_filters( 'automator_get_the_excerpt_continuity', '...', $post_id );
+
+		return apply_filters( 'automator_get_the_excerpt', $excerpt, $post_content, $post_id, $length );
+	}
 }

@@ -553,4 +553,17 @@ class Slack_Helpers {
 		return $response;
 
 	}
+
+	public function integration_status() {
+
+		try {
+			$client       = $this->get_slack_client();
+			$is_connected = true;
+		} catch ( \Exception $e ) {
+			$client       = array();
+			$is_connected = false;
+		}
+
+		return $is_connected ? 'success' : '';
+	}
 }

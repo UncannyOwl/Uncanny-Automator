@@ -77,21 +77,26 @@ class GH_ADDTAG {
 	 * @param $recipe_id
 	 */
 	public function add_tag_to_user( $user_id, $action_data, $recipe_id, $args ) {
+		$contact = Plugin::$instance->utils->get_contact( absint( $user_id ), true );
 
-		$tag_id = absint( $action_data['meta'][ $this->action_meta ] );
+		if ( ! $contact ) {
+			$action_data['do-nothing']           = true;
+			$action_data['complete_with_errors'] = true;
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, __( 'Contact was not found.', 'uncanny-automator' ) );
 
-		if ( 0 !== $tag_id ) {
-			$contact = Plugin::$instance->utils->get_contact( absint( $user_id ), true );
-
-			if ( ! $contact ) {
-				return;
-			}
-
-			$tags_to_add = array( $tag_id );
-			$contact->apply_tag( $tags_to_add );
-
+			return;
 		}
 
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		$tag_id = $action_data['meta'][ $this->action_meta ];
+		$tags   = new Tags();
+
+		if ( false === $tags->exists( $tag_id ) ) {
+			$tag_id = $tags->add( array( 'tag_name' => $tag_id ) );
+		}
+
+		$tags_to_add = array( absint( $tag_id ) );
+		$contact->apply_tag( $tags_to_add );
+
+		Automator()->complete->action( $user_id, $action_data, $recipe_id );
 	}
 }
