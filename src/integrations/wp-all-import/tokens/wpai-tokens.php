@@ -294,7 +294,7 @@ class Wpai_Tokens {
 				$value = get_permalink( $post->ID );
 				break;
 			case 'POSTEXCERPT':
-				$value = get_the_excerpt( $post->ID );
+				$value = Automator()->utilities->automator_get_the_excerpt( $post->ID );
 				break;
 			case 'POSTCONTENT':
 				$value = $post->post_content;

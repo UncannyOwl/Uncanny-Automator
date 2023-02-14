@@ -18,7 +18,7 @@ class SureCart_Helpers {
 		if ( $add_any ) {
 			$options[] = array(
 				'value' => -1,
-				'text'  => __( 'Any Product', 'uncanny-automator' ),
+				'text'  => __( 'Any product', 'uncanny-automator' ),
 			);
 		}
 

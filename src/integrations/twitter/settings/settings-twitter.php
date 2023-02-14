@@ -10,32 +10,19 @@
 
 namespace Uncanny_Automator;
 
-class Twitter_Settings {
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
+class Twitter_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct() {
-
-		$this->functions = new Twitter_Functions();
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-	}
+	protected $functions;
+	protected $client;
+	protected $is_connected;
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	private function set_properties() {
+	public function set_properties() {
+
+		$this->functions = new Twitter_Functions();
+
 		// Define the ID
 		// This should go first
 		$this->set_id( 'twitter-api' );
@@ -54,6 +41,10 @@ class Twitter_Settings {
 		$this->register_option( 'automator_twitter_access_token' );
 		$this->register_option( 'automator_twitter_access_token_secret' );
 
+	}
+
+	public function get_status() {
+
 		try {
 			$this->client       = $this->functions->get_client();
 			$this->is_connected = true;
@@ -65,7 +56,7 @@ class Twitter_Settings {
 		// Set the status
 		// This expects a valid <uo-tab> status
 		// Check the Design Guidelines to see the list of valid statuses
-		$this->set_status( $this->is_connected ? 'success' : '' );
+		return $this->is_connected ? 'success' : '';
 	}
 
 	/**

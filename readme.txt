@@ -4,7 +4,7 @@ Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce aut
 Requires at least: 5.3
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 4.9.0.1
+Stable tag: 4.10
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -57,6 +57,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 = Supported apps =
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -71,7 +72,9 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro 4.8+)
+- [OpenAI](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Trello](https://automatorplugin.com/integration/trello/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -154,6 +157,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Webhooks](https://automatorplugin.com/integration/webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WooCommerce](https://automatorplugin.com/integration/woocommerce/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WooCommerce Memberships](https://automatorplugin.com/integration/woocommerce-memberships/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -313,6 +317,69 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 4.10 [2023-02-14] =
+
+**New App Integrations:**
+
+* [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2872
+* [OpenAI](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3186
+* [Trello](https://automatorplugin.com/integration/trello/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2894
+
+**New Plugin Integration:**
+
+* [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2948
+
+**New Triggers:**
+
+* Wholesale Suite - A wholesale lead is created #2929
+* Wholesale Suite - A wholesale order is received from a user with a specific role #2931
+
+**New Actions:**
+
+* ClickUp - Add a comment to a specific task in a specific list in a specific folder in a specific space in a specific team #2967
+* ClickUp - Add a specific tag to a specific task in a specific list of a specific space #2998
+* ClickUp - Create a list in a specific folder in a specific space in a specific team #2999
+* ClickUp - Create a task in a specific list in a specific folder in a specific space in a specific team #2950
+* ClickUp - Delete a specific task #2951
+* ClickUp - Remove a tag from a specific task in a specific list of a specific space #3000
+* ClickUp - Update a task in a specific list of a specific space #2965
+* LinkedIn - Publish a post with an image to a LinkedIn page #2960
+* OpenAI - Use a prompt to generate text #3187
+* Trello - Add a comment to a card #2995
+* Trello - Add a label to a card #2991
+* Trello - Add a member to a card #2996
+* Trello - Create a card #2989
+* Trello - Create a checklist item in a card #2990
+* Trello - Update a card #2994
+* Wholesale Suite - Approve a wholesale lead #2930
+
+**Added:**
+
+* Facebook Pages - Support "Image ID" on the "Image URL" field as we are doing with Instagram  #3207
+* Twitter - For the "Post a tweet to Twitter" action, support "Image ID" on the "Image URL" field as we are doing with Instagram #3204
+
+**Updated:**
+
+* WordPress - Excerpt token now returns first 15 words #3205
+* Groundhogg - "Add a tag to the user" action - Create the tag if it doesn't exist #3161
+
+**Fixed:**
+
+* Facebook Pages - Change the resend button to use the latest credentials from the DB #3225
+* Formidable Forms - Entry tokens now work reliably #3222
+* GamiPress - "A user earns an achievement": change the second field "Any" option to "Any award" #3144
+* LearnDash - A user completes a topic now fires reliably #3173
+* LearnDash - A user completes a lesson was executing multiple times in a certain situation #3135
+* Premium integrations no longer check for a connection on extra pages when disconnected #3203
+* WooCommerce - A user views a product - Product title token now parses the title #3141
+
+**Under the hood:**
+
+* Instagram - Fixed some PHP Notices #3152
+* Add an icon next to the "Requires Uncanny Automator Pro" text on Integrations page #3177
+* Premium integrations - Settings page code refactor #3138
+* Recipe UI - Populate repeater when parent field changes #3201
+
 = 4.9.0.1 [2023-02-02] =
 
 **Fixed:** 
@@ -338,13 +405,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **New App Integrations:**
 
-* ConvertKit #3042
-* Drip #3041
+* [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3042
+* [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3041
 
 **New Plugin Integrations:**
 
-* Thrive Apprentice #3044
-* Thrive Leads #3043
+* [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3044
+* [Thrive Leads](https://automatorplugin.com/integration/thrive-leads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3043
 
 **New Triggers:**
 

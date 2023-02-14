@@ -13,15 +13,9 @@ namespace Uncanny_Automator;
 /**
  * Active_Campaign Settings
  */
-class Active_Campaign_Settings {
+class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helpers;
+	public $helpers;
 	protected $account_url;
 	protected $api_key;
 	protected $is_connected;
@@ -30,30 +24,7 @@ class Active_Campaign_Settings {
 	protected $disconnect_url;
 	protected $button_labels;
 
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helpers ) {
-
-		$this->helpers = $helpers;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-		// Localize button labels.
-		add_action( 'admin_enqueue_scripts', array( $this, 'localize_button_labels' ), 20 );
-
-	}
-
-	/**
-	 * Sets up the properties of the settings page
-	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'active-campaign' );
 
@@ -69,24 +40,13 @@ class Active_Campaign_Settings {
 
 		$this->register_option( 'uap_active_campaign_enable_webhook' );
 
-		$this->set_js( '/active-campaign/settings/assets/script.js' );
+	}
 
-		$this->account_url = get_option( 'uap_active_campaign_api_url', '' );
-
-		$this->api_key = get_option( 'uap_active_campaign_api_key', '' );
-
-		$this->users = false;
-
-		if ( ! empty( $this->api_key ) && ! empty( $this->account_url ) ) {
-
-			$this->users = get_option( 'uap_active_campaign_connected_user', array() );
-
-		}
-
-		$this->is_connected = ! empty( $this->users[0]['email'] );
-
-		$this->set_status( $this->is_connected ? 'success' : '' );
-
+	/**
+	 * Sets up the properties of the settings page
+	 */
+	public function get_status() {
+		return $this->helpers->integration_status();
 	}
 
 	/**
@@ -95,6 +55,19 @@ class Active_Campaign_Settings {
 	 * @return void.
 	 */
 	public function output() {
+
+		// Localize button labels.
+		add_action( 'admin_enqueue_scripts', array( $this, 'localize_button_labels' ), 20 );
+
+		$this->load_js( '/active-campaign/settings/assets/script.js' );
+
+		$this->is_connected = 'success' === $this->helpers->integration_status();
+
+		$this->users = get_option( 'uap_active_campaign_connected_user', array() );
+
+		$this->account_url = get_option( 'uap_active_campaign_api_url', '' );
+
+		$this->api_key = get_option( 'uap_active_campaign_api_key', '' );
 
 		$this->enable_triggers = $this->helpers->is_webhook_enabled() ? 'checked' : '';
 

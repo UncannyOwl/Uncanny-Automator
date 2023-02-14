@@ -13,36 +13,12 @@ namespace Uncanny_Automator;
 /**
  * LinkedIn_Settings Settings
  */
-class LinkedIn_Settings {
-
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helper = '';
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helper ) {
-
-		$this->helper = $helper;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-	}
+class LinkedIn_Settings extends Settings\Premium_Integration_Settings {
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'linkedin' );
 
@@ -50,10 +26,13 @@ class LinkedIn_Settings {
 
 		$this->set_name( 'LinkedIn Pages' );
 
-		$is_user_connected = ! empty( $this->helper->get_client() );
+	}
 
-		$this->set_status( $is_user_connected ? 'success' : '' );
+	public function get_status() {
 
+		$is_user_connected = ! empty( $this->helpers->get_client() );
+
+		return $is_user_connected ? 'success' : '';
 	}
 
 	/**
@@ -63,7 +42,7 @@ class LinkedIn_Settings {
 	 */
 	public function get_helper() {
 
-		return $this->helper;
+		return $this->helpers;
 
 	}
 
@@ -74,11 +53,11 @@ class LinkedIn_Settings {
 	 */
 	public function output() {
 
-		$is_user_connected = ! empty( $this->helper->get_client() );
+		$is_user_connected = ! empty( $this->helpers->get_client() );
 
-		$authentication_url = $this->helper->get_authentication_url();
+		$authentication_url = $this->helpers->get_authentication_url();
 
-		$user = $this->helper->get_connected_user();
+		$user = $this->helpers->get_connected_user();
 
 		$display_name = '';
 

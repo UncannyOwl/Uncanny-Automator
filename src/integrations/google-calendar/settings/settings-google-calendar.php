@@ -13,36 +13,12 @@ namespace Uncanny_Automator;
 /**
  * Google_ShGoogle_Calendar_Settingseet_Settings Settings
  */
-class Google_Calendar_Settings {
-
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helper = '';
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helper ) {
-
-		$this->helper = $helper;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-	}
+class Google_Calendar_Settings extends Settings\Premium_Integration_Settings {
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'google-calendar' );
 
@@ -50,19 +26,17 @@ class Google_Calendar_Settings {
 
 		$this->set_name( 'Google Calendar' );
 
+	}
+
+	public function get_status() {
+
 		$is_user_connected = false;
 
 		if ( false !== $this->get_helper()->get_client() ) {
 			$is_user_connected = true;
 		}
 
-		$this->set_status( $is_user_connected ? 'success' : '' );
-
-		if ( $is_user_connected ) {
-			$this->set_js( '/google-calendar/settings/assets/script.js' );
-			$this->set_css( '/google-calendar/settings/assets/style.css' );
-		}
-
+		return $is_user_connected ? 'success' : '';
 	}
 
 	/**
@@ -72,7 +46,7 @@ class Google_Calendar_Settings {
 	 */
 	public function get_helper() {
 
-		return $this->helper;
+		return $this->helpers;
 
 	}
 
@@ -90,6 +64,11 @@ class Google_Calendar_Settings {
 		$authentication_url = $helper->get_authentication_url();
 
 		$is_user_connected = $helper->is_user_connected();
+
+		if ( $is_user_connected ) {
+			$this->load_js( '/google-calendar/settings/assets/script.js' );
+			$this->load_css( '/google-calendar/settings/assets/style.css' );
+		}
 
 		$user_info = $helper->get_user_info();
 

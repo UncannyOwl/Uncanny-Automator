@@ -13,37 +13,18 @@ namespace Uncanny_Automator;
 /**
  * Zoom Settings
  */
-class Zoom_Settings {
+class Zoom_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
-
-	protected $helpers;
-
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helpers ) {
-
-		$this->helpers = $helpers;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-	}
+	protected $api_key;
+	protected $api_secret;
+	protected $account_id;
+	protected $user;
+	protected $is_connected;
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'zoom-api' );
 
@@ -60,6 +41,22 @@ class Zoom_Settings {
 		$this->register_option( 'uap_automator_zoom_api_client_secret' );
 
 		$this->register_option( 'uap_automator_zoom_api_settings_version' );
+
+	}
+
+	public function get_status() {
+
+		$user = get_option( 'uap_zoom_api_connected_user', array() );
+
+		return ! empty( $user['email'] ) ? 'success' : '';
+	}
+
+	/**
+	 * Creates the output of the settings page
+	 *
+	 * @return void.
+	 */
+	public function output() {
 
 		$this->api_key    = trim( get_option( 'uap_automator_zoom_api_consumer_key', '' ) );
 		$this->api_secret = trim( get_option( 'uap_automator_zoom_api_consumer_secret', '' ) );
@@ -82,16 +79,6 @@ class Zoom_Settings {
 		if ( ! empty( $this->user['email'] ) ) {
 			$this->is_connected = true;
 		}
-
-		$this->set_status( $this->is_connected ? 'success' : '' );
-	}
-
-	/**
-	 * Creates the output of the settings page
-	 *
-	 * @return void.
-	 */
-	public function output() {
 
 		$disconnect_url = $this->helpers->disconnect_url();
 
@@ -119,9 +106,6 @@ class Zoom_Settings {
 
 			$this->user = $this->helpers->api_get_user_info();
 
-			$this->is_connected = true;
-			$this->set_status( 'success' );
-
 			$this->add_alert(
 				array(
 					'type'    => 'success',
@@ -130,8 +114,7 @@ class Zoom_Settings {
 			);
 
 		} catch ( \Exception $e ) {
-			$this->is_connected = false;
-			$this->set_status( '' );
+
 			$this->add_alert(
 				array(
 					'type'    => 'error',

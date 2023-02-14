@@ -100,6 +100,21 @@ class Active_Campaign_Helpers {
 		new Active_Campaign_Settings( $this );
 	}
 
+	public function integration_status() {
+
+		if ( ! $this->has_connection_data() ) {
+			return '';
+		}
+
+		$users = get_option( 'uap_active_campaign_connected_user', array() );
+
+		if ( empty( $users[0]['email'] ) ) {
+			return '';
+		}
+
+		return 'success';
+	}
+
 	/**
 	 * Set the options.
 	 *

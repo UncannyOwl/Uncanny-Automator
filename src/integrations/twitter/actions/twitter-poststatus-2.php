@@ -76,7 +76,7 @@ class TWITTER_POSTSTATUS_2 {
 						array(
 							'option_code' => 'TWITTERSTATUSIMAGE',
 							/* translators: Image field */
-							'label'       => esc_attr__( 'Image URL', 'uncanny-automator' ),
+							'label'       => esc_attr__( 'Image URL or Media library ID', 'uncanny-automator' ),
 							'input_type'  => 'text',
 							'default'     => '',
 							'description' => 'Supported image formats include JPG, PNG, GIF, WEBP. Images posted to Twitter have a 5MB limit.',
@@ -111,6 +111,10 @@ class TWITTER_POSTSTATUS_2 {
 
 		$status = Automator()->parse->text( $action_data['meta']['TWITTERSTATUSCONTENT'], $recipe_id, $user_id, $args );
 		$media  = trim( Automator()->parse->text( $action_data['meta']['TWITTERSTATUSIMAGE'], $recipe_id, $user_id, $args ) );
+
+		if ( is_numeric( $media ) ) {
+			$media = wp_get_attachment_url( intval( $media ) );
+		}
 
 		try {
 

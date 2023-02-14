@@ -10,11 +10,7 @@
 
 namespace Uncanny_Automator;
 
-class WhatsApp_Settings {
-
-	use Settings\Premium_Integrations;
-
-	protected $helper = '';
+class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 
 	const PHONE_ID = 'automator_whatsapp_phone_id';
 
@@ -23,27 +19,6 @@ class WhatsApp_Settings {
 	const BUSINESS_ID = 'automator_whatsapp_business_account_id';
 
 	const KNOWLEDGEBASE_URL = 'https://automatorplugin.com/knowledge-base/whatsapp';
-
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helper ) {
-
-		add_filter( 'sanitize_option_' . self::ACCESS_TOKEN, array( $this, 'validate_access_token' ), 10, 3 );
-
-		$this->helper = $helper;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-
-			return;
-
-		}
-
-	}
 
 	public function validate_access_token( $sanitize_input, $option_name, $original_input ) {
 
@@ -67,7 +42,7 @@ class WhatsApp_Settings {
 
 		try {
 
-			$response = $this->helper->verify_token( $sanitize_input );
+			$response = $this->get_helper()->verify_token( $sanitize_input );
 
 			update_option( 'automator_whatsapp_client', $response, false );
 
@@ -96,19 +71,15 @@ class WhatsApp_Settings {
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
-		$client = $this->helper->get_client();
-
-		$is_user_connected = ! empty( $client ) && ! $this->helper->has_missing_scopes( $client['scopes'] );
+		add_filter( 'sanitize_option_' . self::ACCESS_TOKEN, array( $this, 'validate_access_token' ), 10, 3 );
 
 		$this->set_id( 'whatsapp' );
 
 		$this->set_icon( 'WHATSAPP' );
 
 		$this->set_name( 'WhatsApp' );
-
-		$this->set_status( $is_user_connected ? 'success' : '' );
 
 		$this->register_option( self::PHONE_ID );
 
@@ -118,6 +89,15 @@ class WhatsApp_Settings {
 
 	}
 
+	public function get_status() {
+
+		$client = $this->get_helper()->get_client();
+
+		$is_user_connected = ! empty( $client ) && ! $this->get_helper()->has_missing_scopes( $client['scopes'] );
+
+		return $is_user_connected ? 'success' : '';
+	}
+
 	/**
 	 * Returns the helper class.
 	 *
@@ -125,7 +105,7 @@ class WhatsApp_Settings {
 	 */
 	public function get_helper() {
 
-		return $this->helper;
+		return $this->helpers;
 
 	}
 

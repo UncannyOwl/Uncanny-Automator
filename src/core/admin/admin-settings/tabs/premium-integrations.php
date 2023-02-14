@@ -16,29 +16,23 @@ class Admin_Settings_Premium_Integrations {
 	 */
 	public function __construct() {
 		// Define the tab
-		$this->create_tab();
+		//$this->create_tab();
+		add_filter( 'automator_settings_sections', array( $this, 'create_tab' ) );
 	}
 
 	/**
 	 * Adds the tab using the automator_settings_tab filter
 	 */
-	private function create_tab() {
-		// Add the tab using the filter
-		add_filter(
-			'automator_settings_sections',
-			function( $tabs ) {
-				// Premium integrations
-				$tabs['premium-integrations'] = (object) array(
-					'name'     => esc_html__( 'Premium integrations', 'uncanny-automator' ),
-					'function' => array( $this, 'tab_output' ),
-					'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
-				);
+	public function create_tab( $tabs ) {
 
-				return $tabs;
-			},
-			10,
-			1
+		// Premium integrations
+		$tabs['premium-integrations'] = (object) array(
+			'name'     => esc_html__( 'Premium integrations', 'uncanny-automator' ),
+			'function' => array( $this, 'tab_output' ),
+			'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 		);
+
+		return $tabs;
 	}
 
 	/**
@@ -46,7 +40,7 @@ class Admin_Settings_Premium_Integrations {
 	 */
 	public function tab_output() {
 		// Get the tabs
-		$integrations_tabs = $this->get_premium_integrations_tabs();
+		$integrations_tabs = apply_filters( 'automator_settings_premium_integrations_tabs', array() );
 
 		// Get the current tab
 		$current_integration = automator_filter_has_var( 'integration' ) ? sanitize_text_field( automator_filter_input( 'integration' ) ) : '';
@@ -91,7 +85,10 @@ class Admin_Settings_Premium_Integrations {
 		$layout_version = automator_filter_has_var( 'automator_hide_settings_tabs' ) ? 'focus' : 'default';
 
 		// Add the actions and get the selected tab
-		foreach ( $integrations_tabs as $tab_key => $tab ) {
+		foreach ( $integrations_tabs as $tab_key => &$tab ) {
+
+			$tab = (object) $tab;
+
 			if (
 				// Check if the user can use the premium integrations before adding the content of the tabs
 				$user_can_use_premium_integrations &&
@@ -104,17 +101,11 @@ class Admin_Settings_Premium_Integrations {
 
 			// Check if this is the selected tab
 			$tab->is_selected = $user_can_use_premium_integrations ? $tab_key === $current_integration : false;
+
 		}
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/premium-integrations.php' );
-	}
-
-	/**
-	 * Returns the premium integrations tabs
-	 */
-	public function get_premium_integrations_tabs() {
-		return apply_filters( 'automator_settings_premium_integrations_tabs', array() );
 	}
 
 	/**

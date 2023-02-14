@@ -23,7 +23,7 @@ if ( isset( $integration->external_permalink ) && ! empty( $integration->externa
 		array(
 			'utm_source'  => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? 'uncanny_automator_pro' : 'uncanny_automator',
 			'utm_medium'  => 'integrations_page',
-			'utm_content' => 'integration_item-' . $integration->integration_id
+			'utm_content' => 'integration_item-' . $integration->integration_id,
 		),
 		$integration->external_permalink
 	);
@@ -88,7 +88,8 @@ if ( isset( $integration->external_permalink ) && ! empty( $integration->externa
 			<?php if ( ! $user_has_automator_pro && $integration->is_pro ) { ?>
 
 				<div class="uap-integrations-collections-integration--requieres-pro">
-					<span class="uap-field-icon uap-icon uap-icon--lock-alt"></span><?php esc_html_e( 'Requires Uncanny Automator Pro', 'uncanny-automator' ); ?>
+					<uo-icon id="lock"></uo-icon>
+					<?php esc_html_e( 'Requires Uncanny Automator Pro', 'uncanny-automator' ); ?>
 				</div>
 
 			<?php } ?>

@@ -586,7 +586,7 @@ class Learndash_Helpers {
 		// Activity type is lesson, fire do_action
 		if ( 'lesson' === $activity_type ) {
 			do_action(
-				'learndash_lesson_completed',
+				'automator_learndash_lesson_completed',
 				array(
 					'user'     => $user,
 					'course'   => get_post( $course_id ),
@@ -602,7 +602,7 @@ class Learndash_Helpers {
 		if ( 'topic' === $activity_type ) {
 			$lesson_id = learndash_get_lesson_id( $post_id, $course_id );
 			do_action(
-				'learndash_topic_completed',
+				'automator_learndash_lesson_completed',
 				array(
 					'user'     => $user,
 					'course'   => get_post( $course_id ),

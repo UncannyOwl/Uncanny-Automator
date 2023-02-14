@@ -13,33 +13,15 @@ namespace Uncanny_Automator;
 /**
  * Slack_Settings
  */
-class Slack_Settings {
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
+class Slack_Settings extends Settings\Premium_Integration_Settings {
 
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct( $helpers ) {
-
-		$this->helpers = $helpers;
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-	}
+	protected $client;
+	protected $is_connected;
 
 	/**
 	 * Sets up the properties of the settings page
 	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		// Define the ID
 		// This should go first
@@ -54,19 +36,6 @@ class Slack_Settings {
 		// As this is the brand name, it probably shouldn't be translatable
 		$this->set_name( 'Slack' );
 
-		try {
-			$this->client       = $this->helpers->get_slack_client();
-			$this->is_connected = true;
-		} catch ( \Exception $e ) {
-			$this->client       = array();
-			$this->is_connected = false;
-		}
-
-		// Set the status
-		// This expects a valid <uo-tab> status
-		// Check the Design Guidelines to see the list of valid statuses
-		$this->set_status( $this->is_connected ? 'success' : '' );
-
 		// Add settings (optional)
 		$this->register_option( 'uap_automator_slack_api_bot_name' );
 		$this->register_option( 'uap_automator_alck_api_bot_icon' );
@@ -76,10 +45,22 @@ class Slack_Settings {
 		$this->set_js( '/slack/settings/assets/script.js' );
 	}
 
+	public function get_status() {
+		return $this->helpers->integration_status();
+	}
+
 	/**
 	 * Creates the output of the settings page
 	 */
 	public function output() {
+
+		try {
+			$this->client       = $this->helpers->get_slack_client();
+			$this->is_connected = true;
+		} catch ( \Exception $e ) {
+			$this->client       = array();
+			$this->is_connected = false;
+		}
 
 		$slack_user_data = isset( $this->client->team ) ? $this->client->team : (object) array();
 

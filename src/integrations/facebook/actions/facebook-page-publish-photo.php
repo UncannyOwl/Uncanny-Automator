@@ -69,11 +69,10 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 				array(
 					'option_code' => 'FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL',
 					/* translators: Email field */
-					'label'       => esc_attr__( 'Image URL', 'uncanny-automator' ),
-					'placeholder' => esc_attr__( 'https://examplewebsite.com/path/to/image.jpg', 'uncanny-automator' ),
+					'label'       => esc_attr__( 'Image URL or Media library ID', 'uncanny-automator' ),
 					'input_type'  => 'url',
 					'required'    => true,
-					'description' => esc_attr__( 'Enter the URL of the image you wish to share. The URL must be publicly accessible.', 'uncanny-automator' ),
+					'description' => esc_attr__( 'Enter the URL or the Media library ID of the image you wish to share. The image must be publicly accessible.', 'uncanny-automator' ),
 				),
 				// The message field.
 				array(
@@ -118,16 +117,16 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$facebook  = Automator()->helpers->recipe->facebook->options;
-		$page_id   = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) : 0;
-		$image_url = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
+		$facebook = Automator()->helpers->recipe->facebook->options;
+		$page_id  = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_META'] ) : 0;
+		$media    = isset( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
 
 		// Post content editor adds BR tag if shift+enter. Enter key adds paragraph. Support both.
 		$message = isset( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_PAGE_PUBLISH_MESSAGE'] ) : '';
 
 		$body = array(
 			'action'    => 'image-to-page',
-			'image_url' => $image_url,
+			'image_url' => $this->resolve_image_url( $media ),
 			'page_id'   => $page_id,
 			'message'   => $message,
 		);
@@ -154,4 +153,16 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO {
 		}
 
 	}
+
+	/**
+	 * Resolves the image URL.
+	 *
+	 * @param mixed $image The public image URL or the Media Library ID.
+	 *
+	 * @return string The URL of the image or false if its failing.
+	 */
+	private function resolve_image_url( $media = '' ) {
+		return is_numeric( $media ) ? wp_get_attachment_url( $media ) : $media;
+	}
+
 }

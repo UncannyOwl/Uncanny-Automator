@@ -43,7 +43,7 @@ class LD_LESSONDONE {
 			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
 			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
-			'action'              => 'learndash_lesson_completed',
+			'action'              => array( 'learndash_lesson_completed', 'automator_learndash_lesson_completed' ),
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'lesson_completed' ),
@@ -54,13 +54,15 @@ class LD_LESSONDONE {
 	}
 
 	/**
+	 * Loads all options.
+	 *
 	 * @return array[]
 	 */
 	public function load_options() {
 
 		$args = array(
 			'post_type'      => 'sfwd-courses',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
@@ -125,6 +127,27 @@ class LD_LESSONDONE {
 		$lesson = $data['lesson'];
 		$course = $data['course'];
 
+		if ( empty( $lesson->ID ) || empty( $user->ID ) ) {
+			return;
+		}
+
+		$cache_key = 'automator_lesson_completed_ ' . $lesson->ID . '_user_' . $user->ID;
+
+		$cache_group = 'automator-ld-lesson-completed';
+
+		/**
+		 * Bail if Trigger has already fired during run time.
+		 *
+		 * This is a LearnDash bug. The action hook `learndash_lesson_completed`
+		 * shouldn't fire n times for quiz completions associated with a lesson.
+		 *
+		 * @ticket 2126631606/46933 - 860pm6a12
+		 * @since 4.10
+		 */
+		if ( false !== wp_cache_get( $cache_key, $cache_group ) ) {
+			return;
+		}
+
 		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
@@ -150,6 +173,9 @@ class LD_LESSONDONE {
 				}
 			}
 		}
+
+		wp_cache_set( $cache_key, true, 'automator-ld-lesson-completed' );
+
 	}
 
 }

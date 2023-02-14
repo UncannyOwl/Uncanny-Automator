@@ -13,45 +13,25 @@ namespace Uncanny_Automator;
 /**
  * Drip_Settings
  */
-class Drip_Settings {
-
-	/**
-	 * This trait defines properties and methods shared across all the
-	 * settings pages of Premium Integrations
-	 */
-	use Settings\Premium_Integrations;
+class Drip_Settings extends Settings\Premium_Integration_Settings {
 
 	protected $functions;
 	protected $client;
 
-	/**
-	 * Creates the settings page
-	 */
-	public function __construct() {
-
-		$this->functions = new Drip_Functions();
-
-		// Register the tab
-		$this->setup_settings();
-
-		// The methods above load even if the tab is not selected
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-	}
-
-	/**
-	 * Sets up the properties of the settings page
-	 */
-	protected function set_properties() {
+	public function set_properties() {
 
 		$this->set_id( 'drip' );
 
 		$this->set_icon( 'DRIP' );
 
 		$this->set_name( 'Drip' );
+	}
 
-		$this->set_status( $this->functions->integration_status() );
+	/**
+	 * Sets up the properties of the settings page
+	 */
+	public function get_status() {
+		return $this->helpers->functions->integration_status();
 	}
 
 	/**
@@ -60,6 +40,8 @@ class Drip_Settings {
 	 * @return void.
 	 */
 	public function output() {
+
+		$this->functions = new Drip_Functions();
 
 		$auth_url = $this->functions->get_auth_url();
 
@@ -99,5 +81,3 @@ class Drip_Settings {
 	}
 
 }
-
-new Drip_Settings();

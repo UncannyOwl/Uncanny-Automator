@@ -515,7 +515,7 @@ class Wp_Post_Tokens {
 			case 'WPCUSTOMPOST_EXCERPT':
 			case 'WPPAGE_EXCERPT':
 			case 'WPPOSTTYPES_EXCERPT':
-				$value = get_the_excerpt( $post->ID );
+				$value = Automator()->utilities->automator_get_the_excerpt( $post->ID );
 				break;
 			case 'POSTSTATUSUPDATED':
 				$value = $post->post_status;
