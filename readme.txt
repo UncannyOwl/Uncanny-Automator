@@ -4,7 +4,7 @@ Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce aut
 Requires at least: 5.3
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 4.10
+Stable tag: 4.10.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -316,6 +316,19 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.10.0.1 [2023-02-17] =
+
+**Updated:**
+
+* Excerpt token - Allow emoticons and other non-word characters #3235
+* Excerpt token - Manually populated excerpts are no longer truncated #3235
+* Excerpt token - Word count increased from 15 to 25 when excerpt is generated automatically #3235
+* OpenAI - Show API key connected #3229
+
+**Fixed:**
+
+* Emails To field - Sanitization dropping comma when comma-separated emails are added #3238
 
 = 4.10 [2023-02-14] =
 

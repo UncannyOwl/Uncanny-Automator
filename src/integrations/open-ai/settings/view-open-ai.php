@@ -3,19 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 ?>
-<style>
-	#automator-open-ai-settings__status {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-	#automator-open-ai-settings__status-connected{
-		background: var(--uap-item-status-completed);
-		border-radius: 12.5px;
-		height: 12.5px;
-		width: 12.5px;
-	}
-</style>
+
 <form method="POST" action="options.php" warn-unsaved>
 
 	<?php settings_fields( $this->get_settings_id() ); ?>
@@ -119,9 +107,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php } ?>
 
 				<?php if ( ! empty( $vars['is_connected'] ) ) { ?>
-					<div id="automator-open-ai-settings__status">
-						<div id="automator-open-ai-settings__status-connected"></div>
-						<div id="automator-open-ai-settings__status-connected__label"><?php esc_html_e( 'Connected', 'uncanny-automator' ); ?></div>
+
+					<div class="uap-settings-panel-user">
+
+						<div class="uap-settings-panel-user__avatar">
+							O
+						</div><!--.uap-settings-panel-user__avatar-->
+
+						<div class="uap-settings-panel-user-info">
+
+							<div class="uap-settings-panel-user-info__main">
+								<?php esc_html_e( 'OpenAI account', 'uncanny-automator' ); ?>
+								<uo-icon integration="OPEN_AI"></uo-icon>
+							</div>
+
+							<div class="uap-settings-panel-user-info__additional">
+								<?php /* translators: %1$s The secret key. */ ?>
+								<?php echo sprintf( esc_html__( 'API key connected: %1$s', 'uncanny-automator' ), esc_html( $vars['redacted_token'] ) ); ?>
+							</div>
+
+						</div> <!--uap-settings-panel-user-info-->
+
 					</div>
 				<?php } ?>
 

@@ -148,12 +148,15 @@ class Open_AI_Settings {
 			admin_url( 'admin-ajax.php' )
 		);
 
+		$secret_key = get_option( self::OPTION_KEY, '' );
+
 		$vars = array(
 			'alerts'         => (array) get_settings_errors( self::SETTINGS_ERROR ),
 			'setup_url'      => automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/open-ai/', 'settings', 'open-ai-kb_article' ),
-			'secret_key'     => get_option( self::OPTION_KEY, '' ),
+			'secret_key'     => $secret_key,
 			'is_connected'   => $this->helper->is_connected(),
 			'disconnect_url' => $disconnect_url,
+			'redacted_token' => substr( $secret_key, 0, 3 ) . '&hellip;' . substr( $secret_key, strlen( $secret_key ) - 4, strlen( $secret_key ) ),
 		);
 
 		include_once 'view-open-ai.php';

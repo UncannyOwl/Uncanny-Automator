@@ -569,6 +569,18 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - BuddyPress */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user creates a group", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user is removed from {{a specific type of}} group", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user joins {{a private group}}", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -587,6 +599,12 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - BuddyPress */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user leaves {{a specific type of}} group", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user makes a post to the activity stream of {{a group}}", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -599,7 +617,25 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - BuddyPress */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user rejects a friendship request", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A user}} replies to an activity stream message", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user requests access to {{a private group}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user requests to join a {{specific type of}} group", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
@@ -618,6 +654,12 @@ function automator_pro_items_list() {
 					/* translators: Logged-in trigger - BuddyPress */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user's connection request is accepted", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user's topic in {{a forum}} receives a reply", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
@@ -1510,6 +1552,18 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - LearnDash */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user answers {{a quiz}} question correctly", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user answers {{a quiz}} question incorrectly", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user completes {{a group's}} courses", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -1647,6 +1701,11 @@ function automator_pro_items_list() {
 					/* translators: Action - LearnDash */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Unenroll the user from all courses", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Unenroll the user from all courses associated with {{a group}}", 'uncanny-automator' ),
 				),
 			),
 		),
@@ -2051,6 +2110,16 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'OPEN_AI'           => array(
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - OpenAI */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Use {{a prompt}} to generate text with the Davinci model", 'uncanny-automator' ),
+				),
+			),
+		),
 		'OPTINMONSTER'      => array(
 			'triggers' => array(
 				array(
@@ -2377,6 +2446,45 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'  => array(),
+		),
+		'WHOLESALESUITE'    => array(
+			'triggers' => array(
+				array(
+					/* translators: Logged-in trigger - Wholesale Suite */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A wholesale lead is approved", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - Wholesale Suite */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A wholesale lead is rejected", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - Wholesale Suite */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A wholesale order for {{a specific product}} is received", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'  => array(
+				array(
+					/* translators: Action - Wholesale Suite */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Deactivate a wholesale customer matching {{a user ID or email}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Wholesale Suite */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Reject a wholesale lead matching {{a user ID or email}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Wholesale Suite */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Set the wholesale price of {{a product}}", 'uncanny-automator' ),
+				),
+			),
 		),
 		'WISHLISTMEMBER'    => array(
 			'triggers' => array(
