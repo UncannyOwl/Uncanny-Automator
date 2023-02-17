@@ -474,12 +474,7 @@ class Automator_Utilities {
 					case 'EMAILCC':
 					case 'EMAILBCC':
 					case 'WPCPOSTAUTHOR':
-						$regex = '/[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})/';
-						if ( preg_match( $regex, $v, $email_is ) ) {
-							$data[ $k ] = sanitize_email( $v );
-						} else {
-							$data[ $k ] = sanitize_text_field( $v );
-						}
+						$data[ $k ] = sanitize_text_field( $v );
 						break;
 					case 'EMAILBODY':
 					case 'WPCPOSTCONTENT':
@@ -623,7 +618,7 @@ class Automator_Utilities {
 	 *
 	 * @return mixed|null
 	 */
-	public function automator_get_the_excerpt( $post_id, $length = 15 ) {
+	public function automator_get_the_excerpt( $post_id, $length = 25 ) {
 		$post = get_post( $post_id );
 		if ( ! $post instanceof \WP_Post ) {
 			return '';
@@ -631,14 +626,12 @@ class Automator_Utilities {
 		$post_content = $post->post_content;
 		$post_excerpt = $post->post_excerpt;
 		if ( ! empty( $post_excerpt ) ) {
-			$post_content = $post_excerpt;
+			// If custom excerpt is defined, return the same
+			return apply_filters( 'automator_get_the_excerpt', $post_excerpt, $post_content, $post_id, $length );
 		}
 		$length  = apply_filters( 'automator_get_the_excerpt_length', $length );
 		$excerpt = sanitize_text_field( strip_shortcodes( wp_strip_all_tags( $post_content ) ) );
-		if ( str_word_count( $excerpt, 0 ) <= $length ) {
-			return apply_filters( 'automator_get_the_excerpt', $excerpt, $post_content, $post_id, $length );
-		}
-		$words   = str_word_count( $excerpt, 1 );
+		$words   = explode( apply_filters( 'automator_get_the_excerpt_separator', ' ' ), $excerpt );
 		$len     = min( $length, count( $words ) );
 		$excerpt = array_slice( $words, 0, $len );
 		$excerpt = join( ' ', $excerpt ) . apply_filters( 'automator_get_the_excerpt_continuity', '...', $post_id );
