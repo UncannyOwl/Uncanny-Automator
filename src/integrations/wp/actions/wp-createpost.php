@@ -321,36 +321,36 @@ class WP_CREATEPOST {
 	 */
 	public function add_featured_image( $image_url, $post_id ) {
 
-		$upload_dir = wp_upload_dir();
-		$image_data = file_get_contents( $image_url );
-		$filename   = basename( $image_url );
-
-		if ( wp_mkdir_p( $upload_dir['path'] ) ) {
-			$file = $upload_dir['path'] . '/' . $filename;
-		} else {
-			$file = $upload_dir['basedir'] . '/' . $filename;
-		}
-
-		file_put_contents( $file, $image_data );
-
-		$wp_filetype = wp_check_filetype( $filename, null );
-
-		$attachment = array(
-			'post_mime_type' => $wp_filetype['type'],
-			'post_title'     => sanitize_file_name( $filename ),
-			'post_content'   => '',
-			'post_status'    => 'inherit',
-		);
-
-		$attach_id = wp_insert_attachment( $attachment, $file, $post_id );
-
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
-		$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+		// Prevents double image downloading.
+		$existing_media_id = absint( attachment_url_to_postid( $image_url ) );
 
-		$res1 = wp_update_attachment_metadata( $attach_id, $attach_data );
+		// If existing_media_id is not equals 0, it means media already exists.
+		if ( 0 !== $existing_media_id ) {
+			// Overwrite the image url with the existing media.
+			$image_url = $existing_media_id;
+		}
 
-		$res2 = set_post_thumbnail( $post_id, $attach_id );
+		// Supports numeric input.
+		if ( is_numeric( $image_url ) ) {
+			// The $image_url is numeric.
+			return set_post_thumbnail( $post_id, $image_url );
+		}
+
+		// Otherwise, download and store the image as attachment.
+		$attachment_id = media_sideload_image( $image_url, $post_id, null, 'id' );
+
+		// Assign the downloaded attachment ID to the post.
+		set_post_thumbnail( $post_id, $attachment_id );
+
+		if ( is_wp_error( $attachment_id ) ) {
+			automator_log( $attachment_id->get_error_message(), self::class . '->add_featured_image error', true, 'wp-createpost' );
+		}
+
+		return $attachment_id;
 
 	}
 

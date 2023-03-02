@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.10.0.1\n"
+"Project-Id-Version: Uncanny Automator 4.11\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-17T15:35:40+00:00\n"
+"POT-Creation-Date: 2023-03-02T15:11:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
@@ -1091,7 +1091,7 @@ msgid ""
 msgstr ""
 
 #: src/core/admin/setup-wizard/src/views/step-1.php:66
-msgid "1,000 credits"
+msgid "250 credits"
 msgstr ""
 
 #: src/core/admin/setup-wizard/src/views/step-1.php:69
@@ -3814,17 +3814,17 @@ msgstr ""
 msgid "ID: %s (no title)"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:454
+#: src/core/lib/utilities/class-automator-input-parser.php:451
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:224
 msgid "N/A"
 msgstr ""
 
 #. translators: Article. Fallback. Any type of content (post, page, media, etc)
-#: src/core/lib/utilities/class-automator-input-parser.php:660
+#: src/core/lib/utilities/class-automator-input-parser.php:662
 msgid "Any"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:852
+#: src/core/lib/utilities/class-automator-input-parser.php:854
 msgid "Click here to reset your password."
 msgstr ""
 
@@ -5293,6 +5293,8 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:1167
 #: src/core/views/admin-integrations/single/sidebar.php:41
 #: src/core/views/admin-settings/tab/premium-integrations/not-connected.php:73
+#: src/core/views/credits-remaining-25.php:33
+#: src/core/views/credits-remaining-100.php:35
 #: src/integrations/mailchimp/actions/campaign-createandsend.php:89
 #: src/integrations/whatsapp/settings/settings-whatsapp.php:159
 msgid "Learn more"
@@ -5808,7 +5810,7 @@ msgstr ""
 
 #. translators: Email field
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:172
-#: src/integrations/emails/actions/emails-send-emails.php:160
+#: src/integrations/emails/actions/emails-send-emails.php:171
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:125
 #: src/integrations/twilio/actions/twilio-sendsms.php:51
 #: src/integrations/whatsapp/actions/whatsapp-send-message.php:226
@@ -6234,7 +6236,7 @@ msgid "Can I get more credits?"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:854
-msgid "If you use more than 1,000 credits, you must either purchase the Pro version or disable your actions that use credits."
+msgid "If you use more than 250 credits, you must either purchase the Pro version or disable your actions that use credits."
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:863
@@ -6590,6 +6592,58 @@ msgstr ""
 
 #: src/core/views/admin-tools/tab/debug/log-viewer.php:41
 msgid "Requested log is empty."
+msgstr ""
+
+#: src/core/views/credits-remaining-0.php:9
+msgctxt "Reviews banner"
+msgid "Critical issue: There are no credits left in your account!"
+msgstr ""
+
+#: src/core/views/credits-remaining-0.php:31
+msgctxt "Reviews banner"
+msgid "Recipes with app integrations are not working because your Uncanny Automator account has run out of credits. Upgrade to Pro to get unlimited credits and continue using app integrations."
+msgstr ""
+
+#: src/core/views/credits-remaining-0.php:41
+msgctxt "Reviews banner"
+msgid "Upgrade now"
+msgstr ""
+
+#: src/core/views/credits-remaining-0.php:51
+#: src/core/views/credits-remaining-25.php:54
+msgctxt "Reviews banner"
+msgid "I'm okay with my recipes not working"
+msgstr ""
+
+#: src/core/views/credits-remaining-25.php:9
+msgid "Warning! Only %d app credits left in your Uncanny Automator account!"
+msgstr ""
+
+#: src/core/views/credits-remaining-25.php:31
+msgid "When you reach 0 credits, recipes with app integrations will stop working."
+msgstr ""
+
+#: src/core/views/credits-remaining-25.php:44
+msgctxt "Reviews banner"
+msgid "Upgrade"
+msgstr ""
+
+#: src/core/views/credits-remaining-100.php:9
+msgid "Hey %1$s! You have %2$d app credits remaining for app integrations in Uncanny Automator!"
+msgstr ""
+
+#: src/core/views/credits-remaining-100.php:33
+msgid "When credits run out, app integrations will stop working."
+msgstr ""
+
+#: src/core/views/credits-remaining-100.php:46
+msgctxt "Reviews banner"
+msgid "Get unlimited credits"
+msgstr ""
+
+#: src/core/views/credits-remaining-100.php:56
+msgctxt "Reviews banner"
+msgid "Dismiss"
 msgstr ""
 
 #: src/core/views/html-admin-status.php:165
@@ -7348,7 +7402,7 @@ msgstr ""
 #: src/integrations/active-campaign/actions/ac-annon-removetag.php:61
 #: src/integrations/active-campaign/actions/ac-user-add-tag.php:53
 #: src/integrations/active-campaign/actions/ac-user-remove-tag.php:55
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:495
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:545
 #: src/integrations/autonami/helpers/autonami-helpers.php:106
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:97
 #: src/integrations/clickup/fields/space-list-task-tag-fields.php:80
@@ -7488,59 +7542,47 @@ msgstr ""
 msgid "Remove {{a tag:%1$s}} from the user"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:289
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:348
 msgid "ActiveCampaign is not connected"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:293
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:352
 msgid "The account URL is not a valid URL"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:308
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:367
 msgid "Error validating the credentials"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:314
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:373
 msgid "User was not found"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:340
-msgid "The contact %s does not exist in ActiveCampaign."
-msgstr ""
-
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:487
-#: src/integrations/autonami/helpers/autonami-helpers.php:96
-#: src/integrations/jet-crm/helpers/jet-crm-helpers.php:69
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:330
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:495
-msgid "Any tag"
-msgstr ""
-
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:862
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:914
 msgid "Refresh available tags, lists, and custom fields"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:863
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:915
 msgid "Connecting"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:864
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:916
 msgid "Syncing tags, lists, and custom fields"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:865
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:917
 msgid "Complete"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:895
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:947
 msgid "mm/dd/yyyy hh:mm"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1070
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1123
 msgid "The contact has no tags."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1081
+#: src/integrations/active-campaign/helpers/active-campaign-helpers.php:1134
 msgid "The contact doesn't have the given tag."
 msgstr ""
 
@@ -7602,7 +7644,6 @@ msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:66
 #: src/integrations/active-campaign/settings/view-active-campaign.php:70
-#: src/integrations/clickup/settings/view-clickup.php:72
 #: src/integrations/helpscout/settings/view-helpscout.php:126
 #: src/integrations/helpscout/settings/view-helpscout.php:138
 #: src/integrations/helpscout/settings/view-helpscout.php:150
@@ -7635,7 +7676,7 @@ msgstr ""
 #: src/integrations/active-campaign/settings/view-active-campaign.php:102
 #: src/integrations/active-campaign/settings/view-active-campaign.php:106
 #: src/integrations/active-campaign/settings/view-active-campaign.php:110
-#: src/integrations/clickup/settings/view-clickup.php:82
+#: src/integrations/clickup/settings/view-clickup.php:72
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:57
 #: src/integrations/drip/settings/view-drip.php:52
 #: src/integrations/drip/settings/view-drip.php:55
@@ -7835,7 +7876,7 @@ msgid "Connect ActiveCampaign account"
 msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:274
-#: src/integrations/clickup/settings/view-clickup.php:138
+#: src/integrations/clickup/settings/view-clickup.php:128
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:167
 #: src/integrations/drip/settings/view-drip.php:145
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:205
@@ -8385,6 +8426,13 @@ msgstr ""
 #: src/integrations/autonami/helpers/autonami-helpers.php:42
 #: src/integrations/mailpoet/helpers/mailpoet-helpers.php:74
 msgid "Any list"
+msgstr ""
+
+#: src/integrations/autonami/helpers/autonami-helpers.php:96
+#: src/integrations/jet-crm/helpers/jet-crm-helpers.php:69
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:330
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:495
+msgid "Any tag"
 msgstr ""
 
 #: src/integrations/autonami/helpers/autonami-helpers.php:148
@@ -9349,27 +9397,31 @@ msgid "Everyone"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:71
-msgid "A comment is added to a task"
+msgid "Add a comment to a specific task in a specific list in a specific folder in a specific space in a specific team"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:72
-msgid "A task is created in a list with a status"
+msgid "Add a tag to a specific task in a specific list of a specific space"
 msgstr ""
 
-#: src/integrations/clickup/settings/settings-clickup.php:77
-msgid "Add a comment to a task"
+#: src/integrations/clickup/settings/settings-clickup.php:73
+msgid "Create a list in a specific folder in a specific space in a specific team"
 msgstr ""
 
-#: src/integrations/clickup/settings/settings-clickup.php:78
-msgid "Create a task in a specific list"
+#: src/integrations/clickup/settings/settings-clickup.php:74
+msgid "Create a task in a specific list in a specific folder in a specific space in a specific team"
 msgstr ""
 
-#: src/integrations/clickup/settings/settings-clickup.php:79
+#: src/integrations/clickup/settings/settings-clickup.php:75
 msgid "Delete a specific task"
 msgstr ""
 
-#: src/integrations/clickup/settings/settings-clickup.php:80
-msgid "Update a task"
+#: src/integrations/clickup/settings/settings-clickup.php:76
+msgid "Remove a tag from a specific task in a specific list of a specific space"
+msgstr ""
+
+#: src/integrations/clickup/settings/settings-clickup.php:77
+msgid "Update a task in a specific list of a specific space"
 msgstr ""
 
 #: src/integrations/clickup/settings/view-clickup.php:19
@@ -9392,7 +9444,7 @@ msgstr ""
 msgid "Connect Uncanny Automator to ClickUp to have WordPress site activity create tasks, add comments and more. Put Project Management workflows on autopilot by linking form submissions to new tasks, post site updates when comments are added in ClickUp, and keep users engaged with ClickUp activity."
 msgstr ""
 
-#: src/integrations/clickup/settings/view-clickup.php:102
+#: src/integrations/clickup/settings/view-clickup.php:92
 msgid "Connect ClickUp account"
 msgstr ""
 
@@ -10136,21 +10188,26 @@ msgstr ""
 
 #. translators: Email field
 #: src/integrations/emails/actions/emails-send-emails.php:128
-msgid "CC"
+msgid "Reply to"
 msgstr ""
 
 #. translators: Email field
 #: src/integrations/emails/actions/emails-send-emails.php:139
-msgid "BCC"
+msgid "CC"
 msgstr ""
 
 #. translators: Email field
 #: src/integrations/emails/actions/emails-send-emails.php:150
+msgid "BCC"
+msgstr ""
+
+#. translators: Email field
+#: src/integrations/emails/actions/emails-send-emails.php:161
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:118
 msgid "Subject"
 msgstr ""
 
-#: src/integrations/emails/actions/emails-send-emails.php:212
+#: src/integrations/emails/actions/emails-send-emails.php:223
 msgid "Cannot send email with an empty body."
 msgstr ""
 
@@ -14066,6 +14123,51 @@ msgid "Badge ID"
 msgstr ""
 
 #. translators: Action sentence
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:46
+msgid "Use {{a prompt:%1$s}} to generate an image"
+msgstr ""
+
+#. translators: Action sentence
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:52
+msgid "Use {{a prompt}} to generate an image"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:63
+msgid "Attachment ID"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:67
+msgid "Attachment URL"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:71
+msgid "OpenAI generated image URL"
+msgstr ""
+
+#. translators: Action field
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:96
+#: src/integrations/open-ai/actions/open-ai-text-generate.php:131
+msgid "Prompt"
+msgstr ""
+
+#. translators: Action field
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:103
+msgid "Size"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:106
+msgid "256x256"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:107
+msgid "512x512"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:108
+msgid "1024x1024"
+msgstr ""
+
+#. translators: Action sentence
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:48
 msgid "Use {{a prompt:%1$s}} to generate text"
 msgstr ""
@@ -14101,11 +14203,6 @@ msgstr ""
 #. translators: Action field
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:123
 msgid "Maximum length"
-msgstr ""
-
-#. translators: Action field
-#: src/integrations/open-ai/actions/open-ai-text-generate.php:131
-msgid "Prompt"
 msgstr ""
 
 #: src/integrations/open-ai/settings/settings-open-ai.php:108

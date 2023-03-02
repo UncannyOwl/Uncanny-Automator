@@ -5,7 +5,7 @@ namespace Uncanny_Automator;
 /**
  * Premium integrations
  * Settings > Premium integrations > Not connected
- * 
+ *
  * Tab panel displayed when the user doesn't have an
  * automatorplugin.com account connected
  *
@@ -43,10 +43,10 @@ namespace Uncanny_Automator;
 							/* translators: 1. Highlighted text */
 							esc_html__( 'Connect your site and start using third-party integrations! The free version of Uncanny Automator includes %1$s to use with our third-party integrations.', 'uncanny-automator' ),
 							/* translators: 1. Integer. Number of credits */
-							'<strong>' . sprintf( esc_html__( '%1$s free credits', 'uncanny-automator' ), '1,000' ) . '</strong>'
+							'<strong>' . sprintf( esc_html__( '%1$s free credits', 'uncanny-automator' ), '250' ) . '</strong>'
 						);
 
-					?>
+						?>
 
 					<a 
 						href="<?php echo esc_url( $upgrade_to_pro_url ); ?>"

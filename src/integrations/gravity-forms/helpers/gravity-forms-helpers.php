@@ -327,7 +327,7 @@ class Gravity_Forms_Helpers {
 	 */
 	public function get_forms_as_option_fields() {
 
-		if ( ! class_exists( '\GFAPI' ) ) {
+		if ( ! class_exists( '\GFAPI' ) || ! is_admin() ) {
 
 			return array();
 

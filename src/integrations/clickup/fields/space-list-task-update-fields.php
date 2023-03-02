@@ -84,7 +84,7 @@ return array(
 		'supports_multiple_values' => true,
 		'options'                  => array(),
 		'supports_custom_value'    => false,
-		'required'                 => true,
+		'required'                 => false,
 		'ajax'                     => array(
 			'endpoint'      => 'automator_clickup_fetch_assignees_list',
 			'event'         => 'parent_fields_change',
@@ -99,7 +99,7 @@ return array(
 		'options'                  => array(),
 		'supports_multiple_values' => true,
 		'supports_custom_value'    => false,
-		'required'                 => true,
+		'required'                 => false,
 		'ajax'                     => array(
 			'endpoint'      => 'automator_clickup_fetch_assignees_list',
 			'event'         => 'parent_fields_change',

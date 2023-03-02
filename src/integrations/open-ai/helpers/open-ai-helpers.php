@@ -81,7 +81,16 @@ class Open_AI_Helpers {
 
 	}
 
-	public function check_for_errors( $response ) {
+	/**
+	 * Handle common errors.
+	 *
+	 * @param array $response The response.
+	 *
+	 * @throws \Exception
+	 *
+	 * @return void
+	 */
+	public function check_for_errors( $response = array() ) {
 
 		if ( 200 !== $response['statusCode'] ) {
 			throw new \Exception( 'Request to OpenAI returned with status: ' . $response['statusCode'], $response['statusCode'] );

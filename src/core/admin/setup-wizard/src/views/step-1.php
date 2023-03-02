@@ -63,7 +63,7 @@
 				);
 				?>
 			<strong>
-				<?php esc_html_e( '1,000 credits', 'uncanny-automator' ); ?>
+				<?php esc_html_e( '250 credits', 'uncanny-automator' ); ?>
 			</strong>
 			<?php
 				esc_html_e(

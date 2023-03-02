@@ -66,7 +66,7 @@ class EMAILS_SEND_EMAILS {
 	/**
 	 * Method load_options
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function load_options() {
 		$options_group = array(
@@ -117,6 +117,17 @@ class EMAILS_SEND_EMAILS {
 						'label'       => esc_attr__( 'To', 'uncanny-automator' ),
 						'description' => esc_attr__( 'Separate multiple email addresses with a comma', 'uncanny-automator' ),
 						'input_type'  => 'email',
+					)
+				),
+
+				// Email To Field.
+				Automator()->helpers->recipe->field->text(
+					array(
+						'option_code' => 'REPLYTO',
+						/* translators: Email field */
+						'label'       => esc_attr__( 'Reply to', 'uncanny-automator' ),
+						'input_type'  => 'email',
+						'required'    => false,
 					)
 				),
 
@@ -215,6 +226,7 @@ class EMAILS_SEND_EMAILS {
 		$this->set_content_type( $content_type );
 		$data = array(
 			'to'        => isset( $parsed['EMAILTO'] ) ? $parsed['EMAILTO'] : '',
+			'reply_to'  => isset( $parsed['REPLYTO'] ) ? $parsed['REPLYTO'] : '',
 			'from'      => isset( $parsed['EMAILFROM'] ) ? $parsed['EMAILFROM'] : '',
 			'from_name' => isset( $parsed['EMAILFROMNAME'] ) ? $parsed['EMAILFROMNAME'] : '',
 			'cc'        => isset( $parsed['EMAILCC'] ) ? $parsed['EMAILCC'] : '',

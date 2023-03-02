@@ -55,15 +55,12 @@ class Automator_Input_Parser {
 				'current_date_and_time',
 			)
 		);
-		add_filter(
-			'automator_maybe_parse_token',
-			array(
-				$this,
-				'automator_maybe_parse_postmeta_token',
-			),
-			99999,
-			6
-		);
+
+		add_filter( 'automator_maybe_parse_token', array( $this, 'automator_maybe_parse_postmeta_token' ), 99999, 6 );
+
+		// Attach the new trigger tokens arch for actions that are scheduled.
+		add_filter( 'automator_pro_before_async_action_executed', array( $this, 'attach_trigger_tokens_hook' ), 10, 1 );
+
 	}
 
 	/**
@@ -525,12 +522,17 @@ class Automator_Input_Parser {
 			$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 		}
 
-		return str_replace( array( '{{', '}}' ), '', $field_text );
+		// Only replace open/close curly brackets if it's {{TOKEN}} style structure.
+		// This avoids the erroneous replacement of the JSON closing brackets.
+		// Example a:2:{i:0;s:12:"Sample array";i:1;a:2:{i:0;s:5:"Apple";i:1;s:6:"Orange";}}
+		// changing to a:2:{i:0;s:12:"Sample array";i:1;a:2:{i:0;s:5:"Apple";i:1;s:6:"Orange";
+		return preg_replace( '/({{(.+?)}})/', '$2', $field_text );
 	}
 
 	/**
 	 * @param $replace_args
-	 * @param $args
+	 * @param array $args
+	 * @param int $source_trigger_id
 	 *
 	 * @return string
 	 */
@@ -1105,6 +1107,66 @@ class Automator_Input_Parser {
 
 		// Return true if source trigger does not match the token's trigger ID `and` recipe logic is equals to `any`.
 		return ! $is_source_trigger_matches_token_trigger && $is_recipe_logic_any;
+
+	}
+
+	/**
+	 * Attach the trigger token hooks.
+	 *
+	 * @param array $action The action array.
+	 *
+	 * @return void.
+	 */
+	public function attach_trigger_tokens_hook( $action ) {
+
+		$code = isset( $action['args']['code'] ) ? $action['args']['code'] : '';
+
+		if ( empty( $code ) ) {
+			return;
+		}
+
+		$filter = strtr(
+			'automator_parse_token_for_trigger_{{integration}}_{{trigger_code}}',
+			array(
+				'{{integration}}'  => strtolower( Automator()->get->value_from_trigger_meta( $code, 'integration' ) ),
+				'{{trigger_code}}' => strtolower( $code ),
+			)
+		);
+
+		// Get the token value when `automator_parse_token_for_trigger_{{integration}}_{{trigger_code}}`.
+		add_filter( $filter, array( $this, 'fetch_trigger_tokens' ), 20, 6 );
+
+		return $action;
+
+	}
+
+	/**
+	 * This method was copied from the Trigger_Tokens Traits.
+	 *
+	 * @return string The token value.
+	 * @todo Move this method to a separate class or function for reusability. E.g Uncanny_Automator\Trigger\Token_Handler::fetch_trigger_tokens()
+	 *
+	 */
+	public function fetch_trigger_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_arg ) {
+
+		if ( empty( $trigger_data ) || ! isset( $trigger_data[0] ) ) {
+			return $value;
+		}
+
+		if ( ! is_array( $pieces ) || ! isset( $pieces[1] ) || ! isset( $pieces[2] ) ) {
+			return $value;
+		}
+
+		// For brevity.
+		list( $recipe_id, $token_identifier, $token_id ) = $pieces;
+
+		$data = json_decode( Automator()->db->token->get( $token_identifier, $replace_arg ), true );
+
+		if ( isset( $data[ $token_id ] ) ) {
+			return $data[ $token_id ];
+		}
+
+		return $value;
 
 	}
 

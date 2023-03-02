@@ -58,6 +58,7 @@ class Active_Campaign_Helpers {
 
 		// Add the ajax endpoints.
 		add_action( 'wp_ajax_active-campaign-list-tags', array( $this, 'list_tags' ) );
+		add_action( 'wp_ajax_active-campaign-list-tags-triggers', array( $this, 'list_tags_triggers' ) );
 		add_action( 'wp_ajax_active-campaign-list-contacts', array( $this, 'list_contacts' ) );
 		add_action( 'wp_ajax_active-campaign-list-retrieve', array( $this, 'list_retrieve' ) );
 		add_action( 'wp_ajax_active-campaign-disconnect', array( $this, 'disconnect' ) );
@@ -182,6 +183,8 @@ class Active_Campaign_Helpers {
 
 	public function list_retrieve() {
 
+		Automator()->utilities->ajax_auth_check();
+
 		$lists = get_transient( 'ua_ac_list_group' );
 
 		if ( false === $lists ) {
@@ -193,7 +196,16 @@ class Active_Campaign_Helpers {
 	}
 
 
+	/**
+	 * Lists all available tags.
+	 *
+	 * Syncs the tag in case the transients has expired.
+	 *
+	 * @return void
+	 */
 	public function list_tags() {
+
+		Automator()->utilities->ajax_auth_check();
 
 		$lists = get_transient( 'ua_ac_tag_list' );
 
@@ -205,7 +217,54 @@ class Active_Campaign_Helpers {
 
 	}
 
+	/**
+	 * Lists all available tags for triggers. Adds `Any` option.
+	 *
+	 * Syncs the tag in case the transients has expired.
+	 *
+	 * @return void
+	 */
+	public function list_tags_triggers() {
+
+		Automator()->utilities->ajax_auth_check();
+
+		$any_option = array(
+			array(
+				'text'  => esc_html__( 'Any tag' ),
+				'value' => -1,
+			),
+		);
+
+		$tags = get_transient( 'ua_ac_tag_list' );
+
+		if ( false === $tags ) {
+			$tags = $this->sync_tags( false );
+		}
+
+		if ( empty( $tags ) || ! is_array( $tags ) ) {
+			return $any_option;
+		}
+
+		/**
+		 * Assigns the Tag's text as Tag's value.
+		 *
+		 * @see $this->get_tags()
+		 */
+		$tags = array_map(
+			function( $tag ) {
+				$tag['value'] = $tag['text'];
+				return $tag;
+			},
+			$tags
+		);
+
+		wp_send_json( array_merge( $any_option, $tags ) );
+
+	}
+
 	public function list_contacts() {
+
+		Automator()->utilities->ajax_auth_check();
 
 		$saved_contact_list = get_transient( 'ua_ac_contact_list' );
 
@@ -337,10 +396,11 @@ class Active_Campaign_Helpers {
 		$response = $this->api_request( $body );
 
 		if ( empty( $response['data']['contacts'] ) ) {
-			throw new \Exception( sprintf( __( 'The contact %s does not exist in ActiveCampaign.', 'uncanny-automator' ), $email ) );
+			throw new \Exception( 'The contact %s does not exist in ActiveCampaign', $email );
 		}
 
 		return array_shift( $response['data']['contacts'] );
+
 	}
 
 	/**
@@ -443,7 +503,9 @@ class Active_Campaign_Helpers {
 	 * Warning! This function will return tag names as the option values, because the incoming webhooks return names and not ids as well.
 	 * It also doesn't cache the results, so it should only be used in postponed options load.
 	 *
-	 * @return void
+	 * @deprecated 4.10
+	 *
+	 * @return array The list of tags.
 	 */
 	public function get_tags() {
 
@@ -478,25 +540,15 @@ class Active_Campaign_Helpers {
 
 	public function get_tag_options( $code, $any = false ) {
 
-		$tag_options = $this->get_tags();
-
-		if ( $any ) {
-
-			$any_item = array(
-				'value' => - 1,
-				'text'  => __( 'Any tag', 'uncanny-automator' ),
-			);
-
-			array_unshift( $tag_options, $any_item );
-		}
-
 		$tags_dropdown = array(
 			'option_code'           => $code,
 			'label'                 => __( 'Tag', 'uncanny-automator' ),
 			'input_type'            => 'select',
-			'supports_custom_value' => true,
 			'required'              => true,
-			'options'               => $tag_options,
+			'is_ajax'               => true,
+			'endpoint'              => 'active-campaign-list-tags-triggers',
+			'supports_custom_value' => true,
+			'options'               => array(),
 		);
 
 		return array(
@@ -1015,6 +1067,7 @@ class Active_Campaign_Helpers {
 			'endpoint' => self::API_ENDPOINT,
 			'body'     => $body,
 			'action'   => $action,
+			'timeout'  => 60, // Sync can be slow sometimes.
 		);
 
 		$response = Api_Server::api_call( $params );

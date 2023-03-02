@@ -173,9 +173,15 @@ class OPEN_AI_TEXT_GENERATE {
 
 			$response = $this->get_helpers()->api_request( $body, $action_data );
 
+			$response_text = isset( $response['data']['choices'][0]['text'] ) ? $response['data']['choices'][0]['text'] : '';
+
+			if ( 0 === strlen( $response_text ) ) {
+				throw new \Exception( 'The model predicted a completion that results in no output. Consider adjusting your prompt.', 400 );
+			}
+
 			$this->hydrate_tokens(
 				array(
-					'RESPONSE' => isset( $response['data']['choices'][0]['text'] ) ? $response['data']['choices'][0]['text'] : '',
+					'RESPONSE' => $response_text,
 				),
 				$this->get_action_code()
 			);
