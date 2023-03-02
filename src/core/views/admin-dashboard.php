@@ -783,7 +783,7 @@ if ( $dashboard->has_site_connected ) {
 								printf(
 								/* translators: 1. Number of total credits */
 									esc_attr_x( 'of %1$s', 'Credits', 'uncanny-automator' ),
-									'<span id="uap-dashboard-credits-left-total"><span class="uap-placeholder-text" data-placeholder="1000"></span></span>'
+									'<span id="uap-dashboard-credits-left-total"><span class="uap-placeholder-text" data-placeholder="250"></span></span>'
 								);
 
 								?>
@@ -851,7 +851,7 @@ if ( $dashboard->has_site_connected ) {
 									<?php esc_attr_e( 'Can I get more credits?', 'uncanny-automator' ); ?>
 								</div>
 								<div class="uap-accordion-item__content">
-									<?php esc_attr_e( 'If you use more than 1,000 credits, you must either purchase the Pro version or disable your actions that use credits.', 'uncanny-automator' ); ?>
+									<?php esc_attr_e( 'If you use more than 250 credits, you must either purchase the Pro version or disable your actions that use credits.', 'uncanny-automator' ); ?>
 								</div>
 							</div>
 						</div>

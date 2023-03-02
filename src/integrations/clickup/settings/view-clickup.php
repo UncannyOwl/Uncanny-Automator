@@ -65,16 +65,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<ul>
 
-						<?php foreach ( $vars['triggers'] as $ua_trigger ) { ?>
-							<li>
-								<uo-icon id="bolt"></uo-icon>
-								<strong>
-									<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?>
-								</strong>
-								<?php echo esc_html( $ua_trigger ); ?>
-							</li>
-						<?php } ?>
-
 						<?php foreach ( $vars['actions'] as $ua_action ) { ?>
 							<li>
 								<uo-icon id="bolt"></uo-icon>

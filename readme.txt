@@ -4,7 +4,7 @@ Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce aut
 Requires at least: 5.3
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 4.10.0.1
+Stable tag: 4.11
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,7 +12,7 @@ Uncanny Automator is the easiest and most powerful way to connect your WordPress
 
 == Description ==
 
-Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and non-WordPress apps together using billions of recipe combinations.
+Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and app integrations apps together using billions of recipe combinations.
 
 Here's how Uncanny Automator works:
 
@@ -44,7 +44,7 @@ Personalize student experiences and deliver better learning outcomes with no-cod
 
 = Social Media Automation =
 
-Spend less time sharing your posts and announcements on social media with automatic posting. Automatically post anything you want to Facebook Pages, Facebook Groups, Twitter, LinkedIn and Instagram, including with images and links. Sign up for a free account to get 1,000 credits for social posting; Pro plugin users get unlimited posting.
+Spend less time sharing your posts and announcements on social media with automatic posting. Automatically post anything you want to Facebook Pages, Facebook Groups, Twitter, LinkedIn and Instagram, including with images and links. Sign up for a free account to get 250 credits for social posting; Pro plugin users get unlimited posting.
 
 = BuddyBoss Automation =
 
@@ -194,7 +194,7 @@ Beyond the plugin and API-based integrations, this free version of Uncanny Autom
 - Create a post
 - Add a WP role
 
-All plugin triggers and actions included in Uncanny Automator come with a forever free license, which allows unlimited usage on your WordPress site. By creating a free, optional Automator account, you can unlock [1,000 credits](https://automatorplugin.com/knowledge-base/what-are-credits) to try out premium non-WordPress integrations. You can use credits on your site to:
+All plugin triggers and actions included in Uncanny Automator come with a forever free license, which allows unlimited usage on your WordPress site. By creating a free, optional Automator account, you can unlock [250 credits](https://automatorplugin.com/knowledge-base/what-are-credits) to try out premium app integrations integrations. You can use credits on your site to:
 
 - Post new content to Facebook Groups, Facebook Pages, Twitter and Instagram
 - Pass records to Google Sheets (to generate charts or reports or manipulate data outside of WordPress)
@@ -206,7 +206,7 @@ All plugin triggers and actions included in Uncanny Automator come with a foreve
 
 = Take automation to the next level =
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of non-WordPress integrations like Google Sheets and Twitter. It also triples the number of available triggers and actions.
+[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations integrations like Google Sheets and Twitter. It also triples the number of available triggers and actions.
 
 Here are some of the other really cool automations you can create with [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=create_really_cool_automations):
 
@@ -254,7 +254,7 @@ Uncanny Automator is built from the ground up for efficiency and performance. Au
 
 = What are the limits of your free version? =
 
-All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include non-WordPress apps, like Twitter and Facebook, you can create a free account to unlock 1,000 credits to try out these integrations.
+All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include app integrations apps, like Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
 
 = Is Automator translation friendly? =
 
@@ -270,7 +270,7 @@ Check out our developer documentation over at [https://developer.automatorplugin
 
 = Can I automatically share posts & updates on social media? =
 
-Yes. It is easy to set up automation and share content on Social Media platforms. Set up integrations with Instagram, Facebook Pages, Facebook Groups, LinkedIn Pages and Twitter by creating a free account to unlock 1,000 free credits.
+Yes. It is easy to set up automation and share content on Social Media platforms. Set up integrations with Instagram, Facebook Pages, Facebook Groups, LinkedIn Pages and Twitter by creating a free account to unlock 250 free credits.
 
 = Do I need coding skills or help from a developer? =
 
@@ -316,6 +316,33 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.11 [2023-03-02] =
+
+**New Feature:**
+
+* OpenAI - Use a prompt to generate an image #3259
+
+**Added:**
+
+* Emails - Send an email - "Reply to" field added #3258
+
+**Updated:**
+
+* ClickUp - Assignee, Add Assignee, Remove Assignee are no longer required fields #3242
+
+**Fixed:**
+
+* ActiveCampaign - Sync now works with triggers Tags dropdown field #3137
+* Gravity Forms - Gravity fields & gAppointments fields conflict #3244
+* OpenAI - Handle empty response #3252
+* Token parsing - Some tokens are not returning values if the action has a delay #3247
+* Token parsing - Ending curly brackets in a JSON/Serialized string are erroneously removed #3265
+
+**Under the hood:**
+
+* Credit usage text updates #2912 #2915 #2920 #3023
+* New notifications - 0, 25 and 100 app credits left #3014 #3015 #3016 
 
 = 4.10.0.1 [2023-02-17] =
 

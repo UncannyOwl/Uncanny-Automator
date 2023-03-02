@@ -83,7 +83,7 @@ return array(
 		'label'                 => esc_html__( 'Assignee', 'uncanny-automator' ),
 		'input_type'            => 'select',
 		'supports_custom_value' => true,
-		'required'              => true,
+		'required'              => false,
 		'options'               => array(),
 		'options_show_id'       => false,
 		'ajax'                  => array(
