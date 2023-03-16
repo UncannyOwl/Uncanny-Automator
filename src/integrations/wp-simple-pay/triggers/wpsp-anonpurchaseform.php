@@ -28,16 +28,18 @@ class WPSP_ANONPURCHASEFORM {
 		$this->trigger_meta = 'WPSPFORMS';
 		$this->define_trigger();
 
-		// Add WPSimplePay Lite support
-		add_action(
-			'simpay_payment_receipt_viewed',
-			function ( $object ) {
-				$event = (object) array();
-				$this->simple_pay_charge_created( $event, $object );
-			},
-			99,
-			1
-		);
+		if ( defined( 'SIMPLE_PAY_PLUGIN_NAME' ) && 'WP Simple Pay Pro' !== SIMPLE_PAY_PLUGIN_NAME ) {
+			// Add WPSimplePay Lite support
+			add_action(
+				'simpay_payment_receipt_viewed',
+				function ( $object ) {
+					$event = (object) array();
+					$this->simple_pay_charge_created( $event, $object );
+				},
+				99,
+				1
+			);
+		}
 	}
 
 	/**
