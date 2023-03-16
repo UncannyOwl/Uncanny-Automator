@@ -45,16 +45,16 @@ class Space_List_Task_Update {
 		$this->set_sentence(
 			sprintf(
 				/* translators: Action sentence */
-				esc_attr__( 'Update {{a task:%1$s}} in {{a specific list:%2$s}} of {{a specific space:%3$s}}', 'uncanny-automator' ),
-				$this->get_action_meta(),
-				'LIST:' . $this->get_action_meta(),
-				'TEAM:' . $this->get_action_meta()
+				esc_attr__( 'Update {{a task:%1$s}}', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
 
-		$this->set_readable_sentence( esc_attr__( 'Update {{a task}} in {{a specific list}} of {{a specific space}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'Update {{a task}}', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
+
+		$this->set_wpautop( false );
 
 		$this->set_background_processing( true );
 
@@ -88,23 +88,35 @@ class Space_List_Task_Update {
 
 		try {
 
-			$start_date = $this->read_from_parsed( $parsed, 'start_date' );
-			$start_time = $this->read_from_parsed( $parsed, 'start_time' );
-			$due_date   = $this->read_from_parsed( $parsed, 'due_date' );
-			$due_time   = $this->read_from_parsed( $parsed, 'due_time' );
+			$name        = $this->read_from_repeater( $parsed, 'name' );
+			$description = $this->read_from_repeater( $parsed, 'description', '', 'sanitize_textarea_field' );
+			$start_date  = $this->read_from_repeater( $parsed, 'start_date', true );
+			$start_time  = $this->read_from_repeater( $parsed, 'start_time', true );
+			$due_date    = $this->read_from_repeater( $parsed, 'due_date', true );
+			$due_time    = $this->read_from_repeater( $parsed, 'due_time', true );
 
 			$body = array(
 				'action'               => 'task_update',
-				'name'                 => $this->read_from_parsed( $parsed, 'name' ),
-				'description'          => $this->read_from_parsed( $parsed, 'description', '', 'sanitize_textarea_field' ),
 				'status'               => $this->read_from_parsed( $parsed, 'status' ),
 				'priority'             => $this->read_from_parsed( $parsed, 'priority' ),
 				'assignees_add'        => $this->read_from_parsed( $parsed, 'assignees_add' ),
 				'assignees_remove'     => $this->read_from_parsed( $parsed, 'assignees_remove' ),
 				'task_id'              => $this->read_from_parsed( $parsed, $this->get_action_meta() ),
+				'name'                 => $name,
+				'description'          => $description,
 				'date_start_timestamp' => $this->read_as_timestamp( $start_date, $start_time ),
 				'date_due_timestamp'   => $this->read_as_timestamp( $due_date, $due_time ),
 			);
+
+			// Enable start time if value exists.
+			if ( ! empty( $start_time ) ) {
+				$body['enable_start_time'] = 'yes';
+			}
+
+			// Enable due time if value exists.
+			if ( ! empty( $due_time ) ) {
+				$body['enable_due_time'] = 'yes';
+			}
 
 			$response = $this->get_helpers()->api_request(
 				$this->get_helpers()->get_client(),
@@ -121,6 +133,42 @@ class Space_List_Task_Update {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}
+
+	}
+
+	/**
+	 * Read from repeater field.
+	 *
+	 * @param array $parsed The data being parsed by the Action.
+	 * @param string $key The key of the Action processed from $parsed.
+	 * @param string $default The default value.
+	 * @param callable $cd The callable function to pass.
+	 *
+	 * @return null|string Null when disabled. Otherwise, the value of the field.
+	 */
+	private function read_from_repeater( $parsed = array(), $key = '', $default = '', callable $cb = null ) {
+
+		$key = strtoupper( $key );
+
+		if ( null === $cb ) {
+			$cb = 'sanitize_text_field';
+		}
+
+		// Convert br to nl.
+		$field_value_br2nl = str_replace( array( '<br>', '<br/>', '<br />' ), PHP_EOL, $parsed[ $key . '_REPEATER' ] );
+
+		// E.g. addcslashes( sanitize_text_field( $parsed['NAME_REPEATER] ) ).
+		$restore_slashes = addcslashes( $cb( $field_value_br2nl ), PHP_EOL );
+		$repeater_fields = (array) json_decode( $restore_slashes, true );
+		$repeater_fields = end( $repeater_fields );
+
+		$retval = null;
+
+		if ( isset( $repeater_fields[ $key . '_UPDATE' ] ) && true === $repeater_fields[ $key . '_UPDATE' ] ) {
+			$retval = isset( $repeater_fields[ $key ] ) ? $repeater_fields[ $key ] : '';
+		}
+
+		return apply_filters( 'automator_clickup_update_action_read_from_repeater', $retval, $parsed, $key, $default, $cb, $this );
 
 	}
 
@@ -173,3 +221,4 @@ class Space_List_Task_Update {
 	}
 
 }
+

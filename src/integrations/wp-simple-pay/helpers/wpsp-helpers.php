@@ -89,16 +89,15 @@ class Wpsp_Helpers {
 		$token           = key_exists( 'token', $args ) ? $args['token'] : false;
 		$is_any          = key_exists( 'is_any', $args ) ? $args['is_any'] : false;
 		$is_subscription = key_exists( 'is_subscription', $args ) ? $args['is_subscription'] : false;
-		$options         = $this->get_forms();
-		if ( ! empty( $options ) ) {
-			foreach ( $options as $form_id => $form_title ) {
+		$options         = array();
+		$wpsp_forms      = $this->get_forms();
+		if ( ! empty( $wpsp_forms ) ) {
+			foreach ( $wpsp_forms as $form_id => $form_title ) {
 				$form = simpay_get_form( $form_id );
-				if ( true === $is_subscription && ! isset( $form->plans ) ) {
-					unset( $options[ $form_id ] );
+				if ( true === $is_subscription && $form->subscription_type === 'disabled' ) {
+					continue;
 				}
-				if ( false === $is_subscription && isset( $form->plans ) ) {
-					unset( $options[ $form_id ] );
-				}
+				$options[ $form_id ] = ! empty( $form_title ) ? $form_title : $form->company_name;
 			}
 		}
 		if ( true === $is_any ) {

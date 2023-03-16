@@ -86,7 +86,7 @@ class TRELLO_ADD_CARD_LABEL {
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
-			'supports_custom_value' => false,
+			'supports_custom_value' => true,
 			'ajax'                  => array(
 				'endpoint'      => 'automator_trello_get_list_cards',
 				'event'         => 'parent_fields_change',

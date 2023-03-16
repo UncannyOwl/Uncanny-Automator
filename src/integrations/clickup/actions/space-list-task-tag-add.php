@@ -46,19 +46,16 @@ class Space_List_Task_Tag_Add {
 			sprintf(
 				/* translators: Action sentence */
 				esc_attr__(
-					'Add {{a tag:%1$s}} to {{a specific task:%2$s}} in {{a specific list:%3$s}} of {{a specific space:%4$s}}',
+					'Add {{a tag:%1$s}} to a task',
 					'uncanny-automator'
 				),
-				$this->get_action_meta(),
-				'TASK:' . $this->get_action_meta(),
-				'LIST:' . $this->get_action_meta(),
-				'SPACE:' . $this->get_action_meta()
+				$this->get_action_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
 			esc_attr__(
-				'Add {{a tag}} to {{a specific task}} in {{a specific list}} of {{a specific space}}',
+				'Add {{a tag}} to a task',
 				'uncanny-automator'
 			)
 		);

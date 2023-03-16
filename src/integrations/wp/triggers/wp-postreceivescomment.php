@@ -59,7 +59,7 @@ class WP_POSTRECEIVESCOMMENT {
 	/**
 	 * Method load_options.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function load_options() {
 
@@ -94,10 +94,7 @@ class WP_POSTRECEIVESCOMMENT {
 			),
 		);
 
-		$temp = Automator()->utilities->keep_order_of_options( $temp );
-
-		return $temp;
-
+		return Automator()->utilities->keep_order_of_options( $temp );
 	}
 
 	/**
@@ -108,7 +105,9 @@ class WP_POSTRECEIVESCOMMENT {
 	 * @param $commentdata
 	 */
 	public function post_receives_comment( $comment_id, $comment_approved, $commentdata ) {
-
+		if ( isset( $commentdata['posted_by_automator'] ) ) {
+			return;
+		}
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_post      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$user_id            = get_post_field( 'post_author', (int) $commentdata['comment_post_ID'] );

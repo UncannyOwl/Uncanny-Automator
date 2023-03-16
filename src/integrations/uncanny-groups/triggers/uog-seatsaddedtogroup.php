@@ -50,10 +50,10 @@ class UOG_SEATSADDEDTOGROUP {
 		$this->set_trigger_type( 'anonymous' );
 
 		/* Translators: Trigger sentence */
-		$this->set_sentence( sprintf( esc_html__( 'A number of seats {{greater than, less than, equal to, not equal to:%1$s}}{{a specific number:%2$s}} are added to {{an Uncanny group:%3$s}}', 'uncanny-automator-pro' ), 'NUMBERCOND', $this->get_trigger_meta() . '_NUMOFSEATS', $this->get_trigger_meta() ) );
+		$this->set_sentence( sprintf( esc_html__( 'A number of seats {{greater than, less than, equal to, not equal to:%1$s}}{{a specific number:%2$s}} are added to {{an Uncanny group:%3$s}}', 'uncanny-automator' ), 'NUMBERCOND', $this->get_trigger_meta() . '_NUMOFSEATS', $this->get_trigger_meta() ) );
 
 		$this->set_readable_sentence(
-			esc_html__( 'A number of seats {{greater than, less than, equal to, not equal to}} {{a specific number}} are added to {{an Uncanny group}}', 'uncanny-automator-pro' )
+			esc_html__( 'A number of seats {{greater than, less than, equal to, not equal to}} {{a specific number}} are added to {{an Uncanny group}}', 'uncanny-automator' )
 		);
 
 		$this->add_action( 'ulgm_seats_added' );

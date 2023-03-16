@@ -1,6 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
+use DateTime;
 use Uncanny_Automator\Recipe\Actions;
 
 /**
@@ -264,28 +265,29 @@ class GCALENDAR_ADDEVENT {
 
 		$helper = Automator()->helpers->recipe->google_calendar->options;
 
-		$body = array(
-			'action'                  => 'create_event',
-			'access_token'            => $helper->get_client(),
-			'summary'                 => $summary,
-			'location'                => $location,
-			'calendar_id'             => $calendar_id,
-			'description'             => $description,
-			'start_date'              => $start_date,
-			'start_time'              => $start_time,
-			'end_date'                => $end_date,
-			'end_time'                => $end_time,
-			'attendees'               => str_replace( ' ', '', trim( $attendees ) ),
-			'notification_email'      => $notification_email,
-			'notification_popup'      => $notification_popup,
-			'notification_time_email' => $notification_time_email,
-			'notification_time_popup' => $notification_time_popup,
-			'timezone'                => apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
-			// Google Calendar endpoint is written so the date format can be changed from the Client.
-			'date_format'             => get_option( 'date_format', 'F j, Y' ),
-		);
-
 		try {
+
+			$body = array(
+				'action'                  => 'create_event',
+				'access_token'            => $helper->get_client(),
+				'summary'                 => $summary,
+				'location'                => $location,
+				'calendar_id'             => $calendar_id,
+				'description'             => $description,
+				'start_date'              => $this->autoformat_date( $start_date ),
+				'start_time'              => $start_time,
+				'end_date'                => $this->autoformat_date( $end_date ),
+				'end_time'                => $end_time,
+				'attendees'               => str_replace( ' ', '', trim( $attendees ) ),
+				'notification_email'      => $notification_email,
+				'notification_popup'      => $notification_popup,
+				'notification_time_email' => $notification_time_email,
+				'notification_time_popup' => $notification_time_popup,
+				'timezone'                => apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
+				// Google Calendar endpoint is written so the date format can be changed from the Client.
+				'date_format'             => $this->get_date_format(),
+			);
+
 			$response = $helper->api_call(
 				$body,
 				$action_data
@@ -300,6 +302,34 @@ class GCALENDAR_ADDEVENT {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}
+
+	}
+
+	/**
+	 * Autoformats the given date base on the format from WordPress.
+	 *
+	 * @return string The formatted date.
+	 */
+	protected function autoformat_date( $start_date = '' ) {
+
+		try {
+			$dt = new \DateTime( $start_date ); // Accept whatever date.
+		} catch ( \Exception $e ) {
+			throw new \Exception( sprintf( 'Error: Invalid date provided (%s)', $start_date ) );
+		}
+
+		return $dt->format( $this->get_date_format() );
+
+	}
+
+	/**
+	 * Retrieves the date format.
+	 *
+	 * @return string The date format. E.g. 'F j, Y'. Overridable with `automator_google_calendar_date_format`
+	 */
+	protected function get_date_format() {
+
+		return apply_filters( 'automator_google_calendar_date_format', get_option( 'date_format', 'F j, Y' ), $this );
 
 	}
 

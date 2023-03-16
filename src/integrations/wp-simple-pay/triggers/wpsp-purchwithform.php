@@ -25,6 +25,7 @@ class WPSP_PURCHWITHFORM {
 	public function __construct() {
 		$this->trigger_code = 'WPSPPURCHAFORMS';
 		$this->trigger_meta = 'WPSPFORMS';
+
 		$this->define_trigger();
 	}
 

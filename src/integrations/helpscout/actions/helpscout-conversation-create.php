@@ -50,11 +50,11 @@ class HELPSCOUT_CONVERSATION_CREATE {
 		$this->set_action_tokens(
 			array(
 				'CONVERSATION_ID'  => array(
-					'name' => __( 'Conversation ID', 'uncanny-automator-pro' ),
+					'name' => __( 'Conversation ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'CONVERSATION_URL' => array(
-					'name' => __( 'Conversation URL', 'uncanny-automator-pro' ),
+					'name' => __( 'Conversation URL', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),

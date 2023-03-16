@@ -4,7 +4,7 @@ Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce aut
 Requires at least: 5.3
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 4.11
+Stable tag: 4.12
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,7 +12,7 @@ Uncanny Automator is the easiest and most powerful way to connect your WordPress
 
 == Description ==
 
-Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and app integrations apps together using billions of recipe combinations.
+Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and apps together using billions of recipe combinations.
 
 Here's how Uncanny Automator works:
 
@@ -254,7 +254,7 @@ Uncanny Automator is built from the ground up for efficiency and performance. Au
 
 = What are the limits of your free version? =
 
-All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include app integrations apps, like Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
+All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include apps, like Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
 
 = Is Automator translation friendly? =
 
@@ -316,6 +316,40 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.12 [2023-03-16] =
+
+**New Triggers:**
+
+* Easy Digital Downloads - A customer purchases a download #3106
+* WordPress - A type of post is published #3301
+
+**New Actions:**
+
+* OpenAI - Use a prompt to generate text with the GPT model #3305
+* WordPress - Add a reply to a comment #3255
+
+**Added:**
+
+* WP Simple Pay - "A payment for a form is completed" - Now supports WP Simple Pay Lite #3314
+
+**Updated:**
+
+* ClickUp - Update a task - Now let's you selectively update fields #3286
+* ClickUp - Action sentences simplified #3237
+* FluentCRM - Change "Add a contact" to "Add/Update a contact" #3291
+* Outgoing Webhooks - Now escapes URL field #3327
+* Trello - "Add a label to a card" - Allow tokens in Card field #3318
+* Trello - Add token support on Due date field #3321
+* WordPress - A user publishes a post - Sentence simplified #3253
+
+**Fixed:**
+
+* Trello - Connecting to Trellow not working on the recipe page. #3287
+* Email - Body sanitizing causing other HTML tags to be removed #3304
+* Google Calendar - Improve date handling #3300
+* LearnDash - "Complete any lesson for a course" fires like "Complete any lesson in any course" #3312
+* WP Simple Pay - Some forms not appearing in dropdown #3260
 
 = 4.11 [2023-03-02] =
 
@@ -395,7 +429,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Added:**
 
-* Facebook Pages - Support "Image ID" on the "Image URL" field as we are doing with Instagram  #3207
+* Facebook Pages - Support "Image ID" on the "Image URL" field as we are doing with Instagram #3207
 * Twitter - For the "Post a tweet to Twitter" action, support "Image ID" on the "Image URL" field as we are doing with Instagram #3204
 
 **Updated:**
@@ -489,7 +523,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 	* Subscription cycle number
 	* Subscription start date
 	* Subscription end date
-* Uncanny Codes  #3005
+* Uncanny Codes #3005
 	* Code 
 
 **Updated:**
@@ -507,7 +541,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **Fixed:**
 
 * WooCommerce triggers - The Product price token is empty in "A user views a product" and it is returning a string in "A user completes, pays for, lands on a thank you page for an order with a product" #2975
-* ActiveCampaign - PHP 8  Error when tags are empty #3090
+* ActiveCampaign - PHP 8 Error when tags are empty #3090
 * Google Calendar - Date is no longer 'Y-m-d' format but uses WP settings #3050
 * HubSpot - Refresh token no longer generate multiple requests on page load when not connected #3071
 * Mailchimp - Add a contact to an audience - Group field not working when user exists #3047
@@ -587,7 +621,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * PHP error on WordPress 5.2: Added fallback to `wp_timezone_string()` if it doesn't exist #2882
 * Purge - Purging now remove results more reliably #2889
 * Outgoing Webhooks - New filter to allow non-stripping of quotes
-	* `automator_send_webhook_get_fields_should_strip_quotes`  #2893
+	* `automator_send_webhook_get_fields_should_strip_quotes` #2893
 * Action Traits - Add $helper method #2860
 * Add Upgrade to Pro menu entry #393
 * Automator core - Add a filter to override find_all matching criteria #2932
@@ -599,7 +633,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe UI - Item sentence - Now displays empty if the field has no value #1262
 * Recipe UI - Loading animation added when deleting a condition #1901
 * Remove automator.css if not used, or dequeue for non-admins #2883
-* Action tokens - Parsing as an empty string `''` when the value is `0`, `'0'`, `''`,  etc. #2955
+* Action tokens - Parsing as an empty string `''` when the value is `0`, `'0'`, `''`, etc. #2955
 * Usage report - Fixed PHP error when running cron #2875
 * Add new parameters to Upgrade to pro links #2934
 

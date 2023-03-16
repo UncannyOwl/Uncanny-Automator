@@ -149,14 +149,24 @@ class TRELLO_CREATE_CARD {
 			'options_show_id'       => false,
 		);
 
+		$card_start_date_field = array(
+			'option_code'     => 'START',
+			'input_type'      => 'date',
+			'label'           => esc_attr__( 'Start date', 'uncanny-automator' ),
+			'placeholder'     => '',
+			'description'     => '',
+			'supports_tokens' => true,
+			'default'         => '',
+		);
+
 		$card_due_date_field = array(
-			'option_code' => 'DUE',
-			'input_type'  => 'date',
-			'label'       => esc_attr__( 'Due date', 'uncanny-automator' ),
-			'placeholder' => '',
-			'description' => '',
-			'tokens'      => true,
-			'default'     => '',
+			'option_code'     => 'DUE',
+			'input_type'      => 'date',
+			'label'           => esc_attr__( 'Due date', 'uncanny-automator' ),
+			'placeholder'     => '',
+			'description'     => '',
+			'supports_tokens' => true,
+			'default'         => '',
 		);
 
 		$card_members_field = array(
@@ -240,6 +250,7 @@ class TRELLO_CREATE_CARD {
 					$card_name_field,
 					$card_description_field,
 					$card_position_field,
+					$card_start_date_field,
 					$card_due_date_field,
 					$card_members_field,
 					$card_labels_field,
@@ -262,7 +273,8 @@ class TRELLO_CREATE_CARD {
 			'name'         => Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args ),
 			'desc'         => Automator()->parse->text( $action_data['meta']['DESC'], $recipe_id, $user_id, $args ),
 			'pos'          => $action_data['meta']['POS'],
-			'due'          => $action_data['meta']['DUE'],
+			'start'        => Automator()->parse->text( $action_data['meta']['START'] ),
+			'due'          => Automator()->parse->text( $action_data['meta']['DUE'] ),
 			'idMembers'    => $action_data['meta']['MEMBERS'],
 			'idLabels'     => $action_data['meta']['LABELS'],
 			'customFields' => $this->parse_custom_fields_values( $action_data['meta']['CUSTOMFIELDS'], $recipe_id, $user_id, $args ),

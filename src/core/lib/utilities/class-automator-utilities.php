@@ -405,6 +405,10 @@ class Automator_Utilities {
 			case 'html':
 				// not sanitization
 				break;
+			case 'url':
+				// Uses esc_url if its a URL field.
+				$data = esc_url( $data );
+				break;
 			case 'text':
 				$data = sanitize_text_field( $data );
 				break;
@@ -477,6 +481,8 @@ class Automator_Utilities {
 						$data[ $k ] = sanitize_text_field( $v );
 						break;
 					case 'EMAILBODY':
+						$data[ $k ] = $v;
+						break;
 					case 'WPCPOSTCONTENT':
 						$data[ $k ] = wp_kses_post( $v );
 						break;
@@ -634,7 +640,10 @@ class Automator_Utilities {
 		$words   = explode( apply_filters( 'automator_get_the_excerpt_separator', ' ' ), $excerpt );
 		$len     = min( $length, count( $words ) );
 		$excerpt = array_slice( $words, 0, $len );
-		$excerpt = join( ' ', $excerpt ) . apply_filters( 'automator_get_the_excerpt_continuity', '...', $post_id );
+		$excerpt = join( ' ', $excerpt );
+		if ( ! empty( $excerpt ) ) {
+			$excerpt = $excerpt . apply_filters( 'automator_get_the_excerpt_continuity', '...', $post_id );
+		}
 
 		return apply_filters( 'automator_get_the_excerpt', $excerpt, $post_content, $post_id, $length );
 	}

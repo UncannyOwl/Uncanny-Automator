@@ -32,7 +32,7 @@ namespace Uncanny_Automator;
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<uo-icon integration="GTT"></uo-icon> <?php esc_html_e( 'GoTo Training', 'uncanny-automator-pro' ); ?>
+				<uo-icon integration="GTT"></uo-icon> <?php esc_html_e( 'GoTo Training', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
@@ -40,7 +40,7 @@ namespace Uncanny_Automator;
 				<?php if ( $is_connected ) { ?>
 
 					<?php if ( '1' === $connection ) { ?>
-						<uo-alert type="success" heading="<?php esc_attr_e( 'You have successfully connected your GoTo Training account', 'uncanny-automator-pro' ); ?>" class="uap-spacing-bottom"></uo-alert>
+						<uo-alert type="success" heading="<?php esc_attr_e( 'You have successfully connected your GoTo Training account', 'uncanny-automator' ); ?>" class="uap-spacing-bottom"></uo-alert>
 					<?php } ?>
 
 					<uo-alert
@@ -80,7 +80,7 @@ namespace Uncanny_Automator;
 							<?php
 
 								echo sprintf(
-									esc_html__( "Connecting to GoTo Training requires setting up an application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
+									esc_html__( "Connecting to GoTo Training requires setting up an application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
 									'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/gototraining/', 'settings', 'gototrainig-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 								);
 
@@ -100,25 +100,25 @@ namespace Uncanny_Automator;
 					</uo-alert>
 
 					<?php if ( 'disconnected' === $connection ) { ?>
-						<uo-alert type="error" class="uap-spacing-top" heading="<?php esc_attr_e( 'You have successfully disconnected your account.', 'uncanny-automator-pro' ); ?>"></uo-alert>
+						<uo-alert type="error" class="uap-spacing-top" heading="<?php esc_attr_e( 'You have successfully disconnected your account.', 'uncanny-automator' ); ?>"></uo-alert>
 					<?php } ?>
-					
+
 				<?php } ?>
 
-				<uo-text-field required id="uap_automator_gtt_api_consumer_key" 
-					value="<?php echo esc_attr( $key ); ?>" 
-					label="<?php esc_attr_e( 'Client ID', 'uncanny-automator-pro' ); ?>"
+				<uo-text-field required id="uap_automator_gtt_api_consumer_key"
+					value="<?php echo esc_attr( $key ); ?>"
+					label="<?php esc_attr_e( 'Client ID', 'uncanny-automator' ); ?>"
 					class="uap-spacing-top"
 
 					<?php echo $is_connected ? 'hidden disabled' : ''; ?>
 				>
 				</uo-text-field>
 
-				<uo-text-field required id="uap_automator_gtt_api_consumer_secret" 
-					value="<?php echo esc_attr( $secret ); ?>" 
-					label="<?php esc_attr_e( 'Client secret', 'uncanny-automator-pro' ); ?>"
+				<uo-text-field required id="uap_automator_gtt_api_consumer_secret"
+					value="<?php echo esc_attr( $secret ); ?>"
+					label="<?php esc_attr_e( 'Client secret', 'uncanny-automator' ); ?>"
 					class="uap-spacing-top"
-					
+
 					<?php echo $is_connected ? 'hidden disabled' : ''; ?>
 				>
 				</uo-text-field>
@@ -157,7 +157,7 @@ namespace Uncanny_Automator;
 					</div>
 				<?php } else { ?>
 					<uo-button type="submit">
-						<?php esc_html_e( 'Connect GoTo Training account', 'uncanny-automator-pro' ); ?>
+						<?php esc_html_e( 'Connect GoTo Training account', 'uncanny-automator' ); ?>
 					</uo-button>
 				<?php } ?>
 			</div>
@@ -165,10 +165,10 @@ namespace Uncanny_Automator;
 				<?php if ( $is_connected ) { ?>
 					<uo-button href="<?php echo esc_url( $disconnect_url ); ?>" color="danger">
 						<uo-icon id="sign-out"></uo-icon>
-						<?php esc_html_e( 'Disconnect', 'uncanny-automator-pro' ); ?>
+						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 					</uo-button>
 				<?php } ?>
-			   
+
 			</div>
 		</div>
 

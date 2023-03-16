@@ -86,7 +86,7 @@
 						<?php
 
 							echo sprintf(
-								esc_html__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
+								esc_html__( "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
 								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 							);
 
@@ -127,13 +127,13 @@
 
 				if ( $this->is_connected ) {
 					?>
-					<uo-alert 
+					<uo-alert
 						heading="<?php esc_attr_e( 'Uncanny Automator only supports connecting to one Zoom Meetings account.', 'uncanny-automator' ); ?>"
 					></uo-alert>
 					<br>
 
-					<uo-alert 
-						type="error" 
+					<uo-alert
+						type="error"
 						heading="WARNING"
 					>
 					<?php

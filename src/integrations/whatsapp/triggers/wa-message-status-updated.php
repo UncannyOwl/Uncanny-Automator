@@ -77,13 +77,13 @@ class WA_MESSAGE_STATUS_UPDATED {
 				'options' => array(
 					array(
 						'option_code'     => $this->get_trigger_meta(),
-						'label'           => __( 'Status', 'uncanny-automator-pro' ),
+						'label'           => __( 'Status', 'uncanny-automator' ),
 						'input_type'      => 'select',
 						'required'        => true,
 						'options'         => array(
-							'sent'      => esc_html__( 'Sent', 'uncanny-automator-pro' ),
-							'delivered' => esc_html__( 'Delivered', 'uncanny-automator-pro' ),
-							'read'      => esc_html__( 'Read', 'uncanny-automator-pro' ),
+							'sent'      => esc_html__( 'Sent', 'uncanny-automator' ),
+							'delivered' => esc_html__( 'Delivered', 'uncanny-automator' ),
+							'read'      => esc_html__( 'Read', 'uncanny-automator' ),
 						),
 						'relevant_tokens' => array(),
 					),

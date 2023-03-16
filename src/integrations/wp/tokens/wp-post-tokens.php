@@ -20,8 +20,9 @@ class Wp_Post_Tokens {
 	 * WP_Anon_Tokens constructor.
 	 */
 	public function __construct() {
-		$codes = array( 'userspost', 'wpviewposttype', 'viewcustompost' );
+		$codes = array( 'userspost', 'wpviewposttype', 'viewcustompost', 'WP_POST_PUBLISHED' );
 		foreach ( $codes as $code ) {
+			$code = strtolower( $code );
 			add_filter(
 				'automator_maybe_trigger_wp_' . $code . '_tokens',
 				array(
@@ -45,6 +46,31 @@ class Wp_Post_Tokens {
 			20,
 			2
 		);
+
+		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
+	}
+
+	/**
+	 * @param $args
+	 * @param $trigger
+	 *
+	 * @return void
+	 */
+	public function save_token_data( $args, $trigger ) {
+		if ( ! isset( $args['trigger_args'] ) || ! isset( $args['entry_args']['code'] ) ) {
+			return;
+		}
+
+		$triggers = array( 'WP_POST_PUBLISHED' );
+
+		if ( in_array( $args['entry_args']['code'], $triggers, true ) ) {
+
+			$wp_post_data                                        = $args['trigger_args'];
+			list( $post_id, $wp_post, $update, $wp_post_before ) = $wp_post_data;
+			if ( isset( $post_id ) && ! empty( $post_id ) ) {
+				Automator()->db->token->save( 'post_id', $post_id, $args['trigger_entry'] );
+			}
+		}
 	}
 
 	/**
@@ -286,6 +312,12 @@ class Wp_Post_Tokens {
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
+				'tokenId'         => 'POSTCOMMENTID',
+				'tokenName'       => __( 'Comment ID', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
 				'tokenId'         => 'POSTCOMMENTERNAME',
 				'tokenName'       => __( 'Commenter name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
@@ -413,6 +445,11 @@ class Wp_Post_Tokens {
 				$author_id = get_post_field( 'post_author', $comment->comment_post_ID );
 				$value     = get_the_author_meta( 'url', $author_id );
 				break;
+			case 'POSTCOMMENTID':
+			case 'POSTCOMMENT_ID':
+			case 'COMMENTID':
+				$value = $comment->comment_ID;
+				break;
 			case 'POSTCOMMENTCONTENT':
 				$value = $comment->comment_content;
 				break;
@@ -443,9 +480,6 @@ class Wp_Post_Tokens {
 				break;
 			case 'POSTCOMMENTSTATUS':
 				$value = ( $comment->comment_approved === 1 ) ? 'approved' : 'pending';
-				break;
-			case 'COMMENTID':
-				$value = $comment->comment_ID;
 				break;
 			case 'NUMTIMES':
 				$value = absint( $replace_args['run_number'] );
@@ -478,7 +512,7 @@ class Wp_Post_Tokens {
 
 		if ( ! in_array( 'USERSPOST', $pieces, true ) && ! in_array( 'WPVIEWPOSTTYPE', $pieces, true )
 			 && ! in_array( 'VIEWPOST', $pieces, true ) && ! in_array( 'VIEWPAGE', $pieces, true )
-			 && ! in_array( 'VIEWCUSTOMPOST', $pieces, true ) ) {
+			 && ! in_array( 'VIEWCUSTOMPOST', $pieces, true ) && ! in_array( 'WP_POST_PUBLISHED', $pieces, true ) ) {
 			return $value;
 		}
 

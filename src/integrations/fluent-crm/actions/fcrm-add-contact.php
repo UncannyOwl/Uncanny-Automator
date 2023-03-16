@@ -35,9 +35,9 @@ class FCRM_ADD_CONTACT {
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 		/* translators: Action - FluentCRM */
-		$this->set_sentence( sprintf( esc_attr__( 'Add {{a contact:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_attr__( 'Add/Update {{a contact:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - FluentCRM */
-		$this->set_readable_sentence( esc_attr__( 'Add {{a contact}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'Add/Update {{a contact}}', 'uncanny-automator' ) );
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_action();
 	}
@@ -71,17 +71,17 @@ class FCRM_ADD_CONTACT {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 		$data['email'] = Automator()->parse->text( $action_data['meta']['FCRMUSEREMAIL'], $recipe_id, $user_id, $args );
-		$subscriber    = Subscriber::where( 'email', $data['email'] )->first();
-
-		if ( ! is_null( $subscriber ) ) {
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			/* translators: Subscriber email */
-			$message = sprintf( esc_html__( 'Duplicate email: %s, please use different email address.', 'uncanny-automator' ), $data['email'] );
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
-
-			return;
-		}
+		//      $subscriber    = Subscriber::where( 'email', $data['email'] )->first();
+		//
+		//      if ( ! is_null( $subscriber ) ) {
+		//          $action_data['do-nothing']           = true;
+		//          $action_data['complete_with_errors'] = true;
+		//          /* translators: Subscriber email */
+		//          $message = sprintf( esc_html__( 'Duplicate email: %s, please use different email address.', 'uncanny-automator' ), $data['email'] );
+		//          Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
+		//
+		//          return;
+		//      }
 
 		$data['first_name']      = Automator()->parse->text( $action_data['meta']['FCRMFIRSTNAME'], $recipe_id, $user_id, $args );
 		$data['last_name']       = Automator()->parse->text( $action_data['meta']['FCRMLASTNAME'], $recipe_id, $user_id, $args );
@@ -120,9 +120,23 @@ class FCRM_ADD_CONTACT {
 				}
 			}
 		}
-		$contact = Subscriber::store( $data );
-		do_action( 'fluentcrm_contact_created', $contact, $data );
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+
+		$contact = FluentCrmApi( 'contacts' )->createOrUpdate( $data );
+		if ( ! $contact ) {
+			$action_data['do-nothing']           = true;
+			$action_data['complete_with_errors'] = true;
+			/* translators: Subscriber email */
+			$message = sprintf( esc_html__( 'We are not able to create or update a contact %s.', 'uncanny-automator' ), $data['email'] );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
+
+			return;
+		}
+
+		if ( $contact->status === 'pending' ) {
+			$contact->sendDoubleOptinEmail();
+		}
+
+		Automator()->complete->action( $user_id, $action_data, $recipe_id );
 	}
 
 	/**

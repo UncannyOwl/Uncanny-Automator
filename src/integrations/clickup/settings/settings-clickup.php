@@ -68,13 +68,13 @@ class ClickUp_Settings extends Settings\Premium_Integration_Settings {
 
 		// Actions.
 		$vars['actions'] = array(
-			__( 'Add a comment to a specific task in a specific list in a specific folder in a specific space in a specific team', 'uncanny-automator' ),
-			__( 'Add a tag to a specific task in a specific list of a specific space', 'uncanny-automator' ),
-			__( 'Create a list in a specific folder in a specific space in a specific team', 'uncanny-automator' ),
-			__( 'Create a task in a specific list in a specific folder in a specific space in a specific team', 'uncanny-automator' ),
-			__( 'Delete a specific task', 'uncanny-automator' ),
-			__( 'Remove a tag from a specific task in a specific list of a specific space', 'uncanny-automator' ),
-			__( 'Update a task in a specific list of a specific space', 'uncanny-automator' ),
+			__( 'Add a comment to a task', 'uncanny-automator' ),
+			__( 'Add a tag to a task', 'uncanny-automator' ),
+			__( 'Create a list', 'uncanny-automator' ),
+			__( 'Create a task', 'uncanny-automator' ),
+			__( 'Delete a task', 'uncanny-automator' ),
+			__( 'Remove a tag from a task', 'uncanny-automator' ),
+			__( 'Update a task', 'uncanny-automator' ),
 		);
 
 		if ( 'error' === automator_filter_input( 'status' ) && filter_has_var( INPUT_GET, 'code' ) ) {

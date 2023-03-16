@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 use Uncanny_Automator_Pro\Edd_Pro_Helpers;
@@ -63,7 +64,7 @@ class Edd_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true ) {
+	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true, $is_relevant_tokens = true ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -112,7 +113,7 @@ class Edd_Helpers {
 			'current_value'   => false,
 			'validation_type' => 'text',
 			'options'         => $options,
-			'relevant_tokens' => $relevant_tokens,
+			'relevant_tokens' => ( false === $is_relevant_tokens ) ? array() : $relevant_tokens,
 		);
 
 		return apply_filters( 'uap_option_all_edd_downloads', $option );
@@ -122,6 +123,7 @@ class Edd_Helpers {
 	 * Get the licenses of the order.
 	 *
 	 * @param int $order_id The payment ID.
+	 *
 	 * @return string The licenses.
 	 */
 	public function get_licenses( $order_id = 0 ) {

@@ -782,7 +782,16 @@ class ClickUp_Helpers {
 
 		$space_id = $this->get_payload_values( 'SPACE', null );
 
-		$statuses = array();
+		$statuses = array(
+			array(
+				'text'  => __( 'Leave unchanged in ClickUp', 'uncanny-automator' ),
+				'value' => '__NO_UPDATE__',
+			),
+			array(
+				'text'  => __( 'Remove status', 'uncanny-automator' ),
+				'value' => '__REMOVE__',
+			),
+		);
 
 		foreach ( $this->get_space_statuses( $space_id ) as $status ) {
 
