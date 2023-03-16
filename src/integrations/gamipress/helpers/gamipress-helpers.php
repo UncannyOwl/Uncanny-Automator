@@ -302,7 +302,7 @@ class Gamipress_Helpers {
 			// Add any option.
 			$fields[] = array(
 				'value' => -1,
-				'text'  => esc_html__( 'Any rank', 'uncanny-automator-pro' ),
+				'text'  => esc_html__( 'Any rank', 'uncanny-automator' ),
 			);
 
 			foreach ( $options as $award_id => $award_name ) {

@@ -113,7 +113,7 @@ class WP_USERCREATESPOST {
 				'WPTAXONOMIES:' . $this->trigger_meta
 			),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => esc_attr__( 'A user publishes a {{type of}} post with {{a taxonomy term}} in {{a taxonomy}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user publishes a post', 'uncanny-automator' ),
 			'action'              => 'wp_after_insert_post',
 			'priority'            => 90,
 			'accepted_args'       => 4,
@@ -567,7 +567,7 @@ class WP_USERCREATESPOST {
 	}
 
 	/**
-	 * @param $post
+	 * @param      $post
 	 * @param null $request
 	 * @param null $creating
 	 */

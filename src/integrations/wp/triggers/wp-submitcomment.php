@@ -66,7 +66,7 @@ class WP_SUBMITCOMMENT {
 	/**
 	 * Method load_options.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function load_options() {
 
@@ -108,18 +108,19 @@ class WP_SUBMITCOMMENT {
 								'WPPOSTTYPES'          => esc_attr__( 'Post type', 'uncanny-automator' ),
 								$this->trigger_meta . '_THUMB_ID' => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
 								$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Post featured image URL', 'uncanny-automator' ),
-								'POSTAUTHORFN'         => esc_attr__( 'Post author first name', 'uncanny-automator-pro' ),
-								'POSTAUTHORLN'         => esc_attr__( 'Post author last name', 'uncanny-automator-pro' ),
-								'POSTAUTHORDN'         => esc_attr__( 'Post author display name', 'uncanny-automator-pro' ),
-								'POSTAUTHOREMAIL'      => esc_attr__( 'Post author email', 'uncanny-automator-pro' ),
-								'POSTAUTHORURL'        => esc_attr__( 'Post author URL', 'uncanny-automator-pro' ),
+								'POSTAUTHORFN'         => esc_attr__( 'Post author first name', 'uncanny-automator' ),
+								'POSTAUTHORLN'         => esc_attr__( 'Post author last name', 'uncanny-automator' ),
+								'POSTAUTHORDN'         => esc_attr__( 'Post author display name', 'uncanny-automator' ),
+								'POSTAUTHOREMAIL'      => esc_attr__( 'Post author email', 'uncanny-automator' ),
+								'POSTAUTHORURL'        => esc_attr__( 'Post author URL', 'uncanny-automator' ),
+								'POSTCOMMENT_ID'       => esc_attr__( 'Comment ID', 'uncanny-automator' ),
 								'POSTCOMMENTCONTENT'   => esc_attr__( 'Comment content', 'uncanny-automator' ),
 								'POSTCOMMENTDATE'      => esc_attr__( 'Comment submitted date', 'uncanny-automator' ),
 								'POSTCOMMENTEREMAIL'   => esc_attr__( 'Commenter email', 'uncanny-automator' ),
 								'POSTCOMMENTERNAME'    => esc_attr__( 'Commenter name', 'uncanny-automator' ),
 								'POSTCOMMENTERWEBSITE' => esc_attr__( 'Commenter website', 'uncanny-automator' ),
 								'POSTCOMMENTSTATUS'    => esc_attr__( 'Commenter status', 'uncanny-automator' ),
-								'POSTCOMMENTURL'       => esc_attr__( 'Comment URL', 'uncanny-automator-pro' ),
+								'POSTCOMMENTURL'       => esc_attr__( 'Comment URL', 'uncanny-automator' ),
 
 							)
 						),
@@ -148,7 +149,9 @@ class WP_SUBMITCOMMENT {
 	 * @param array $commentdata Comment data.
 	 */
 	public function submitted_comment( $comment_id, $comment_approved, $commentdata ) {
-
+		if ( isset( $commentdata['posted_by_automator'] ) ) {
+			return;
+		}
 		$user_id   = get_current_user_id();
 		$post_type = get_post_type( $commentdata['comment_post_ID'] );
 		// We need backword compatibility along with new change

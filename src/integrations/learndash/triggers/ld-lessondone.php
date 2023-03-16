@@ -68,7 +68,8 @@ class LD_LESSONDONE {
 			'post_status'    => 'publish',
 		);
 
-		$options                = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any course', 'uncanny-automator' ) );
+
 		$course_relevant_tokens = array(
 			'LDCOURSE'           => esc_attr__( 'Course title', 'uncanny-automator' ),
 			'LDCOURSE_ID'        => esc_attr__( 'Course ID', 'uncanny-automator' ),
@@ -76,7 +77,8 @@ class LD_LESSONDONE {
 			'LDCOURSE_THUMB_ID'  => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
 			'LDCOURSE_THUMB_URL' => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
 		);
-		$relevant_tokens        = array(
+
+		$relevant_tokens = array(
 			$this->trigger_meta                => esc_attr__( 'Lesson title', 'uncanny-automator' ),
 			$this->trigger_meta . '_ID'        => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 			$this->trigger_meta . '_URL'       => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
@@ -86,9 +88,7 @@ class LD_LESSONDONE {
 
 		return Automator()->utilities->keep_order_of_options(
 			array(
-				'options'       => array(
-					Automator()->helpers->recipe->options->number_of_times(),
-				),
+				'options'       => array( Automator()->helpers->recipe->options->number_of_times() ),
 				'options_group' => array(
 					$this->trigger_meta => array(
 						Automator()->helpers->recipe->field->select_field_ajax(
@@ -131,8 +131,9 @@ class LD_LESSONDONE {
 			return;
 		}
 
-		$cache_key = 'automator_lesson_completed_ ' . $lesson->ID . '_user_' . $user->ID;
+		$matched_recipe_ids = array();
 
+		$cache_key   = 'automator_lesson_completed_ ' . $lesson->ID . '_user_' . $user->ID;
 		$cache_group = 'automator-ld-lesson-completed';
 
 		/**
@@ -148,28 +149,62 @@ class LD_LESSONDONE {
 			return;
 		}
 
-		$args = array(
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => $lesson->ID,
-			'user_id' => $user->ID,
-		);
+		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 
-		$args = Automator()->maybe_add_trigger_entry( $args, false );
-		if ( $args ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] ) {
-					Automator()->insert_trigger_meta(
-						array(
+		// Just check if the course ID passed into the action hook matches the one selected in the Trigger.
+		$trigger_course_field = Automator()->get->meta_from_recipes( $recipes, 'LDCOURSE' );
+		$trigger_lesson_field = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+
+		foreach ( $trigger_course_field as $recipe_id => $triggers ) {
+
+			foreach ( $triggers as $trigger_id => $field_course_id ) {
+
+				// The lesson ID from the field.
+				$field_lesson_id = isset( $trigger_lesson_field[ $recipe_id ][ $trigger_id ] )
+					? $trigger_lesson_field[ $recipe_id ][ $trigger_id ] : null;
+
+				// Determine if the lesson and the course matches.
+				$lesson_and_course_matches = $this->course_matches( $field_course_id, $course->ID )
+					&& $this->lesson_matches( $field_lesson_id, $lesson->ID );
+
+				if ( $lesson_and_course_matches ) {
+
+					$matched_recipe_ids[] = array(
+						'recipe_id'  => $recipe_id,
+						'trigger_id' => $trigger_id,
+					);
+
+				}
+			}
+		}
+
+		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+
+			$pass_args = array(
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'user_id'          => $user->ID,
+				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
+				'trigger_to_match' => $matched_recipe_id['trigger_id'],
+				'post_id'          => $lesson->ID,
+			);
+
+			$args = Automator()->process->user->maybe_add_trigger_entry( $pass_args, false );
+
+			if ( $args ) {
+				foreach ( $args as $result ) {
+					if ( true === $result['result'] ) {
+						$meta_args = array(
 							'user_id'        => $user->ID,
 							'trigger_id'     => $result['args']['trigger_id'],
 							'meta_key'       => 'LDCOURSE',
 							'meta_value'     => $course->ID,
 							'trigger_log_id' => $result['args']['get_trigger_id'],
 							'run_number'     => $result['args']['run_number'],
-						)
-					);
-					Automator()->maybe_trigger_complete( $result['args'] );
+						);
+						Automator()->insert_trigger_meta( $meta_args );
+						Automator()->process->user->maybe_trigger_complete( $result['args'] );
+					}
 				}
 			}
 		}
@@ -178,4 +213,42 @@ class LD_LESSONDONE {
 
 	}
 
+	/**
+	 * Determine if the selected course in the trigger matches the one sent by the action hook.
+	 *
+	 * @param int $field_course_id The course ID from the field.
+	 * @param int $action_hook_course_id The course ID sent from 'learndash_lesson_completed'.
+	 *
+	 * @return bool True if course matches. Otherwise, false.
+	 */
+	private function course_matches( $field_course_id = 0, $action_hook_course_id = 0 ) {
+
+		// Determine if selected course matches from received course ID.
+		$course_is_any  = intval( $field_course_id ) === -1;
+		$course_matches = intval( $field_course_id ) === intval( $action_hook_course_id ) || $course_is_any;
+
+		return $course_matches;
+
+	}
+
+	/**
+	 * Determine if the selected lesson in the trigger matches the one sent by the action hook.
+	 *
+	 * @param int $field_lesson_id The lesson ID from the field.
+	 * @param int $action_hook_lesson_id The lesson ID sent from 'learndash_lesson_completed'.
+	 *
+	 * @return bool True if lesson matches. Otherwise, false.
+	 */
+	private function lesson_matches( $field_lesson_id = 0, $action_hook_lesson_id = 0 ) {
+
+		// Determine if selected lesson mataches received lesson ID.
+		$lesson_is_any  = intval( $field_lesson_id ) === -1;
+		$lesson_matches = intval( $field_lesson_id ) === absint( $action_hook_lesson_id ) || $lesson_is_any;
+
+		return $lesson_matches;
+
+	}
+
 }
+
+

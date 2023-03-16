@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon integration="HELPSCOUT"></uo-icon> 
+				<uo-icon integration="HELPSCOUT"></uo-icon>
 
 				<?php esc_html_e( 'Help Scout', 'uncanny-automator' ); ?>
 
@@ -48,13 +48,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 									</a>
 
-									<?php esc_html_e( 'for simple instructions.	', 'uncanny-automator' ); ?>						
+									<?php esc_html_e( 'for simple instructions.	', 'uncanny-automator' ); ?>
 
 								</p>
 
 								<p>
-									<uo-text-field 
-										disabled 
+									<uo-text-field
+										disabled
 										copy-to-clipboard
 										id="uap_helpscout_webhook_key"
 										value="<?php echo esc_attr( $vars['webhook_key'] ); ?>"
@@ -64,22 +64,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 								</p>
 
 								<p>
-									<uo-text-field 
+									<uo-text-field
 										disabled
 										copy-to-clipboard
-										value="<?php echo esc_url( $vars['webhook_url'] ); ?>" 
-										label="<?php esc_attr_e( 'Callback URL', 'uncanny-automator' ); ?>" 
-										helper="<?php esc_html_e( "You'll be asked to enter a webhook URL.", 'uncanny-automator-pro' ); ?>">
+										value="<?php echo esc_url( $vars['webhook_url'] ); ?>"
+										label="<?php esc_attr_e( 'Callback URL', 'uncanny-automator' ); ?>"
+										helper="<?php esc_html_e( "You'll be asked to enter a webhook URL.", 'uncanny-automator' ); ?>">
 									</uo-text-field>
 								</p>
-								<uo-button 
+								<uo-button
 									needs-confirmation
 									confirmation-heading="<?php esc_attr_e( 'This action is irreversible', 'uncanny-automator' ); ?>"
 									confirmation-content="<?php esc_attr_e( 'Regenerating the secret key will prevent Help Scout triggers from working until the new secret key is set in Help Scout. Continue?', 'uncanny-automator' ); ?>"
 									confirmation-button-label="<?php esc_attr_e( 'Confirm', 'uncanny-automator' ); ?>"
-									href="<?php echo esc_url( $vars['webhook_regenerate_url'] ); ?>" 
-									size="small" 
-									color="secondary" 
+									href="<?php echo esc_url( $vars['webhook_regenerate_url'] ); ?>"
+									size="small"
+									color="secondary"
 									class="uap-spacing-bottom uap-spacing-top">
 
 									<?php esc_html_e( 'Regenerate secret key', 'uncanny-automator' ); ?>
@@ -216,7 +216,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 						<div class="uap-settings-panel-user__avatar">
 
-							<?php echo esc_html( substr( $vars['user']['firstName'], 0, 1 ) ); ?> 
+							<?php echo esc_html( substr( $vars['user']['firstName'], 0, 1 ) ); ?>
 
 						</div>
 
@@ -238,7 +238,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</div>
 
 							<div class="uap-settings-panel-user-info__additional">
-								<?php echo esc_html( $vars['user']['email'] ); ?> 
+								<?php echo esc_html( $vars['user']['email'] ); ?>
 							</div>
 
 						</div>

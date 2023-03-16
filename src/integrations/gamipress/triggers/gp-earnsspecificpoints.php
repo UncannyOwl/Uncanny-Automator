@@ -38,9 +38,9 @@ class GP_EARNSSPECIFICPOINTS {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - GamiPress */
-			'sentence'            => sprintf( esc_attr__( 'A user earns {{greater than, less than, or equal to:%3$s}} {{a number of:%1$s}} {{a specific type of:%2$s}} points in a single transaction', 'uncanny-automator-pro' ), 'GPPOINTVALUE', $this->trigger_meta, 'NUMBERCOND' ),
+			'sentence'            => sprintf( esc_attr__( 'A user earns {{greater than, less than, or equal to:%3$s}} {{a number of:%1$s}} {{a specific type of:%2$s}} points in a single transaction', 'uncanny-automator' ), 'GPPOINTVALUE', $this->trigger_meta, 'NUMBERCOND' ),
 			/* translators: Logged-in trigger - GamiPress */
-			'select_option_name'  => esc_attr__( 'A user earns {{greater than, less than, or equal to}} {{a number of}} {{a specific type of}} points in a single transaction', 'uncanny-automator-pro' ),
+			'select_option_name'  => esc_attr__( 'A user earns {{greater than, less than, or equal to}} {{a number of}} {{a specific type of}} points in a single transaction', 'uncanny-automator' ),
 			'action'              => 'gamipress_award_points_to_user',
 			'priority'            => 20,
 			'accepted_args'       => 4,
@@ -50,8 +50,8 @@ class GP_EARNSSPECIFICPOINTS {
 				Automator()->helpers->recipe->field->int(
 					array(
 						'option_code' => 'GPPOINTVALUE',
-						'label'       => esc_attr__( 'Points', 'uncanny-automator-pro' ),
-						'placeholder' => esc_attr__( 'Example: 15', 'uncanny-automator-pro' ),
+						'label'       => esc_attr__( 'Points', 'uncanny-automator' ),
+						'placeholder' => esc_attr__( 'Example: 15', 'uncanny-automator' ),
 						'input_type'  => 'int',
 						'default'     => null,
 					)

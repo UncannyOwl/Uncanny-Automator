@@ -105,7 +105,7 @@ class THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED {
 							'label'                    => esc_html__( 'Lesson', 'uncanny-automator' ),
 							'input_type'               => 'select',
 							'supports_custom_value'    => true,
-							'custom_value_description' => esc_html__( 'Lesson ID', 'uncanny-automator-pro' ),
+							'custom_value_description' => esc_html__( 'Lesson ID', 'uncanny-automator' ),
 							'options'                  => array(),
 							'relevant_tokens'          => $this->get_helper()->get_relevant_tokens_courses_lessons(),
 						),

@@ -23,7 +23,8 @@ class Add_Trello_Integration {
 
 		$this->set_connected( $functions->integration_status() );
 
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'trello' ) );
+		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'trello-api' ) );
+
 	}
 
 	/**

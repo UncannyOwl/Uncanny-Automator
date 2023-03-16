@@ -95,8 +95,8 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 			'token_name'            => __( 'Card ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
-			'options'               => array(),
 			'supports_custom_value' => false,
+			'options'               => array(),
 			'ajax'                  => array(
 				'endpoint'      => 'automator_trello_get_list_cards',
 				'event'         => 'parent_fields_change',
@@ -111,7 +111,7 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
-			'supports_custom_value' => false,
+			'supports_custom_value' => true,
 			'ajax'                  => array(
 				'endpoint'      => 'automator_trello_get_card_checklists',
 				'event'         => 'parent_fields_change',

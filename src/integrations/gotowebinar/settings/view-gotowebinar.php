@@ -43,7 +43,7 @@ namespace Uncanny_Automator;
 						<uo-alert type="success" heading="<?php esc_attr_e( 'You have successfully connected your GoTo Webinar account', 'uncanny-automator' ); ?>" class="uap-spacing-bottom"></uo-alert>
 					<?php } ?>
 
-					<uo-alert 
+					<uo-alert
 						heading="<?php esc_attr_e( 'Uncanny Automator only supports connecting to one GoTo Webinar account.', 'uncanny-automator' ); ?>"
 					></uo-alert>
 
@@ -80,7 +80,7 @@ namespace Uncanny_Automator;
 							<?php
 
 								echo sprintf(
-									esc_html__( "Connecting to GoTo Webinar requires setting up an application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
+									esc_html__( "Connecting to GoTo Webinar requires setting up an application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
 									'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/gotowebinar/', 'settings', 'gotowebinar-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 								);
 
@@ -105,8 +105,8 @@ namespace Uncanny_Automator;
 
 				<?php } ?>
 
-				<uo-text-field required id="uap_automator_gtw_api_consumer_key" 
-					value="<?php echo esc_attr( $key ); ?>" 
+				<uo-text-field required id="uap_automator_gtw_api_consumer_key"
+					value="<?php echo esc_attr( $key ); ?>"
 					label="<?php esc_attr_e( 'Client ID', 'uncanny-automator' ); ?>"
 					class="uap-spacing-top"
 
@@ -114,8 +114,8 @@ namespace Uncanny_Automator;
 				>
 				</uo-text-field>
 
-				<uo-text-field required id="uap_automator_gtw_api_consumer_secret" 
-					value="<?php echo esc_attr( $secret ); ?>" 
+				<uo-text-field required id="uap_automator_gtw_api_consumer_secret"
+					value="<?php echo esc_attr( $secret ); ?>"
 					label="<?php esc_attr_e( 'Client secret', 'uncanny-automator' ); ?>"
 					class="uap-spacing-top"
 
@@ -165,7 +165,7 @@ namespace Uncanny_Automator;
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 					</uo-button>
 				<?php } ?>
-			   
+
 			</div>
 		</div>
 

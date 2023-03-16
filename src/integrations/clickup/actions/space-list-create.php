@@ -45,15 +45,12 @@ class Space_List_Create {
 		$this->set_sentence(
 			sprintf(
 				/* translators: Action sentence */
-				esc_attr__( 'Create {{a list:%1$s}} in {{a specific folder:%2$s}} {{a specific space:%3$s}} in {{a specific team:%4$s}}', 'uncanny-automator' ),
-				$this->get_action_meta(),
-				'FOLDER:' . $this->get_action_meta(),
-				'SPACE:' . $this->get_action_meta(),
-				'TEAM:' . $this->get_action_meta()
+				esc_attr__( 'Create {{a list:%1$s}}', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
 
-		$this->set_readable_sentence( esc_attr__( 'Create {{a list}} in {{a specific folder}} in {{a specific space}} in {{a specific team}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'Create {{a list}}', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 

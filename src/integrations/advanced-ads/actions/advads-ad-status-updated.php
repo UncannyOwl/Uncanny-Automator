@@ -28,10 +28,10 @@ class ADVADS_AD_STATUS_UPDATED {
 		$this->set_requires_user( false );
 
 		/* translators: Action - Advanced Ads */
-		$this->set_sentence( sprintf( esc_attr__( 'Set {{an ad:%1$s}} to {{a specific status:%2$s}}', 'uncanny-automator-pro' ), $this->get_action_meta(), 'AD_STATUS' ) );
+		$this->set_sentence( sprintf( esc_attr__( 'Set {{an ad:%1$s}} to {{a specific status:%2$s}}', 'uncanny-automator' ), $this->get_action_meta(), 'AD_STATUS' ) );
 
 		/* translators: Action - Advanced Ads */
-		$this->set_readable_sentence( esc_attr__( 'Set {{an ad}} to {{a specific status}}', 'uncanny-automator-pro' ) );
+		$this->set_readable_sentence( esc_attr__( 'Set {{an ad}} to {{a specific status}}', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_action();

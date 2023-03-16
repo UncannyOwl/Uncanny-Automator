@@ -122,7 +122,7 @@
 							<li><?php esc_html_e( 'The Account Settings menu will appear. Click the "Developer" option.', 'uncanny-automator' ); ?></li>
 							<li><?php esc_html_e( 'The Developer Settings page will load and will display your ActiveCampaign API URL and Key.', 'uncanny-automator' ); ?></li>
 						</ol>
-					
+
 					</uo-alert>
 
 				<?php } ?>
@@ -179,7 +179,7 @@
 								<?php
 
 									echo sprintf(
-										esc_html__( "Enabling ActiveCampaign triggers requires setting up a webhook in your ActiveCampaign account using the URL below. A few steps and you'll be up and running in no time. Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
+										esc_html__( "Enabling ActiveCampaign triggers requires setting up a webhook in your ActiveCampaign account using the URL below. A few steps and you'll be up and running in no time. Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
 										'<a href="' . esc_url( $this->kb_link ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 									);
 
@@ -200,16 +200,16 @@
 								color="secondary"
 								class="uap-spacing-top"
 							>
-								<uo-icon id="sync"></uo-icon> 
+								<uo-icon id="sync"></uo-icon>
 								<?php esc_attr_e( 'Regenerate webhook URL', 'uncanny-automator' ); ?>
 							</uo-button>
-						
+
 						</uo-alert>
 
 					</div>
 
-				<?php } ?> 
-					
+				<?php } ?>
+
 			</div>
 
 		</div>
@@ -281,7 +281,7 @@
 					</uo-button>
 
 				<?php } ?>
-					
+
 				</div>
 
 		</div>

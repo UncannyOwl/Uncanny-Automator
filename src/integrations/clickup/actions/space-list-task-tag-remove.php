@@ -45,15 +45,12 @@ class Space_List_Task_Tag_Remove {
 		$this->set_sentence(
 			sprintf(
 				/* translators: Action sentence */
-				esc_attr__( 'Remove {{a tag:%1$s}} from {{a specific task:%2$s}} in {{a specific list:%3$s}} of {{a specific space:%4$s}}', 'uncanny-automator' ),
-				$this->get_action_meta(),
-				'TASK:' . $this->get_action_meta(),
-				'LIST:' . $this->get_action_meta(),
-				'SPACE:' . $this->get_action_meta()
+				esc_attr__( 'Remove {{a tag:%1$s}} from a task', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
 
-		$this->set_readable_sentence( esc_attr__( 'Remove {{a tag}} from {{a specific task}} in {{a specific list}} of {{a specific space}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'Remove {{a tag}} from a task', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 

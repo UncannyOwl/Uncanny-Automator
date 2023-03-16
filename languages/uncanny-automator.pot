@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.11\n"
+"Project-Id-Version: Uncanny Automator 4.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-03-02T15:11:09+00:00\n"
+"POT-Creation-Date: 2023-03-16T17:30:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: uncanny-automator\n"
@@ -279,12 +279,13 @@ msgstr ""
 #: src/integrations/buddyboss/actions/bdb-setuserstatus.php:64
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:104
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:112
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:223
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:237
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:139
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:37
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:65
 #: src/integrations/twitter/actions/twitter-poststatus.php:64
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:57
+#: src/integrations/whatsapp/triggers/wa-message-status-updated.php:80
 #: src/integrations/wp/actions/wp-createpost.php:113
 msgid "Status"
 msgstr ""
@@ -348,7 +349,7 @@ msgstr ""
 
 #. translators: Calendar field
 #: src/core/admin/api-log/class-api-log.php:69
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:80
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:81
 #: src/integrations/wp/actions/wp-createpost.php:129
 msgid "Title"
 msgstr ""
@@ -963,6 +964,7 @@ msgstr ""
 #. translators: 1. Application name
 #: src/core/admin/pro-upgrade/class-pro-upsell.php:230
 #: src/core/views/admin-dashboard.php:469
+#: src/integrations/gototraining/settings/view-gototraining.php:35
 msgid "GoTo Training"
 msgstr ""
 
@@ -3632,7 +3634,7 @@ msgid "All downloads"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:828
-#: src/integrations/edd/helpers/edd-helpers.php:84
+#: src/integrations/edd/helpers/edd-helpers.php:85
 msgid "Any download"
 msgstr ""
 
@@ -4629,6 +4631,7 @@ msgid "Token data"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:564
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:52
 #: src/integrations/wp/actions/wp-createpost.php:51
 #: src/integrations/wp/helpers/wp-helpers.php:201
 #: src/integrations/wp/helpers/wp-helpers.php:611
@@ -4990,7 +4993,7 @@ msgstr ""
 #: src/integrations/drip/actions/drip-remove-tag.php:58
 #: src/integrations/drip/actions/drip-subscribe-to-campaign.php:58
 #: src/integrations/drip/actions/drip-unsubscribe-all.php:58
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:155
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:169
 #: src/integrations/give/helpers/give-helpers.php:117
 #: src/integrations/jet-crm/actions/jetcrm-tag-to-company.php:55
 #: src/integrations/jet-crm/actions/jetcrm-tag-to-contact.php:55
@@ -5021,6 +5024,11 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:809
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:157
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:195
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:151
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:171
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:192
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:213
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:234
 #: src/integrations/drip/actions/drip-create-subscriber.php:94
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:131
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:162
@@ -5029,8 +5037,8 @@ msgstr ""
 #: src/integrations/jetformbuilder/helpers/jetfb-helpers.php:74
 #: src/integrations/mailchimp/actions/audience-addauser.php:141
 #: src/integrations/mailchimp/actions/mc-everyone-add-contact.php:140
-#: src/integrations/trello/actions/trello-create-card.php:227
-#: src/integrations/trello/actions/trello-update-card.php:229
+#: src/integrations/trello/actions/trello-create-card.php:237
+#: src/integrations/trello/actions/trello-update-card.php:239
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:245
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:260
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:284
@@ -5076,7 +5084,7 @@ msgstr ""
 #: src/integrations/active-campaign/actions/ac-annon-add.php:123
 #: src/integrations/convertkit/actions/convertkit-form-subscriber-add.php:119
 #: src/integrations/convertkit/actions/convertkit-subscriber-sequence-add.php:114
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:139
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:153
 #: src/integrations/give/helpers/give-helpers.php:105
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:191
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:109
@@ -5094,7 +5102,7 @@ msgstr ""
 #: src/core/lib/utilities/class-automator-translations.php:827
 #: src/integrations/active-campaign/actions/ac-annon-add.php:129
 #: src/integrations/active-campaign/tokens/ac-tokens.php:61
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:147
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:161
 #: src/integrations/give/helpers/give-helpers.php:111
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:192
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:110
@@ -5792,9 +5800,10 @@ msgstr ""
 #: src/core/views/html-admin-status.php:791
 #: src/integrations/clickup/fields/space-list-create-fields.php:50
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:69
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:141
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:144
 #: src/integrations/trello/actions/trello-create-card.php:112
 #: src/integrations/trello/actions/trello-update-card.php:114
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:76
 msgid "Name"
 msgstr ""
 
@@ -7842,6 +7851,10 @@ msgstr ""
 msgid "Enable triggers"
 msgstr ""
 
+#: src/integrations/active-campaign/settings/view-active-campaign.php:182
+msgid "Enabling ActiveCampaign triggers requires setting up a webhook in your ActiveCampaign account using the URL below. A few steps and you'll be up and running in no time. Visit our %1$s for simple instructions."
+msgstr ""
+
 #: src/integrations/active-campaign/settings/view-active-campaign.php:183
 #: src/integrations/gototraining/settings/view-gototraining.php:84
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:84
@@ -7862,6 +7875,7 @@ msgid "Webhook URL"
 msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:192
+#: src/integrations/helpscout/settings/view-helpscout.php:72
 msgid "You'll be asked to enter a webhook URL."
 msgstr ""
 
@@ -7883,6 +7897,7 @@ msgstr ""
 #: src/integrations/facebook/settings/view-facebook.php:161
 #: src/integrations/google-calendar/settings/view-google-calendar.php:151
 #: src/integrations/google-sheet/settings/view-google-sheet.php:149
+#: src/integrations/gototraining/settings/view-gototraining.php:168
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:165
 #: src/integrations/helpscout/settings/view-helpscout.php:255
 #: src/integrations/hubspot/settings/view-hubspot.php:162
@@ -7912,13 +7927,23 @@ msgid "First Name"
 msgstr ""
 
 #: src/integrations/active-campaign/tokens/ac-tokens.php:68
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:163
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:177
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:89
 msgid "Phone"
 msgstr ""
 
 #: src/integrations/active-campaign/tokens/ac-tokens.php:75
 msgid "Account"
+msgstr ""
+
+#. translators: Action - Advanced Ads
+#: src/integrations/advanced-ads/actions/advads-ad-status-updated.php:31
+msgid "Set {{an ad:%1$s}} to {{a specific status:%2$s}}"
+msgstr ""
+
+#. translators: Action - Advanced Ads
+#: src/integrations/advanced-ads/actions/advads-ad-status-updated.php:34
+msgid "Set {{an ad}} to {{a specific status}}"
 msgstr ""
 
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:35
@@ -8276,25 +8301,29 @@ msgid "Booking price"
 msgstr ""
 
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:532
+#: src/integrations/edd/tokens/edd-tokens.php:474
 #: src/integrations/fluent-support/tokens/flsupport-tokens.php:127
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:99
 msgid "Customer first name"
 msgstr ""
 
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:536
+#: src/integrations/edd/tokens/edd-tokens.php:480
 #: src/integrations/fluent-support/tokens/flsupport-tokens.php:133
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:105
 msgid "Customer last name"
 msgstr ""
 
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:540
+#: src/integrations/edd/tokens/edd-tokens.php:468
 #: src/integrations/jet-crm/actions/jetcrm-create-contact.php:39
 #: src/integrations/jet-crm/tokens/jetcrm-tokens.php:81
 msgid "Customer ID"
 msgstr ""
 
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:544
-#: src/integrations/edd/tokens/edd-tokens.php:47
+#: src/integrations/edd/tokens/edd-tokens.php:260
+#: src/integrations/edd/tokens/edd-tokens.php:486
 #: src/integrations/fluent-support/tokens/flsupport-tokens.php:121
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:111
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:89
@@ -8628,6 +8657,7 @@ msgstr ""
 
 #: src/integrations/badgeos/actions/bo-awardpoints-a.php:76
 #: src/integrations/gamipress/actions/gp-awardpoints-a.php:66
+#: src/integrations/gamipress/triggers/gp-earnsspecificpoints.php:53
 #: src/integrations/mycred/actions/mycred-awardpoints-a.php:74
 msgid "Points"
 msgstr ""
@@ -8957,10 +8987,13 @@ msgid "A user sends an email invitation"
 msgstr ""
 
 #. translators: Logged-in trigger - BuddyPress
+#. translators: Logged-in trigger - PeepSo Core
 #: src/integrations/buddyboss/triggers/bdb-userupdateavatar.php:43
 #: src/integrations/buddyboss/triggers/bdb-userupdateavatar.php:45
 #: src/integrations/buddypress/triggers/bp-userupdateavatar.php:43
 #: src/integrations/buddypress/triggers/bp-userupdateavatar.php:45
+#: src/integrations/peepso/triggers/peepso-userupdatesavatar.php:46
+#: src/integrations/peepso/triggers/peepso-userupdatesavatar.php:48
 msgid "A user updates their avatar"
 msgstr ""
 
@@ -9006,6 +9039,7 @@ msgstr ""
 #: src/integrations/give/triggers/anon-make-donation.php:68
 #: src/integrations/give/triggers/make-donation.php:69
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:67
+#: src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php:91
 #: src/integrations/gravity-forms/triggers/gf-subform-codes.php:83
 #: src/integrations/gravity-forms/triggers/gf-subform-groups.php:83
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:66
@@ -9028,6 +9062,8 @@ msgstr ""
 
 #: src/integrations/caldera-forms/tokens/cf-tokens.php:117
 #: src/integrations/formidable/tokens/fi-tokens.php:257
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:89
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:94
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:177
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:314
 #: src/integrations/wpforms/tokens/wpf-tokens.php:293
@@ -9036,6 +9072,7 @@ msgstr ""
 
 #: src/integrations/caldera-forms/tokens/cf-tokens.php:123
 #: src/integrations/formidable/tokens/fi-tokens.php:269
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:92
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:189
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:332
 #: src/integrations/wpforms/tokens/wpf-tokens.php:305
@@ -9146,38 +9183,38 @@ msgstr ""
 
 #. translators: Action sentence
 #: src/integrations/clickup/actions/space-list-create.php:48
-msgid "Create {{a list:%1$s}} in {{a specific folder:%2$s}} {{a specific space:%3$s}} in {{a specific team:%4$s}}"
+msgid "Create {{a list:%1$s}}"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-create.php:56
-msgid "Create {{a list}} in {{a specific folder}} in {{a specific space}} in {{a specific team}}"
+#: src/integrations/clickup/actions/space-list-create.php:53
+msgid "Create {{a list}}"
 msgstr ""
 
 #. translators: Action sentence
 #: src/integrations/clickup/actions/space-list-task-comment-create.php:48
-msgid "Add a comment to {{a specific task:%1$s}} in {{a specific list:%2$s}} in {{a specific folder:%3$s}} in {{a specific space:%4$s}} in {{a specific team:%5$s}}"
+msgid "Add {{a comment:%1$s}} to a task"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-task-comment-create.php:57
-msgid "Add a comment to {{a specific task}} in {{a specific list}} in {{a specific folder}} in {{a specific space}} in {{a specific team}}"
+#: src/integrations/clickup/actions/space-list-task-comment-create.php:53
+msgid "Add {{a comment}} to a task"
 msgstr ""
 
 #. translators: Action sentence
 #: src/integrations/clickup/actions/space-list-task-create.php:48
-msgid "Create a task in {{a specific list:%1$s}} in {{a specific folder:%2$s}} in {{a specific space:%3$s}} in {{a specific team:%4$s}}"
+msgid "Create a {{task:%1$s}}"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-task-create.php:56
-msgid "Create a task in {{a specific list}} in {{a specific folder}} in {{a specific space}} in {{a specific team}}"
+#: src/integrations/clickup/actions/space-list-task-create.php:53
+msgid "Create a {{task}}"
 msgstr ""
 
 #. translators: Action sentence
 #: src/integrations/clickup/actions/space-list-task-delete.php:48
-msgid "Delete {{a specific task:%1$s}}"
+msgid "Delete {{a task:%1$s}}"
 msgstr ""
 
 #: src/integrations/clickup/actions/space-list-task-delete.php:53
-msgid "Delete {{a specific task}}"
+msgid "Delete {{a task}}"
 msgstr ""
 
 #: src/integrations/clickup/actions/space-list-task-delete.php:76
@@ -9188,29 +9225,29 @@ msgstr ""
 
 #. translators: Action sentence
 #: src/integrations/clickup/actions/space-list-task-tag-add.php:48
-msgid "Add {{a tag:%1$s}} to {{a specific task:%2$s}} in {{a specific list:%3$s}} of {{a specific space:%4$s}}"
+msgid "Add {{a tag:%1$s}} to a task"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-task-tag-add.php:60
-msgid "Add {{a tag}} to {{a specific task}} in {{a specific list}} of {{a specific space}}"
+#: src/integrations/clickup/actions/space-list-task-tag-add.php:57
+msgid "Add {{a tag}} to a task"
 msgstr ""
 
 #. translators: Action sentence
 #: src/integrations/clickup/actions/space-list-task-tag-remove.php:48
-msgid "Remove {{a tag:%1$s}} from {{a specific task:%2$s}} in {{a specific list:%3$s}} of {{a specific space:%4$s}}"
+msgid "Remove {{a tag:%1$s}} from a task"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-task-tag-remove.php:56
-msgid "Remove {{a tag}} from {{a specific task}} in {{a specific list}} of {{a specific space}}"
+#: src/integrations/clickup/actions/space-list-task-tag-remove.php:53
+msgid "Remove {{a tag}} from a task"
 msgstr ""
 
 #. translators: Action sentence
 #: src/integrations/clickup/actions/space-list-task-update.php:48
-msgid "Update {{a task:%1$s}} in {{a specific list:%2$s}} of {{a specific space:%3$s}}"
+msgid "Update {{a task:%1$s}}"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-task-update.php:55
-msgid "Update {{a task}} in {{a specific list}} of {{a specific space}}"
+#: src/integrations/clickup/actions/space-list-task-update.php:53
+msgid "Update {{a task}}"
 msgstr ""
 
 #: src/integrations/clickup/fields/space-list-create-fields.php:12
@@ -9271,8 +9308,8 @@ msgstr ""
 
 #. translators: Calendar field
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:76
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:148
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:98
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:164
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:99
 #: src/integrations/mycred/actions/mycred-awardpoints-a.php:81
 #: src/integrations/trello/actions/trello-create-card.php:122
 #: src/integrations/trello/actions/trello-update-card.php:124
@@ -9281,32 +9318,32 @@ msgid "Description"
 msgstr ""
 
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:118
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:126
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:127
 msgid "Priority"
 msgstr ""
 
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:123
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:129
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:132
 msgid "No priority"
 msgstr ""
 
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:124
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:130
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:133
 msgid "Low"
 msgstr ""
 
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:125
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:131
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:134
 msgid "Normal"
 msgstr ""
 
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:126
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:132
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:135
 msgid "High"
 msgstr ""
 
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:127
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:133
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:136
 msgid "Urgent"
 msgstr ""
 
@@ -9332,14 +9369,18 @@ msgstr ""
 
 #. translators: Calendar field
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:159
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:155
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:107
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:185
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:108
+#: src/integrations/trello/actions/trello-create-card.php:155
+#: src/integrations/trello/actions/trello-update-card.php:157
 msgid "Start date"
 msgstr ""
 
 #. translators: Calendar field
 #: src/integrations/clickup/fields/space-list-task-create-fields.php:167
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:122
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:206
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:255
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:123
 msgid "Start time"
 msgstr ""
 
@@ -9373,18 +9414,33 @@ msgstr ""
 msgid "Remove assignees"
 msgstr ""
 
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:162
-msgid "Start date time"
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:130
+#: src/integrations/clickup/helpers/clickup-helpers.php:787
+msgid "Leave unchanged in ClickUp"
 msgstr ""
 
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:169
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:131
+msgid "Remove priority"
+msgstr ""
+
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:156
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:177
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:198
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:219
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:240
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:261
+#: src/integrations/google-sheet/actions/sheet-updaterecord.php:157
+msgid "Update?"
+msgstr ""
+
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:227
 #: src/integrations/trello/actions/trello-add-checklist-item.php:135
-#: src/integrations/trello/actions/trello-create-card.php:155
-#: src/integrations/trello/actions/trello-update-card.php:157
+#: src/integrations/trello/actions/trello-create-card.php:165
+#: src/integrations/trello/actions/trello-update-card.php:167
 msgid "Due date"
 msgstr ""
 
-#: src/integrations/clickup/fields/space-list-task-update-fields.php:176
+#: src/integrations/clickup/fields/space-list-task-update-fields.php:248
 msgid "Due date time"
 msgstr ""
 
@@ -9396,32 +9452,36 @@ msgstr ""
 msgid "Everyone"
 msgstr ""
 
+#: src/integrations/clickup/helpers/clickup-helpers.php:791
+msgid "Remove status"
+msgstr ""
+
 #: src/integrations/clickup/settings/settings-clickup.php:71
-msgid "Add a comment to a specific task in a specific list in a specific folder in a specific space in a specific team"
+msgid "Add a comment to a task"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:72
-msgid "Add a tag to a specific task in a specific list of a specific space"
+msgid "Add a tag to a task"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:73
-msgid "Create a list in a specific folder in a specific space in a specific team"
+msgid "Create a list"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:74
-msgid "Create a task in a specific list in a specific folder in a specific space in a specific team"
+msgid "Create a task"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:75
-msgid "Delete a specific task"
+msgid "Delete a task"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:76
-msgid "Remove a tag from a specific task in a specific list of a specific space"
+msgid "Remove a tag from a task"
 msgstr ""
 
 #: src/integrations/clickup/settings/settings-clickup.php:77
-msgid "Update a task in a specific list of a specific space"
+msgid "Update a task"
 msgstr ""
 
 #: src/integrations/clickup/settings/view-clickup.php:19
@@ -9454,13 +9514,14 @@ msgstr ""
 #: src/integrations/forminator/helpers/forminator-helpers.php:105
 #: src/integrations/give/helpers/give-helpers.php:56
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:108
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:96
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:108
 #: src/integrations/jetformbuilder/tokens/jetfb-tokens.php:97
 #: src/integrations/mailpoet/helpers/mailpoet-helpers.php:190
 #: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:98
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:119
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:102
-#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:115
+#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:114
 #: src/integrations/wpforms/helpers/wpforms-helpers.php:111
 #: src/integrations/ws-form-lite/tokens/ws-form-lite-tokens.php:78
 msgid "Form title"
@@ -9472,6 +9533,7 @@ msgstr ""
 #: src/integrations/forminator/helpers/forminator-helpers.php:106
 #: src/integrations/give/helpers/give-helpers.php:57
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:109
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:97
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:109
 #: src/integrations/jetformbuilder/tokens/jetfb-tokens.php:94
 #: src/integrations/mailpoet/helpers/mailpoet-helpers.php:191
@@ -9479,7 +9541,7 @@ msgstr ""
 #: src/integrations/thrive-leads/tokens/thrive-leads-tokens.php:85
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:120
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:103
-#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:116
+#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:115
 #: src/integrations/wpforms/helpers/wpforms-helpers.php:112
 #: src/integrations/ws-form-lite/tokens/ws-form-lite-tokens.php:72
 msgid "Form ID"
@@ -9720,7 +9782,7 @@ msgstr ""
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:75
 #: src/integrations/ultimate-member/triggers/um-userlogsin.php:67
 #: src/integrations/ultimate-member/triggers/um-userregister.php:70
-#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:105
+#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:104
 #: src/integrations/wp-user-manager/helpers/wp-user-manager-helpers.php:76
 #: src/integrations/ws-form-lite/helpers/ws-form-lite-helpers.php:37
 msgid "Any form"
@@ -10011,7 +10073,7 @@ msgstr ""
 msgid "A new sale is recorded for {{an affiliate}}"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:73
+#: src/integrations/edd/helpers/edd-helpers.php:74
 #: src/integrations/edd/triggers/edd-productpurchase.php:61
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:67
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:118
@@ -10028,46 +10090,50 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:87
-#: src/integrations/edd/tokens/edd-tokens.php:53
+#: src/integrations/edd/helpers/edd-helpers.php:88
+#: src/integrations/edd/tokens/edd-tokens.php:266
 msgid "Discount codes used"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:88
+#: src/integrations/edd/helpers/edd-helpers.php:89
 msgid "Download title"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:89
+#: src/integrations/edd/helpers/edd-helpers.php:90
+#: src/integrations/edd/tokens/edd-tokens.php:360
 msgid "Download ID"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:90
+#: src/integrations/edd/helpers/edd-helpers.php:91
+#: src/integrations/edd/tokens/edd-tokens.php:372
 msgid "Download URL"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:91
+#: src/integrations/edd/helpers/edd-helpers.php:92
+#: src/integrations/edd/tokens/edd-tokens.php:378
 msgid "Download featured image ID"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:92
+#: src/integrations/edd/helpers/edd-helpers.php:93
+#: src/integrations/edd/tokens/edd-tokens.php:384
 msgid "Download featured image URL"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:93
-#: src/integrations/edd/tokens/edd-tokens.php:106
+#: src/integrations/edd/helpers/edd-helpers.php:94
+#: src/integrations/edd/tokens/edd-tokens.php:319
 msgid "License key"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:94
-#: src/integrations/edd/tokens/edd-tokens.php:65
+#: src/integrations/edd/helpers/edd-helpers.php:95
+#: src/integrations/edd/tokens/edd-tokens.php:278
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:96
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:126
 #: src/integrations/woocommerce/tokens/wc-tokens.php:64
 msgid "Order discounts"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:95
-#: src/integrations/edd/tokens/edd-tokens.php:71
+#: src/integrations/edd/helpers/edd-helpers.php:96
+#: src/integrations/edd/tokens/edd-tokens.php:284
 #: src/integrations/surecart/tokens/surecart-tokens.php:87
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:94
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:122
@@ -10075,16 +10141,16 @@ msgstr ""
 msgid "Order subtotal"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:96
-#: src/integrations/edd/tokens/edd-tokens.php:77
+#: src/integrations/edd/helpers/edd-helpers.php:97
+#: src/integrations/edd/tokens/edd-tokens.php:290
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:95
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:124
 #: src/integrations/woocommerce/tokens/wc-tokens.php:62
 msgid "Order tax"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:97
-#: src/integrations/edd/tokens/edd-tokens.php:83
+#: src/integrations/edd/helpers/edd-helpers.php:98
+#: src/integrations/edd/tokens/edd-tokens.php:296
 #: src/integrations/surecart/tokens/surecart-tokens.php:90
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:92
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:119
@@ -10092,8 +10158,8 @@ msgstr ""
 msgid "Order total"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:98
-#: src/integrations/edd/tokens/edd-tokens.php:95
+#: src/integrations/edd/helpers/edd-helpers.php:99
+#: src/integrations/edd/tokens/edd-tokens.php:308
 #: src/integrations/surecart/tokens/surecart-tokens.php:96
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:100
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:136
@@ -10101,7 +10167,7 @@ msgstr ""
 msgid "Payment method"
 msgstr ""
 
-#: src/integrations/edd/tokens/edd-tokens.php:59
+#: src/integrations/edd/tokens/edd-tokens.php:272
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:93
 #: src/integrations/surecart/tokens/surecart-tokens.php:72
 #: src/integrations/surecart/tokens/surecart-tokens.php:162
@@ -10111,8 +10177,104 @@ msgstr ""
 msgid "Order ID"
 msgstr ""
 
-#: src/integrations/edd/tokens/edd-tokens.php:89
+#: src/integrations/edd/tokens/edd-tokens.php:302
 msgid "Ordered items"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:366
+msgid "Download name"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:390
+msgid "Download price"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:396
+msgid "Download quantity"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:402
+msgid "Download subtotal"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:408
+msgid "Download tax"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:414
+msgid "Payment key"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:420
+#: src/integrations/give/triggers/anon-make-donation.php:73
+#: src/integrations/give/triggers/make-donation.php:74
+msgid "Payment ID"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:426
+msgid "Payment subtotal"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:432
+msgid "Payment total"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:438
+msgid "Payment tax"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:444
+msgid "Payment discount"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:450
+msgid "Payment status"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:456
+msgid "Payment gateway"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:462
+msgid "Payment currency"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:492
+msgid "Customer address - Line 1"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:498
+msgid "Customer address - Line 2"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:504
+msgid "Customer address - City"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:510
+msgid "Customer address - State"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:516
+msgid "Customer address - Country"
+msgstr ""
+
+#: src/integrations/edd/tokens/edd-tokens.php:522
+msgid "Customer address - Zip"
+msgstr ""
+
+#. Translators: Trigger sentence - Easy Digital Downloads
+#: src/integrations/edd/triggers/edd-anon-product-purchase.php:33
+msgid "A customer purchases {{a download:%1$s}}"
+msgstr ""
+
+#: src/integrations/edd/triggers/edd-anon-product-purchase.php:36
+msgid "A customer purchases {{a download}}"
+msgstr ""
+
+#: src/integrations/edd/triggers/edd-anon-product-purchase.php:51
+#: src/integrations/surecart/tokens/surecart-tokens.php:567
+msgid "Download"
 msgstr ""
 
 #. translators: Logged-in trigger - Easy Digital Downloads
@@ -10242,6 +10404,16 @@ msgstr ""
 #: src/integrations/events-manager/helpers/events-manager-helpers.php:79
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:99
 msgid "Event featured image URL"
+msgstr ""
+
+#: src/integrations/event-tickets/tokens/ec-tokens.php:78
+msgid "Attendee name"
+msgstr ""
+
+#: src/integrations/event-tickets/tokens/ec-tokens.php:84
+#: src/integrations/google-calendar/actions/gcalendar-addattendee.php:99
+#: src/integrations/google-calendar/actions/gcalendar-removeattendee.php:99
+msgid "Attendee email"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:40
@@ -10685,58 +10857,58 @@ msgstr ""
 
 #. translators: Action - FluentCRM
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:38
-msgid "Add {{a contact:%1$s}}"
+msgid "Add/Update {{a contact:%1$s}}"
 msgstr ""
 
 #. translators: Action - FluentCRM
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:40
-msgid "Add {{a contact}}"
+msgid "Add/Update {{a contact}}"
 msgstr ""
 
 #. translators: Subscriber email
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:80
-msgid "Duplicate email: %s, please use different email address."
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:129
+msgid "We are not able to create or update a contact %s."
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:171
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:185
 msgid "Date of birth"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:180
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:194
 #: src/integrations/give/helpers/give-helpers.php:141
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:124
 msgid "Address line 1"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:187
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:201
 #: src/integrations/give/helpers/give-helpers.php:147
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:131
 msgid "Address line 2"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:194
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:208
 #: src/integrations/give/helpers/give-helpers.php:153
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:138
 msgid "City"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:201
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:215
 #: src/integrations/give/helpers/give-helpers.php:159
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:145
 msgid "State"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:208
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:222
 msgid "Postal code"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:215
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:229
 #: src/integrations/give/helpers/give-helpers.php:171
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:117
 msgid "Country"
 msgstr ""
 
-#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:229
+#: src/integrations/fluent-crm/actions/fcrm-add-contact.php:243
 #: src/integrations/fluent-crm/actions/fcrm-user-to-list.php:64
 msgctxt "Fluent Forms"
 msgid "Lists"
@@ -11001,6 +11173,7 @@ msgid "A ticket receives a reply from a customer"
 msgstr ""
 
 #: src/integrations/formidable/tokens/fi-tokens.php:263
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:98
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:183
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:320
 #: src/integrations/wpforms/tokens/wpf-tokens.php:299
@@ -11008,6 +11181,7 @@ msgid "User IP"
 msgstr ""
 
 #: src/integrations/formidable/tokens/fi-tokens.php:275
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:95
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:195
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:326
 msgid "Entry source URL"
@@ -11056,6 +11230,24 @@ msgctxt "GamiPress"
 msgid "Rank type slug"
 msgstr ""
 
+#: src/integrations/gamipress/helpers/gamipress-helpers.php:305
+msgid "Any rank"
+msgstr ""
+
+#. translators: Logged-in trigger - GamiPress
+#: src/integrations/gamipress/triggers/gp-earnsspecificpoints.php:41
+msgid "A user earns {{greater than, less than, or equal to:%3$s}} {{a number of:%1$s}} {{a specific type of:%2$s}} points in a single transaction"
+msgstr ""
+
+#. translators: Logged-in trigger - GamiPress
+#: src/integrations/gamipress/triggers/gp-earnsspecificpoints.php:43
+msgid "A user earns {{greater than, less than, or equal to}} {{a number of}} {{a specific type of}} points in a single transaction"
+msgstr ""
+
+#: src/integrations/gamipress/triggers/gp-earnsspecificpoints.php:54
+msgid "Example: 15"
+msgstr ""
+
 #: src/integrations/give/helpers/give-helpers.php:55
 msgid "Donated amount"
 msgstr ""
@@ -11096,11 +11288,6 @@ msgstr ""
 msgid "Donation ID"
 msgstr ""
 
-#: src/integrations/give/triggers/anon-make-donation.php:73
-#: src/integrations/give/triggers/make-donation.php:74
-msgid "Payment ID"
-msgstr ""
-
 #: src/integrations/give/triggers/anon-make-donation.php:120
 #: src/integrations/give/triggers/make-donation.php:122
 msgid "-"
@@ -11128,108 +11315,103 @@ msgstr ""
 
 #. translators: Calendar field
 #: src/integrations/google-calendar/actions/gcalendar-addattendee.php:77
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:67
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:68
 #: src/integrations/google-calendar/actions/gcalendar-removeattendee.php:77
 msgid "Calendar"
 msgstr ""
 
-#: src/integrations/google-calendar/actions/gcalendar-addattendee.php:99
-#: src/integrations/google-calendar/actions/gcalendar-removeattendee.php:99
-msgid "Attendee email"
-msgstr ""
-
 #. translators: Action sentence
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:50
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:51
 msgid "Add {{an event:%1$s}} to {{a Google Calendar:%2$s}}"
 msgstr ""
 
 #. translators: Action - WordPress
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:59
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:60
 msgid "Add {{an event}} to {{a Google Calendar}}"
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:89
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:90
 #: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:114
 #: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:256
 #: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:356
 msgid "Location"
 msgstr ""
 
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:113
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:114
 msgid "Start date must be in the date format set in"
 msgstr ""
 
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:115
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:146
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:116
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:147
 msgid "WordPress"
 msgstr ""
 
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:128
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:159
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:129
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:160
 msgid "The event time will match the timezone set in"
-msgstr ""
-
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:130
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:161
-msgid "WordPress Settings"
 msgstr ""
 
 #: src/integrations/google-calendar/actions/gcalendar-addevent.php:131
 #: src/integrations/google-calendar/actions/gcalendar-addevent.php:162
+msgid "WordPress Settings"
+msgstr ""
+
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:132
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:163
 msgid "Leave blank to create an all-day event."
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:138
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:139
 msgid "End date"
 msgstr ""
 
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:144
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:145
 msgid "End date must be in the date format set in"
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:153
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:154
 msgid "End time"
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:169
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:170
 msgid "Attendees"
 msgstr ""
 
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:170
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:171
 msgid "Comma separated email addresses of the attendees"
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:179
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:180
 msgid "Enable email notifications in Google Calendar"
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:188
-msgid "Minutes before event to trigger email notification"
-msgstr ""
-
 #: src/integrations/google-calendar/actions/gcalendar-addevent.php:189
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:207
-msgid "If no value is entered, the notification will fire 15 minutes before the event."
+msgid "Minutes before event to trigger email notification"
 msgstr ""
 
 #: src/integrations/google-calendar/actions/gcalendar-addevent.php:190
 #: src/integrations/google-calendar/actions/gcalendar-addevent.php:208
+msgid "If no value is entered, the notification will fire 15 minutes before the event."
+msgstr ""
+
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:191
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:209
 msgid "15"
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:199
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:200
 msgid "Enable popup notifications in Google Calendar"
 msgstr ""
 
 #. translators: Calendar field
-#: src/integrations/google-calendar/actions/gcalendar-addevent.php:206
+#: src/integrations/google-calendar/actions/gcalendar-addevent.php:207
 msgid "Minutes before event to trigger popup notification"
 msgstr ""
 
@@ -11437,10 +11619,6 @@ msgstr ""
 msgid "Match value"
 msgstr ""
 
-#: src/integrations/google-sheet/actions/sheet-updaterecord.php:157
-msgid "Update?"
-msgstr ""
-
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:674
 msgid "Notice: No cell values matches with '%1$s' under '%2$s' column in Sheet: '%3$s'."
 msgstr ""
@@ -11589,6 +11767,10 @@ msgstr ""
 msgid "Error validating Oauth tokens"
 msgstr ""
 
+#: src/integrations/gototraining/settings/view-gototraining.php:43
+msgid "You have successfully connected your GoTo Training account"
+msgstr ""
+
 #: src/integrations/gototraining/settings/view-gototraining.php:47
 msgid "Uncanny Automator only supports connecting to one GoTo Training account."
 msgstr ""
@@ -11609,9 +11791,36 @@ msgstr ""
 msgid "Remove the user from a training session"
 msgstr ""
 
+#: src/integrations/gototraining/settings/view-gototraining.php:83
+msgid "Connecting to GoTo Training requires setting up an application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1$s for simple instructions."
+msgstr ""
+
 #: src/integrations/gototraining/settings/view-gototraining.php:94
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:94
 msgid "You'll be asked to enter a redirect URL."
+msgstr ""
+
+#: src/integrations/gototraining/settings/view-gototraining.php:103
+#: src/integrations/gotowebinar/settings/view-gotowebinar.php:103
+msgid "You have successfully disconnected your account."
+msgstr ""
+
+#: src/integrations/gototraining/settings/view-gototraining.php:110
+#: src/integrations/gotowebinar/settings/view-gotowebinar.php:110
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:89
+#: src/integrations/zoom/settings/view-zoom-v3.php:89
+msgid "Client ID"
+msgstr ""
+
+#: src/integrations/gototraining/settings/view-gototraining.php:119
+#: src/integrations/gotowebinar/settings/view-gotowebinar.php:119
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:101
+#: src/integrations/zoom/settings/view-zoom-v3.php:101
+msgid "Client secret"
+msgstr ""
+
+#: src/integrations/gototraining/settings/view-gototraining.php:160
+msgid "Connect GoTo Training account"
 msgstr ""
 
 #. translators: Webinar topic
@@ -11705,24 +11914,16 @@ msgstr ""
 msgid "Remove the user from a webinar"
 msgstr ""
 
-#: src/integrations/gotowebinar/settings/view-gotowebinar.php:103
-msgid "You have successfully disconnected your account."
-msgstr ""
-
-#: src/integrations/gotowebinar/settings/view-gotowebinar.php:110
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:89
-#: src/integrations/zoom/settings/view-zoom-v3.php:89
-msgid "Client ID"
-msgstr ""
-
-#: src/integrations/gotowebinar/settings/view-gotowebinar.php:119
-#: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:101
-#: src/integrations/zoom/settings/view-zoom-v3.php:101
-msgid "Client secret"
+#: src/integrations/gotowebinar/settings/view-gotowebinar.php:83
+msgid "Connecting to GoTo Webinar requires setting up an application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1$s for simple instructions."
 msgstr ""
 
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:157
 msgid "Connect GoTo Webinar account"
+msgstr ""
+
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:93
+msgid "Entry date updated"
 msgstr ""
 
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:269
@@ -11734,6 +11935,16 @@ msgstr ""
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:314
 #: src/integrations/wpforms/tokens/wpf-tokens.php:112
 msgid "(label)"
+msgstr ""
+
+#. Translators: Trigger sentence
+#: src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php:50
+msgid "An entry for {{a form:%1$s}} is updated"
+msgstr ""
+
+#. Translators: Trigger sentence
+#: src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php:57
+msgid "An entry for {{a form}} is updated"
 msgstr ""
 
 #. Translators: Trigger sentence
@@ -11772,6 +11983,19 @@ msgstr ""
 #. translators: Action - WordPress
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:44
 msgid "Create a conversation in {{a mailbox}}"
+msgstr ""
+
+#: src/integrations/helpscout/actions/helpscout-conversation-create.php:53
+#: src/integrations/helpscout/triggers/hs-rating-received.php:85
+msgid "Conversation ID"
+msgstr ""
+
+#: src/integrations/helpscout/actions/helpscout-conversation-create.php:57
+#: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:86
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:83
+#: src/integrations/helpscout/triggers/hs-note-added.php:85
+#: src/integrations/helpscout/triggers/hs-rating-received.php:86
+msgid "Conversation URL"
 msgstr ""
 
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:76
@@ -11912,13 +12136,6 @@ msgstr ""
 msgid "{{A conversation}} in {{a mailbox}} receives a reply from a customer"
 msgstr ""
 
-#: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:86
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:83
-#: src/integrations/helpscout/triggers/hs-note-added.php:85
-#: src/integrations/helpscout/triggers/hs-rating-received.php:86
-msgid "Conversation URL"
-msgstr ""
-
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:87
 #: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:86
 #: src/integrations/helpscout/triggers/hs-note-added.php:86
@@ -11995,10 +12212,6 @@ msgstr ""
 #. Translators: Trigger sentence
 #: src/integrations/helpscout/triggers/hs-rating-received.php:78
 msgid "A conversation receives {{a specific rating}}"
-msgstr ""
-
-#: src/integrations/helpscout/triggers/hs-rating-received.php:85
-msgid "Conversation ID"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-rating-received.php:87
@@ -12086,8 +12299,8 @@ msgstr ""
 
 #: src/integrations/hubspot/actions/hubspot-adduser.php:77
 #: src/integrations/hubspot/actions/hubspot-createcontact.php:86
-#: src/integrations/trello/actions/trello-create-card.php:198
-#: src/integrations/trello/actions/trello-update-card.php:200
+#: src/integrations/trello/actions/trello-create-card.php:208
+#: src/integrations/trello/actions/trello-update-card.php:210
 msgid "Custom fields"
 msgstr ""
 
@@ -12812,7 +13025,7 @@ msgstr ""
 #: src/integrations/learndash/actions/ld-marktopicdone.php:93
 #: src/integrations/learndash/helpers/learndash-helpers.php:144
 #: src/integrations/learndash/tokens/ld-tokens.php:148
-#: src/integrations/learndash/triggers/ld-lessondone.php:74
+#: src/integrations/learndash/triggers/ld-lessondone.php:75
 #: src/integrations/learndash/triggers/ld-topicdone.php:81
 #: src/integrations/learnpress/actions/lp-marklessondone.php:78
 #: src/integrations/learnpress/actions/lp-marksectiondone.php:82
@@ -12855,7 +13068,7 @@ msgstr ""
 #: src/integrations/learndash/actions/ld-marktopicdone.php:108
 #: src/integrations/learndash/helpers/learndash-helpers.php:208
 #: src/integrations/learndash/tokens/ld-tokens.php:166
-#: src/integrations/learndash/triggers/ld-lessondone.php:81
+#: src/integrations/learndash/triggers/ld-lessondone.php:83
 #: src/integrations/learndash/triggers/ld-topicdone.php:88
 #: src/integrations/learnpress/actions/lp-marklessondone.php:104
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:157
@@ -12864,6 +13077,7 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:80
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:81
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:274
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:108
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:108
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:76
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:92
@@ -12882,7 +13096,7 @@ msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:143
 #: src/integrations/learndash/tokens/ld-tokens.php:142
-#: src/integrations/learndash/triggers/ld-lessondone.php:73
+#: src/integrations/learndash/triggers/ld-lessondone.php:74
 #: src/integrations/learndash/triggers/ld-topicdone.php:80
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:111
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:88
@@ -12911,7 +13125,7 @@ msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:147
 #: src/integrations/learndash/tokens/ld-tokens.php:154
-#: src/integrations/learndash/triggers/ld-lessondone.php:75
+#: src/integrations/learndash/triggers/ld-lessondone.php:76
 #: src/integrations/learndash/triggers/ld-topicdone.php:82
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:113
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:90
@@ -12931,7 +13145,7 @@ msgid "Course URL"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:148
-#: src/integrations/learndash/triggers/ld-lessondone.php:76
+#: src/integrations/learndash/triggers/ld-lessondone.php:77
 #: src/integrations/learndash/triggers/ld-topicdone.php:83
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:91
 #: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:83
@@ -12947,7 +13161,7 @@ msgid "Course featured image ID"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:149
-#: src/integrations/learndash/triggers/ld-lessondone.php:77
+#: src/integrations/learndash/triggers/ld-lessondone.php:78
 #: src/integrations/learndash/triggers/ld-topicdone.php:84
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:92
 #: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:84
@@ -12969,7 +13183,7 @@ msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:207
 #: src/integrations/learndash/tokens/ld-tokens.php:160
-#: src/integrations/learndash/triggers/ld-lessondone.php:80
+#: src/integrations/learndash/triggers/ld-lessondone.php:82
 #: src/integrations/learndash/triggers/ld-topicdone.php:87
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:156
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:135
@@ -12984,7 +13198,7 @@ msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:209
 #: src/integrations/learndash/tokens/ld-tokens.php:172
-#: src/integrations/learndash/triggers/ld-lessondone.php:82
+#: src/integrations/learndash/triggers/ld-lessondone.php:84
 #: src/integrations/learndash/triggers/ld-topicdone.php:89
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:158
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:137
@@ -12998,7 +13212,7 @@ msgid "Lesson URL"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:210
-#: src/integrations/learndash/triggers/ld-lessondone.php:83
+#: src/integrations/learndash/triggers/ld-lessondone.php:85
 #: src/integrations/learndash/triggers/ld-topicdone.php:90
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:138
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:82
@@ -13009,7 +13223,7 @@ msgid "Lesson featured image ID"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:211
-#: src/integrations/learndash/triggers/ld-lessondone.php:84
+#: src/integrations/learndash/triggers/ld-lessondone.php:86
 #: src/integrations/learndash/triggers/ld-topicdone.php:91
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:139
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:83
@@ -14123,6 +14337,76 @@ msgid "Badge ID"
 msgstr ""
 
 #. translators: Action sentence
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:46
+msgid "Use {{a prompt:%1$s}} to generate text with the GPT model"
+msgstr ""
+
+#. translators: Action sentence
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:52
+msgid "Use {{a prompt}} to generate text with the GPT model"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:63
+#: src/integrations/open-ai/actions/open-ai-text-generate.php:65
+msgid "Response"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:67
+msgid "Prompt tokens usage"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:70
+msgid "Completion tokens usage"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:73
+msgid "Total tokens usage"
+msgstr ""
+
+#. translators: Action field description
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:93
+msgid "The maximum number of tokens allowed for the generated answer. By default, the number of tokens the model can return will be (4096 - prompt tokens). %1$sLearn more about tokens%2$s."
+msgstr ""
+
+#. translators: Action field
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:109
+#: src/integrations/open-ai/actions/open-ai-text-generate.php:102
+msgid "Model"
+msgstr ""
+
+#. translators: Action field
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:121
+#: src/integrations/open-ai/actions/open-ai-text-generate.php:115
+msgid "Temperature"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:124
+msgid "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."
+msgstr ""
+
+#. translators: Action field
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:129
+#: src/integrations/open-ai/actions/open-ai-text-generate.php:123
+msgid "Maximum length"
+msgstr ""
+
+#. translators: Action field
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:136
+msgid "System message"
+msgstr ""
+
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:137
+msgid "Add context or instructions to have GPT respond with those details in mind."
+msgstr ""
+
+#. translators: Action field
+#: src/integrations/open-ai/actions/open-ai-chat-generate.php:144
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:96
+#: src/integrations/open-ai/actions/open-ai-text-generate.php:131
+msgid "Prompt"
+msgstr ""
+
+#. translators: Action sentence
 #: src/integrations/open-ai/actions/open-ai-image-generate.php:46
 msgid "Use {{a prompt:%1$s}} to generate an image"
 msgstr ""
@@ -14142,12 +14426,6 @@ msgstr ""
 
 #: src/integrations/open-ai/actions/open-ai-image-generate.php:71
 msgid "OpenAI generated image URL"
-msgstr ""
-
-#. translators: Action field
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:96
-#: src/integrations/open-ai/actions/open-ai-text-generate.php:131
-msgid "Prompt"
 msgstr ""
 
 #. translators: Action field
@@ -14177,32 +14455,13 @@ msgstr ""
 msgid "Use {{a prompt}} to generate text"
 msgstr ""
 
-#: src/integrations/open-ai/actions/open-ai-text-generate.php:65
-msgid "Response"
-msgstr ""
-
 #. translators: Action field description
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:86
 msgid "The maximum number of tokens. Tokens are shared between the prompt and the response. %1$sLearn more about tokens%2$s."
 msgstr ""
 
-#. translators: Action field
-#: src/integrations/open-ai/actions/open-ai-text-generate.php:102
-msgid "Model"
-msgstr ""
-
-#. translators: Action field
-#: src/integrations/open-ai/actions/open-ai-text-generate.php:115
-msgid "Temperature"
-msgstr ""
-
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:118
 msgid "Higher values mean the model will take more risks. Try 0.9 for more creative applications and a value closer to 0 for a well-defined answer."
-msgstr ""
-
-#. translators: Action field
-#: src/integrations/open-ai/actions/open-ai-text-generate.php:123
-msgid "Maximum length"
 msgstr ""
 
 #: src/integrations/open-ai/settings/settings-open-ai.php:108
@@ -15083,10 +15342,6 @@ msgstr ""
 msgid "Subscription"
 msgstr ""
 
-#: src/integrations/surecart/tokens/surecart-tokens.php:567
-msgid "Download"
-msgstr ""
-
 #: src/integrations/surecart/tokens/surecart-tokens.php:586
 msgid "week"
 msgid_plural "weeks"
@@ -15115,6 +15370,7 @@ msgid "Course summary"
 msgstr ""
 
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:259
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:109
 msgid "Module ID"
 msgstr ""
 
@@ -15190,11 +15446,14 @@ msgid "Add a comment to {{a card}}"
 msgstr ""
 
 #: src/integrations/trello/actions/trello-add-card-comment.php:50
+#: src/integrations/wp/tokens/wp-post-tokens.php:316
+#: src/integrations/wp/triggers/wp-submitcomment.php:116
 msgid "Comment ID"
 msgstr ""
 
 #: src/integrations/trello/actions/trello-add-card-comment.php:54
-#: src/integrations/wp/tokens/wp-post-tokens.php:314
+#: src/integrations/wp/tokens/wp-post-tokens.php:346
+#: src/integrations/wp/triggers/wp-submitcomment.php:123
 msgid "Comment URL"
 msgstr ""
 
@@ -15295,8 +15554,8 @@ msgid "Checklist item name"
 msgstr ""
 
 #: src/integrations/trello/actions/trello-add-checklist-item.php:148
-#: src/integrations/trello/actions/trello-create-card.php:168
-#: src/integrations/trello/actions/trello-update-card.php:170
+#: src/integrations/trello/actions/trello-create-card.php:178
+#: src/integrations/trello/actions/trello-update-card.php:180
 msgid "No member"
 msgstr ""
 
@@ -15328,18 +15587,18 @@ msgstr ""
 msgid "Get custom fields"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-create-card.php:167
-#: src/integrations/trello/actions/trello-update-card.php:169
+#: src/integrations/trello/actions/trello-create-card.php:177
+#: src/integrations/trello/actions/trello-update-card.php:179
 msgid "Members"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-create-card.php:183
-#: src/integrations/trello/actions/trello-update-card.php:185
+#: src/integrations/trello/actions/trello-create-card.php:193
+#: src/integrations/trello/actions/trello-update-card.php:195
 msgid "Labels"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-create-card.php:211
-#: src/integrations/trello/actions/trello-update-card.php:213
+#: src/integrations/trello/actions/trello-create-card.php:221
+#: src/integrations/trello/actions/trello-update-card.php:223
 msgid "Field name"
 msgstr ""
 
@@ -15352,11 +15611,11 @@ msgstr ""
 msgid "Update {{a card}}"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-update-card.php:186
+#: src/integrations/trello/actions/trello-update-card.php:196
 msgid "No label"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-update-card.php:201
+#: src/integrations/trello/actions/trello-update-card.php:211
 msgid "Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets."
 msgstr ""
 
@@ -15559,6 +15818,11 @@ msgstr ""
 
 #: src/integrations/twilio/settings/view-twilio.php:62
 msgid "Send an SMS message to a number"
+msgstr ""
+
+#. translators: 1. Link to Automator knowledge base
+#: src/integrations/twilio/settings/view-twilio.php:75
+msgid "Connecting to Twilio requires getting 2 values from inside your account. It's really easy, we promise! Visit our %1$s for simple instructions."
 msgstr ""
 
 #: src/integrations/twilio/settings/view-twilio.php:89
@@ -16111,9 +16375,27 @@ msgstr ""
 msgid "A user is registered using {{a group}} key"
 msgstr ""
 
+#. Translators: Trigger sentence
+#: src/integrations/uncanny-groups/triggers/uog-seatsaddedtogroup.php:53
+msgid "A number of seats {{greater than, less than, equal to, not equal to:%1$s}}{{a specific number:%2$s}} are added to {{an Uncanny group:%3$s}}"
+msgstr ""
+
+#: src/integrations/uncanny-groups/triggers/uog-seatsaddedtogroup.php:56
+msgid "A number of seats {{greater than, less than, equal to, not equal to}} {{a specific number}} are added to {{an Uncanny group}}"
+msgstr ""
+
 #: src/integrations/uncanny-groups/triggers/uog-seatsaddedtogroup.php:84
 #: src/integrations/uncanny-groups/triggers/uog-seatsremovedfromgroup.php:84
 msgid "Seats"
+msgstr ""
+
+#. Translators: Trigger sentence
+#: src/integrations/uncanny-groups/triggers/uog-seatsremovedfromgroup.php:53
+msgid "A number of seats {{greater than, less than, equal to, not equal to:%1$s}} {{a specific number:%2$s}} are removed from {{an Uncanny group:%3$s}}"
+msgstr ""
+
+#: src/integrations/uncanny-groups/triggers/uog-seatsremovedfromgroup.php:56
+msgid "A number of seats {{greater than, less than, equal to, not equal to}} {{a specific number}} are removed from {{an Uncanny group}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Groups
@@ -16584,6 +16866,18 @@ msgstr ""
 msgid "Delivery error"
 msgstr ""
 
+#: src/integrations/whatsapp/triggers/wa-message-status-updated.php:84
+msgid "Sent"
+msgstr ""
+
+#: src/integrations/whatsapp/triggers/wa-message-status-updated.php:85
+msgid "Delivered"
+msgstr ""
+
+#: src/integrations/whatsapp/triggers/wa-message-status-updated.php:86
+msgid "Read"
+msgstr ""
+
 #. translators: Action - Wholesale suite - lead capture
 #: src/integrations/wholesale-suite/actions/wss-lead-approved.php:33
 msgid "Approve a wholesale lead matching {{a user ID or email:%1$s}}"
@@ -16848,8 +17142,9 @@ msgstr ""
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:114
 #: src/integrations/wp/helpers/wp-helpers.php:205
 #: src/integrations/wp/helpers/wp-helpers.php:665
-#: src/integrations/wp/tokens/wp-post-tokens.php:131
-#: src/integrations/wp/tokens/wp-post-tokens.php:236
+#: src/integrations/wp/tokens/wp-post-tokens.php:157
+#: src/integrations/wp/tokens/wp-post-tokens.php:262
+#: src/integrations/wp/triggers/wp-post-published.php:83
 #: src/integrations/wp/triggers/wp-submitcomment.php:108
 msgid "Post type"
 msgstr ""
@@ -16857,8 +17152,8 @@ msgstr ""
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:84
 #: src/integrations/wp/helpers/wp-helpers.php:200
 #: src/integrations/wp/helpers/wp-helpers.php:610
-#: src/integrations/wp/tokens/wp-post-tokens.php:101
-#: src/integrations/wp/tokens/wp-post-tokens.php:206
+#: src/integrations/wp/tokens/wp-post-tokens.php:127
+#: src/integrations/wp/tokens/wp-post-tokens.php:232
 #: src/integrations/wp/triggers/wp-submitcomment.php:103
 msgid "Post title"
 msgstr ""
@@ -16867,8 +17162,8 @@ msgstr ""
 #: src/integrations/wp/actions/wp-createpost.php:55
 #: src/integrations/wp/helpers/wp-helpers.php:202
 #: src/integrations/wp/helpers/wp-helpers.php:612
-#: src/integrations/wp/tokens/wp-post-tokens.php:113
-#: src/integrations/wp/tokens/wp-post-tokens.php:218
+#: src/integrations/wp/tokens/wp-post-tokens.php:139
+#: src/integrations/wp/tokens/wp-post-tokens.php:244
 #: src/integrations/wp/triggers/wp-submitcomment.php:105
 msgid "Post URL"
 msgstr ""
@@ -16876,44 +17171,49 @@ msgstr ""
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:120
 #: src/integrations/wp/helpers/wp-helpers.php:207
 #: src/integrations/wp/helpers/wp-helpers.php:614
-#: src/integrations/wp/tokens/wp-post-tokens.php:137
-#: src/integrations/wp/tokens/wp-post-tokens.php:242
+#: src/integrations/wp/tokens/wp-post-tokens.php:163
+#: src/integrations/wp/tokens/wp-post-tokens.php:268
 #: src/integrations/wp/triggers/wp-submitcomment.php:110
 msgid "Post featured image URL"
 msgstr ""
 
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:132
 #: src/integrations/wp/helpers/wp-helpers.php:208
-#: src/integrations/wp/tokens/wp-post-tokens.php:149
-#: src/integrations/wp/tokens/wp-post-tokens.php:254
+#: src/integrations/wp/tokens/wp-post-tokens.php:175
+#: src/integrations/wp/tokens/wp-post-tokens.php:280
+#: src/integrations/wp/triggers/wp-submitcomment.php:111
 msgid "Post author first name"
 msgstr ""
 
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:138
 #: src/integrations/wp/helpers/wp-helpers.php:209
-#: src/integrations/wp/tokens/wp-post-tokens.php:155
-#: src/integrations/wp/tokens/wp-post-tokens.php:260
+#: src/integrations/wp/tokens/wp-post-tokens.php:181
+#: src/integrations/wp/tokens/wp-post-tokens.php:286
+#: src/integrations/wp/triggers/wp-submitcomment.php:112
 msgid "Post author last name"
 msgstr ""
 
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:144
 #: src/integrations/wp/helpers/wp-helpers.php:210
-#: src/integrations/wp/tokens/wp-post-tokens.php:161
-#: src/integrations/wp/tokens/wp-post-tokens.php:266
+#: src/integrations/wp/tokens/wp-post-tokens.php:187
+#: src/integrations/wp/tokens/wp-post-tokens.php:292
+#: src/integrations/wp/triggers/wp-submitcomment.php:113
 msgid "Post author display name"
 msgstr ""
 
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:150
 #: src/integrations/wp/helpers/wp-helpers.php:211
-#: src/integrations/wp/tokens/wp-post-tokens.php:167
-#: src/integrations/wp/tokens/wp-post-tokens.php:272
+#: src/integrations/wp/tokens/wp-post-tokens.php:193
+#: src/integrations/wp/tokens/wp-post-tokens.php:298
+#: src/integrations/wp/triggers/wp-submitcomment.php:114
 msgid "Post author email"
 msgstr ""
 
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:156
 #: src/integrations/wp/helpers/wp-helpers.php:212
-#: src/integrations/wp/tokens/wp-post-tokens.php:179
-#: src/integrations/wp/tokens/wp-post-tokens.php:284
+#: src/integrations/wp/tokens/wp-post-tokens.php:205
+#: src/integrations/wp/tokens/wp-post-tokens.php:310
+#: src/integrations/wp/triggers/wp-submitcomment.php:115
 msgid "Post author URL"
 msgstr ""
 
@@ -17309,31 +17609,31 @@ msgid "Amount remaining"
 msgstr ""
 
 #. translators: Logged-in trigger - WP Simple Pay
-#: src/integrations/wp-simple-pay/triggers/wpsp-anonpurchaseform.php:43
+#: src/integrations/wp-simple-pay/triggers/wpsp-anonpurchaseform.php:55
 msgid "A payment for {{a form:%1$s}} is completed"
 msgstr ""
 
 #. translators: Logged-in trigger - WP Simple Pay
-#: src/integrations/wp-simple-pay/triggers/wpsp-anonpurchaseform.php:45
+#: src/integrations/wp-simple-pay/triggers/wpsp-anonpurchaseform.php:57
 msgid "A payment for {{a form}} is completed"
 msgstr ""
 
 #. translators: Logged-in trigger - WP Simple Pay
-#: src/integrations/wp-simple-pay/triggers/wpsp-anonsubscription.php:40
+#: src/integrations/wp-simple-pay/triggers/wpsp-anonsubscription.php:41
 msgid "A subscription for {{a form:%1$s}} is created"
 msgstr ""
 
 #. translators: Logged-in trigger - WP Simple Pay
-#: src/integrations/wp-simple-pay/triggers/wpsp-anonsubscription.php:42
+#: src/integrations/wp-simple-pay/triggers/wpsp-anonsubscription.php:43
 msgid "A subscription for {{a form}} is created"
 msgstr ""
 
-#: src/integrations/wp-simple-pay/triggers/wpsp-purchwithform.php:43
+#: src/integrations/wp-simple-pay/triggers/wpsp-purchwithform.php:44
 msgid "A user completes a purchase with {{a form:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - WP Job Manager
-#: src/integrations/wp-simple-pay/triggers/wpsp-purchwithform.php:50
+#: src/integrations/wp-simple-pay/triggers/wpsp-purchwithform.php:51
 msgid "A user completes a purchase with {{a form}}"
 msgstr ""
 
@@ -17382,6 +17682,39 @@ msgstr ""
 #. translators: Logged-in trigger - Formidable
 #: src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php:44
 msgid "{{A webhook trigger}} is triggered"
+msgstr ""
+
+#. translators: Sentence name - WordPress
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:32
+msgid "Add {{a reply:%1$s}} to a comment"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:33
+msgid "Add {{a reply}} to a comment"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:59
+msgid "Parent comment ID"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:67
+msgid "Commenter's email"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:68
+msgid "If the email matches a WordPress user, the comment will be attributed to that user."
+msgstr ""
+
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:77
+msgid "If the email provided above matches a WordPress user, that user's name will be used."
+msgstr ""
+
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:84
+msgid "Reply"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:112
+msgid "Comment content is empty."
 msgstr ""
 
 #. translators: Action - WordPress
@@ -17648,37 +17981,37 @@ msgstr ""
 msgid "Any taxonomy term"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-post-tokens.php:173
-#: src/integrations/wp/tokens/wp-post-tokens.php:278
+#: src/integrations/wp/tokens/wp-post-tokens.php:199
+#: src/integrations/wp/tokens/wp-post-tokens.php:304
 msgid "Post author ID"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-post-tokens.php:290
-#: src/integrations/wp/triggers/wp-submitcomment.php:119
+#: src/integrations/wp/tokens/wp-post-tokens.php:322
+#: src/integrations/wp/triggers/wp-submitcomment.php:120
 msgid "Commenter name"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-post-tokens.php:296
-#: src/integrations/wp/triggers/wp-submitcomment.php:118
+#: src/integrations/wp/tokens/wp-post-tokens.php:328
+#: src/integrations/wp/triggers/wp-submitcomment.php:119
 msgid "Commenter email"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-post-tokens.php:302
-#: src/integrations/wp/triggers/wp-submitcomment.php:120
+#: src/integrations/wp/tokens/wp-post-tokens.php:334
+#: src/integrations/wp/triggers/wp-submitcomment.php:121
 msgid "Commenter website"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-post-tokens.php:308
-#: src/integrations/wp/triggers/wp-submitcomment.php:116
+#: src/integrations/wp/tokens/wp-post-tokens.php:340
+#: src/integrations/wp/triggers/wp-submitcomment.php:117
 msgid "Comment content"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-post-tokens.php:320
-#: src/integrations/wp/triggers/wp-submitcomment.php:117
+#: src/integrations/wp/tokens/wp-post-tokens.php:352
+#: src/integrations/wp/triggers/wp-submitcomment.php:118
 msgid "Comment submitted date"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-post-tokens.php:326
+#: src/integrations/wp/tokens/wp-post-tokens.php:358
 msgid "Comment status"
 msgstr ""
 
@@ -17708,6 +18041,15 @@ msgstr ""
 msgid "A user logs out of a site"
 msgstr ""
 
+#. Translators: Trigger sentence
+#: src/integrations/wp/triggers/wp-post-published.php:60
+msgid "A {{type of post:%1$s}} is published"
+msgstr ""
+
+#: src/integrations/wp/triggers/wp-post-published.php:63
+msgid "A {{type of post}} is published"
+msgstr ""
+
 #. translators: Logged-in trigger - WordPress
 #: src/integrations/wp/triggers/wp-postreceivescomment.php:45
 msgid "{{A user's post:%1$s}} receives a comment"
@@ -17728,7 +18070,7 @@ msgstr ""
 msgid "A user submits a comment on {{a post}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-submitcomment.php:121
+#: src/integrations/wp/triggers/wp-submitcomment.php:122
 msgid "Commenter status"
 msgstr ""
 
@@ -17739,7 +18081,7 @@ msgstr ""
 
 #. translators: Logged-in trigger - WordPress
 #: src/integrations/wp/triggers/wp-usercreatespost.php:116
-msgid "A user publishes a {{type of}} post with {{a taxonomy term}} in {{a taxonomy}}"
+msgid "A user publishes a post"
 msgstr ""
 
 #: src/integrations/wp/triggers/wp-usercreatespost.php:157
@@ -18053,6 +18395,10 @@ msgstr ""
 msgid "Remove an attendee to a webinar"
 msgstr ""
 
+#: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:88
+msgid "Connecting to Zoom Webinars requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1$s for simple instructions."
+msgstr ""
+
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:132
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:122
 msgid "Uncanny Automator only supports connecting to one Zoom Webinars account."
@@ -18223,6 +18569,10 @@ msgstr ""
 #: src/integrations/zoom/settings/view-zoom-v2.php:77
 #: src/integrations/zoom/settings/view-zoom-v3.php:47
 msgid "Remove the user from a meeting"
+msgstr ""
+
+#: src/integrations/zoom/settings/view-zoom-v2.php:89
+msgid "Connecting to Zoom requires setting up a JWT application and getting 2 values from inside your account. It's really easy, we promise! Visit our %1$s for simple instructions."
 msgstr ""
 
 #: src/integrations/zoom/settings/view-zoom-v2.php:131

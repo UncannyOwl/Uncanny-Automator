@@ -23,9 +23,21 @@ class WPSP_ANONPURCHASEFORM {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+
 		$this->trigger_code = 'WPSPANONPURCHAFORMS';
 		$this->trigger_meta = 'WPSPFORMS';
 		$this->define_trigger();
+
+		// Add WPSimplePay Lite support
+		add_action(
+			'simpay_payment_receipt_viewed',
+			function ( $object ) {
+				$event = (object) array();
+				$this->simple_pay_charge_created( $event, $object );
+			},
+			99,
+			1
+		);
 	}
 
 	/**
@@ -72,21 +84,27 @@ class WPSP_ANONPURCHASEFORM {
 
 	/**
 	 * @param \SimplePay\Vendor\Stripe\Event $type Stripe webhook event.
-	 * @param \SimplePay\Vendor\Stripe\PaymentIntent $object Stripe PaymentIntent.
+	 * @param \SimplePay\Vendor\Stripe\PaymentIntent $payment_intent Stripe PaymentIntent.
 	 */
-	public function simple_pay_charge_created( $type, $object ) {
-
-		if ( ! isset( $object->metadata->simpay_form_id ) ) {
+	public function simple_pay_charge_created( $type, $payment_intent ) {
+		$simpay_lite = false;
+		$main_object = $payment_intent;
+		if ( ! $payment_intent instanceof \SimplePay\Vendor\Stripe\PaymentIntent && isset( $payment_intent['paymentintents'] ) ) {
+			$payment_intent = array_shift( $payment_intent['paymentintents'] );
+			$simpay_lite    = true;
+		}
+		if ( ! isset( $payment_intent->metadata->simpay_form_id ) ) {
 			return;
 		}
-		$form_id = $object->metadata->simpay_form_id;
+		$form_id = $payment_intent->metadata->simpay_form_id;
 
 		if ( empty( $form_id ) ) {
 			return;
 		}
 
-		$user_id       = 0;
-		$billing_email = $object->customer->email;
+		$user_id         = 0;
+		$customer_object = false === $simpay_lite ? $payment_intent->customer : $main_object['customer'];
+		$billing_email   = $customer_object->email;
 		if ( is_email( $billing_email ) ) {
 			$user_id = false === email_exists( $billing_email ) ? 0 : email_exists( $billing_email );
 		}
@@ -135,9 +153,9 @@ class WPSP_ANONPURCHASEFORM {
 
 						Automator()->db->token->save( $this->trigger_meta . '_ID', $form_id, $trigger_meta );
 						Automator()->db->token->save( 'WPSPFORMS', $form_name, $trigger_meta );
-						Automator()->db->token->save( 'meta_data', maybe_serialize( json_decode( wp_json_encode( $object->metadata ), true ) ), $trigger_meta );
-						Automator()->db->token->save( 'customer_data', maybe_serialize( json_decode( wp_json_encode( $object->customer ), true ) ), $trigger_meta );
-						Automator()->db->token->save( 'AMOUNT_PAID', $object->amount, $trigger_meta );
+						Automator()->db->token->save( 'meta_data', maybe_serialize( json_decode( wp_json_encode( $payment_intent->metadata ), true ) ), $trigger_meta );
+						Automator()->db->token->save( 'customer_data', maybe_serialize( json_decode( wp_json_encode( $customer_object ), true ) ), $trigger_meta );
+						Automator()->db->token->save( 'AMOUNT_PAID', $payment_intent->amount, $trigger_meta );
 
 						Automator()->maybe_trigger_complete( $result['args'] );
 					}

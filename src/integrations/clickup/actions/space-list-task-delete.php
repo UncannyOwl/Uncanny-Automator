@@ -45,12 +45,12 @@ class Space_List_Task_Delete {
 		$this->set_sentence(
 			sprintf(
 				/* translators: Action sentence */
-				esc_attr__( 'Delete {{a specific task:%1$s}}', 'uncanny-automator' ),
+				esc_attr__( 'Delete {{a task:%1$s}}', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
 
-		$this->set_readable_sentence( esc_attr__( 'Delete {{a specific task}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'Delete {{a task}}', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 

@@ -920,6 +920,7 @@ class Automator_Input_Parser {
 	 * @return mixed|string|null
 	 */
 	public function maybe_parse_shortcodes_in_fields( $field_text, $recipe_id = null, $user_id = null, $args = array() ) {
+
 		$skip_do_shortcode_actions = apply_filters(
 			'automator_skip_do_shortcode_parse_in_fields',
 			array(
@@ -932,7 +933,8 @@ class Automator_Input_Parser {
 
 		// If filter is set to true OR action meta matches
 		if ( in_array( $action_meta_code, $skip_do_shortcode_actions, true ) || true === apply_filters( 'automator_skip_do_action_field_parsing', $field_text, $recipe_id, $user_id, $args ) ) {
-			return apply_filters( 'automator_parse_token_parse_text', stripslashes( $field_text ), $args );
+			// The function stripcslashes preserves the \a, \b, \f, \n, \r, \t and \v characters.
+			return apply_filters( 'automator_parse_token_parse_text', stripcslashes( $field_text ), $args );
 		}
 
 		/**
@@ -941,7 +943,7 @@ class Automator_Input_Parser {
 		 *
 		 * @since 3.0
 		 */
-		return do_shortcode( apply_filters( 'automator_parse_token_parse_text', stripslashes( $field_text ), $args ) );
+		return do_shortcode( apply_filters( 'automator_parse_token_parse_text', stripcslashes( $field_text ), $args ) );
 	}
 
 	/**

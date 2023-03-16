@@ -22,6 +22,7 @@ class WPSP_ANONSUBSCRIPTION {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+
 		$this->define_trigger();
 	}
 
@@ -71,7 +72,7 @@ class WPSP_ANONSUBSCRIPTION {
 	}
 
 	/**
-	 * @param \SimplePay\Vendor\Stripe\Event $type Stripe webhook event.
+	 * @param \SimplePay\Vendor\Stripe\Event         $type   Stripe webhook event.
 	 * @param \SimplePay\Vendor\Stripe\PaymentIntent $object Stripe PaymentIntent.
 	 */
 	public function simple_pay_charge_created( $type, $object ) {

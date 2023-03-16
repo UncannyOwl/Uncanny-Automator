@@ -2,7 +2,7 @@
 	return;} ?>
 
 <form method="POST" action="options.php" warn-unsaved>
-	
+
 	<?php settings_fields( $this->get_settings_id() ); ?>
 
 	<div class="uap-settings-panel">
@@ -13,7 +13,7 @@
 			</div>
 
 			<div class="uap-settings-panel-content">
-				
+
 					<?php
 
 					if ( automator_filter_has_var( 'connect' ) ) {
@@ -72,7 +72,7 @@
 
 							echo sprintf(
 								/* translators: 1. Link to Automator knowledge base  */
-								esc_html__( "Connecting to Twilio requires getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator-pro' ),
+								esc_html__( "Connecting to Twilio requires getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
 								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twilio/', 'settings', 'twilio-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 							);
 
@@ -114,7 +114,7 @@
 				);
 
 				?>
-					
+
 				<uo-text-field
 					id="uap_automator_twilio_api_phone_number"
 					value="<?php echo esc_attr( $phone_number ); ?>"
@@ -211,10 +211,10 @@
 					</uo-button>
 
 				<?php } ?>
-					
+
 				</div>
 
-				
+
 
 		</div>
 

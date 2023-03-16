@@ -45,16 +45,12 @@ class Space_List_Task_Comment_Create {
 		$this->set_sentence(
 			sprintf(
 				/* translators: Action sentence */
-				esc_attr__( 'Add a comment to {{a specific task:%1$s}} in {{a specific list:%2$s}} in {{a specific folder:%3$s}} in {{a specific space:%4$s}} in {{a specific team:%5$s}}', 'uncanny-automator' ),
-				$this->get_action_meta(),
-				'LIST:' . $this->get_action_meta(),
-				'FOLDER:' . $this->get_action_meta(),
-				'SPACE:' . $this->get_action_meta(),
-				'TEAM:' . $this->get_action_meta()
+				esc_attr__( 'Add {{a comment:%1$s}} to a task', 'uncanny-automator' ),
+				'COMMENT_TEXT:' . $this->get_action_meta()
 			)
 		);
 
-		$this->set_readable_sentence( esc_attr__( 'Add a comment to {{a specific task}} in {{a specific list}} in {{a specific folder}} in {{a specific space}} in {{a specific team}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'Add {{a comment}} to a task', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 

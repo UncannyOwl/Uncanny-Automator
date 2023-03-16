@@ -47,14 +47,14 @@ class ANON_GF_FORM_ENTRY_UPDATED {
 		$this->set_sentence(
 			sprintf(
 				/* Translators: Trigger sentence */
-				esc_html__( 'An entry for {{a form:%1$s}} is updated', 'uncanny-automator-pro' ),
+				esc_html__( 'An entry for {{a form:%1$s}} is updated', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
 			/* Translators: Trigger sentence */
-			esc_html__( 'An entry for {{a form}} is updated', 'uncanny-automator-pro' )
+			esc_html__( 'An entry for {{a form}} is updated', 'uncanny-automator' )
 		);
 
 		// Set the options field group.
@@ -88,7 +88,7 @@ class ANON_GF_FORM_ENTRY_UPDATED {
 		return array(
 			array(
 				'option_code'     => $this->get_trigger_meta(),
-				'label'           => esc_attr__( 'Form', 'uncanny-automator-pro' ),
+				'label'           => esc_attr__( 'Form', 'uncanny-automator' ),
 				'input_type'      => 'select',
 				'required'        => true,
 				'options'         => $helper->get_forms_as_option_fields(),
