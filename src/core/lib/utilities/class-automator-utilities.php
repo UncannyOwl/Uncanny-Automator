@@ -403,16 +403,20 @@ class Automator_Utilities {
 				$data = sanitize_textarea_field( $data );
 				break;
 			case 'html':
-				// not sanitization
+				// Do nothing for HTML types.
 				break;
 			case 'url':
-				// Uses esc_url if its a URL field.
-				$data = esc_url( $data );
+				// Only escape the data if there are no tokens.
+				preg_match_all( '/{{\s*(.*?)\s*}}/', $data, $tokens );
+				if ( ! isset( $tokens[0] ) || empty( $tokens[0] ) ) {
+					$data = esc_url( $data );
+				}
 				break;
 			case 'text':
 				$data = sanitize_text_field( $data );
 				break;
 			case 'mixed':
+				// Apply default sanitization for 'mixed' type.
 			default:
 				if ( wp_strip_all_tags( $data ) === $data ) {
 					$data = sanitize_text_field( $data );
