@@ -10,13 +10,11 @@ class AC_USER_ADD {
 
 	use Recipe\Actions;
 
-	public $prefix = '';
+	public $prefix = 'AC_USER_ADD';
+
+	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
 
 	public function __construct() {
-
-		$this->prefix = 'AC_USER_ADD';
-
-		$this->ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
 
 		$this->setup_action();
 
@@ -41,13 +39,23 @@ class AC_USER_ADD {
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Add {{the user}} to ActiveCampaign', 'uncanny-automator' ) );
 
-		$options_group = array( $this->get_action_meta() => $this->get_field() );
-
-		$this->set_options_group( $options_group );
+		$this->set_options_callback( array( $this, 'load_options' ) );
 
 		$this->set_background_processing( true );
 
 		$this->register_action();
+
+	}
+
+	public function load_options() {
+
+		$options_group = array( $this->get_action_meta() => $this->get_field() );
+
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => $options_group,
+			)
+		);
 
 	}
 

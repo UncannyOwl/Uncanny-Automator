@@ -447,6 +447,12 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - BuddyBoss */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user's friendship request is accepted", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - BuddyBoss */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user's topic in {{a forum}} receives a reply", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -2085,6 +2091,11 @@ function automator_pro_items_list() {
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Add the user to {{a list}}", 'uncanny-automator' ),
 				),
+				array(
+					/* translators: Action - Newsletter */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Remove the user from {{a list}}", 'uncanny-automator' ),
+				),
 			),
 		),
 		'NF'                => array(
@@ -2761,6 +2772,12 @@ function automator_pro_items_list() {
 					/* translators: Logged-in trigger - WooCommerce Subscriptions */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user's subscription to {{a product}} expires", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - WooCommerce Subscriptions */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user's renewal payment for {{a subscription product}} fails", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(

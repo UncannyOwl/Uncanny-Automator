@@ -125,14 +125,19 @@ trait Action_Parser {
 
 		$this->pre_parse();
 
+		// Pass the 'should_apply_extra_formatting_property' to the $args['action_meta'] key.
+		$args['action_meta']['should_apply_extra_formatting'] = $this->get_should_apply_extra_formatting();
+
 		foreach ( $metas as $meta_key => $meta_value ) {
+
 			if ( ! $this->is_valid_token( $meta_key, $meta_value ) ) {
 				$parsed = Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args );
 				$this->set_parsed( $meta_key, $this->should_wpautop( $parsed, $meta_key ) );
 				continue;
 			}
 
-			$parsed     = Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args );
+			$parsed = Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args );
+
 			$token_args = array(
 				'user_id'     => $user_id,
 				'action_data' => $action_data,

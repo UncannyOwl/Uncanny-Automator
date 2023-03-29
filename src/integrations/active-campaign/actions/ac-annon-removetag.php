@@ -12,20 +12,14 @@ class AC_ANNON_REMOVETAG {
 
 	use Actions;
 
-	public $prefix = '';
+	public $prefix = 'AC_ANNON_REMOVETAG';
+
+	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
 
 	public function __construct() {
 
-		$this->prefix = 'AC_ANNON_REMOVETAG';
-
-		$this->ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
-
-		// Allow overwrite in wp-config.php.
-		if ( DEFINED( 'UO_AUTOMATOR_DEV_AC_ENDPOINT_URL' ) ) {
-			$this->ac_endpoint_uri = UO_AUTOMATOR_DEV_AC_ENDPOINT_URL;
-		}
-
 		$this->setup_action();
+
 	}
 
 	/**
@@ -41,17 +35,27 @@ class AC_ANNON_REMOVETAG {
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 
-		/* translators: Action - WordPress */
 		$this->set_sentence(
 			sprintf(
+				/* translators: Action - WordPress */
 				esc_attr__( 'Remove {{a tag:%1$s}} from {{a contact:%2$s}}', 'uncanny-automator' ),
 				$this->get_action_meta(),
-				$this->prefix . '_CONTACT_ID' . ':' . $this->get_action_meta()
+				$this->prefix . '_CONTACT_ID:' . $this->get_action_meta()
 			)
 		);
 
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Remove {{a tag}} from {{a contact}}', 'uncanny-automator' ) );
+
+		$this->set_options_callback( array( $this, 'load_options' ) );
+
+		$this->set_background_processing( true );
+
+		$this->register_action();
+
+	}
+
+	public function load_options() {
 
 		$options_group = array(
 			$this->get_action_meta() => array(
@@ -78,12 +82,11 @@ class AC_ANNON_REMOVETAG {
 			),
 		);
 
-		$this->set_options_group( $options_group );
-
-		$this->set_background_processing( true );
-
-		$this->register_action();
-
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => $options_group,
+			)
+		);
 	}
 
 

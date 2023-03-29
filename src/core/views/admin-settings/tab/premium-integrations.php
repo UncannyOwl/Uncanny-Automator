@@ -3,8 +3,8 @@
 namespace Uncanny_Automator;
 
 /**
- * Premium integrations
- * Settings > Premium integrations
+ * App integrations
+ * Settings > App integrations
  *
  * @since   3.7
  * @version 3.7
@@ -88,7 +88,7 @@ namespace Uncanny_Automator;
 
 				<?php
 
-				// IF the user CAN'T use Premium integrations, disable the tab
+				// IF the user CAN'T use App integrations, disable the tab
 				echo ! $user_can_use_premium_integrations ? 'disabled' : '';
 
 				?>

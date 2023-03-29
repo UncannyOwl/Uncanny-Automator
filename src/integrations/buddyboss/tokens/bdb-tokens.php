@@ -57,7 +57,7 @@ class Bdb_Tokens {
 
 		$xprofile_fields = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
+				"SELECT * FROM {$wpdb->base_prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
 				0
 			)
 		);
@@ -69,7 +69,7 @@ class Bdb_Tokens {
 				if ( 'socialnetworks' === $field->type ) {
 					$child_fields = $wpdb->get_results(
 						$wpdb->prepare(
-							"SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
+							"SELECT * FROM {$wpdb->base_prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
 							$field->id
 						)
 					);

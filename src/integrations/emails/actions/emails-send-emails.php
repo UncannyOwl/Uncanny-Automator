@@ -59,6 +59,8 @@ class EMAILS_SEND_EMAILS {
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
+		$this->set_should_apply_extra_formatting( true );
+
 		$this->register_action();
 
 	}
@@ -257,4 +259,5 @@ class EMAILS_SEND_EMAILS {
 		Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 	}
+
 }

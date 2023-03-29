@@ -4,7 +4,7 @@ Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce aut
 Requires at least: 5.3
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 4.12.0.1
+Stable tag: 4.13
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -148,6 +148,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Leads](https://automatorplugin.com/integration/thrive-leads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Thrive Ovation](https://automatorplugin.com/integration/thrive-ovation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tin Canny Reporting](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -177,6 +178,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WP User Manager](https://automatorplugin.com/integration/wp-user-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP-Polls](https://automatorplugin.com/integration/wp-polls/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WPForms](https://automatorplugin.com/integration/wp-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WS Form LITE](https://automatorplugin.com/integration/ws-form-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -317,6 +319,45 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 4.13 [2023-03-29] =
+
+**New Integrations:**
+
+* [Thrive Ovation](https://automatorplugin.com/integration/thrive-ovation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #3114
+* [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #3324
+
+**New Trigger:**
+
+* Thrive Ovation - A testimonial is submitted #3113
+
+**New Actions:**
+
+* WPCode - Activate a snippet #3325
+* WPCode - Deactivate a snippet #3329
+
+**Added:**
+
+* FluentCRM - A contact is added to a list - Contact ID token  #3358
+* FluentCRM - A contact is set to a specific status - Contact ID token  #3358
+* FluentCRM - A tag is added to a contact - Contact ID token  #3358
+
+**Updated:**
+
+* Elementor - WP filter automator_elementor_add_page_id_before_form_id added to append Page IDs to show duplicate forms #3346
+* Emails - Send an email - Now maintains the original formatting of action token content  #3369
+
+**Fixed:**
+
+* Automator core - PHP Error when the plugin path contains parentheses #3363
+* BuddyBoss/BuddyPress - Xprofile - Prefix issue on multisites #3377
+* Usermeta token - Not replacing the leading and trailing token brackets when meta is empty #3360
+
+**Internal:**
+
+* ActiveCampaign - Move options to options_callback  #3092
+* Several text updates #3269 #3267
+* Recipe UI - Prevent infinite loop when a token is added in the sentence in a filter #3292
+
 = 4.12.0.1 [2023-03-20] =
 
 **Fixed:**
@@ -351,7 +392,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Fixed:**
 
-* Trello - Connecting to Trellow not working on the recipe page. #3287
+* Trello - Connecting to Trello not working on the recipe page. #3287
 * Email - Body sanitizing causing other HTML tags to be removed #3304
 * Google Calendar - Improve date handling #3300
 * LearnDash - "Complete any lesson for a course" fires like "Complete any lesson in any course" #3312

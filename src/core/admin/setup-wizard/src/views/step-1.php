@@ -32,7 +32,7 @@
 		</h2>
 
 		<p>
-			<?php esc_html_e( "You're just minutes away from building powerful automations that connect your plugins, sites and apps together. Connect a free account to try premium integrations like Google Sheets, Facebook and Slack.", 'uncanny-automator' ); ?>
+			<?php esc_html_e( "You're just minutes away from building powerful automations that connect your plugins, sites and apps together. Connect a free account to try app integrations like Google Sheets, Facebook and Slack.", 'uncanny-automator' ); ?>
 		</p>
 
 		<p>
@@ -63,11 +63,11 @@
 				);
 				?>
 			<strong>
-				<?php esc_html_e( '250 credits', 'uncanny-automator' ); ?>
+				<?php esc_html_e( '250 app credits', 'uncanny-automator' ); ?>
 			</strong>
 			<?php
 				esc_html_e(
-					'for premium integrations, but a Pro account gets you',
+					'for app integrations, but a Pro account gets you',
 					'uncanny-automator'
 				);
 				?>

@@ -12,20 +12,14 @@ class AC_USER_LIST_REMOVE {
 
 	use Actions;
 
-	public $prefix = '';
+	public $prefix = 'AC_USER_LIST_REMOVE';
+
+	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
 
 	public function __construct() {
 
-		$this->prefix = 'AC_USER_LIST_REMOVE';
-
-		$this->ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
-
-		// Allow overwrite in wp-config.php.
-		if ( DEFINED( 'UO_AUTOMATOR_DEV_AC_ENDPOINT_URL' ) ) {
-			$this->ac_endpoint_uri = UO_AUTOMATOR_DEV_AC_ENDPOINT_URL;
-		}
-
 		$this->setup_action();
+
 	}
 
 	/**
@@ -47,6 +41,16 @@ class AC_USER_LIST_REMOVE {
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Remove the user from {{a list}}', 'uncanny-automator' ) );
 
+		$this->set_options_callback( array( $this, 'load_options' ) );
+
+		$this->set_background_processing( true );
+
+		$this->register_action();
+
+	}
+
+	public function load_options() {
+
 		$options_group = array(
 			$this->get_action_meta() => array(
 				array(
@@ -64,14 +68,12 @@ class AC_USER_LIST_REMOVE {
 			),
 		);
 
-		$this->set_options_group( $options_group );
-
-		$this->set_background_processing( true );
-
-		$this->register_action();
-
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => $options_group,
+			)
+		);
 	}
-
 
 	/**
 	 * @param int $user_id

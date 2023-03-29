@@ -1055,7 +1055,7 @@ class Admin_Menu {
 					// Add strings
 					$data['i18n']['credits'] = array(
 						'recipesUsingCredits' => array(
-							'noRecipes' => __( 'No recipes using credits on this site', 'uncanny-automator' ),
+							'noRecipes' => __( 'No recipes using app credits on this site', 'uncanny-automator' ),
 							'table'     => array(
 								'recipe'             => __( 'Recipe', 'uncanny-automator' ),
 								'completionsAllowed' => __( 'Completions allowed', 'uncanny-automator' ),

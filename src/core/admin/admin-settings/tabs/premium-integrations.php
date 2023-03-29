@@ -25,9 +25,9 @@ class Admin_Settings_Premium_Integrations {
 	 */
 	public function create_tab( $tabs ) {
 
-		// Premium integrations
+		// App integrations
 		$tabs['premium-integrations'] = (object) array(
-			'name'     => esc_html__( 'Premium integrations', 'uncanny-automator' ),
+			'name'     => esc_html__( 'App integrations', 'uncanny-automator' ),
 			'function' => array( $this, 'tab_output' ),
 			'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 		);
@@ -36,7 +36,7 @@ class Admin_Settings_Premium_Integrations {
 	}
 
 	/**
-	 * Outputs the content of the "Premium integrations" tab
+	 * Outputs the content of the "App integrations" tab
 	 */
 	public function tab_output() {
 		// Get the tabs

@@ -35,7 +35,13 @@ class Elem_Tokens {
 			return $tokens;
 		}
 
-		$form_id      = $args['value'];
+		$post_id = 0;
+		$form_id = $args['value'];
+		if ( true === apply_filters( 'automator_elementor_add_page_id_before_form_id', false, $form_id ) ) {
+			$form_id_raw = explode( '___', $form_id );
+			$form_id     = isset( $form_id_raw[1] ) ? $form_id_raw[1] : '';
+			$post_id     = isset( $form_id_raw[0] ) ? $form_id_raw[0] : 0;
+		}
 		$trigger_meta = $args['meta'];
 		if ( empty( $form_id ) ) {
 			return $tokens;
@@ -54,10 +60,10 @@ class Elem_Tokens {
 		}
 		if ( empty( $post_metas ) ) {
 			global $wpdb;
-
-			$post_metas = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT pm.meta_value
+			if ( 0 === (int) $post_id ) {
+				$post_metas = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT pm.meta_value
 FROM $wpdb->postmeta pm
     LEFT JOIN $wpdb->posts p
         ON p.ID = pm.post_id
@@ -65,10 +71,29 @@ WHERE p.post_type IS NOT NULL
   AND p.post_status NOT IN('trash', 'inherit', 'auto-draft')
   AND pm.meta_key = %s
   AND pm.`meta_value` LIKE %s",
-					'_elementor_data',
-					'%%form_fields%%'
-				)
-			);
+						'_elementor_data',
+						'%%form_fields%%'
+					)
+				);
+			} elseif ( is_numeric( $post_id ) ) {
+				$post_metas = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT pm.meta_value
+FROM $wpdb->postmeta pm
+    LEFT JOIN $wpdb->posts p
+        ON p.ID = pm.post_id
+WHERE p.post_type IS NOT NULL
+  AND p.post_status NOT IN('trash', 'inherit', 'auto-draft')
+  AND pm.meta_key = %s
+  AND pm.`meta_value` LIKE %s
+  AND pm.post_id = %d",
+						'_elementor_data',
+						'%%form_fields%%',
+						$post_id
+					)
+				);
+
+			}
 			if ( empty( $post_metas ) ) {
 				// No Elementor forms found! Adding `empty` string
 				Automator()->cache->set( 'automator_elementor_qry_results', 'empty', 'automator', 60 );
