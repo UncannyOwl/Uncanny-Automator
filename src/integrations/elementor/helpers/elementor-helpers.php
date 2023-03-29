@@ -59,7 +59,7 @@ class Elementor_Helpers {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'uo_include_any' => false,
+				'uo_include_any' => true,
 				'uo_any_label'   => esc_attr__( 'Any form', 'uncanny-automator' ),
 			)
 		);
@@ -77,7 +77,7 @@ class Elementor_Helpers {
 			global $wpdb;
 			$post_metas = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT pm.meta_value
+					"SELECT pm.meta_value, pm.post_id
 FROM $wpdb->postmeta pm
     LEFT JOIN $wpdb->posts p
         ON p.ID = pm.post_id
@@ -97,7 +97,11 @@ WHERE p.post_type IS NOT NULL
 					$inner_forms = self::get_all_inner_forms( json_decode( $post_meta->meta_value ) );
 					if ( ! empty( $inner_forms ) ) {
 						foreach ( $inner_forms as $form ) {
-							$options[ $form->id ] = $form->settings->form_name;
+							$form_id = $form->id;
+							if ( true === apply_filters( 'automator_elementor_add_page_id_before_form_id', false, $form_id ) ) {
+								$form_id = "{$post_meta->post_id}___{$form_id}";
+							}
+							$options[ $form_id ] = $form->settings->form_name;
 						}
 					}
 				}

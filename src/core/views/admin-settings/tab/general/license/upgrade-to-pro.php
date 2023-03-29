@@ -27,7 +27,7 @@ namespace Uncanny_Automator;
 
 		printf(
 			/* translators: 1. Link (upgrading to Pro) */
-			esc_html__( 'To unlock more than 3x the triggers and actions for your recipes and unlimited third-party actions, consider %1$s.', 'uncanny-automator' ),
+			esc_html__( 'To unlock more than 3x the triggers and actions for your recipes and unlimited app credits, consider %1$s.', 'uncanny-automator' ),
 			sprintf(
 				'<a href="%1$s" target="_blank">%2$s <uo-icon id="external-link"></uo-icon></a>',
 				esc_url(
@@ -52,7 +52,7 @@ namespace Uncanny_Automator;
 			<?php esc_html_e( '3x the triggers and actions', 'uncanny-automator' ); ?>
 		</li>
 		<li>
-			<?php esc_html_e( 'Unlimited third-party actions with no per-transaction fees', 'uncanny-automator' ); ?>
+			<?php esc_html_e( 'Unlimited app credits with no per-transaction fees', 'uncanny-automator' ); ?>
 		</li>
 		<li>
 			<?php esc_html_e( 'Add schedules and delays to your actions', 'uncanny-automator' ); ?>

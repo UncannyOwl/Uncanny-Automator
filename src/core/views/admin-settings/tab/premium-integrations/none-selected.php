@@ -3,9 +3,9 @@
 namespace Uncanny_Automator;
 
 /**
- * Premium integrations
- * Settings > Premium integrations > None selected
- * 
+ * App integrations
+ * Settings > App integrations > None selected
+ *
  * Tab panel displayed when the user can access to the settings,
  * but haven't selected an integration yet
  *
@@ -26,14 +26,14 @@ namespace Uncanny_Automator;
 			<uo-icon id="bolt"></uo-icon>
 
 			<div class="uap-settings-panel-title">
-				<?php esc_html_e( 'Select a premium integration', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'Select an app integration', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
 
 				<div class="uap-settings-panel-content-paragraph">
 
-					<?php esc_html_e( 'Choose a premium integration to connect an account or manage other settings.', 'uncanny-automator' ); ?>
+					<?php esc_html_e( 'Choose an app integration to connect an account or manage other settings.', 'uncanny-automator' ); ?>
 
 				</div>
 

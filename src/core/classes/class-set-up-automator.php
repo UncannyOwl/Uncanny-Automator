@@ -409,7 +409,8 @@ class Set_Up_Automator {
 		}
 
 		// Check if it's an internal Automator file
-		$pattern = '/(' . addcslashes( $this->integrations_directory_path, '/-:\\' ) . ')/';
+		$esc_characters = apply_filters( 'automator_esc_with_slash_characters', '/-:\\()_,.' );
+		$pattern        = '/(' . addcslashes( $this->integrations_directory_path, $esc_characters ) . ')/';
 		if ( preg_match( $pattern, $file ) ) {
 			$class_name = __NAMESPACE__ . '\\' . $class_name;
 		} else {

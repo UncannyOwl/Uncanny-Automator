@@ -708,6 +708,12 @@ class Active_Campaign_Helpers {
 	 */
 	public function sync_contact_fields( $should_verify_nonce = true ) {
 
+		$user = get_option( 'uap_active_campaign_connected_user', false );
+
+		if ( empty( $user ) ) {
+			return false;
+		}
+
 		if ( $should_verify_nonce ) {
 			if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 				return false;

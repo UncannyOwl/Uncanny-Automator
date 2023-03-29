@@ -75,8 +75,8 @@ class Api_Log {
 		);
 
 		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
-			$headings['price']   = esc_attr__( 'Credits charged', 'uncanny-automator' );
-			$headings['balance'] = esc_attr__( 'Credits left', 'uncanny-automator' );
+			$headings['price']   = esc_attr__( 'App credits charged', 'uncanny-automator' );
+			$headings['balance'] = esc_attr__( 'App credits left', 'uncanny-automator' );
 		}
 
 		$headings['actions'] = esc_attr__( 'Actions', 'uncanny-automator' );

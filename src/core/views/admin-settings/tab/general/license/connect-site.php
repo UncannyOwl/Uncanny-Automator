@@ -20,11 +20,11 @@ namespace Uncanny_Automator;
 ?>
 
 <div class="uap-settings-panel-content-subtitle">
-	<?php esc_html_e( 'Access third-party integrations', 'uncanny-automator' ); ?>
+	<?php esc_html_e( 'Access app integrations', 'uncanny-automator' ); ?>
 </div>
 
 <p>
-	<?php esc_html_e( 'Creating a free account gives you access to third-party integrations including Google Sheets, Slack, Facebook, MailChimp and more.', 'uncanny-automator' ); ?>
+	<?php esc_html_e( 'Creating a free account gives you 250 app credits to try out app integrations like Google Sheets, Slack, Facebook, MailChimp and more.', 'uncanny-automator' ); ?>
 </p>
 
 <?php

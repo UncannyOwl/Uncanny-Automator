@@ -314,7 +314,7 @@ class Automator_Input_Parser {
 						}
 					}
 					$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
-					$field_text = str_replace( $match, $replaceable, $field_text );
+					$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 				} else {
 					//Non usermeta
 					global $wpdb;
@@ -866,7 +866,7 @@ class Automator_Input_Parser {
 	 * @param null $recipe_id
 	 * @param null $user_id
 	 *
-	 * @param null $trigger_args
+	 * @param null $args
 	 *
 	 * @return null|string
 	 */
@@ -881,7 +881,7 @@ class Automator_Input_Parser {
 			'field_text'  => $field_text,
 			'meta_key'    => null,
 			'user_id'     => $user_id,
-			'action_data' => null,
+			'action_data' => isset( $trigger_args['action_meta'] ) ? $trigger_args['action_meta'] : null,
 			'recipe_id'   => $recipe_id,
 		);
 

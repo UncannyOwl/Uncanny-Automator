@@ -117,9 +117,14 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 	 */
 	public function get_tokens() {
 		$token_id = 'FLUENTCRM_STATUS_FIELD_';
+
 		if ( ! class_exists( '\FluentCrm\App\Models\Subscriber' ) ) {
 			$tokens = array();
 		}
+
+		// Add the Contact ID.
+		$tokens['contact_id'] = esc_html__( 'Contact ID', 'uncanny-automator' );
+
 		// Regular contact profile fields.
 		$mappable_fields                         = (array) \FluentCrm\App\Models\Subscriber::mappables();
 		$tokens['FLUENTCRM_STATUS_FIELD_status'] = esc_attr__( 'Subscription status', 'uncanny-automator' );
@@ -189,8 +194,21 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 								'meta_value'     => $contact_email,
 							);
 
+							// Subscriber ID meta.
+							$subscriber_id_meta = array(
+								'user_id'        => absint( $user_id ),
+								'trigger_id'     => $result['args']['trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+								'trigger_log_id' => $result['args']['trigger_log_id'],
+								'meta_key'       => 'subscriber_id',
+								'meta_value'     => $subscriber->id,
+							);
+
 							// Add contact email as trigger meta.
 							Automator()->insert_trigger_meta( $contact_email_meta );
+
+							// Store subscriber ID in logs.
+							Automator()->insert_trigger_meta( $subscriber_id_meta );
 
 							// Complete the trigger.
 							Automator()->maybe_trigger_complete( $result['args'] );

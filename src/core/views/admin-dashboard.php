@@ -139,7 +139,7 @@ if ( $dashboard->has_site_connected ) {
 										'<uo-icon integration="FACEBOOK"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use app credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
 							)
 						);
 					}
@@ -162,7 +162,7 @@ if ( $dashboard->has_site_connected ) {
 										'<uo-icon integration="FACEBOOK"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use app credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
 							)
 						);
 					}
@@ -286,7 +286,7 @@ if ( $dashboard->has_site_connected ) {
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-												target="_blank"><?php esc_attr_e( 'What are credits?', 'uncanny-automator' ); ?>
+												target="_blank"><?php esc_attr_e( 'What are app credits?', 'uncanny-automator' ); ?>
 												<span class="uap-icon uap-icon--external-link-alt"></span></a>
 										</li>
 
@@ -655,7 +655,7 @@ if ( $dashboard->has_site_connected ) {
 	<!-- Credits section -->
 	<div id="uap-dashboard-credits" class="uap-dashboard-section uap-dashboard-credits">
 		<div class="uap-dashboard-section__title">
-			<?php esc_attr_e( 'Credits', 'uncanny-automator' ); ?>
+			<?php esc_attr_e( 'App credits', 'uncanny-automator' ); ?>
 		</div>
 		<div class="uap-dashboard-section__content">
 
@@ -676,7 +676,7 @@ if ( $dashboard->has_site_connected ) {
 							0
 						</div>
 						<div class="uap-dashboard-box-content-label uap-dashboard-box-content-label--reduced-margin">
-							<?php esc_attr_e( 'Credits left', 'uncanny-automator' ); ?>
+							<?php esc_attr_e( 'App credits left', 'uncanny-automator' ); ?>
 						</div>
 						<div
 							class="uap-dashboard-box-content-below-label uap-dashboard-box-content-below-label--warning">
@@ -738,7 +738,7 @@ if ( $dashboard->has_site_connected ) {
 							</div>
 							<div
 								class="uap-dashboard-box-content-label uap-dashboard-box-content-label--reduced-margin">
-								<?php esc_attr_e( 'Credits left', 'uncanny-automator' ); ?>
+								<?php esc_attr_e( 'App credits left', 'uncanny-automator' ); ?>
 							</div>
 							<div
 								class="uap-dashboard-box-content-below-label uap-dashboard-box-content-below-label--secondary">
@@ -756,7 +756,7 @@ if ( $dashboard->has_site_connected ) {
 						<div class="uap-dashboard-box-footer">
 							<a href="https://automatorplugin.com/article-categories/specialized-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=connect_premium_integrations"
 							   target="_blank">
-								<?php esc_attr_e( 'Connect premium integrations', 'uncanny-automator' ); ?> <span
+								<?php esc_attr_e( 'Connect app integrations', 'uncanny-automator' ); ?> <span
 									class="uap-icon uap-icon--external-link-alt"></span>
 							</a>
 						</div>
@@ -789,7 +789,7 @@ if ( $dashboard->has_site_connected ) {
 								?>
 							</div>
 							<div class="uap-dashboard-box-content-label">
-								<?php esc_attr_e( 'Credits left', 'uncanny-automator' ); ?>
+								<?php esc_attr_e( 'App credits left', 'uncanny-automator' ); ?>
 							</div>
 						</div>
 						<?php if ( $dashboard->is_pro_installed ) { ?>
@@ -830,28 +830,28 @@ if ( $dashboard->has_site_connected ) {
 						<div class="uap-accordion">
 							<div class="uap-accordion-item uap-accordion-item--open">
 								<div class="uap-accordion-item__toggle">
-									<?php esc_attr_e( 'What are credits?', 'uncanny-automator' ); ?>
+									<?php esc_attr_e( 'What are app credits?', 'uncanny-automator' ); ?>
 								</div>
 								<div class="uap-accordion-item__content">
-									<?php esc_attr_e( "Some premium non-WordPress integrations connect to other services using an API. Automator's credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one credit.", 'uncanny-automator' ); ?>
+									<?php esc_attr_e( "Some app integrations connect to other services using an API. Automator's app credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one app credit.", 'uncanny-automator' ); ?>
 								</div>
 							</div>
 
 							<div class="uap-accordion-item">
 								<div class="uap-accordion-item__toggle">
-									<?php esc_attr_e( 'Do I need credits?', 'uncanny-automator' ); ?>
+									<?php esc_attr_e( 'Do I need app credits?', 'uncanny-automator' ); ?>
 								</div>
 								<div class="uap-accordion-item__content">
-									<?php esc_attr_e( 'Credits are only needed for premium non-WordPress services that pass through an API. Everything else is unrestricted (and Pro users get unlimited credits).', 'uncanny-automator' ); ?>
+									<?php esc_attr_e( 'App credits are only needed for app integrations that pass through an API. Everything else is unrestricted (and Pro users get unlimited app credits).', 'uncanny-automator' ); ?>
 								</div>
 							</div>
 
 							<div class="uap-accordion-item">
 								<div class="uap-accordion-item__toggle">
-									<?php esc_attr_e( 'Can I get more credits?', 'uncanny-automator' ); ?>
+									<?php esc_attr_e( 'Can I get more app credits?', 'uncanny-automator' ); ?>
 								</div>
 								<div class="uap-accordion-item__content">
-									<?php esc_attr_e( 'If you use more than 250 credits, you must either purchase the Pro version or disable your actions that use credits.', 'uncanny-automator' ); ?>
+									<?php esc_attr_e( 'If you use more than 250 app credits, you must either purchase the Pro version or disable your actions that use credits.', 'uncanny-automator' ); ?>
 								</div>
 							</div>
 						</div>
@@ -860,7 +860,7 @@ if ( $dashboard->has_site_connected ) {
 				<div class="uap-dashboard-box-footer">
 					<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=learn_more_about_credits"
 					   target="blank">
-						<?php esc_attr_e( 'Learn more about credits', 'uncanny-automator' ); ?> <span
+						<?php esc_attr_e( 'Learn more about app credits', 'uncanny-automator' ); ?> <span
 							class="uap-icon uap-icon--external-link-alt"></span>
 					</a>
 				</div>
@@ -873,7 +873,7 @@ if ( $dashboard->has_site_connected ) {
 
 						printf(
 						/* translators: 1. Site URL */
-							esc_attr__( 'Recipes using credits on %1$s', 'uncanny-automator' ),
+							esc_attr__( 'Recipes using app credits on %1$s', 'uncanny-automator' ),
 							esc_attr( $dashboard->miscellaneous->site_url_without_protocol )
 						);
 
@@ -942,7 +942,7 @@ if ( $dashboard->has_site_connected ) {
 						<div class="uap-dashboard-credits-recipes__no-recipes">
 							<span class="uap-text-secondary">
 								<span
-									class="uap-icon uap-icon--info-circle"></span> <?php esc_attr_e( 'No recipes using credits on this site', 'uncanny-automator' ); ?>
+									class="uap-icon uap-icon--info-circle"></span> <?php esc_attr_e( 'No recipes using app credits on this site', 'uncanny-automator' ); ?>
 							</span>
 						</div>
 

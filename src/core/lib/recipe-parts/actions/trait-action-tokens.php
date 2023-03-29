@@ -181,7 +181,7 @@ trait Action_Tokens {
 		// Initiate to 0.
 		$count_iteration = 0;
 
-		$replaceables = $this->get_replace_pairs( $field_text, $trigger_args );
+		$replaceables = $this->get_replace_pairs( $field_text, $trigger_args, $args );
 
 		if ( false === $replaceables ) {
 			return $field_text;
@@ -204,7 +204,7 @@ trait Action_Tokens {
 					$do_iterate = false;
 				}
 
-				$field_text = strtr( $field_text, $this->get_replace_pairs( $field_text, $trigger_args ) );
+				$field_text = strtr( $field_text, $this->get_replace_pairs( $field_text, $trigger_args, $args ) );
 
 			}
 		}
@@ -221,7 +221,7 @@ trait Action_Tokens {
 	 *
 	 * @return array The collection of replace vars.
 	 */
-	private function get_replace_pairs( $field_text, $trigger_args ) {
+	private function get_replace_pairs( $field_text, $trigger_args, $args ) {
 
 		$replaceables = array();
 
@@ -250,7 +250,13 @@ trait Action_Tokens {
 
 			// Action meta type.
 			if ( 'META' === $type ) {
-				$replaceables[ sprintf( '{{ACTION_META:%d:%s:%s}}', $action_id, $parent, $meta_key ) ] = $this->get_meta_value( $action_log_id, $meta_key );
+
+				$replaceables[ sprintf( '{{ACTION_META:%d:%s:%s}}', $action_id, $parent, $meta_key ) ] = $this->get_meta_value(
+					$action_log_id,
+					$meta_key,
+					$args
+				);
+
 			}
 
 			// Action field type.
@@ -329,11 +335,28 @@ trait Action_Tokens {
 	 *
 	 * @return string The meta value, if available. Otherwise, empty string.
 	 */
-	private function get_meta_value( $action_log_id = 0, $action_meta_key = '' ) {
+	private function get_meta_value( $action_log_id = 0, $action_meta_key = '', $args = array() ) {
 
 		$tokens = json_decode( Automator()->db->action->get_meta( $action_log_id, $this->meta_key ), true );
 
-		return isset( $tokens[ $action_meta_key ] ) ? $tokens[ $action_meta_key ] : '';
+		$token_value = isset( $tokens[ $action_meta_key ] ) ? $tokens[ $action_meta_key ] : '';
+
+		if ( ! empty( $args ) && isset( $args['action_data']['should_apply_extra_formatting'] ) ) {
+
+			if ( true === $args['action_data']['should_apply_extra_formatting'] ) {
+				$token_value = apply_filters(
+					'automator_action_tokens_get_extra_formatted_meta_value',
+					wpautop( $token_value ),
+					$action_log_id,
+					$action_meta_key,
+					$args,
+					$token_value,
+					$this
+				);
+			}
+		}
+
+		return $token_value;
 
 	}
 

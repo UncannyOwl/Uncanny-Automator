@@ -554,13 +554,13 @@ $automator_stats    = $report['automator_stats'];
 		<td><?php echo esc_html( $automator_stats['not_completed_status'] ); ?></td>
 	</tr>
 	<tr>
-		<td data-export-label="Credits left"><?php esc_html_e( 'Credits left', 'uncanny-automator' ); ?>:</td>
-		<td class="help"><?php echo esc_html__( 'Available credits.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td data-export-label="App credits left"><?php esc_html_e( 'App credits left', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Available app credits.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 		<td><?php echo esc_html( $automator_stats['credits_left'] ); ?></td>
-	</tr>
+	</tr>	
 	<tr>
-		<td data-export-label="Recipes using credits"><?php esc_html_e( 'Recipes using credits', 'uncanny-automator' ); ?>:</td>
-		<td class="help"><?php echo esc_html__( 'Total number of recipes using credits on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
+		<td data-export-label="Recipes using app credits"><?php esc_html_e( 'Recipes using app credits', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php echo esc_html__( 'Total number of recipes using app credits on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 		<td><?php echo esc_html( $automator_stats['credit_recipes'] ); ?></td>
 	</tr>
 	</tbody>

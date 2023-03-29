@@ -95,6 +95,13 @@ trait Action_Setup {
 	protected $background_processing = false;
 
 	/**
+	 * Whether the specific action should apply extra formatting or not.
+	 *
+	 * @var bool $should_apply_extra_formatting Pass true to apply extra formatting. Defaults to false.
+	 */
+	protected $should_apply_extra_formatting = false;
+
+	/**
 	 * @var
 	 */
 	protected $helpers;
@@ -310,6 +317,22 @@ trait Action_Setup {
 	}
 
 	/**
+	 * @param bool $should_apply_extra_formatting
+	 */
+	public function set_should_apply_extra_formatting( $should_apply_extra_formatting = false ) {
+		$this->should_apply_extra_formatting = (bool) $should_apply_extra_formatting;
+	}
+
+	/**
+	 * Retrieves the should_apply_extra_formatting property.
+	 *
+	 * @return bool Whether it should apply an extra formatting or not.
+	 */
+	public function get_should_apply_extra_formatting() {
+		return (bool) $this->should_apply_extra_formatting;
+	}
+
+	/**
 	 * @return mixed
 	 */
 	public function get_helpers() {
@@ -330,17 +353,18 @@ trait Action_Setup {
 	protected function register_action() {
 
 		$action = array(
-			'author'                => $this->get_author(),
-			'support_link'          => $this->get_support_link(),
-			'integration'           => $this->get_integration(),
-			'is_pro'                => $this->is_is_pro(),
-			'is_deprecated'         => $this->is_is_deprecated(),
-			'requires_user'         => $this->get_requires_user(),
-			'code'                  => $this->get_action_code(),
-			'sentence'              => $this->get_sentence(),
-			'select_option_name'    => $this->get_readable_sentence(),
-			'execution_function'    => array( $this, 'do_action' ),
-			'background_processing' => $this->get_background_processing(),
+			'author'                        => $this->get_author(),
+			'support_link'                  => $this->get_support_link(),
+			'integration'                   => $this->get_integration(),
+			'is_pro'                        => $this->is_is_pro(),
+			'is_deprecated'                 => $this->is_is_deprecated(),
+			'requires_user'                 => $this->get_requires_user(),
+			'code'                          => $this->get_action_code(),
+			'sentence'                      => $this->get_sentence(),
+			'select_option_name'            => $this->get_readable_sentence(),
+			'execution_function'            => array( $this, 'do_action' ),
+			'background_processing'         => $this->get_background_processing(),
+			'should_apply_extra_formatting' => $this->get_should_apply_extra_formatting(),
 		);
 
 		if ( ! empty( $this->get_options() ) ) {

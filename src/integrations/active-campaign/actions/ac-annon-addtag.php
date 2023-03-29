@@ -12,18 +12,14 @@ class AC_ANNON_ADDTAG {
 
 	use Actions;
 
-	public $prefix = '';
+	public $prefix = 'AC_ANNON_ADDTAG';
+
+	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
 
 	public function __construct() {
-		$this->prefix          = 'AC_ANNON_ADDTAG';
-		$this->ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
-
-		// Allow overwrite in wp-config.php.
-		if ( DEFINED( 'UO_AUTOMATOR_DEV_AC_ENDPOINT_URL' ) ) {
-			$this->ac_endpoint_uri = UO_AUTOMATOR_DEV_AC_ENDPOINT_URL;
-		}
 
 		$this->setup_action();
+
 	}
 
 	/**
@@ -42,16 +38,25 @@ class AC_ANNON_ADDTAG {
 		/* translators: Action - WordPress */
 		$this->set_sentence(
 			sprintf(
-			/* translators: Action sentence */
+				/* translators: Action sentence */
 				esc_attr__( 'Add {{a tag:%1$s}} to {{a contact:%2$s}}', 'uncanny-automator' ),
 				$this->get_action_meta(),
-				$this->prefix . '_CONTACT_ID' . ':' . $this->get_action_meta()
-				//'WPTAXONOMYTERM' . ':' . $this->trigger_meta,
+				$this->prefix . '_CONTACT_ID:' . $this->get_action_meta()
 			)
 		);
 
 		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Add {{a tag}} to {{a contact}}', 'uncanny-automator' ) );
+
+		$this->set_options_callback( array( $this, 'load_options' ) );
+
+		$this->set_background_processing( true );
+
+		$this->register_action();
+
+	}
+
+	public function load_options() {
 
 		$options_group = array(
 			$this->get_action_meta() => array(
@@ -78,11 +83,11 @@ class AC_ANNON_ADDTAG {
 			),
 		);
 
-		$this->set_options_group( $options_group );
-
-		$this->set_background_processing( true );
-
-		$this->register_action();
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options_group' => $options_group,
+			)
+		);
 
 	}
 
