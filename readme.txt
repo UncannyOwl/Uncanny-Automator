@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce automation, marketing, twitter, facebook, whatsapp, buddyboss, tutor lms
 Requires at least: 5.3
-Tested up to: 6.1.1
+Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 4.13
+Stable tag: 4.13.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -319,6 +319,10 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 4.13.0.1 [2023-03-29] =
+
+* Recipe UI - Triggers containing a number field break fields that support tokens #3385
+
 = 4.13 [2023-03-29] =
 
 **New Integrations:**
@@ -362,7 +366,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Fixed:**
 
-* Recipe UI - URL field - Text sanitization erroneously removing tokens from the field 
+* Recipe UI - URL field - Text sanitization erroneously removing tokens from the field #3354
 
 = 4.12 [2023-03-16] =
 
