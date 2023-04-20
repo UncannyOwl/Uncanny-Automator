@@ -1,6 +1,7 @@
 <?php
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\OpenAI\HTTP_Client;
 use Uncanny_Automator\Recipe;
 
 /**
@@ -136,32 +137,34 @@ class OPEN_AI_IMAGE_GENERATE {
 		try {
 
 			$body = array(
-				'action'       => 'generate_image',
-				'prompt'       => $prompt,
-				'size'         => $size,
-				'access_token' => get_option( 'automator_open_ai_secret', '' ),
+				'prompt' => $prompt,
+				'size'   => $size,
+				'n'      => 1,
 			);
 
 			$body = apply_filters( 'automator_openai_image_generate', $body );
 
-			$response = $this->get_helpers()->api_request( $body, $action_data );
+			require_once dirname( __DIR__ ) . '/client/http-client.php';
 
-			if ( empty( $response['data']['data'][0]['url'] ) ) {
-				throw new \Exception( 'OpenAI has responded with an empty image URL. Please try different prompt.', 400 );
+			$client = new HTTP_Client( Api_Server::get_instance() );
+			$client->set_endpoint( 'v1/images/generations' );
+			$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+			$client->set_request_body( $body );
+
+			try {
+
+				$client->send_request();
+				$response = $client->get_response();
+				// Hydrates tokens based on the generated image.
+				$attachment_id = $this->insert_to_media( $response['data'][0]['url'], $prompt );
+				$this->hydrate_tokens_from_response( $response, $attachment_id );
+
+			} catch ( \Exception $e ) {
+
+				$action_data['complete_with_errors'] = true;
+				return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+
 			}
-
-			// Hydrates tokens based on the generated image.
-			$attachment_id  = $this->insert_to_media( $response['data']['data'][0]['url'], $prompt );
-			$attachment_url = wp_get_attachment_url( $attachment_id );
-
-			$this->hydrate_tokens(
-				array(
-					'ATTACHMENT_ID'        => $attachment_id,
-					'ATTACHMENT_URL'       => $attachment_url,
-					'OPENAI_GEN_IMAGE_URL' => $response['data']['data'][0]['url'],
-				),
-				$this->get_action_code()
-			);
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
@@ -197,6 +200,31 @@ class OPEN_AI_IMAGE_GENERATE {
 
 		return $attachment_id;
 
+	}
+
+	/**
+		 * Hydrates this specific action tokens.
+		 *
+		 * @param array $response.
+		 *
+		 * @return self
+		 */
+	protected function hydrate_tokens_from_response( $response, $attachment_id ) {
+
+		if ( empty( $response['data'][0]['url'] ) ) {
+			throw new \Exception( 'OpenAI has responded with an empty image URL. Please try different prompt.', 400 );
+		}
+
+		$attachment_url = wp_get_attachment_url( $attachment_id );
+
+		$this->hydrate_tokens(
+			array(
+				'ATTACHMENT_ID'        => $attachment_id,
+				'ATTACHMENT_URL'       => $attachment_url,
+				'OPENAI_GEN_IMAGE_URL' => $response['data'][0]['url'],
+			),
+			$this->get_action_code()
+		);
 	}
 
 }

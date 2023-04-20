@@ -20,7 +20,17 @@ class Wp_Post_Tokens {
 	 * WP_Anon_Tokens constructor.
 	 */
 	public function __construct() {
-		$codes = array( 'userspost', 'wpviewposttype', 'viewcustompost', 'WP_POST_PUBLISHED' );
+		$codes = array(
+			'userspost',
+			'wpviewposttype',
+			'viewcustompost',
+			'WP_POST_PUBLISHED',
+			'WP_USER_POST_UPDATED',
+			'ANON_POST_UPDATED_IN_TAXONOMY',
+			'WP_ANON_POST_UPDATED',
+			'WP_POST_PUBLISHED_IN_TAXONOMY',
+			'WP_USER_POST_PUBLISHED',
+		);
 		foreach ( $codes as $code ) {
 			$code = strtolower( $code );
 			add_filter(
@@ -64,31 +74,27 @@ class Wp_Post_Tokens {
 		$triggers = array( 'WP_POST_PUBLISHED' );
 
 		if ( in_array( $args['entry_args']['code'], $triggers, true ) ) {
-
 			$wp_post_data                                        = $args['trigger_args'];
 			list( $post_id, $wp_post, $update, $wp_post_before ) = $wp_post_data;
 			if ( isset( $post_id ) && ! empty( $post_id ) ) {
 				Automator()->db->token->save( 'post_id', $post_id, $args['trigger_entry'] );
 			}
 		}
-	}
 
-	/**
-	 * Only load this integration and its triggers and actions if the related plugin is active
-	 *
-	 * @param $status
-	 * @param $code
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $code ) {
+		$post_update_triggers = array(
+			'WP_ANON_POST_UPDATED',
+			'WP_USER_POST_UPDATED',
+			'ANON_POST_UPDATED_IN_TAXONOMY',
+			'WP_USER_POST_PUBLISHED',
+		);
 
-		if ( self::$integration === $code ) {
-
-			$status = true;
+		if ( in_array( $args['entry_args']['code'], $post_update_triggers, true ) ) {
+			$wp_post_data                                     = $args['trigger_args'];
+			list( $post_id, $wp_post_after, $wp_post_before ) = $wp_post_data;
+			if ( isset( $post_id ) && ! empty( $post_id ) ) {
+				Automator()->db->token->save( 'post_id', $post_id, $args['trigger_entry'] );
+			}
 		}
-
-		return $status;
 	}
 
 	/**
@@ -510,9 +516,19 @@ class Wp_Post_Tokens {
 			return $value;
 		}
 
-		if ( ! in_array( 'USERSPOST', $pieces, true ) && ! in_array( 'WPVIEWPOSTTYPE', $pieces, true )
-			 && ! in_array( 'VIEWPOST', $pieces, true ) && ! in_array( 'VIEWPAGE', $pieces, true )
-			 && ! in_array( 'VIEWCUSTOMPOST', $pieces, true ) && ! in_array( 'WP_POST_PUBLISHED', $pieces, true ) ) {
+		if (
+			! in_array( 'USERSPOST', $pieces, true ) &&
+			! in_array( 'WPVIEWPOSTTYPE', $pieces, true ) &&
+			! in_array( 'VIEWPOST', $pieces, true ) &&
+			! in_array( 'VIEWPAGE', $pieces, true ) &&
+			! in_array( 'VIEWCUSTOMPOST', $pieces, true ) &&
+			! in_array( 'WP_POST_PUBLISHED', $pieces, true ) &&
+			! in_array( 'WP_USER_POST_UPDATED', $pieces, true ) &&
+			! in_array( 'WP_POST_PUBLISHED_IN_TAXONOMY', $pieces, true ) &&
+			! in_array( 'WP_ANON_POST_UPDATED', $pieces, true ) &&
+			! in_array( 'WP_USER_POST_PUBLISHED', $pieces, true ) &&
+			! in_array( 'ANON_POST_UPDATED_IN_TAXONOMY', $pieces, true )
+		) {
 			return $value;
 		}
 

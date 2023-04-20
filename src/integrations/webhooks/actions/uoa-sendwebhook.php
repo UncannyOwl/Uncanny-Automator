@@ -17,12 +17,10 @@ class UOA_SENDWEBHOOK {
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
-
 		$this->setup_action();
 
 		// Migrate existing WP -> Webhook action.
 		$this->maybe_migrate_wp_webhooks();
-
 	}
 
 	/**
@@ -52,7 +50,7 @@ class UOA_SENDWEBHOOK {
 		/* translators: Action - Uncanny Automator */
 		$this->set_sentence(
 			sprintf(
-				/* translators: Trigger sentence */
+			/* translators: Trigger sentence */
 				esc_attr__( 'Send data to {{a webhook:%1$s}}', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
@@ -77,6 +75,14 @@ class UOA_SENDWEBHOOK {
 		);
 
 		$this->set_background_processing( true );
+
+		// add filter to inject tokens
+		add_filter(
+			'automator_action_' . $this->get_action_code() . '_tokens_renderable',
+			array( $this, 'inject_webhooks_response_tokens' ),
+			99,
+			3
+		);
 
 		$this->register_action();
 	}
@@ -106,6 +112,7 @@ class UOA_SENDWEBHOOK {
 
 		if ( empty( $current_actions ) ) {
 			update_option( $option_key, 'yes', false );
+
 			return;
 		}
 

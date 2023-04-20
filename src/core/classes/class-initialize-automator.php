@@ -103,6 +103,8 @@ class Initialize_Automator extends Set_Up_Automator {
 			self::$auto_loaded_directories = $this->get_integrations_autoload_directories();
 			Automator()->cache->set( 'automator_integration_directories_loaded', self::$auto_loaded_directories, 'automator', Automator()->cache->long_expires );
 		}
+
+		$this->load_framework_integrations();
 	}
 
 	/**
@@ -137,5 +139,30 @@ class Initialize_Automator extends Set_Up_Automator {
 		// Let others hook in and add triggers actions or tokens
 		do_action_deprecated( 'uncanny_automator_add_integration_triggers_actions_tokens', array(), '3.0', 'automator_add_integration_recipe_parts' );
 		do_action( 'automator_add_integration_recipe_parts' );
+	}
+
+	/**
+	 * load_framework_integrations
+	 *
+	 * Will scan the integrations folder and if one has the load.php file, it will include it.
+	 *
+	 * @return void
+	 */
+	public function load_framework_integrations() {
+
+		$dirs = scandir( $this->integrations_directory_path );
+
+		foreach ( $dirs as $integration ) {
+
+			if ( '.' === $integration || '..' === $integration ) {
+				continue;
+			}
+
+			$load_file_path = $this->integrations_directory_path . DIRECTORY_SEPARATOR . $integration . DIRECTORY_SEPARATOR . 'load.php';
+
+			if ( file_exists( $load_file_path ) ) {
+				include_once $load_file_path;
+			}
+		}
 	}
 }

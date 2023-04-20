@@ -122,6 +122,36 @@ class Wpdm_Tokens {
 					'tokenType'       => 'url',
 					'tokenIdentifier' => $trigger_code,
 				),
+				array(
+					'tokenId'         => 'USER_ID',
+					'tokenName'       => __( 'User ID', 'uncanny-automator' ),
+					'tokenType'       => 'int',
+					'tokenIdentifier' => $trigger_code,
+				),
+				array(
+					'tokenId'         => 'USERNAME',
+					'tokenName'       => __( 'Username', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				),
+				array(
+					'tokenId'         => 'USER_FIRSTNAME',
+					'tokenName'       => __( 'First name', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				),
+				array(
+					'tokenId'         => 'USER_LASTNAME',
+					'tokenName'       => __( 'Last name', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				),
+				array(
+					'tokenId'         => 'USER_EMAIL',
+					'tokenName'       => __( 'Email', 'uncanny-automator' ),
+					'tokenType'       => 'email',
+					'tokenIdentifier' => $trigger_code,
+				),
 			);
 
 			$tokens = array_merge( $tokens, $fields );
@@ -196,8 +226,26 @@ class Wpdm_Tokens {
 				$value = get_the_author_meta( 'display_name', $package['author'] );
 				break;
 			case 'FILE_ID';
-			default:
 				$value = $package['ID'];
+				break;
+			case 'USER_ID';
+				$value = ! empty( $user_id ) ? $user_id : '';
+				break;
+			case 'USERNAME';
+				$user  = get_userdata( $user_id );
+				$value = $user->user_login;
+				break;
+			case 'USER_FIRSTNAME';
+				$user  = get_userdata( $user_id );
+				$value = $user->user_firstname;
+				break;
+			case 'USER_LASTNAME';
+				$user  = get_userdata( $user_id );
+				$value = $user->user_lastname;
+				break;
+			case 'USER_EMAIL';
+				$user  = get_userdata( $user_id );
+				$value = $user->user_email;
 				break;
 		}
 

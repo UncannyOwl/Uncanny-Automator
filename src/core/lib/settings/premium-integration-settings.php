@@ -99,14 +99,32 @@ abstract class Premium_Integration_Settings {
 	public $alerts = array();
 
 	/**
-	 * Integration helpers
+	 * helpers
 	 *
 	 * @var mixed
 	 */
 	public $helpers;
 
-	final public function __construct( $helpers = null ) {
-		$this->helpers = $helpers;
+	/**
+	 * Integration helpers
+	 *
+	 * @var mixed
+	 */
+	public $dependencies;
+
+	/**
+	 * __construct
+	 *
+	 * @param  mixed $dependencies
+	 * @return void
+	 */
+	final public function __construct( ...$dependencies ) {
+
+		if ( ! empty( $dependencies ) ) {
+			$this->dependencies = $dependencies;
+			$this->helpers      = array_shift( $dependencies );
+		}
+
 		$this->register_hooks();
 	}
 
@@ -305,8 +323,119 @@ abstract class Premium_Integration_Settings {
 		// Return a placeholder
 		// Each Premium Integration will have its own output method
 		// Don't translate the string, it's just for internal use
-		echo $this->content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		//echo $this->content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		$this->output_form();
+
 	}
+
+	/**
+	 * output_form
+	 *
+	 * @return void
+	 */
+	public function output_form() {
+		?>
+
+			<form method="POST" action="options.php" warn-unsaved>
+				<?php settings_fields( $this->get_settings_id() ); ?>
+				<?php $this->output_panel(); ?>
+			</form>
+			<?php
+	}
+
+	/**
+	 * output_panel
+	 *
+	 * @return void
+	 */
+	public function output_panel() {
+		?>
+
+			<div class="uap-settings-panel">
+				<div class="uap-settings-panel-top">
+					<?php $this->output_panel_top(); ?>
+					<?php $this->display_alerts(); ?>
+					<div class="uap-settings-panel-content">
+						<?php $this->output_panel_content(); ?>
+					</div>
+				</div>
+				<div class="uap-settings-panel-bottom">
+					<?php $this->output_panel_bottom(); ?>
+				</div>
+			</div>		
+		<?php
+	}
+
+	/**
+	 * output_panel_top
+	 *
+	 * @return void
+	 */
+	public function output_panel_top() {
+		?>
+
+			<div class="uap-settings-panel-title">
+				<?php $this->output_panel_title(); ?>
+			</div>
+
+		<?php
+	}
+
+	/**
+	 * output_panel_title
+	 *
+	 * @return void
+	 */
+	public function output_panel_title() {
+		?>
+
+			<uo-icon integration="<?php echo esc_attr( $this->get_icon() ); ?>"></uo-icon> <?php echo esc_attr( $this->get_name() ); ?>
+
+		<?php
+	}
+
+	/**
+	 * output_panel_content
+	 *
+	 * @return void
+	 */
+	public function output_panel_content() {
+
+	}
+
+	/**
+	 * output_panel_bottom
+	 *
+	 * @return void
+	 */
+	public function output_panel_bottom() {
+		?>
+
+		<div class="uap-settings-panel-bottom-left">
+			<?php $this->output_panel_bottom_left(); ?>
+		</div>
+		<div class="uap-settings-panel-bottom-right">
+			<?php $this->output_panel_bottom_right(); ?>
+		</div>
+
+		<?php
+	}
+
+	/**
+	 * output_panel_bottom_left
+	 *
+	 * @return void
+	 */
+	public function output_panel_bottom_left() {}
+
+	/**
+	 * output_panel_bottom_right
+	 *
+	 * @return void
+	 */
+	public function output_panel_bottom_right() {}
+
 
 	/**
 	 * Returns the URL to the Settings page of this integration
@@ -363,8 +492,8 @@ abstract class Premium_Integration_Settings {
 	 */
 	public function is_current_page_settings() {
 		return automator_filter_input( 'page' ) === 'uncanny-automator-config'
-			   && automator_filter_input( 'tab' ) === 'premium-integrations'
-			   && automator_filter_input( 'integration' ) === $this->get_id();
+		&& automator_filter_input( 'tab' ) === 'premium-integrations'
+		&& automator_filter_input( 'integration' ) === $this->get_id();
 	}
 
 	/**
@@ -588,6 +717,16 @@ abstract class Premium_Integration_Settings {
 	}
 
 	/**
+	 * text_input
+	 *
+	 * @param  mixed $input
+	 * @return void
+	 */
+	public function text_input( $input ) {
+		$this->text_input_html( $input );
+	}
+
+	/**
 	 * text_input_html
 	 *
 	 * Output the uo-text-input HTML
@@ -630,4 +769,51 @@ abstract class Premium_Integration_Settings {
 		></uo-text-field>
 		<?php
 	}
+
+	/**
+	 * output_panel_separator
+	 *
+	 * @return void
+	 */
+	public function output_panel_separator() {
+		?>
+
+			<div class="uap-settings-panel-content-separator"></div>
+
+		<?php
+	}
+
+	/**
+	 * submit_button
+	 *
+	 * @param  mixed $label
+	 * @return void
+	 */
+	public function submit_button( $label ) {
+		?>
+
+			<uo-button type="submit">
+				<?php echo esc_attr( $label ); ?>
+			</uo-button>
+
+		<?php
+	}
+
+	/**
+	 * redirect_button
+	 *
+	 * @param  mixed $label
+	 * @param  mixed $url
+	 * @return void
+	 */
+	public function redirect_button( $label, $url ) {
+		?>
+
+		<uo-button href="<?php echo esc_attr( $url ); ?>">
+			<?php echo esc_attr( $label ); ?>
+		</uo-button>
+
+		<?php
+	}
+
 }

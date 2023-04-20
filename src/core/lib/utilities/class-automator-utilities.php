@@ -651,4 +651,25 @@ class Automator_Utilities {
 
 		return apply_filters( 'automator_get_the_excerpt', $excerpt, $post_content, $post_id, $length );
 	}
+
+	/**
+	 * Determine if the given text has multiple lines or not.
+	 *
+	 * @param string $text Optional parameter defaults to empty string.
+	 *
+	 * @return boolean True if has multiple lines. Otherwise, false.
+	 */
+	public function has_multiple_lines( $text = '' ) {
+
+		// Standardize newline characters to "\n".
+		$token_value = str_replace( array( "\r\n", "\r" ), "\n", $text );
+		// Remove more than two contiguous line breaks.
+		$token_value = preg_replace( "/\n\n+/", "\n\n", $token_value );
+		// Split up the contents into an array of strings, separated by double line breaks.
+		$paragraphs = preg_split( '/\n\s*\n/', $token_value, - 1, PREG_SPLIT_NO_EMPTY );
+
+		return count( $paragraphs ) > 1;
+
+	}
+
 }

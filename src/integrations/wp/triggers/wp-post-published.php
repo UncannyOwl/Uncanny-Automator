@@ -60,7 +60,7 @@ class WP_POST_PUBLISHED {
 			sprintf( esc_html__( 'A {{type of post:%1$s}} is published', 'uncanny-automator' ), $this->get_trigger_meta() )
 		);
 
-		$this->set_readable_sentence( esc_attr__( 'A {{type of post}} is published', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'A post is published', 'uncanny-automator' ) );
 
 		$this->set_action_hook( 'wp_after_insert_post' );
 

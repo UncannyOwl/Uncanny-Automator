@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\OpenAI\HTTP_Client;
+
 /**
  * Class OPEN_AI_CHAT_GENERATE
  *
@@ -171,39 +173,41 @@ class OPEN_AI_CHAT_GENERATE {
 		$system_content = isset( $parsed['SYSTEM_CONTENT'] ) ? sanitize_textarea_field( $parsed['SYSTEM_CONTENT'] ) : '';
 		$prompt         = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
 
+		$body = array(
+			'temperature' => floatval( $temperature ),
+			'model'       => $model,
+			'max_tokens'  => intval( $max_tokens ),
+			'messages'    => array(
+				array(
+					'role'    => 'system',
+					'content' => $system_content,
+				),
+				array(
+					'role'    => 'user',
+					'content' => $prompt,
+				),
+			),
+		);
+
+		$body = apply_filters( 'automator_openai_chat_generate', $body );
+
+		require_once dirname( __DIR__ ) . '/client/http-client.php';
+
+		$client = new HTTP_Client( Api_Server::get_instance() );
+		$client->set_endpoint( 'v1/chat/completions' );
+		$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+		$client->set_request_body( $body );
+
 		try {
-
-			$this->set_helpers( new Open_AI_Helpers( false ) );
-
-			$body = array(
-				'action'         => 'generate_chat',
-				'prompt'         => $prompt,
-				'temperature'    => $temperature,
-				'model'          => $model,
-				'max_tokens'     => $max_tokens,
-				'system_content' => $system_content,
-				'access_token'   => get_option( 'automator_open_ai_secret', '' ),
-			);
-
-			$body = apply_filters( 'automator_openai_chat_generate', $body );
-
-			require_once UA_ABSPATH . 'src/integrations/open-ai/client/chat-completions/chat-completions.php';
-
-			$client = new Chat_Completions_Client( Api_Server::get_instance(), $this->get_helpers() );
-
-			$response = $client->set_parameters( $body )->send_request( $action_data );
-
-			$this->hydrate_tokens_from_response( $response );
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
+			$client->send_request();
+			// Send the response as action tokens.
+			$this->hydrate_tokens_from_response( $client->get_response() );
 		} catch ( \Exception $e ) {
-
 			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
+			return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
+
+		return Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 	}
 
@@ -216,7 +220,9 @@ class OPEN_AI_CHAT_GENERATE {
 	 */
 	private function hydrate_tokens_from_response( $response = array() ) {
 
-		$response_text = isset( $response['data']['choices'][0]['message']['content'] ) ? $response['data']['choices'][0]['message']['content'] : '';
+		$response_text = isset( $response['choices'][0]['message']['content'] )
+			? $response['choices'][0]['message']['content'] :
+			''; // Defaults to empty string.
 
 		if ( 0 === strlen( $response_text ) ) {
 			throw new \Exception( 'The model predicted a completion that results in no output. Consider adjusting your prompt.', 400 );
@@ -225,9 +231,9 @@ class OPEN_AI_CHAT_GENERATE {
 		$this->hydrate_tokens(
 			array(
 				'RESPONSE'                => $response_text,
-				'USAGE_PROMPT_TOKENS'     => $response['data']['usage']['prompt_tokens'],
-				'USAGE_COMPLETION_TOKENS' => $response['data']['usage']['completion_tokens'],
-				'USAGE_TOTAL_TOKENS'      => $response['data']['usage']['total_tokens'],
+				'USAGE_PROMPT_TOKENS'     => $response['usage']['prompt_tokens'],
+				'USAGE_COMPLETION_TOKENS' => $response['usage']['completion_tokens'],
+				'USAGE_TOTAL_TOKENS'      => $response['usage']['total_tokens'],
 			)
 		);
 

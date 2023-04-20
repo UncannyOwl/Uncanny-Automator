@@ -73,9 +73,7 @@ class WP_USERCREATESPOST {
 
 
 	public function __construct() {
-
 		$this->trigger_code = 'USERSPOST';
-
 		$this->trigger_meta = 'WPPOSTTYPES';
 
 		if ( Automator()->helpers->recipe->is_edit_page() ) {
@@ -113,7 +111,7 @@ class WP_USERCREATESPOST {
 				'WPTAXONOMIES:' . $this->trigger_meta
 			),
 			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => esc_attr__( 'A user publishes a post', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user publishes a post in a taxonomy', 'uncanny-automator' ),
 			'action'              => 'wp_after_insert_post',
 			'priority'            => 90,
 			'accepted_args'       => 4,

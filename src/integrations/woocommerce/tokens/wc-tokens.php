@@ -123,7 +123,7 @@ class Wc_Tokens {
 				$this,
 				'wc_ordertotal_tokens',
 			),
-			20,
+			2000,
 			6
 		);
 
@@ -381,43 +381,43 @@ class Wc_Tokens {
 						$value = $order->get_status();
 						break;
 					case 'WOOPRODUCT':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
-						$value          = $this->get_woo_product_names_from_items( $order, $value_to_match );
+						//$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value = $this->get_woo_product_names_from_items( $order, '-1' );
 						break;
 					case 'WOOPRODUCT_ID':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_ids_from_items( $order, $value_to_match );
 						break;
 					case 'WOOPRODUCT_PRODUCT_PRICE':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match );
 						break;
 					case 'WOOPRODUCT_PRODUCT_PRICE_UNFORMATTED':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match, true );
 						break;
 					case 'WOOPRODUCT_PRODUCT_SALE_PRICE':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match, false, true );
 						break;
 					case 'WOOPRODUCT_PRODUCT_SALE_PRICE_UNFORMATTED':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_price_from_items( $order, $value_to_match, true, true );
 						break;
 					case 'WOOPRODUCT_URL':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_urls_from_items( $order, $value_to_match );
 						break;
 					case 'WOOPRODUCT_THUMB_ID':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_image_ids_from_items( $order, $value_to_match );
 						break;
 					case 'WOOPRODUCT_THUMB_URL':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_image_urls_from_items( $order, $value_to_match );
 						break;
 					case 'WOOPRODUCT_ORDER_QTY':
-						$product_id   = isset( $trigger['meta']['WOOPRODUCT'] ) ? intval( $trigger['meta']['WOOPRODUCT'] ) : - 1;
+						$product_id   = isset( $trigger['meta']['WOOPRODUCT'] ) ? intval( $trigger['meta']['WOOPRODUCT'] ) : '-1';
 						$items        = $order->get_items();
 						$product_qtys = array();
 						if ( $items ) {
@@ -636,11 +636,11 @@ class Wc_Tokens {
 						$value = $this->get_products_skus( $order );
 						break;
 					case 'WOOPRODUCT_CATEGORIES':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_categories_from_items( $order, $value_to_match );
 						break;
 					case 'WOOPRODUCT_TAGS':
-						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : - 1;
+						$value_to_match = isset( $trigger['meta'][ $parse ] ) ? $trigger['meta'][ $parse ] : '-1';
 						$value          = $this->get_woo_product_tags_from_items( $order, $value_to_match );
 						break;
 					case 'CARRIER':
@@ -696,7 +696,6 @@ class Wc_Tokens {
 				$value = apply_filters( 'automator_woocommerce_token_parser', $value, $token, $token_pieces, $order );
 			}
 		}
-
 		return $value;
 	}
 
@@ -712,12 +711,11 @@ class Wc_Tokens {
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
-				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || intval( '-1' ) === intval( $value_to_match ) ) {
 					$product_titles[] = $item->get_product()->get_name();
 				}
 			}
 		}
-
 		return join( ', ', $product_titles );
 	}
 
@@ -733,7 +731,7 @@ class Wc_Tokens {
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
-				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || intval( '-1' ) === intval( $value_to_match ) ) {
 					$product_ids[] = $item->get_product_id();
 				}
 			}
@@ -756,7 +754,7 @@ class Wc_Tokens {
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
-				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || intval( '-1' ) === intval( $value_to_match ) ) {
 					$product = $item->get_product();
 					if ( $unformatted ) {
 						$product_prices[] = ! $sale ? $product->get_price() : $product->get_sale_price();
@@ -782,7 +780,7 @@ class Wc_Tokens {
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
-				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || intval( '-1' ) === intval( $value_to_match ) ) {
 					$product_ids[] = get_permalink( $item->get_product_id() );
 				}
 			}
@@ -803,7 +801,7 @@ class Wc_Tokens {
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
-				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || intval( '-1' ) === intval( $value_to_match ) ) {
 					$product_image_ids[] = get_post_thumbnail_id( $item->get_product_id() );
 				}
 			}
@@ -824,7 +822,7 @@ class Wc_Tokens {
 		if ( $items ) {
 			/** @var WC_Order_Item_Product $item */
 			foreach ( $items as $item ) {
-				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || absint( '-1' ) === absint( $value_to_match ) ) {
+				if ( absint( $value_to_match ) === absint( $item->get_product_id() ) || intval( '-1' ) === intval( $value_to_match ) ) {
 					$product_image_urls[] = get_the_post_thumbnail_url( $item->get_product_id(), 'full' );
 				}
 			}

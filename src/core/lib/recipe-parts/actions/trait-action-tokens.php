@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Recipe;
 
 /**
@@ -11,6 +12,20 @@ namespace Uncanny_Automator\Recipe;
  * @version 1.0.0
  */
 trait Action_Tokens {
+
+	/**
+	 * The priority.
+	 *
+	 * @var int Used the default filter priority value.
+	 */
+	private $renderable_priority = 10;
+
+	/**
+	 * The number of args.
+	 *
+	 * @var int This value should reflect the number of arguments accepted by the renderable filter.
+	 */
+	private $renderable_number_args = 3;
 
 	/**
 	 * The action token meta_value are fetched with matching specific meta_key.
@@ -44,13 +59,14 @@ trait Action_Tokens {
 
 		add_filter(
 			'automator_action_' . $action_code . '_tokens_renderable',
-			function() use ( $tokens ) {
-				return $tokens;
-			}
+			function ( $registered_tokens = array(), $action_id = null, $recipe_id = null ) use ( $tokens ) {
+				return $registered_tokens + $tokens;
+			},
+			$this->renderable_priority,
+			$this->renderable_number_args
 		);
 
 		return $this;
-
 	}
 
 	private function format_tokens( $tokens = array(), $action_code = '' ) {
@@ -95,7 +111,7 @@ trait Action_Tokens {
 	 */
 	public function hydrate_tokens( $args = array() ) {
 
-		$closure = function() use ( $args ) {
+		$closure = function () use ( $args ) {
 			return wp_json_encode( $args );
 		};
 
@@ -121,7 +137,15 @@ trait Action_Tokens {
 		add_action( 'automator_action_created', array( $this, 'persist_token_value' ), 10, 1 );
 
 		// Manually parse the action tokens.
-		add_filter( 'automator_action_token_input_parser_text_field_text', array( $this, 'interpolate_tokens_with_values' ), 10, 3 );
+		add_filter(
+			'automator_action_token_input_parser_text_field_text',
+			array(
+				$this,
+				'interpolate_tokens_with_values',
+			),
+			10,
+			3
+		);
 
 		do_action( 'automator_action_tokens_parser_loaded' );
 
@@ -197,7 +221,7 @@ trait Action_Tokens {
 
 			while ( $do_iterate && ( strpos( $field_text, '{{ACTION_FIELD' ) || strpos( $field_text, '{{ACTION_META' ) ) ) {
 
-				$count_iteration++;
+				$count_iteration ++;
 
 				// Terminate safely, in case for some reason, unexpected input turns into infinite loop.
 				if ( $count_iteration >= $max_iteration ) {
@@ -340,19 +364,30 @@ trait Action_Tokens {
 		$tokens = json_decode( Automator()->db->action->get_meta( $action_log_id, $this->meta_key ), true );
 
 		$token_value = isset( $tokens[ $action_meta_key ] ) ? $tokens[ $action_meta_key ] : '';
-
 		if ( ! empty( $args ) && isset( $args['action_data']['should_apply_extra_formatting'] ) ) {
 
 			if ( true === $args['action_data']['should_apply_extra_formatting'] ) {
-				$token_value = apply_filters(
-					'automator_action_tokens_get_extra_formatted_meta_value',
-					wpautop( $token_value ),
-					$action_log_id,
-					$action_meta_key,
-					$args,
-					$token_value,
-					$this
-				);
+				// Standardize newline characters to "\n".
+				$token_value = str_replace( array( "\r\n", "\r" ), "\n", $token_value );
+
+				// Remove more than two contiguous line breaks.
+				$token_value = preg_replace( "/\n\n+/", "\n\n", $token_value );
+
+				// Split up the contents into an array of strings, separated by double line breaks.
+				$paragraphs = preg_split( '/\n\s*\n/', $token_value, - 1, PREG_SPLIT_NO_EMPTY );
+
+				// Only apply automatic formatting on the value if it's a paragraph.
+				if ( count( $paragraphs ) > 1 ) {
+					$token_value = apply_filters(
+						'automator_action_tokens_apply_auto_formatting',
+						wpautop( $token_value ),
+						$token_value,
+						$action_meta_key,
+						$action_log_id,
+						$args,
+						$this
+					);
+				}
 			}
 		}
 
@@ -374,8 +409,8 @@ trait Action_Tokens {
 
 		$action_log_id = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->prefix}uap_action_log 
-				WHERE automator_action_id = %d 
+				"SELECT ID FROM {$wpdb->prefix}uap_action_log
+				WHERE automator_action_id = %d
 				AND automator_recipe_log_id = %d
 				ORDER BY ID DESC",
 				$action_id,

@@ -11,22 +11,34 @@ class WP_CREATEPOST {
 
 	use Recipe\Action_Tokens;
 
+	/**
+	 * @var string
+	 */
 	public static $integration = 'WP';
 
+	/**
+	 * @var string
+	 */
 	private $action_code = 'CREATEPOST';
 
+	/**
+	 * @var string
+	 */
 	private $action_meta = 'WPPOSTFIELDS';
 
+	/**
+	 *
+	 */
 	public function __construct() {
 
-		if ( is_admin() ) {
-			add_action( 'wp_loaded', array( $this, 'define_action' ), 99 );
-		} else {
-			$this->define_action();
-		}
+		$this->define_action();
 
 	}
 
+	/**
+	 * @return void
+	 * @throws \Exception
+	 */
 	public function define_action() {
 
 		$action = array(
@@ -67,6 +79,9 @@ class WP_CREATEPOST {
 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function load_options() {
 
 		Automator()->helpers->recipe->wp->options->load_options = true;
@@ -171,6 +186,17 @@ class WP_CREATEPOST {
 							'description' => esc_attr__( 'The URL must include a supported image file extension (e.g. .jpg, .png, .svg, etc.). Some sites may block remote image download.', 'uncanny-automator' ),
 						),
 
+						// The photo url field.
+						array(
+							'option_code'   => 'OPEN_COMMENTS',
+							/* translators: Allow comment field */
+							'label'         => esc_attr__( 'Allow people to submit comments', 'uncanny-automator' ),
+							'input_type'    => 'checkbox',
+							'is_toggle'     => true,
+							'required'      => false,
+							'default_value' => 'open' === get_option( 'default_comment_status', 'open' ),
+						),
+
 						array(
 							'input_type'        => 'repeater',
 							'option_code'       => 'CPMETA_PAIRS',
@@ -213,24 +239,31 @@ class WP_CREATEPOST {
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 
-		$post_title                = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
-		$post_terms                = Automator()->parse->text( $action_data['meta']['TERM'], $recipe_id, $user_id, $args );
-		$post_slug                 = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
-		$post_content              = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
-		$post_excerpt              = Automator()->parse->text( $action_data['meta']['WPCPOSTEXCERPT'], $recipe_id, $user_id, $args );
-		$post_author               = Automator()->parse->text( $action_data['meta']['WPCPOSTAUTHOR'], $recipe_id, $user_id, $args );
-		$post_status               = Automator()->parse->text( $action_data['meta']['WPCPOSTSTATUS'], $recipe_id, $user_id, $args );
-		$post_fimage               = Automator()->parse->text( $action_data['meta']['FEATURED_IMAGE_URL'], $recipe_id, $user_id, $args );
-		$post_fimage               = filter_var( $post_fimage, FILTER_SANITIZE_URL );
-		$post_type                 = $action_data['meta'][ $this->action_code ];
-		$post_args                 = array();
-		$post_args['post_title']   = sanitize_text_field( $post_title );
-		$post_args['post_name']    = sanitize_title( $post_slug );
-		$post_args['post_content'] = $post_content;
-		$post_args['post_excerpt'] = $post_excerpt;
-		$post_args['post_type']    = $post_type;
-		$post_args['post_status']  = $post_status;
-		$post_args['post_author']  = 0;
+		$post_title         = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
+		$post_terms         = Automator()->parse->text( $action_data['meta']['TERM'], $recipe_id, $user_id, $args );
+		$post_slug          = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
+		$post_content       = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+		$post_excerpt       = Automator()->parse->text( $action_data['meta']['WPCPOSTEXCERPT'], $recipe_id, $user_id, $args );
+		$post_author        = Automator()->parse->text( $action_data['meta']['WPCPOSTAUTHOR'], $recipe_id, $user_id, $args );
+		$post_status        = Automator()->parse->text( $action_data['meta']['WPCPOSTSTATUS'], $recipe_id, $user_id, $args );
+		$post_fimage        = Automator()->parse->text( $action_data['meta']['FEATURED_IMAGE_URL'], $recipe_id, $user_id, $args );
+		$post_fimage        = filter_var( $post_fimage, FILTER_SANITIZE_URL );
+		$post_open_comments = sanitize_text_field( $action_data['meta']['OPEN_COMMENTS'] );
+		$post_type          = $action_data['meta'][ $this->action_code ];
+
+		if ( empty( $post_open_comments ) ) {
+			$post_open_comments = 'open' === get_option( 'default_comment_status' ) ? 'true' : 'false';
+		}
+
+		$post_args                   = array();
+		$post_args['post_title']     = sanitize_text_field( $post_title );
+		$post_args['post_name']      = sanitize_title( $post_slug );
+		$post_args['post_content']   = $post_content;
+		$post_args['post_excerpt']   = $post_excerpt;
+		$post_args['post_type']      = $post_type;
+		$post_args['post_status']    = $post_status;
+		$post_args['post_author']    = 0;
+		$post_args['comment_status'] = ( 'true' === $post_open_comments ) ? 'open' : 'closed';
 
 		$fields_to_check = array( 'ID', 'login', 'email', 'slug' );
 
@@ -354,31 +387,9 @@ class WP_CREATEPOST {
 
 	}
 
-	public function get_custom_post_types() {
-
-		// Only public post type is available.
-		$args = array(
-			'public'   => true,
-			'_builtin' => true,
-		);
-
-		$options = array();
-
-		$post_types = get_post_types( $args, 'object', 'and' );
-
-		if ( ! empty( $post_types ) ) {
-
-			foreach ( $post_types as $post_type ) {
-
-				$options[ $post_type->name ] = esc_html( $post_type->labels->singular_name );
-
-			}
-		}
-
-		return array_merge( $options, $custom_post_types['options'] );
-
-	}
-
+	/**
+	 * @return array
+	 */
 	public function get_post_statuses() {
 
 		// Get all the post stati objects.
@@ -456,7 +467,7 @@ class WP_CREATEPOST {
 		);
 
 		// Removed any options.
-		unset( $field['options'][-1] );
+		unset( $field['options']['-1'] );
 
 		return $field;
 

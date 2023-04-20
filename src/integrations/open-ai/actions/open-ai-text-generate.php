@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\OpenAI\HTTP_Client;
+
 /**
  * Class OPEN_AI_TEXT_GENERATE
  *
@@ -153,48 +155,76 @@ class OPEN_AI_TEXT_GENERATE {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$model       = isset( $parsed['MODEL'] ) ? sanitize_text_field( $parsed['MODEL'] ) : '';
-		$temperature = isset( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : '';
-		$max_tokens  = isset( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : '';
+		$model       = isset( $parsed['MODEL'] ) ? sanitize_text_field( $parsed['MODEL'] ) : 'curie';
+		$temperature = ! empty( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : 0.7;
+		$max_tokens  = ! empty( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : 256;
 		$prompt      = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
 
 		try {
 
 			$body = array(
-				'action'       => 'generate_message',
-				'prompt'       => $prompt,
-				'temperature'  => $temperature,
-				'max_tokens'   => $max_tokens,
-				'model'        => $model,
-				'access_token' => get_option( 'automator_open_ai_secret', '' ),
+				'prompt'      => $prompt,
+				'temperature' => floatval( $temperature ),
+				'max_tokens'  => intval( $max_tokens ),
+				'model'       => $model,
 			);
 
 			$body = apply_filters( 'automator_open_ai_text_generate', $body );
 
-			$response = $this->get_helpers()->api_request( $body, $action_data );
+			require_once dirname( __DIR__ ) . '/client/http-client.php';
 
-			$response_text = isset( $response['data']['choices'][0]['text'] ) ? $response['data']['choices'][0]['text'] : '';
+			$client = new HTTP_Client( Api_Server::get_instance() );
+			$client->set_endpoint( 'v1/completions' );
+			$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+			$client->set_request_body( $body );
 
-			if ( 0 === strlen( $response_text ) ) {
-				throw new \Exception( 'The model predicted a completion that results in no output. Consider adjusting your prompt.', 400 );
+			try {
+
+				$client->send_request();
+				$this->hydrate_tokens_from_response( $client->get_response() );
+
+			} catch ( \Exception $e ) {
+
+				$action_data['complete_with_errors'] = true;
+				return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+
 			}
-
-			$this->hydrate_tokens(
-				array(
-					'RESPONSE' => $response_text,
-				),
-				$this->get_action_code()
-			);
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 		} catch ( \Exception $e ) {
 
 			$action_data['complete_with_errors'] = true;
-
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}
+
+	}
+
+	/**
+	 * Hydrates this specific action tokens.
+	 *
+	 * @param array $response.
+	 *
+	 * @return self
+	 */
+	private function hydrate_tokens_from_response( $response = array() ) {
+
+		$response_text = isset( $response['choices'][0]['text'] )
+			? $response['choices'][0]['text'] :
+			''; // Defaults to empty string.
+
+		if ( 0 === strlen( $response_text ) ) {
+			throw new \Exception( 'The model predicted a completion that results in no output. Consider adjusting your prompt.', 400 );
+		}
+
+		$this->hydrate_tokens(
+			array(
+				'RESPONSE' => $response_text,
+			)
+		);
+
+		return $this;
 
 	}
 

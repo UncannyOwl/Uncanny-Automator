@@ -77,6 +77,9 @@ class Facebook_Groups_Helpers {
 		// Add an ajax endpoint for listing groups.
 		add_action( 'wp_ajax_ua_facebook_group_list_groups', array( $this, 'list_groups' ) );
 
+		// Add an ajax endpoint for validating groups.
+		add_action( 'wp_ajax_automator_facebook_groups_verify_app_install', array( $this, 'verify_install' ) );
+
 		// Check if token is still valid or not.
 		add_action( 'admin_init', array( $this, 'maybe_add_admin_notice' ) );
 
@@ -257,6 +260,45 @@ class Facebook_Groups_Helpers {
 
 	}
 
+	/**
+	 * Verifies app installation for Facebook Group.
+	 *
+	 * @return void
+	 */
+	public function verify_install() {
+
+		if ( current_user_can( 'manage_option' ) ) {
+			wp_die( 'Unauthorized', 401 );
+		}
+
+		if ( wp_verify_nonce( filter_input( INPUT_POST, 'nonce' ), 'verify_install' ) ) {
+			wp_die( 'Unauthenticated', 403 );
+		}
+
+		try {
+			$response = $this->api_request(
+				array(
+					'action'   => 'verify_app_install',
+					'group_id' => filter_input( INPUT_POST, 'group_id' ),
+				)
+			);
+
+			wp_send_json( $response, 200 );
+
+		} catch ( \Exception $e ) {
+
+			wp_send_json(
+				array(
+					'data' => array(
+						'error' => $e->getMessage(),
+					),
+				),
+				400
+			);
+
+		}
+
+	}
 	/**
 	 * Endpoint wp_ajax callback. Capture user token.
 	 *
@@ -623,6 +665,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function click_handler( $action_meta = '' ) {
 		ob_start();
+		$request_url = admin_url( 'admin-ajax.php' );
 		?>
 		<script>
 			function ($button, data, modules) {
@@ -638,10 +681,11 @@ class Facebook_Groups_Helpers {
 				// Begin AJAX Request.
 				jQuery.ajax({
 					method: 'POST',
-					url: '<?php echo esc_url( AUTOMATOR_API_URL . self::API_ENDPOINT ); ?>',
+					url: '<?php echo esc_url( $request_url ); ?>',
 					data: {
-						action: 'verify_app_install',
-						group_id: selected_group_id
+						action: 'automator_facebook_groups_verify_app_install',
+						group_id: selected_group_id,
+						nonce: '<?php esc_js( wp_create_nonce( 'verify_install' ) ); ?>'
 					},
 					success: function (response) {
 
