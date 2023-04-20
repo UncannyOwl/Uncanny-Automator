@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 /**
  * This class handles the chat/completions endpoint
  *
+ * @deprecated 4.14
  * @since 4.12
  */
 class Chat_Completions_Client {

@@ -17,6 +17,8 @@ class WhatsApp_Helpers {
 
 	const WEBHOOK_KEY = 'uap_active_campaign_webhook_key';
 
+	protected $whatsapp_settings = '';
+
 	/**
 	 * The options.
 	 *
@@ -206,6 +208,7 @@ class WhatsApp_Helpers {
 			'wamid'     => $message['id'],
 			'body'      => $text_body,
 			'timestamp' => $timestamp,
+			'_response' => $response, // Send the whole response to the Trigger.
 		);
 
 		do_action( 'automator_whatsapp_webhook_message_received', $args );
@@ -320,7 +323,6 @@ class WhatsApp_Helpers {
 
 		// e.g. `automator_whatsapp_message_delivery_failed`.
 		do_action( 'automator_whatsapp_message_delivery_' . $incoming_data['status'], $incoming_data );
-
 		do_action( 'automator_whatsapp_message_status', $incoming_data, $incoming_data['status'] );
 
 	}

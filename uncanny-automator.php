@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             4.13.0.1
+ * Version:             4.14
  * Requires at least:   5.3
  * Requires PHP:        5.6
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '4.13.0.1' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '4.14' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -31,6 +31,28 @@ if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
 	define( 'AUTOMATOR_BASE_FILE', __FILE__ );
 }
 
+/**
+ * @param $class
+ *
+ * @return void
+ */
+function automator_autoloader( $class ) {
+
+	$class = strtolower( $class );
+
+	global $automator_class_map;
+
+	if ( ! $automator_class_map ) {
+		$automator_class_map = include_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'autoload_classmap.php';
+		$automator_class_map = array_change_key_case( $automator_class_map, CASE_LOWER );
+	}
+
+	if ( isset( $automator_class_map[ $class ] ) ) {
+		include_once $automator_class_map[ $class ];
+	}
+}
+
+spl_autoload_register( 'automator_autoloader' );
 
 // Autoload files
 require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';

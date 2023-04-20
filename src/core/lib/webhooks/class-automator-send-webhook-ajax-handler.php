@@ -45,15 +45,16 @@ class Automator_Send_Webhook_Ajax_Handler {
 	 */
 	public function webhook_send_test_data() {
 		Automator()->utilities->ajax_auth_check();
-		$values = (array) automator_filter_input_array( 'values', INPUT_POST );
+		$values    = (array) automator_filter_input_array( 'values', INPUT_POST );
+		$action_id = (int) automator_filter_input( 'item_id', INPUT_POST );
 		// This is for v1.0 of send webhook action in Pro
 		if ( isset( $values['WEBHOOKURL'] ) ) {
-			$this->call_webhook( $values, true );
+			$this->call_webhook( $values, true, $action_id );
 
 			return;
 		}
 		// Current send webhook method
-		$this->call_webhook( $values, false );
+		$this->call_webhook( $values, false, $action_id );
 	}
 
 	/**
@@ -66,7 +67,7 @@ class Automator_Send_Webhook_Ajax_Handler {
 	 * @return void
 	 * @throws \Exception
 	 */
-	private function call_webhook( $data, $legacy = false ) {
+	private function call_webhook( $data, $legacy = false, $action_id = null ) {
 
 		$data_type    = Automator()->send_webhook->get_data_type( $data );
 		$headers      = Automator()->send_webhook->get_headers( $data );
@@ -116,6 +117,13 @@ class Automator_Send_Webhook_Ajax_Handler {
 				)
 			);
 		}
+		$header_response = wp_remote_retrieve_headers( $response );
+		$header_leafs    = Automator_Send_Webhook::parse_headers( $header_response );
+		// Parse incoming response
+		$response_leafs = Automator_Send_Webhook::get_leafs( json_decode( wp_remote_retrieve_body( $response ), true ) );
+		$all_tokens     = array_merge( $header_leafs, $response_leafs );
+		// Save response to build action tokens
+		update_post_meta( $action_id, 'webhook_response_tokens', json_encode( $all_tokens ) );
 		/* translators: 1. Webhook URL */
 		//      $body            = wp_remote_retrieve_body( $response );
 		//      $msg             = wp_remote_retrieve_response_message( $response );
@@ -150,7 +158,7 @@ class Automator_Send_Webhook_Ajax_Handler {
 		wp_send_json(
 			array(
 				'type'    => 'gray',
-				'message' => wp_unslash( $fields ),
+				'message' => stripcslashes( $fields ),
 			),
 			200,
 			JSON_PRETTY_PRINT

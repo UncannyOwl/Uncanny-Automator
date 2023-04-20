@@ -130,6 +130,12 @@ trait Action_Parser {
 
 		foreach ( $metas as $meta_key => $meta_value ) {
 
+			// Prevents autop when text only contains a single line.
+			if ( ! Automator()->utilities->has_multiple_lines( $meta_value ) ) {
+				$this->set_parsed( $meta_key, Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args ) );
+				continue;
+			}
+
 			if ( ! $this->is_valid_token( $meta_key, $meta_value ) ) {
 				$parsed = Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args );
 				$this->set_parsed( $meta_key, $this->should_wpautop( $parsed, $meta_key ) );

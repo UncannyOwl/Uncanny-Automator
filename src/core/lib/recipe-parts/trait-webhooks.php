@@ -9,6 +9,38 @@ use Uncanny_Automator\Automator_Send_Webhook;
  */
 trait Webhooks {
 
+	use Action_Tokens;
+
+	/**
+	 * Filter function to inject "Send test" response values as Action tokens.
+	 * Each Webhook calls this parent method.
+	 *
+	 * @param $tokens
+	 * @param $action_id
+	 * @param $recipe_id
+	 *
+	 * @return array|mixed
+	 */
+	public function inject_webhooks_response_tokens( $tokens = array(), $action_id = null, $recipe_id = null ) {
+		$response_exists = get_post_meta( $action_id, 'webhook_response_tokens', true );
+		if ( empty( $response_exists ) ) {
+			return array();
+		}
+		$response_exists = json_decode( $response_exists );
+		$new_tokens      = array();
+		foreach ( $response_exists as $action_token ) {
+			$tag          = strtoupper( $action_token->key );
+			$new_tokens[] = array(
+				'tokenId'     => $tag,
+				'tokenParent' => get_post_meta( $action_id, 'code', true ),
+				'tokenName'   => sprintf( '%s - %s', __( 'Response', 'uncanny-automator' ), $action_token->key ),
+				'tokenType'   => $action_token->type,
+			);
+		}
+
+		return $new_tokens + $tokens;
+	}
+
 	/**
 	 * Common function to run action on all outgoing webhooks
 	 *
@@ -38,11 +70,6 @@ trait Webhooks {
 		$fields       = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, $parsing_args );
 		$request_type = Automator()->send_webhook->request_type( $data );
 		$headers      = Automator()->send_webhook->get_content_type( $data_type, $headers );
-
-		// Fix required boundary for multipart/* content-type.
-		if ( false !== strpos( $headers['Content-Type'], 'multipart/' ) ) {
-			$headers['Content-Type'] .= ';boundary=' . sha1( time() );
-		}
 
 		if ( empty( $webhook_url ) ) {
 
@@ -81,8 +108,28 @@ trait Webhooks {
 		}
 
 		try {
-
+			// Get response header
 			$response = Automator_Send_Webhook::call_webhook( $webhook_url, $args, $request_type );
+
+			$header_response = wp_remote_retrieve_headers( $response );
+			$header_leafs    = Automator_Send_Webhook::parse_headers( $header_response );
+			// Get response body
+			$response_body = Automator_Send_Webhook::get_leafs( json_decode( wp_remote_retrieve_body( $response ), true ), true );
+			// Combine header and body tokens
+			$all_tokens = array_merge( $header_leafs, $response_body );
+			// If tokens are not previously saved OR set to true, override previously saved tokens
+			if (
+				empty( get_post_meta( $action_data['ID'], 'webhook_response_tokens', true ) ) ||
+				true === apply_filters( 'automator_outgoing_webhook_live_response_tokens', false, $response )
+			) {
+				$save_tokens = Automator_Send_Webhook::clean_tokens_before_save( $all_tokens );
+				update_post_meta( $action_data['ID'], 'webhook_response_tokens', json_encode( $save_tokens ) );
+				unset( $save_tokens );
+			}
+			// Parse response into leafs
+			$hydration_data = Automator_Send_Webhook::before_hydrate_tokens( $all_tokens );
+			// Pass to hydrate tokens
+			$this->hydrate_tokens( $hydration_data );
 
 			$validated = $this->validate_response( $response );
 
@@ -361,5 +408,4 @@ trait Webhooks {
 			   ! empty( $response->errors );
 
 	}
-
 }

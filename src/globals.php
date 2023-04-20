@@ -30,6 +30,13 @@ if ( ! defined( 'AUTOMATOR_CONFIGURATION_PRIORITY' ) ) {
 	define( 'AUTOMATOR_CONFIGURATION_PRIORITY', 10 );
 }
 
+if ( ! defined( 'AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY' ) ) {
+	/**
+	 * Automator trigger load priority
+	 */
+	define( 'AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY', 15 );
+}
+
 if ( ! defined( 'AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY' ) ) {
 	/**
 	 * Automator trigger load priority

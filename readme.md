@@ -3,9 +3,9 @@
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, mailchimp, learndash, webhooks, woocommerce automation, marketing, twitter, facebook, whatsapp, buddyboss, tutor lms \
 **Requires at least:** 5.3 \
-**Tested up to:** 6.1.1 \
+**Tested up to:** 6.2 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.13 \
+**Stable tag:** 4.14 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,6 +79,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Zoho Campaigns](https://automatorplugin.com/integration/zoho-campaigns/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
@@ -150,6 +151,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Leads](https://automatorplugin.com/integration/thrive-leads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Ovation](https://automatorplugin.com/integration/thrive-ovation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Thrive Quiz Builder](https://automatorplugin.com/integration/thrive-quiz-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tin Canny Reporting](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -344,6 +346,72 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
+### 4.14 [2023-04-20]
+
+**New Feature:**
+
+* Outgoing Webhooks - Response Tokens #3438
+
+**New Integrations:**
+
+* [Thrive Quiz Builder](https://automatorplugin.com/integration/thrive-quiz-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3112
+* [Zoho Campaigns](https://automatorplugin.com/integration/zoho-campaigns/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3045
+
+**New Triggers:**
+
+* Thrive Quiz Builder - A quiz is completed #3116
+* WordPress - A post is updated #3409
+* WordPress - A post in a taxonomy is updated #3411
+* WordPress - A post in a taxonomy is published #3407
+* WordPress - A user publishes a post #3412
+* WordPress - A user updates a post type #3406
+
+**New Actions:**
+
+* Zoho Campaigns - Create a list #3080
+* Zoho Campaigns - Move a contact to Do-Not-Mail #3079
+* Zoho Campaigns - Subscribe a contact to a list #3077
+* Zoho Campaigns - Unsubscribe a contact from a list #3078
+
+**New Tokens:**
+
+* WhatsApp - Sender's profile name #3428
+* WordPress Download Manager - "A specific file is downloaded" #3395
+	* User ID
+	* Username
+	* First name
+	* Last name
+	* Email
+
+**Updated:**
+
+* OpenAI - Now directly communicates with OpenAI to reduce requests timing out #3424
+* Outgoing Webhooks - Data formats are now reliably parsed for payload #3437
+* WordPress - A type of post is published - Update sentence - A post is published #3408
+* WordPress - A user publishes a type of post with a taxonomy term in a taxonomy - Sentence changed to "A user publishes a post in a taxonomy" #3405
+* WordPress - Create a post - "Allow comments" toggle added #3400
+
+**Fixed:**
+
+* Emails - Send an email - Token adds p tag before and after token value when an action token is used in the To field #3393
+* Facebook Groups - "Verify app installation" button bypasses internal check #3416
+* WooCommerce - A user completes, pays for, lands on a thank you page for an order with a product - the Product title now returns all the product titles #3396
+* WordPress - Create a post - Action now reliably completes if used with in wp-admin #3444
+* Twitter - Reroute user app tweets to use the new endpoint #3430
+
+**Under the hood:**
+
+* Add survey on plugin deactivation #3390
+* Automator dashboard - Functional guest icon. #3013
+* Duplicate "Create a user" action found in both free and pro #3403
+* Framework updates #3212 #3213 #3166
+* Token parser - The passed variable always wraps the values in `<p>` tags #3394
+* Recipe UI - Save `title_html` of conditions #3440
+
+### 4.13.0.1 [2023-03-29]
+
+* Recipe UI - Triggers containing a number field break fields that support tokens #3385
+
 ### 4.13 [2023-03-29]
 
 **New Integrations:**
@@ -387,7 +455,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Fixed:**
 
-* Recipe UI - URL field - Text sanitization erroneously removing tokens from the field 
+* Recipe UI - URL field - Text sanitization erroneously removing tokens from the field #3354
 
 ### 4.12 [2023-03-16]
 
@@ -1264,151 +1332,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **Internal:**
 
 * Automator Core - Trigger Filters Trait - Add a way to filter multiple trigger conditions #2105
-
-### 4.1 [2022-06-08]
-
-**New Integrations:**
-
-* [Autonami](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1977
-* [Fluent Support](https://automatorplugin.com/integration/fluent-support/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2003
-* [Google Calendar](https://automatorplugin.com/integration/google-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2049
-
-**New Triggers:**
-
-* Amelia - A guest registers for an event #2028
-* Amelia - A User registers for an event #2030
-* Autonami - A contact is added to a list #1963
-* Autonami - A tag is added to a contact #1962
-* Autonami - A tag is added to a user #1958
-* Autonami - A user is added to a list #1959
-* Fluent Support - A ticket is closed by a customer #2010
-* Fluent Support - A ticket is opened by a customer #2009
-* Fluent Support - A ticket receives a reply from a customer #2011
-* GamiPress - A user earns greater than, less than, greater than or equal to...etc. a number of a specific type of points in a single transaction #1929
-* Uncanny Toolkit Pro - A user's time in a course exceeds a specific number of minutes #1997
-
-**New Actions:**
-
-* Autonami - Add a tag to a contact #2013
-* Autonami - Add a tag to the user #2012
-* Google Calendar - Add an attendee to an event in a Google Calendar #1986
-* Google Calendar - Add an event to a Google Calendar #1985
-* Google Calendar - Remove an attendee from an event in a Google Calendar #1987
-* Uncanny Toolkit Pro - Reset a user's time in a course #1998
-* WordPress - Add a WordPress data erasure request for a user #1411
-
-**New Tokens:**
-
-* Common - Current site ID (Multisite and for Pro users only) #2042
-* Elementor - Form ID and Form title tokens added #2053
-* GiveWP - Comment and Currency #1646
-
-**Updated:**
-
-* Automator API - Filter added to change timeout #1922
-* Dashboard - Replace "Disconnect account" with "Manage license" #2094
-* Facebook Groups - Disconnect account now revokes permissions #1911
-* Facebook Groups - New admin notice and reauthentication option for expiring credentials #1964
-* Google Sheets - "Create a new row": Filter out empty drives (key/options) that are rendering for some users and causing a JS error #1943
-* Google Sheets - "Create a new row": Support for Shared drives #1943
-* Google Sheets - Settings page #2034
-* Gravity Forms - Token parser: Filter added for external hooks #2023
-* Improved string translations #1981
-* LifterLMS - Remove the user from a membership - "All memberships" option added #1848
-* Mailchimp - "Add tag to user" now also adds the user to the associated list if they're not already a member #832
-* Recipe UI Field - Dropdown now sets the visibility of the option ID #2086
-* Recipe UI Time Field - Format time using WordPress setting (only frontend) #2050
-* Recipe UI TinyMCE Field - Now fully supports HTML templates #1946
-* Slack - Only fetch channels to which members have access #1999
-* Webhooks - "Send data to a webhook" now displays a Webhooks response if "Send test" fails #2062
-* WPForms - Entry tokens parsing message updated for WPForms lite users #1830
-
-**Fixed:**
-
-* Automator Core - "An Automator recipe completes with errors" will not fire erroneously with skipped actions #2019
-* BuddyBoss - "A user replies to a topic in a forum" tokens now reliably return data when "Any" option is selected #1948
-* BuddyBoss - Date tokens in Date fields are now parsed reliably #1873
-* BuddyPress - Token now returns properly formatted dates #1978
-* Dashboard - "Sorry, you are not allowed to access this page" when connecting a site #2074
-* Instagram - Line breaks in captions now works reliably #2063
-* Instagram - User max limit reach shows status as completed where it should show as complete with error. #2079
-* Google sheets - Google drive shared drives now shows in the list #2002
-* Usage Reports - Some sites reporting more than once a week #2017
-* Usage Reports - Switching on/off now works reliably #2109
-
-**Internal:**
-
-* API: Google Calendar - Set-up and finalize new API Endpoints #1988
-* Filter - `automator_postmeta_token_parsed` added #2090
-* Google Calendar: Settings page #1989
-* In-Plugin Notifications - Allow 1 button notifications #1924
-* In-plugin notifications - Automatically add utm tags to button urls #1976
-* In-plugin notifications - Hide notifications on Settings page #1926
-* In-plugin notifications - Validate buttons text before displaying them #1927
-* `add` keyword in the filename falsely taken as integration file #2035
-* `automator_before_trigger_completed` changed to `automator_before_maybe_trigger_complete` in trait-triggers.php #2021
-
-### 4.0.1 [2022-05-12]
-
-**Fixed:**
-
-* Recipe UI - "A user publishes a type of post with a taxonomy term in a taxonomy" - Token issue prevented some action fields from rendering #1968
-
-### 4.0 [2022-05-09]
-
-**New integrations:**
-
-* [Advanced Coupons](https://automatorplugin.com/integration/advanced-coupons/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1884 #1885
-* [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1174
-
-**New Triggers:**
-
-* Advanced Coupons - A user spends {greater than, less than, or equal to} {a specific amount} of store credit #1885
-* Advanced Coupons - A user receives {greater than, less than, or equal to} {a specific amount} of store credit #1884
-* Events Manager - An attendee registers for an event #1858
-* Events Manager - A user registers for an event #1866
-* Gravity Forms - A user submits a form with a code from a specific batch (Uncanny Codes required) #1878
-* Mailchimp - A contact is added to an audience #1785
-* Mailchimp - A contact email is changed #1788
-* Mailchimp - A contact is unsubscribed from an audience #1786
-* PeepSo - A user updates a specific field in their profile #1766
-
-**New Actions:**
-
-* Facebook Groups - Publish a post to a Facebook group #1174
-* Facebook Groups - Publish a post with an image to a Facebook group #1174
-* Facebook Groups - Share a link with a message to a Facebook group #1174
-* Optinmonster - Show a campaign #1864
-
-**Added:**
-
-* Events Manager - Several new tokens added #1857
-* WP Job Manager - "Job ID" token added in triggers #1807
-* Mailchimp - Webhooks settings page #1791, #1815
-* In-plugin notifications #1715
-* Support for integration-specific conditions in Uncanny Automator Pro 4.0 #1415
-
-**Updated:**
-
-* Events Manager - "A user registers for an event" renamed to "A user's booking for an event is approved" #1867
-* Instagram - "Publish a photo to an Instagram Business account" now accepts Media Library ID in addition to the media URL #1852
-* Instagram, Facebook - Converted to use the API class #1795
-* Convert Facebook integration to use the API class #1794
-* Automator Core - Set user signed in flag true for all logged-in type triggers #1817
-
-**Fixed:**
-
-* GamiPress - Field label renamed from "Award" to "Achievement" #1652
-* GamiPress - Renamed "Any awards" to "All achievements" #1534
-* Events Manager - "A user's booking for an event is approved" now runs reliably with auto approval #1874
-* Wishlist Member - Sentence case fix, Membership Level renamed to Membership level #1869
-* Wishlist Member - "A user is added to a membership level" now fires with ThriveCart checkout #1808
-* Recipe Tags/Categories - Yoast SEO erroneously enables archives on frontend #1850
-* Internal query now sorts the result set reliably #1913
-* WordPress - A user views a page - "All pages" option renamed to "Any page" #1914
-* Automator Core - Number of times token now parses reliably in certain situations #1918
-* Automator Core - Option to define alternate label for a token added in Automator fields #1919
-* Automator API - API request timeout for Facebook Pages and Google Sheets changed from 5 to 10 seconds #1921
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

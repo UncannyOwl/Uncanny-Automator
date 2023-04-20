@@ -62,6 +62,8 @@ class Automator_Load {
 			return;
 		}
 
+		$this->load_deactivation_survery();
+
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'favicon' ) ) {
 			// bail out if it's favicon.ico
 			return;
@@ -107,6 +109,30 @@ class Automator_Load {
 
 		// Show set-up wizard.
 		$this->initiate_setup_wizard();
+
+	}
+
+	/**
+	 * @return void
+	 */
+	public function load_deactivation_survery() {
+
+		require_once UA_ABSPATH . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'deactivation-survey' . DIRECTORY_SEPARATOR . 'class-automator-deactivation-survey.php';
+		add_action(
+			'admin_menu',
+			function () {
+				// See Usage instructions below for more information.
+				define(
+					'AUTOMATOR_DEACTIVATION_SURVEY_URL',
+					'https://survey.automatorplugin.com/wp-json/am-deactivate-survey/v1/deactivation-data/'
+				);
+				new \Automator_Deactivation_Survey(
+					'Uncanny Automator',
+					'uncanny-automator'
+				);
+			},
+			100
+		);
 
 	}
 
@@ -677,8 +703,13 @@ class Automator_Load {
 			if ( ! file_exists( $file ) ) {
 				continue;
 			}
-			require $file;
+			require_once $file;
 		}
+
+		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/abstract-integration.php';
+		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/actions/abstract-action.php';
+		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/abstract-trigger.php';
+
 		do_action( 'automator_after_traits' );
 	}
 

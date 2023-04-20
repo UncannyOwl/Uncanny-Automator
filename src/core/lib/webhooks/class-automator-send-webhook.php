@@ -31,6 +31,11 @@ class Automator_Send_Webhook {
 	private $field_separator;
 
 	/**
+	 * @var
+	 */
+	private $boundary;
+
+	/**
 	 * Instance of Automator_Send_Webhook
 	 *
 	 * @return Automator_Send_Webhook
@@ -296,7 +301,11 @@ class Automator_Send_Webhook {
 			$data_type = 'raw';
 		}
 		if ( in_array( $data_type, $supported_data_types, true ) ) {
-			$type                    = array_search( $data_type, $supported_data_types, true );
+			$type = array_search( $data_type, $supported_data_types, true );
+			if ( 'form-data' === $data_type ) {
+				$this->boundary = sha1( time() );
+				$type           = $type . '; boundary=' . $this->boundary;
+			}
 			$headers['Content-Type'] = $type;
 
 			return $headers;
@@ -377,11 +386,11 @@ class Automator_Send_Webhook {
 					case 'text':
 					default:
 						/**
-						 * Allows users to overwrite removal of qoutes.
+						 * Allows users to strip the quotes.
 						 *
 						 * @see <https://secure.helpscout.net/conversation/2067343003/45133?folderId=2122433>
 						 */
-						$should_strip_qoutes = apply_filters( 'automator_send_webhook_get_fields_should_strip_qoutes', true );
+						$should_strip_qoutes = apply_filters( 'automator_send_webhook_get_fields_should_strip_qoutes', false );
 
 						if ( $should_strip_qoutes ) {
 							// Decode HTML entities and replace " and '
@@ -458,8 +467,10 @@ class Automator_Send_Webhook {
 	 * @return string|null
 	 */
 	public function maybe_parse_tokens( $value, $parsing_args ) {
+
 		if ( empty( $parsing_args ) ) {
-			return sanitize_text_field( $value );
+			// Convert literal new lines and other into actual new lines.
+			return stripcslashes( $value );
 		}
 
 		return trim( Automator()->parse->text( $value, $parsing_args['recipe_id'], $parsing_args['user_id'], $parsing_args['args'] ) );
@@ -546,7 +557,8 @@ class Automator_Send_Webhook {
 				}
 				break;
 			case 'form-data':
-				$fields = http_build_query( $fields );
+				//$fields = http_build_query( $fields );
+				$fields = $this->build_multipart_form_data( $fields );
 				if ( $is_check_sample ) {
 					$fields = html_entity_decode(
 						str_replace(
@@ -733,5 +745,158 @@ class Automator_Send_Webhook {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Build multipart/form-data
+	 *
+	 * @param $data
+	 *
+	 * @return string
+	 */
+	public function build_multipart_form_data( $data ) {
+		$eol = PHP_EOL;
+
+		$boundary = $this->boundary;
+		if ( empty( $boundary ) ) {
+			$boundary = sha1( time() );
+		}
+		// Build data
+		$rtn = '';
+		foreach ( $data as $key => $value ) {
+			$rtn .= '--' . $boundary . $eol . 'Content-Disposition: form-data; name="' . $key . '"' . $eol . $eol . $value . $eol;
+		}
+
+		return $rtn;
+	}
+
+	/**
+	 * @param $array
+	 * @param bool $add_data
+	 *
+	 * @return array
+	 */
+	public static function get_leafs( $array, $add_data = false ) {
+		$leafs = array();
+
+		if ( ! is_array( $array ) ) {
+			return $leafs;
+		}
+
+		$array_iterator    = new \RecursiveArrayIterator( $array );
+		$iterator_iterator = new \RecursiveIteratorIterator( $array_iterator, \RecursiveIteratorIterator::LEAVES_ONLY );
+		foreach ( $iterator_iterator as $key => $value ) {
+			$keys = array();
+			for ( $i = 0; $i < $iterator_iterator->getDepth(); $i ++ ) { //phpcs:ignore Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed
+				$keys[] = $iterator_iterator->getSubIterator( $i )->key();
+			}
+			$keys[]   = $key;
+			$leaf_key = implode( apply_filters( 'automator_outgoing_webhook_array_key_in_token_separator', '|' ), $keys );
+
+			//$leafs[ $leaf_key ] = $value;
+			$leafs[] = array(
+				'key'  => $leaf_key,
+				'type' => self::value_maybe_of_type( $leaf_key, $value ),
+				'data' => true === $add_data ? $value : '',
+			);
+		}
+
+		return $leafs;
+	}
+
+	/**
+	 * @param $key
+	 * @param $value
+	 *
+	 * @return mixed|null
+	 */
+	public static function value_maybe_of_type( $key, $value ) {
+		$type = 'text';
+
+		if ( is_array( $value ) || is_object( $value ) ) {
+			return apply_filters( 'automator_outgoing_webhook_value_of_type_array', $type, $key, $value );
+		}
+
+		if ( is_email( $value ) ) {
+			$type = 'email';
+
+			return apply_filters( 'automator_outgoing_webhook_value_of_type_email', $type, $key, $value );
+		}
+
+		if ( is_float( $value ) ) {
+			$type = 'float';
+
+			return apply_filters( 'automator_outgoing_webhook_value_of_type_float', $type, $key, $value );
+		}
+
+		if ( is_numeric( $value ) ) {
+			$type = 'int';
+
+			return apply_filters( 'automator_outgoing_webhook_value_of_type_int', $type, $key, $value );
+		}
+
+		if ( wp_http_validate_url( $value ) ) {
+			$type = 'url';
+
+			return apply_filters( 'automator_outgoing_webhook_value_of_type_url', $type, $key, $value );
+		}
+
+		return apply_filters( 'automator_outgoing_webhook_value_of_type_text', $type, $key, $value );
+	}
+
+	/**
+	 * @param $raw
+	 *
+	 * @return array
+	 */
+	public static function before_hydrate_tokens( $raw ) {
+		if ( empty( $raw ) ) {
+			return array();
+		}
+		$hydration_data = array();
+		foreach ( $raw as $action_token ) {
+			$tag                    = strtoupper( $action_token['key'] );
+			$hydration_data[ $tag ] = $action_token['data'];
+		}
+
+		return $hydration_data;
+	}
+
+	/**
+	 * @param \WpOrg\Requests\Utility\CaseInsensitiveDictionary $header
+	 *
+	 * @return array
+	 */
+	public static function parse_headers( $header ) {
+		if ( empty( $header->getAll() ) ) {
+			return array();
+		}
+		$tokens = array();
+		foreach ( $header->getAll() as $k => $v ) {
+			$tokens[] = array(
+				'key'  => "header|$k",
+				'data' => $v,
+				'type' => 'text',
+			);
+		}
+
+		return $tokens;
+	}
+
+	/**
+	 * @param $tokens
+	 *
+	 * @return array
+	 */
+	public static function clean_tokens_before_save( $tokens ) {
+		if ( empty( $tokens ) ) {
+			return array();
+		}
+
+		foreach ( $tokens as $k => $v ) {
+			$tokens[ $k ]['data'] = '';
+		}
+
+		return $tokens;
 	}
 }

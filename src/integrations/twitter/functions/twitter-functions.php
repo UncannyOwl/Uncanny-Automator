@@ -343,6 +343,11 @@ class Twitter_Functions {
 		$body['status'] = $status;
 		$body['media']  = $media;
 
+		// If a user app is used, switch the action
+		if ( $this->is_user_app_connected() ) {
+			$body['action'] = 'manage_tweets_user_app';
+		}
+
 		$response = $this->api_request( $body, $action_data, 60 );
 
 		return $response;

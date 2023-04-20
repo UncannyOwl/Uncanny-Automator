@@ -7,8 +7,8 @@
  * @class   Automator_Tokens
  * @since   3.0
  * @version 3.0
- * @package Uncanny_Automator
  * @author  Saad S.
+ * @package Uncanny_Automator
  */
 
 namespace Uncanny_Automator;
@@ -224,10 +224,9 @@ class Automator_Tokens {
 	}
 
 
-	public function get_action_tokens_renderable( $action ) {
+	public function get_action_tokens_renderable( $action, $action_id = null, $recipe_id = null ) {
 
-		return apply_filters( 'automator_action_' . $action['code'] . '_tokens_renderable', array() );
+		return apply_filters( 'automator_action_' . $action['code'] . '_tokens_renderable', array(), $action_id, $recipe_id );
 
 	}
-
 }

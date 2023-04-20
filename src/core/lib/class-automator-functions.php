@@ -277,6 +277,30 @@ class Automator_Functions {
 		// Load Webhook files
 		require_once __DIR__ . '/webhooks/class-automator-send-webhook.php';
 		$this->send_webhook = Automator_Send_Webhook::get_instance();
+
+		add_filter( 'plugins_loaded', array( $this, 'filter_recipe_parts' ), AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY );
+	}
+
+	public function filter_recipe_parts() {
+
+		$this->integrations = apply_filters_deprecated( 'uap_integrations', array( $this->integrations ), '3.0', 'automator_integrations' );
+		$this->integrations = apply_filters( 'automator_integrations', $this->integrations );
+
+		$this->actions = apply_filters_deprecated( 'uap_actions', array( $this->actions ), '3.0', 'automator_actions' );
+		$this->actions = apply_filters( 'automator_actions', $this->actions );
+
+		$this->triggers = apply_filters_deprecated( 'uap_triggers', array( $this->triggers ), '3.0', 'automator_triggers' );
+		$this->triggers = apply_filters( 'automator_triggers', $this->triggers );
+
+		$this->closures = apply_filters_deprecated( 'uap_closures', array( $this->closures ), '3.0', 'automator_closures' );
+		$this->closures = apply_filters( 'automator_closures', $this->closures );
+
+		$this->recipe_items = apply_filters( 'automator_recipe_items', $this->recipe_items );
+
+		$this->all_integrations = apply_filters( 'automator_all_integrations', $this->all_integrations );
+
+		$this->recipe_types = apply_filters_deprecated( 'uap_recipe_types', array( $this->recipe_types ), '3.0', 'automator_recipe_types' );
+		$this->recipe_types = apply_filters( 'automator_recipe_types', $this->recipe_types );
 	}
 
 	/**
@@ -369,7 +393,7 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_recipe_items() {
-		return apply_filters( 'automator_recipe_items', $this->recipe_items );
+		return $this->recipe_items;
 	}
 
 	/**
@@ -378,17 +402,14 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_integrations() {
-		$this->integrations = apply_filters_deprecated( 'uap_integrations', array( $this->integrations ), '3.0', 'automator_integrations' );
-
-		return apply_filters( 'automator_integrations', $this->integrations );
+		return $this->integrations;
 	}
 
 	/**
 	 * @return mixed|null
 	 */
 	public function get_all_integrations() {
-
-		return apply_filters( 'automator_all_integrations', $this->all_integrations );
+		return $this->all_integrations;
 	}
 
 	/**
@@ -397,9 +418,7 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_triggers() {
-		$this->triggers = apply_filters_deprecated( 'uap_triggers', array( $this->triggers ), '3.0', 'automator_triggers' );
-
-		return apply_filters( 'automator_triggers', $this->triggers );
+		return $this->triggers;
 	}
 
 	/**
@@ -408,9 +427,7 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_actions() {
-		$this->actions = apply_filters_deprecated( 'uap_actions', array( $this->actions ), '3.0', 'automator_actions' );
-
-		return apply_filters( 'automator_actions', $this->actions );
+		return $this->actions;
 	}
 
 	/**
@@ -419,9 +436,7 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_closures() {
-		$this->closures = apply_filters_deprecated( 'uap_closures', array( $this->closures ), '3.0', 'automator_closures' );
-
-		return apply_filters( 'automator_closures', $this->closures );
+		return $this->closures;
 	}
 
 	/**
@@ -430,10 +445,6 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_recipe_types() {
-		$this->recipe_types = apply_filters_deprecated( 'uap_recipe_types', array( $this->recipe_types ), '3.0', 'automator_recipe_types' );
-
-		$this->recipe_types = apply_filters( 'automator_recipe_types', $this->recipe_types );
-
 		return $this->recipe_types;
 	}
 
@@ -551,7 +562,7 @@ class Automator_Functions {
 				// Add action tokens to recipe_objects.
 				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
 					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
-						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'] );
+						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'], $recipe_action_id, $recipe_id );
 					}
 				}
 
@@ -1091,7 +1102,7 @@ WHERE pm.post_id
 			}
 
 			if ( 'uo-action' === $type ) {
-				$recipe_children_data[ $key ]['tokens'] = $this->tokens->get_action_tokens_renderable( $child_meta_single );
+				$recipe_children_data[ $key ]['tokens'] = $this->tokens->get_action_tokens_renderable( $child_meta_single, absint( $child['ID'] ), $recipe_id );
 			}
 
 		}
