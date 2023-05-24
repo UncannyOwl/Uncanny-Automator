@@ -7,33 +7,43 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Handles Setup Wizard related functionalities.
+ * Class Setup_Wizard
+ *
+ * Handles the set-up wizard.
+ *
+ * @since ${VERSION}
  */
 class Setup_Wizard {
 
-	/**
-	 * @var string
-	 */
+	/** @var string The connect url. */
 	public $connect_url = '';
 
-	/**
-	 * @var string
-	 */
+	/** @var string The connect page. */
 	public $connect_page = '';
 
 	/**
 	 * Set-ups action hooks.
+	 *
+	 * @return void
 	 */
 	public function __construct() {
 
-		$this->connect_url  = AUTOMATOR_FREE_STORE_URL;
+		$this->connect_url = AUTOMATOR_FREE_STORE_URL;
+
 		$this->connect_page = AUTOMATOR_FREE_STORE_CONNECT_URL;
 
 		add_action( 'admin_menu', array( $this, 'setup_menu_page' ) );
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 
 		// Redirect to proper step.
 		add_action( 'admin_init', array( $this, 'redirect_if_connected' ), 20 );
+
+		if ( filter_has_var( INPUT_GET, 'recipe_ui_connect_automator_license' ) && filter_has_var( INPUT_GET, 'origin' ) ) {
+
+			add_action( 'admin_init', array( $this, 'redirect_if_from_recipe_builder' ) );
+
+		}
 
 	}
 
@@ -45,7 +55,34 @@ class Setup_Wizard {
 		die;
 	}
 
+	public function redirect_if_from_recipe_builder() {
+
+		$secret = wp_create_nonce( 'automator_setup_wizard_redirect_nonce' );
+
+		$message_to_decrypt = array(
+			'redirect_url' => urldecode( filter_input( INPUT_GET, 'return_to' ) ) . '&state=' . $secret,
+		);
+
+		$message = Automator_Helpers_Recipe::encrypt( $message_to_decrypt, $secret );
+
+		wp_redirect(
+			add_query_arg(
+				array(
+					'client'    => $message,
+					'state'     => $secret,
+					'__version' => AUTOMATOR_PLUGIN_VERSION,
+				),
+				$this->connect_url . $this->connect_page
+			)
+		);
+
+		die;
+
+	}
+
 	/**
+	 * Set-ups the menu page.
+	 *
 	 * @return void
 	 */
 	public function setup_menu_page() {
@@ -70,6 +107,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the views directory path.
+	 *
 	 * @return string
 	 */
 	public function get_view_path() {
@@ -77,6 +116,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Includes the set-up wizard view.
+	 *
 	 * @return void
 	 */
 	public function setup_wizard_view() {
@@ -84,22 +125,37 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Enqueues set-up wizard CSS.
+	 *
 	 * @return void
 	 */
 	public function enqueue_styles() {
+
 		$page = automator_filter_input( 'page' );
+
 		if ( 'uncanny-automator-setup-wizard' === $page ) {
-			wp_enqueue_style( 'uap-admin-settings', Utilities::automator_get_asset( '/legacy/css/admin/performance.css' ), array(), Utilities::automator_get_version() );
+
+			wp_enqueue_style(
+				'uap-admin-settings',
+				Utilities::automator_get_asset( '/legacy/css/admin/performance.css' ),
+				array(),
+				Utilities::automator_get_version()
+			);
+
 			wp_enqueue_style(
 				'uap-setup-wizard',
 				plugins_url( 'assets/css/setup-wizard.css', __FILE__ ),
 				array( 'uap-admin-settings' ),
 				Utilities::automator_get_version()
 			);
+
 		}
+
 	}
 
 	/**
+	 * Retrieves the current step.
+	 *
 	 * @return string
 	 */
 	public function get_step() {
@@ -115,13 +171,29 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the connect button URL..
+	 *
 	 * @return string
 	 */
 	public function get_connect_button_uri() {
 
+		$secret = wp_create_nonce( 'automator_setup_wizard_client' );
+
+		$redirect_url = $this->get_dashboard_uri( 2, true );
+
+		$message_to_decrypt = array(
+			'redirect_url' => $redirect_url,
+		);
+
+		$message = Automator_Helpers_Recipe::encrypt( $message_to_decrypt, $secret );
+
 		return add_query_arg(
 			array(
-				'redirect_url' => rawurlencode( $this->get_dashboard_uri( 2, true ) ),
+				'client'       => $message,
+				'state'        => $secret,
+				'__version'    => AUTOMATOR_PLUGIN_VERSION,
+				'requested'    => time(),
+				'redirect_url' => $redirect_url, // Legacy sign-up form handle.
 			),
 			$this->connect_url . $this->connect_page
 		);
@@ -129,6 +201,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the dashboards url.
+	 *
 	 * @param $step
 	 * @param $is_method
 	 *
@@ -139,6 +213,7 @@ class Setup_Wizard {
 		$args = array(
 			'post_type' => 'uo-recipe',
 			'page'      => 'uncanny-automator-setup-wizard',
+			'state'     => wp_create_nonce( 'automator_setup_wizard_redirect_nonce' ),
 			'step'      => absint( $step ),
 		);
 
@@ -153,6 +228,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the checkout URL.
+	 *
 	 * @return string
 	 */
 	public function get_checkout_uri() {
@@ -183,6 +260,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the steps.
+	 *
 	 * @return array
 	 */
 	public function get_steps() {
@@ -216,6 +295,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the dashboard URL.
+	 *
 	 * @return string
 	 */
 	public function get_automator_dashboard_uri() {
@@ -229,6 +310,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Redirects the user if they're connected already.
+	 *
 	 * @return void
 	 */
 	public function redirect_if_connected() {
@@ -258,13 +341,19 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Determines if the user has tried connecting before.
+	 *
 	 * @return false|mixed|null
 	 */
 	public static function has_tried_connecting() {
+
 		return get_option( 'uoa_setup_wiz_has_connected', false );
+
 	}
 
 	/**
+	 * Sets `uoa_setup_wiz_has_connected` option base on the given value.
+	 *
 	 * @param $bool
 	 *
 	 * @return bool

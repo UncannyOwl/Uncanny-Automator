@@ -95,6 +95,7 @@ class Admin_Settings_General_License {
 				$disconnect_site_url = add_query_arg(
 					array(
 						'action' => 'discount_automator_connect',
+						'state'  => wp_create_nonce( 'automator_setup_wizard_redirect_nonce' ),
 					)
 				);
 

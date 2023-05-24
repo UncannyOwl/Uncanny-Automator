@@ -122,4 +122,171 @@ class Automator_DB_Handler_Closures {
 			)
 		);
 	}
+
+	/**
+	 * Adds an entry to the closure log.
+	 *
+	 * @param mixed[] $args See wp_parse_args func inside for possible arguments.
+	 * -- `$args` Accepts\
+	 * `int 'user_id'` - Defaults to `NULL` \
+	 * `int 'automator_closure_id'` - Defaults to `NULL`\
+	 * `int 'automator_recipe_id` - Defaults to `NULL`\
+	 * `int 'automator_recipe_log_id` - Defaults to `NULL`\
+	 * `int 'completed` - Defaults to `<int> 0`
+	 *
+	 * @return int|false The log ID on success. Returns boolean false otherwise.
+	 */
+	public function add_entry( $args = array() ) {
+
+		global $wpdb;
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'user_id'                 => null,
+				'automator_closure_id'    => null,
+				'automator_recipe_id'     => null,
+				'automator_recipe_log_id' => null,
+				'completed'               => 0,
+			)
+		);
+
+		$closure_tbl = $wpdb->prefix . Automator()->db->tables->closure;
+
+		$inserted = $wpdb->insert(
+			$closure_tbl,
+			array(
+				'user_id'                 => $args['user_id'],
+				'automator_closure_id'    => $args['automator_closure_id'],
+				'automator_recipe_id'     => $args['automator_recipe_id'],
+				'automator_recipe_log_id' => $args['automator_recipe_log_id'],
+				'completed'               => $args['completed'],
+			),
+			array(
+				'%d',
+				'%d',
+				'%d',
+				'%d',
+				'%d',
+			)
+		);
+
+		if ( false !== $inserted ) {
+			return $wpdb->insert_id;
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * Adds an entry to the closures log table.
+	 *
+	 * @param int[] $args
+	 * -- `$args` Accepts\
+	 * `int 'user_id'` - Defaults to `NULL` \
+	 * `int 'automator_closure_id'` - Defaults to `NULL`\
+	 * `int 'automator_closure_log_id` - Defaults to `NULL`
+	 *
+	 * @param string $meta_key
+	 * @param string $meta_value
+	 *
+	 * @return int|false
+	 */
+	public function add_entry_meta( $args = array(), $meta_key = '', $meta_value = '' ) {
+
+		if ( empty( $meta_key ) ) {
+			_doing_it_wrong( esc_html( self::class . '::add_entry_meta' ), 'The parameter $meta_key must not be empty.', 4.12 );
+			return false;
+		}
+
+		global $wpdb;
+
+		$closure_meta_tbl = $wpdb->prefix . Automator()->db->tables->closure_meta;
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'user_id'                  => null,
+				'automator_closure_id'     => null,
+				'automator_closure_log_id' => null,
+			)
+		);
+
+		return $wpdb->insert(
+			$closure_meta_tbl,
+			array(
+				'user_id'                  => $args['user_id'],
+				'automator_closure_id'     => $args['automator_closure_id'],
+				'automator_closure_log_id' => $args['automator_closure_log_id'],
+				'meta_key'                 => $meta_key,
+				'meta_value'               => $meta_value,
+			),
+			array(
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+			)
+		);
+
+	}
+
+	/**
+	 * Retrieve an entry meta value from the closures log meta table.
+	 *
+	 * @param int[] $args
+	 * -- `$args` Accepts\
+	 * `int 'user_id'` - Defaults to `NULL` \
+	 * `int 'automator_closure_id'` - Defaults to `NULL`\
+	 * `int 'automator_closure_log_id` - Defaults to `NULL`
+	 *
+	 * @param string $meta_key
+	 *
+	 * @return string|false Returns the meta value as string. Otherwise, returns boolean false if meta value is falsy or if meta key is empty.
+	 */
+	public function get_entry_meta( $args = array(), $meta_key = '' ) {
+
+		if ( empty( $meta_key ) ) {
+			_doing_it_wrong( esc_html( self::class . '::get_entry_meta' ), 'The parameter $meta_key must not be empty.', 4.12 );
+			return false;
+		}
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'user_id'                  => null,
+				'automator_closure_id'     => null,
+				'automator_closure_log_id' => null,
+			)
+		);
+
+		global $wpdb;
+
+		$closure_meta_tbl = $wpdb->prefix . Automator()->db->tables->closure_meta;
+
+		$meta_value = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT meta_value FROM ' . esc_sql( $closure_meta_tbl ) . '
+				WHERE user_id = %d
+				AND automator_closure_id = %d
+				AND automator_closure_log_id = %d
+				AND meta_key = %s
+				',
+				$args['user_id'],
+				$args['automator_closure_id'],
+				$args['automator_closure_log_id'],
+				$meta_key
+			)
+		);
+
+		if ( empty( $meta_value ) ) {
+			return false;
+		}
+
+		return $meta_value;
+
+	}
+
 }

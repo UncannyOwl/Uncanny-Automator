@@ -684,6 +684,36 @@ class Automator_Get_Data {
 	}
 
 	/**
+	 * Accepts a an object code (e.g. Trigger code, or action code) and returns that associated object as array.
+	 *
+	 * @param null $trigger_code
+	 *
+	 * @return array
+	 */
+	public function object_field_options_from_object_code( $object_code = '', $option_type = 'options_group', $object_type = 'trigger' ) {
+
+		// Load all default trigger settings
+		if ( 'action' === $object_type ) {
+			$object = Automator()->get_action( $object_code );
+		}
+
+		if ( 'trigger' === $object_type ) {
+			$object = Automator()->get_trigger( $object_code );
+		}
+
+		if ( false !== $object && isset( $object[ $option_type ] ) ) {
+			return array(
+				'integration'  => $object['integration'],
+				'trigger_code' => $object['code'],
+				$option_type   => $object[ $option_type ],
+			);
+		}
+
+		return array();
+
+	}
+
+	/**
 	 * Get the trigger log ID for the user
 	 *
 	 * @param null $user_id

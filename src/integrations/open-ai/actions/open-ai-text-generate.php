@@ -4,18 +4,12 @@ namespace Uncanny_Automator;
 use Uncanny_Automator\OpenAI\HTTP_Client;
 
 /**
- * Class OPEN_AI_TEXT_GENERATE
- *
- * A handler class for wrapping text generate action.
- *
  * @since 4.10
  * @package Uncanny_Automator
  */
 class OPEN_AI_TEXT_GENERATE {
 
-	use Recipe\Actions;
-
-	use Recipe\Action_Tokens;
+	use Recipe\Actions, Recipe\Action_Tokens;
 
 	public function __construct() {
 
@@ -128,11 +122,12 @@ class OPEN_AI_TEXT_GENERATE {
 							'placeholder' => '256',
 						),
 						array(
-							'option_code' => $this->get_action_meta(),
+							'option_code'       => $this->get_action_meta(),
 							/* translators: Action field */
-							'label'       => esc_attr__( 'Prompt', 'uncanny-automator' ),
-							'input_type'  => 'textarea',
-							'required'    => true,
+							'label'             => esc_attr__( 'Prompt', 'uncanny-automator' ),
+							'input_type'        => 'textarea',
+							'supports_markdown' => true,
+							'required'          => true,
 						),
 					),
 				),
@@ -158,7 +153,7 @@ class OPEN_AI_TEXT_GENERATE {
 		$model       = isset( $parsed['MODEL'] ) ? sanitize_text_field( $parsed['MODEL'] ) : 'curie';
 		$temperature = ! empty( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : 0.7;
 		$max_tokens  = ! empty( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : 256;
-		$prompt      = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
+		$prompt      = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
 
 		try {
 

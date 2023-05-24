@@ -531,7 +531,11 @@ class Gf_Tokens {
 
 				// Return the formattted time according to the selected time zone
 				$value = date_i18n( "$date_format $time_format", strtotime( $expiry_date ) );
+
+				return $value;
 			}
+
+			return '';
 		}
 
 		/**

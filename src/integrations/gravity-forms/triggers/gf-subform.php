@@ -1,157 +1,141 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Gravity_Forms;
 
 /**
  * Class GF_SUBFORM
  *
  * @package Uncanny_Automator
  */
-class GF_SUBFORM {
+class GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
+
+	const TRIGGER_CODE = 'GFSUBFORM';
+
+	const TRIGGER_META = 'GFFORMS';
+
+	private $gf;
 
 	/**
-	 * Integration code
 	 *
-	 * @var string
-	 */
-	public static $integration = 'GF';
-
-	private $trigger_code;
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'GFSUBFORM';
-		$this->trigger_meta = 'GFFORMS';
-		$this->define_trigger();
-	}
-
-	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
-	public function define_trigger() {
+	public function setup_trigger() {
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - Gravity Forms */
-			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - Gravity Forms */
-			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
-			'action'              => 'gform_after_submission',
-			'priority'            => 20,
-			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'gform_submit' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
+		$this->gf = array_shift( $this->dependencies );
 
-		Automator()->register->trigger( $trigger );
-	}
+		$this->set_integration( 'GF' );
 
-	/**
-	 * @return array[]
-	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					Automator()->helpers->recipe->gravity_forms->options->list_gravity_forms(),
-					Automator()->helpers->recipe->options->number_of_times(),
-				),
+		$this->set_trigger_code( self::TRIGGER_CODE );
+
+		$this->set_trigger_meta( self::TRIGGER_META );
+
+		$this->set_sentence(
+			sprintf(
+				/* translators: Anonymous trigger - Gravity Forms */
+				esc_html__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ),
+				$this->get_trigger_meta(),
+				'NUMTIMES'
 			)
 		);
+
+		$this->set_readable_sentence(
+			/* translators: Anonymous trigger - Gravity Forms */
+			esc_html__( 'A user submits {{a form}}', 'uncanny-automator' )
+		);
+
+		$this->add_action( 'gform_after_submission' );
+
+		$this->set_action_args_count( 2 );
+
+		$this->set_author( Automator()->get_author_name( $this->trigger_code ) );
+
+		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ) );
+
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * load_options
 	 *
-	 * @param $entry
-	 * @param $form
+	 * @return array
 	 */
-	public function gform_submit( $entry, $form ) {
+	public function load_options() {
+		return array(
+			'options' => array(
+				array(
+					'option_code'     => $this->get_trigger_meta(),
+					'label'           => esc_attr__( 'Form', 'uncanny-automator' ),
+					'input_type'      => 'select',
+					'required'        => true,
+					'options'         => $this->gf->get_forms_options(),
+					'relevant_tokens' => array(),
+				),
+				'NUMTIMES' => Automator()->helpers->recipe->options->number_of_times(),
+			),
+		);
+	}
 
-		if ( empty( $entry ) ) {
-			return;
+	/**
+	 * define_tokens
+	 *
+	 * @param  array $trigger
+	 * @param  array $tokens
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+
+		$tokens[] = array(
+			'tokenId'   => self::TRIGGER_META,
+			'tokenName' => __( 'Form title', 'uncanny-automator' ),
+			'tokenType' => 'text',
+		);
+
+		$tokens[] = array(
+			'tokenId'   => self::TRIGGER_META . '_ID',
+			'tokenName' => __( 'Form ID', 'uncanny-automator' ),
+			'tokenType' => 'int',
+		);
+
+		return $tokens;
+	}
+
+	/**
+	 * validate
+	 *
+	 * @param  array $trigger
+	 * @param  array $hook_args
+	 * @return bool
+	 */
+	public function validate( $trigger, $hook_args ) {
+
+		$selected_form_id = absint( $trigger['meta'][ $this->get_trigger_meta() ] );
+
+		// If any form is selected
+		if ( -1 === $selected_form_id ) {
+			return true;
 		}
-		$recipes       = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_form = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		if ( empty( $recipes ) ) {
-			return;
-		}
-		if ( empty( $required_form ) ) {
-			return;
-		}
-		$form_id            = $form['id'];
-		$user_id            = get_current_user_id();
-		$matched_recipe_ids = array();
-		foreach ( $recipes as $recipe_id => $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				$trigger_id = absint( $trigger['ID'] );
-				if ( ! isset( $required_form[ $recipe_id ] ) ) {
-					continue;
-				}
-				if ( ! isset( $required_form[ $recipe_id ][ $trigger_id ] ) ) {
-					continue;
-				}
-				if ( intval( '-1' ) === intval( $required_form[ $recipe_id ][ $trigger_id ] ) || (int) $form_id === (int) $required_form[ $recipe_id ][ $trigger_id ] ) {
-					$matched_recipe_ids[ $recipe_id ] = array(
-						'recipe_id'  => $recipe_id,
-						'trigger_id' => $trigger_id,
-					);
-				}
-			}
+
+		list( $entry, $form ) = $hook_args;
+
+		if ( absint( $form['id'] ) === $selected_form_id ) {
+			return true;
 		}
 
-		if ( empty( $matched_recipe_ids ) ) {
-			return;
-		}
-		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-			$pass_args = array(
-				'code'             => $this->trigger_code,
-				'meta'             => $this->trigger_meta,
-				'ignore_post_id'   => true,
-				'recipe_to_match'  => $matched_recipe_id['recipe_id'],
-				'trigger_to_match' => $matched_recipe_id['trigger_id'],
-				'user_id'          => $user_id,
-				'is_signed_in'     => true,
-			);
+		return false;
+	}
 
-			$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+	/**
+	 * hydrate_tokens
+	 *
+	 * @param  array $trigger
+	 * @param  array $hook_args
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
 
-			if ( ! empty( $args ) ) {
-				foreach ( $args as $result ) {
-					if ( true === $result['result'] ) {
-						$trigger_meta = array(
-							'user_id'        => $user_id,
-							'trigger_id'     => $result['args']['trigger_id'],
-							'trigger_log_id' => $result['args']['get_trigger_id'],
-							'run_number'     => $result['args']['run_number'],
-						);
+		list( $entry, $form ) = $hook_args;
 
-						$trigger_meta['meta_key']   = 'GFENTRYID';
-						$trigger_meta['meta_value'] = $entry['id'];
-						Automator()->insert_trigger_meta( $trigger_meta );
+		$this->gf->tokens->save_legacy_trigger_tokens( $this->trigger_records, $entry, $form );
 
-						$trigger_meta['meta_key']   = 'GFUSERIP';
-						$trigger_meta['meta_value'] = maybe_serialize( $entry['ip'] );
-						Automator()->insert_trigger_meta( $trigger_meta );
-
-						$trigger_meta['meta_key']   = 'GFENTRYDATE';
-						$trigger_meta['meta_value'] = maybe_serialize( \GFCommon::format_date( $entry['date_created'], false, 'Y/m/d' ) );
-						Automator()->insert_trigger_meta( $trigger_meta );
-
-						$trigger_meta['meta_key']   = 'GFENTRYSOURCEURL';
-						$trigger_meta['meta_value'] = maybe_serialize( $entry['source_url'] );
-						Automator()->insert_trigger_meta( $trigger_meta );
-
-						Automator()->maybe_trigger_complete( $result['args'] );
-					}
-				}
-			}
-		}
+		return array();
 	}
 }

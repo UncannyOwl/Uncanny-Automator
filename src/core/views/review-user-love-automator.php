@@ -6,20 +6,20 @@
 		heading="<?php echo esc_attr_x( 'Fantastic!', 'Reviews banner', 'uncanny-automator' ); ?> 🎉"
 		type="white"
 	>
-		<uo-button 
+		<uo-button
 			href="<?php echo esc_url( $vars['url_close_button'] ); ?>"
 
 			data-action="hide-banner-on-click"
 
-			slot="top-right-icon" 
-			color="transparent" 
+			slot="top-right-icon"
+			color="transparent"
 			size="small"
 		>
 			<uo-icon id="times"></uo-icon>
 		</uo-button>
 
 		<p>
-			<?php echo esc_html_x( 'If you can spare 2 minutes, it would mean a lot to our team if you could leave 5-star review on WordPress.org.', 'Reviews banner', 'uncanny-automator' ); ?>
+			<?php echo esc_html_x( 'If you can spare 2 minutes, it would mean a lot to our team if you could leave us a review on WordPress.org. Please also let us know about any feature requests in your review; we always read them!', 'Reviews banner', 'uncanny-automator' ); ?>
 		</p>
 
 		<div class="uap-spacing-top">

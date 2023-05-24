@@ -25,6 +25,7 @@ class Automator_Recipe_Process_User {
 	 * @return array|null
 	 */
 	public function maybe_add_trigger_entry( $args, $mark_trigger_complete = true, $trigger_args = array() ) {
+
 		$original_args      = $args;
 		$is_signed_in       = Automator()->is_user_signed_in( $args );
 		$check_trigger_code = key_exists( 'code', $args ) ? $args['code'] : null;
@@ -613,6 +614,8 @@ class Automator_Recipe_Process_User {
 	 */
 	public function maybe_trigger_num_times_completed( $times_args ) {
 
+		do_action( 'automator_before_maybe_trigger_num_times_completed', $times_args );
+
 		$recipe_id      = key_exists( 'recipe_id', $times_args ) ? $times_args['recipe_id'] : null;
 		$trigger_id     = key_exists( 'trigger_id', $times_args ) ? $times_args['trigger_id'] : null;
 		$trigger        = key_exists( 'trigger', $times_args ) ? $times_args['trigger'] : null;
@@ -694,6 +697,20 @@ class Automator_Recipe_Process_User {
 
 		// Move on if the user didn't trigger the trigger enough times
 		if ( $user_num_times < $num_times ) {
+
+			// Used by fields logger.
+			do_action(
+				'automator_recipe_process_user_trigger_num_times_insufficient',
+				array(
+					'trigger_id'     => $trigger_id,
+					'recipe_id'      => isset( $times_args['recipe_id'] ) ? $times_args['recipe_id'] : null,
+					'trigger_log_id' => $trigger_log_id,
+					'recipe_log_id'  => $recipe_log_id,
+					'run_number'     => $run_number,
+					'user_id'        => $user_id,
+				)
+			);
+
 			return array(
 				'result' => false,
 				'error'  => 'Number of times condition is not completed.',

@@ -110,6 +110,23 @@ class WP_POST_PUBLISHED {
 	protected function validate_trigger( ...$args ) {
 
 		list( $post_id, $wp_post, $update, $wp_post_before ) = $args[0];
+		// only run when posts
+		// are published first time
+		if ( $update ) {
+			return false;
+		}
+
+		$include_non_public_posts = apply_filters(
+			'automator_wp_post_updates_include_non_public_posts',
+			false,
+			$post_id
+		);
+		if ( false === $include_non_public_posts ) {
+			$__object = get_post_type_object( $wp_post->post_type );
+			if ( false === $__object->public ) {
+				return false;
+			}
+		}
 
 		return ! empty( $post_id ) && 'publish' === $wp_post->post_status;
 

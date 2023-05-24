@@ -123,19 +123,26 @@ class HTTP_Client {
 	/**
 	 * @throws \Exception
 	 */
-	public function send_request() {
+	public function send_request( $method = 'POST' ) {
 
 		$this->reduce_credits();
 
-		$response = wp_remote_post(
+		$body = $this->get_request_body();
+
+		if ( 'POST' === $method ) {
+			$body = wp_json_encode( $body );
+		}
+
+		$response = wp_remote_request(
 			$this->get_url(),
 			array(
+				'method'  => $method,
 				'timeout' => apply_filters( 'automator_openai_http_client_timeout', 120 ),
 				'headers' => array(
 					'Content-Type'  => 'application/json',
 					'Authorization' => 'Bearer ' . $this->get_api_key(),
 				),
-				'body'    => wp_json_encode( $this->get_request_body() ),
+				'body'    => $body,
 			)
 		);
 
@@ -156,7 +163,7 @@ class HTTP_Client {
 
 			$err_message = sprintf( 'OpenAI error: [%s] %s', $response_body['error']['type'], $response_body['error']['message'] );
 
-			throw new \Exception( $err_message, $status_code );
+			throw new \Exception( $err_message, (int) $status_code );
 
 		}
 
@@ -186,4 +193,26 @@ class HTTP_Client {
 		);
 
 	}
+
+	/**
+	 * Retrieves the first response string.
+	 *
+	 * @param array $response
+	 *
+	 * @return string The response
+	 */
+	public function get_first_response_string( $response ) {
+
+		$response_text = isset( $response['choices'][0]['message']['content'] )
+			? $response['choices'][0]['message']['content'] :
+			''; // Defaults to empty string.
+
+		if ( 0 === strlen( $response_text ) ) {
+			throw new \Exception( 'The model predicted a completion that results in no output. Consider adjusting your prompt.', 400 );
+		}
+
+		return $response_text;
+
+	}
+
 }

@@ -136,17 +136,6 @@ class Twitter_Functions {
 
 		$response = Api_Server::api_call( $params );
 
-		if ( 200 !== $response['statusCode'] ) {
-
-			$error = __( 'Something went wrong.', 'uncanny-automator' );
-
-			if ( ! empty( $response['data']['detail'] ) ) {
-				$error = $response['statusCode'] . ': ' . $response['data']['detail'];
-			}
-
-			throw new \Exception( $error, $response['statusCode'] );
-		}
-
 		return $response;
 	}
 
@@ -292,45 +281,6 @@ class Twitter_Functions {
 	}
 
 	/**
-	 * parse_errors
-	 *
-	 * @param  string $error_msg
-	 * @return string
-	 */
-	public function parse_errors( $error_msg ) {
-
-		$output = array();
-
-		// The message has several lines, parse them into array.
-		$lines = explode( "\n", $error_msg );
-
-		// The second line usually has a json string, but let's loop through all of them just in case.
-		foreach ( $lines as $line ) {
-
-			$error_array = json_decode( $line, true );
-
-			if ( ! empty( $error_array['errors'] ) ) {
-
-				foreach ( $error_array['errors'] as $error ) {
-
-					if ( empty( $error['code'] ) || empty( $error['message'] ) ) {
-						continue;
-					}
-
-					$output[] = 'Error code ' . $error['code'] . ': ' . $error['message'];
-				}
-			}
-		}
-
-		// Return the original string if no errors were parsed.
-		if ( empty( $output ) ) {
-			return $error_msg;
-		}
-
-		return implode( '<br>', $output );
-	}
-
-	/**
 	 * Send data to Automator API.
 	 *
 	 * @param string $status
@@ -433,5 +383,49 @@ class Twitter_Functions {
 		);
 	}
 
+	/**
+	 * get_username
+	 *
+	 * @return string
+	 */
+	public function get_username() {
+
+		if ( $this->is_user_app_connected() ) {
+			return $this->get_user_app_username();
+		}
+
+		return $this->get_oauth_username();
+	}
+
+	/**
+	 * get_user_app_username
+	 *
+	 * @return string
+	 */
+	public function get_user_app_username() {
+
+		$user = get_option( 'automator_twitter_user', array() );
+
+		if ( ! empty( $user['screen_name'] ) ) {
+			return $user['screen_name'];
+		}
+
+		return '';
+	}
+
+	/**
+	 * get_oauth_username
+	 *
+	 * @return string
+	 */
+	public function get_oauth_username() {
+
+		try {
+			$client = $this->get_client();
+			return $client['screen_name'];
+		} catch ( \Exception $e ) {
+			return '';
+		}
+	}
 }
 

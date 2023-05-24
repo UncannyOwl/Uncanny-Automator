@@ -50,6 +50,7 @@ class Automator_DB_Handler {
 			'automator_database_tables',
 			(object) array(
 				'recipe'       => 'uap_recipe_log',
+				'recipe_meta'  => 'uap_recipe_log_meta',
 				'trigger'      => 'uap_trigger_log',
 				'trigger_meta' => 'uap_trigger_log_meta',
 				'action'       => 'uap_action_log',
@@ -62,6 +63,8 @@ class Automator_DB_Handler {
 				'trigger_logs' => 'uap_trigger_logs_view',
 				'action_logs'  => 'uap_action_logs_view',
 				'api_logs'     => 'uap_api_logs_view',
+				'api_response_logs' => 'uap_api_log_response',
+				'tokens_logs'  => 'uap_tokens_log'
 			)
 		);
 		$this->recipe  = Automator_DB_Handler_Recipes::get_instance();

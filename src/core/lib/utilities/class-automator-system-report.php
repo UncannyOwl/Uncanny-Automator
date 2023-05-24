@@ -313,6 +313,7 @@ class Automator_System_Report {
 				'automator_database_tables',
 				(object) array(
 					'recipe'       => 'uap_recipe_log',
+					'recipe_meta'  => 'uap_recipe_log_meta',
 					'trigger'      => 'uap_trigger_log',
 					'trigger_meta' => 'uap_trigger_log_meta',
 					'action'       => 'uap_action_log',
@@ -324,6 +325,8 @@ class Automator_System_Report {
 					'trigger_logs' => 'uap_trigger_logs_view',
 					'action_logs'  => 'uap_action_logs_view',
 					'api_logs'     => 'uap_api_logs_view',
+					'api_response_logs' => 'uap_api_log_response',
+					'tokens_logs'  => 'uap_tokens_log'
 				)
 			);
 
@@ -586,6 +589,14 @@ class Automator_System_Report {
 	 * @return array
 	 */
 	public function get_automator_stats() {
+
+		if ( 
+			// Disable in Status > Tools page.
+			'uncanny-automator-admin-tools' === filter_input( INPUT_GET, 'page' ) 
+			&& 'tools' === filter_input( INPUT_GET, 'tab' ) ) {
+			return;
+		}
+
 		if ( ! class_exists( '\Uncanny_Automator\Admin_Menu' ) ) {
 			include_once UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
 		}

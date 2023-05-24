@@ -91,19 +91,25 @@ class Automator_DB {
 		$charset_collate = $wpdb->get_charset_collate();
 		// Automator Recipe log
 		$tbl_recipe_log = $wpdb->prefix . 'uap_recipe_log';
-		//Automator trigger log
+		// Automator Recipe log meta.
+		$tbl_recipe_log_meta = $wpdb->prefix . 'uap_recipe_log_meta';
+		// Automator trigger log
 		$tbl_trigger_log = $wpdb->prefix . 'uap_trigger_log';
-		//Automator trigger meta data log
+		// Automator trigger meta data log
 		$tbl_trigger_log_meta = $wpdb->prefix . 'uap_trigger_log_meta';
 		// Automator Action log
 		$tbl_action_log = $wpdb->prefix . 'uap_action_log';
-		//Automator action meta data log
+		// Automator action meta data log
 		$tbl_action_log_meta = $wpdb->prefix . 'uap_action_log_meta';
 		// Automator Closure Log
 		$tbl_closure_log = $wpdb->prefix . 'uap_closure_log';
-		//Automator closure meta data log
+		// Automator closure meta data log
 		$tbl_closure_log_meta = $wpdb->prefix . 'uap_closure_log_meta';
-
+		// Tokens log
+		$tbl_tokens_log = $wpdb->prefix . 'uap_tokens_log';
+		// API retries log
+		$tbl_api_response_log = $wpdb->prefix . 'uap_api_log_response';
+		// API logs tables.
 		$tbl_api_log = $wpdb->prefix . 'uap_api_log';
 
 		return "CREATE TABLE {$tbl_recipe_log} (
@@ -117,6 +123,36 @@ PRIMARY KEY  (`ID`),
 KEY completed (`completed`),
 KEY user_id (`user_id`),
 KEY automator_recipe_id (`automator_recipe_id`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_recipe_log_meta} (
+`ID` bigint NOT NULL AUTO_INCREMENT,
+`user_id` bigint NOT NULL,
+`recipe_id` bigint NOT NULL,
+`recipe_log_id` bigint NOT NULL,
+`meta_key` varchar(255) NOT NULL,
+`meta_value` longtext NOT NULL,
+PRIMARY KEY (`ID`),
+KEY recipe_id (`recipe_id`),
+KEY user_id (`user_id`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_tokens_log} (
+`ID` bigint NOT NULL AUTO_INCREMENT,
+`recipe_id` bigint NOT NULL,
+`recipe_log_id` bigint NOT NULL,
+`run_number` bigint NOT NULL,
+`tokens_record` longtext NOT NULL,
+`date_added` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+PRIMARY KEY (`ID`),
+KEY recipe_id (`recipe_id`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_api_response_log} (
+`ID` bigint NOT NULL AUTO_INCREMENT,
+`api_log_id` bigint NOT NULL,
+`item_log_id` bigint NOT NULL,
+`result` varchar(255) NOT NULL,
+`message` text NOT NULL,
+`date_added` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_trigger_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -666,6 +702,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		global $wpdb;
 
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_recipe_log`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_recipe_log_meta`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_action_log`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_action_log_meta`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_closure_log`;" );
@@ -673,6 +710,8 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_trigger_log`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_trigger_log_meta`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log_response`;" );
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_tokens_log`;" );
 
 		return true;
 

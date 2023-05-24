@@ -194,6 +194,11 @@ class Automator_Functions {
 	public $send_webhook;
 
 	/**
+	 * @var Parsed_Token_Records_Singleton
+	 */
+	protected $parsed_token_records = null;
+
+	/**
 	 * Initializes all development helper classes and variables via class composition
 	 */
 	public function __construct() {
@@ -316,6 +321,30 @@ class Automator_Functions {
 	}
 
 	/**
+	 * @return Singleton\Parsed_Token_Records_Singleton
+	 */
+	public function parsed_token_records() {
+		require_once UA_ABSPATH . 'src/core/services/singleton/parsed-token-records-singleton.php';
+		return Singleton\Parsed_Token_Records_Singleton::get_instance();
+	}
+
+	/**
+	 * @return Logger\Singleton\Async_Actions_Logger_Singleton
+	 */
+	public function async_action_logger() {
+		require_once UA_ABSPATH . 'src/core/services/logger/singleton/async-action-logger-singleton.php';
+		return Logger\Singleton\Async_Actions_Logger_Singleton::get_instance();
+	}
+
+	/**
+	 * @returnLogger\Singleton\Main_Aggregate_Logger_Singleton
+	 */
+	public function main_aggregate_logger() {
+		require_once UA_ABSPATH . 'src/core/services/logger/singleton/main-aggregate-logger-singleton.php';
+		return Logger\Singleton\Main_Aggregate_Logger_Singleton::get_instance();
+	}
+
+	/**
 	 * @param $integration_code
 	 * @param $integration
 	 */
@@ -339,8 +368,30 @@ class Automator_Functions {
 	 */
 	public function set_triggers( $trigger ) {
 		if ( $this->add_unique_recipe_item( $trigger, 'triggers' ) ) {
-			$this->triggers[] = $trigger;
+			// Code is a required field.
+			$this->triggers[ $trigger['code'] ] = $trigger;
 		};
+	}
+
+	/**
+	 * @param string $code
+	 */
+	public function has_trigger( $code = '' ) {
+		return isset( $this->triggers[ $code ] );
+	}
+
+	/**
+	 * Retrieves the trigger from the Triggers entries.
+	 *
+	 * @param string $code
+	 *
+	 * @return bool|mixed[] The Trigger if there is an entry. Otherwise, boolean false.
+	 */
+	public function get_trigger( $code = '' ) {
+		if ( $this->has_trigger( $code ) ) {
+			return $this->triggers[ $code ];
+		}
+		return false;
 	}
 
 	/**
@@ -348,8 +399,20 @@ class Automator_Functions {
 	 */
 	public function set_actions( $action ) {
 		if ( $this->add_unique_recipe_item( $action, 'actions' ) ) {
-			$this->actions[] = $action;
+			// Code is a required field.
+			$this->actions[ $action['code'] ] = $action;
 		}
+	}
+
+	public function has_action( $code = '' ) {
+		return isset( $this->actions[ $code ] );
+	}
+
+	public function get_action( $code = '' ) {
+		if ( $this->has_action( $code ) ) {
+			return $this->actions[ $code ];
+		}
+		return false;
 	}
 
 	/**
@@ -489,7 +552,7 @@ class Automator_Functions {
 	 * Get data for all recipe objects
 	 *
 	 * @param $force_new_data_load
-	 * @param null $recipe_id
+	 * @param int $recipe_id. Defaults to null.
 	 *
 	 * @return array
 	 */
@@ -554,7 +617,7 @@ class Automator_Functions {
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
@@ -1023,7 +1086,7 @@ WHERE pm.post_id
 	 * @param null $recipe_id
 	 * @param array $recipe_children
 	 *
-	 * @return null
+	 * @return mixed[]
 	 */
 	public function get_recipe_data( $type = null, $recipe_id = null, $recipe_children = array() ) {
 
@@ -1104,7 +1167,6 @@ WHERE pm.post_id
 			if ( 'uo-action' === $type ) {
 				$recipe_children_data[ $key ]['tokens'] = $this->tokens->get_action_tokens_renderable( $child_meta_single, absint( $child['ID'] ), $recipe_id );
 			}
-
 		}
 
 		return apply_filters(
@@ -1116,6 +1178,72 @@ WHERE pm.post_id
 				'recipe_children' => $recipe_children,
 			)
 		);
+	}
+
+	/**
+	 * Retrieve recipe actions ordered by menu number.
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return array|object|null — Database query results.
+	 */
+	public function get_recipe_actions( $recipe_id = 0 ) {
+
+		$key           = 'recipe_' . $recipe_id . 'actions';
+		$results_cache = wp_cache_get( $key );
+
+		if ( false !== $results_cache ) {
+			return $results_cache;
+		}
+
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID, post_title, post_status
+                FROM {$wpdb->posts}
+                WHERE post_parent = %d 
+                AND post_type = %s
+                AND post_status = 'publish'
+                ORDER BY menu_order ASC
+                LIMIT 100
+                ",
+				$recipe_id,
+				'uo-action'
+			),
+			ARRAY_A
+		);
+
+		wp_cache_set( $key, $results );
+
+		return $results;
+
+	}
+
+	/**
+	 * Retrives the recipe conditions of the given recipe.
+	 *
+	 * @param int $recipe_id
+	 *
+	 * @return mixed[]
+	 */
+	public function get_recipe_conditions( $recipe_id ) {
+
+		$recipe_conditions = get_post_meta( $recipe_id, 'actions_conditions', true );
+
+		// Bail out if recipe_conditions is not string or not empty.
+		if ( ! is_string( $recipe_conditions ) && ! empty( $recipe_conditions ) ) {
+			return array();
+		}
+
+		$recipe_conditions = json_decode( $recipe_conditions, true );
+
+		if ( ! is_array( $recipe_conditions ) ) {
+			return array();
+		}
+
+		return $recipe_conditions;
+
 	}
 
 	/**
@@ -1664,6 +1792,96 @@ WHERE pm.post_id
 		$tz_offset = sprintf( '%s%02d:%02d', $sign, $abs_hour, $abs_mins );
 
 		return $tz_offset;
+
+	}
+
+	/**
+	 * Decodes the supplied string parameters and parse with specified default values if key is not found.
+	 *
+	 * @param string $json_string
+	 * @param mixed[] $defaults
+	 *
+	 * @return mixed[]
+	 */
+	public function json_decode_parse_args( $json_string = '', $defaults = array() ) {
+
+		$args = json_decode( $json_string, true );
+
+		return wp_parse_args( $args, $defaults );
+
+	}
+
+	/**
+	 * Retrieve the recipe log meta using the meta_key, recipe id, and recipe log id.
+	 *
+	 * @param string $key The meta key.
+	 * @param int $recipe_id
+	 * @param int $recipe_log_id
+	 *
+	 * @return string
+	 */
+	public function get_recipe_meta( $key, $recipe_id, $recipe_log_id ) {
+
+		global $wpdb;
+
+		$result = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value
+				FROM {$wpdb->prefix}uap_recipe_log_meta
+				WHERE meta_key = %s
+				AND recipe_id = %d
+				AND meta_value <> '[]'
+				AND recipe_log_id = %d",
+				$key,
+				$recipe_id,
+				$recipe_log_id
+			)
+		);
+
+		if ( ! is_string( $result ) || is_null( $result ) ) {
+			return '';
+		}
+
+		return $result;
+
+	}
+
+	/**
+	 * Retrieve all the conditions that failed.
+	 *
+	 * @param int $recipe_id
+	 * @param int $recipe_log_id
+	 *
+	 * @return string[]
+	 */
+	public function get_conditions_failed( $recipe_id, $recipe_log_id ) {
+
+		global $wpdb;
+
+		$condition_id_failure_message = array();
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT meta_value
+					FROM {$wpdb->prefix}uap_recipe_log_meta
+						WHERE meta_key = 'conditions_failed'
+							AND recipe_id = %d
+							AND meta_value <> '[]'
+							AND recipe_log_id = %d",
+				$recipe_id,
+				$recipe_log_id
+			),
+			ARRAY_A
+		);
+
+		foreach ( $results as $result ) {
+			$item = (array) json_decode( $result['meta_value'], true );
+			foreach ( $item as $condition_id => $message ) {
+				$condition_id_failure_message[ $condition_id ] = $message;
+			}
+		}
+
+		return $condition_id_failure_message;
 
 	}
 

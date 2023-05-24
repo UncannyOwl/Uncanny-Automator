@@ -1352,13 +1352,76 @@ class Recipe_Post_Rest_Api {
 			$return['message'] = $e->getMessage();
 			automator_log( $e->getMessage() );
 
+			// Log the response for retries.
+			if ( true === $params['resend'] ) {
+				$this->log_api_retry_response(
+					$item_log_id,
+					Automator_Status::get_class_name( Automator_Status::COMPLETED_WITH_ERRORS ),
+					$return['message']
+				);
+			}
+
 			return new WP_REST_Response( $return, $e->getCode() );
 		}
 
 		$return['message'] = __( 'The request has been successfully resent', 'uncanny-automator' );
 		$return['success'] = true;
 
+		// Log the success response for retries.
+		if ( true === $params['resend'] ) {
+			$this->log_api_retry_response(
+				$item_log_id,
+				Automator_Status::get_class_name( Automator_Status::COMPLETED ),
+				$return['message']
+			);
+		}
+
 		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * Log API retry responses.
+	 *
+	 * @param int $item_log_id The item log id.
+	 * @param string $result The result.
+	 * @param string $message The message.
+	 *
+	 * @return int|false The ID of the last inserted log response. Returns false otherwise.
+	 */
+	protected function log_api_retry_response( $item_log_id = 0, $result = '', $message = '' ) {
+
+		global $wpdb;
+
+		// Figure out the last insert ID since we cannot directly access it.
+		$last_insert_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MAX(id) as last_insert_id FROM {$wpdb->prefix}uap_api_log WHERE 1=%d",
+				1
+			)
+		);
+
+		$inserted = $wpdb->insert(
+			$wpdb->prefix . 'uap_api_log_response',
+			array(
+				'api_log_id'  => $last_insert_id,
+				'item_log_id' => $item_log_id,
+				'result'      => $result,
+				'message'     => $message,
+			),
+			array(
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+			)
+		);
+
+		if ( false !== $inserted ) {
+			return $wpdb->insert_id;
+		}
+
+		return false;
+
 	}
 
 	/**

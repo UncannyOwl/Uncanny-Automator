@@ -122,15 +122,15 @@ class TWITTER_POSTSTATUS_2 {
 
 			$post_id = isset( $response['data']['id'] ) ? $response['data']['id'] : 0;
 
-			$has_screen_name = ! empty( $response['data']['user']['screen_name'] );
+			$username = $this->functions->get_username();
 
-			if ( 0 !== $post_id && $has_screen_name ) {
+			if ( 0 !== $post_id && ! empty( $username ) ) {
 
 				// The Tweet link.
 				$post_link = strtr(
 					'https://twitter.com/{{screen_name}}/status/{{post_id}}',
 					array(
-						'{{screen_name}}' => $response['data']['user']['screen_name'],
+						'{{screen_name}}' => $username,
 						'{{post_id}}'     => $post_id,
 					)
 				);
@@ -145,7 +145,7 @@ class TWITTER_POSTSTATUS_2 {
 
 		} catch ( \Exception $e ) {
 
-			$error_msg                           = $this->functions->parse_errors( $e->getMessage() );
+			$error_msg                           = $e->getMessage();
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 

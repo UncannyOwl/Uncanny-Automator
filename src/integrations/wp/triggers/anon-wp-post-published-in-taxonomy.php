@@ -181,6 +181,11 @@ class ANON_WP_POST_PUBLISHED_IN_TAXONOMY {
 	 * @param $post_before
 	 */
 	public function schedule_a_post( $post_id, $post, $update, $post_before ) {
+		// only run when posts
+		// are published first time
+		if ( $update ) {
+			return;
+		}
 		if ( ! empty( $post_before ) && 'publish' === $post_before->post_status ) {
 			return;
 		}

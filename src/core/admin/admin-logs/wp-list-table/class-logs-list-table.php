@@ -535,15 +535,8 @@ class Logs_List_Table extends WP_List_Table {
 				absint( $recipe_log_id )
 			);
 
-			// Details button
-			$view_details_btn = '<uo-button class="uap-log-details uap-logs-action-button uap-logs-action-button--details" size="small" uap-tooltip="' . esc_attr__( 'View details', 'uncanny-automator' ) . '" color="transparent" href="#" data-lity-target="%s">%s</uo-button>';
-
 			$actions = array(
-				'view' => sprintf(
-					$view_details_btn,
-					esc_url( $this->get_details_url( $recipe_id, $run_number_log, $recipe_log_id ) ),
-					'<uo-icon id="info-circle"></uo-icon>'
-				),
+				'view' => '<uap-log-dialog-button log-id="' . $recipe_log_id . '" recipe-id="' . $recipe_id . '" run-number="' . $run_number_log . '"></uap-log-dialog-button>'
 			);
 
 			// Delete button
@@ -629,19 +622,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $trigger->recipe_run_number ) ? 1 : $trigger->recipe_run_number : $trigger->recipe_run_number;
 
-			$actions = '
-				<div class="uap-logs-action-buttons">
-					<uo-button
-						class="uap-log-details uap-logs-action-button uap-logs-action-button--details"
-						size="small"
-						color="transparent"
-						href="#"
-						uap-tooltip="' . esc_attr__( 'View details', 'uncanny-automator' ) . '"
-						data-lity-target="' . esc_url( $this->get_details_url( $trigger->automator_recipe_id, $run_number_log, $trigger->recipe_log_id ) ) . '"
-						>
-						<uo-icon id="info-circle"></uo-icon>
-					</uo-button>
-				</div>';
+			$actions = '<uap-log-dialog-button log-id="'.esc_attr( $trigger->recipe_log_id ).'" recipe-id="'.esc_attr( $trigger->automator_recipe_id ).'" run-number="'.esc_attr($run_number_log).'"></uap-log-dialog-button>';
 
 			$recipe_link = $this->get_edit_link( absint( $trigger->automator_recipe_id ) );
 
@@ -846,18 +827,8 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $action->recipe_run_number ) ? 1 : $action->recipe_run_number : $action->recipe_run_number;
 
-			$action_column = '
-				<div class="uap-logs-action-buttons">
-					<uo-button
-						class="uap-log-details uap-logs-action-button uap-logs-action-button--details"
-						size="small"
-						color="transparent"
-						href="#"
-						uap-tooltip="' . esc_attr__( 'View details', 'uncanny-automator' ) . '"
-						data-lity-target="' . esc_url( $this->get_details_url( $action->automator_recipe_id, $run_number_log, $action->recipe_log_id ) ) . '">
-						<uo-icon id="info-circle"></uo-icon>
-					</uo-button>
-				</div>';
+			$action_column = $actions = '<uap-log-dialog-button log-id="'.esc_attr( $action->recipe_log_id ).'" recipe-id="'.esc_attr( $action->automator_recipe_id ).'" run-number="'.esc_attr($run_number_log).'"></uap-log-dialog-button>';
+
 			// Action status
 			$action_status_html = '
 				<div class="uap-logs-action-status uap-logs-action-status--' . sanitize_html_class( $this->get_status_class_name( $action->action_completed ) ) . '">' .

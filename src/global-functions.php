@@ -334,7 +334,7 @@ function automator_db_view_exists( $type = 'recipe' ) {
  *
  * @param mixed $message
  * @param mixed $subject
- * @param false $force_log
+ * @param bool $force_log
  * @param mixed $log_file
  * @param false $backtrace
  *
@@ -568,4 +568,24 @@ function automator_duplicate_recipe_part( $part_id, $recipe_id, $status = 'draft
  */
 function automator_sort_options( $a, $b ) {
 	return strcmp( $a['text'], $b['text'] );
+}
+
+/**
+ * automator_array_as_options
+ *
+ * @param  array $array
+ * @return array
+ */
+function automator_array_as_options( $array ) {
+
+	$options = array();
+
+	foreach ( $array as $value => $text ) {
+		$options[] = array(
+			'value' => $value,
+			'text'  => $text,
+		);
+	}
+
+	return $options;
 }

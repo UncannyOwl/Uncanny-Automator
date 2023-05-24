@@ -426,6 +426,25 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	}
 
 	/**
+	 * Encrypt any outgoing data.
+	 *
+	 * @param array $args The message to decrypt.
+	 * @param string $secret The secret key to pass for decoding.
+	 *
+	 * @return string The encrypted data.
+	 */
+	public static function encrypt( $args, $secret ) {
+		$message_to_encrypt = serialize( $args ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		$method             = 'AES128';
+		$ivlen              = openssl_cipher_iv_length( $method );
+		$iv                 = openssl_random_pseudo_bytes( $ivlen );
+		$encrypted_message  = openssl_encrypt( $message_to_encrypt, $method, $secret, 0, $iv );
+		$encrypted_message  = base64_encode( $iv . $encrypted_message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		return urlencode( $encrypted_message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode
+	}
+
+
+	/**
 	 * @param mixed $options
 	 */
 	public function setOptions( $options ) {

@@ -6,14 +6,14 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VERSION', '4.3' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '4.15' );
 }
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VIEWS_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VIEWS_VERSION', '4.3' );
+	define( 'AUTOMATOR_DATABASE_VIEWS_VERSION', '4.15' );
 }
 
 if ( ! defined( 'AUTOMATOR_REST_API_END_POINT' ) ) {
@@ -63,7 +63,7 @@ if ( ! defined( 'LOAD_AUTOMATOR' ) ) {
 	/**
 	 * Load Automator on/off
 	 */
-	define( 'LOAD_AUTOMATOR', true );
+	define( 'LOAD_AUTOMATOR', filter_var( get_option( 'load_automator', true ), FILTER_VALIDATE_BOOLEAN ) );
 }
 
 if ( ! defined( 'UA_ABSPATH' ) ) {
@@ -95,5 +95,5 @@ if ( ! defined( 'AUTOMATOR_FREE_ITEM_NAME' ) ) {
 }
 
 if ( ! defined( 'AUTOMATOR_FREE_STORE_CONNECT_URL' ) ) {
-	define( 'AUTOMATOR_FREE_STORE_CONNECT_URL', 'sign-up/' );
+	define( 'AUTOMATOR_FREE_STORE_CONNECT_URL', 'signup/' );
 }

@@ -232,9 +232,28 @@ class Automator_DB_Handler_Recipes {
 	 * @param $automator_recipe_log_id
 	 */
 	public function delete_logs( $recipe_id, $automator_recipe_log_id ) {
+
 		global $wpdb;
 
-		// delete from uap_recipe_log
+		// Delete from uap_recipe_log_meta.
+		$wpdb->delete(
+			$wpdb->prefix . Automator()->db->tables->recipe_meta,
+			array(
+				'recipe_id' => $recipe_id,
+				'recipe_log_id' => $automator_recipe_log_id
+			)
+		);
+
+		// Delete from uap_tokens_log
+		$wpdb->delete(
+			$wpdb->prefix . Automator()->db->tables->tokens_logs,
+			array(
+				'recipe_id' => $recipe_id,
+				'recipe_log_id' => $automator_recipe_log_id
+			)
+		);
+
+		// Delete from uap_recipe_log.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->recipe,
 			array(

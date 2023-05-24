@@ -98,7 +98,7 @@ class Add_Slack_Integration {
 				'name'         => 'Slack',
 				'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/slack-icon.svg' ),
 				'connected'    => $this->connected,
-				'settings_url' => automator_get_premium_integrations_settings_url( 'slack_api' )
+				'settings_url' => automator_get_premium_integrations_settings_url( 'slack_api' ),
 			)
 		);
 

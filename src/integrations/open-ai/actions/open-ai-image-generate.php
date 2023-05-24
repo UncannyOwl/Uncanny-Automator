@@ -7,20 +7,22 @@ use Uncanny_Automator\Recipe;
 /**
  * Class OPEN_AI_IMAGE_GENERATE
  *
- * @package Uncanny_Automator_Pro
+ * @package Uncanny_Automator
  * @since 4.11
  */
 class OPEN_AI_IMAGE_GENERATE {
 
-	use Recipe\Actions;
-
-	use Recipe\Action_Tokens;
+	use Recipe\Actions, Recipe\Action_Tokens;
 
 	public function __construct() {
 
-		$this->setup_action();
-
 		$this->set_helpers( new Open_AI_Helpers( false ) );
+
+		if ( ! $this->get_helpers()->has_gpt4_access() ) {
+			return;
+		}
+
+		$this->setup_action();
 
 	}
 
@@ -92,11 +94,12 @@ class OPEN_AI_IMAGE_GENERATE {
 				'options_group' => array(
 					$this->get_action_meta() => array(
 						array(
-							'option_code' => $this->get_action_meta(),
+							'option_code'       => $this->get_action_meta(),
 							/* translators: Action field */
-							'label'       => esc_attr__( 'Prompt', 'uncanny-automator' ),
-							'input_type'  => 'textarea',
-							'required'    => true,
+							'label'             => esc_attr__( 'Prompt', 'uncanny-automator' ),
+							'input_type'        => 'textarea',
+							'supports_markdown' => true,
+							'required'          => true,
 						),
 						array(
 							'option_code'     => 'SIZE',
@@ -131,7 +134,7 @@ class OPEN_AI_IMAGE_GENERATE {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$prompt = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
+		$prompt = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
 		$size   = isset( $parsed['SIZE'] ) ? sanitize_text_field( $parsed['SIZE'] ) : '1024x1024';
 
 		try {

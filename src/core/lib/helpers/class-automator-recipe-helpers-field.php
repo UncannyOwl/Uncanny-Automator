@@ -189,6 +189,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'min_number'                => null,
 			'max_number'                => null,
 			'supports_tinymce'          => null,
+			'supports_markdown'         => null,
 			'supports_fullpage_editing' => null,
 			'token_name'                => '',
 			'read_only'                 => false,
@@ -206,6 +207,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$default                   = $args['default'];
 		$required                  = $args['required'];
 		$supports_tinymce          = $args['supports_tinymce'];
+		$supports_markdown         = $args['supports_markdown'];
 		$supports_fullpage_editing = $args['supports_fullpage_editing'];
 		$token_name                = $args['token_name'];
 		$min_number                = $args['min_number'];
@@ -223,6 +225,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'required'                  => $required,
 			'default_value'             => $default,
 			'supports_tinymce'          => $supports_tinymce,
+			'supports_markdown'         => $supports_markdown,
 			'supports_fullpage_editing' => $supports_fullpage_editing,
 			'token_name'                => $token_name,
 			'min_number'                => $min_number,

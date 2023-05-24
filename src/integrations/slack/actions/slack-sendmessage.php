@@ -45,6 +45,7 @@ class SLACK_SENDMESSAGE {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			'requires_user'         => false,
+			// translators: slack channel name
 			'sentence'              => sprintf( __( 'Send a message to {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name'    => __( 'Send a message to {{a channel}}', 'uncanny-automator' ),
 			'priority'              => 10,
@@ -91,11 +92,9 @@ class SLACK_SENDMESSAGE {
 			$response = Automator()->helpers->recipe->slack->chat_post_message( $message, $action_data );
 		} catch ( \Exception $e ) {
 			$error_msg                           = $e->getMessage();
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 		}
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-		return;
 	}
 }

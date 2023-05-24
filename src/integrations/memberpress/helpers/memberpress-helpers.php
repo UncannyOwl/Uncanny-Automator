@@ -53,7 +53,7 @@ class Memberpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
@@ -104,7 +104,7 @@ class Memberpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
@@ -168,7 +168,7 @@ class Memberpress_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
@@ -226,6 +226,23 @@ class Memberpress_Helpers {
 		);
 
 		return apply_filters( 'uap_option_all_memberpress_products_recurring', $option );
+	}
+
+	/**
+	 * @param $subscription
+	 *
+	 * @return bool
+	 */
+	public function check_if_is_renewal_or_first_payment( $subscription ) {
+		if ( $subscription !== false ) {
+			if ( ( ! $subscription->trial || ( $subscription->trial && $subscription->trial_amount <= 0.00 ) ) && $subscription->txn_count == 1 ) {
+				return true;
+			} elseif ( $subscription->trial && $subscription->trial_amount > 0.00 && $subscription->txn_count == 2 ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

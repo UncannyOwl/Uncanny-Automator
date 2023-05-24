@@ -19,6 +19,43 @@ class Automator_Registration {
 	 * Automator_Registration constructor.
 	 */
 	public function __construct() {
+		add_filter(
+			'automator_register_integration',
+			array(
+				$this,
+				'set_connected_to_false_if_site_inactive',
+			),
+			99,
+			2
+		);
+	}
+
+	/**
+	 * Set `connected` for each API integration to false IF the site is no
+	 * longer connected to automatorplugin.com OR has a valid PRO license.
+	 *
+	 * @param $integration
+	 * @param $integration_code
+	 *
+	 * @return mixed
+	 */
+	public function set_connected_to_false_if_site_inactive( $integration, $integration_code ) {
+		// Not a Recipe Builder page
+		if ( ! Automator()->helpers->recipe->is_edit_page() ) {
+			return $integration;
+		}
+		// Doesn't have `connected` key
+		if ( ! isset( $integration['connected'] ) ) {
+			return $integration;
+		}
+		// Check if the site is connected
+		$is_connected = Api_Server::get_license_type();
+		// Site is no longer connected
+		if ( false === $is_connected ) {
+			$integration['connected'] = false;
+		}
+
+		return $integration;
 	}
 
 	/**
@@ -212,6 +249,8 @@ class Automator_Registration {
 		if ( null === $integration || ! is_array( $integration ) ) {
 			throw new Automator_Exception( 'You are trying to register an integration without passing an integration object.', 1002 );
 		}
+
+		$integration = apply_filters( 'automator_register_integration', $integration, $integration_code );
 
 		// Register integration if it doesn't already exist
 		if ( ! array_key_exists( $integration_code, Automator()->integrations ) ) {

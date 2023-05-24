@@ -1,16 +1,12 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
-
-use Uncanny_Automator\Recipe;
+namespace Uncanny_Automator\Integrations\Gravity_Forms;
 
 /**
  * Class GF_SUBFORM_CODES
  *
  * @package Uncanny_Automator
  */
-class GF_SUBFORM_CODES {
-
-	use Recipe\Triggers;
+class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
 	 * Trigger code.
@@ -33,20 +29,18 @@ class GF_SUBFORM_CODES {
 	 */
 	const UO_CODES_FIELD_TYPE = 'uncanny_enrollment_code';
 
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		if ( ! defined( 'UNCANNY_LEARNDASH_CODES_VERSION' ) ) {
-			return;
-		}
-		$this->setup_trigger();
+	private $gf;
+
+	public function requirements_met() {
+		return defined( 'UNCANNY_LEARNDASH_CODES_VERSION' );
 	}
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function setup_trigger() {
+
+		$this->gf = array_shift( $this->dependencies );
 
 		$this->set_integration( 'GF' );
 		$this->set_trigger_code( self::TRIGGER_CODE );
@@ -68,13 +62,11 @@ class GF_SUBFORM_CODES {
 		// Which do_action() fires this trigger.
 		$this->add_action( 'gform_after_submission' );
 		$this->set_action_args_count( 2 );
-		$this->set_options_callback( array( $this, 'load_options' ) );
-		$this->register_trigger();
 
 	}
 
 	/**
-	 * @return array[]
+	 * @return array
 	 */
 	public function load_options() {
 		return Automator()->utilities->keep_order_of_options(
@@ -94,108 +86,142 @@ class GF_SUBFORM_CODES {
 	 *
 	 * @return bool
 	 */
-	protected function validate_trigger( ...$args ) {
+	public function validate( $trigger, $hook_args ) {
 
-		$args = array_shift( $args );
+		list( $entry, $form ) = $hook_args;
 
-		if ( empty( $args[0] ) || empty( $args[1] ) ) {
+		if ( ! $this->is_correct_form( $trigger, $form ) ) {
 			return false;
 		}
 
-		$entry  = $args[0];
-		$form   = $args[1];
-		$fields = $form['fields'];
+		if ( ! $this->is_correct_batch( $trigger, $form, $entry ) ) {
+			return false;
+		}
 
-		// Get all the codes field.
-		$uo_codes_fields = Gravity_Forms_Helpers::is_uncanny_code_field_exist( $fields );
-
-		// True if theres a codes field and that code field has a value.
-		return $uo_codes_fields;
-
+		return true;
 	}
 
 	/**
-	 * Prepare to run the trigger.
+	 * is_correct_form
 	 *
-	 * @param $data
-	 *
-	 * @return void
+	 * @param  array $trigger
+	 * @param  array $form
+	 * @return bool
 	 */
-	public function prepare_to_run( $data ) {
+	public function is_correct_form( $trigger, $form ) {
 
-		$this->set_conditional_trigger( true );
+		$selected_form_id = intval( $trigger['meta'][ self::TRIGGER_META ] );
 
+		if ( -1 === $selected_form_id ) {
+			return true;
+		}
+
+		if ( intval( $form['id'] ) === $selected_form_id ) {
+			return true;
+		}
+
+		return false;
 	}
 
+	/**
+	 * is_correct_batch
+	 *
+	 * @param  array $trigger
+	 * @param  array $form
+	 * @param  array $entry
+	 * @return bool
+	 */
+	public function is_correct_batch( $trigger, $form, $entry ) {
+
+		$selected_code_batch = intval( $trigger['meta'][ self::TRIGGER_META . '_CODES' ] );
+
+		if ( -1 === $selected_code_batch ) {
+			return true;
+		}
+
+		$batch = $this->get_batch( $form, $entry );
+
+		if ( $batch !== $selected_code_batch ) {
+			return false;
+		}
+
+		return true;
+	}
 
 	/**
-	 * Validate if trigger matches the condition.
+	 * get_batch
 	 *
-	 * @param $args
+	 * @param  array $form
+	 * @param  array $entry
+	 * @return int
+	 */
+	public function get_batch( $form, $entry ) {
+
+		$code_fields = \Uncanny_Automator\Gravity_Forms_Helpers::get_code_fields( $entry, $form );
+
+		if ( empty( $code_fields ) ) {
+			return false;
+		}
+
+		$code_field = array_shift( $code_fields );
+
+		if ( empty( $code_field ) ) {
+			return false;
+		}
+
+		$batch = \Uncanny_Automator\Gravity_Forms_Helpers::get_batch_by_value( $code_field, $entry );
+
+		return intval( $batch );
+	}
+
+	/**
+	 * get_batch_expiration
 	 *
+	 * @param  int $batch_id
+	 * @return string
+	 */
+	public function get_batch_expiration( $batch_id ) {
+
+		global $wpdb;
+
+		$expiry_date      = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
+		$expiry_timestamp = strtotime( $expiry_date );
+
+		// Check if the date is in future to filter out empty dates
+		if ( $expiry_timestamp > time() ) {
+			// Get the format selected in general WP settings
+			$date_format = get_option( 'date_format' );
+			$time_format = get_option( 'time_format' );
+
+			// Return the formattted time according to the selected time zone
+			$value = date_i18n( "$date_format $time_format", strtotime( $expiry_date ) );
+
+			return $value;
+		}
+
+		return '';
+	}
+
+	/**
+	 * hydrate_tokens
+	 *
+	 * @param  array $trigger
+	 * @param  array $hook_args
 	 * @return array
 	 */
-	protected function validate_conditions( $args ) {
+	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		$matched_recipe_ids = array();
+		list( $entry, $form ) = $hook_args;
 
-		list ( $entry, $form ) = $args;
+		$this->gf->tokens->save_legacy_trigger_tokens( $this->trigger_records, $entry, $form );
 
-		if ( empty( $entry ) || empty( $form ) ) {
-			return $matched_recipe_ids;
-		}
+		$batch = $this->get_batch( $form, $entry );
 
-		$recipes = $this->trigger_recipes();
+		$tokens = array(
+			'GF_SUBFORM_CODES_METADATA_CODES' => $batch,
+			'UNCANNYCODESBATCHEXPIRY'         => $this->get_batch_expiration( $batch ),
+		);
 
-		if ( empty( $recipes ) ) {
-			return $matched_recipe_ids;
-		}
-
-		$required_form  = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$required_batch = Automator()->get->meta_from_recipes( $recipes, sprintf( '%s_CODES', $this->trigger_meta ) );
-
-		if ( empty( $required_form ) ) {
-			return $matched_recipe_ids;
-		}
-
-		$code_fields = Gravity_Forms_Helpers::get_code_fields( $entry, $form );
-
-		// Bailout if there are no UncannyCodes fields in the form.
-		if ( empty( $code_fields ) ) {
-			return $matched_recipe_ids;
-		}
-
-		$form_id = $form['id'];
-
-		foreach ( $recipes as $recipe_id => $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				$trigger_id = absint( $trigger['ID'] );
-				if ( ! isset( $required_form[ $recipe_id ] ) ) {
-					continue;
-				}
-				if ( ! isset( $required_form[ $recipe_id ][ $trigger_id ] ) ) {
-					continue;
-				}
-
-				$code_field = array_shift( $code_fields );
-				if ( empty( $code_field ) || null === $code_field ) {
-					continue;
-				}
-				$batch = Gravity_Forms_Helpers::get_batch_by_value( $code_field, $entry );
-
-				if (
-					absint( $form_id ) === absint( $required_form[ $recipe_id ][ $trigger_id ] ) &&
-					(
-						intval( '-1' ) === intval( $required_batch[ $recipe_id ][ $trigger_id ] ) ||
-						absint( $batch->code_group ) === absint( $required_batch[ $recipe_id ][ $trigger_id ] )
-					)
-				) {
-					$matched_recipe_ids[ $recipe_id ] = $trigger_id;
-				}
-			}
-		}
-
-		return $matched_recipe_ids;
-
+		return $tokens;
 	}
 }

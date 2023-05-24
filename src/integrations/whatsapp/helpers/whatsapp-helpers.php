@@ -133,6 +133,16 @@ class WhatsApp_Helpers {
 
 		$wp_current_datetime_object = new \DateTime( $wp_current_datetime, new \DateTimeZone( Automator()->get_timezone_string() ) );
 
+		automator_log(
+			array(
+				'$wp_current_time'            => $wp_current_datetime,
+				'$wp_current_datetime_object' => $wp_current_datetime_object,
+			),
+			'WhatsApp: Method is_timestamp_acceptable params',
+			AUTOMATOR_DEBUG_MODE,
+			'whatsapp-params'
+		);
+
 		if ( false === $wp_current_datetime_object ) {
 
 			return false;
@@ -142,6 +152,16 @@ class WhatsApp_Helpers {
 		$wp_current_datetime_object->setTimezone( new \DateTimeZone( 'UTC' ) );
 		// Get the timestamp.
 		$wp_current_datetime_utc = strtotime( $wp_current_datetime_object->format( 'Y-m-d H:i:s' ) );
+
+		automator_log(
+			array(
+				'calculated'           => absint( $wp_current_datetime_utc - $wa_timestamp ),
+				'$acceptable_interval' => $acceptable_interval,
+			),
+			'WhatsApp: Method is_timestamp_acceptable params',
+			AUTOMATOR_DEBUG_MODE,
+			'whatsapp-processed'
+		);
 		// Compare if it was recently accepted.
 		return absint( $wp_current_datetime_utc - $wa_timestamp ) <= $acceptable_interval;
 
@@ -185,11 +205,31 @@ class WhatsApp_Helpers {
 
 		$timestamp = $response['entry'][0]['changes'][0]['value']['messages'][0]['timestamp'];
 
-		// Prevent spammy WhatsApp webhook.
-		if ( ! $this->is_timestamp_acceptable( $timestamp, 3 ) ) {
+		/**
+		 * Prevent spammy WhatsApp webhook. This is an old issue where WhatsApp repeatedly sends the webhook payload to the URL.
+		 * We have to do this to safe guard the users and not let WhatsApp spam their logs with incoming webhooks.
+		 * By default, its enabled.
+		 *
+		 * When the Trigger is erratically firing,
+		 * try increasing the acceptable interval first via 'automator_whatsapp_acceptable_interval'
+		 *
+		 * @default int 5 - Five seconds.
+		 * @filter automator_whatsapp_acceptable_interval
+		 **/
+		$acceptable_interval = apply_filters( 'automator_whatsapp_acceptable_interval', 5, $response, $this );
 
+		/**
+		 * Disable timestamp validation.
+		 *
+		 * Otherwise, you may completely disable the timestamp validation.
+		 *
+		 * @default true
+		 * @filter automator_whatsapp_timestamp_validation_enabled
+		 */
+		$timestamp_validation = apply_filters( 'automator_whatsapp_timestamp_validation_enabled', true, $response, $this );
+
+		if ( true === $timestamp_validation && ! $this->is_timestamp_acceptable( $timestamp, $acceptable_interval ) ) {
 			throw new \Exception( 'Stale data: WhatsApp Bug. Do not process.' );
-
 		}
 
 		$default = array(
@@ -344,6 +384,7 @@ class WhatsApp_Helpers {
 
 			// Bail out if meta is empty.
 			if ( empty( $action_data['meta'] ) ) {
+				automator_log( $action_data, 'WhatsApp: Bailed out. The $action_data["meta"] was empty.', AUTOMATOR_DEBUG_MODE, 'whatsapp' );
 				return;
 			}
 
@@ -351,6 +392,8 @@ class WhatsApp_Helpers {
 
 		} catch ( \Exception $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing for now.
+			automator_log( $e->getMessage(), 'WhatsApp: An Exception has occured', AUTOMATOR_DEBUG_MODE, 'whatsapp' );
+
 		}
 
 	}

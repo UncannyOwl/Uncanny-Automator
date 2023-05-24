@@ -48,9 +48,9 @@ class PMP_MEMBERSHIPCANCEL {
 			'sentence'            => sprintf( esc_attr__( 'A user cancels {{a membership:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Paid Memberships Pro */
 			'select_option_name'  => esc_attr__( 'A user cancels {{a membership}}', 'uncanny-automator' ),
-			'action'              => 'pmpro_after_change_membership_level',
+			'action'              => 'pmpro_before_change_membership_level',
 			'priority'            => 99,
-			'accepted_args'       => 3,
+			'accepted_args'       => 4,
 			'validation_function' => array(
 				$this,
 				'pmpro_subscription_cancelled',
@@ -86,7 +86,7 @@ class PMP_MEMBERSHIPCANCEL {
 	 * @param $user_id
 	 * @param $cancel_level
 	 */
-	public function pmpro_subscription_cancelled( $level_id, $user_id, $cancel_level ) {
+	public function pmpro_subscription_cancelled( $level_id, $user_id, $old_levels, $cancel_level ) {
 
 		if ( 0 !== absint( $level_id ) ) {
 			return;

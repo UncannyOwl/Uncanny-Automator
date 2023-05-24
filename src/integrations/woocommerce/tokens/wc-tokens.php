@@ -73,6 +73,8 @@ class Wc_Tokens {
 			'order_shipping'        => esc_attr__( 'Order shipping', 'uncanny-automator' ),
 			'payment_method'        => esc_attr__( 'Payment method', 'uncanny-automator' ),
 			'shipping_method'       => esc_attr__( 'Shipping method', 'uncanny-automator' ),
+			'payment_url'           => esc_attr__( 'Payment URL', 'uncanny-automator' ),
+			'payment_url_checkout'  => esc_attr__( 'Direct checkout URL', 'uncanny-automator' ),
 		);
 
 		add_action(
@@ -312,7 +314,6 @@ class Wc_Tokens {
 		if ( empty( $pieces ) ) {
 			return $value;
 		}
-
 		if ( array_intersect( $to_match, $pieces ) ) {
 			$value = $this->replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 		}
@@ -356,11 +357,15 @@ class Wc_Tokens {
 	 * @return array|string|null
 	 */
 	public function replace_values( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+
 		if ( empty( $trigger_data ) || empty( $replace_args ) ) {
 			return $value;
 		}
-		$parse                = $pieces[2];
+
+		$parse = $pieces[2];
+
 		$multi_line_separator = apply_filters( 'automator_woo_multi_item_separator', ' | ', $pieces );
+
 		foreach ( $trigger_data as $trigger ) {
 			if ( ! is_array( $trigger ) || empty( $trigger ) ) {
 				continue;
@@ -368,10 +373,18 @@ class Wc_Tokens {
 			$trigger_id     = $trigger['ID'];
 			$trigger_log_id = $replace_args['trigger_log_id'];
 			$order          = null;
-			$order_id       = Automator()->db->token->get( 'order_id', $replace_args );
+
+			// Use the Trigger's user id if its available.
+			if ( isset( $replace_args['recipe_triggers'][ $trigger['ID'] ]['user_id'] ) ) {
+				$replace_args['user_id'] = $replace_args['recipe_triggers'][ $trigger['ID'] ]['user_id'];
+			}
+
+			$order_id = Automator()->db->token->get( 'order_id', $replace_args );
+
 			if ( ! empty( $order_id ) ) {
 				$order = wc_get_order( $order_id );
 			}
+
 			if ( $order instanceof WC_Order ) {
 				switch ( $parse ) {
 					case 'order_id':
@@ -545,19 +558,19 @@ class Wc_Tokens {
 						$value = $order->get_status();
 						break;
 					case 'order_total':
-						$value = strip_tags( wc_price( $order->get_total() ) );
+						$value = wp_strip_all_tags( wc_price( $order->get_total() ) );
 						break;
 					case 'order_total_raw':
 						$value = $order->get_total();
 						break;
 					case 'order_subtotal':
-						$value = strip_tags( wc_price( $order->get_subtotal() ) );
+						$value = wp_strip_all_tags( wc_price( $order->get_subtotal() ) );
 						break;
 					case 'order_subtotal_raw':
 						$value = $order->get_subtotal();
 						break;
 					case 'order_tax':
-						$value = strip_tags( wc_price( $order->get_total_tax() ) );
+						$value = wp_strip_all_tags( wc_price( $order->get_total_tax() ) );
 						break;
 					case 'order_fees':
 						$value = wc_price( $order->get_total_fees() );
@@ -569,7 +582,7 @@ class Wc_Tokens {
 						$value = $order->get_total_tax();
 						break;
 					case 'order_discounts':
-						$value = strip_tags( wc_price( $order->get_discount_total() * - 1 ) );
+						$value = wp_strip_all_tags( wc_price( $order->get_discount_total() * - 1 ) );
 						break;
 					case 'order_discounts_raw':
 						$value = ( $order->get_discount_total() * - 1 );
@@ -629,6 +642,15 @@ class Wc_Tokens {
 					case 'payment_method':
 						$value = $order->get_payment_method_title();
 						break;
+
+					case 'payment_url':
+						$value = $order->get_checkout_payment_url();
+						break;
+
+					case 'payment_url_checkout':
+						$value = $order->get_checkout_payment_url( true );
+						break;
+
 					case 'shipping_method':
 						$value = $order->get_shipping_method();
 						break;

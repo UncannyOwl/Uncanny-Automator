@@ -236,6 +236,9 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function parse_vars( $args, $trigger_args = array() ) {
+		
+		$parsed_tokens_record = Automator()->parsed_token_records();
+
 		$field_text     = $args['field_text'];
 		$meta_key       = $args['meta_key'];
 		$action_data    = $args['action_data'];
@@ -517,11 +520,14 @@ class Automator_Input_Parser {
 
 			$replaceable = apply_filters( 'automator_maybe_parse_replaceable', $replaceable );
 
+			// Record the token raw vs replaceable with respect to $args for log details consumption.
+			$parsed_tokens_record->record_token( '{{'.$match.'}}', $replaceable, $args );
+
 			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable, $args );
 
 			$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
-		}
-
+		} // End foreach.
+		
 		// Only replace open/close curly brackets if it's {{TOKEN}} style structure.
 		// This avoids the erroneous replacement of the JSON closing brackets.
 		// Example a:2:{i:0;s:12:"Sample array";i:1;a:2:{i:0;s:5:"Apple";i:1;s:6:"Orange";}}
