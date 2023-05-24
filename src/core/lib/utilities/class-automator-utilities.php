@@ -392,7 +392,7 @@ class Automator_Utilities {
 		if ( is_array( $data ) ) {
 			return $this->automator_sanitize_array( $data, $meta_key, $options );
 		}
-		$type_before = $type;
+		// $type_before = $type;
 		// Maybe identify field type
 		if ( empty( $type ) || 'mixed' === $type ) {
 			$type = $this->maybe_get_field_type( $meta_key, $options );
@@ -403,6 +403,7 @@ class Automator_Utilities {
 				$data = sanitize_textarea_field( $data );
 				break;
 			case 'html':
+			case 'markdown':
 				// Do nothing for HTML types.
 				break;
 			case 'url':
@@ -611,6 +612,11 @@ class Automator_Utilities {
 		// if tinymce is set to yes, return HTML
 		if ( isset( $options['fields'][ $option_code ]['supports_tinymce'] ) && 'true' === (string) $options['fields'][ $option_code ]['supports_tinymce'] ) {
 			return 'html';
+		}
+
+		// if markdown is set to yes, return HTML
+		if ( isset( $options['fields'][ $option_code ]['supports_markdown'] ) && 'true' === (string) $options['fields'][ $option_code ]['supports_markdown'] ) {
+			return 'markdown';
 		}
 
 		// No type found

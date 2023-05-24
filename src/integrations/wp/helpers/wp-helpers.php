@@ -219,7 +219,7 @@ class Wp_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool $any_option
+	 * @param bool   $any_option
 	 *
 	 * @return mixed
 	 */
@@ -380,7 +380,12 @@ class Wp_Helpers {
 
 		$options = array();
 
+		$group_id   = automator_filter_input( 'group_id', INPUT_POST );
 		$taxonomies = $this->get_taxonomies( automator_filter_input( 'value', INPUT_POST ) );
+		if ( 'CREATEPOST' === $group_id ) {
+			$post_type  = $_POST['values']['CREATEPOST'];
+			$taxonomies = $this->get_taxonomies( $post_type );
+		}
 
 		if ( empty( $taxonomies ) ) {
 			wp_send_json( array() );
@@ -512,6 +517,7 @@ class Wp_Helpers {
 		}
 
 		$post_type = automator_filter_input( 'value', INPUT_POST );
+		$group_id  = automator_filter_input( 'group_id', INPUT_POST );
 
 		$args       = array(
 			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
@@ -525,14 +531,23 @@ class Wp_Helpers {
 		);
 		$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any post', 'uncanny-automator' ) );
 
+		if ( 'CREATEPOST' === $group_id ) {
+			$fields[] = array(
+				'value' => '0',
+				'text'  => _x( 'No parent', 'WordPress post parent', 'uncanny-automator' ),
+			);
+		}
+
 		if ( ! empty( $posts_list ) ) {
 
 			$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
 
-			$fields[] = array(
-				'value' => '-1',
-				'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
-			);
+			if ( 'CREATEPOST' !== $group_id ) {
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
+				);
+			}
 			foreach ( $posts_list as $post_id => $post_title ) {
 				// Check if the post title is defined
 				$post_title = ! empty( $post_title ) ? $post_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
@@ -543,16 +558,18 @@ class Wp_Helpers {
 				);
 			}
 		} else {
-			$post_type_label = 'post';
+			if ( 'CREATEPOST' !== $group_id ) {
+				$post_type_label = 'post';
 
-			if ( intval( $post_type ) !== intval( '-1' ) ) {
-				$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
+				if ( intval( $post_type ) !== intval( '-1' ) ) {
+					$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
+				}
+
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
+				);
 			}
-
-			$fields[] = array(
-				'value' => '-1',
-				'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
-			);
 		}
 
 		echo wp_json_encode( $fields );
@@ -562,9 +579,9 @@ class Wp_Helpers {
 	}
 
 	/**
-	 * @param null $label
+	 * @param null   $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed|void
 	 */
@@ -581,10 +598,11 @@ class Wp_Helpers {
 	/**
 	 * Method get_post_types_options
 	 *
-	 * @param string $label The label of the field.
-	 * @param string $option_code The option code of the field.
-	 * @param array $args The field arguments.
-	 * @param boolean $apply_relevant_tokens Previous method `all_post_types` does not apply the relevant tokens. Set to true to apply the 'relevant_tokens' argument.
+	 * @param string  $label                 The label of the field.
+	 * @param string  $option_code           The option code of the field.
+	 * @param array   $args                  The field arguments.
+	 * @param boolean $apply_relevant_tokens Previous method `all_post_types` does not apply the relevant tokens. Set
+	 *                                       to true to apply the 'relevant_tokens' argument.
 	 *
 	 * @return array The option.
 	 */

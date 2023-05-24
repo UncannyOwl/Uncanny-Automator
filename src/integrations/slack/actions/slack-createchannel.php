@@ -47,6 +47,7 @@ class SLACK_CREATECHANNEL {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			'requires_user'         => false,
+			// translators: slack channel
 			'sentence'              => sprintf( __( 'Create {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
 			'select_option_name'    => __( 'Create {{a channel}}', 'uncanny-automator' ),
 			'priority'              => 10,
@@ -115,13 +116,8 @@ class SLACK_CREATECHANNEL {
 				);
 			}
 		} catch ( \Exception $e ) {
-
-			$error_msg = $e->getMessage();
-
-			$action_data['do-nothing'] = true;
-
+			$error_msg                           = $e->getMessage();
 			$action_data['complete_with_errors'] = true;
-
 		}
 
 		return Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );

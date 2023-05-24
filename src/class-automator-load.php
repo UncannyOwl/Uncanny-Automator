@@ -279,9 +279,52 @@ class Automator_Load {
 		// Load the core files
 		$this->initialize_core_automator();
 
+		// Load the services.
+		$this->load_services();
+
 		do_action( 'automator_configuration_complete' );
 
 		add_action( 'wpforms_loaded', array( $this, 'wpforms_integration' ) );
+	}
+
+	/**
+	 * Loads the RESTful API services.
+	 *
+	 * @since 4.15
+	 */
+	public function load_services() {
+
+		// Rest services.
+		add_action(
+			'rest_api_init',
+			function( \WP_REST_Server $wp_rest_server ) {
+				// Register our routes when 'rest_api_init' is called.
+				// Only require the route when needed.
+				require_once UA_ABSPATH . 'src/core/services/rest-routes.php';
+				Rest\Log_Endpoint\rest_api_init( $wp_rest_server );
+			},
+			10,
+			1
+		);
+
+		// Various callbacks when numtimes is evaluated.
+		add_action(
+			'automator_before_maybe_trigger_num_times_completed',
+			function( $times_args ) {
+				static $has_loaded = false;
+				// Make sure we only load once.
+				if ( ! $has_loaded ) {
+					require_once UA_ABSPATH . 'src/core/services/logger.php';
+					\Uncanny_Automator\Logger\fields_logger_register_listeners( $times_args );
+					$has_loaded = true;
+				}
+			},
+			10,
+			1
+		);
+
+		require_once UA_ABSPATH . 'src/core/services/logger/async-logger.php';
+
 	}
 
 	/**

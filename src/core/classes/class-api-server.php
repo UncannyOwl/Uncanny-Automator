@@ -183,10 +183,9 @@ class Api_Server {
 	 * @param string $endpoint
 	 * @param array $body
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public static function api_call( $params ) {
-
 		$api = self::get_instance();
 
 		if ( null !== self::$mock_response ) {
@@ -220,13 +219,7 @@ class Api_Server {
 			throw new \Exception( 'Unrecognized API response', 500 );
 		}
 
-		if ( array_key_exists( 'data', $response_body ) ) {
-			return $response_body;
-		}
-
-		automator_log( var_export( $response_body, true ), 'Empty API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
-
-		throw new \Exception( 'API returned an empty response with error code ' . $response_body['statusCode'], $response_body['statusCode'] );
+		return $response_body;
 	}
 
 	/**
@@ -303,11 +296,13 @@ class Api_Server {
 
 		$params['time_spent'] = $time_spent;
 
-		$api->maybe_log_action( $params, $request, $response );
+		$api_log_id = $api->maybe_log_action( $params, $request, $response );
 
 		if ( is_wp_error( $response ) ) {
 			throw new \Exception( 'WordPress was not able to make a request: ' . $response->get_error_message(), 500 );
 		}
+
+		$response['api_log_id'] = $api_log_id;
 
 		return $response;
 	}
@@ -481,7 +476,7 @@ class Api_Server {
 		$log = array(
 			'type'          => 'action',
 			'recipe_log_id' => $params['action']['recipe_log_id'],
-			'item_log_id'   => $params['action']['action_log_id'],
+			'item_log_id'   => isset( $params['action']['action_log_id'] ) ? $params['action']['action_log_id'] : '',
 			'endpoint'      => $params['endpoint'],
 			'params'        => maybe_serialize( $params ),
 			'request'       => maybe_serialize( $request ),

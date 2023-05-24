@@ -491,7 +491,6 @@ class Recipe_Post_Utilities {
 		);
 
 		Automator()->automator_load_textdomain();
-
 		$api_setup = array(
 			'wp'                  => false,
 			'restURL'             => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
@@ -507,12 +506,12 @@ class Recipe_Post_Utilities {
 			),
 			'isMultisite'         => ( is_multisite() ) ? true : false,
 			'integrations'        => Automator()->get_integrations(),
-			'triggers'            => Automator()->get_triggers(),
-			'actions'             => Automator()->get_actions(),
-			'closures'            => Automator()->get_closures(),
+			'triggers'            => array_values( Automator()->get_triggers() ),
+			'actions'             => array_values( Automator()->get_actions() ),
+			'closures'            => array_values( Automator()->get_closures() ),
 			'i18n'                => Automator()->i18n->get_all(),
 			'recipes_object'      => Automator()->get_recipes_data( true, $post_id ),
-			'version'             => Utilities::automator_get_version(),
+			'version'             => AUTOMATOR_PLUGIN_VERSION,
 			'proVersion'          => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : '',
 			'proFeatures'         => $this->get_pro_items(),
 			'recipe'              => array(
@@ -560,6 +559,7 @@ class Recipe_Post_Utilities {
 				'time' => get_option( 'time_format' ),
 			),
 			'connectApiUrl'       => sprintf( '%s%s?redirect_url=%s', AUTOMATOR_FREE_STORE_URL, AUTOMATOR_FREE_STORE_CONNECT_URL, rawurlencode( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ),
+			'adminUrl'            => admin_url( 'admin.php' ),
 			'dashboardUrl'        => admin_url( 'admin.php?page=uncanny-automator-dashboard' ),
 			'hasAccountConnected' => ( ! Api_Server::is_automator_connected() ? false : true ),
 			'hasValidProLicense'  => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),

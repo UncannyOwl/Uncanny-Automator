@@ -13,7 +13,7 @@ class Mp_Tokens {
 
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_mp_mpproduct_tokens', array( $this, 'mp_possible_tokens' ), 20, 2 );
-		add_filter( 'automator_maybe_parse_token', array( $this, 'mp_token' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'mp_token' ), 222, 6 );
 	}
 
 	/**

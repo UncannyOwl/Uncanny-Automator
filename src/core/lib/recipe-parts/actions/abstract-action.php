@@ -247,6 +247,22 @@ abstract class Action {
 	}
 
 	/**
+	 * get_parsed_meta_value
+	 *
+	 * @param  string $meta
+	 * @param  mixed $default
+	 * @return mixed
+	 */
+	public function get_parsed_meta_value( $meta, $default = '' ) {
+
+		if ( ! isset( $this->maybe_parsed[ $meta ] ) ) {
+			return $default;
+		}
+
+		return $this->maybe_parsed[ $meta ];
+	}
+
+	/**
 	 * @param $user_id
 	 * @param $action_data
 	 * @param $recipe_id
@@ -255,5 +271,7 @@ abstract class Action {
 	 *
 	 * @return mixed
 	 */
-	abstract protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed );
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		throw new \Exception( 'Please override the process_action() method to add the logic to your action.' );
+	}
 }

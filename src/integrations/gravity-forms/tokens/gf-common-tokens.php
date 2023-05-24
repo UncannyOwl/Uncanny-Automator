@@ -100,6 +100,14 @@ class GF_COMMON_TOKENS {
 
 	}
 
+	/**
+	 * get_hydrated_common_tokens
+	 *
+	 * @param  mixed $parsed
+	 * @param  mixed $args
+	 * @param  mixed $trigger
+	 * @return array
+	 */
 	public static function get_hydrated_common_tokens( $parsed, $args, $trigger ) {
 
 		list( $form, $entry_id, $previous_entry ) = $args['trigger_args'];
@@ -120,6 +128,14 @@ class GF_COMMON_TOKENS {
 
 	}
 
+	/**
+	 * get_hydrated_form_tokens
+	 *
+	 * @param  mixed $parsed
+	 * @param  mixed $args
+	 * @param  mixed $trigger
+	 * @return array
+	 */
 	public static function get_hydrated_form_tokens( $parsed, $args, $trigger ) {
 
 		list ($form, $entry_id, $previous_entry) = $args['trigger_args'];

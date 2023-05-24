@@ -11,7 +11,6 @@ if ( ! defined( 'WPINC' ) ) {
  * This class stores helper functions that can be used statically in all of WP after plugins loaded hook
  *
  * Use the Utilites::automator_get_% function to retrieve the variable. The following is a list of calls
- *
  */
 class Utilities {
 
@@ -51,7 +50,6 @@ class Utilities {
 	 *
 	 * @return Utilities $instance
 	 * @since 1.0.0
-	 *
 	 */
 	public static function get_instance() {
 
@@ -86,7 +84,6 @@ class Utilities {
 	 * @param object $class_instance
 	 *
 	 * @since    2.1.0
-	 *
 	 */
 	public static function automator_add_helper_instance( $integration, $class_instance ) {
 		self::$helper_instances[ $integration ] = $class_instance;
@@ -97,7 +94,6 @@ class Utilities {
 	 *
 	 * @return array
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_all_class_instances() {
 		return self::$class_instances;
@@ -108,7 +104,6 @@ class Utilities {
 	 *
 	 * @return array
 	 * @since    2.1.0
-	 *
 	 */
 	public static function automator_get_all_helper_instances() {
 		return self::$helper_instances;
@@ -131,7 +126,6 @@ class Utilities {
 	 *
 	 * @return string
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_date_format() {
 		return apply_filters( 'automator_date_format', 'F j, Y' );
@@ -142,7 +136,6 @@ class Utilities {
 	 *
 	 * @return string
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_time_format() {
 		return apply_filters( 'automator_time_format', 'g:i a' );
@@ -174,11 +167,11 @@ class Utilities {
 	 *
 	 * @return $asset_url
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_integration_icon( $file_name, $plugin_path = AUTOMATOR_BASE_FILE ) {
 		/**
 		 * Integration icons are now moved in to integrations itself
+		 *
 		 * @since 3.0
 		 */
 		if ( ! empty( $file_name ) && is_dir( dirname( $file_name ) ) ) {
@@ -249,7 +242,6 @@ class Utilities {
 	 *
 	 * @return $asset_url
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_media( $file_name ) {
 		return plugins_url( 'src/assets/backend/dist/img/' . $file_name, AUTOMATOR_BASE_FILE );
@@ -259,7 +251,6 @@ class Utilities {
 	 * Returns the full url for the passed vendor file
 	 *
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_vendor_asset( $file_name ) {
 		return plugins_url( 'src/assets/legacy/vendor/' . $file_name, AUTOMATOR_BASE_FILE );
@@ -271,7 +262,6 @@ class Utilities {
 	 * @param $file_name
 	 *
 	 * @since    1.0.0
-	 *
 	 */
 	public static function legacy_automator_enqueue_global_assets() {
 		wp_enqueue_style( 'uap-admin-global-fonts', 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap', array(), self::automator_get_version() );
@@ -288,7 +278,6 @@ class Utilities {
 	 *
 	 * @return $asset_url
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_css( $file_name ) {
 		return plugins_url( 'src/assets/css/' . $file_name, AUTOMATOR_BASE_FILE );
@@ -301,7 +290,6 @@ class Utilities {
 	 *
 	 * @return $asset_url
 	 * @since    3.2.0.2
-	 *
 	 */
 	public static function automator_get_asset( $file_name ) {
 		return plugins_url( 'src/assets/' . $file_name, AUTOMATOR_BASE_FILE );
@@ -312,7 +300,6 @@ class Utilities {
 	 *
 	 * @return string
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_version() {
 		return AUTOMATOR_PLUGIN_VERSION;
@@ -325,7 +312,6 @@ class Utilities {
 	 *
 	 * @return $asset_url
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_js( $file_name ) {
 		return plugins_url( 'src/assets/js/' . $file_name, AUTOMATOR_BASE_FILE );
@@ -354,7 +340,6 @@ class Utilities {
 		 * @param $file_name The file name of the view file
 		 *
 		 * @since 1.0.0
-		 *
 		 */
 		$views_directory = apply_filters( 'automator_view_path', $views_directory, $file_name );
 
@@ -368,7 +353,6 @@ class Utilities {
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    1.0.0
-	 *
 	 */
 	public static function add_class_instance( $class_name, $class_instance ) {
 
@@ -383,7 +367,6 @@ class Utilities {
 	 * @param object $class_instance The reference to the class instance
 	 *
 	 * @since    2.1.0
-	 *
 	 */
 	public static function add_helper_instance( $integration, $class_instance ) {
 
@@ -396,7 +379,6 @@ class Utilities {
 	 *
 	 * @return array
 	 * @since    1.0.0
-	 *
 	 */
 	public static function get_all_class_instances() {
 		return self::$class_instances;
@@ -407,7 +389,6 @@ class Utilities {
 	 *
 	 * @return array
 	 * @since    2.1.0
-	 *
 	 */
 	public static function get_all_helper_instances() {
 		return self::$helper_instances;
@@ -420,7 +401,6 @@ class Utilities {
 	 *
 	 * @return object | bool
 	 * @since    1.0.0
-	 *
 	 */
 	public static function get_class_instance( $class_name ) {
 		return isset( self::$class_instances[ $class_name ] ) ? self::$class_instances[ $class_name ] : false;
@@ -433,7 +413,6 @@ class Utilities {
 	 *
 	 * @return array
 	 * @since    1.0.0
-	 *
 	 */
 	public static function get_pro_items_list() {
 		include self::automator_get_include( 'pro-items-list.php' );
@@ -461,7 +440,6 @@ class Utilities {
 		 * @param $file_name The file name of the include file
 		 *
 		 * @since 1.0.0
-		 *
 		 */
 		$includes_directory = apply_filters( 'automator_includes_path_to', $includes_directory, $file_name );
 
@@ -478,7 +456,6 @@ class Utilities {
 	 *
 	 * @return $error_log Was the log successfully created
 	 * @since    1.0.0
-	 *
 	 */
 	public static function log( $trace_message = '', $trace_heading = '', $force_log = false, $file_name = 'logs', $backtrace = false ) {
 
@@ -524,7 +501,6 @@ class Utilities {
 	 *
 	 * @return bool
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_debug_mode() {
 		return ! empty( get_option( 'automator_settings_debug_enabled', false ) ) ? true : false;
@@ -535,10 +511,55 @@ class Utilities {
 	 *
 	 * @return string
 	 * @since    1.0.0
-	 *
 	 */
 	public static function automator_get_date_time_format() {
 		return apply_filters( 'automator_date_time_format', 'F j, Y g:i a' );
 	}
 
+	/**
+	 * Convert seconds to hours.
+	 *
+	 * @param int $seconds Seconds to convert.
+	 * @return string Hours in HH:MM:SS format.
+	 */
+	public static function seconds_to_hours( $seconds ) {
+
+		if ( ! is_numeric( $seconds ) || $seconds <= 0 ) {
+			return '00:00:00';
+		}
+		$seconds = (int) $seconds;
+		$hours   = floor( $seconds / 3600 );
+		$hours   = str_pad( $hours, 2, '0', STR_PAD_LEFT );
+		$minutes = floor( ( $seconds / 60 ) % 60 );
+		$minutes = str_pad( $minutes, 2, '0', STR_PAD_LEFT );
+		$seconds = $seconds % 60;
+		$seconds = str_pad( $seconds, 2, '0', STR_PAD_LEFT );
+
+		return "{$hours}:{$minutes}:{$seconds}";
+	}
+
+	/**
+	 * Convert Array to CSV.
+	 *
+	 * @param array $array Array to convert.
+	 * @param string $delimiter Delimiter to use.
+	 * @param string $enclosure Enclosure to use.
+	 * @param string $escape_char Escape character to use.
+	 *
+	 * @return string CSV string.
+	 */
+	public static function array_to_csv( $array = array(), $delimiter = ',', $enclosure = '"', $escape_char = '\\' ) {
+
+		if ( empty( $array ) || ! is_array( $array ) ) {
+			return '';
+		}
+
+		$f = fopen( 'php://memory', 'r+' );
+		foreach ( $array as $item ) {
+			fputcsv( $f, $item, $delimiter, $enclosure, $escape_char );
+		}
+		rewind( $f );
+
+		return stream_get_contents( $f );
+	}
 }

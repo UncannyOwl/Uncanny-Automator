@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit583c1269728d358d5b6e2399445f062c
+class ComposerStaticInit77bd35c93d70b36ed1eb17dd63a10d79
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -35,6 +35,7 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Flatted' => __DIR__ . '/../..' . '/src/recipe-ui/node_modules/flatted/php/flatted.php',
         'FlattedString' => __DIR__ . '/../..' . '/src/recipe-ui/node_modules/flatted/php/flatted.php',
+        'Recipe_Actions_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/recipe-actions-resolver.php',
         'Uncanny_Automator\\AC_ANNON_ADD' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-add.php',
         'Uncanny_Automator\\AC_ANNON_ADDTAG' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-addtag.php',
         'Uncanny_Automator\\AC_ANNON_LISTREMOVE' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-listremove.php',
@@ -73,8 +74,6 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\ANON_FCRM_TAG_ADDED' => __DIR__ . '/../..' . '/src/integrations/fluent-crm/triggers/anon-fcrm-tag-added.php',
         'Uncanny_Automator\\ANON_FI_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/formidable/triggers/anon-fi-submitform.php',
         'Uncanny_Automator\\ANON_FR_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/forminator/triggers/anon-fr-submitform.php',
-        'Uncanny_Automator\\ANON_GF_FORM_ENTRY_UPDATED' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php',
-        'Uncanny_Automator\\ANON_GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-subform.php',
         'Uncanny_Automator\\ANON_HF_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/happyforms/triggers/anon-hf-submitform.php',
         'Uncanny_Automator\\ANON_MAILCHIMP_CONTACT_ADDED' => __DIR__ . '/../..' . '/src/integrations/mailchimp/triggers/anon-mailchimp-contact-added.php',
         'Uncanny_Automator\\ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED' => __DIR__ . '/../..' . '/src/integrations/mailchimp/triggers/anon-mailchimp-contact-email-changed.php',
@@ -136,7 +135,6 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\Add_Fi_Integration' => __DIR__ . '/../..' . '/src/integrations/formidable/add-fi-integration.php',
         'Uncanny_Automator\\Add_Flsupport_Integration' => __DIR__ . '/../..' . '/src/integrations/fluent-support/add-flsupport-integration.php',
         'Uncanny_Automator\\Add_Fr_Integration' => __DIR__ . '/../..' . '/src/integrations/forminator/add-fr-integration.php',
-        'Uncanny_Automator\\Add_Gf_Integration' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/add-gf-integration.php',
         'Uncanny_Automator\\Add_Give_Integration' => __DIR__ . '/../..' . '/src/integrations/give/add-give-integration.php',
         'Uncanny_Automator\\Add_Google_Calendar_Integration' => __DIR__ . '/../..' . '/src/integrations/google-calendar/add-google-calendar-integration.php',
         'Uncanny_Automator\\Add_Google_Sheet_Integration' => __DIR__ . '/../..' . '/src/integrations/google-sheet/add-google-sheet-integration.php',
@@ -338,7 +336,6 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\Caldera_Helpers' => __DIR__ . '/../..' . '/src/integrations/caldera-forms/helpers/caldera-helpers.php',
         'Uncanny_Automator\\Cf7_Tokens' => __DIR__ . '/../..' . '/src/integrations/contact-form7/tokens/cf7-tokens.php',
         'Uncanny_Automator\\Cf_Tokens' => __DIR__ . '/../..' . '/src/integrations/caldera-forms/tokens/cf-tokens.php',
-        'Uncanny_Automator\\Chat_Completions_Client' => __DIR__ . '/../..' . '/src/integrations/open-ai/client/chat-completions/chat-completions.php',
         'Uncanny_Automator\\ClickUp_Helpers' => __DIR__ . '/../..' . '/src/integrations/clickup/helpers/clickup-helpers.php',
         'Uncanny_Automator\\ClickUp_Settings' => __DIR__ . '/../..' . '/src/integrations/clickup/settings/settings-clickup.php',
         'Uncanny_Automator\\Closure_Redirect' => __DIR__ . '/../..' . '/src/integrations/wp/closures/closure-redirect.php',
@@ -417,10 +414,8 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\GCALENDAR_ADDEVENT' => __DIR__ . '/../..' . '/src/integrations/google-calendar/actions/gcalendar-addevent.php',
         'Uncanny_Automator\\GCALENDAR_REMOVEATTENDEE' => __DIR__ . '/../..' . '/src/integrations/google-calendar/actions/gcalendar-removeattendee.php',
         'Uncanny_Automator\\GF_COMMON_TOKENS' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/tokens/gf-common-tokens.php',
-        'Uncanny_Automator\\GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform.php',
-        'Uncanny_Automator\\GF_SUBFORM_CODES' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform-codes.php',
-        'Uncanny_Automator\\GF_SUBFORM_GROUPS' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform-groups.php',
         'Uncanny_Automator\\GH_ADDTAG' => __DIR__ . '/../..' . '/src/integrations/groundhogg/actions/gh-addtag.php',
+        'Uncanny_Automator\\GH_CREATE_UPDATE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/groundhogg/actions/gh-create-update-contact.php',
         'Uncanny_Automator\\GH_REMOVETAG' => __DIR__ . '/../..' . '/src/integrations/groundhogg/actions/gh-removetag.php',
         'Uncanny_Automator\\GP_AWARDACHIEVEMENT_A' => __DIR__ . '/../..' . '/src/integrations/gamipress/actions/gp-awardachievement-a.php',
         'Uncanny_Automator\\GP_AWARDPOINTS_A' => __DIR__ . '/../..' . '/src/integrations/gamipress/actions/gp-awardpoints-a.php',
@@ -475,6 +470,24 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\Instagram_Helpers' => __DIR__ . '/../..' . '/src/integrations/instagram/helpers/instagram-helpers.php',
         'Uncanny_Automator\\Instagram_Settings' => __DIR__ . '/../..' . '/src/integrations/instagram/settings/settings-instagram.php',
         'Uncanny_Automator\\Integration' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/abstract-integration.php',
+        'Uncanny_Automator\\Integrations\\Charitable\\ANON_CHARITABLE_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/anon-charitable-made-donation.php',
+        'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_HELPERS' => __DIR__ . '/../..' . '/src/integrations/charitable/helpers/charitable-helpers.php',
+        'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
+        'Uncanny_Automator\\Integrations\\Charitable\\Charitable_Integration' => __DIR__ . '/../..' . '/src/integrations/charitable/class-charitable-integration.php',
+        'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_FORM_ENTRY_UPDATED' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php',
+        'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-subform.php',
+        'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform.php',
+        'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM_CODES' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform-codes.php',
+        'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM_GROUPS' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform-groups.php',
+        'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Integration' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/class-gf-integration.php',
+        'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Tokens' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/tokens/gf-new-tokens.php',
+        'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CHANNEL_MESSAGE' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php',
+        'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_CHANNEL' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php',
+        'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_TEAM' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php',
+        'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_SEND_DM' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php',
+        'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Helpers' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php',
+        'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Integration' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/microsoft-teams-integration.php',
+        'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Settings' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/settings/settings-microsoft-teams.php',
         'Uncanny_Automator\\Integromat_Helpers' => __DIR__ . '/../..' . '/src/integrations/integromat/helpers/integromat-helpers.php',
         'Uncanny_Automator\\JETCRM_COMPANY_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-company-created.php',
         'Uncanny_Automator\\JETCRM_CONTACT_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-contact-created.php',
@@ -528,6 +541,11 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\Lifterlms_Helpers' => __DIR__ . '/../..' . '/src/integrations/lifterlms/helpers/lifterlms-helpers.php',
         'Uncanny_Automator\\LinkedIn_Settings' => __DIR__ . '/../..' . '/src/integrations/linkedin/settings/settings-linkedin.php',
         'Uncanny_Automator\\Linkedin_Helpers' => __DIR__ . '/../..' . '/src/integrations/linkedin/helpers/linkedin-helpers.php',
+        'Uncanny_Automator\\Logger\\Action_Fields_Logger' => __DIR__ . '/../..' . '/src/core/services/logger/action-fields-logger.php',
+        'Uncanny_Automator\\Logger\\Recipe_Objects_Logger' => __DIR__ . '/../..' . '/src/core/services/logger/recipe-objects-logger.php',
+        'Uncanny_Automator\\Logger\\Singleton\\Async_Actions_Logger_Singleton' => __DIR__ . '/../..' . '/src/core/services/logger/singleton/async-action-logger-singleton.php',
+        'Uncanny_Automator\\Logger\\Tokens_Logger' => __DIR__ . '/../..' . '/src/core/services/logger/token-logger.php',
+        'Uncanny_Automator\\Logger\\Trigger_Fields_Logger' => __DIR__ . '/../..' . '/src/core/services/logger/trigger-fields-logger.php',
         'Uncanny_Automator\\Logs_List_Table' => __DIR__ . '/../..' . '/src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php',
         'Uncanny_Automator\\MAILCHIMP_TOKENS' => __DIR__ . '/../..' . '/src/integrations/mailchimp/tokens/mailchimp-tokens.php',
         'Uncanny_Automator\\MAILPOET_ADDSUBSCRIBERTOLIST_A' => __DIR__ . '/../..' . '/src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php',
@@ -554,6 +572,7 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\MPC_MARKLESSONDONE' => __DIR__ . '/../..' . '/src/integrations/memberpress-courses/actions/mpc-marklessondone.php',
         'Uncanny_Automator\\MP_PURCHASEPRODUCTONETIME' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-purchaseproductonetime.php',
         'Uncanny_Automator\\MP_PURCHASEPRODUCTRECURRING' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-purchaseproductrecurring.php',
+        'Uncanny_Automator\\MP_RENEWS_RECURRING_SUBSCRIPTION' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-renews-recurring-subscription.php',
         'Uncanny_Automator\\MYCRED_AWARDBADGE_A' => __DIR__ . '/../..' . '/src/integrations/mycred/actions/mycred-awardbadge-a.php',
         'Uncanny_Automator\\MYCRED_AWARDPOINTS_A' => __DIR__ . '/../..' . '/src/integrations/mycred/actions/mycred-awardpoints-a.php',
         'Uncanny_Automator\\MYCRED_AWARDRANK_A' => __DIR__ . '/../..' . '/src/integrations/mycred/actions/mycred-awardrank-a.php',
@@ -577,8 +596,17 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\Nf_Tokens' => __DIR__ . '/../..' . '/src/integrations/ninja-forms/tokens/nf-tokens.php',
         'Uncanny_Automator\\Ninja_Forms_Helpers' => __DIR__ . '/../..' . '/src/integrations/ninja-forms/helpers/ninja-forms-helpers.php',
         'Uncanny_Automator\\OPEN_AI_CHAT_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-chat-generate.php',
+        'Uncanny_Automator\\OPEN_AI_CORRECT_SPELLING_GRAMMAR' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-correct-spelling-grammar.php',
+        'Uncanny_Automator\\OPEN_AI_EXCERPT_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-excerpt-generate.php',
         'Uncanny_Automator\\OPEN_AI_IMAGE_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-image-generate.php',
+        'Uncanny_Automator\\OPEN_AI_INSTAGRAM_EXCERPT_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-instagram-excerpt-generate.php',
+        'Uncanny_Automator\\OPEN_AI_LINKS_SUGGEST' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-links-suggest.php',
+        'Uncanny_Automator\\OPEN_AI_META_DESCRIPTION_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-meta-description-generate.php',
+        'Uncanny_Automator\\OPEN_AI_SENTIMENT_ANALYZE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-sentiment-analyze.php',
+        'Uncanny_Automator\\OPEN_AI_SEO_TITLE_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-seo-title-generate.php',
         'Uncanny_Automator\\OPEN_AI_TEXT_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-text-generate.php',
+        'Uncanny_Automator\\OPEN_AI_TEXT_TRANSLATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-text-translate.php',
+        'Uncanny_Automator\\OPEN_AI_TWITTER_EXCERPT_GENERATE' => __DIR__ . '/../..' . '/src/integrations/open-ai/actions/open-ai-twitter-excerpt-generate.php',
         'Uncanny_Automator\\OPTINMONSTER_SHOW_CAMPAIGN' => __DIR__ . '/../..' . '/src/integrations/optinmonster/actions/optinmonster-show-campaign.php',
         'Uncanny_Automator\\OpenAI\\HTTP_Client' => __DIR__ . '/../..' . '/src/integrations/open-ai/client/http-client.php',
         'Uncanny_Automator\\Open_AI_Helpers' => __DIR__ . '/../..' . '/src/integrations/open-ai/helpers/open-ai-helpers.php',
@@ -631,6 +659,23 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\Recipe_Post_Rest_Api' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php',
         'Uncanny_Automator\\Recipe_Post_Type' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-recipe/class-recipe-post-type.php',
         'Uncanny_Automator\\Recipe_Post_Utilities' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php',
+        'Uncanny_Automator\\Resolver\\Conditions\\Errors_Mapping' => __DIR__ . '/../..' . '/src/core/services/resolver/conditions/errors-mapping.php',
+        'Uncanny_Automator\\Resolver\\Conditions\\Errors_Registry' => __DIR__ . '/../..' . '/src/core/services/resolver/conditions/errors-registry.php',
+        'Uncanny_Automator\\Resolver\\Fields_Conditions_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/fields-conditions-resolver.php',
+        'Uncanny_Automator\\Resolver\\Fields_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/fields-resolver.php',
+        'Uncanny_Automator\\Rest\\Auth\\Auth' => __DIR__ . '/../..' . '/src/core/services/rest/auth/auth.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Factory\\Automator_Factory' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/factory/automator-factory.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Factory\\Logs_Factory' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/factory/logs-factory.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Queries\\Action_Logs_Queries' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/queries/action-logs-queries.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Queries\\Recipe_Logs_Queries' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/queries/recipe-logs-queries.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Queries\\Trigger_Logs_Queries' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/queries/trigger-logs-queries.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Action_Logs_Helpers\\Conditions_Helper' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/action-logs-helpers/conditions-helper.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Action_Logs_Resources' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Recipe_Logs_Resources' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/recipe-logs-resources.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Trigger_Logs_Resources' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/trigger-logs-resources.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Utils\\Formatters_Utils' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\User_Endpoint' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/user-endpoint.php',
         'Uncanny_Automator\\Restrict_Content_Helpers' => __DIR__ . '/../..' . '/src/integrations/restrict-content/helpers/restrict-content-helpers.php',
         'Uncanny_Automator\\Restrict_Content_Tokens' => __DIR__ . '/../..' . '/src/integrations/restrict-content/tokens/restrict-content-tokens.php',
         'Uncanny_Automator\\SHEET_ADDARECORD' => __DIR__ . '/../..' . '/src/integrations/google-sheet/actions/sheet-addarecord.php',
@@ -647,6 +692,7 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
         'Uncanny_Automator\\Settings\\Premium_Integration_Settings' => __DIR__ . '/../..' . '/src/core/lib/settings/premium-integration-settings.php',
         'Uncanny_Automator\\Settings\\Premium_Integrations' => __DIR__ . '/../..' . '/src/core/lib/settings/trait-premium-integrations.php',
         'Uncanny_Automator\\Setup_Wizard' => __DIR__ . '/../..' . '/src/core/admin/setup-wizard/setup-wizard.php',
+        'Uncanny_Automator\\Singleton\\Parsed_Token_Records_Singleton' => __DIR__ . '/../..' . '/src/core/services/singleton/parsed-token-records-singleton.php',
         'Uncanny_Automator\\Slack_Helpers' => __DIR__ . '/../..' . '/src/integrations/slack/helpers/slack-helpers.php',
         'Uncanny_Automator\\Slack_Settings' => __DIR__ . '/../..' . '/src/integrations/slack/settings/settings-slack.php',
         'Uncanny_Automator\\Space_List_Create' => __DIR__ . '/../..' . '/src/integrations/clickup/actions/space-list-create.php',
@@ -894,10 +940,10 @@ class ComposerStaticInit583c1269728d358d5b6e2399445f062c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit583c1269728d358d5b6e2399445f062c::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit583c1269728d358d5b6e2399445f062c::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit583c1269728d358d5b6e2399445f062c::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit583c1269728d358d5b6e2399445f062c::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit77bd35c93d70b36ed1eb17dd63a10d79::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit77bd35c93d70b36ed1eb17dd63a10d79::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit77bd35c93d70b36ed1eb17dd63a10d79::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit77bd35c93d70b36ed1eb17dd63a10d79::$classMap;
 
         }, null, ClassLoader::class);
     }

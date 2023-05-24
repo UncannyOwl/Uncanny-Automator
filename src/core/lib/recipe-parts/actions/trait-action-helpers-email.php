@@ -96,7 +96,7 @@ trait Action_Helpers_Email {
 		$reply_to   = sanitize_email( $data['reply_to'] );
 		$content    = sanitize_text_field( $data['content'] );
 		$charset    = sanitize_text_field( $data['charset'] );
-		$subject    = sanitize_text_field( stripslashes( $data['subject'] ) );
+		$subject    = sanitize_text_field( stripslashes( html_entity_decode( $data['subject'] ) ) );
 		if ( 'text/html' !== $this->get_content_type() ) {
 			$body = wp_filter_post_kses( stripslashes( $data['body'] ) );
 		} else {

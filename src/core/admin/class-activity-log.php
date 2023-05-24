@@ -297,9 +297,6 @@ class Activity_Log {
 		) {
 			return;
 		}
-		//Added lity option for the iframe ligthbox
-		wp_enqueue_style( 'uap-lity', Utilities::automator_get_vendor_asset( 'lity/css/lity.min.css' ), array(), '2.4.1' );
-		wp_enqueue_script( 'uap-lity', Utilities::automator_get_vendor_asset( 'lity/js/lity.min.js' ), array( 'jquery' ), '2.4.1', true );
 
 		// Recipe details css.
 		wp_enqueue_style( 'uap-recipe-details', Utilities::automator_get_asset( 'legacy/css/admin/recipe-details.css' ), array(), Utilities::automator_get_version() );

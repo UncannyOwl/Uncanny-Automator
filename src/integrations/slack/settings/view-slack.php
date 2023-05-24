@@ -26,7 +26,7 @@ $default_icon_preview = plugins_url( 'assets/slack-avatar@2x.png', __FILE__ );
 ?>
 
 <form method="POST" action="options.php" warn-unsaved>
-	
+
 	<?php settings_fields( $this->get_settings_id() ); ?>
 
 	<div class="uap-settings-panel">
@@ -100,13 +100,13 @@ $default_icon_preview = plugins_url( 'assets/slack-avatar@2x.png', __FILE__ );
 					?>
 
 					<div class="uap-slack-fields">
-						
+
 						<div class="uap-slack-fields-left">
 
 							<div class="uap-settings-panel-content-subtitle">
 								<?php esc_html_e( 'Bot setup', 'uncanny-automator' ); ?>
 							</div>
-							
+
 							<uo-text-field
 								id="uap_automator_slack_api_bot_name"
 								value="<?php echo esc_attr( $bot_name ); ?>"
@@ -138,7 +138,7 @@ $default_icon_preview = plugins_url( 'assets/slack-avatar@2x.png', __FILE__ );
 							<div id="uap-slack-preview-generator" data-icon="<?php echo esc_url( $default_icon_preview ); ?>">
 
 								<div class="uap-slack-preview uap-spacing-top">
-									
+
 									<div class="uap-slack-preview-avatar">
 										<img 
 											src="<?php echo ! empty( $bot_icon ) ? esc_url( $bot_icon ) : esc_url( $default_icon_preview ); ?>" 
@@ -155,7 +155,7 @@ $default_icon_preview = plugins_url( 'assets/slack-avatar@2x.png', __FILE__ );
 										</span>
 
 										<span class="uap-slack-preview-details__date">
-											<?php esc_attr_e( date_i18n( 'g:i A' ) ); ?>
+											<?php echo esc_attr( date_i18n( 'g:i A' ) ); ?>
 										</span>
 									</div>
 									<div class="uap-slack-preview-body">
@@ -165,7 +165,7 @@ $default_icon_preview = plugins_url( 'assets/slack-avatar@2x.png', __FILE__ );
 								</div>
 
 								<div class="uap-slack-preview uap-slack-preview--dark uap-spacing-top">
-									
+
 									<div class="uap-slack-preview-avatar">
 										<img 
 											src="<?php echo ! empty( $bot_icon ) ? esc_url( $bot_icon ) : esc_url( $default_icon_preview ); ?>" 
@@ -182,7 +182,7 @@ $default_icon_preview = plugins_url( 'assets/slack-avatar@2x.png', __FILE__ );
 										</span>
 
 										<span class="uap-slack-preview-details__date">
-											<?php esc_attr_e( date_i18n( 'g:i A' ) ); ?>
+											<?php echo esc_attr( date_i18n( 'g:i A' ) ); ?>
 										</span>
 									</div>
 									<div class="uap-slack-preview-body">

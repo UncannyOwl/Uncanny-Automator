@@ -88,6 +88,5 @@ jQuery(document).ready(function($){
 	'use strict';
 	$('form.uap-report-filters').append("<input type='hidden' name='tab' value='<?php echo esc_html( $this->get_current_tab() ); ?>' />")
 	$('form.uap-report-filters input[name=page]').val('uncanny-automator-admin-logs');
-	$(document).on('click', '.uap-log-details', lity);
 });
 </script>

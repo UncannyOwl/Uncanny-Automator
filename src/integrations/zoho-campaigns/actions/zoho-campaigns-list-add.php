@@ -37,7 +37,7 @@ class Zoho_Campaigns_List_Add {
 
 		$this->set_is_pro( false );
 
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/clickup/' ) );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/zoho-campaigns/' ) );
 
 		$this->set_requires_user( false );
 

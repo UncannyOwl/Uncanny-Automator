@@ -396,7 +396,7 @@ class Active_Campaign_Helpers {
 		$response = $this->api_request( $body );
 
 		if ( empty( $response['data']['contacts'] ) ) {
-			throw new \Exception( 'The contact %s does not exist in ActiveCampaign', $email );
+			throw new \Exception( sprintf( 'The contact %s does not exist in ActiveCampaign', $email ), 400 );
 		}
 
 		return array_shift( $response['data']['contacts'] );

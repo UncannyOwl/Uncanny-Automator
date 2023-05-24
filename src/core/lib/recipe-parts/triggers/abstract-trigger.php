@@ -275,7 +275,7 @@ abstract class Trigger {
 
 		$additional_tokens = $this->define_tokens( $trigger, $tokens );
 
-		foreach ( $additional_tokens as &$additonal_token ) {
+		foreach ( $additional_tokens as $key => $additonal_token ) {
 			if ( empty( $additonal_token['tokenIdentifier'] ) ) {
 				$additonal_token['tokenIdentifier'] = $this->get_code();
 			}
@@ -284,7 +284,7 @@ abstract class Trigger {
 				$additonal_token['tokenType'] = 'text';
 			}
 
-			$tokens[] = $additonal_token;
+			$tokens[ $key ] = $additonal_token;
 		}
 
 		return $tokens;
@@ -420,11 +420,11 @@ abstract class Trigger {
 		$this->trigger_records = array(
 			'code'           => $this->get_code(),
 			'user_id'        => $this->user_id,
-			'trigger_id'     => $this->trigger['ID'],
+			'trigger_id'     => (int) $this->trigger['ID'],
 			'recipe_id'      => $this->recipe_id,
 			'trigger_log_id' => $this->trigger_log_entry,
 			'recipe_log_id'  => $this->recipe_log_id,
-			'run_number'     => $this->run_number,
+			'run_number'     => (int) Automator()->get->next_run_number( $this->recipe_id, $this->user_id, true ),
 			'meta'           => $this->get_trigger_meta(),
 		);
 

@@ -42,7 +42,7 @@ class LP_LESSONDONE {
 			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnPress */
 			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
-			'action'              => 'learn_press_user_complete_lesson',
+			'action'              => 'learn-press/user-completed-lesson',
 			'priority'            => 10,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'lp_lesson_completed' ),
@@ -74,7 +74,7 @@ class LP_LESSONDONE {
 	 * @param $result
 	 * @param $user_id
 	 */
-	public function lp_lesson_completed( $lesson_id, $result, $user_id ) {
+	public function lp_lesson_completed( $lesson_id, $course_id, $user_id ) {
 
 		if ( is_null( $lesson_id ) ) {
 			return;

@@ -144,25 +144,3 @@ a#ua-connect-account-btn {
 p.footer-actions span a {
     color: #7f7e7e;
 }
-
-/**
- * Skip modal styling
- */
-#automator-setup-wizard-skip-modal {
-    width: 450px;
-    padding: 20px 40px;
-    border-radius: 6px;
-}
-
-#automator-setup-wizard-skip-modal p {
-    font-size: 16px;
-}
-
-#automator-setup-wizard-skip-modal a {
-    text-decoration: none;
-}
-
-#automator-setup-wizard-skip-modal a#ua-connect-account-btn {
-    margin-top: 0px;
-}
-

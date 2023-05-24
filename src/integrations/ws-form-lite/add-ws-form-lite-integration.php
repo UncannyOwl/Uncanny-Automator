@@ -23,7 +23,7 @@ class Add_Ws_Form_Lite_Integration {
 	 */
 	protected function setup() {
 		$this->set_integration( 'WSFORMLITE' );
-		$this->set_name( 'WS Form LITE' );
+		$this->set_name( 'WS Form' );
 		$this->set_icon( 'ws-form-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 	}

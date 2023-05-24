@@ -185,7 +185,7 @@ class Gravity_Forms_Helpers {
 	public static function is_uncanny_group_field_exist( $fields ) {
 		$uo_groups_fields = false;
 		foreach ( $fields as $field ) {
-			if ( GF_SUBFORM_GROUPS::UO_GROUP_FIELD_TYPE !== $field->type ) {
+			if ( Integrations\Gravity_Forms\GF_SUBFORM_GROUPS::UO_GROUP_FIELD_TYPE !== $field->type ) {
 				continue;
 			}
 			$uo_groups_fields = true;

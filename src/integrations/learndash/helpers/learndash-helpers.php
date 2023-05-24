@@ -151,6 +151,11 @@ class Learndash_Helpers {
 			'custom_value_description' => _x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
+		if ( self::is_course_timer_activated() ) {
+				$option['relevant_tokens'][ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = __( 'Course cumulative time', 'uncanny-automator' );
+				$option['relevant_tokens'][ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = __( 'Course time at completion', 'uncanny-automator' );
+		}
+
 		if ( false === $relevant_tokens ) {
 			$option['relevant_tokens'] = array();
 		}
@@ -348,11 +353,18 @@ class Learndash_Helpers {
 			'required'                 => true,
 			'options'                  => $options,
 			'relevant_tokens'          => array(
-				$option_code                => esc_attr__( 'Quiz title', 'uncanny-automator' ),
-				$option_code . '_ID'        => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
-				$option_code . '_URL'       => esc_attr__( 'Quiz URL', 'uncanny-automator' ),
-				$option_code . '_THUMB_ID'  => esc_attr__( 'Quiz featured image ID', 'uncanny-automator' ),
-				$option_code . '_THUMB_URL' => esc_attr__( 'Quiz featured image URL', 'uncanny-automator' ),
+				$option_code                      => esc_attr_x( 'Quiz title', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_ID'              => esc_attr_x( 'Quiz ID', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_URL'             => esc_attr_x( 'Quiz URL', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'        => esc_attr_x( 'Quiz featured image ID', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL'       => esc_attr_x( 'Quiz featured image URL', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_TIME'            => esc_attr_x( 'Quiz time spent', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_SCORE'           => esc_attr_x( 'Quiz score', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_POINTS'          => esc_attr_x( 'Quiz points scored', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_CORRECT'         => esc_attr_x( 'Quiz number of correct answers', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_CATEGORY_SCORES' => esc_attr_x( 'Quiz category scores', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_Q_AND_A'         => esc_attr_x( 'Quiz questions and answers', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_Q_AND_A_CSV'     => esc_attr_x( 'Quiz question & answers (unformatted)', 'LearnDash Token', 'uncanny-automator' ),
 			),
 			'custom_value_description' => _x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
 		);
@@ -615,4 +627,24 @@ class Learndash_Helpers {
 			return;
 		}
 	}
+
+	/**
+	 * Check if course timer is activated
+	 */
+	public static function is_course_timer_activated() {
+
+		static $is_activated = null;
+
+		if ( is_null( $is_activated ) ) {
+			if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
+				$is_activated = false;
+			} else {
+				$active_modules = get_option( 'uncanny_toolkit_active_classes', true );
+				$is_activated   = ! empty( $active_modules['uncanny_pro_toolkit\CourseTimer'] );
+			}
+		}
+
+		return $is_activated;
+	}
+
 }

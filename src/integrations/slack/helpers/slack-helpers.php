@@ -73,7 +73,8 @@ class Slack_Helpers {
 	/**
 	 * Method setOptions
 	 *
-	 * @param  Slack_Helpers $options
+	 * @param Slack_Helpers $options
+	 *
 	 * @return void
 	 */
 	public function setOptions( Slack_Helpers $options ) { // phpcs:ignore
@@ -109,6 +110,7 @@ class Slack_Helpers {
 	 * Method maybe_customize_bot
 	 *
 	 * @param array $mesage
+	 *
 	 * @return array $mesage
 	 */
 	public function maybe_customize_bot( $message ) {
@@ -287,15 +289,16 @@ class Slack_Helpers {
 		}
 
 		$option = array(
-			'option_code'      => $option_code,
-			'label'            => $label,
-			'description'      => $description,
-			'placeholder'      => $placeholder,
-			'input_type'       => $type,
-			'supports_tokens'  => $tokens,
-			'required'         => $required,
-			'default_value'    => $default,
-			'supports_tinymce' => false,
+			'option_code'       => $option_code,
+			'label'             => $label,
+			'description'       => $description,
+			'placeholder'       => $placeholder,
+			'input_type'        => $type,
+			'supports_tokens'   => $tokens,
+			'required'          => $required,
+			'default_value'     => $default,
+			'supports_tinymce'  => false,
+			'supports_markdown' => true,
 		);
 
 		return apply_filters( 'uap_option_text_field', $option );
@@ -316,10 +319,6 @@ class Slack_Helpers {
 			);
 
 			$response = $this->api_call( $body );
-
-			if ( empty( $response['data']['ok'] ) || true !== $response['data']['ok'] ) {
-				throw new \Exception( 'Something went wrong when fetching the channles' );
-			}
 
 			$options[] = array(
 				'value' => '-1',
@@ -363,10 +362,6 @@ class Slack_Helpers {
 			);
 
 			$response = $this->api_call( $body );
-
-			if ( empty( $response['data']['ok'] ) || true !== $response['data']['ok'] ) {
-				throw new \Exception( 'Something went wrong when fetching the users' );
-			}
 
 			$options[] = array(
 				'value' => '-1',
@@ -527,8 +522,9 @@ class Slack_Helpers {
 	/**
 	 * Method api_call
 	 *
-	 * @param  mixed $body
-	 * @param  mixed $action
+	 * @param mixed $body
+	 * @param mixed $action
+	 *
 	 * @return void
 	 */
 	public function api_call( $body, $action = null ) {
@@ -546,14 +542,17 @@ class Slack_Helpers {
 
 		$response = Api_Server::api_call( $params );
 
-		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( $params['endpoint'] . ' failed' );
-		}
+		$this->check_for_errors( $response );
 
 		return $response;
 
 	}
 
+	/**
+	 * integration_status
+	 *
+	 * @return string
+	 */
 	public function integration_status() {
 
 		try {
@@ -565,5 +564,29 @@ class Slack_Helpers {
 		}
 
 		return $is_connected ? 'success' : '';
+	}
+
+	/**
+	 * check_for_errors
+	 *
+	 * @param  mixed $response
+	 * @return void
+	 */
+	public function check_for_errors( $response ) {
+
+		// The API class makes sure the [data] is always there.
+		$data = $response['data'];
+
+		if ( ! empty( $data['ok'] ) && true === $data['ok'] ) {
+			return;
+		}
+
+		$error = __( 'Unknown Slack API error occurred.', 'uncanny-automator' );
+
+		if ( ! empty( $data['error'] ) ) {
+			$error = __( 'Slack API returned an error: ', 'uncanny-automator' ) . $data['error'];
+		}
+
+		throw new \Exception( $error, $response['statusCode'] );
 	}
 }

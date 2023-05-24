@@ -275,7 +275,9 @@ trait Action_Tokens {
 			// Action meta type.
 			if ( 'META' === $type ) {
 
-				$replaceables[ sprintf( '{{ACTION_META:%d:%s:%s}}', $action_id, $parent, $meta_key ) ] = $this->get_meta_value(
+				$raw = sprintf( '{{ACTION_META:%d:%s:%s}}', $action_id, $parent, $meta_key );
+
+				$replaceables[ $raw ] = $this->get_meta_value(
 					$action_log_id,
 					$meta_key,
 					$args
@@ -285,8 +287,16 @@ trait Action_Tokens {
 
 			// Action field type.
 			if ( 'FIELD' === $type ) {
-				$replaceables[ sprintf( '{{ACTION_FIELD:%d:%s:%s}}', $action_id, $parent, $meta_key ) ] = $this->get_field_value( $action_log_id, $meta_key );
+
+				$raw = sprintf( '{{ACTION_FIELD:%d:%s:%s}}', $action_id, $parent, $meta_key );
+
+				$replaceables[ $raw ] = $this->get_field_value( $action_log_id, $meta_key );
+
 			}
+
+			$parsed_tokens_record = Automator()->parsed_token_records();
+			$parsed_tokens_record->record_token( $raw, $replaceables[ $raw ], $args );
+
 		}
 
 		return $replaceables;
@@ -323,12 +333,10 @@ trait Action_Tokens {
 
 		}
 
-		$found_key = array_search( $action_meta_key, array_column( $action_meta, 'meta_key' ), true );
+		$value = $this->find_token_value( $action_meta_key, $action_meta );
 
-		if ( false !== $found_key ) {
-
-			$value = $action_meta[ $found_key ];
-
+		if ( false !== $value ) {
+			$value = $this->maybe_handle_custom_value( $value, $action_meta );
 		}
 
 		// If its a repeater field and the value is JSON, get the requested field code from index.
@@ -349,6 +357,47 @@ trait Action_Tokens {
 
 		return ! empty( $meta_value ) ? $meta_value : '';
 
+	}
+
+	/**
+	 * find_token_value
+	 *
+	 * @param  string $token
+	 * @param  array $action_meta
+	 * @return object
+	 */
+	public function find_token_value( $token, $action_meta ) {
+
+		$found_key = array_search( $token, array_column( $action_meta, 'meta_key' ), true );
+
+		if ( false === $found_key ) {
+			return false;
+		}
+
+		$value = $action_meta[ $found_key ];
+
+		return $value;
+	}
+
+	/**
+	 * maybe_handle_custom_value
+	 *
+	 * @param  object $value
+	 * @return object
+	 */
+	public function maybe_handle_custom_value( $value, $action_meta ) {
+
+		if ( 'automator_custom_value' !== $value->meta_value ) {
+			return $value;
+		}
+
+		$automator_custom_value = $this->find_token_value( $value->meta_key . '_custom', $action_meta );
+
+		if ( false === $automator_custom_value ) {
+			return $value;
+		}
+
+		return $automator_custom_value;
 	}
 
 	/**

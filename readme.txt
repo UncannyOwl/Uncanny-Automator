@@ -1,10 +1,10 @@
 === Uncanny Automator – Automate everything with the #1 no-code Automation tool for WordPress ===
 Contributors: uncannyautomator, uncannyowl, smub
-Tags: automation, google sheets, mailchimp, learndash, webhooks, woocommerce automation, marketing, twitter, facebook, whatsapp, buddyboss, tutor lms
+Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailchimp, twitter, facebook, whatsapp, buddyboss, tutor lms
 Requires at least: 5.3
-Tested up to: 6.2
+Tested up to: 6.2.2
 Requires PHP: 5.6
-Stable tag: 4.14
+Stable tag: 4.15
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -72,7 +72,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro 4.8+)
-- [OpenAI](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Trello](https://automatorplugin.com/integration/trello/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -97,6 +98,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [BuddyBoss](https://automatorplugin.com/integration/buddyboss/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Divi](https://automatorplugin.com/integration/divi/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -186,9 +188,9 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
-Over 300 automation triggers and actions are available for the plugins listed above in the free version. There's straightforward documentation in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
+Over 350 automation triggers and actions are available for the plugins and apps listed above in the free version. There's straightforward documentation in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
 
-Beyond the plugin and API-based integrations, this free version of Uncanny Automator also supports common WP triggers and actions in automations:
+Beyond the plugin and app integrations, this free version of Uncanny Automator also supports common WP triggers and actions in automations:
 
 - A user views a page
 - A user submits a comment
@@ -205,7 +207,7 @@ All plugin triggers and actions included in Uncanny Automator come with a foreve
 - Notify staff of key events in Slack
 - Register customers in Zoom events on product purchase
 - Send Mailchimp campaigns when new blog posts are published
-- Tag contacts in ActiveCampaign based on their WP activity
+- Generate, proofread or translate text with OpenAI and GPT
 - and more
 
 = Take automation to the next level =
@@ -284,9 +286,9 @@ No coding skills are required. Uncanny Automator is built for non-developers to 
 
 Absolutely! LearnDash is our most popular integration. Automator provides an easy way to build powerful LearnDash activity reports, personalize learning paths, connect LearnDash to live events and more.
 
-= Can I automate a WooCommerce site? =
+= How does Automator use OpenAI? =
 
-Yes, Uncanny Automator is deeply integrated with WooCommerce! It can be used for product coss-selling and promotions. Create follow-up emails and coupons for strategic WooCommerce email marketing campaigns.
+By connecting your recipes to an OpenAI API account, you can send prompts to OpenAI and use the responses in other actions. Generate titles and descriptions, excerpts for social media, translations, new blog posts and more; you can even perform sentiment analysis on submitted text. Automator supports GPT-3.5, GPT-4 and other OpenAI models.
 
 = Does Uncanny Automator allow me to customize the look and design of the emails it sends? =
 
@@ -295,14 +297,6 @@ Yes, with WordPress's "Send Email" action, send rich text, plain text and raw HT
 = Why should I consider upgrading to Uncanny Automator Pro? =
 
 You can use the free version forever without purchasing the Uncanny Automator Pro version. However, with Uncanny Automator Pro, you'll get access to more automation triggers and actions, as well as unlimited credits for app integrations. Visit [our plans page](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_campaign=faq) to learn more.
-
-= Can I send automated WhatsApp messages? =
-
-Absolutely! With Uncanny Automator, you can send WhatsApp messages and WhatsApp message templates with our powerful WhatsApp integration.
-
-= Can I send automated SMS messages? =
-
-Yes! Send SMS messages with our Twilio integration. Send an SMS after a user submits a form, after a user makes a purchase with WooCommerce, or any other supported trigger.
 
 = Who is Uncanny Owl? =
 
@@ -320,6 +314,110 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.15 [2023-05-24] =
+
+**New Integrations:**
+
+* [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3371
+* [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2757
+
+**New Triggers:**
+
+* Charitable - A donation is made #3372
+* Charitable - A user makes a donation #3373
+* MemberPress - A user renews a recurring subscription product #3249
+
+**New Actions:**
+
+* Groundhogg - Create or update a contact #3149
+* OpenAI - Analyze sentiment with GPT-4 #3547
+* OpenAI - Correct spelling and grammar with GPT-4 #3542
+* OpenAI - Create a list of links that might help resolve a customer request with GPT-4 #3545
+* OpenAI - Generate a meta description with GPT-4 #3546
+* OpenAI - Generate an SEO title with GPT-4 #3541
+* OpenAI - Generate an excerpt suitable for Instagram with GPT-4 #3543
+* OpenAI - Generate an excerpt suitable for Twitter with GPT-4 #3550
+* OpenAI - Generate an excerpt with GPT-4 #3544
+* OpenAI - Translate text with GPT-4 #3549
+* Microsoft Teams - Create a channel in a team #2814
+* Microsoft Teams - Create a team #2887
+* Microsoft Teams - Send a direct message to a team member #2815
+* Microsoft Teams - Send a message to a channel #2886
+
+**New Tokens:**
+
+* LearnDash quiz triggers #3101
+	* Quiz time spent
+	* Quiz score
+	* Quiz points scored
+	* Quiz number of correct answers
+	* Quiz category scores
+	* Quiz questions and answers
+	* Quiz question & answers (unformatted)
+	* Quiz question & answers (individual question & answer tokens when a specific quiz is selected)
+* Uncanny Toolkit & LearnDash - Simple Course Timer #3519
+	* Course Cumulative Time 
+	* Course Time at Completion
+* WooCommerce #3483
+	* Payment URL 
+	* Direct checkout URL
+
+**Added:**
+
+* All-new recipe logs #3254
+	* Improved UI/UX
+	* Ability to view incomplete triggers and actions for in-progress recipe runs
+	* Ability to view token values in actions
+	* Ability to view filters / conditions and schedules
+	* Ability to view incoming and outgoing data
+* WhatsApp - Added internal logs and new filters to extend valid intervals and to disable timestamp validation #3521
+* WordPress - Create a post - "Post parent" field added #3480
+
+**Updated:**
+
+* MemberPress - A user purchases a recurring subscription product now fires on initial purchase only #47849 #3248
+* OpenAI - Allow HTML in "Prompt" field #3530
+* OpenAI - GPT actions updated #3504
+* Twitter - Improved error messaging in Logs #3563
+* WS Form LITE - Renamed to WS Form #3502
+* Zoom Webinar - Webinar field - Token selector added #3562
+
+**Fixed:**
+
+* ActiveCampaign - PHP Error when adding a contact in a certain situation #3526
+* BuddyBoss - Social media fields tokens now parse reliably #3477
+* Emails - Subject - Not decoding HTML entities #3536
+* LearnPress - A user completes a lesson now triggers reliably #3474
+* MemberPress - A user purchases a recurring subscription product doesn't run when the user purchases the product with a coupon #3401
+* OpenAI - Prompt incorrectly stripping line-breaks #3527
+* Outgoing Webhook - PHP error with an invalid header #3552
+* Slack - Markdown anchor links not working #3517
+* Slack - Slack actions do not pass any errors to the logs #3388
+* WooCommerce - "Product categories" tokens not parsing in filter fields #3496
+* WordPress - Post published triggers - Erroneously firing when post updates are made to a published post #3485
+* WordPress - A user publishes a post is triggering two times #3532
+* Zoho Campaign - Support link returns 404 #3494
+
+**Under the hood:**
+
+* Automator Core - Additional actions and filters #3490
+* Recipe UI - Fix integration order inside a recipe #3256
+* Gravity Forms - Framework updated #3364
+* Microsoft Teams - Settings page #2843
+* Framework fixes #3493
+* Recipe UI - Show "View logs" link regardless of the completed runs in publish box #3481
+* Review banner - Text updates #3391
+* Setup Wizard - Remove pop-up and redirect the user instead #2859
+* Setup Wizard - Tightened security #2855
+* Recipe UI - Save `title_html` of conditions #3440
+
+= 4.14.0.1 [2023-04-24] =
+
+**Fixed:**
+
+* OpenAI - Handled empty `temperature` and `max_tokens` params #3447
+* Paid Memberships Pro - "A user cancels a membership" - Tokens not returning membership details #3450
 
 = 4.14 [2023-04-20] =
 
@@ -391,8 +489,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **New Integrations:**
 
-* [Thrive Ovation](https://automatorplugin.com/integration/thrive-ovation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #3114
-* [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #3324
+* [Thrive Ovation](https://automatorplugin.com/integration/thrive-ovation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3114
+* [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3324
 
 **New Trigger:**
 
@@ -405,14 +503,14 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Added:**
 
-* FluentCRM - A contact is added to a list - Contact ID token  #3358
-* FluentCRM - A contact is set to a specific status - Contact ID token  #3358
-* FluentCRM - A tag is added to a contact - Contact ID token  #3358
+* FluentCRM - A contact is added to a list - Contact ID token #3358
+* FluentCRM - A contact is set to a specific status - Contact ID token #3358
+* FluentCRM - A tag is added to a contact - Contact ID token #3358
 
 **Updated:**
 
 * Elementor - WP filter automator_elementor_add_page_id_before_form_id added to append Page IDs to show duplicate forms #3346
-* Emails - Send an email - Now maintains the original formatting of action token content  #3369
+* Emails - Send an email - Now maintains the original formatting of action token content #3369
 
 **Fixed:**
 
@@ -420,9 +518,9 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * BuddyBoss/BuddyPress - Xprofile - Prefix issue on multisites #3377
 * Usermeta token - Not replacing the leading and trailing token brackets when meta is empty #3360
 
-**Internal:**
+**Under the hood:**
 
-* ActiveCampaign - Move options to options_callback  #3092
+* ActiveCampaign - Move options to options_callback #3092
 * Several text updates #3269 #3267
 * Recipe UI - Prevent infinite loop when a token is added in the sentence in a filter #3292
 
@@ -1185,128 +1283,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe UI + FluentCRM - Dequeue conflictive scripts and styles in recipe builder #2311
 * Recipe UI - Fix spacing between icons and text in <uo-button> #2309
 * Recipe UI - Dequeue select2 added by Event Tickets & Studiocart #2323
-
-= 4.2 [2022-07-12] =
-
-**New Integrations:**
-
-* [Pabbly Connect](https://automatorplugin.com/integration/pabbly-connect/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2266
-* [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1697
-
-**New Triggers:**
-
-* Mailpoet - A user submits a form #217
-* Studiocart - A user completes an order for a product #2210
-* Studiocart - A user purchases a product #2226
-* Studiocart - A user's order for a product is refunded #2227
-* Uncanny Groups - A group is created #1478
-
-**New Action:**
-
-* Pabbly Connect - Send data to Pabbly Connect #2212
-
-**New Tokens:**
-
-* WooCommerce:
-	* Product SKU #2179
-	* Product categories #2190
-	* Product tags #2191
-* WordPress - Additional tokens in all Post/Page/Comment type triggers: #2209
-	* Post/Page ID
-	* Post/Page content
-	* Post type
-	* Post/Page author first name
-	* Post/Page author last name
-	* Post/Page author display name
-	* Post/Page author email
-
-**Added:**
-
-* Automator Core - Premium Integrations and Webhooks now run asynchronously #1797
-
-**Updated:**
-
-* All Recipes list - All actions are listed in recipe order #2007
-* Automator Core - Improved performance on high data & traffic sites #2149
-* Automator Core - Review Banner - Several UI upgrades #2229
-* Instagram - Permissions errors are now properly reflected in Recipe logs #2272
-* Instagram - Permissions/scopes validation added before making the action available in recipes #1606
-* Instagram - Recipe logs now reflect an error if the Instagram account is delinked from Facebook #2273
-* Mailchimp - "Send an email campaign" - "From" drop-down description added #1451
-* Recipe UI - "Use a token/custom value" added in token drop-down for several actions #1742
-* Recipe UI - JSON strings are now supported in fields #2203
-* WordPress - "A user's post receives a comment" - Duplicate "Any" options removed #2182
-* WordPress - All triggers now have standard post/page/comment tokens #2209
-* WordPress - Triggers with apost type option now list all post types #2180
-
-**Internal:**
-
-* Automator Core - `automator_before_process_action` do action, `automator_maybe_parse_replaceable` filter #2194
-* Automator Core - Duplicate Action "code" conflict in a specific situation #2207
-
-**Fixed:**
-
-* Automator Closure - Usermeta in redirect URL now parses reliably #2251
-* BuddyBoss - Profile field tokens now parses as comma-separated string instead of `Array` #2221
-* Elementor - PHP 8.x+ error when email token is used on the "To" field of send an email action #2214
-* Facebook Settings - Nonce verification fixed #2263
-* WordPress - "A user submits a comment on a post" firing for all custom post types #2259
-* WPForms - Multiple select field token now separates data by comma instead of new line #2225
-* Warning - URL redirect in WP-CLI mode #2231
-* WordPress - "A user publishes a post with a taxonomy term in a taxonomy" now lists all post types reliably #2196
-* WordPress - "A user publishes a type of post with a taxonomy term in a taxonomy" now parses tokens reliably #2245
-* WordPress - "A user views a custom post type" firing on any post #2243
-
-= 4.1.1.1 [2022-06-29] =
-
-**Fixed:**
-
-* Recipe UI - Fix fallback for unsupported regular expressions by Safari #2199
-
-**Internal:**
-
-* Settings UI - Icon assets updated #2156
-
-= 4.1.1 [2022-06-22] =
-
-**New Tokens:**
-
-* LearnDash - Course status #2138
-* LearnDash - Course completion date #2130
-* WooCommerce - Order date #2175
-
-**Added:**
-
-* Upsell Plugin - "A user purchases a product" - Filter `automator_upsell_order_use_current_logged_user` to override customer email with logged in user email #2096
-* WishList Member - Any membership level option added in triggers #2076
-* Action Logs - Allow anchor links in recipe logs #2118
-
-**Enhanced:**
-
-* Google Sheet Permissions enhancement #2075
-
-**Updated:**
-
-* Google Calendar - str_contains switched to strpos for PHP backwards compatibility #2153
-* Mailchimp - "Create and send a campaign" now supports fullpage HTML #2135
-* Action Logs - Display "Out of credits" error for users with zero credits #1203
-* Disable Automator plugin activation redirect in some situations #2137
-
-**Fixed:**
-
-* Automator Core - WP_Rewrite usage conflict in a specific situation #2161
-* Google Sheets - PHP Error if `$fields` are `empty` or `null` on PHP 8.x #2167
-* Gravity Forms - The field "Date" is having problems #2133
-* WordPress Core - "A user publishes a type of post with a taxonomy term in a taxonomy" now displays all public and private post types #2169
-* Delay Modal - Hour selection is not displaying #2128
-* Premium API Integrations - Unnecessary HTTP API calls fixed when user is unauthenticated #2127
-* PHP Notices - "Attempt to read property of `post_type`" in a few triggers #2185
-* Recipe UI Field - TinyMCE textarea is deleting content on save #2146
-* Remove extra spaces from some token names #2177
-
-**Internal:**
-
-* Automator Core - Trigger Filters Trait - Add a way to filter multiple trigger conditions #2105
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

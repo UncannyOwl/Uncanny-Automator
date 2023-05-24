@@ -868,9 +868,15 @@ class Automator_Send_Webhook {
 	 * @return array
 	 */
 	public static function parse_headers( $header ) {
+
+		if ( ! $header instanceof \WpOrg\Requests\Utility\CaseInsensitiveDictionary ) {
+			return array();
+		}
+
 		if ( empty( $header->getAll() ) ) {
 			return array();
 		}
+
 		$tokens = array();
 		foreach ( $header->getAll() as $k => $v ) {
 			$tokens[] = array(

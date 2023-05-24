@@ -1,32 +1,22 @@
 <?php
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Gravity_Forms;
 
-class ANON_GF_FORM_ENTRY_UPDATED {
-
-	use Recipe\Triggers;
+class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 
 	const TRIGGER_CODE = 'ANON_GF_FORM_ENTRY_UPDATED';
 
 	const TRIGGER_META = 'ANON_GF_FORM_ENTRY_UPDATED_META';
 
-	public function __construct() {
-
-		$this->setup_trigger();
-
-	}
+	private $gf;
 
 	/**
-	 * Continue trigger process even for logged-in user.
+	 * setup_trigger
 	 *
-	 * @return boolean True, always.
+	 * @return void
 	 */
-	public function do_continue_anon_trigger( ...$args ) {
-
-		return true;
-
-	}
-
 	public function setup_trigger() {
+
+		$this->gf = array_shift( $this->dependencies );
 
 		$this->set_integration( 'GF' );
 
@@ -57,33 +47,14 @@ class ANON_GF_FORM_ENTRY_UPDATED {
 			esc_html__( 'An entry for {{a form}} is updated', 'uncanny-automator' )
 		);
 
-		// Set the options field group.
-		$this->set_options_group(
-			array(
-				$this->get_trigger_meta() => $this->get_fields(),
-			)
-		);
-
-		// Set new tokens.
-		if ( class_exists( '\Uncanny_Automator\GF_COMMON_TOKENS' ) ) {
-
-			$this->set_tokens( GF_COMMON_TOKENS::get_common_tokens() );
-
-		}
-
-		// Register the trigger.
-		$this->register_trigger();
-
 	}
 
-		/**
-		 * Retrieves the fields to be used as option fields in the dropdown.
-		 *
-		 * @return array The dropdown option fields.
-		 */
-	private function get_fields() {
-
-		$helper = new Gravity_Forms_Helpers();
+	/**
+	 * Retrieves the fields to be used as option fields in the dropdown.
+	 *
+	 * @return array The dropdown option fields.
+	 */
+	public function options() {
 
 		return array(
 			array(
@@ -91,53 +62,52 @@ class ANON_GF_FORM_ENTRY_UPDATED {
 				'label'           => esc_attr__( 'Form', 'uncanny-automator' ),
 				'input_type'      => 'select',
 				'required'        => true,
-				'options'         => $helper->get_forms_as_option_fields(),
+				'options'         => $this->gf->get_forms_options(),
 				'relevant_tokens' => array(),
 			),
 		);
 
 	}
 
-	public function prepare_to_run( $data ) {
-
-		$this->set_conditional_trigger( true );
-
-	}
-
-		/**
-		 * Validates the trigger before processing.
-		 *
-		 * @return boolean False or true.
-		 */
-	public function validate_trigger( ...$args ) {
-
-		list( $form, $entry_id ) = end( $args );
-
-		return ! empty( $form ) && ! empty( $entry_id );
-
-	}
-
 	/**
-	 * Validate conditions.
+	 * define_tokens
 	 *
-	 * @return array The matching recipes and triggers.
+	 * @param  array $trigger
+	 * @param  array $tokens
+	 * @return array
 	 */
-	protected function validate_conditions( ...$args ) {
+	public function define_tokens( $trigger, $tokens ) {
 
-		list( $form, $entry_id, $previous_values ) = end( $args );
+		$form_id = $trigger['meta'][ $this->get_trigger_meta() ];
 
-		$matching_recipes_triggers = $this->find_all( $this->trigger_recipes() )
-			->where( array( $this->get_trigger_meta() ) )
-			->match( array( $form['id'] ) )
-			->format( array( 'intval' ) )
-			->get();
+		$tokens = array_merge( $this->gf->tokens->form_specific_tokens( $form_id ), $this->gf->tokens->entry_tokens() );
 
-		return $matching_recipes_triggers;
-
+		return $tokens;
 	}
 
 	/**
-	 * Method parse_additional_tokens.
+	 * Validates the trigger before processing.
+	 *
+	 * @return boolean False or true.
+	 */
+	public function validate( $trigger, $hook_args ) {
+
+		// If any form is selected
+		if ( '-1' === $trigger['meta'][ $this->get_trigger_meta() ] ) {
+			return true;
+		}
+
+		list( $form, $entry_id, $original_entry ) = $hook_args;
+
+		if ( absint( $form['id'] ) === absint( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Method hydrate_tokens.
 	 *
 	 * @param $parsed
 	 * @param $args
@@ -145,17 +115,14 @@ class ANON_GF_FORM_ENTRY_UPDATED {
 	 *
 	 * @return array
 	 */
-	public function parse_additional_tokens( $parsed, $args, $trigger ) {
+	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		if ( class_exists( '\Uncanny_Automator\GF_COMMON_TOKENS' ) ) {
+		list( $form, $entry_id, $original_entry ) = $hook_args;
 
-			return GF_COMMON_TOKENS::get_hydrated_common_tokens( $parsed, $args, $trigger )
-			+ GF_COMMON_TOKENS::get_hydrated_form_tokens( $parsed, $args, $trigger );
+		$entry_tokens = $this->gf->tokens->hydrate_entry_tokens( $entry_id, $form );
+		$form_tokens  = $this->gf->tokens->hydrate_form_tokens( $form );
 
-		}
-
-		return $parsed;
-
+		return $entry_tokens + $form_tokens;
 	}
 
 }

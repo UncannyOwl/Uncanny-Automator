@@ -39,12 +39,13 @@
 			<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
 				id="ua-connect-account-btn"
 				class="ua-connect-account-btn-class uo-settings-btn uo-settings-btn--primary"
-				target="popup"
 				>
 				<?php esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
 			</a>
 		</p>
+		
 	</div>
+
 	<div class="row-2">
 		<h3>
 			<?php
@@ -87,44 +88,12 @@
 				<?php esc_html_e( 'Upgrade to Pro now and save up to $200', 'uncanny-automator' ); ?>
 			</a>
 			<span>
-				<a data-lity data-lity-target="#automator-setup-wizard-skip-modal" href="#" class="footer-actions__skip">
-					<?php esc_html_e( 'Skip this', 'uncanny-automator' ); ?>
-				</a>
+				<uap-setup-wizard-step-1-skip
+					url-next-step="<?php echo esc_url( $this->get_dashboard_uri( 2 ) ); ?>"
+					url-connect-account="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
+				></uap-setup-wizard-step-1-skip>
 			</span>
 		</p>
 	</div>
-
-	<div id="automator-setup-wizard-skip-modal" style="background:#fff" class="lity-hide">
-		<h3>
-			<?php esc_html_e( 'Are you sure?', 'uncanny-automator' ); ?>
-		</h3>
-		<p>
-			<?php
-				esc_html_e(
-					'Your free account gives you access to Slack, Google Sheets,
-                    Facebook, exclusive discounts, updates and much more. ',
-					'uncanny-automator'
-				);
-				?>
-		</p>
-
-		<p>
-
-			<a href="<?php echo esc_url( $this->get_dashboard_uri( 2 ) ); ?>" class="uo-settings-btn uo-settings-btn--secondary">
-				<?php esc_html_e( 'Skip for now', 'uncanny-automator' ); ?>
-			</a>
-
-			<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
-				id="ua-connect-account-btn"
-				class="ua-connect-account-btn-class uo-settings-btn uo-settings-btn--primary"
-				target="popup"
-				>
-				<?php esc_html_e( 'Sign Up Now!', 'uncanny-automator' ); ?>
-			</a>
-
-		</p>
-
-	</div>
-
 </div>
 

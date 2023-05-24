@@ -93,6 +93,22 @@ class WP_CREATEPOST {
 
 						$this->get_all_post_types(),
 
+						Automator()->helpers->recipe->field->select_field_ajax(
+							'PARENT_POST',
+							esc_attr__( 'Parent post', 'uncanny-automator' ),
+							array(),
+							null,
+							null,
+							true,
+							true,
+							array(
+								'endpoint'              => 'select_specific_post_type_taxonomies',
+								'target_field'          => 'TAXONOMY',
+								'supports_custom_value' => false,
+							),
+							array()
+						),
+
 						array(
 							'input_type'               => 'select',
 							'option_code'              => 'TAXONOMY',
@@ -248,11 +264,16 @@ class WP_CREATEPOST {
 		$post_status        = Automator()->parse->text( $action_data['meta']['WPCPOSTSTATUS'], $recipe_id, $user_id, $args );
 		$post_fimage        = Automator()->parse->text( $action_data['meta']['FEATURED_IMAGE_URL'], $recipe_id, $user_id, $args );
 		$post_fimage        = filter_var( $post_fimage, FILTER_SANITIZE_URL );
-		$post_open_comments = sanitize_text_field( $action_data['meta']['OPEN_COMMENTS'] );
+		$post_open_comments = 'open' === get_option( 'default_comment_status', 'closed' ) ? 'true' : 'false';
 		$post_type          = $action_data['meta'][ $this->action_code ];
+		$post_parent        = 0;
 
-		if ( empty( $post_open_comments ) ) {
-			$post_open_comments = 'open' === get_option( 'default_comment_status' ) ? 'true' : 'false';
+		if ( isset( $action_data['meta']['PARENT_POST'] ) ) {
+			$post_parent = Automator()->parse->text( $action_data['meta']['PARENT_POST'], $recipe_id, $user_id, $args );
+		}
+
+		if ( isset( $action_data['meta']['OPEN_COMMENTS'] ) ) {
+			$post_open_comments = sanitize_text_field( $action_data['meta']['OPEN_COMMENTS'] );
 		}
 
 		$post_args                   = array();
@@ -263,6 +284,7 @@ class WP_CREATEPOST {
 		$post_args['post_type']      = $post_type;
 		$post_args['post_status']    = $post_status;
 		$post_args['post_author']    = 0;
+		$post_args['post_parent']    = $post_parent;
 		$post_args['comment_status'] = ( 'true' === $post_open_comments ) ? 'open' : 'closed';
 
 		$fields_to_check = array( 'ID', 'login', 'email', 'slug' );
@@ -333,7 +355,7 @@ class WP_CREATEPOST {
 
 		foreach ( $terms as $term ) {
 
-			list( $taxonomy, $term )         = explode( ':', $term );
+			list( $taxonomy, $term ) = explode( ':', $term );
 			$curated_taxonomy[ $taxonomy ][] = $term;
 
 		}
@@ -461,8 +483,8 @@ class WP_CREATEPOST {
 			array(
 				'token'        => false,
 				'is_ajax'      => true,
-				'endpoint'     => 'select_specific_post_type_taxonomies',
-				'target_field' => 'TAXONOMY',
+				'endpoint'     => 'select_all_post_from_SELECTEDPOSTTYPE',
+				'target_field' => 'PARENT_POST',
 			)
 		);
 

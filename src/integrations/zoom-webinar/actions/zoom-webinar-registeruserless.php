@@ -129,7 +129,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
-			'supports_tokens'       => false,
+			'supports_tokens'       => true,
 			'supports_custom_value' => true,
 			'is_ajax'               => true,
 			'endpoint'              => 'uap_zoom_api_get_webinar_occurrences',

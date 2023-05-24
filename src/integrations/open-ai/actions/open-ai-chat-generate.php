@@ -13,9 +13,7 @@ use Uncanny_Automator\OpenAI\HTTP_Client;
  */
 class OPEN_AI_CHAT_GENERATE {
 
-	use Recipe\Actions;
-
-	use Recipe\Action_Tokens;
+	use Recipe\Actions, Recipe\Action_Tokens;
 
 	public function __construct() {
 
@@ -31,15 +29,10 @@ class OPEN_AI_CHAT_GENERATE {
 	protected function setup_action() {
 
 		$this->set_integration( 'OPEN_AI' );
-
 		$this->set_action_code( 'OPEN_AI_CHAT_GENERATE' );
-
 		$this->set_action_meta( 'OPEN_AI_CHAT_GENERATE_META' );
-
 		$this->set_is_pro( false );
-
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/open-ai/' ) );
-
 		$this->set_requires_user( false );
 
 		$this->set_sentence(
@@ -54,9 +47,7 @@ class OPEN_AI_CHAT_GENERATE {
 		$this->set_readable_sentence( esc_attr__( 'Use {{a prompt}} to generate text with the GPT model', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
-
 		$this->set_wpautop( false );
-
 		$this->set_background_processing( false );
 
 		$this->set_action_tokens(
@@ -89,14 +80,28 @@ class OPEN_AI_CHAT_GENERATE {
 	 */
 	public function load_options() {
 
-		$description = wp_kses_post(
+		$description_max_len = wp_kses_post(
 			sprintf(
-				/* translators: Action field description */
-				__(
-					'The maximum number of tokens allowed for the generated answer. By default, the number of tokens the model can return will be (4096 - prompt tokens). %1$sLearn more about tokens%2$s.',
+				/* translators: OpenAI field description */
+				_x(
+					'The maximum number of tokens allowed for the prompt and response. %1$sLearn more about tokens%2$s.',
+					'OpenAI field description',
 					'uncanny-automator'
 				),
 				'<a href="https://platform.openai.com/docs/api-reference/chat/create#chat/create-max_tokens" target="_blank">',
+				'</a>'
+			)
+		);
+
+		$description_models = wp_kses_post(
+			sprintf(
+				/* translators: OpenAI field description */
+				_x(
+					'Only GPT models that your account has access to are listed. %1$sLearn more about GPT models%2$s.',
+					'OpenAI field description',
+					'uncanny-automator'
+				),
+				'<a href="https://platform.openai.com/docs/models/overview" target="_blank">',
 				'</a>'
 			)
 		);
@@ -109,13 +114,15 @@ class OPEN_AI_CHAT_GENERATE {
 							'option_code'     => 'MODEL',
 							/* translators: Action field */
 							'label'           => esc_attr__( 'Model', 'uncanny-automator' ),
+							'description'     => $description_models,
 							'input_type'      => 'select',
 							'required'        => true,
-							'options'         => array(
-								'gpt-3.5-turbo'      => 'gpt-3.5-turbo',
-								'gpt-3.5-turbo-0301' => 'gpt-3.5-turbo-0301',
-							),
+							'options'         => array(),
 							'options_show_id' => false,
+							'ajax'            => array(
+								'endpoint' => 'automator_openai_get_models',
+								'event'    => 'on_load',
+							),
 						),
 						array(
 							'option_code' => 'TEMPERATURE',
@@ -129,7 +136,7 @@ class OPEN_AI_CHAT_GENERATE {
 							'option_code' => 'MAX_LEN',
 							/* translators: Action field */
 							'label'       => esc_attr__( 'Maximum length', 'uncanny-automator' ),
-							'description' => $description,
+							'description' => $description_max_len,
 							'input_type'  => 'text',
 						),
 						array(
@@ -141,11 +148,12 @@ class OPEN_AI_CHAT_GENERATE {
 							'required'    => false,
 						),
 						array(
-							'option_code' => $this->get_action_meta(),
+							'option_code'       => $this->get_action_meta(),
 							/* translators: Action field */
-							'label'       => esc_attr__( 'Prompt', 'uncanny-automator' ),
-							'input_type'  => 'textarea',
-							'required'    => true,
+							'label'             => esc_attr__( 'Prompt', 'uncanny-automator' ),
+							'input_type'        => 'textarea',
+							'supports_markdown' => true,
+							'required'          => true,
 						),
 					),
 				),
@@ -174,10 +182,8 @@ class OPEN_AI_CHAT_GENERATE {
 		$prompt         = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
 
 		$body = array(
-			'temperature' => floatval( $temperature ),
-			'model'       => $model,
-			'max_tokens'  => intval( $max_tokens ),
-			'messages'    => array(
+			'model'    => $model,
+			'messages' => array(
 				array(
 					'role'    => 'system',
 					'content' => $system_content,
@@ -188,6 +194,14 @@ class OPEN_AI_CHAT_GENERATE {
 				),
 			),
 		);
+
+		if ( ! empty( $max_tokens ) ) {
+			$body['max_tokens'] = intval( $max_tokens );
+		}
+
+		if ( ! empty( $temperature ) ) {
+			$body['temperature'] = floatval( $temperature );
+		}
 
 		$body = apply_filters( 'automator_openai_chat_generate', $body );
 

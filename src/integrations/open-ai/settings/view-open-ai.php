@@ -40,6 +40,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php esc_html_e( 'If you create recipes and then change the connected OpenAI account, your previous recipes may no longer work.', 'uncanny-automator' ); ?>
 					</uo-alert>
 
+					<?php if ( true === $vars['can_access_gpt4'] ) { ?>
+						<uo-alert type="success" class="uap-spacing-bottom uap-spacing-bottom--big" heading="<?php esc_attr_e( 'The connected account has access to the GPT-4 API.', 'uncanny-automator' ); ?>">
+						</uo-alert>
+					<?php } else { ?>
+						<uo-alert type="warning" class="uap-spacing-bottom uap-spacing-bottom--big" heading="<?php esc_attr_e( 'GPT-4 API access', 'uncanny-automator' ); ?>">
+							<?php
+								esc_html_e(
+									'The connected account does not currently have access to the GPT-4 API. Once you gain access to the GPT-4 API, additional OpenAI actions will become available. If you have recently been granted access to GPT-4, please create a new key, disconnect the current connection, and reconnect by entering your new key. You may also use the button below to recheck access to GPT-4.',
+									'uncanny-automator'
+								);
+							?>
+							<br/></br>
+							<uo-button href="<?php echo esc_url( $vars['recheck_gpt4_access_url'] ); ?>" size="small" color="secondary">
+								<?php esc_html_e( 'Recheck GPT-4 access', 'uncanny-automator' ); ?>
+							</uo-button>
+						</uo-alert>
+					<?php } ?>
+
 					<?php } ?>
 
 				<?php if ( false === $vars['is_connected'] ) { ?>
