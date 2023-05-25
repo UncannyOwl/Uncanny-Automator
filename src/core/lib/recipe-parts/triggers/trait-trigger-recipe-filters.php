@@ -443,7 +443,7 @@ trait Trigger_Recipe_Filters {
 
 			$trigger_meta = Automator()->get->meta_from_recipes( $this->get_recipes(), $trigger_option_code );
 
-			if ( empty( $trigger_meta[ $recipe_id ][ $trigger_id ] ) ) {
+			if ( ! isset( $trigger_meta[ $recipe_id ][ $trigger_id ] ) ) {
 				$is_valid = false;
 			}
 		}
@@ -473,8 +473,26 @@ trait Trigger_Recipe_Filters {
 
 			$this->push_log( "with trigger id: {$trigger_id} from option_code: {$trigger_option_code}", 'recipe_trigger_field_values', $recipe_id );
 
-			// Handle 'Any' automatically.
-			if ( intval( - 1 ) === intval( $where_value ) ) {
+			/**
+			 * Ability for Trigger to overwrite this option in case zero is a valid option.
+			 *
+			 * @since 4.15.1
+			 */
+			$use_zero_as_any = apply_filters(
+				'automator_recipe_filters_get_where_values_zero_as_any',
+				true,
+				$trigger_id,
+				$recipe_id,
+				$trigger_meta,
+				$where_value
+			);
+
+			// Determine whethere to use zero as any and if the where_value is zero or not.
+			$where_value_is_zero_as_any = ( true === $use_zero_as_any )
+				// Make sure to check if where value is numeric as intval will cast string to 0.
+				&& ( is_numeric( $where_value ) && 0 === intval( $where_value ) );
+
+			if ( $where_value_is_zero_as_any || intval( - 1 ) === intval( $where_value ) ) {
 
 				// Make the where value equals to match condition automatically so it becomes valid.
 				$where_value = $this->match_conditions[ $i ];

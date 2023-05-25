@@ -181,15 +181,7 @@ class WP_USERCREATESPOST {
 	public function schedule_a_post( $post_id, $post, $update, $post_before ) {
 		// only run when posts
 		// are published first time
-		if ( $update ) {
-			return;
-		}
-
-		if ( ! empty( $post_before ) && 'publish' === $post_before->post_status ) {
-			return;
-		}
-
-		if ( 'publish' !== $post->post_status ) {
+		if ( ! Automator()->utilities->is_wp_post_being_published( $post, $post_before ) ) {
 			return;
 		}
 
