@@ -678,4 +678,38 @@ class Automator_Utilities {
 
 	}
 
+	/**
+	 * @param $post
+	 * @param $post_before
+	 *
+	 * @return bool
+	 */
+	public function is_wp_post_being_published( $post, $post_before ) {
+		// If this post is not published yet, bail
+		if ( 'publish' !== $post->post_status ) {
+			return false;
+		}
+
+		// If this post was published before, bail
+		if ( ! empty( $post_before->post_status ) && 'publish' === $post_before->post_status ) {
+			return false;
+		}
+
+		// Include attachment, revision etc
+		$include_non_public_posts = apply_filters(
+			'automator_wp_post_updates_include_non_public_posts',
+			false,
+			$post->ID
+		);
+
+		if ( false === $include_non_public_posts ) {
+			$__object = get_post_type_object( $post->post_type );
+			if ( false === $__object->public ) {
+				return false;
+			}
+		}
+
+		// Otherwise, return true
+		return true;
+	}
 }
