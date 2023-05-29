@@ -68,9 +68,10 @@ class Setup_Wizard {
 		wp_redirect(
 			add_query_arg(
 				array(
-					'client'    => $message,
-					'state'     => $secret,
-					'__version' => AUTOMATOR_PLUGIN_VERSION,
+					'client'       => $message,
+					'state'        => $secret,
+					'redirect_url' => $this->get_dashboard_uri( 2, true ),
+					'__version'    => AUTOMATOR_PLUGIN_VERSION,
 				),
 				$this->connect_url . $this->connect_page
 			)

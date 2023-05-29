@@ -85,6 +85,26 @@ class Formatters_Utils {
 	}
 
 	/**
+	 * Returns a 'Y-m-d H:i:s' formatted timestamp.
+	 *
+	 * @param $timestamp int The timestamp
+	 *
+	 * @return string
+	 */
+	public static function unix_timestamp_to_date( $timestamp ) {
+
+		$datetimeFormat = 'Y-m-d H:i:s';
+
+		$date = new \DateTime( 'now', new \DateTimeZone( Automator()->get_timezone_string() ) );
+		$date->setTimestamp( $timestamp );
+
+		$ds = $date->format( $datetimeFormat );
+
+		return $ds;
+
+	}
+
+	/**
 	 * Accepts status code and return its corresponding class name.
 	 *
 	 * @param Automator_Status $automator_status The class for handling common logs status.

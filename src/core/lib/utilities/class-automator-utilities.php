@@ -329,32 +329,36 @@ class Automator_Utilities {
 	 */
 	public function get_recipe_type( $recipe_id = 0 ) {
 
-		if ( ! absint( $recipe_id ) ) {
+		$recipe_id = absint( $recipe_id );
+
+		if ( 0 === $recipe_id ) {
 			return false;
 		}
 
-		if ( ! empty( $this->recipe_types ) && isset( $this->recipe_types[ $recipe_id ] ) ) {
-			return $this->recipe_types[ $recipe_id ];
-		}
+		$recipe_types = $this->get_recipe_types();
 
-		$cached = Automator()->cache->get( 'get_recipe_type' );
-		if ( ! empty( $cached ) && isset( $cached[ $recipe_id ] ) ) {
-			return $cached[ $recipe_id ];
-		}
-
-		global $wpdb;
-		$recipe_types = $wpdb->get_results( $wpdb->prepare( "SELECT pm.meta_value, pm.post_id FROM $wpdb->postmeta pm JOIN $wpdb->posts p ON p.ID = pm.post_id WHERE p.post_type = %s AND pm.meta_key = %s", 'uo-recipe', 'uap_recipe_type' ) );
-
-		$data = array();
 		foreach ( $recipe_types as $r_t ) {
-			$r_id          = $r_t->post_id;
-			$r_type        = $r_t->meta_value;
-			$data[ $r_id ] = $r_type;
+			if ( $recipe_id === absint( $r_t->post_id ) ) {
+				return $r_t->meta_value;
+			}
 		}
-		Automator()->cache->set( 'get_recipe_type', $data );
-		$this->recipe_types = $data;
 
-		return ! isset( $data[ $recipe_id ] ) || empty( $data[ $recipe_id ] ) ? 'user' : $data[ $recipe_id ];
+		return 'user';
+	}
+
+	/**
+	 * get_recipe_types
+	 *
+	 * @return mixed
+	 */
+	public function get_recipe_types() {
+
+		if ( empty( $this->recipe_types ) ) {
+			global $wpdb;
+			$this->recipe_types = $wpdb->get_results( $wpdb->prepare( "SELECT pm.meta_value, pm.post_id FROM $wpdb->postmeta pm JOIN $wpdb->posts p ON p.ID = pm.post_id WHERE p.post_type = %s AND pm.meta_key = %s", 'uo-recipe', 'uap_recipe_type' ) );
+		}
+
+		return $this->recipe_types;
 	}
 
 	/**

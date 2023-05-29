@@ -426,6 +426,7 @@ abstract class Trigger {
 			'recipe_log_id'  => $this->recipe_log_id,
 			'run_number'     => (int) Automator()->get->next_run_number( $this->recipe_id, $this->user_id, true ),
 			'meta'           => $this->get_trigger_meta(),
+			'get_trigger_id' => $this->trigger_log_entry,
 		);
 
 		$this->token_values = $this->hydrate_tokens( $this->trigger, $this->hook_args );

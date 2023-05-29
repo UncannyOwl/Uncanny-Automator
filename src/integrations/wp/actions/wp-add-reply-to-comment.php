@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Action_Tokens;
+
 /**
  * Class WP_ADD_REPLY_TO_COMMENT
  *
@@ -9,6 +11,7 @@ namespace Uncanny_Automator;
  */
 class WP_ADD_REPLY_TO_COMMENT {
 	use Recipe\Actions;
+	use Action_Tokens;
 
 	/**
 	 * Automator Action Construct
@@ -32,6 +35,15 @@ class WP_ADD_REPLY_TO_COMMENT {
 		$this->set_sentence( sprintf( esc_attr__( 'Add {{a reply:%1$s}} to a comment', 'uncanny-automator' ), $this->get_action_meta() . '_COMMENT:' . $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr__( 'Add {{a reply}} to a comment', 'uncanny-automator' ) );
 		$this->set_options_callback( array( $this, 'load_options' ) );
+		$this->set_action_tokens(
+			array(
+				'COMMENT_ID' => array(
+					'name' => __( 'Comment ID', 'uncanny-automator-pro' ),
+					'type' => 'int',
+				),
+			),
+			$this->action_code
+		);
 		$this->register_action();
 	}
 
@@ -139,6 +151,12 @@ class WP_ADD_REPLY_TO_COMMENT {
 
 			return;
 		}
+
+		$this->hydrate_tokens(
+			array(
+				'COMMENT_ID' => $comment,
+			)
+		);
 
 		Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
