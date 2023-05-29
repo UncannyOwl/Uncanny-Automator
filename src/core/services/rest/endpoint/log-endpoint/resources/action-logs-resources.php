@@ -394,10 +394,11 @@ class Action_Logs_Resources {
 	 * or there are multiple Triggers with "All" option selected and not all Triggers are fired yet.
 	 *
 	 * @param mixed[] $action_meta
+	 * @param bool $trigger_is_not_yet_completed
 	 *
 	 * @return mixed[]|false
 	 */
-	protected function fabricate_item_with_delay_not_started( $action_meta = array() ) {
+	protected function fabricate_item_with_delay_not_started( $action_meta = array(), $trigger_is_not_yet_completed = false ) {
 
 		if ( 'delay' === $action_meta['async_mode'] ) {
 
@@ -407,7 +408,7 @@ class Action_Logs_Resources {
 			$time_units = $this->utils::time_units( $time );
 
 			return array(
-				'status_id'  => 'not-completed',
+				'status_id'  => $trigger_is_not_yet_completed ? 'not-completed' : 'delayed',
 				'start_date' => sprintf( $time_units[ $unit ], $time ),
 				'_timestamp' => strtotime( sprintf( $time_units[ $unit ], $time ) ),
 				'end_date'   => null,
@@ -417,9 +418,14 @@ class Action_Logs_Resources {
 
 		if ( 'schedule' === $action_meta['async_mode'] ) {
 
+			// Fix the record first.
+			$schedule_timestamp = strtotime( str_replace( '@ ', '', $action_meta['async_sentence'] ) );
+			// Then format it with propery date.
+			$schedule_dt = gmdate( 'Y-m-d H:i:s', $schedule_timestamp );
+
 			return array(
-				'status_id'  => 'scheduled',
-				'start_date' => $action_meta['async_sentence'],
+				'status_id'  => $trigger_is_not_yet_completed ? 'not-completed' : 'scheduled',
+				'start_date' => $this->utils::date_time_format( $schedule_dt ),
 				'_timestamp' => strtotime( $action_meta['async_sentence'] ),
 				'end_date'   => null,
 			);
@@ -459,8 +465,8 @@ class Action_Logs_Resources {
 
 		$trigger_is_not_yet_completed = empty( $this->get_recipe_actions_logs_raw( $params ) );
 
-		if ( $trigger_is_not_yet_completed && isset( $action_meta['async_mode'] ) ) {
-			return $this->fabricate_item_with_delay_not_started( $action_meta );
+		if ( ( $trigger_is_not_yet_completed || $item_is_in_progressed ) && isset( $action_meta['async_mode'] ) ) {
+			return $this->fabricate_item_with_delay_not_started( $action_meta, $trigger_is_not_yet_completed );
 		}
 
 		if ( $item_has_delay && $item_is_in_progressed ) {

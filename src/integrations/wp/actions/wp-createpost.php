@@ -93,20 +93,17 @@ class WP_CREATEPOST {
 
 						$this->get_all_post_types(),
 
-						Automator()->helpers->recipe->field->select_field_ajax(
-							'PARENT_POST',
-							esc_attr__( 'Parent post', 'uncanny-automator' ),
-							array(),
-							null,
-							null,
-							true,
-							true,
+						Automator()->helpers->recipe->field->select_field_args(
 							array(
+								'option_code'           => 'PARENT_POST',
+								'label'                 => esc_attr__( 'Parent post', 'uncanny-automator' ),
+								'options'               => array(),
+								'is_ajax'               => true,
 								'endpoint'              => 'select_specific_post_type_taxonomies',
 								'target_field'          => 'TAXONOMY',
-								'supports_custom_value' => false,
-							),
-							array()
+								'supports_custom_value' => true,
+								'relevant_tokens'       => array(),
+							)
 						),
 
 						array(
@@ -355,7 +352,7 @@ class WP_CREATEPOST {
 
 		foreach ( $terms as $term ) {
 
-			list( $taxonomy, $term ) = explode( ':', $term );
+			list( $taxonomy, $term )         = explode( ':', $term );
 			$curated_taxonomy[ $taxonomy ][] = $term;
 
 		}
