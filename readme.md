@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.2.2 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.15.0.1 \
+**Stable tag:** 4.15.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -339,6 +339,23 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 4.15.1 [2023-05-29]
+
+**New Token:**
+
+* WordPress - Add a reply to a comment - Comment ID #3524
+
+**Fixed:**
+
+* WordPress - Create a post - "Post parent" changed to "not required" for older recipes #3575
+* Recipe UI & Setup Wizard - Fix missing parameter #3582
+
+**Internal:**
+
+* Core - Performance updates to reduce the number of queries per page load #3583
+* Core - Added missing legacy param to support user selector in Pro for newer recipes #3586
+* Recipe logs - Delayed/scheduled actions - Incorrect status & date #3580
 
 ### 4.15.0.1 [2023-05-25]
 
