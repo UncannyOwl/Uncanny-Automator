@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.15.1\n"
+"Project-Id-Version: Uncanny Automator 4.15.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-05-29T19:11:00+00:00\n"
+"POT-Creation-Date: 2023-06-28T04:34:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: uncanny-automator\n"
@@ -339,7 +339,7 @@ msgstr ""
 #: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:62
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:108
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:238
-#: src/integrations/wp/actions/wp-createpost.php:478
+#: src/integrations/wp/actions/wp-createpost.php:492
 msgid "Type"
 msgstr ""
 
@@ -1646,15 +1646,15 @@ msgstr ""
 msgid "Post type is not defined."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1330
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1337
 msgid "Action Log ID is empty"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1341
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1348
 msgid "Missing action params"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1367
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1374
 msgid "The request has been successfully resent"
 msgstr ""
 
@@ -3967,7 +3967,7 @@ msgid "less or equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:555
-#: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:661
+#: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:686
 #: src/integrations/gototraining/settings/view-gototraining.php:93
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:93
 msgid "Redirect URL"
@@ -4135,7 +4135,7 @@ msgstr ""
 msgid "Completed, awaiting"
 msgstr ""
 
-#: src/core/lib/process/class-automator-recipe-process-complete.php:387
+#: src/core/lib/process/class-automator-recipe-process-complete.php:389
 msgid "Unknown error occurred."
 msgstr ""
 
@@ -4189,37 +4189,37 @@ msgstr ""
 msgid "No action happened."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:36
+#: src/core/lib/recipe-parts/trait-webhooks.php:42
 #: src/integrations/open-ai/actions/open-ai-chat-generate.php:56
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:61
 msgid "Response"
 msgstr ""
 
 #. translators: 1. Webhook URL
-#: src/core/lib/recipe-parts/trait-webhooks.php:77
+#: src/core/lib/recipe-parts/trait-webhooks.php:84
 msgid "Webhook URL is empty."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:87
+#: src/core/lib/recipe-parts/trait-webhooks.php:94
 msgid "Webhook payload is empty."
 msgstr ""
 
 #. translators: 1. Webhook URL
-#: src/core/lib/recipe-parts/trait-webhooks.php:197
+#: src/core/lib/recipe-parts/trait-webhooks.php:204
 msgid "An error was found in the webhook (%1$s) response."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:235
+#: src/core/lib/recipe-parts/trait-webhooks.php:242
 msgid "Request redirected to another URL."
 msgstr ""
 
 #. translators: Response code
-#: src/core/lib/recipe-parts/trait-webhooks.php:241
+#: src/core/lib/recipe-parts/trait-webhooks.php:248
 msgid "Client error, request responded with %d error."
 msgstr ""
 
 #. translators: Response code
-#: src/core/lib/recipe-parts/trait-webhooks.php:247
+#: src/core/lib/recipe-parts/trait-webhooks.php:254
 msgid "Server error, request responded with %d error."
 msgstr ""
 
@@ -4241,7 +4241,7 @@ msgstr ""
 msgid "Any"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:860
+#: src/core/lib/utilities/class-automator-input-parser.php:875
 msgid "Click here to reset your password."
 msgstr ""
 
@@ -9524,7 +9524,7 @@ msgstr ""
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:94
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:177
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:314
-#: src/integrations/wpforms/tokens/wpf-tokens.php:293
+#: src/integrations/wpforms/tokens/wpf-tokens.php:337
 msgid "Entry ID"
 msgstr ""
 
@@ -9533,7 +9533,7 @@ msgstr ""
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:92
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:189
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:332
-#: src/integrations/wpforms/tokens/wpf-tokens.php:305
+#: src/integrations/wpforms/tokens/wpf-tokens.php:349
 msgid "Entry submission date"
 msgstr ""
 
@@ -11795,7 +11795,7 @@ msgstr ""
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:98
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:183
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:320
-#: src/integrations/wpforms/tokens/wpf-tokens.php:299
+#: src/integrations/wpforms/tokens/wpf-tokens.php:343
 msgid "User IP"
 msgstr ""
 
@@ -12542,7 +12542,7 @@ msgstr ""
 
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:277
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:314
-#: src/integrations/wpforms/tokens/wpf-tokens.php:112
+#: src/integrations/wpforms/tokens/wpf-tokens.php:117
 msgid "(label)"
 msgstr ""
 
@@ -15346,7 +15346,7 @@ msgstr ""
 
 #. translators: Action field
 #: src/integrations/open-ai/actions/open-ai-chat-generate.php:153
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:99
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:95
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:127
 msgid "Prompt"
 msgstr ""
@@ -15387,41 +15387,41 @@ msgid "Maximum length (words)"
 msgstr ""
 
 #. translators: Action sentence
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:49
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:45
 msgid "Use {{a prompt:%1$s}} to generate an image"
 msgstr ""
 
 #. translators: Action sentence
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:55
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:51
 msgid "Use {{a prompt}} to generate an image"
 msgstr ""
 
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:66
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:62
 msgid "Attachment ID"
 msgstr ""
 
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:70
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:66
 msgid "Attachment URL"
 msgstr ""
 
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:74
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:70
 msgid "OpenAI generated image URL"
 msgstr ""
 
 #. translators: Action field
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:107
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:103
 msgid "Size"
 msgstr ""
 
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:110
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:106
 msgid "256x256"
 msgstr ""
 
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:111
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:107
 msgid "512x512"
 msgstr ""
 
-#: src/integrations/open-ai/actions/open-ai-image-generate.php:112
+#: src/integrations/open-ai/actions/open-ai-image-generate.php:108
 msgid "1024x1024"
 msgstr ""
 
@@ -18152,6 +18152,21 @@ msgstr ""
 msgid "A wholesale order is received from a user with {{a specific role}}"
 msgstr ""
 
+#: src/integrations/wishlist-member/actions/wm-adduser-a.php:99
+msgctxt "WishList Member"
+msgid "User is already a member of the selected level."
+msgstr ""
+
+#: src/integrations/wishlist-member/actions/wm-adduser-a.php:111
+msgctxt "WishList Member"
+msgid "User is already a member of all levels."
+msgstr ""
+
+#: src/integrations/wishlist-member/actions/wm-adduser-a.php:113
+msgctxt "WishList Member"
+msgid "No levels found."
+msgstr ""
+
 #: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:64
 #: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:101
 msgid "Membership level"
@@ -19275,7 +19290,7 @@ msgctxt "WordPress"
 msgid "A user publishes a post"
 msgstr ""
 
-#: src/integrations/wp/triggers/wp-users-post-published.php:52
+#: src/integrations/wp/triggers/wp-users-post-published.php:82
 msgctxt "wordpress"
 msgid "Post type"
 msgstr ""
@@ -19444,11 +19459,12 @@ msgstr ""
 msgid "All snippets"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:98
+#: src/integrations/wpforms/tokens/wpf-tokens.php:103
 msgid "No name"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:334
+#: src/integrations/wpforms/tokens/wpf-tokens.php:210
+#: src/integrations/wpforms/tokens/wpf-tokens.php:380
 msgid "This token requires WPForms Pro"
 msgstr ""
 
@@ -19589,7 +19605,7 @@ msgid "Subscribe a contact to a list"
 msgstr ""
 
 #: src/integrations/zoho-campaigns/settings/zoho-campaigns-settings.php:67
-msgid "Unscubscribe a contact from a list"
+msgid "Unsubscribe a contact from a list"
 msgstr ""
 
 #: src/integrations/zoho-campaigns/settings/zoho-campaigns-settings.php:73

@@ -502,7 +502,14 @@ class Recipe_Post_Rest_Api {
 			if ( is_array( $request->get_param( 'default_meta' ) ) ) {
 				$meta_values = (array) Automator()->utilities->automator_sanitize( $request->get_param( 'default_meta' ), 'mixed' );
 				foreach ( $meta_values as $meta_key => $meta_value ) {
-					update_post_meta( $post_id, Automator()->utilities->automator_sanitize( $meta_key ), Automator()->utilities->automator_sanitize( $meta_value ) );
+					if (
+						true === apply_filters( 'automator_sanitize_input_fields', true, $meta_key, $meta_value, $recipe->ID ) &&
+						true === apply_filters( 'automator_sanitize_input_fields_' . $recipe->ID, true, $meta_key, $meta_value )
+					) {
+						$meta_value = Automator()->utilities->automator_sanitize( $meta_value );
+						$meta_key   = Automator()->utilities->automator_sanitize( $meta_key );
+					}
+					update_post_meta( $post_id, $meta_key, $meta_value );
 				}
 			}
 		}

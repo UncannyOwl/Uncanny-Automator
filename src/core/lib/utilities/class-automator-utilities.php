@@ -392,6 +392,7 @@ class Automator_Utilities {
 	 * @return mixed|string
 	 */
 	public function automator_sanitize( $data, $type = 'text', $meta_key = '', $options = array() ) {
+
 		// If it's an array, handle it early and return data
 		if ( is_array( $data ) ) {
 			return $this->automator_sanitize_array( $data, $meta_key, $options );
@@ -414,7 +415,8 @@ class Automator_Utilities {
 				// Only escape the data if there are no tokens.
 				preg_match_all( '/{{\s*(.*?)\s*}}/', $data, $tokens );
 				if ( ! isset( $tokens[0] ) || empty( $tokens[0] ) ) {
-					$data = esc_url( $data );
+					// Use esc_url_raw so ampersand won't be encoded.
+					$data = esc_url_raw( $data );
 				}
 				break;
 			case 'text':
@@ -610,26 +612,27 @@ class Automator_Utilities {
 	public function maybe_get_field_type( $option_code, $options ) {
 		// if nothing is set, return text
 		if ( empty( $options ) || ! isset( $options['fields'] ) || ! isset( $options['fields'][ $option_code ] ) ) {
-			return 'text';
+			return apply_filters( 'automator_sanitize_get_field_type_text', 'text', $option_code, $options );
 		}
 
 		// if tinymce is set to yes, return HTML
 		if ( isset( $options['fields'][ $option_code ]['supports_tinymce'] ) && 'true' === (string) $options['fields'][ $option_code ]['supports_tinymce'] ) {
-			return 'html';
+			return apply_filters( 'automator_sanitize_get_field_type_html', 'html', $option_code, $options );
 		}
 
 		// if markdown is set to yes, return HTML
 		if ( isset( $options['fields'][ $option_code ]['supports_markdown'] ) && 'true' === (string) $options['fields'][ $option_code ]['supports_markdown'] ) {
-			return 'markdown';
+			return apply_filters( 'automator_sanitize_get_field_type_markdown', 'markdown', $option_code, $options );
 		}
 
 		// No type found
 		if ( ! isset( $options['fields'][ $option_code ]['type'] ) || empty( $options['fields'][ $option_code ]['type'] ) ) {
-			return 'text';
+			return apply_filters( 'automator_sanitize_get_field_type_text', 'text', $option_code, $options );
 		}
 
 		// Return type
-		return (string) $options['fields'][ $option_code ]['type'];
+		$type = (string) $options['fields'][ $option_code ]['type'];
+		return apply_filters( 'automator_sanitize_get_field_type_' . $type, $type, $option_code, $options );
 	}
 
 	/**

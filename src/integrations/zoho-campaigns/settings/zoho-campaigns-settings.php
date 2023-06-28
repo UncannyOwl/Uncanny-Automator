@@ -64,7 +64,7 @@ class Zoho_Campaigns_Settings extends Settings\Premium_Integration_Settings {
 			__( 'Create a list', 'uncanny-automator' ),
 			__( 'Move a contact to Do-Not-Mail', 'uncanny-automator' ),
 			__( 'Subscribe a contact to a list', 'uncanny-automator' ),
-			__( 'Unscubscribe a contact from a list', 'uncanny-automator' ),
+			__( 'Unsubscribe a contact from a list', 'uncanny-automator' ),
 		);
 
 		if ( filter_has_var( INPUT_GET, 'auth_error' ) ) {

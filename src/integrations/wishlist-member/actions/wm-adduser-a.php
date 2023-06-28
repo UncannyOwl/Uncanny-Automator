@@ -85,23 +85,56 @@ class WM_ADDUSER_A {
 		global $WishListMemberInstance;
 
 		$level_ids = array();
-		$wm_level  = $action_data['meta'][ $this->action_meta ];
+		$wm_level  = (int) $action_data['meta'][ $this->action_meta ];
 
-		if ( $wm_level == '-1' ) {
-			$all_levels = $WishListMemberInstance->GetOption( 'wpm_levels' );
-			if ( is_array( $all_levels ) ) {
-				foreach ( $all_levels as $Id => $levels ) {
-					$level_ids = $Id;
-				}
+		$get_levels_function = method_exists( $WishListMemberInstance, 'get_membership_levels' ) ? 'get_membership_levels' : 'GetMembershipLevels';
+		$user_level_ids      = $WishListMemberInstance->$get_levels_function( $user_id );
+		$error               = false;
+
+		// Add to one level.
+		if ( $wm_level > 0 ) {
+			if ( ! in_array( $wm_level, $user_level_ids ) ) {
+				$level_ids[] = $wm_level;
+			} else {
+				$error = _x( 'User is already a member of the selected level.', 'WishList Member', 'uncanny-automator' );
 			}
 		} else {
-			$level_ids = $WishListMemberInstance->GetMembershipLevels( $user_id );
-			if ( ! in_array( $wm_level, $level_ids ) ) {
-				$level_ids[] = $wm_level;
+			// Add to all levels.
+			$get_option_function = method_exists( $WishListMemberInstance, 'get_option' ) ? 'get_option' : 'GetOption';
+			$all_levels          = $WishListMemberInstance->$get_option_function( 'wpm_levels' );
+			if ( is_array( $all_levels ) ) {
+				foreach ( $all_levels as $id => $levels ) {
+					if ( ! in_array( $id, $user_level_ids ) ) {
+						$level_ids[] = $id;
+					}
+				}
+				$error = empty( $level_ids ) ? _x( 'User is already a member of all levels.', 'WishList Member', 'uncanny-automator' ) : false;
+			} else {
+				$error = _x( 'No levels found.', 'WishList Member', 'uncanny-automator' );
 			}
 		}
 
-		$WishListMemberInstance->SetMembershipLevels( $user_id, $level_ids );
+		if ( $error ) {
+			$args['do-nothing']                  = true;
+			$action_data['do-nothing']           = true;
+			$action_data['complete_with_errors'] = true;
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error, $action_data['recipe_log_id'], $args );
+
+			return;
+		}
+
+		$args = array(
+			'Users'                        => array(
+				$user_id,
+			),
+			'SendMail'                     => false,
+			'SendMailPerLevel'             => false,
+			'ObeyLevelsAdditionalSettings' => false,
+		);
+		foreach ( $level_ids as $level_id ) {
+			wlmapi_add_member_to_level( $level_id, $args );
+		}
+
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 

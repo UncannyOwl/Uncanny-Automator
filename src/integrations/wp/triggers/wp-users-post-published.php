@@ -41,6 +41,36 @@ class WP_USERS_POST_PUBLISHED {
 	}
 
 	/**
+	 * Add Check for Scheduled Post
+	 * Scheduled posts are run w/o a logged in user.
+	 *
+	 * @param array $args
+	 *
+	 * @return bool
+	 */
+	public function is_user_logged_in_required( $args ) {
+
+		// Bail already logged in.
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+
+		list( $post_id, $wp_post, $update, $wp_post_before ) = $args;
+
+		// Ensure we have a post before object.
+		if ( ! is_object( $wp_post_before ) ) {
+			return true;
+		}
+		// This is a Scheduled Post.
+		if ( 'future' === $wp_post_before->post_status && 'publish' === $wp_post->post_status ) {
+			$this->set_user_id( $wp_post->post_author );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function load_options() {

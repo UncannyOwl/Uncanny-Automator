@@ -1,12 +1,12 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => 'dev-master',
-    'version' => 'dev-master',
+    'pretty_version' => 'dev-5.0-Loops-Feature',
+    'version' => 'dev-5.0-Loops-Feature',
     'aliases' => 
     array (
     ),
-    'reference' => 'd02d8b2369b60618e343bdba3b9a840e50bd4e42',
+    'reference' => '40bbf26cb3e1c4289178c75e0cb982d5e9303b4e',
     'name' => 'uncanny-owl/uncanny-automator',
   ),
   'versions' => 
@@ -31,12 +31,12 @@
     ),
     'uncanny-owl/uncanny-automator' => 
     array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
+      'pretty_version' => 'dev-5.0-Loops-Feature',
+      'version' => 'dev-5.0-Loops-Feature',
       'aliases' => 
       array (
       ),
-      'reference' => 'd02d8b2369b60618e343bdba3b9a840e50bd4e42',
+      'reference' => '40bbf26cb3e1c4289178c75e0cb982d5e9303b4e',
     ),
   ),
 );

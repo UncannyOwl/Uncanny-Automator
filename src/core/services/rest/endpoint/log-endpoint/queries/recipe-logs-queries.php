@@ -27,19 +27,29 @@ class Recipe_Logs_Queries {
 	 */
 	public function recipe_log_query( $params ) {
 
-		return $this->db->get_row(
-			$this->db->prepare(
-				"SELECT * FROM {$this->db->prefix}uap_recipe_logs_view 
-                WHERE automator_recipe_id = %d 
-                AND run_number = %d
-                AND recipe_log_id = %d
-                ORDER BY recipe_date_time DESC LIMIT 0,100",
-				$params['recipe_id'],
-				$params['run_number'],
-				$params['recipe_log_id']
-			),
-			ARRAY_A
-		);
+		if ( automator_db_view_exists( 'recipe' ) ) {
+			return $this->db->get_row(
+				$this->db->prepare(
+					"SELECT * FROM {$this->db->prefix}uap_recipe_logs_view 
+					WHERE automator_recipe_id = %d 
+					AND run_number = %d
+					AND recipe_log_id = %d
+					ORDER BY recipe_date_time DESC LIMIT 0,100",
+					$params['recipe_id'],
+					$params['run_number'],
+					$params['recipe_log_id']
+				),
+				ARRAY_A
+			);
+		}
+
+		$recipe_query_result = (array) require __DIR__ . '/view-queries/recipe.php';
+
+		if ( empty( $recipe_query_result ) ) {
+			return array();
+		}
+
+		return $recipe_query_result;
 
 	}
 

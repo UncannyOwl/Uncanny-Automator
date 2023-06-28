@@ -121,7 +121,7 @@ class Automator_Input_Parser {
 
 		if ( ! preg_match( $this->url_regx, $url ) ) {
 			// if the url is not valid and / isn't the first character then the url is missing the site url
-			$url = '{{site_url}}' . '/' . $url;
+			$url = '{{site_url}}/' . $url;
 			// Replace Tokens
 			$args = array(
 				'field_text'  => $url,
@@ -236,7 +236,7 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function parse_vars( $args, $trigger_args = array() ) {
-		
+
 		$parsed_tokens_record = Automator()->parsed_token_records();
 
 		$field_text     = $args['field_text'];
@@ -521,13 +521,13 @@ class Automator_Input_Parser {
 			$replaceable = apply_filters( 'automator_maybe_parse_replaceable', $replaceable );
 
 			// Record the token raw vs replaceable with respect to $args for log details consumption.
-			$parsed_tokens_record->record_token( '{{'.$match.'}}', $replaceable, $args );
+			$parsed_tokens_record->record_token( '{{' . $match . '}}', $replaceable, $args );
 
 			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable, $args );
 
 			$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 		} // End foreach.
-		
+
 		// Only replace open/close curly brackets if it's {{TOKEN}} style structure.
 		// This avoids the erroneous replacement of the JSON closing brackets.
 		// Example a:2:{i:0;s:12:"Sample array";i:1;a:2:{i:0;s:5:"Apple";i:1;s:6:"Orange";}}
@@ -577,10 +577,10 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false
-				 || strpos( $piece, '_URL' ) !== false
-				 || strpos( $piece, '_EXCERPT' ) !== false
-				 || strpos( $piece, '_THUMB_URL' ) !== false
-				 || strpos( $piece, '_THUMB_ID' ) !== false ) {
+			 || strpos( $piece, '_URL' ) !== false
+			 || strpos( $piece, '_EXCERPT' ) !== false
+			 || strpos( $piece, '_THUMB_URL' ) !== false
+			 || strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -764,7 +764,22 @@ class Automator_Input_Parser {
 			 * @ticket #2255
 			 * @since 3.0
 			 */
-			return do_shortcode( $return );
+
+			if ( apply_filters(
+				'automator_replace_recipe_variables_do_shortcode',
+				true,
+				$return,
+				$pieces,
+				$recipe_id,
+				$trigger_data,
+				$user_id,
+				$replace_args
+			)
+				) {
+				   $return = do_shortcode( $return );
+			}
+
+			return $return;
 		}
 
 		// Handle Array if in case the data ends up being an Array (Edge cases)
@@ -1167,8 +1182,8 @@ class Automator_Input_Parser {
 
 		// For brevity.
 		list( $recipe_id, $token_identifier, $token_id ) = $pieces;
-
-		$data = json_decode( Automator()->db->token->get( $token_identifier, $replace_arg ), true );
+		$data                                            = Automator()->db->token->get( $token_identifier, $replace_arg );
+		$data                                            = is_array( $data ) ? $data : json_decode( $data, true );
 
 		if ( isset( $data[ $token_id ] ) ) {
 			return $data[ $token_id ];

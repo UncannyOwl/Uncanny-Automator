@@ -18,10 +18,6 @@ class OPEN_AI_IMAGE_GENERATE {
 
 		$this->set_helpers( new Open_AI_Helpers( false ) );
 
-		if ( ! $this->get_helpers()->has_gpt4_access() ) {
-			return;
-		}
-
 		$this->setup_action();
 
 	}

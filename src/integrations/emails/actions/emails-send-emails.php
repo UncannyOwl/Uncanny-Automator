@@ -239,7 +239,7 @@ class EMAILS_SEND_EMAILS {
 			'charset'   => $this->get_charset(),
 		);
 
-		$this->set_mail_values( $data );
+		$this->set_mail_values( $data, $user_id, $recipe_id, $args );
 		$mailed = $this->send_email();
 
 		// Set $this->set_error_message(); and complete the action automatically. May be use return true / false.

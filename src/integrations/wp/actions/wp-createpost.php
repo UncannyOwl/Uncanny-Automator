@@ -309,8 +309,22 @@ class WP_CREATEPOST {
 
 			if ( ! empty( $meta_pairs ) ) {
 				foreach ( $meta_pairs as $pair ) {
-					$meta_key   = sanitize_title( $pair['KEY'] );
-					$meta_value = sanitize_text_field( Automator()->parse->text( $pair['VALUE'], $recipe_id, $user_id, $args ) );
+					$meta_key   = $pair['KEY'];
+					$meta_value = Automator()->parse->text( $pair['VALUE'], $recipe_id, $user_id, $args );
+					if (
+						true === apply_filters( 'automator_create_post_sanitize_meta_values', true, $meta_key, $meta_value, $recipe_id ) &&
+						true === apply_filters( 'automator_create_post_sanitize_meta_values_' . $recipe_id, true, $meta_key, $meta_value ) &&
+						true === apply_filters( 'automator_create_post_sanitize_meta_values_' . sanitize_title( $meta_key ), true, $meta_value, $recipe_id )
+					) {
+						$meta_key   = Automator()->utilities->automator_sanitize(
+							$meta_key,
+							apply_filters( 'automator_sanitize_get_field_type', 'text', $meta_key, array() )
+						);
+						$meta_value = Automator()->utilities->automator_sanitize(
+							$meta_value,
+							apply_filters( 'automator_sanitize_get_field_type', 'text', $meta_value, array() )
+						);
+					}
 					update_post_meta( $post_id, $meta_key, $meta_value );
 				}
 			}

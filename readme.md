@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.2.2 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.15.1 \
+**Stable tag:** 4.15.1.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -340,6 +340,33 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
+### 4.15.1.1 [2023-06-28]
+
+**Updated:**
+
+* Uncanny Groups - A group is created - Support purchased group licenses #3654
+* WordPress - Create a post - Optionally allow HTML in fields by using a WordPress filter #3664
+
+**Fixed:**
+
+* OpenAI - Use a prompt to generate an image - No longer requires GPT-4 access #3607
+* Outgoing Webhook - A warning is thrown when get_post_meta is invalid #3616
+* Outgoing Webhook - URLs are incorrectly escaped causing ampersand to be encoded incorrectly. #3596
+* WPForms - Dynamic field values not accessible via tokens #3121
+* WPForms - File Upload Tokens now return correct values #3634
+* Wishlist Member - Add the user to a membership level - Replaced deprecated functions #3630
+* WordPress - A user publishes a type of post - Scheduled posts are not triggering for logged in user #3617
+
+**Under the hood:**
+
+* Recipe Logs - Prevent conditions that have a status of 'succeeded' from outputting the previous error message when the same conditions are used (For Automator Pro) #3593
+* Recipe Logs - Send an email - Missing parser arguments for the default values #3663
+* Recipe Logs - Some token values causing invalid JSON format #3633
+* Recipe Logs - Missing fallback query when the recipe log view is missing #3602
+* Recipe Logs - Delayed/scheduled actions don't show the status "Delayed"/"Scheduled", and show incorrect date #3580
+* Scheduled actions - Action Scheduler - `json_decode` error in a specific situation #3666
+* Zoho Campaigns - Typo on settings page #3540
+
 ### 4.15.1 [2023-05-29]
 
 **New Token:**
@@ -348,7 +375,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Fixed:**
 
-* WordPress - Create a post - "Post parent" changed to "not required" for older recipes #3575
+* WordPress - Create a post - Post parent is no longer a required field #3575
 * Recipe UI & Setup Wizard - Fix missing parameter #3582
 
 **Internal:**
@@ -1316,22 +1343,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **Fixed:**
 
 * Automator core - Improved compatibility with 3rd-party Automator Integrations #2360
-
-### 4.2.1 [2022-07-19]
-
-**Updated:**
-
-* Background Processing - Added REST API validation before activating the setting on sites #2293
-* Settings - Tabs now redirect back to themselves after saving #2301
-* WordPress - "A user submits a comment on a post" gains improved compatibility with wpDiscuz #2283
-
-**Fixed:**
-
-* MemberPress Courses - PHP error when Automator Pro is active #2297
-* Scheduled Actions - Changed priority to accommodate Background processing when Automator Pro is active #2327
-* Recipe UI + FluentCRM - Dequeue conflictive scripts and styles in recipe builder #2311
-* Recipe UI - Fix spacing between icons and text in <uo-button> #2309
-* Recipe UI - Dequeue select2 added by Event Tickets & Studiocart #2323
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 
