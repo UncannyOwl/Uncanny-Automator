@@ -233,6 +233,11 @@ class Fields_Conditions_Resolver {
 
 				$conditions_statuses[ $id ]['status_id'] = 'met';
 
+				// Prevents conditions that have a status 'succeeded' outputting the previous error message as default.
+				if ( 'succeeded' === $condition_summary[ $id ] ) {
+					$conditions_statuses[ $id ]['error_message'] = '';
+				}
+
 				if ( ! isset( $condition_summary[ $id ] ) || 'succeeded' !== $condition_summary[ $id ] ) {
 					$conditions_statuses[ $id ]['status_id'] = 'not-met';
 				}

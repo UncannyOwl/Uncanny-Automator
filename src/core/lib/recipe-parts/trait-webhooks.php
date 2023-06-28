@@ -22,23 +22,30 @@ trait Webhooks {
 	 * @return array|mixed
 	 */
 	public function inject_webhooks_response_tokens( $tokens = array(), $action_id = null, $recipe_id = null ) {
+
 		$response_exists = get_post_meta( $action_id, 'webhook_response_tokens', true );
+
 		if ( empty( $response_exists ) ) {
 			return array();
 		}
-		$response_exists = json_decode( $response_exists );
-		$new_tokens      = array();
+
+		// Make sure data is array. The func json_decode can return boolean or null.
+		$response_exists = (array) json_decode( $response_exists, true );
+
+		$new_tokens = array();
+
 		foreach ( $response_exists as $action_token ) {
-			$tag          = strtoupper( $action_token->key );
+			$tag          = strtoupper( $action_token['key'] );
 			$new_tokens[] = array(
 				'tokenId'     => $tag,
 				'tokenParent' => get_post_meta( $action_id, 'code', true ),
-				'tokenName'   => sprintf( '%s - %s', __( 'Response', 'uncanny-automator' ), $action_token->key ),
+				'tokenName'   => sprintf( '%s - %s', __( 'Response', 'uncanny-automator' ), $action_token['key'] ),
 				'tokenType'   => $action_token->type,
 			);
 		}
 
-		return $new_tokens + $tokens;
+		return array_merge( $new_tokens, $tokens );
+
 	}
 
 	/**

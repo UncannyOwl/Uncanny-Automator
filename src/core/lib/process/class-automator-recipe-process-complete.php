@@ -364,6 +364,8 @@ class Automator_Recipe_Process_Complete {
 
 				if ( isset( $action['process_further'] ) ) {
 
+					do_action( 'automator_action_been_process_further', $action );
+
 					if ( false === $action['process_further'] ) {
 						$action = apply_filters( 'automator_action_complete_action_skipped', $action, $args );
 						Automator()->error->add_error( 'complete_action', 'Action was skipped by uap_before_action_executed filter' );

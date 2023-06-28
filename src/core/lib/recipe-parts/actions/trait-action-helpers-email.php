@@ -71,12 +71,12 @@ trait Action_Helpers_Email {
 	/**
 	 * @param $data
 	 */
-	public function set_mail_values( $data ) {
+	public function set_mail_values( $data = array(), $user_id = null, $recipe_id = null, $args = array() ) {
 
 		$defaults = array(
-			'from'      => Automator()->parse->text( '{{admin_email}}' ),
-			'from_name' => Automator()->parse->text( '{{site_name}}' ),
-			'to'        => Automator()->parse->text( '{{user_email}}' ),
+			'from'      => Automator()->parse->text( '{{admin_email}}', $recipe_id, $user_id, $args ),
+			'from_name' => Automator()->parse->text( '{{site_name}}', $recipe_id, $user_id, $args ),
+			'to'        => Automator()->parse->text( '{{user_email}}', $recipe_id, $user_id, $args ),
 			'cc'        => '',
 			'bcc'       => '',
 			'reply_to'  => '',

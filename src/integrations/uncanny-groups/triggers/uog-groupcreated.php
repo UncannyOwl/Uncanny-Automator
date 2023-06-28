@@ -49,7 +49,7 @@ class UOG_GROUPCREATED {
 			'sentence'            => esc_attr__( 'A group is created', 'uncanny-automator' ),
 			/* translators: Logged-in trigger - Uncanny Groups */
 			'select_option_name'  => esc_attr__( 'A group is created', 'uncanny-automator' ),
-			'action'              => 'uo_new_group_created',
+			'action'              => array( 'uo_new_group_created', 'uo_new_group_purchased' ),
 			'priority'            => 20,
 			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'group_created' ),

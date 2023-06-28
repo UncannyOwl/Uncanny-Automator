@@ -562,8 +562,8 @@ abstract class Trigger {
 
 		list( $recipe_id, $token_identifier, $token_id ) = $pieces;
 
-		$data = json_decode( Automator()->db->token->get( $token_identifier, $replace_arg ), true );
-
+		$data = Automator()->db->token->get( $token_identifier, $replace_arg );
+		$data = is_array( $data ) ? $data : json_decode( $data, true );
 		if ( isset( $data[ $token_id ] ) ) {
 			return $data[ $token_id ];
 		}

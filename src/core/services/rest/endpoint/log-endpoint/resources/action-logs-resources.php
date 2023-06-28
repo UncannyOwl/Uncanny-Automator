@@ -151,29 +151,60 @@ class Action_Logs_Resources {
 
 		$fields = $this->retrieve_fields( $action_id, $action_log_id );
 
-		$parsed_token_record = $this->get_parsed_token_record( $params );
+		$replace_pairs = $this->get_parsed_token_record( $params );
 
 		foreach ( $fields as $key => $field ) {
 
 			// Interpolate the token based on the parsed value that was stored in the token log.
-			$interpolated = Automator()->parsed_token_records()->interpolate( /** @phpstan-ignore-line */
+			$replaced_values = Automator()->parsed_token_records()->interpolate( /** @phpstan-ignore-line */
 				$field['value']['raw'], /** @phpstan-ignore-line */
-				$parsed_token_record
+				$replace_pairs
 			);
 
 			// Nested tokens alert! 😱
-			preg_match_all( '/{{\s*(.*?)\s*}}/', $interpolated, $matches );
+			preg_match_all( '/{{\s*(.*?)\s*}}/', $replaced_values, $matches );
 
 			if ( ! empty( $matches[0] ) ) { // The interpolated values still contains tokens.
-				$interpolated = Automator()->parsed_token_records()->interpolate(
-					$interpolated,
-					$parsed_token_record
+				$replaced_values = Automator()->parsed_token_records()->interpolate(
+					$replaced_values,
+					$replace_pairs
 				);
 			}
 
-			// Ignore the following errors in phpstan, as we have to inject the array values into keys. No need for 'key' checking.
-			$fields[ $key ]['value']['parsed'] = $interpolated; /** @phpstan-ignore-line */
+			// Repeater is a special field which already contains JSON.
+			// A token can break a JSON so make sure its handled.
+			if ( 'repeater' === $field['type'] ) {
 
+				$repeater_fields_array = (array) json_decode( $fields[ $key ]['value']['raw'], true );
+
+				foreach ( $repeater_fields_array as $index => $repeater_fields ) {
+
+					foreach ( $repeater_fields as $code => $value ) {
+						$parsed_value = Automator()->parsed_token_records()->interpolate(
+							$value,
+							$replace_pairs
+						);
+
+						// Fix the JSON!
+						$parsed_value = strtr(
+							htmlentities( $parsed_value, ENT_QUOTES ),
+							array(
+								"\n" => "\\n",
+								"\r" => "\\r",
+							)
+						);
+
+						$temp[ $index ][ $code ] = $parsed_value;
+					}
+				}
+
+				$fields[ $key ]['value']['parsed'] = wp_json_encode( $temp );
+
+			} else {
+				// Otherwise, proceed as normal.
+				// Ignore the following errors in phpstan, as we have to inject the array values into keys. No need for 'key' checking.
+				$fields[ $key ]['value']['parsed'] = $replaced_values; /** @phpstan-ignore-line */
+			}
 		}
 
 		return $fields;
@@ -394,11 +425,10 @@ class Action_Logs_Resources {
 	 * or there are multiple Triggers with "All" option selected and not all Triggers are fired yet.
 	 *
 	 * @param mixed[] $action_meta
-	 * @param bool $trigger_is_not_yet_completed
 	 *
 	 * @return mixed[]|false
 	 */
-	protected function fabricate_item_with_delay_not_started( $action_meta = array(), $trigger_is_not_yet_completed = false ) {
+	protected function fabricate_item_with_delay_not_started( $action_meta = array() ) {
 
 		if ( 'delay' === $action_meta['async_mode'] ) {
 
@@ -408,7 +438,7 @@ class Action_Logs_Resources {
 			$time_units = $this->utils::time_units( $time );
 
 			return array(
-				'status_id'  => $trigger_is_not_yet_completed ? 'not-completed' : 'delayed',
+				'status_id'  => 'not-completed',
 				'start_date' => sprintf( $time_units[ $unit ], $time ),
 				'_timestamp' => strtotime( sprintf( $time_units[ $unit ], $time ) ),
 				'end_date'   => null,
@@ -418,14 +448,9 @@ class Action_Logs_Resources {
 
 		if ( 'schedule' === $action_meta['async_mode'] ) {
 
-			// Fix the record first.
-			$schedule_timestamp = strtotime( str_replace( '@ ', '', $action_meta['async_sentence'] ) );
-			// Then format it with propery date.
-			$schedule_dt = gmdate( 'Y-m-d H:i:s', $schedule_timestamp );
-
 			return array(
-				'status_id'  => $trigger_is_not_yet_completed ? 'not-completed' : 'scheduled',
-				'start_date' => $this->utils::date_time_format( $schedule_dt ),
+				'status_id'  => 'not-completed',
+				'start_date' => $action_meta['async_sentence'],
 				'_timestamp' => strtotime( $action_meta['async_sentence'] ),
 				'end_date'   => null,
 			);
@@ -465,8 +490,8 @@ class Action_Logs_Resources {
 
 		$trigger_is_not_yet_completed = empty( $this->get_recipe_actions_logs_raw( $params ) );
 
-		if ( ( $trigger_is_not_yet_completed || $item_is_in_progressed ) && isset( $action_meta['async_mode'] ) ) {
-			return $this->fabricate_item_with_delay_not_started( $action_meta, $trigger_is_not_yet_completed );
+		if ( $trigger_is_not_yet_completed && isset( $action_meta['async_mode'] ) ) {
+			return $this->fabricate_item_with_delay_not_started( $action_meta );
 		}
 
 		if ( $item_has_delay && $item_is_in_progressed ) {
