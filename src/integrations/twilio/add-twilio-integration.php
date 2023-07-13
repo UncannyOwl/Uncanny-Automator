@@ -80,9 +80,9 @@ class Add_Twilio_Integration {
 	 */
 	public function add_integration_func() {
 
-		$sid      = get_option( 'uap_automator_twilio_api_account_sid', '' );
-		$token    = get_option( 'uap_automator_twilio_api_auth_token', '' );
-		$user     = get_option( 'uap_twilio_connected_user', '' );
+		$sid   = automator_get_option( 'uap_automator_twilio_api_account_sid', '' );
+		$token = automator_get_option( 'uap_automator_twilio_api_auth_token', '' );
+		$user  = automator_get_option( 'uap_twilio_connected_user', '' );
 
 		if ( ! empty( $sid ) && ! empty( $token ) && ! empty( $user ) ) {
 			$this->connected = true;

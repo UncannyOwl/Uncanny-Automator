@@ -89,7 +89,7 @@ class CAMPAIGN_CREATEANDSEND {
 			esc_html__( 'Learn more', 'uncanny-automator' )
 		);
 
-		$client = get_option( '_uncannyowl_mailchimp_settings', array() );
+		$client = automator_get_option( '_uncannyowl_mailchimp_settings', array() );
 
 		$user_email = ! empty( $client['login']->email ) ? $client['login']->email : '';
 

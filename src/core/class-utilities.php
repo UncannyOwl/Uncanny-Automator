@@ -503,7 +503,7 @@ class Utilities {
 	 * @since    1.0.0
 	 */
 	public static function automator_get_debug_mode() {
-		return ! empty( get_option( 'automator_settings_debug_enabled', false ) ) ? true : false;
+		return ! empty( automator_get_option( 'automator_settings_debug_enabled', false ) ) ? true : false;
 	}
 
 	/**

@@ -42,7 +42,7 @@ namespace Uncanny_Automator;
 				<div class="uap-field uap-spacing-top--small">
 
 					<uo-switch label="<?php esc_attr_e( 'Logs', 'uncanny-automator' ); ?>"
-						<?php checked( get_option( 'automator_settings_debug_enabled', false ), true, true ); ?> 
+						<?php checked( automator_get_option( 'automator_settings_debug_enabled', false ), true, true ); ?> 
 						id="automator_settings_debug_enabled" 
 						status-label="Enabled,Disabled" class="uap-spacing-top">
 					</uo-switch>

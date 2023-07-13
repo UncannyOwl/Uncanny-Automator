@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailc
 Requires at least: 5.3
 Tested up to: 6.2.2
 Requires PHP: 5.6
-Stable tag: 4.15.1.1
+Stable tag: 4.16
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -75,6 +75,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Telegram](https://automatorplugin.com/integration/telegram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Trello](https://automatorplugin.com/integration/trello/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -91,6 +92,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Airtable](https://automatorplugin.com/integration/airtable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Autonami](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -145,6 +147,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -161,6 +164,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Webhooks](https://automatorplugin.com/integration/webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -314,6 +318,54 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.16 [2023-07-13] =
+
+**New Integrations:**
+
+* [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3024
+* [RafflePress](https://automatorplugin.com/integration/rafflepress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3331
+* [Telegram](https://automatorplugin.com/integration/telegram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3139
+* [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3701
+
+**New Triggers:**
+
+* ARMember - A user cancels a membership plan #3026
+* RafflePress - Someone registers for a giveaway #3332
+* Telegram - A text message is received #3146
+* UserFeedback - A user submits a survey #3703
+* UserFeedback - A visitor submits a survey #3702
+
+**New Actions:**
+
+* ARMember - Cancel the user's membership plan #3344
+* Telegram - Send a text message #3147
+
+**Updated:**
+
+* Facebook Pages - Increase timeout to 30 from 10 seconds #3684
+* LinkedIn - Remove temporary transients when disconnected #3690
+
+**Fixed:**
+
+* Emails - Send an email - Erroneously showing errors from the previous action #3722
+* MailPoet - Add a subscriber to a list not completing the action resulting in logs not showing the fields #3698
+* MemberPress - A user purchases a recurring subscription product - Not running if the recipe contains a MemberPress condition #3689
+* WS Form - Triggers are not returning all the available tokens of the form #3657
+
+**Under the hood:**
+
+* App integrations - Timeouts increased to 30 seconds #3515
+* Automator license - Improved license validation #2781
+* Add `add_option` with default value to avoid unnecessary App integration calls on the frontend #3497
+* Automator DB - Changed datetime to timestamp for MYSQL backwards compatibility #3717
+* Automator Core - New framework erroneously loading triggers and actions of an integration that is not active #3696
+* Recipe UI - Stop Gravity Forms integration from showing up when the plugin is not active #3621
+* Improved integrations loading process #3724
+* Internal function - action_is_finished  #3708
+* Rename "Integrations" to "All integrations"  #3355
+* Added "App integrations" menu #3355
+* All integrations - Search threshold updated #3234
 
 = 4.15.1.1 [2023-06-28] =
 

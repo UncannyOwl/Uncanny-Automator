@@ -19,7 +19,7 @@ class Add_Helpscout_Integration {
 
 		$this->set_icon( __DIR__ . '/img/help-scout-icon.svg' );
 
-		$this->set_connected( false !== get_option( 'automator_helpscout_client', false ) ? true : false );
+		$this->set_connected( false !== automator_get_option( 'automator_helpscout_client', false ) ? true : false );
 
 		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'helpscout' ) );
 

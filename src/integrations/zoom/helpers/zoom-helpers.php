@@ -487,7 +487,7 @@ class Zoom_Helpers {
 	 */
 	public function get_client() {
 
-		$client = get_option( '_uncannyowl_zoom_settings', false );
+		$client = automator_get_option( '_uncannyowl_zoom_settings', false );
 
 		if ( ! $client || empty( $client['access_token'] ) ) {
 			return $this->refresh_token();

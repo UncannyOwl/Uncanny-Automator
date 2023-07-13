@@ -112,8 +112,6 @@ class Facebook_Groups_Helpers {
 	 */
 	public function maybe_add_admin_notice() {
 
-		$token_info = get_option( self::TOKEN_INFO );
-
 		$n_days = $this->get_token_days_remaining( $this->get_token_info() );
 
 		$token_notice_n_days = apply_filters( 'automator_facebook_group_token_notice_n_days', 14 );
@@ -206,7 +204,7 @@ class Facebook_Groups_Helpers {
 		}
 
 		// Otherwise, request from the API.
-		$settings = get_option( self::OPTION_KEY );
+		$settings = automator_get_option( self::OPTION_KEY );
 
 		$body = array(
 			'action'       => 'list_groups',
@@ -370,7 +368,7 @@ class Facebook_Groups_Helpers {
 
 			try {
 
-				$this->deauthorized_app( get_option( self::OPTION_KEY, false ) );
+				$this->deauthorized_app( automator_get_option( self::OPTION_KEY, false ) );
 
 				$this->remove_credentials();
 
@@ -486,7 +484,7 @@ class Facebook_Groups_Helpers {
 			return false;
 		}
 
-		$settings = get_option( self::OPTION_KEY );
+		$settings = automator_get_option( self::OPTION_KEY );
 
 		$user_connected = $this->get_user_connected();
 
@@ -508,7 +506,7 @@ class Facebook_Groups_Helpers {
 			return false;
 		}
 
-		return get_option( self::OPTION_KEY );
+		return automator_get_option( self::OPTION_KEY );
 
 	}
 
@@ -584,7 +582,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function get_user_access_token() {
 
-		$option = get_option( self::OPTION_KEY );
+		$option = automator_get_option( self::OPTION_KEY );
 
 		return isset( $option['user']['token'] ) ? $option['user']['token'] : '';
 
@@ -597,7 +595,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function get_saved_groups() {
 
-		$saved_groups = get_option( 'ua_facebook_group_saved_groups' );
+		$saved_groups = automator_get_option( 'ua_facebook_group_saved_groups' );
 
 		$items = array();
 
@@ -776,7 +774,7 @@ class Facebook_Groups_Helpers {
 		}
 
 		// Check credentials if token is empty.
-		if ( false === get_option( self::TOKEN_INFO ) ) {
+		if ( false === automator_get_option( self::TOKEN_INFO ) ) {
 			$this->check_credentials();
 		}
 
@@ -838,7 +836,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function get_token_info() {
 
-		return get_option( self::TOKEN_INFO, false );
+		return automator_get_option( self::TOKEN_INFO, false );
 
 	}
 

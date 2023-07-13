@@ -84,7 +84,7 @@ class Active_Campaign_Helpers {
 	 */
 	public function is_webhook_enabled() {
 
-		$webhook_enabled_option = get_option( 'uap_active_campaign_enable_webhook', false );
+		$webhook_enabled_option = automator_get_option( 'uap_active_campaign_enable_webhook', false );
 
 		// The get_option can return string or boolean sometimes.
 		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
@@ -135,8 +135,8 @@ class Active_Campaign_Helpers {
 		$has_pro_license  = false;
 		$has_free_license = false;
 
-		$free_license_status = get_option( 'uap_automator_free_license_status' );
-		$pro_license_status  = get_option( 'uap_automator_pro_license_status' );
+		$free_license_status = automator_get_option( 'uap_automator_free_license_status' );
+		$pro_license_status  = automator_get_option( 'uap_automator_pro_license_status' );
 
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === $pro_license_status ) {
 			$has_pro_license = true;

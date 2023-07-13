@@ -141,7 +141,7 @@ CREATE TABLE {$tbl_tokens_log} (
 `recipe_log_id` bigint NOT NULL,
 `run_number` bigint NOT NULL,
 `tokens_record` longtext NOT NULL,
-`date_added` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+`date_added` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 PRIMARY KEY (`ID`),
 KEY recipe_id (`recipe_id`)
 ) ENGINE=InnoDB {$charset_collate};
@@ -151,7 +151,7 @@ CREATE TABLE {$tbl_api_response_log} (
 `item_log_id` bigint NOT NULL,
 `result` varchar(255) NOT NULL,
 `message` text NOT NULL,
-`date_added` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+`date_added` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_trigger_log} (

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
+class ComposerStaticInitc8368dd33beb9872d97db437acec666b
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -83,11 +83,14 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\ANON_NF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/ninja-forms/triggers/anon-nf-subform.php',
         'Uncanny_Automator\\ANON_THRIVE_QB_QUIZ_COMPLETED' => __DIR__ . '/../..' . '/src/integrations/thrive-quiz-builder/triggers/anon-thrive-qb-quiz-completed.php',
         'Uncanny_Automator\\ANON_TL_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/thrive-leads/triggers/anon-tl-form-submitted.php',
+        'Uncanny_Automator\\ANON_USERFEEDBACK_SURVEY_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/userfeedback/triggers/anon-userfeedback-survey-submitted.php',
         'Uncanny_Automator\\ANON_WPFF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/wp-fluent-forms/triggers/anon-wpff-subform.php',
         'Uncanny_Automator\\ANON_WPF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/wpforms/triggers/anon-wpf-subform.php',
         'Uncanny_Automator\\ANON_WP_POST_PUBLISHED_IN_TAXONOMY' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/anon-wp-post-published-in-taxonomy.php',
         'Uncanny_Automator\\ANON_WP_UPDATES_POST_IN_TAXONOMY' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/anon-wp-updates-post-in-taxonomy.php',
         'Uncanny_Automator\\ANON_WP_VIEWPOSTTYPE' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/anon-wp-viewposttype.php',
+        'Uncanny_Automator\\ARMEMBER_CANCEL_MEMBERSHIP' => __DIR__ . '/../..' . '/src/integrations/armember/triggers/armember-cancel-membership.php',
+        'Uncanny_Automator\\ARMEMBER_MEMBERSHIP_PLAN_CANCELLED' => __DIR__ . '/../..' . '/src/integrations/armember/actions/armember-membership-plan-cancelled.php',
         'Uncanny_Automator\\AUDIENCE_ADDAUSER' => __DIR__ . '/../..' . '/src/integrations/mailchimp/actions/audience-addauser.php',
         'Uncanny_Automator\\AUDIENCE_ADDUSERNOTE' => __DIR__ . '/../..' . '/src/integrations/mailchimp/actions/audience-addusernote.php',
         'Uncanny_Automator\\AUDIENCE_ADDUSERTAG' => __DIR__ . '/../..' . '/src/integrations/mailchimp/actions/audience-addusertag.php',
@@ -112,6 +115,7 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\Add_Airtable_Integration' => __DIR__ . '/../..' . '/src/integrations/airtable/add-airtable-integration.php',
         'Uncanny_Automator\\Add_Ameliabooking_Integration' => __DIR__ . '/../..' . '/src/integrations/ameliabooking/add-ameliabooking-integration.php',
         'Uncanny_Automator\\Add_Anon_Recipe_Type' => __DIR__ . '/../..' . '/src/core/anon/class-add-anon-recipe-type.php',
+        'Uncanny_Automator\\Add_Armember_Integration' => __DIR__ . '/../..' . '/src/integrations/armember/add-armember-integration.php',
         'Uncanny_Automator\\Add_Autonami_Integration' => __DIR__ . '/../..' . '/src/integrations/autonami/add-autonami-integration.php',
         'Uncanny_Automator\\Add_Bb_Integration' => __DIR__ . '/../..' . '/src/integrations/bbpress/add-bb-integration.php',
         'Uncanny_Automator\\Add_Bdb_Integration' => __DIR__ . '/../..' . '/src/integrations/buddyboss/add-bdb-integration.php',
@@ -177,6 +181,7 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\Add_Slack_Integration' => __DIR__ . '/../..' . '/src/integrations/slack/add-slack-integration.php',
         'Uncanny_Automator\\Add_Studiocart_Integration' => __DIR__ . '/../..' . '/src/integrations/studiocart/add-studiocart-integration.php',
         'Uncanny_Automator\\Add_SureCart_Integration' => __DIR__ . '/../..' . '/src/integrations/surecart/add-surecart-integration.php',
+        'Uncanny_Automator\\Add_Telegram_Integration' => __DIR__ . '/../..' . '/src/integrations/telegram/add-telegram-integration.php',
         'Uncanny_Automator\\Add_Thrive_Apprentice_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-apprentice/add-thrive-apprentice-integration.php',
         'Uncanny_Automator\\Add_Thrive_Leads_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-leads/add-thrive-leads-integration.php',
         'Uncanny_Automator\\Add_Thrive_Ovation_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-ovation/add-thrive-ovation-integration.php',
@@ -193,6 +198,7 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\Add_Uog_Integration' => __DIR__ . '/../..' . '/src/integrations/uncanny-groups/add-uog-integration.php',
         'Uncanny_Automator\\Add_Upsell_Plugin_Integration' => __DIR__ . '/../..' . '/src/integrations/upsell-plugin/add-upsell-plugin-integration.php',
         'Uncanny_Automator\\Add_User_Recipe_Type' => __DIR__ . '/../..' . '/src/core/classes/class-add-user-recipe-type.php',
+        'Uncanny_Automator\\Add_Userfeedback_Integration' => __DIR__ . '/../..' . '/src/integrations/userfeedback/add-userfeedback-integration.php',
         'Uncanny_Automator\\Add_Ut_Integration' => __DIR__ . '/../..' . '/src/integrations/uncanny-toolkit/add-ut-integration.php',
         'Uncanny_Automator\\Add_WPCW_Integration' => __DIR__ . '/../..' . '/src/integrations/wp-courseware/add-wpcw-integration.php',
         'Uncanny_Automator\\Add_WPLMS_Integration' => __DIR__ . '/../..' . '/src/integrations/wplms/add-wplms-integration.php',
@@ -254,6 +260,8 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\Api_Log' => __DIR__ . '/../..' . '/src/core/admin/api-log/class-api-log.php',
         'Uncanny_Automator\\Api_Log_Table' => __DIR__ . '/../..' . '/src/core/admin/api-log/class-api-log-table.php',
         'Uncanny_Automator\\Api_Server' => __DIR__ . '/../..' . '/src/core/classes/class-api-server.php',
+        'Uncanny_Automator\\Armember_Helpers' => __DIR__ . '/../..' . '/src/integrations/armember/helpers/armember-helpers.php',
+        'Uncanny_Automator\\Armember_Tokens' => __DIR__ . '/../..' . '/src/integrations/armember/tokens/armember-tokens.php',
         'Uncanny_Automator\\Automator_Cache_Handler' => __DIR__ . '/../..' . '/src/core/lib/helpers/class-automator-cache-handler.php',
         'Uncanny_Automator\\Automator_DB' => __DIR__ . '/../..' . '/src/core/class-automator-db.php',
         'Uncanny_Automator\\Automator_DB_Handler' => __DIR__ . '/../..' . '/src/core/lib/utilities/db/class-automator-db-handler.php',
@@ -488,6 +496,9 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Helpers' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Integration' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/microsoft-teams-integration.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Settings' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/settings/settings-microsoft-teams.php',
+        'Uncanny_Automator\\Integrations\\RafflePress\\RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY' => __DIR__ . '/../..' . '/src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php',
+        'Uncanny_Automator\\Integrations\\RafflePress\\RafflePress_Integration' => __DIR__ . '/../..' . '/src/integrations/rafflepress/class-rafflepress-integration.php',
+        'Uncanny_Automator\\Integrations\\RafflePress\\Rafflepress_Helpers' => __DIR__ . '/../..' . '/src/integrations/rafflepress/helpers/rafflepress-helpers.php',
         'Uncanny_Automator\\Integromat_Helpers' => __DIR__ . '/../..' . '/src/integrations/integromat/helpers/integromat-helpers.php',
         'Uncanny_Automator\\JETCRM_COMPANY_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-company-created.php',
         'Uncanny_Automator\\JETCRM_CONTACT_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-contact-created.php',
@@ -538,6 +549,7 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\Ld_Tokens' => __DIR__ . '/../..' . '/src/integrations/learndash/tokens/ld-tokens.php',
         'Uncanny_Automator\\Learndash_Helpers' => __DIR__ . '/../..' . '/src/integrations/learndash/helpers/learndash-helpers.php',
         'Uncanny_Automator\\Learnpress_Helpers' => __DIR__ . '/../..' . '/src/integrations/learnpress/helpers/learnpress-helpers.php',
+        'Uncanny_Automator\\Legacy_Integrations' => __DIR__ . '/../..' . '/src/core/classes/class-legacy-integrations-files.php',
         'Uncanny_Automator\\Lifterlms_Helpers' => __DIR__ . '/../..' . '/src/integrations/lifterlms/helpers/lifterlms-helpers.php',
         'Uncanny_Automator\\LinkedIn_Settings' => __DIR__ . '/../..' . '/src/integrations/linkedin/settings/settings-linkedin.php',
         'Uncanny_Automator\\Linkedin_Helpers' => __DIR__ . '/../..' . '/src/integrations/linkedin/helpers/linkedin-helpers.php',
@@ -706,6 +718,8 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\Studiocart_Tokens' => __DIR__ . '/../..' . '/src/integrations/studiocart/tokens/studiocart-tokens.php',
         'Uncanny_Automator\\SureCart_Helpers' => __DIR__ . '/../..' . '/src/integrations/surecart/helpers/surecart-helpers.php',
         'Uncanny_Automator\\SureCart_Tokens' => __DIR__ . '/../..' . '/src/integrations/surecart/tokens/surecart-tokens.php',
+        'Uncanny_Automator\\TELEGRAM_MESSAGE_RECEIVED' => __DIR__ . '/../..' . '/src/integrations/telegram/triggers/telegram-message-received.php',
+        'Uncanny_Automator\\TELEGRAM_SEND_MESSAGE' => __DIR__ . '/../..' . '/src/integrations/telegram/actions/telegram-send-message.php',
         'Uncanny_Automator\\THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED' => __DIR__ . '/../..' . '/src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php',
         'Uncanny_Automator\\THRIVE_APPRENTICE_USER_COURSE_MODULE_COMPLETED' => __DIR__ . '/../..' . '/src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php',
         'Uncanny_Automator\\THRIVE_OVATION_TESTIMONIAL_CREATED' => __DIR__ . '/../..' . '/src/integrations/thrive-ovation/triggers/thrive-ovation-testimonial-created.php',
@@ -725,6 +739,11 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\TWILIO_SENDSMS' => __DIR__ . '/../..' . '/src/integrations/twilio/actions/twilio-sendsms.php',
         'Uncanny_Automator\\TWITTER_POSTSTATUS' => __DIR__ . '/../..' . '/src/integrations/twitter/actions/twitter-poststatus.php',
         'Uncanny_Automator\\TWITTER_POSTSTATUS_2' => __DIR__ . '/../..' . '/src/integrations/twitter/actions/twitter-poststatus-2.php',
+        'Uncanny_Automator\\Telegram_Api' => __DIR__ . '/../..' . '/src/integrations/telegram/functions/telegram-api.php',
+        'Uncanny_Automator\\Telegram_Functions' => __DIR__ . '/../..' . '/src/integrations/telegram/functions/telegram-functions.php',
+        'Uncanny_Automator\\Telegram_Helpers' => __DIR__ . '/../..' . '/src/integrations/telegram/helpers/telegram-helpers.php',
+        'Uncanny_Automator\\Telegram_Settings' => __DIR__ . '/../..' . '/src/integrations/telegram/settings/settings-telegram.php',
+        'Uncanny_Automator\\Telegram_Webhook' => __DIR__ . '/../..' . '/src/integrations/telegram/functions/telegram-webhook.php',
         'Uncanny_Automator\\Thrive_Apprentice_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php',
         'Uncanny_Automator\\Thrive_Leads_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-leads/helpers/thrive-leads-helpers.php',
         'Uncanny_Automator\\Thrive_Leads_Tokens' => __DIR__ . '/../..' . '/src/integrations/thrive-leads/tokens/thrive-leads-tokens.php',
@@ -774,6 +793,7 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
         'Uncanny_Automator\\UOTC_Tokens' => __DIR__ . '/../..' . '/src/integrations/uncanny-tincanny/tokens/uotc-tokens.php',
         'Uncanny_Automator\\UOTC_USERATTAINSSCORE' => __DIR__ . '/../..' . '/src/integrations/uncanny-tincanny/triggers/uotc-userattainsscore.php',
         'Uncanny_Automator\\UPSELL_PLUGIN_PURCHPROD' => __DIR__ . '/../..' . '/src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php',
+        'Uncanny_Automator\\USER_USERFEEDBACK_SURVEY_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/userfeedback/triggers/user-userfeedback-survey-submitted.php',
         'Uncanny_Automator\\UT_GROUP_LEADER_IMPORTED' => __DIR__ . '/../..' . '/src/integrations/uncanny-toolkit/triggers/ut-group-leader-imported.php',
         'Uncanny_Automator\\UT_RESETUSERSTIMEINCOURSE' => __DIR__ . '/../..' . '/src/integrations/uncanny-toolkit/actions/ut-resetuserstimeincourse.php',
         'Uncanny_Automator\\UT_USERS_TIME_IN_COURSE_EXCEEDS' => __DIR__ . '/../..' . '/src/integrations/uncanny-toolkit/triggers/ut-users-time-in-course-exceeds.php',
@@ -940,10 +960,10 @@ class ComposerStaticInitcb9e58f90d614e3910370170a3daba99
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitcb9e58f90d614e3910370170a3daba99::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitcb9e58f90d614e3910370170a3daba99::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitcb9e58f90d614e3910370170a3daba99::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitcb9e58f90d614e3910370170a3daba99::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitc8368dd33beb9872d97db437acec666b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitc8368dd33beb9872d97db437acec666b::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitc8368dd33beb9872d97db437acec666b::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitc8368dd33beb9872d97db437acec666b::$classMap;
 
         }, null, ClassLoader::class);
     }

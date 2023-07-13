@@ -75,7 +75,7 @@ class Hubspot_Helpers {
 	 */
 	public function get_client() {
 
-		$tokens = get_option( '_automator_hubspot_settings', array() );
+		$tokens = automator_get_option( '_automator_hubspot_settings', array() );
 
 		if ( empty( $tokens['access_token'] ) || empty( $tokens['refresh_token'] ) ) {
 			throw new \Exception( __( 'HubSpot is not connected', 'uncanny-automator' ) );

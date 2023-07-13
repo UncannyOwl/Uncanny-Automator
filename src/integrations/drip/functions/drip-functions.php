@@ -71,7 +71,7 @@ class Drip_Functions {
 	 * @return array
 	 */
 	public function get_client() {
-		return get_option( self::TOKEN_OPTION, false );
+		return automator_get_option( self::TOKEN_OPTION, false );
 	}
 
 	public function integration_status() {

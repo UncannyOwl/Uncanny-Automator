@@ -130,7 +130,7 @@ class Trello_Functions {
 	 * @return array
 	 */
 	public function get_client() {
-		return get_option( self::TOKEN, false );
+		return automator_get_option( self::TOKEN, false );
 	}
 
 	/**

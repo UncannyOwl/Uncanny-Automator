@@ -104,7 +104,7 @@ class ClickUp_Helpers {
 	 */
 	public function get_client() {
 
-		return get_option( self::CLIENT, false );
+		return automator_get_option( self::CLIENT, false );
 
 	}
 
@@ -136,7 +136,7 @@ class ClickUp_Helpers {
 
 				$resource_owner = $this->api_request( $response, array( 'action' => 'get_authorized_user' ), null );
 
-				update_option( 'automator_clickup_client', array_merge( $response, $resource_owner['data']['user'] ), null );
+				update_option( 'automator_clickup_client', array_merge( $response, $resource_owner['data']['user'] ), true );
 
 			} catch ( \Exception $e ) {
 

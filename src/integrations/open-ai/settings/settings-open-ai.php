@@ -76,6 +76,11 @@ class Open_AI_Settings {
 	 */
 	public function validate_secret_key( $sanitized_input, $option_name, $original_input ) {
 
+		// Early bail on empty input.
+		if ( empty( $sanitized_input ) ) {
+			return false;
+		}
+
 		$cache_key = $option_name . '_validated';
 
 		// Prevents duplicate process.
@@ -95,7 +100,7 @@ class Open_AI_Settings {
 
 			$heading = __( 'Your account has been connected successfully!', 'uncanny-automator' );
 
-			add_settings_error( self::SETTINGS_ERROR, $heading, '', 'success' );
+			automator_add_settings_error( self::SETTINGS_ERROR, $heading, '', 'success' );
 
 			wp_cache_set( $cache_key, true, self::CACHE_GROUP_VALIDATION );
 
@@ -105,7 +110,7 @@ class Open_AI_Settings {
 
 			wp_cache_set( $cache_key, true, self::CACHE_GROUP_VALIDATION );
 
-			add_settings_error( self::SETTINGS_ERROR, __( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( self::SETTINGS_ERROR, __( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 

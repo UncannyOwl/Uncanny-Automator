@@ -90,7 +90,7 @@ class Linkedin_Helpers {
 
 	public function get_client() {
 
-		return get_option( self::LINKEDIN_CLIENT );
+		return automator_get_option( self::LINKEDIN_CLIENT );
 
 	}
 
@@ -176,7 +176,7 @@ class Linkedin_Helpers {
 
 			$response = $this->api_call( $body, null );
 
-			update_option( self::LINKEDIN_CONNECTED_USER, $response['data'], false );
+			update_option( self::LINKEDIN_CONNECTED_USER, $response['data'], true );
 
 		} catch ( \Exception $e ) {
 
@@ -195,7 +195,7 @@ class Linkedin_Helpers {
 
 	public function get_connected_user() {
 
-		$in_record = get_option( self::LINKEDIN_CONNECTED_USER, array() );
+		$in_record = automator_get_option( self::LINKEDIN_CONNECTED_USER, array() );
 
 		// Add some default so we don't have to check.
 		$defaults = array(
@@ -277,6 +277,8 @@ class Linkedin_Helpers {
 
 		delete_option( self::LINKEDIN_CONNECTED_USER );
 
+		delete_transient( 'automator_linkedin_pages' );
+
 		$this->redirect(
 			$this->get_settings_url(),
 			array(
@@ -338,7 +340,7 @@ class Linkedin_Helpers {
 
 	public function get_access_token_remaining_days() {
 
-		$client = get_option( self::LINKEDIN_CLIENT, false );
+		$client = automator_get_option( self::LINKEDIN_CLIENT, false );
 
 		if ( empty( $client['expires_on'] ) ) {
 			return;
@@ -381,7 +383,7 @@ class Linkedin_Helpers {
 				$response['data']['expires_on']               = strtotime( current_time( 'mysql' ) ) + $response['data']['expires_in'];
 				$response['data']['refresh_token_expires_on'] = strtotime( current_time( 'mysql' ) ) + $response['data']['refresh_token_expires_in'];
 
-				update_option( self::LINKEDIN_CLIENT, $response['data'], false );
+				update_option( self::LINKEDIN_CLIENT, $response['data'], true );
 
 			}
 		} catch ( \Exception $e ) {

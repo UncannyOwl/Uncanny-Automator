@@ -62,7 +62,7 @@ class ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED {
 
 		$this->add_action( 'automator_mailchimp_webhook_received_upemail' ); // which do_action() fires this trigger
 
-		if ( get_option( 'uap_mailchimp_enable_webhook', false ) ) {
+		if ( automator_get_option( 'uap_mailchimp_enable_webhook', false ) ) {
 
 			$this->register_trigger(); // Registering this trigger
 

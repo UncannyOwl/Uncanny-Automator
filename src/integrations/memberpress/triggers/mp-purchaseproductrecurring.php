@@ -85,11 +85,12 @@ class MP_PURCHASEPRODUCTRECURRING {
 			return;
 		}
 
-		$subscription          = $transaction->subscription();
-		$is_first_real_payment = Automator()->helpers->recipe->memberpress->check_if_is_renewal_or_first_payment( $subscription );
-
-		if ( $is_first_real_payment === false && \MeprTransaction::$free_gateway_str !== $pm->id ) {
-			return;
+		if ( apply_filters( 'automator_mepr_check_first_real_payment', false, $event ) ) {
+			$subscription          = $transaction->subscription();
+			$is_first_real_payment = Automator()->helpers->recipe->memberpress->check_if_is_renewal_or_first_payment( $subscription );
+			if ( $is_first_real_payment === false && \MeprTransaction::$free_gateway_str !== $pm->id ) {
+				return;
+			}
 		}
 
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );

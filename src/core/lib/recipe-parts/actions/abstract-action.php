@@ -145,7 +145,7 @@ abstract class Action {
 
 		$action = apply_filters( 'automator_register_action', $action );
 
-		$actions[] = $action;
+		$actions[ $this->get_action_code() ] = $action;
 
 		return $actions;
 	}

@@ -8,7 +8,7 @@ class Zoho_Campaigns_Client {
 
 	public function get_redacted_token() {
 
-		$creds = get_option( 'zoho_campaigns_credentials', false );
+		$creds = automator_get_option( 'zoho_campaigns_credentials', false );
 
 		if ( empty( $creds['access_token'] ) ) {
 			return 'N/A';
@@ -22,7 +22,7 @@ class Zoho_Campaigns_Client {
 	}
 
 	public function is_connected() {
-		return ! empty( get_option( 'zoho_campaigns_credentials', false ) );
+		return ! empty( automator_get_option( 'zoho_campaigns_credentials', false ) );
 	}
 
 	public function get_connect_url() {

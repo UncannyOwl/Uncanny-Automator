@@ -277,6 +277,10 @@ class ConvertKit_Helpers {
 
 	}
 
+	/**
+	 * get_client
+	 *
+	 */
 	public function get_client() {
 
 		return get_option( 'automator_convertkit_client', null );

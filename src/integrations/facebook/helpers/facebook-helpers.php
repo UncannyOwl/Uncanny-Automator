@@ -223,10 +223,10 @@ class Facebook_Helpers {
 			$settings['user-info'] = $this->get_user_information( $settings['user']['id'], $settings['user']['token'] );
 
 			// Updates the option value to settings.
-			update_option( self::OPTION_KEY, $settings, false );
+			update_option( self::OPTION_KEY, $settings, true );
 
 			// Updates the option value to settings.
-			update_option( self::OPTION_KEY, $settings, false );
+			update_option( self::OPTION_KEY, $settings, true );
 
 			// Delete any user info left.
 			delete_option( '_uncannyowl_facebook_pages_settings' );
@@ -346,7 +346,7 @@ class Facebook_Helpers {
 			$message = esc_html__( 'Pages are fetched successfully', 'uncanny-automator' );
 
 			// Save the option.
-			update_option( '_uncannyowl_facebook_pages_settings', $pages, false );
+			update_option( '_uncannyowl_facebook_pages_settings', $pages, true );
 
 		} catch ( \Exception $e ) {
 
@@ -566,7 +566,7 @@ class Facebook_Helpers {
 			'endpoint' => self::API_ENDPOINT,
 			'body'     => $body,
 			'action'   => $action_data,
-			'timeout'  => 10,
+			'timeout'  => 30,
 		);
 
 		$response = Api_Server::api_call( $params );
@@ -590,7 +590,7 @@ class Facebook_Helpers {
 			'endpoint' => self::API_ENDPOINT,
 			'body'     => $body,
 			'action'   => null,
-			'timeout'  => 10,
+			'timeout'  => 30,
 		);
 
 		return Api_Server::api_call( $params );

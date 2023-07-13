@@ -56,7 +56,11 @@ class Ws_Form_Lite_Tokens {
 	 */
 	public function wsformlite_possible_tokens( $tokens = array(), $args = array() ) {
 		$trigger_code = $args['triggers_meta']['code'];
-		$form_id      = $args['triggers_meta']['WSFORM_FORMS'];
+		$form_id      = ! empty( $args['triggers_meta']['WSFORM_FORMS'] ) ? $args['triggers_meta']['WSFORM_FORMS'] : '';
+
+		if ( empty( $form_id ) ) {
+			return $tokens;
+		}
 
 		$trigger_meta_validations = apply_filters(
 			'automator_wsformlite_validate_common_possible_trigger_tokens',
@@ -65,7 +69,6 @@ class Ws_Form_Lite_Tokens {
 		);
 
 		if ( in_array( $trigger_code, $trigger_meta_validations, true ) ) {
-			global $wpdb;
 			$fields = array(
 				array(
 					'tokenId'         => 'FORM_ID',
@@ -81,7 +84,7 @@ class Ws_Form_Lite_Tokens {
 				),
 			);
 
-			$form_fields = $wpdb->get_results( $wpdb->prepare( "SELECT id,label,type FROM {$wpdb->prefix}wsf_field WHERE section_id=%d AND type != 'submit'", $form_id ) );
+			$form_fields = $this->get_form_fields( $form_id );
 			if ( ! empty( $form_fields ) ) {
 				foreach ( $form_fields as $field ) {
 					$fields[] = array(
@@ -97,6 +100,23 @@ class Ws_Form_Lite_Tokens {
 		}
 
 		return $tokens;
+	}
+
+	/**
+	 * Get the fields for the form by Form ID.
+	 *
+	 * @param int $id  - Form ID
+	 *
+	 * @return array - Array of field objects
+	 */
+	public function get_form_fields( $id ) {
+
+		static $helper = null;
+		if ( null === $helper ) {
+			$helper = new Ws_Form_Lite_Helpers( false );
+		}
+
+		return $helper->get_form_fields( $id );
 	}
 
 	/**
@@ -131,6 +151,7 @@ class Ws_Form_Lite_Tokens {
 			return $value;
 		}
 
+		$entry_id   = false;
 		$to_replace = $pieces[2];
 		$token      = explode( '|', $to_replace );
 		if ( is_array( $token ) && isset( $token[1] ) ) {
@@ -148,12 +169,47 @@ class Ws_Form_Lite_Tokens {
 				$value = $wpdb->get_var( $wpdb->prepare( "SELECT label FROM {$wpdb->prefix}wsf_form WHERE id=%d", $form_id ) );
 				break;
 			default:
-				global $wpdb;
-				$field_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}wsf_submit_meta WHERE parent_id=%d AND meta_key LIKE %s", $entry_id, $token[1] ) );
-				$value       = maybe_unserialize( $field_value );
+				if ( $entry_id ) {
+					global $wpdb;
+					$field_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}wsf_submit_meta WHERE parent_id=%d AND meta_key LIKE %s", $entry_id, $token[1] ) );
+					$value       = maybe_unserialize( $field_value );
+					// Check for File Uploads.
+					if ( is_array( $value ) && ! empty( $value[0] ) && is_array( $value[0] ) && isset( $value[0]['size'] ) && isset( $value[0]['type'] ) ) {
+						$value = $this->get_file_upload_value( $value );
+					}
+				}
 				break;
 		}
 
 		return $value;
 	}
+
+	/**
+	 * Get CSV string of file upload URLs.
+	 *
+	 * @param array $files
+	 *
+	 * @return string
+	 */
+	public function get_file_upload_value( $files ) {
+		$value = '';
+		foreach ( $files as $file ) {
+			if ( isset( $file['attachment_id'] ) && ! empty( $file['attachment_id'] ) ) {
+				// Get the URL if public.
+				$url = wp_get_attachment_url( $file['attachment_id'] );
+				if ( empty( $url ) ) {
+					// Give the admin URL if not public.
+					$url .= admin_url( 'upload.php?item=' . $file['attachment_id'] );
+				}
+				$value .= $url . ', ';
+			}
+		}
+
+		// Remove the trailing comma and space.
+		$value = ! empty( $value ) ? rtrim( $value, ', ' ) : '';
+
+		// Allow 3rd parties to filter the value.
+		return apply_filters( 'automator_wsformlite_file_token', $value, $files );
+	}
+
 }

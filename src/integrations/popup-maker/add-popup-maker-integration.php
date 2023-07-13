@@ -135,13 +135,13 @@ class Add_Popup_Maker_Integration {
 	 *
 	 */
 	public function migrate_popup_maker_to_new_methods() {
-		if ( 'yes' === get_option( 'automator_popup_maker_migrated', 'no' ) ) {
+		if ( 'yes' === automator_get_option( 'automator_popup_maker_migrated', 'no' ) ) {
 			return;
 		}
 		global $wpdb;
 		$popup_settings = $wpdb->get_results( "SELECT post_id, meta_value as settings FROM $wpdb->postmeta WHERE meta_key = 'popup_settings'" );
 		if ( empty( $popup_settings ) ) {
-			update_option( 'automator_popup_maker_migrated', 'yes', false );
+			update_option( 'automator_popup_maker_migrated', 'yes', true );
 
 			return;
 		}
@@ -176,6 +176,6 @@ class Add_Popup_Maker_Integration {
 				update_post_meta( $popup_id, 'popup_settings', $settings );
 			}
 		}
-		update_option( 'automator_popup_maker_migrated', 'yes', false );
+		update_option( 'automator_popup_maker_migrated', 'yes', true );
 	}
 }

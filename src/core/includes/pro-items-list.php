@@ -170,6 +170,21 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
+		'ARMEMBER'          => array(
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - ARMember */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add the user to {{a membership plan}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - ARMember */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Remove the user from {{a membership plan}}", 'uncanny-automator' ),
+				),
+			),
+		),
 		'UOA'               => array(
 			'triggers' => array(
 				array(
@@ -1086,6 +1101,11 @@ function automator_pro_items_list() {
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Convert {{text}} into {{format}}", 'uncanny-automator' ),
 				),
+				array(
+					/* translators: Action - Formatter */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Replace values in {{a string}}", 'uncanny-automator' ),
+				),
 			),
 		),
 		'FI'                => array(
@@ -1384,6 +1404,12 @@ function automator_pro_items_list() {
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "{{A tag}} is removed from a user", 'uncanny-automator' ),
 					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Anonymous trigger - Groundhogg */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A note is added to {{a contact}}", 'uncanny-automator' ),
+					'type' => 'anonymous',
 				),
 				array(
 					/* translators: Anonymous trigger - Groundhogg */
@@ -2310,6 +2336,17 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
+		'RAFFLE_PRESS'      => array(
+			'triggers' => array(
+				array(
+					/* translators: Anonymous trigger - RafflePress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Someone enters {{a giveaway}} with {{a specific action}}", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'  => array(),
+		),
 		'RC'                => array(
 			'triggers' => array(
 				array(
@@ -2870,6 +2907,12 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - WooCommerce Subscriptions */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user renews a subscription to {{a product}} for the {{nth}} time", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - WooCommerce Subscriptions */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user renews a subscription to {{a specific}} variation of {{a variable subscription}}", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -3268,6 +3311,17 @@ function automator_pro_items_list() {
 					'name' => __( "Update the user's {{details}}", 'uncanny-automator' ),
 				),
 			),
+		),
+		'WPDM'              => array(
+			'triggers' => array(
+				array(
+					/* translators: Logged-in trigger - WordPress Download Manager */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user downloads {{a file}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'  => array(),
 		),
 		'WPMU'              => array(
 			'triggers' => array(

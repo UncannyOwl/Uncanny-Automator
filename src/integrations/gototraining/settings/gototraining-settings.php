@@ -36,9 +36,9 @@ class GoToTraining_Settings extends Settings\Premium_Integration_Settings {
 
 	public function get_status() {
 
-		$user = get_option( '_uncannyowl_gtt_settings', false );
+		$user = automator_get_option( '_uncannyowl_gtt_settings', array() );
 
-		return false !== $user ? 'success' : '';
+		return ! empty( $user ) ? 'success' : '';
 	}
 
 	/**
@@ -59,9 +59,9 @@ class GoToTraining_Settings extends Settings\Premium_Integration_Settings {
 	 */
 	public function output() {
 
-		$key = get_option( 'uap_automator_gtt_api_consumer_key' );
+		$key = automator_get_option( 'uap_automator_gtt_api_consumer_key' );
 
-		$secret = get_option( 'uap_automator_gtt_api_consumer_secret' );
+		$secret = automator_get_option( 'uap_automator_gtt_api_consumer_secret' );
 
 		$tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=go-to-training';
 
@@ -69,9 +69,9 @@ class GoToTraining_Settings extends Settings\Premium_Integration_Settings {
 
 		$connection = automator_filter_input( 'connect' );
 
-		$user = get_option( '_uncannyowl_gtt_settings', false );
+		$user = automator_get_option( '_uncannyowl_gtt_settings', array() );
 
-		$is_connected = false !== $user;
+		$is_connected = ! empty( $user );
 
 		$user_first_name = isset( $user['firstName'] ) ? $user['firstName'] : '';
 

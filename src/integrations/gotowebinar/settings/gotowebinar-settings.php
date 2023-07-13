@@ -34,7 +34,8 @@ class GoToWebinar_Settings extends Settings\Premium_Integration_Settings {
 	}
 
 	public function get_status() {
-		return false !== get_option( '_uncannyowl_gtw_settings', false ) ? 'success' : '';
+		$settings = automator_get_option( '_uncannyowl_gtw_settings', array() );
+		return ! empty( $settings ) ? 'success' : '';
 	}
 
 	/**
@@ -55,9 +56,9 @@ class GoToWebinar_Settings extends Settings\Premium_Integration_Settings {
 	 */
 	public function output() {
 
-		$key = trim( get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
+		$key = trim( automator_get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
 
-		$secret = trim( get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
+		$secret = trim( automator_get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
 
 		$tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=go-to-webinar';
 
@@ -65,9 +66,9 @@ class GoToWebinar_Settings extends Settings\Premium_Integration_Settings {
 
 		$connection = automator_filter_input( 'connect' );
 
-		$user = get_option( '_uncannyowl_gtw_settings', false );
+		$user = automator_get_option( '_uncannyowl_gtw_settings', array() );
 
-		$is_connected = false !== $user;
+		$is_connected = ! empty( $user );
 
 		$user_first_name = isset( $user['firstName'] ) ? $user['firstName'] : '';
 

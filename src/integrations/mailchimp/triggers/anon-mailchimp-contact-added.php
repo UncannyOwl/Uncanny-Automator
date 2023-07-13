@@ -73,7 +73,7 @@ class ANON_MAILCHIMP_CONTACT_ADDED {
 		$this->set_options_callback( array( $this, 'get_trigger_option_fields' ) );
 
 		// Only register the trigger if mailchimp webhook is enabled inside the settings.
-		if ( get_option( 'uap_mailchimp_enable_webhook', false ) ) {
+		if ( automator_get_option( 'uap_mailchimp_enable_webhook', false ) ) {
 
 			$this->register_trigger();
 

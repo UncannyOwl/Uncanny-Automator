@@ -117,6 +117,14 @@ class Admin_Menu {
 			'admin_menu',
 			array(
 				$this,
+				'register_submenu_app_integrations',
+			)
+		);
+
+		add_action(
+			'admin_menu',
+			array(
+				$this,
 				'register_legacy_options_menu_page',
 			),
 			999
@@ -170,7 +178,7 @@ class Admin_Menu {
 
 		$option_key = 'automator_reporting';
 
-		$uap_automator_allow_tracking = get_option( $option_key, false );
+		$uap_automator_allow_tracking = automator_get_option( $option_key, false );
 
 		$is_connected = Api_Server::get_license_type();
 
@@ -301,11 +309,11 @@ class Admin_Menu {
 			0
 		);
 
-		// Create "Integrations" submenu page
+		// Create "All integrations" submenu page
 		add_submenu_page(
 			$parent_slug,
-			esc_attr__( 'Integrations', 'uncanny-automator' ),
-			esc_attr__( 'Integrations', 'uncanny-automator' ),
+			esc_attr__( 'All integrations', 'uncanny-automator' ),
+			esc_attr__( 'All integrations', 'uncanny-automator' ),
 			'manage_options',
 			'uncanny-automator-integrations',
 			array(
@@ -322,6 +330,34 @@ class Admin_Menu {
 			'manage_options',
 			'uncanny-automator-recipe-activity-details',
 			$function
+		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function register_submenu_app_integrations() {
+		// Get the global $submenu array
+		add_submenu_page(
+			'edit.php?post_type=uo-recipe',
+			/* translators: 1. Trademarked term */
+			__( 'App integrations', 'uncanny-automator' ),
+			__( 'App integrations', 'uncanny-automator' ),
+			'manage_options',
+			'uncanny-automator-app-integrations',
+			function () {
+				if ( ! automator_filter_has_var( 'page' ) ) {
+					return;
+				}
+				if ( 'uncanny-automator-app-integrations' === automator_filter_input( 'page' ) ) {
+					if ( defined( 'WP_DEBUG_DISPLAY' ) && WP_DEBUG_DISPLAY ) {
+						echo '<script>window.location.replace(\'' . admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations' ) . '\')</script>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						exit;
+					}
+					wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations' ) );
+					exit;
+				}
+			}
 		);
 	}
 
@@ -408,7 +444,7 @@ class Admin_Menu {
 
 		//      $license_data = false;
 		//      if ( $is_connected ) {
-		//          $license_data = get_option( 'uap_automator_free_license_data' );
+		//          $license_data = automator_get_option( 'uap_automator_free_license_data' );
 		//      }
 
 		$is_pro_active = false;
@@ -604,7 +640,7 @@ class Admin_Menu {
 
 				$license_data = false;
 				if ( $is_connected ) {
-					$license_data = get_option( 'uap_automator_free_license_data' );
+					$license_data = automator_get_option( 'uap_automator_free_license_data' );
 				}
 
 				$is_pro_active = false;
@@ -615,13 +651,13 @@ class Admin_Menu {
 				}
 				//}
 
-				$uap_automator_allow_tracking = get_option( 'automator_reporting', false );
+				$uap_automator_allow_tracking = automator_get_option( 'automator_reporting', false );
 
 				if ( $is_pro_active ) {
 					$license_data = $this->check_pro_license( true );
 
-					$license = get_option( 'uap_automator_pro_license_key' );
-					$status  = get_option( 'uap_automator_pro_license_status' ); // $license_data->license will be either "valid", "invalid", "expired", "disabled"
+					$license = automator_get_option( 'uap_automator_pro_license_key' );
+					$status  = automator_get_option( 'uap_automator_pro_license_status' ); // $license_data->license will be either "valid", "invalid", "expired", "disabled"
 
 					// Check license status
 					$license_is_active = ( 'valid' === $status ) ? true : false;
@@ -748,7 +784,7 @@ class Admin_Menu {
 
 			$this->validate_credentials( automator_filter_input( 'state' ) );
 
-			$license = get_option( 'uap_automator_free_license_key' );
+			$license = automator_get_option( 'uap_automator_free_license_key' );
 
 			if ( $license ) {
 
@@ -822,7 +858,7 @@ class Admin_Menu {
 	 * @throws \Exception
 	 */
 	public function check_pro_license( $force_check = false ) {
-		$last_checked = get_option( 'uap_automator_pro_license_last_checked' );
+		$last_checked = automator_get_option( 'uap_automator_pro_license_last_checked' );
 		if ( ! empty( $last_checked ) && false === $force_check ) {
 			$datediff = time() - $last_checked;
 			if ( $datediff < DAY_IN_SECONDS ) {
@@ -832,32 +868,18 @@ class Admin_Menu {
 		if ( true === $force_check ) {
 			delete_option( 'uap_automator_pro_license_last_checked' );
 		}
-		$license = trim( get_option( 'uap_automator_pro_license_key' ) );
+		$license = trim( automator_get_option( 'uap_automator_pro_license_key' ) );
 		if ( empty( $license ) ) {
 			return new \stdClass();
 		}
-		$api_params = array(
-			'edd_action' => 'check_license',
-			'license'    => $license,
-			'item_name'  => rawurlencode( AUTOMATOR_PRO_ITEM_NAME ),
-			'url'        => home_url(),
-		);
 
-		// Call the custom API.
-		$response = wp_remote_post(
-			AUTOMATOR_PRO_STORE_URL,
-			array(
-				'timeout'   => 15,
-				'sslverify' => false,
-				'body'      => $api_params,
-			)
-		);
+		$license_data = Api_Server::is_automator_connected( $force_check );
 
-		if ( is_wp_error( $response ) ) {
-			return false;
+		if ( ! $license_data ) {
+			return new \stdClass();
 		}
 
-		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
+		$license_data = (object) $license_data;
 
 		// this license is still valid
 		if ( $license_data->license === 'valid' ) {

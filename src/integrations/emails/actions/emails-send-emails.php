@@ -202,6 +202,11 @@ class EMAILS_SEND_EMAILS {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
+		// Clear the error messages.
+		$this->clear_error_message();
+		// Reset the errors.
+		Automator_WP_Error::get_instance()->reset_errors();
+
 		$body_text    = isset( $parsed['EMAILBODY'] ) ? $parsed['EMAILBODY'] : '';
 		$content_type = isset( $parsed['EMAILCONTENTTYPE'] ) ? $parsed['EMAILCONTENTTYPE'] : 'text/html';
 

@@ -57,7 +57,7 @@ class Add_Twitter_Integration {
 
 		$connected = false;
 
-		$tokens = get_option( '_uncannyowl_twitter_settings', array() );
+		$tokens = automator_get_option( '_uncannyowl_twitter_settings', array() );
 
 		if ( ! empty( $tokens ) ) {
 			$connected = true;

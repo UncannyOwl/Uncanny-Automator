@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             4.15.1.1
+ * Version:             4.16
  * Requires at least:   5.3
  * Requires PHP:        5.6
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '4.15.1.1' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '4.16' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -43,7 +43,7 @@ function automator_autoloader( $class ) {
 	global $automator_class_map;
 
 	if ( ! $automator_class_map ) {
-		$automator_class_map = include_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'autoload_classmap.php';
+		$automator_class_map = include __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'autoload_classmap.php';
 		$automator_class_map = array_change_key_case( $automator_class_map, CASE_LOWER );
 	}
 

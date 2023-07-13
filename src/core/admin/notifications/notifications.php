@@ -428,7 +428,7 @@ class Automator_Notifications {
 				'events'    => array_merge( $notification, $option['events'] ),
 				'dismissed' => $option['dismissed'],
 			),
-			false
+			true
 		);
 	}
 
@@ -452,7 +452,7 @@ class Automator_Notifications {
 				'events'    => $option['events'],
 				'dismissed' => array_slice( $option['dismissed'], 0, 30 ), // Limit dismissed notifications to last 30.
 			),
-			false
+			true
 		);
 	}
 
@@ -510,7 +510,7 @@ class Automator_Notifications {
 			}
 		}
 
-		update_option( $this->option_name, $option, false );
+		update_option( $this->option_name, $option, true );
 
 		wp_send_json_success();
 	}

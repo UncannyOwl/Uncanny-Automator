@@ -24,7 +24,6 @@ class Microsoft_Teams_Integration extends \Uncanny_Automator\Integration {
 		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'microsoft-teams' ) );
 
 		$this->register_hooks();
-		$this->load();
 	}
 
 	/**

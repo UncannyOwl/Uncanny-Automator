@@ -242,7 +242,7 @@ class Gotowebinar_Helpers {
 
 		}
 
-		$oauth_settings        = get_option( '_uncannyowl_gtw_settings' );
+		$oauth_settings        = automator_get_option( '_uncannyowl_gtw_settings', array() );
 		$current_refresh_token = isset( $oauth_settings['refresh_token'] ) ? $oauth_settings['refresh_token'] : '';
 
 		if ( empty( $current_refresh_token ) ) {
@@ -250,8 +250,8 @@ class Gotowebinar_Helpers {
 			throw new \Exception( __( 'GoTo Webinar credentails have expired.', 'uncanny-automator' ) );
 		}
 
-		$consumer_key    = trim( get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
-		$consumer_secret = trim( get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
+		$consumer_key    = trim( automator_get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
+		$consumer_secret = trim( automator_get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
 
 		$params = array(
 			'method'  => 'POST',
@@ -344,9 +344,9 @@ class Gotowebinar_Helpers {
 	 */
 	private function oauth_redirect() {
 
-		$consumer_key = trim( get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
+		$consumer_key = trim( automator_get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
 
-		$consumer_secret = trim( get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
+		$consumer_secret = trim( automator_get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
 
 		if ( isset( $consumer_key ) && isset( $consumer_secret ) && strlen( $consumer_key ) > 0 && strlen( $consumer_secret ) > 0 ) {
 
@@ -377,8 +377,8 @@ class Gotowebinar_Helpers {
 			return;
 		}
 
-		$consumer_key    = trim( get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
-		$consumer_secret = trim( get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
+		$consumer_key    = trim( automator_get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
+		$consumer_secret = trim( automator_get_option( 'uap_automator_gtw_api_consumer_secret', '' ) );
 
 		$code = automator_filter_input( 'code' );
 

@@ -75,7 +75,7 @@ class Add_Gtw_Integration {
 	public function add_integration_func() {
 
 		// check if Consumer Key and Consumer Secret available
-		$gtw_options = get_option( '_uncannyowl_gtw_settings', array() );
+		$gtw_options = automator_get_option( '_uncannyowl_gtw_settings', array() );
 
 		Automator()->register->integration(
 			self::$integration,

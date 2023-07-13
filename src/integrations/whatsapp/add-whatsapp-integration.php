@@ -50,7 +50,7 @@ class Add_WhatsApp_Integration {
 
 	public function get_client() {
 
-		$option = get_option( self::CLIENT, array() );
+		$option = automator_get_option( self::CLIENT, array() );
 
 		return ! empty( $option['data']['data'] ) ? $option['data']['data'] : array();
 
