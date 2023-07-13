@@ -164,8 +164,8 @@ class Twilio_Helpers {
 	 */
 	public function get_client() {
 
-		$sid   = get_option( 'uap_automator_twilio_api_account_sid' );
-		$token = get_option( 'uap_automator_twilio_api_auth_token' );
+		$sid   = automator_get_option( 'uap_automator_twilio_api_account_sid' );
+		$token = automator_get_option( 'uap_automator_twilio_api_auth_token' );
 
 		if ( empty( $sid ) || empty( $token ) ) {
 			throw new \Exception( 'Twilio is not connected' );

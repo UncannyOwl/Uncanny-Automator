@@ -23,7 +23,7 @@ class Emails_Helpers {
 
 		$option_key = 'automator_wp_send_email_action_moved__4.3';
 
-		if ( 'yes' === get_option( $option_key ) ) {
+		if ( 'yes' === automator_get_option( $option_key ) ) {
 			return;
 		}
 
@@ -38,7 +38,7 @@ class Emails_Helpers {
 		);
 
 		if ( empty( $current_actions ) ) {
-			update_option( $option_key, 'yes', false );
+			update_option( $option_key, 'yes', true );
 			return;
 		}
 
@@ -47,7 +47,7 @@ class Emails_Helpers {
 			update_post_meta( $action->post_id, 'integration_name', 'EMAILS' );
 		}
 
-		update_option( $option_key, 'yes', false );
+		update_option( $option_key, 'yes', true );
 
 	}
 }

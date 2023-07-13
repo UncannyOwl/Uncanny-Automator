@@ -589,3 +589,69 @@ function automator_array_as_options( $array ) {
 
 	return $options;
 }
+
+// String oprtations fallback for old PHP versions.
+
+if ( ! function_exists( 'str_starts_with' ) ) {
+	function str_starts_with( $haystack, $needle ) {
+		return (string) $needle !== '' && strncmp( $haystack, $needle, strlen( $needle ) ) === 0;
+	}
+}
+
+if ( ! function_exists( 'str_ends_with' ) ) {
+	function str_ends_with( $haystack, $needle ) {
+		return $needle !== '' && substr( $haystack, -strlen( $needle ) ) === (string) $needle;
+	}
+}
+
+if ( ! function_exists( 'str_contains' ) ) {
+	function str_contains( $haystack, $needle ) {
+		return $needle !== '' && mb_strpos( $haystack, $needle ) !== false;
+	}
+}
+
+/**
+ * automator_get_option
+ *
+ * @param  string $option
+ * @param  mixed $default_value
+ * @return mixed
+ */
+function automator_get_option( $option, $default_value = false ) {
+
+	$value = get_option( $option, $default_value );
+
+	if ( '' === $value && false === $default_value ) {
+		return false;
+	}
+
+	if ( $default_value === $value ) {
+		add_option( $option, $default_value, '', true );
+		return $default_value;
+	}
+
+	return $value;
+}
+
+
+/**
+ * Wrapper function for add_settings_error.
+ *
+ * Bails if add_settings_error function is not yet loaded. Prevents fatal error when adding an option too early.
+ *
+ * @param string $setting Slug title of the setting to which this error applies.
+ * @param string $code Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
+ * @param string $message The formatted message text to display to the user (will be shown inside styled <div> and <p> tags).
+ * @param string $type MMessage type, controls HTML class. Possible values include 'error', 'success', 'warning', 'info'. Default 'error'.
+ *
+ * @return mixed
+ */
+function automator_add_settings_error( $setting = '', $code = '', $message = '', $type = '' ) {
+
+	if ( ! function_exists( 'add_settings_error' ) ) {
+		return;
+	}
+
+	return add_settings_error( $setting, $code, $message, $type );
+
+}

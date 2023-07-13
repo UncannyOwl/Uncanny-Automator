@@ -56,7 +56,7 @@ class Add_Hubspot_Integration {
 
 		$connected = false;
 
-		$tokens = get_option( '_automator_hubspot_settings', array() );
+		$tokens = automator_get_option( '_automator_hubspot_settings', array() );
 
 		if ( ! empty( $tokens ) ) {
 			$connected = true;

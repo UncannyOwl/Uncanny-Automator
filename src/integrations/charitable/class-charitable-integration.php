@@ -18,11 +18,6 @@ class Charitable_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'CHARITABLE' );
 		$this->set_name( 'Charitable' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/charitable-icon.svg' );
-
-		if ( $this->plugin_active() ) {
-			$this->load();
-			$this->add_wp_hooks();
-		}
 	}
 
 	/**
@@ -35,6 +30,7 @@ class Charitable_Integration extends \Uncanny_Automator\Integration {
 		// Load triggers.
 		new ANON_CHARITABLE_MADE_DONATION( $this );
 		new CHARITABLE_USER_MADE_DONATION( $this );
+		$this->add_wp_hooks();
 	}
 
 	/**

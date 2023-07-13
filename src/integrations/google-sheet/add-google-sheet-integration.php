@@ -107,7 +107,7 @@ class Add_Google_Sheet_Integration {
 	 */
 	public function has_missing_scope() {
 
-		$client = get_option( '_uncannyowl_google_sheet_settings', array() );
+		$client = automator_get_option( '_uncannyowl_google_sheet_settings', array() );
 
 		$scopes = array(
 			'https://www.googleapis.com/auth/drive',
@@ -138,7 +138,7 @@ class Add_Google_Sheet_Integration {
 	 */
 	public function get_google_client() {
 
-		$access_token = get_option( '_uncannyowl_google_sheet_settings', array() );
+		$access_token = automator_get_option( '_uncannyowl_google_sheet_settings', array() );
 
 		if ( empty( $access_token ) || ! isset( $access_token['access_token'] ) ) {
 			return false;

@@ -34,7 +34,7 @@ class Twitter_Functions {
 	 */
 	public function get_client() {
 
-		$tokens = get_option( '_uncannyowl_twitter_settings', array() );
+		$tokens = automator_get_option( '_uncannyowl_twitter_settings', array() );
 
 		if ( empty( $tokens['oauth_token'] ) || empty( $tokens['oauth_token_secret'] ) ) {
 			throw new \Exception( 'Twitter is not connected' );

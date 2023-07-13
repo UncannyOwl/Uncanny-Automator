@@ -533,7 +533,7 @@ class Google_Calendar_Helpers {
 	 */
 	public function get_client() {
 
-		return get_option( self::OPTION_KEY, false );
+		return automator_get_option( self::OPTION_KEY, false );
 
 	}
 

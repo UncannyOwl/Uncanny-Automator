@@ -23,7 +23,7 @@ class Add_Gtt_Integration {
 	 * @return bool
 	 */
 	public function plugin_active( $status, $code ) {
-		
+
 		$is_enabled = true;
 
 		$directories = array(
@@ -37,7 +37,7 @@ class Add_Gtt_Integration {
 		);
 
 		$pro_integration_helpers_path = ABSPATH . implode( DIRECTORY_SEPARATOR, $directories ) . '/gototraining-pro-helpers.php';
-		
+
 		// If the helper file exists in pro it means, the pro version still contains the old helper file.
 		if ( file_exists( $pro_integration_helpers_path ) && is_automator_pro_active() ) {
 			$is_enabled = false;
@@ -70,14 +70,17 @@ class Add_Gtt_Integration {
 	public function add_integration_func() {
 
 		// Check if consumer key and secret is available.
-		$gtt_options = get_option( '_uncannyowl_gtt_settings', array() );
+		$gtt_options = automator_get_option( '_uncannyowl_gtt_settings' );
 
-		Automator()->register->integration( self::$integration, array(
-			'name'     => 'GoTo Training',
-			'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/gototraining-icon.svg' ),
-			'connected'    => isset( $gtt_options['refresh_token'] ) && ! empty( $gtt_options['refresh_token'] ),
-			'settings_url' => automator_get_premium_integrations_settings_url( 'go-to-training' ),
-		) );
+		Automator()->register->integration(
+			self::$integration,
+			array(
+				'name'         => 'GoTo Training',
+				'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/gototraining-icon.svg' ),
+				'connected'    => ! empty( $gtt_options['refresh_token'] ),
+				'settings_url' => automator_get_premium_integrations_settings_url( 'go-to-training' ),
+			)
+		);
 
 	}
 }

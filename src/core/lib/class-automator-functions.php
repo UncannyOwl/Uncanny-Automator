@@ -1884,5 +1884,4 @@ WHERE pm.post_id
 		return $condition_id_failure_message;
 
 	}
-
 }

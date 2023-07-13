@@ -82,7 +82,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 
 		} catch ( \Exception $e ) {
 
-			add_settings_error( 'automator_convertkit_connection_alerts', __( 'API Key verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( 'automator_convertkit_connection_alerts', __( 'API Key verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 
@@ -124,20 +124,20 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 			$response = $this->helpers->verify_api_secret( $sanitized_input );
 
 			// At this point, both API Key and API Secret are good to go. Save the Client in the DB.
-			update_option( self::OPTIONS_CLIENT, $response, false );
+			update_option( self::OPTIONS_CLIENT, $response, true );
 
 			$client = $this->helpers->get_client();
 
 			/* translators: Settings flash message */
 			$heading = sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client['primary_email_address'] );
 
-			add_settings_error( 'automator_convertkit_connection_alerts', $heading, '', 'success' );
+			automator_add_settings_error( 'automator_convertkit_connection_alerts', $heading, '', 'success' );
 
 			return $sanitized_input;
 
 		} catch ( \Exception $e ) {
 
-			add_settings_error( 'automator_convertkit_connection_alerts', __( 'API Secret verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( 'automator_convertkit_connection_alerts', __( 'API Secret verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 

@@ -745,7 +745,7 @@ class Mailchimp_Helpers {
 	 */
 	public function get_mailchimp_client() {
 
-		$client = get_option( '_uncannyowl_mailchimp_settings', array() );
+		$client = automator_get_option( '_uncannyowl_mailchimp_settings', array() );
 
 		if ( empty( $client ) || ! isset( $client['access_token'] ) ) {
 			throw new \Exception( __( 'Mailchimp account not found.', 'uncanny-automator' ) );
@@ -1070,7 +1070,7 @@ class Mailchimp_Helpers {
 	 */
 	public function is_webhook_enabled() {
 
-		$webhook_enabled_option = get_option( 'uap_mailchimp_enable_webhook', false );
+		$webhook_enabled_option = automator_get_option( 'uap_mailchimp_enable_webhook', false );
 
 		// The get_option can return string or boolean sometimes.
 		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison

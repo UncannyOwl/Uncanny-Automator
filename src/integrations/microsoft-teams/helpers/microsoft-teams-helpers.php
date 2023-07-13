@@ -108,7 +108,7 @@ class Microsoft_Teams_Helpers {
 	 */
 	public function get_api_secret() {
 
-		$secret = get_option( self::API_SECRET, false );
+		$secret = automator_get_option( self::API_SECRET, false );
 
 		if ( false === $secret ) {
 			$secret = wp_create_nonce( self::NONCE );
@@ -173,7 +173,7 @@ class Microsoft_Teams_Helpers {
 	 */
 	public function get_client() {
 
-		$client = (array) get_option( self::OPTION_KEY, false );
+		$client = (array) automator_get_option( self::OPTION_KEY, false );
 
 		if ( empty( $client['access_token'] ) || empty( $client['refresh_token'] ) ) {
 			throw new \Exception( 'Microsoft is not connected' );

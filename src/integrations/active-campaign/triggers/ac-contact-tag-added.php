@@ -43,7 +43,7 @@ class AC_CONTACT_TAG_ADDED {
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
-		if ( get_option( 'uap_active_campaign_enable_webhook', false ) ) {
+		if ( automator_get_option( 'uap_active_campaign_enable_webhook', false ) ) {
 			$this->register_trigger(); // Registering this trigger
 		}
 

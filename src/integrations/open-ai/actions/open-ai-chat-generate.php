@@ -209,7 +209,7 @@ class OPEN_AI_CHAT_GENERATE {
 
 		$client = new HTTP_Client( Api_Server::get_instance() );
 		$client->set_endpoint( 'v1/chat/completions' );
-		$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+		$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
 		$client->set_request_body( $body );
 
 		try {

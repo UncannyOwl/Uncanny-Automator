@@ -205,6 +205,11 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 				),
 				true
 			);
+
+			// Complete the action with notice while Cron is processing it.
+			$action_data['complete_with_notice'] = true;
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, _x( 'Waiting for the action to be completed', 'MailPoet action status', 'uncanny-automator' ) );
+
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
 			$action_data['do-nothing']           = true;

@@ -41,7 +41,7 @@ class Add_Facebook_Groups_Integration {
 	 */
 	public function add_integration_func() {
 
-		$settings = get_option( '_uncannyowl_facebook_group_settings', false );
+		$settings = automator_get_option( '_uncannyowl_facebook_group_settings', false );
 
 		// Set up configuration.
 		$integration_config = array(

@@ -86,8 +86,8 @@ class Zoho_Campaigns_Client_Auth {
 
 		try {
 
-			update_option( 'zoho_campaigns_credentials', $this->get_agent_credentials(), false );
-			update_option( 'zoho_campaigns_credentials_last_refreshed', time(), false );
+			update_option( 'zoho_campaigns_credentials', $this->get_agent_credentials(), true );
+			update_option( 'zoho_campaigns_credentials_last_refreshed', time(), true );
 
 			if ( is_callable( $success_callback ) ) {
 				return call_user_func( $success_callback );
@@ -192,10 +192,10 @@ class Zoho_Campaigns_Client_Auth {
 			$credentials['access_token'] = $response['data']['access_token'];
 
 			// Update the access token with the new token coming from refresh token endpoint.
-			update_option( 'zoho_campaigns_credentials', $credentials, false );
+			update_option( 'zoho_campaigns_credentials', $credentials, true );
 
 			// Update last refresh time.
-			update_option( 'zoho_campaigns_credentials_last_refreshed', time(), false );
+			update_option( 'zoho_campaigns_credentials_last_refreshed', time(), true );
 
 			do_action( 'automator_zoho_campaigns_before_access_token_succesful', $credentials, $response, $this );
 

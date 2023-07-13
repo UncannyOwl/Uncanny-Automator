@@ -196,7 +196,7 @@ abstract class Trigger {
 
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );
 
-		$triggers[] = $trigger;
+		$triggers[ $this->get_code() ] = $trigger;
 		return $triggers;
 	}
 

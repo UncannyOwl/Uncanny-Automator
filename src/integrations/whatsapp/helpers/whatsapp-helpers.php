@@ -472,7 +472,7 @@ class WhatsApp_Helpers {
 			return false;
 		}
 
-		$secret = get_option( 'automator_whatsapp_secret', null );
+		$secret = automator_get_option( 'automator_whatsapp_secret', null );
 
 		$x_hub_signature = $request->get_header( 'x-hub-signature' );
 
@@ -514,7 +514,7 @@ class WhatsApp_Helpers {
 		// Hub challenge verification.
 		if ( ! empty( $request->get_param( 'hub_challenge' ) ) ) {
 
-			if ( $request->get_param( 'hub_verify_token' ) !== get_option( self::WEBHOOK_KEY, false ) ) {
+			if ( $request->get_param( 'hub_verify_token' ) !== automator_get_option( self::WEBHOOK_KEY, false ) ) {
 
 				wp_send_json_error( null, 403 );
 
@@ -574,7 +574,7 @@ class WhatsApp_Helpers {
 	 */
 	public function get_webhook_key() {
 
-		$webhook_key = get_option( self::WEBHOOK_KEY, false );
+		$webhook_key = automator_get_option( self::WEBHOOK_KEY, false );
 
 		if ( false === $webhook_key ) {
 
@@ -686,7 +686,7 @@ class WhatsApp_Helpers {
 
 	public function get_client() {
 
-		$option = get_option( self::CLIENT, array() );
+		$option = automator_get_option( self::CLIENT, array() );
 
 		return ! empty( $option['data']['data'] ) ? $option['data']['data'] : array();
 
@@ -710,13 +710,13 @@ class WhatsApp_Helpers {
 
 	public function get_phone_number_id() {
 
-		return absint( get_option( WhatsApp_Settings::PHONE_ID, 0 ) );
+		return absint( automator_get_option( WhatsApp_Settings::PHONE_ID, 0 ) );
 
 	}
 
 	public function get_access_token() {
 
-		return trim( get_option( WhatsApp_Settings::ACCESS_TOKEN, '' ) );
+		return trim( automator_get_option( WhatsApp_Settings::ACCESS_TOKEN, '' ) );
 
 	}
 
@@ -742,7 +742,7 @@ class WhatsApp_Helpers {
 
 			$body = array(
 				'action'       => 'list_template',
-				'business_id'  => get_option( WhatsApp_Settings::BUSINESS_ID ),
+				'business_id'  => automator_get_option( WhatsApp_Settings::BUSINESS_ID ),
 				'access_token' => $this->get_access_token(),
 			);
 
@@ -768,7 +768,7 @@ class WhatsApp_Helpers {
 	}
 
 	public function get_dropdown_transient_key() {
-		return 'automator_whatsapp_message_templates_dropdown_' . get_option( WhatsApp_Settings::BUSINESS_ID, '' );
+		return 'automator_whatsapp_message_templates_dropdown_' . automator_get_option( WhatsApp_Settings::BUSINESS_ID, '' );
 	}
 
 	public function retrieve_template() {

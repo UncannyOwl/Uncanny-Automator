@@ -23,9 +23,9 @@ class Add_Active_Campaign_Integration {
 	 */
 	public function is_connected() {
 
-		$api_url = get_option( 'uap_active_campaign_api_url', '' );
-		$api_key = get_option( 'uap_active_campaign_api_key', '' );
-		$user    = get_option( 'uap_active_campaign_connected_user' );
+		$api_url = automator_get_option( 'uap_active_campaign_api_url', '' );
+		$api_key = automator_get_option( 'uap_active_campaign_api_key', '' );
+		$user    = automator_get_option( 'uap_active_campaign_connected_user' );
 
 		return ! empty( $user ) && ! empty( $api_url ) && ! empty( $api_key );
 

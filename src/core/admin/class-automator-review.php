@@ -151,17 +151,17 @@ class Automator_Review {
 			return;
 		}
 
-		update_option( '_uncanny_credits_notification_' . $type, 'hide-forever', false );
+		update_option( '_uncanny_credits_notification_' . $type, 'hide-forever', true );
 
 		if ( 25 === $type ) {
 			// Also hide '_uncanny_credits_notification_100' notification.
-			update_option( '_uncanny_credits_notification_100', 'hide-forever', false );
+			update_option( '_uncanny_credits_notification_100', 'hide-forever', true );
 		}
 
 		if ( 0 === $type ) {
 			// Also hide '_uncanny_credits_notification_25' and '_uncanny_credits_notification_100' notifications.
-			update_option( '_uncanny_credits_notification_25', 'hide-forever', false );
-			update_option( '_uncanny_credits_notification_100', 'hide-forever', false );
+			update_option( '_uncanny_credits_notification_25', 'hide-forever', true );
+			update_option( '_uncanny_credits_notification_100', 'hide-forever', true );
 		}
 
 		return true;
@@ -402,9 +402,9 @@ class Automator_Review {
 	 */
 	public function maybe_ask_tracking() {
 
-		$_is_reminder = get_option( '_uncanny_automator_tracking_reminder', '' );
+		$_is_reminder = automator_get_option( '_uncanny_automator_tracking_reminder', '' );
 
-		$_reminder_date = get_option( '_uncanny_automator_tracking_reminder_date', current_time( 'timestamp' ) );
+		$_reminder_date = automator_get_option( '_uncanny_automator_tracking_reminder_date', current_time( 'timestamp' ) );
 
 		if ( ! empty( $_is_reminder ) && 'hide-forever' === $_is_reminder ) {
 			return;
@@ -497,6 +497,10 @@ class Automator_Review {
 	 * @return void
 	 */
 	public function view_review_banner() {
+		if ( automator_filter_has_var( 'page' ) && 'uncanny-automator-app-integrations' === automator_filter_input( 'page' ) ) {
+			// Placeholder redirect page, bail
+			return;
+		}
 
 		if ( $this->has_credits_notification() ) {
 			return $this->display_credits_notification();

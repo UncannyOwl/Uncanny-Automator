@@ -985,4 +985,21 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			)
 		);
 	}
+
+	/**
+	 * action_is_finished
+	 *
+	 * @param  array $action
+	 * @return bool
+	 */
+	public function action_is_finished( $action ) {
+
+		if ( empty( $action['action_data']['completed'] ) ) {
+			return false;
+		}
+
+		$action_status = (int) $action['action_data']['completed'];
+
+		return \Uncanny_Automator\Automator_Status::finished( $action_status );
+	}
 }

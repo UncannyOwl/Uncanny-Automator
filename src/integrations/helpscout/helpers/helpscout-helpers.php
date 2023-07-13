@@ -348,7 +348,7 @@ class Helpscout_Helpers {
 		// Manually set the access token and refresh token expiration date.
 		$tokens['expires_on'] = strtotime( current_time( 'mysql' ) ) + $tokens['expires_in'];
 
-		update_option( self::CLIENT, $tokens, false );
+		update_option( self::CLIENT, $tokens, true );
 
 		try {
 
@@ -358,7 +358,7 @@ class Helpscout_Helpers {
 
 			$client['user'] = $response['data'];
 
-			update_option( self::CLIENT, $client, false );
+			update_option( self::CLIENT, $client, true );
 
 		} catch ( \Exception $e ) {
 
@@ -491,7 +491,7 @@ class Helpscout_Helpers {
 
 	public function get_client() {
 
-		return get_option( self::CLIENT, false );
+		return automator_get_option( self::CLIENT, false );
 
 	}
 
@@ -503,7 +503,7 @@ class Helpscout_Helpers {
 
 	private function get_access_token() {
 
-		$client = get_option( self::CLIENT, array() );
+		$client = automator_get_option( self::CLIENT, array() );
 
 		// If date today exceeded the expires on, it means the token has expired already.
 		// Allowance of 2 hours (7200s) to account for token expiration timing.
@@ -541,7 +541,7 @@ class Helpscout_Helpers {
 					$response['expires_on'] = strtotime( current_time( 'mysql' ) ) + $response['expires_in'];
 					$response['user']       = $client['user'];
 
-					update_option( self::CLIENT, $response, false );
+					update_option( self::CLIENT, $response, true );
 
 				}
 			}
@@ -608,7 +608,7 @@ class Helpscout_Helpers {
 	 */
 	public function is_webhook_enabled() {
 
-		$webhook_enabled_option = get_option( 'uap_helpscout_enable_webhook', false );
+		$webhook_enabled_option = automator_get_option( 'uap_helpscout_enable_webhook', false );
 
 		// The get_option can return string or boolean sometimes.
 		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
@@ -646,7 +646,7 @@ class Helpscout_Helpers {
 	 */
 	public function get_webhook_key() {
 
-		$webhook_key = get_option( 'uap_helpscout_webhook_key', false );
+		$webhook_key = automator_get_option( 'uap_helpscout_webhook_key', false );
 
 		if ( false === $webhook_key ) {
 			$webhook_key = $this->regenerate_webhook_key();

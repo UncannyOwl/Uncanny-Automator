@@ -111,7 +111,7 @@ class Open_AI_Helpers {
 	 * @return bool True if there is an option key. Otherwise, false.
 	 */
 	public function is_connected() {
-		return ! empty( get_option( self::OPTION_KEY, false ) );
+		return ! empty( automator_get_option( self::OPTION_KEY, false ) );
 	}
 
 	/**
@@ -147,7 +147,7 @@ class Open_AI_Helpers {
 		$client = new HTTP_Client( Api_Server::get_instance() );
 
 		$client->set_endpoint( 'v1/models' );
-		$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+		$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
 
 		try {
 
@@ -251,7 +251,7 @@ class Open_AI_Helpers {
 		$client = new HTTP_Client( Api_Server::get_instance() );
 
 		$client->set_endpoint( 'v1/models/gpt-4' );
-		$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+		$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
 
 		$has_gpt4_access = 'no';
 
@@ -309,7 +309,7 @@ class Open_AI_Helpers {
 
 		$client = new HTTP_Client( Api_Server::get_instance() );
 		$client->set_endpoint( 'v1/chat/completions' );
-		$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+		$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
 		$client->set_request_body( $body );
 
 		return $client;

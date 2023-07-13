@@ -97,7 +97,7 @@ class Slack_Helpers {
 	 */
 	public function get_slack_client() {
 
-		$tokens = get_option( '_uncannyowl_slack_settings', array() );
+		$tokens = automator_get_option( '_uncannyowl_slack_settings', array() );
 
 		if ( empty( $tokens ) ) {
 			throw new \Exception( 'Slack is not connected' );

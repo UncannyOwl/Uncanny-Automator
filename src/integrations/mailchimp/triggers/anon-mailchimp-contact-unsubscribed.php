@@ -72,7 +72,7 @@ class ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED {
 		// Set the options field group.
 		$this->set_options_callback( array( $this, 'get_trigger_option_fields' ) );
 
-		if ( get_option( 'uap_mailchimp_enable_webhook', false ) ) {
+		if ( automator_get_option( 'uap_mailchimp_enable_webhook', false ) ) {
 
 			$this->register_trigger(); // Registering this trigger
 

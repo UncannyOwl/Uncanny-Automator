@@ -765,7 +765,7 @@ class Automator_Load {
 
 		$uncanny_automator_enabled_global_utm = apply_filters( 'uncanny_automator_enabled_global_utm', true );
 
-		$uncannyautomator_source = get_option( 'uncannyautomator_source' );
+		$uncannyautomator_source = automator_get_option( 'uncannyautomator_source' );
 
 		if ( false === $uncannyautomator_source || empty( $uncannyautomator_source ) ) {
 			return;

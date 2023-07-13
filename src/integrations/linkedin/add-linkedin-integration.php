@@ -22,7 +22,7 @@ class Add_LinkedIn_Integration {
 
 		$this->set_name( 'LinkedIn Pages' );
 
-		$this->set_connected( false !== get_option( 'automator_linkedin_client', false ) ? true : false );
+		$this->set_connected( false !== automator_get_option( 'automator_linkedin_client', false ) ? true : false );
 
 		$this->set_icon( 'linkedin-icon.svg' );
 

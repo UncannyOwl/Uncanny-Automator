@@ -170,7 +170,7 @@ class OPEN_AI_TEXT_GENERATE {
 
 			$client = new HTTP_Client( Api_Server::get_instance() );
 			$client->set_endpoint( 'v1/completions' );
-			$client->set_api_key( (string) get_option( 'automator_open_ai_secret', '' ) );
+			$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
 			$client->set_request_body( $body );
 
 			try {

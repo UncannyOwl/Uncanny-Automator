@@ -563,7 +563,7 @@ class Automator_Cache_Handler {
 	 * @return mixed|void
 	 */
 	public function is_cache_enabled( $key = '' ) {
-		$value = get_option( self::OPTION_NAME, '' );
+		$value = automator_get_option( self::OPTION_NAME, '' );
 
 		if ( '' === (string) $value ) {
 			// Use filter to check if user has disabled object cache previously.

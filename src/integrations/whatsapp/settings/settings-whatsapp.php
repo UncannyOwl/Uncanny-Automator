@@ -44,14 +44,14 @@ class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 
 			$response = $this->get_helper()->verify_token( $sanitize_input );
 
-			update_option( 'automator_whatsapp_client', $response, false );
+			update_option( 'automator_whatsapp_client', $response, true );
 
 			$client = $this->get_helper()->get_client();
 
 			/* translators: Settings flash message */
 			$heading = sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client['application'] );
 
-			add_settings_error( 'automator_whatsapp_connection_alerts', $heading, '', 'success' );
+			automator_add_settings_error( 'automator_whatsapp_connection_alerts', $heading, '', 'success' );
 
 			// Set the run-time cache.
 			Automator()->cache->set( $cache_key, true );
@@ -60,7 +60,7 @@ class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 
 		} catch ( \Exception $e ) {
 
-			add_settings_error( 'automator_whatsapp_connection_alerts', __( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( 'automator_whatsapp_connection_alerts', __( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 

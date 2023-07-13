@@ -565,7 +565,7 @@ class Recipe_Post_Utilities {
 			'hasValidProLicense'  => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),
 			'licenseUrl'          => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
 			'marketing'           => array(
-				'utmR' => get_option( 'uncannyautomator_source', '' ),
+				'utmR' => automator_get_option( 'uncannyautomator_source', '' ),
 			),
 			'assets'              => array(
 				'global'        => array(

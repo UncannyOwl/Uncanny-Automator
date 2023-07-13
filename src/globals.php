@@ -55,7 +55,7 @@ if ( ! defined( 'AUTOMATOR_DEBUG_MODE' ) ) {
 	/**
 	 * Automator debug mode on/off
 	 */
-	define( 'AUTOMATOR_DEBUG_MODE', ! empty( get_option( 'automator_settings_debug_notices_enabled', false ) ) ? true : false );
+	define( 'AUTOMATOR_DEBUG_MODE', ! empty( automator_get_option( 'automator_settings_debug_notices_enabled', false ) ) ? true : false );
 }
 
 
@@ -63,7 +63,7 @@ if ( ! defined( 'LOAD_AUTOMATOR' ) ) {
 	/**
 	 * Load Automator on/off
 	 */
-	define( 'LOAD_AUTOMATOR', filter_var( get_option( 'load_automator', true ), FILTER_VALIDATE_BOOLEAN ) );
+	define( 'LOAD_AUTOMATOR', filter_var( automator_get_option( 'load_automator', true ), FILTER_VALIDATE_BOOLEAN ) );
 }
 
 if ( ! defined( 'UA_ABSPATH' ) ) {

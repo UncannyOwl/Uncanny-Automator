@@ -27,6 +27,7 @@ class Api_Server {
 		self::$url = apply_filters( 'automator_api_url', AUTOMATOR_API_URL );
 
 		add_filter( 'http_request_args', array( $this, 'add_api_headers' ), 10, 2 );
+		add_filter( 'http_request_timeout', array( $this, 'default_api_timeout' ), 10, 2 );
 		add_filter( 'automator_trigger_should_complete', array( $this, 'maybe_log_trigger' ), 10, 3 );
 
 	}
@@ -67,13 +68,41 @@ class Api_Server {
 		}
 
 		// If the request URL starts with the Automator API url
-		if ( substr( $request_url, 0, strlen( self::$url ) ) === self::$url ) {
-			$args['headers']['license-key'] = $license_key;
-			$args['headers']['site-name']   = self::get_site_name();
-			$args['headers']['item-name']   = self::get_item_name();
+		if ( ! $this->is_api_url( $request_url ) ) {
+			return $args;
 		}
 
+		$args['headers']['license-key'] = $license_key;
+		$args['headers']['site-name']   = self::get_site_name();
+		$args['headers']['item-name']   = self::get_item_name();
+
 		return $args;
+	}
+
+	/**
+	 * is_api_url
+	 *
+	 * @param  mixed $url
+	 * @return bool
+	 */
+	public function is_api_url( $url ) {
+		return substr( $url, 0, strlen( self::$url ) ) === self::$url;
+	}
+
+	/**
+	 * default_api_timeout
+	 *
+	 * @param  mixed $timeout
+	 * @param  mixed $request_url
+	 * @return int
+	 */
+	public function default_api_timeout( $timeout, $request_url ) {
+
+		if ( ! $this->is_api_url( $request_url ) ) {
+			return $timeout;
+		}
+
+		return apply_filters( 'automator_api_timeout', 30, $request_url );
 	}
 
 	/**
@@ -82,9 +111,9 @@ class Api_Server {
 	 * @return string
 	 */
 	public static function get_license_type() {
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ) {
+		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ) {
 			return 'pro';
-		} elseif ( 'valid' === get_option( 'uap_automator_free_license_status' ) ) {
+		} elseif ( 'valid' === automator_get_option( 'uap_automator_free_license_status' ) ) {
 			return 'free';
 		}
 
@@ -99,7 +128,7 @@ class Api_Server {
 	public static function get_license_key() {
 		$license_type = self::get_license_type();
 
-		return get_option( 'uap_automator_' . $license_type . '_license_key' );
+		return automator_get_option( 'uap_automator_' . $license_type . '_license_key' );
 	}
 
 	/**

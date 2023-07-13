@@ -83,7 +83,8 @@ class Set_Up_Automator {
 	 */
 	public function get_integrations_autoload_directories() {
 		try {
-			$integrations = self::read_directory( $this->integrations_directory_path );
+			$legacy_integrations = new Legacy_Integrations();
+			$integrations        = $legacy_integrations->generate_integrations_file_map();
 		} catch ( Exception $e ) {
 			throw new Automator_Exception( $e->getTraceAsString() );
 		}

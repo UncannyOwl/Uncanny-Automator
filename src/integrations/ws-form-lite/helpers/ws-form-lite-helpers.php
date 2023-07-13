@@ -12,8 +12,10 @@ class Ws_Form_Lite_Helpers {
 	/**
 	 * Ws_Form_Helpers __construct
 	 */
-	public function __construct() {
-		add_action( 'wp_ajax_select_form_fields_WSFORMS', array( $this, 'select_form_fields_func' ) );
+	public function __construct( $load = true ) {
+		if ( $load ) {
+			add_action( 'wp_ajax_select_form_fields_WSFORMS', array( $this, 'select_form_fields_func' ) );
+		}
 	}
 
 	/**
@@ -81,8 +83,8 @@ class Ws_Form_Lite_Helpers {
 			if ( is_array( $form_fields ) ) {
 				foreach ( $form_fields as $field ) {
 					$fields[] = array(
-						'value' => $field['key'],
-						'text'  => $field['label'],
+						'value' => "field_{$field->id}",
+						'text'  => $field->label,
 					);
 				}
 			}
@@ -92,27 +94,32 @@ class Ws_Form_Lite_Helpers {
 	}
 
 	/**
-	 * @param $form_id
+	 * Get the fields for the form by Form ID.
 	 *
-	 * @return array|mixed|void
+	 * @param int $id  - Form ID
+	 *
+	 * @return array - Array of field objects
 	 */
-	public function get_form_fields( $form_id ) {
+	public function get_form_fields( $id ) {
 
-		global $wpdb;
-		$fields      = array();
-		$form_fields = $wpdb->get_results( $wpdb->prepare( "SELECT id,label,type FROM {$wpdb->prefix}wsf_field WHERE section_id=%d AND type != 'submit'", $form_id ), ARRAY_A );
-		if ( ! empty( $form_fields ) ) {
-			foreach ( $form_fields as $field ) {
-				$fields[] = array(
-					'type'  => $field['type'],
-					'label' => $field['label'],
-					'key'   => "field_{$field['id']}",
-				);
+		static $fields = array();
+
+		if ( isset( $fields[ $id ] ) ) {
+			return $fields[ $id ];
+		}
+
+		$form          = new \WS_Form_Form();
+		$form->id      = $id;
+		$form_object   = $form->db_read_published( true );
+		$fields[ $id ] = \WS_Form_Common::get_fields_from_form( $form_object, true );
+		foreach ( $fields[ $id ] as $field_id => $field ) {
+			// Remove submit button - Review may be other fields to omit.
+			if ( 'submit' === $field->type ) {
+				unset( $fields[ $id ][ $field_id ] );
 			}
 		}
 
-		return apply_filters( 'automator_ws_form_get_form_fields', $fields );
-
+		return apply_filters( 'automator_ws_form_get_form_fields', $fields[ $id ] );
 	}
 
 }

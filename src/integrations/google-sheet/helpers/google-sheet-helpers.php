@@ -408,7 +408,7 @@ class Google_Sheet_Helpers {
 	 */
 	public function get_google_client() {
 
-		$access_token = get_option( '_uncannyowl_google_sheet_settings', array() );
+		$access_token = automator_get_option( '_uncannyowl_google_sheet_settings', array() );
 
 		if ( empty( $access_token ) || ! isset( $access_token['access_token'] ) ) {
 			throw new \Exception( 'Google is not connected' );
@@ -1207,7 +1207,7 @@ class Google_Sheet_Helpers {
 	 */
 	public function maybe_migrate_googlesheets() {
 
-		if ( 'yes' === get_option( 'uncanny_automator_google_sheets_migrated' ) ) {
+		if ( 'yes' === automator_get_option( 'uncanny_automator_google_sheets_migrated' ) ) {
 			return;
 		}
 
@@ -1281,7 +1281,7 @@ class Google_Sheet_Helpers {
 		}
 
 		// Update the option 'uncanny_automator_google_sheets_migrated'.
-		update_option( 'uncanny_automator_google_sheets_migrated', 'yes', false );
+		update_option( 'uncanny_automator_google_sheets_migrated', 'yes', true );
 
 	}
 

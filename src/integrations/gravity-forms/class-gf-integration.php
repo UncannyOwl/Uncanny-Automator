@@ -18,11 +18,6 @@ class Gravity_Forms_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'GF' );
 		$this->set_name( 'Gravity Forms' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/gravity-forms-icon.svg' );
-
-		if ( $this->plugin_active() ) {
-			$this->load();
-			$this->load_legacy_files();
-		}
 	}
 
 	/**
@@ -30,13 +25,14 @@ class Gravity_Forms_Integration extends \Uncanny_Automator\Integration {
 	 *
 	 * @return void
 	 */
-	public function load() {
+	protected function load() {
 		$this->tokens = new Gravity_Forms_Tokens();
 		new ANON_GF_FORM_ENTRY_UPDATED( $this );
 		new ANON_GF_SUBFORM( $this );
 		new GF_SUBFORM( $this );
 		new GF_SUBFORM_CODES( $this );
 		new GF_SUBFORM_GROUPS( $this );
+		$this->load_legacy_files();
 	}
 
 	/**

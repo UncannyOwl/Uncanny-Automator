@@ -244,7 +244,7 @@ class Gototraining_Helpers {
 
 		}
 
-		$oauth_settings        = get_option( '_uncannyowl_gtt_settings' );
+		$oauth_settings        = automator_get_option( '_uncannyowl_gtt_settings', array() );
 		$current_refresh_token = isset( $oauth_settings['refresh_token'] ) ? $oauth_settings['refresh_token'] : '';
 
 		if ( empty( $current_refresh_token ) ) {
@@ -252,8 +252,8 @@ class Gototraining_Helpers {
 			throw new \Exception( __( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
 		}
 
-		$consumer_key    = trim( get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
-		$consumer_secret = trim( get_option( 'uap_automator_gtt_api_consumer_secret', '' ) );
+		$consumer_key    = trim( automator_get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
+		$consumer_secret = trim( automator_get_option( 'uap_automator_gtt_api_consumer_secret', '' ) );
 
 		$params = array(
 			'method'  => 'POST',
@@ -341,8 +341,8 @@ class Gototraining_Helpers {
 	 */
 	private function oauth_redirect() {
 
-		$consumer_key    = trim( get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
-		$consumer_secret = trim( get_option( 'uap_automator_gtt_api_consumer_secret', '' ) );
+		$consumer_key    = trim( automator_get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
+		$consumer_secret = trim( automator_get_option( 'uap_automator_gtt_api_consumer_secret', '' ) );
 		if ( isset( $consumer_key ) && isset( $consumer_secret ) && strlen( $consumer_key ) > 0 && strlen( $consumer_secret ) > 0 ) {
 
 			$tab_url    = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=' . $this->setting_tab;
@@ -366,8 +366,8 @@ class Gototraining_Helpers {
 			return;
 		}
 
-		$consumer_key    = trim( get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
-		$consumer_secret = trim( get_option( 'uap_automator_gtt_api_consumer_secret', '' ) );
+		$consumer_key    = trim( automator_get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
+		$consumer_secret = trim( automator_get_option( 'uap_automator_gtt_api_consumer_secret', '' ) );
 
 		$code = wp_unslash( automator_filter_input( 'code' ) );
 

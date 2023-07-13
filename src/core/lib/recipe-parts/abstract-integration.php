@@ -64,9 +64,30 @@ abstract class Integration {
 	final public function __construct( $helpers = null ) {
 		$this->helpers = $helpers;
 		$this->setup();
-		add_action( 'automator_integrations', array( $this, 'register_integration' ) );
-		add_filter( 'uncanny_automator_maybe_add_integration', array( $this, 'override_plugin_status' ), 10, 2 );
+
+		Automator()->set_all_integrations(
+			$this->get_integration(),
+			array(
+				'name'     => $this->get_name(),
+				'icon_svg' => $this->get_icon_url(),
+			)
+		);
+
+		if ( $this->plugin_active() ) {
+			$this->load();
+			add_action( 'automator_integrations', array( $this, 'register_integration' ) );
+			add_filter( 'uncanny_automator_maybe_add_integration', array( $this, 'override_plugin_status' ), 10, 2 );
+		}
 	}
+
+	/**
+	 * load
+	 *
+	 * Override this method and instantiate the integration classes in it
+	 *
+	 * @return void
+	 */
+	protected function load() {}
 
 	/**
 	 * @return string
@@ -110,7 +131,7 @@ abstract class Integration {
 	 * @return mixed|bool
 	 */
 	public function plugin_active() {
-		return apply_filters( 'automator_is_integration_plugin_active', true );
+		return apply_filters( 'automator_integration_plugin_active', true, $this );
 	}
 
 	/**

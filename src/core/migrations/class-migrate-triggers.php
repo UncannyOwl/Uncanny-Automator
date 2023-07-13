@@ -36,7 +36,7 @@ class Migrate_Triggers {
 
 		$this->fill_missing_hook_name_records();
 
-		update_option( self::MIGRATED_FLAG, time(), false );
+		update_option( self::MIGRATED_FLAG, time(), true );
 
 		automator_log( 'Trigger migration event finished... ' . time(), 'Trigger Migration', true, '4-7-migration' );
 
@@ -136,7 +136,7 @@ add_action(
 		// Early bail if already migrated.
 		$migrate = new Migrate_Triggers();
 
-		if ( false !== get_option( $migrate::MIGRATED_FLAG, false ) ) {
+		if ( false !== automator_get_option( $migrate::MIGRATED_FLAG, false ) ) {
 			return;
 		}
 

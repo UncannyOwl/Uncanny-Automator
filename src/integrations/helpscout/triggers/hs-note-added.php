@@ -28,7 +28,7 @@ class HS_NOTE_ADDED {
 
 	public function __construct() {
 
-		if ( get_option( 'uap_helpscout_enable_webhook', false ) ) {
+		if ( automator_get_option( 'uap_helpscout_enable_webhook', false ) ) {
 
 			$this->set_helper( new Helpscout_Helpers( false ) );
 

@@ -32,7 +32,7 @@ class Add_Zoho_Campaigns_Integration {
 
 		$this->set_icon_path( __DIR__ . '/img/' );
 
-		$this->set_connected( get_option( 'zoho_campaigns_credentials', false ) );
+		$this->set_connected( automator_get_option( 'zoho_campaigns_credentials', false ) );
 
 		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'zoho_campaigns' ) );
 
