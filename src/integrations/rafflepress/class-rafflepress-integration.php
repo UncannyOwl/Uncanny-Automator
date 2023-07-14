@@ -37,7 +37,7 @@ class RafflePress_Integration extends \Uncanny_Automator\Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return defined( 'RAFFLEPRESS_BUILD' );
+		return defined( 'RAFFLEPRESS_BUILD' ) || defined( 'RAFFLEPRESS_PRO_BUILD' );
 	}
 
 }

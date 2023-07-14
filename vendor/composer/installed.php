@@ -1,12 +1,12 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => 'dev-5.0-release',
-    'version' => 'dev-5.0-release',
+    'pretty_version' => 'dev-master',
+    'version' => 'dev-master',
     'aliases' => 
     array (
     ),
-    'reference' => 'c52b58be2927e4db37e1756d9b86cfb5b107a3fa',
+    'reference' => '4c0a85d733fc2333327c46ce3f19e01fc2d8bfe4',
     'name' => 'uncanny-owl/uncanny-automator',
   ),
   'versions' => 
@@ -31,12 +31,12 @@
     ),
     'uncanny-owl/uncanny-automator' => 
     array (
-      'pretty_version' => 'dev-5.0-release',
-      'version' => 'dev-5.0-release',
+      'pretty_version' => 'dev-master',
+      'version' => 'dev-master',
       'aliases' => 
       array (
       ),
-      'reference' => 'c52b58be2927e4db37e1756d9b86cfb5b107a3fa',
+      'reference' => '4c0a85d733fc2333327c46ce3f19e01fc2d8bfe4',
     ),
   ),
 );

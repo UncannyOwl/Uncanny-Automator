@@ -18,6 +18,11 @@ $disconnect_url = $this->functions->disconnect_url();
 $bot_info       = $this->functions->get_bot_info();
 $bot_name       = ! empty( $bot_info['first_name'] ) ? $bot_info['first_name'] : '';
 $bot_username   = ! empty( $bot_info['username'] ) ? $bot_info['username'] : '';
+
+$kb_url  = esc_attr( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/telegram/', 'settings', 'telegram-kb_article' ) );
+$kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr( __( 'Knowledge Base article', 'uncanny-automator' ) ), '<uo-icon id="external-link"></uo-icon>' );
+
+
 ?>
 
 <form method="POST" action="options.php">
@@ -47,7 +52,7 @@ $bot_username   = ! empty( $bot_info['username'] ) ? $bot_info['username'] : '';
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Telegram to ...', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Connect your WordPress site to Telegram to run automations when messages are received and send Telegram messages in your recipes.', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
@@ -59,9 +64,19 @@ $bot_username   = ! empty( $bot_info['username'] ) ? $bot_info['username'] : '';
 							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Receive a Telegram message', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Send a Telergam message', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Send a Telegram message', 'uncanny-automator' ); ?>
 						</li>
 					</ul>
+
+					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Setup instructions', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
+						<?php
+						echo sprintf(
+							/* translators: Knowledge base article link */
+							_x( 'Connecting to Telegram requires creating a Telegram bot and retrieving an HTTP access token value (a.k.a. "Bot secret"). Visit our %s for instructions.', 'Telegram', 'uncanny-automator' ),
+							$kb_link
+						);
+						?>
+					</uo-alert>
 
 					<?php
 
@@ -83,7 +98,7 @@ $bot_username   = ! empty( $bot_info['username'] ) ? $bot_info['username'] : '';
 					?>
 
 					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Uncanny Automator only supports connecting to one Telegram account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
-						<?php esc_html_e( 'You can only connect to a Telegram account for which you have read and write access.', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'You can only connect to a Telegram bot for which you have read and write access.', 'uncanny-automator' ); ?>
 					</uo-alert>
 
 				<?php } ?>
@@ -92,7 +107,7 @@ $bot_username   = ! empty( $bot_info['username'] ) ? $bot_info['username'] : '';
 
 		</div>
 
-		<div class="uap-settings-panel-bottom" <?php echo $is_connected ? '' : 'has-arrow'; ?>>
+		<div class="uap-settings-panel-bottom">
 
 				<?php if ( ! $is_connected ) { ?>
 

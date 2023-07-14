@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.16\n"
+"Project-Id-Version: Uncanny Automator 4.16.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-07-13T16:19:07+00:00\n"
+"POT-Creation-Date: 2023-07-14T17:23:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: uncanny-automator\n"
@@ -8126,7 +8126,7 @@ msgstr ""
 #: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:59
 #: src/integrations/open-ai/settings/view-open-ai.php:75
 #: src/integrations/slack/settings/view-slack.php:78
-#: src/integrations/telegram/settings/view-telegram.php:54
+#: src/integrations/telegram/settings/view-telegram.php:59
 #: src/integrations/trello/settings/view-trello.php:53
 #: src/integrations/twilio/settings/view-twilio.php:57
 #: src/integrations/twitter/settings/view-twitter-user-app.php:84
@@ -8149,7 +8149,7 @@ msgstr ""
 #: src/integrations/mailchimp/settings/view-mailchimp.php:125
 #: src/integrations/mailchimp/settings/view-mailchimp.php:128
 #: src/integrations/mailchimp/settings/view-mailchimp.php:131
-#: src/integrations/telegram/settings/view-telegram.php:59
+#: src/integrations/telegram/settings/view-telegram.php:64
 #: src/integrations/whatsapp/settings/view-whatsapp.php:73
 #: src/integrations/whatsapp/settings/view-whatsapp.php:81
 #: src/integrations/whatsapp/settings/view-whatsapp.php:89
@@ -8222,7 +8222,7 @@ msgstr ""
 #: src/integrations/slack/settings/view-slack.php:83
 #: src/integrations/slack/settings/view-slack.php:86
 #: src/integrations/slack/settings/view-slack.php:89
-#: src/integrations/telegram/settings/view-telegram.php:62
+#: src/integrations/telegram/settings/view-telegram.php:67
 #: src/integrations/trello/settings/view-trello.php:58
 #: src/integrations/trello/settings/view-trello.php:61
 #: src/integrations/trello/settings/view-trello.php:64
@@ -8304,6 +8304,7 @@ msgstr ""
 #: src/integrations/mailchimp/settings/view-mailchimp.php:64
 #: src/integrations/open-ai/settings/view-open-ai.php:87
 #: src/integrations/open-ai/settings/view-open-ai.php:95
+#: src/integrations/telegram/settings/view-telegram.php:71
 #: src/integrations/twilio/settings/view-twilio.php:69
 #: src/integrations/whatsapp/settings/view-whatsapp.php:120
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:83
@@ -8356,6 +8357,7 @@ msgstr ""
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:84
 #: src/integrations/helpscout/settings/view-helpscout.php:45
 #: src/integrations/mailchimp/settings/view-mailchimp.php:72
+#: src/integrations/telegram/settings/view-telegram.php:23
 #: src/integrations/twilio/settings/view-twilio.php:76
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:89
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:64
@@ -8403,7 +8405,7 @@ msgstr ""
 #: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:143
 #: src/integrations/open-ai/settings/view-open-ai.php:160
 #: src/integrations/slack/settings/view-slack.php:286
-#: src/integrations/telegram/settings/view-telegram.php:150
+#: src/integrations/telegram/settings/view-telegram.php:165
 #: src/integrations/trello/settings/view-trello.php:135
 #: src/integrations/twilio/settings/view-twilio.php:204
 #: src/integrations/twitter/settings/view-twitter-user-app.php:215
@@ -16613,44 +16615,50 @@ msgstr ""
 msgid "Something went wrong: "
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:35
+#: src/integrations/telegram/settings/view-telegram.php:40
 msgid "Telegram"
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:46
+#: src/integrations/telegram/settings/view-telegram.php:51
 msgid "Connect Uncanny Automator to Telegram"
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:50
-msgid "Connect Uncanny Automator to Telegram to ..."
+#: src/integrations/telegram/settings/view-telegram.php:55
+msgid "Connect your WordPress site to Telegram to run automations when messages are received and send Telegram messages in your recipes."
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:59
+#: src/integrations/telegram/settings/view-telegram.php:64
 msgid "Receive a Telegram message"
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:62
-msgid "Send a Telergam message"
+#: src/integrations/telegram/settings/view-telegram.php:67
+msgid "Send a Telegram message"
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:74
+#. translators: Knowledge base article link
+#: src/integrations/telegram/settings/view-telegram.php:75
+msgctxt "Telegram"
+msgid "Connecting to Telegram requires creating a Telegram bot and retrieving an HTTP access token value (a.k.a. \"Bot secret\"). Visit our %s for instructions."
+msgstr ""
+
+#: src/integrations/telegram/settings/view-telegram.php:89
 msgid "Bot secret"
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:85
+#: src/integrations/telegram/settings/view-telegram.php:100
 msgid "Uncanny Automator only supports connecting to one Telegram account at a time."
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:86
-msgid "You can only connect to a Telegram account for which you have read and write access."
+#: src/integrations/telegram/settings/view-telegram.php:101
+msgid "You can only connect to a Telegram bot for which you have read and write access."
 msgstr ""
 
-#: src/integrations/telegram/settings/view-telegram.php:102
+#: src/integrations/telegram/settings/view-telegram.php:117
 msgid "Connect Telegram account"
 msgstr ""
 
 #. translators: 1. URL address
-#: src/integrations/telegram/settings/view-telegram.php:132
+#: src/integrations/telegram/settings/view-telegram.php:147
 msgid "Bot username: %1$s"
 msgstr ""
 
