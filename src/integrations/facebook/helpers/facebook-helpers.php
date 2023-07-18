@@ -268,32 +268,29 @@ class Facebook_Helpers {
 	 */
 	public function automator_integration_facebook_capture_token_fetch_user_pages() {
 
-		if ( wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 
-			$existing_page_settings = get_option( '_uncannyowl_facebook_pages_settings' );
+			wp_die( 'Invalid nonce', 403 );
 
-			$error_message = '';
-
-			if ( false !== $existing_page_settings ) {
-
-				if ( empty( $existing_page_settings ) ) {
-					$error_message = esc_html__( 'There are no pages found.', 'uncanny-automator' );
-				}
-
-				wp_send_json(
-					array(
-						'status'        => 200,
-						'message'       => __( 'Successful', 'automator-pro' ),
-						'pages'         => $existing_page_settings,
-						'error_message' => $error_message,
-					)
-				);
-
-			} else {
-				$pages = $this->fetch_pages_from_api();
-				wp_send_json( $pages );
-			}
 		}
+
+		$existing_pages = get_option( '_uncannyowl_facebook_pages_settings', false );
+
+		if ( ! empty( $existing_pages ) ) {
+
+			$response = array(
+				'status'  => 200,
+				'message' => '',
+				'pages'   => $existing_pages,
+			);
+
+			wp_send_json( $response );
+
+		}
+
+		$pages = $this->fetch_pages_from_api();
+
+		wp_send_json( $pages );
 
 	}
 
@@ -352,6 +349,7 @@ class Facebook_Helpers {
 
 			// Assign the exception code as status code.
 			$status = $e->getCode();
+
 			// Assign the exception message as the message.
 			$message = $e->getMessage();
 

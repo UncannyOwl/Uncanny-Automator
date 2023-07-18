@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 4.16.0.1\n"
+"Project-Id-Version: Uncanny Automator 4.16.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-07-14T17:23:21+00:00\n"
+"POT-Creation-Date: 2023-07-18T16:40:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: uncanny-automator\n"
@@ -1598,7 +1598,7 @@ msgstr ""
 msgid ""
 "Your site is not connected to an Uncanny Automator account.\n"
 "                    You can still create recipes (automations) with any of our built-in integrations.\n"
-"                    To use third-party integrations (like Facebook, Slack, MailChimp and more), connect\n"
+"                    To use app integrations (like Facebook, Slack, MailChimp and more), connect\n"
 "                    your site with a free Uncanny Automator account."
 msgstr ""
 
@@ -6415,7 +6415,7 @@ msgstr ""
 
 #: src/core/views/admin-dashboard.php:150
 #: src/core/views/admin-dashboard.php:173
-msgid "third-party integrations"
+msgid "app integrations"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:162
@@ -7058,7 +7058,7 @@ msgstr ""
 
 #. translators: 1. Highlighted text
 #: src/core/views/admin-settings/tab/premium-integrations/not-connected.php:44
-msgid "Connect your site and start using third-party integrations! The free version of Uncanny Automator includes %1$s to use with our third-party integrations."
+msgid "Connect your site and start using app integrations! The free version of Uncanny Automator includes %1$s to use with our app integrations."
 msgstr ""
 
 #: src/core/views/admin-settings/tab/premium-integrations/not-connected.php:55
@@ -8392,7 +8392,7 @@ msgstr ""
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:167
 #: src/integrations/drip/settings/view-drip.php:145
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:205
-#: src/integrations/facebook/settings/view-facebook.php:161
+#: src/integrations/facebook/settings/view-facebook.php:162
 #: src/integrations/google-calendar/settings/view-google-calendar.php:151
 #: src/integrations/google-sheet/settings/view-google-sheet.php:149
 #: src/integrations/gototraining/settings/view-gototraining.php:168
@@ -11447,7 +11447,7 @@ msgid "An unexpected error has occurred"
 msgstr ""
 
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:136
-#: src/integrations/facebook/settings/view-facebook.php:107
+#: src/integrations/facebook/settings/view-facebook.php:108
 #: src/integrations/instagram/settings/view-instagram.php:108
 msgid "Connect Facebook account"
 msgstr ""
@@ -11458,7 +11458,7 @@ msgstr ""
 
 #. translators: 1. ID
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:183
-#: src/integrations/facebook/settings/view-facebook.php:141
+#: src/integrations/facebook/settings/view-facebook.php:142
 #: src/integrations/instagram/settings/view-instagram.php:145
 msgid "ID: %1$d"
 msgstr ""
@@ -11517,23 +11517,19 @@ msgstr ""
 msgid "Publish a post to {{a Facebook page}}"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:280
-msgid "There are no pages found."
-msgstr ""
-
-#: src/integrations/facebook/helpers/facebook-helpers.php:321
+#: src/integrations/facebook/helpers/facebook-helpers.php:318
 msgid "Forbidden. User access token is required but empty."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:334
+#: src/integrations/facebook/helpers/facebook-helpers.php:331
 msgid "Invalid status code."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:346
+#: src/integrations/facebook/helpers/facebook-helpers.php:343
 msgid "Pages are fetched successfully"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:538
+#: src/integrations/facebook/helpers/facebook-helpers.php:536
 msgid "Facebook is not connected"
 msgstr ""
 
@@ -11565,7 +11561,7 @@ msgstr ""
 msgid "Linked pages"
 msgstr ""
 
-#: src/integrations/facebook/settings/view-facebook.php:90
+#: src/integrations/facebook/settings/view-facebook.php:92
 msgid "Update linked pages"
 msgstr ""
 

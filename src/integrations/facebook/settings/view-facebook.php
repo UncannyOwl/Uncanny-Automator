@@ -86,11 +86,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<div id="facebook-pages-list"></div>
 
+					<div id="facebook-pages-errors" class="uap-spacing-top"></div>
+					
 					<uo-button id="facebook-pages-update-button" class="uap-spacing-top uap-spacing-top--big" href="<?php echo esc_url( $login_dialog_uri ); ?>" color="secondary">
 						<?php esc_html_e( 'Update linked pages', 'uncanny-automator' ); ?>
 					</uo-button>
 
-					<div id="facebook-pages-errors" class="uap-spacing-top"></div>
 
 				<?php } ?>
 

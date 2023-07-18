@@ -49,8 +49,8 @@ class Add_Facebook_Integration {
 	 */
 	public function add_integration_func() {
 
-		$facebook_options_user  = automator_get_option( '_uncannyowl_facebook_settings', array() );
-		$facebook_options_pages = automator_get_option( '_uncannyowl_facebook_pages_settings', array() );
+		$facebook_options_user  = automator_get_option( '_uncannyowl_facebook_settings', false );
+		$facebook_options_pages = automator_get_option( '_uncannyowl_facebook_pages_settings', false );
 
 		if ( ! empty( $facebook_options_user ) && ! empty( $facebook_options_pages ) ) {
 			$this->connected = true;

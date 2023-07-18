@@ -11,10 +11,10 @@ class AutomatorFacebookSettings {
      */
     retrievePages() {
         // Set the loading status of the button
-        this.$updateListButton.setAttribute( 'loading', '' );
+        this.$updateListButton.setAttribute('loading', '');
 
         // Hide error, if visible
-        this.setError( '' );
+        this.setError('');
 
         // Fetch data
         _uo.utility.fetchData({
@@ -23,31 +23,29 @@ class AutomatorFacebookSettings {
                 action: 'automator_integration_facebook_capture_token_fetch_user_pages',
                 nonce: UncannyAutomatorBackend.ajax.nonce
             },
-            onSuccess: ( response ) => {
+            onSuccess: (response) => {
+
                 // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute( 'loading' );
+                this.$updateListButton.removeAttribute('loading');
 
                 // Check if there are pages
-                if ( ! _uo.utility.isEmpty( response.pages ) ) {
+                if (!_uo.utility.isEmpty(response.pages)) {
                     // Set pages
-                    this.createList( response.pages );
+                    this.createList(response.pages);
                 } else {
                     // Check if there is an error defined
-                    if (
-                        _uo.utility.isDefined( response.error )
-                        && ! _uo.utility.isEmpty( response.error_message )
-                    ) {
-                       // Set error
-                       this.setError( response.error_message ); 
+                    if (_uo.utility.isDefined(response.message)) {
+                        // Set error
+                        this.setError(response.message);
                     }
                 }
             },
-            onFail: ( response, message ) => {
+            onFail: (response, message) => {
                 // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute( 'loading' );
+                this.$updateListButton.removeAttribute('loading');
 
                 // Show error
-                this.setError( message.error );
+                this.setError(message.error);
             },
         });
     }
@@ -58,29 +56,29 @@ class AutomatorFacebookSettings {
      * @param  {Array}  pages An array with the Facebook pages
      * @return {undefined}       
      */
-    createList( pages = [] ) {
+    createList(pages = []) {
         // Remove the current content
         this.$listWrapper.innerHTML = '';
 
         // Iterate list
-        pages.forEach( ( page ) => {
+        pages.forEach((page) => {
             // Append page
             this.$listWrapper.insertAdjacentHTML(
                 'beforeEnd',
                 `
                     <div class="uap-facebook-page uap-spacing-top">
                         <a 
-                            href="https://facebook.com/${ page.value }"
+                            href="https://facebook.com/${page.value}"
                             target="_blank"
                         >
-                            ${ page.text }
+                            ${page.text}
                         </a>
 
                         <uo-icon integration="FACEBOOK"></uo-icon>
                     </div>
                 `
             );
-        } );
+        });
     }
 
     /**
@@ -88,15 +86,18 @@ class AutomatorFacebookSettings {
      * 
      * @param {String} error The error
      */
-    setError( error = '' ) {
+    setError(error = '') {
         // Check if there is an error defined
-        if ( ! _uo.utility.isEmpty( error ) ) {
-
-        } else {
-            // Remove the current error, and hide the notice
-            this.$errorWrapper.innerHTML = '';
-            this.$errorWrapper.style.display = 'none';
+        if (!_uo.utility.isEmpty(error)) {
+            this.$errorWrapper.innerHTML = error;
+            this.$errorWrapper.style.display = 'block';
+            return;
         }
+
+        // Remove the current error, and hide the notice
+        this.$errorWrapper.innerHTML = '';
+        this.$errorWrapper.style.display = 'none';
+
     }
 
     /**
@@ -105,7 +106,7 @@ class AutomatorFacebookSettings {
      * @return {Node} The button
      */
     get $updateListButton() {
-        return document.getElementById( 'facebook-pages-update-button' );
+        return document.getElementById('facebook-pages-update-button');
     }
 
     /**
@@ -114,7 +115,7 @@ class AutomatorFacebookSettings {
      * @return {Node} The wrapper
      */
     get $listWrapper() {
-        return document.getElementById( 'facebook-pages-list' );
+        return document.getElementById('facebook-pages-list');
     }
 
     /**
@@ -123,7 +124,7 @@ class AutomatorFacebookSettings {
      * @return {Node} The wrapper
      */
     get $errorWrapper() {
-        return document.getElementById( 'facebook-pages-errors' );
+        return document.getElementById('facebook-pages-errors');
     }
 }
 

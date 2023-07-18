@@ -77,7 +77,7 @@ $setup_wizard_link = add_query_arg(
 							target="_blank"
 						>
 							<?php esc_attr_e( 'Manage sites', 'uncanny-automator' ); ?>
-							
+
 						</a>
 						<?php if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) { ?>
 							<a class="uap-dropdown-item" href="<?php echo esc_url( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ) ); ?>">
@@ -108,11 +108,11 @@ $setup_wizard_link = add_query_arg(
 							href="<?php echo esc_url( $setup_wizard_link ); ?>"
 						>
 							<?php esc_attr_e( 'Connect your site', 'uncanny-automator' ); ?>
-							
+
 						</a>
 					</div>
 				</div>
-				
+
 
 			<?php } ?>
 		</div>
@@ -147,7 +147,7 @@ $setup_wizard_link = add_query_arg(
 							array(
 								/* translators: 1. Number of credits */
 								'<mark>' . sprintf( esc_attr__( '%1$s free credits', 'uncanny-automator' ), number_format( $dashboard->miscellaneous->free_credits ) ) . '</mark>',
-								'<strong>' . esc_attr__( 'third-party integrations', 'uncanny-automator' ) . '</strong>',
+								'<strong>' . esc_attr__( 'app integrations', 'uncanny-automator' ) . '</strong>',
 								implode(
 									', ',
 									array(
@@ -170,7 +170,7 @@ $setup_wizard_link = add_query_arg(
 							array(
 								/* translators: 1. Number of credits */
 								'<mark>' . sprintf( esc_attr__( '%1$s free credits', 'uncanny-automator' ), 'unlimited' ) . '</mark>',
-								'<strong>' . esc_attr__( 'third-party integrations', 'uncanny-automator' ) . '</strong>',
+								'<strong>' . esc_attr__( 'app integrations', 'uncanny-automator' ) . '</strong>',
 								implode(
 									', ',
 									array(
@@ -578,7 +578,7 @@ $setup_wizard_link = add_query_arg(
 					<a href="https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=view_all_articles"
 					   target="_blank">
 						<?php esc_attr_e( 'View all articles', 'uncanny-automator' ); ?>
-						
+
 					</a>
 				</div>
 			</div>
@@ -644,7 +644,7 @@ $setup_wizard_link = add_query_arg(
 				<div class="uap-dashboard-box-footer">
 					<a href="https://www.youtube.com/watch?v=LMR5YIPu2Kk&list=PL1RknUTvSLClS5ggNPBZXK461vx6kNdTt" target="_blank">
 						<?php esc_attr_e( 'View all videos', 'uncanny-automator' ); ?>
-						
+
 					</a>
 				</div>
 			</div>
@@ -796,7 +796,7 @@ $setup_wizard_link = add_query_arg(
 								<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=how_do_i_get_more_credits"
 								   target="_blank">
 									<?php esc_attr_e( 'How do I get more credits?', 'uncanny-automator' ); ?>
-									
+
 								</a>
 							</div>
 						<?php } ?>

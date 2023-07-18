@@ -71,7 +71,7 @@
 					esc_html_e(
 						'Your site is not connected to an Uncanny Automator account.
                     You can still create recipes (automations) with any of our built-in integrations.
-                    To use third-party integrations (like Facebook, Slack, MailChimp and more), connect
+                    To use app integrations (like Facebook, Slack, MailChimp and more), connect
                     your site with a free Uncanny Automator account.',
 						'uncanny-automator'
 					);

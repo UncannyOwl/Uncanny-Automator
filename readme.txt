@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailc
 Requires at least: 5.3
 Tested up to: 6.2.2
 Requires PHP: 5.6
-Stable tag: 4.16.0.1
+Stable tag: 4.16.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -318,6 +318,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 4.16.0.2 [2023-07-18] =
+
+**Fixed:**
+
+* Facebook Pages - App is not connecting in a certain situation #3742
+* Text changes - "third-party integrations" renamed to "app integrations" #3738
 
 = 4.16.0.1 [2023-07-14] =
 

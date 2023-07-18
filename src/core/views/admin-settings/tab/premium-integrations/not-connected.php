@@ -41,14 +41,14 @@ namespace Uncanny_Automator;
 
 						printf(
 							/* translators: 1. Highlighted text */
-							esc_html__( 'Connect your site and start using third-party integrations! The free version of Uncanny Automator includes %1$s to use with our third-party integrations.', 'uncanny-automator' ),
+							esc_html__( 'Connect your site and start using app integrations! The free version of Uncanny Automator includes %1$s to use with our app integrations.', 'uncanny-automator' ),
 							/* translators: 1. Integer. Number of credits */
 							'<strong>' . sprintf( esc_html__( '%1$s free credits', 'uncanny-automator' ), '250' ) . '</strong>'
 						);
 
 						?>
 
-					<a 
+					<a
 						href="<?php echo esc_url( $upgrade_to_pro_url ); ?>"
 						target="_blank"
 					>
@@ -65,7 +65,7 @@ namespace Uncanny_Automator;
 						<?php esc_html_e( 'Connect your site', 'uncanny-automator' ); ?>
 					</uo-button>
 
-					<uo-button 
+					<uo-button
 						href="<?php echo esc_url( $credits_article_url ); ?>"
 						target="_blank"
 						color="secondary"
