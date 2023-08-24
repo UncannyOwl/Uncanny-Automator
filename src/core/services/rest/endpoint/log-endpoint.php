@@ -5,7 +5,6 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Logs_Factory;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 use WP_REST_Request;
-use WP_REST_Response;
 
 /**
  * The controller class for the log endpoint.
@@ -114,6 +113,7 @@ class Log_Endpoint {
 	 * @return mixed[]
 	 */
 	public function build_response(
+
 		$params = array(
 			'recipe_id'     => 0,
 			'recipe_log_id' => 0,
@@ -136,7 +136,8 @@ class Log_Endpoint {
 
 		// Fetch the triggers items.
 		$triggers_items = $this->logs_factory->trigger()->get_log( $params );
-		$actions_items  = $this->logs_factory->action()->get_log( $params );
+		// Fetch the actions items.
+		$actions_items = $this->logs_factory->action()->get_log( $params );
 
 		return $this->serve_json( (array) $recipe, (array) $triggers_items, (array) $actions_items );
 
@@ -161,11 +162,11 @@ class Log_Endpoint {
 		$triggered_by_user = absint( $recipe['user_id'] );
 		$run_number        = absint( $recipe['run_number'] );
 		$start_date        = isset( $triggers_items[0]['start_date'] ) ? $triggers_items[0]['start_date'] : null;
-		$status_id         = $this->formatter::status_class_name( $this->automator_factory->status(), intval( $recipe['completed'] ) );
+		$status_id         = $this->determine_status_id( $this->automator_factory->status(), $recipe['completed'], $flow_items );
 		$recipe_id         = absint( $recipe['automator_recipe_id'] );
 		$end_date          = $this->resolve_end_date( $flow_items );
 		$title             = trim( $recipe['recipe_title'], "\t\n\r\0\x0B" );
-		$logic             = strtoupper( $this->logs_factory->trigger()->get_logic( intval( $recipe['automator_recipe_id'] ) ) );
+		$logic             = strtoupper( $this->logs_factory->trigger()->get_logic( $recipe ) );
 
 		$triggers_statuses = array_column( $triggers_items, 'status_id' );
 
@@ -183,6 +184,7 @@ class Log_Endpoint {
 			'status_id'         => $status_id,
 			'start_date'        => $start_date,
 			'end_date'          => $end_date,
+			'date_elapsed'      => $this->formatter::get_date_elapsed( $start_date, $end_date ),
 			'triggered_by_user' => $triggered_by_user,
 			'triggers'          => array(
 				'logic' => $logic,
@@ -196,6 +198,24 @@ class Log_Endpoint {
 		);
 
 		return apply_filters( 'uncanny_automator_log_serve_json', $json, $recipe, $triggers_items, $flow_items );
+
+	}
+
+	/**
+	 * Determines status ID.
+	 *
+	 * @param \Uncanny_Automator\Automator_Status $status
+	 * @param int $recipe_status
+	 * @param mixed[] $flow_items
+	 *
+	 * @return string The status ID.
+	 */
+	public function determine_status_id( $status, $recipe_status, $flow_items ) {
+
+		// The original recipe status.
+		$status = $this->formatter::status_class_name( $status, intval( $recipe_status ) );
+
+		return apply_filters( 'automator_logs_recipe_status', $status, $flow_items );
 
 	}
 

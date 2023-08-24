@@ -33,6 +33,6 @@ class Add_Elem_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return defined( 'ELEMENTOR_PRO_PATH' );
+		return defined( 'ELEMENTOR_PRO_VERSION' ) || defined( 'ELEMENTOR_VERSION' );
 	}
 }

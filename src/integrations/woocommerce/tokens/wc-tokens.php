@@ -52,6 +52,8 @@ class Wc_Tokens {
 			'shipping_state'        => esc_attr__( 'Shipping state', 'uncanny-automator' ),
 			'shipping_postcode'     => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
 			'order_date'            => esc_attr__( 'Order date', 'uncanny-automator' ),
+			'order_time'            => esc_attr__( 'Order time', 'uncanny-automator' ),
+			'order_date_time'       => esc_attr__( 'Order date and time', 'uncanny-automator' ),
 			'order_id'              => esc_attr__( 'Order ID', 'uncanny-automator' ),
 			'order_comments'        => esc_attr__( 'Order comments', 'uncanny-automator' ),
 			'order_total'           => esc_attr__( 'Order total', 'uncanny-automator' ),
@@ -70,13 +72,17 @@ class Wc_Tokens {
 			'order_products_links'  => esc_attr__( 'Order products links', 'uncanny-automator' ),
 			'order_summary'         => esc_attr__( 'Order summary', 'uncanny-automator' ),
 			'order_fees'            => esc_attr__( 'Order fees', 'uncanny-automator' ),
-			'order_shipping'        => esc_attr__( 'Order shipping', 'uncanny-automator' ),
+			'order_shipping'        => esc_attr__( 'Shipping fee', 'uncanny-automator' ),
 			'payment_method'        => esc_attr__( 'Payment method', 'uncanny-automator' ),
 			'shipping_method'       => esc_attr__( 'Shipping method', 'uncanny-automator' ),
 			'payment_url'           => esc_attr__( 'Payment URL', 'uncanny-automator' ),
 			'payment_url_checkout'  => esc_attr__( 'Direct checkout URL', 'uncanny-automator' ),
 		);
 
+		if ( function_exists( 'stripe_wc' ) || class_exists( '\WC_Stripe_Helper' ) || function_exists( 'woocommerce_gateway_stripe' ) ) {
+			$this->possible_order_fields['stripe_fee']    = esc_attr__( 'Stripe fee', 'uncanny-automator' );
+			$this->possible_order_fields['stripe_payout'] = esc_attr__( 'Stripe payout', 'uncanny-automator' );
+		}
 		add_action(
 			'uap_wc_trigger_save_meta',
 			array(
@@ -164,12 +170,6 @@ class Wc_Tokens {
 			foreach ( $args as $trigger_result ) {
 
 				if ( true === $trigger_result['result'] && $trigger_result['args']['trigger_id'] && $trigger_result['args']['get_trigger_id'] ) {
-
-					$run_number = Automator()->get->trigger_run_number(
-						$trigger_result['args']['trigger_id'],
-						$trigger_result['args']['get_trigger_id'],
-						$trigger_result['args']['user_id']
-					);
 
 					$trigger_id     = (int) $trigger_result['args']['trigger_id'];
 					$user_id        = (int) $trigger_result['args']['user_id'];
@@ -517,6 +517,12 @@ class Wc_Tokens {
 					case 'order_date':
 						$value = $order->get_date_created()->format( get_option( 'date_format', 'F j, Y' ) );
 						break;
+					case 'order_time':
+						$value = $order->get_date_created()->format( get_option( 'time_format', 'H:i:s' ) );
+						break;
+					case 'order_date_time':
+						$value = $order->get_date_created()->format( sprintf( '%s %s', get_option( 'date_format', 'F j, Y' ), get_option( 'time_format', 'H:i:s' ) ) );
+						break;
 					case 'shipping_first_name':
 						$value = $order->get_shipping_first_name();
 						break;
@@ -651,6 +657,27 @@ class Wc_Tokens {
 						$value = $order->get_checkout_payment_url( true );
 						break;
 
+					case 'stripe_fee':
+						$value = 0;
+						if ( function_exists( 'stripe_wc' ) ) {
+							$value = \WC_Stripe_Utils::display_fee( $order );
+						}
+						if ( ( function_exists( 'woocommerce_gateway_stripe' ) || class_exists( '\WC_Stripe_Helper' ) ) && 0 === $value ) {
+							$value = \WC_Stripe_Helper::get_stripe_fee( $order );
+						}
+
+						break;
+
+					case 'stripe_payout':
+						$value = 0;
+						if ( function_exists( 'stripe_wc' ) ) {
+							$value = \WC_Stripe_Utils::display_net( $order );
+						}
+						if ( class_exists( '\WC_Stripe_Helper' ) && 0 === $value ) {
+							$value = \WC_Stripe_Helper::get_stripe_net( $order );
+						}
+						break;
+
 					case 'shipping_method':
 						$value = $order->get_shipping_method();
 						break;
@@ -718,6 +745,7 @@ class Wc_Tokens {
 				$value = apply_filters( 'automator_woocommerce_token_parser', $value, $token, $token_pieces, $order );
 			}
 		}
+
 		return $value;
 	}
 
@@ -738,6 +766,7 @@ class Wc_Tokens {
 				}
 			}
 		}
+
 		return join( ', ', $product_titles );
 	}
 

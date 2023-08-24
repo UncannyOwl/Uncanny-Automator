@@ -17,8 +17,8 @@ function uap_zoom_get_webinar_questions( $button, data, modules ) {
 
     let sendData = {
         action: 'uap_zoom_api_get_webinar_questions',
-        nonce: UncannyAutomator.nonce,
-        recipe_id: UncannyAutomator.recipe.id,
+        nonce: UncannyAutomator._site.rest.nonce,
+        recipe_id: UncannyAutomator._recipe.recipe_id,
         item_id: data.item.id,
         webinar_id: data.values.ZOOMWEBINAR
     }

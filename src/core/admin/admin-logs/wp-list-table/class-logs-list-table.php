@@ -536,7 +536,7 @@ class Logs_List_Table extends WP_List_Table {
 			);
 
 			$actions = array(
-				'view' => '<uap-log-dialog-button log-id="' . $recipe_log_id . '" recipe-id="' . $recipe_id . '" run-number="' . $run_number_log . '"></uap-log-dialog-button>'
+				'view' => '<uap-log-dialog-button log-id="' . $recipe_log_id . '" recipe-id="' . $recipe_id . '" run-number="' . $run_number_log . '"></uap-log-dialog-button>',
 			);
 
 			// Delete button
@@ -622,7 +622,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $trigger->recipe_run_number ) ? 1 : $trigger->recipe_run_number : $trigger->recipe_run_number;
 
-			$actions = '<uap-log-dialog-button log-id="'.esc_attr( $trigger->recipe_log_id ).'" recipe-id="'.esc_attr( $trigger->automator_recipe_id ).'" run-number="'.esc_attr($run_number_log).'"></uap-log-dialog-button>';
+			$actions = '<uap-log-dialog-button log-id="' . esc_attr( $trigger->recipe_log_id ) . '" recipe-id="' . esc_attr( $trigger->automator_recipe_id ) . '" run-number="' . esc_attr( $run_number_log ) . '"></uap-log-dialog-button>';
 
 			$recipe_link = $this->get_edit_link( absint( $trigger->automator_recipe_id ) );
 
@@ -827,7 +827,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $action->recipe_run_number ) ? 1 : $action->recipe_run_number : $action->recipe_run_number;
 
-			$action_column = $actions = '<uap-log-dialog-button log-id="'.esc_attr( $action->recipe_log_id ).'" recipe-id="'.esc_attr( $action->automator_recipe_id ).'" run-number="'.esc_attr($run_number_log).'"></uap-log-dialog-button>';
+			$action_column = $actions = '<uap-log-dialog-button log-id="' . esc_attr( $action->recipe_log_id ) . '" recipe-id="' . esc_attr( $action->automator_recipe_id ) . '" run-number="' . esc_attr( $run_number_log ) . '"></uap-log-dialog-button>';
 
 			// Action status
 			$action_status_html = '
@@ -1342,7 +1342,7 @@ AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', //phpcs:ignore WordPre
 		}
 		$t_icons = array();
 		foreach ( $triggers as $integration ) {
-			$t_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-name></uo-icon>';
+			$t_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-tooltip></uo-icon>';
 		}
 
 		return join( PHP_EOL, $t_icons );
@@ -1360,7 +1360,7 @@ AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', //phpcs:ignore WordPre
 		}
 		$a_icons = array();
 		foreach ( $actions as $integration ) {
-			$a_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-name></uo-icon>';
+			$a_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-tooltip></uo-icon>';
 		}
 
 		return join( PHP_EOL, $a_icons );

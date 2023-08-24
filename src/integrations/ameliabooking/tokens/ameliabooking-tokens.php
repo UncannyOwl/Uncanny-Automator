@@ -37,11 +37,27 @@ class AMELIABOOKING_TOKENS {
 		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data_reservation' ), 30, 2 );
 
 		foreach ( self::APPOINTMENT_BOOKING_TOKENS_TRIGGERS as $trigger_code ) {
-			add_filter( 'automator_maybe_trigger_ameliabooking_' . strtolower( $trigger_code ) . '_tokens', array( $this, 'register_tokens' ), 20, 2 );
+			add_filter(
+				'automator_maybe_trigger_ameliabooking_' . strtolower( $trigger_code ) . '_tokens',
+				array(
+					$this,
+					'register_tokens',
+				),
+				20,
+				2
+			);
 		}
 
 		foreach ( self::RESERVATION_TOKENS_TRIGGERS as $trigger_code ) {
-			add_filter( 'automator_maybe_trigger_ameliabooking_' . strtolower( $trigger_code ) . '_tokens', array( $this, 'register_reservation_tokens' ), 20, 2 );
+			add_filter(
+				'automator_maybe_trigger_ameliabooking_' . strtolower( $trigger_code ) . '_tokens',
+				array(
+					$this,
+					'register_reservation_tokens',
+				),
+				20,
+				2
+			);
 		}
 
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_tokens' ), 40, 6 );
@@ -54,8 +70,9 @@ class AMELIABOOKING_TOKENS {
 	/**
 	 * Register the tokens.
 	 *
-	 * @param  mixed $tokens
-	 * @param  mixed $args
+	 * @param mixed $tokens
+	 * @param mixed $args
+	 *
 	 * @return void
 	 */
 	public function register_tokens( $tokens = array(), $args = array() ) {
@@ -108,6 +125,7 @@ class AMELIABOOKING_TOKENS {
 		$tokens_collection = array_merge(
 			$this->get_reservation_tokens(),
 			$this->get_coupon_tokens(),
+			$this->get_customer_tokens(),
 			$this->get_reservation_tokens_pro()
 		);
 
@@ -133,8 +151,9 @@ class AMELIABOOKING_TOKENS {
 	/**
 	 * Save the token data.
 	 *
-	 * @param  mixed $args
-	 * @param  mixed $trigger
+	 * @param mixed $args
+	 * @param mixed $trigger
+	 *
 	 * @return void
 	 */
 	public function save_token_data( $args, $trigger ) {
@@ -229,12 +248,13 @@ class AMELIABOOKING_TOKENS {
 	/**
 	 * Parsing the tokens.
 	 *
-	 * @param  mixed $value
-	 * @param  mixed $pieces
-	 * @param  mixed $recipe_id
-	 * @param  mixed $trigger_data
-	 * @param  mixed $user_id
-	 * @param  mixed $replace_args
+	 * @param mixed $value
+	 * @param mixed $pieces
+	 * @param mixed $recipe_id
+	 * @param mixed $trigger_data
+	 * @param mixed $user_id
+	 * @param mixed $replace_args
+	 *
 	 * @return void
 	 */
 	public function parse_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
@@ -282,12 +302,13 @@ class AMELIABOOKING_TOKENS {
 	/**
 	 * Parsing the tokens.
 	 *
-	 * @param  mixed $value
-	 * @param  mixed $pieces
-	 * @param  mixed $recipe_id
-	 * @param  mixed $trigger_data
-	 * @param  mixed $user_id
-	 * @param  mixed $replace_args
+	 * @param mixed $value
+	 * @param mixed $pieces
+	 * @param mixed $recipe_id
+	 * @param mixed $trigger_data
+	 * @param mixed $user_id
+	 * @param mixed $replace_args
+	 *
 	 * @return void
 	 */
 	public function parse_tokens_reservation( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
@@ -320,6 +341,33 @@ class AMELIABOOKING_TOKENS {
 
 		// Second level objects.
 		if ( 2 === count( $token_id_parts ) ) {
+
+			if ( 'customer' === $token_id_parts[0] ) {
+				$reservation_info = json_decode( $reservation_data['booking']['info'] );
+				switch ( $token_id_parts[1] ) {
+					case 'wpUserId':
+						$value = $reservation_data['booking']['customer']['id'];
+						break;
+					case 'email':
+						$value = $reservation_data['booking']['customer']['email'];
+						break;
+					case 'firstName':
+						$value = $reservation_data['booking']['customer']['firstName'];
+						break;
+					case 'lastName':
+						$value = $reservation_data['booking']['customer']['lastName'];
+						break;
+					case 'phone':
+						$value = $reservation_data['booking']['customer']['phone'];
+						break;
+					case 'locale':
+						$value = $reservation_info->locale;
+						break;
+					case 'timeZone':
+						$value = $reservation_info->timeZone;
+						break;
+				}
+			}
 
 			if ( isset( $reservation_data[ $token_id_parts[0] ][ $token_id_parts[1] ] ) ) {
 

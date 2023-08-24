@@ -26,6 +26,13 @@ class WA_MESSAGE_STATUS_UPDATED {
 	 */
 	const TRIGGER_META = 'WA_MESSAGE_STATUS_UPDATED_META';
 
+	/**
+	 * The WhatsApp tokens.
+	 *
+	 * @var Wa_Message_Status_Tokens $whatsapp_tokens
+	 */
+	public $whatsapp_tokens;
+
 	public function __construct() {
 
 		$this->whatsapp_tokens = new Wa_Message_Status_Tokens();
