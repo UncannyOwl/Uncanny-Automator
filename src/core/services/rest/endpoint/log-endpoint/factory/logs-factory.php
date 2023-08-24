@@ -2,6 +2,7 @@
 namespace Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory;
 
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Resources;
+use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Loop_Logs_Resources;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Recipe_Logs_Resources;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Trigger_Logs_Resources;
 
@@ -27,14 +28,21 @@ class Logs_Factory {
 	 */
 	protected $action_logs_resources = null;
 
+	/**
+	 * @var Loop_Logs_Resources
+	 */
+	protected $loop_logs_resources = null;
+
 	public function __construct(
 		Recipe_Logs_Resources $recipe_logs_resources,
 		Trigger_Logs_Resources $trigger_logs_resources,
-		Action_Logs_Resources $action_logs_resources ) {
+		Action_Logs_Resources $action_logs_resources,
+		Loop_Logs_Resources $loop_logs_resources ) {
 
 		$this->recipe_logs_resources  = $recipe_logs_resources;
 		$this->trigger_logs_resources = $trigger_logs_resources;
 		$this->action_logs_resources  = $action_logs_resources;
+		$this->loop_logs_resources    = $loop_logs_resources;
 
 	}
 
@@ -59,4 +67,7 @@ class Logs_Factory {
 		return $this->action_logs_resources;
 	}
 
+	public function loop() {
+		return $this->loop_logs_resources;
+	}
 }

@@ -11,6 +11,8 @@ trait Webhooks {
 
 	use Action_Tokens;
 
+	use Log_Properties;
+
 	/**
 	 * Filter function to inject "Send test" response values as Action tokens.
 	 * Each Webhook calls this parent method.
@@ -40,7 +42,7 @@ trait Webhooks {
 				'tokenId'     => $tag,
 				'tokenParent' => get_post_meta( $action_id, 'code', true ),
 				'tokenName'   => sprintf( '%s - %s', __( 'Response', 'uncanny-automator' ), $action_token['key'] ),
-				'tokenType'   => $action_token->type,
+				'tokenType'   => $action_token['type'],
 			);
 		}
 
@@ -89,16 +91,6 @@ trait Webhooks {
 
 		}
 
-		if ( empty( $fields ) ) {
-
-			$error_message = esc_attr__( 'Webhook payload is empty.', 'uncanny-automator' );
-
-			$action_data['complete_with_errors'] = true;
-
-			return Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
-		}
-
 		$args = apply_filters(
 			'automator_send_webhook_remote_args',
 			array(
@@ -118,24 +110,54 @@ trait Webhooks {
 			// Get response header
 			$response = Automator_Send_Webhook::call_webhook( $webhook_url, $args, $request_type );
 
+			// Send some properties to the log.
+			$response_headers         = wp_remote_retrieve_headers( $response );
+			$encoded_response_headers = $response_headers instanceof \WpOrg\Requests\Utility\CaseInsensitiveDictionary ? $response_headers->getAll() : array();
+
+			$this->set_log_properties(
+				array(
+					'type'       => 'code',
+					'label'      => _x( 'Response headers', 'Send webhook action response headers property', 'uncanny-automator' ),
+					'value'      => wp_json_encode( $encoded_response_headers ),
+					'attributes' => array(
+						'code_language' => 'json',
+					),
+				),
+				// Webhook response
+				array(
+					'type'       => 'code',
+					'label'      => _x( 'Response body', 'Send webhook action log response body property', 'uncanny-automator' ),
+					'value'      => wp_remote_retrieve_body( $response ),
+					'attributes' => array(
+						'code_language' => 'json',
+					),
+				)
+			);
+
 			$header_response = wp_remote_retrieve_headers( $response );
-			$header_leafs    = Automator_Send_Webhook::parse_headers( $header_response );
-			// Get response body
+
+			$header_leafs = Automator_Send_Webhook::parse_headers( $header_response );
+
+			// Get response body.
 			$response_body = Automator_Send_Webhook::get_leafs( json_decode( wp_remote_retrieve_body( $response ), true ), true );
-			// Combine header and body tokens
+
+			// Combine header and body tokens.
 			$all_tokens = array_merge( $header_leafs, $response_body );
-			// If tokens are not previously saved OR set to true, override previously saved tokens
+
+			// If tokens are not previously saved OR set to true, override previously saved tokens.
 			if (
 				empty( get_post_meta( $action_data['ID'], 'webhook_response_tokens', true ) ) ||
 				true === apply_filters( 'automator_outgoing_webhook_live_response_tokens', false, $response )
 			) {
 				$save_tokens = Automator_Send_Webhook::clean_tokens_before_save( $all_tokens );
-				update_post_meta( $action_data['ID'], 'webhook_response_tokens', json_encode( $save_tokens ) );
+				update_post_meta( $action_data['ID'], 'webhook_response_tokens', wp_json_encode( $save_tokens ) );
 				unset( $save_tokens );
 			}
-			// Parse response into leafs
+
+			// Parse response into leafs.
 			$hydration_data = Automator_Send_Webhook::before_hydrate_tokens( $all_tokens );
-			// Pass to hydrate tokens
+
+			// Pass to hydrate tokens.
 			$this->hydrate_tokens( $hydration_data );
 
 			$validated = $this->validate_response( $response );
@@ -200,7 +222,7 @@ trait Webhooks {
 		if ( is_wp_error( $response ) ) {
 
 			$error_message = sprintf(
-			/* translators: 1. Webhook URL */
+				/* translators: 1. Webhook URL */
 				esc_attr__( 'An error was found in the webhook (%1$s) response.', 'uncanny-automator' ),
 				$response->get_error_message()
 			);
@@ -410,9 +432,9 @@ trait Webhooks {
 	private function response_has_errors( $response = null ) {
 
 		return ! empty( $response->data->errors ) ||
-			   ! empty( $response->data->error ) ||
-			   ! empty( $response->error ) ||
-			   ! empty( $response->errors );
+			! empty( $response->data->error ) ||
+			! empty( $response->error ) ||
+			! empty( $response->errors );
 
 	}
 }

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit36b852be76ddc511e004f654338f5153
+class ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -35,7 +35,6 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Flatted' => __DIR__ . '/../..' . '/src/recipe-ui/node_modules/flatted/php/flatted.php',
         'FlattedString' => __DIR__ . '/../..' . '/src/recipe-ui/node_modules/flatted/php/flatted.php',
-        'Recipe_Actions_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/recipe-actions-resolver.php',
         'Uncanny_Automator\\AC_ANNON_ADD' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-add.php',
         'Uncanny_Automator\\AC_ANNON_ADDTAG' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-addtag.php',
         'Uncanny_Automator\\AC_ANNON_LISTREMOVE' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-listremove.php',
@@ -370,6 +369,7 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Uncanny_Automator\\EDD_ORDERDONE' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-orderdone.php',
         'Uncanny_Automator\\EDD_ORDERREFUNDED' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-orderrefunded.php',
         'Uncanny_Automator\\EDD_PRODUCTPURCHASE' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-productpurchase.php',
+        'Uncanny_Automator\\ELEM_POST_PUBLISHED' => __DIR__ . '/../..' . '/src/integrations/elementor/triggers/elem-post-published.php',
         'Uncanny_Automator\\ELEM_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/elementor/triggers/elem-submitform.php',
         'Uncanny_Automator\\EMAILS_SEND_EMAILS' => __DIR__ . '/../..' . '/src/integrations/emails/actions/emails-send-emails.php',
         'Uncanny_Automator\\EM_BOOKING_APPROVED' => __DIR__ . '/../..' . '/src/integrations/events-manager/triggers/em-booking-approved.php',
@@ -478,6 +478,13 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Uncanny_Automator\\Instagram_Helpers' => __DIR__ . '/../..' . '/src/integrations/instagram/helpers/instagram-helpers.php',
         'Uncanny_Automator\\Instagram_Settings' => __DIR__ . '/../..' . '/src/integrations/instagram/settings/settings-instagram.php',
         'Uncanny_Automator\\Integration' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/abstract-integration.php',
+        'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_CONTACT_TO_LIST' => __DIR__ . '/../..' . '/src/integrations/brevo/actions/brevo-add-contact-to-list.php',
+        'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_UPDATE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/brevo/actions/brevo-add-update-contact.php',
+        'Uncanny_Automator\\Integrations\\Brevo\\BREVO_DELETE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/brevo/actions/brevo-delete-contact.php',
+        'Uncanny_Automator\\Integrations\\Brevo\\BREVO_REMOVE_CONTACT_FROM_LIST' => __DIR__ . '/../..' . '/src/integrations/brevo/actions/brevo-remove-contact-from-list.php',
+        'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Helpers' => __DIR__ . '/../..' . '/src/integrations/brevo/helpers/brevo-helpers.php',
+        'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Integration' => __DIR__ . '/../..' . '/src/integrations/brevo/brevo-integration.php',
+        'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Settings' => __DIR__ . '/../..' . '/src/integrations/brevo/settings/settings-brevo.php',
         'Uncanny_Automator\\Integrations\\Charitable\\ANON_CHARITABLE_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/anon-charitable-made-donation.php',
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_HELPERS' => __DIR__ . '/../..' . '/src/integrations/charitable/helpers/charitable-helpers.php',
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
@@ -496,6 +503,12 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Helpers' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Integration' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/microsoft-teams-integration.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Settings' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/settings/settings-microsoft-teams.php',
+        'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_CREATE_A_LINK' => __DIR__ . '/../..' . '/src/integrations/pretty-links/triggers/prli-anon-create-a-link.php',
+        'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_LINK_CLICKED' => __DIR__ . '/../..' . '/src/integrations/pretty-links/triggers/prli-anon-link-clicked.php',
+        'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_CREATE_LINK' => __DIR__ . '/../..' . '/src/integrations/pretty-links/actions/prli-create-link.php',
+        'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_LINK_CLICKED' => __DIR__ . '/../..' . '/src/integrations/pretty-links/triggers/prli-link-clicked.php',
+        'Uncanny_Automator\\Integrations\\Pretty_Links\\Pretty_Links_Helpers' => __DIR__ . '/../..' . '/src/integrations/pretty-links/helpers/pretty-links-helpers.php',
+        'Uncanny_Automator\\Integrations\\Pretty_Links\\Pretty_Links_Integration' => __DIR__ . '/../..' . '/src/integrations/pretty-links/class-pretty-links-integration.php',
         'Uncanny_Automator\\Integrations\\RafflePress\\RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY' => __DIR__ . '/../..' . '/src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php',
         'Uncanny_Automator\\Integrations\\RafflePress\\RafflePress_Integration' => __DIR__ . '/../..' . '/src/integrations/rafflepress/class-rafflepress-integration.php',
         'Uncanny_Automator\\Integrations\\RafflePress\\Rafflepress_Helpers' => __DIR__ . '/../..' . '/src/integrations/rafflepress/helpers/rafflepress-helpers.php',
@@ -658,6 +671,7 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Uncanny_Automator\\Recipe\\Closure' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/trait-closures.php',
         'Uncanny_Automator\\Recipe\\Closure_Setup' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/closures/trait-closure-setup.php',
         'Uncanny_Automator\\Recipe\\Integrations' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/trait-integrations.php',
+        'Uncanny_Automator\\Recipe\\Log_Properties' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/actions/trait-properties.php',
         'Uncanny_Automator\\Recipe\\Trigger' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/triggers/abstract-trigger.php',
         'Uncanny_Automator\\Recipe\\Trigger_Conditions' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/triggers/trait-trigger-conditions.php',
         'Uncanny_Automator\\Recipe\\Trigger_Filters' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/triggers/trait-trigger-filters.php',
@@ -680,10 +694,12 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Factory\\Automator_Factory' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/factory/automator-factory.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Factory\\Logs_Factory' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/factory/logs-factory.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Queries\\Action_Logs_Queries' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/queries/action-logs-queries.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Queries\\Loop_Logs_Queries' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/queries/loop-logs-queries.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Queries\\Recipe_Logs_Queries' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/queries/recipe-logs-queries.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Queries\\Trigger_Logs_Queries' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/queries/trigger-logs-queries.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Action_Logs_Helpers\\Conditions_Helper' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/action-logs-helpers/conditions-helper.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Action_Logs_Resources' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php',
+        'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Loop_Logs_Resources' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/loop-logs-resources.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Recipe_Logs_Resources' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/recipe-logs-resources.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Resources\\Trigger_Logs_Resources' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/resources/trigger-logs-resources.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Utils\\Formatters_Utils' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php',
@@ -700,6 +716,28 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Uncanny_Automator\\STUDIOCART_USERPURCHASESPRODUCT' => __DIR__ . '/../..' . '/src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php',
         'Uncanny_Automator\\SURECART_ORDER_CONFIRMED' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-order-confirmed.php',
         'Uncanny_Automator\\SURECART_PURCHASE_PRODUCT' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-purchase-product.php',
+        'Uncanny_Automator\\Services\\Integrations\\Fields' => __DIR__ . '/../..' . '/src/core/services/integrations/fields.php',
+        'Uncanny_Automator\\Services\\Integrations\\Structure' => __DIR__ . '/../..' . '/src/core/services/integrations/structure.php',
+        'Uncanny_Automator\\Services\\Properties' => __DIR__ . '/../..' . '/src/core/services/properties.php',
+        'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_JSON_Serializer' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-json-serializer.php',
+        'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_Setter_Getter' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-setter-getter.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure' => __DIR__ . '/../..' . '/src/core/services/recipe/structure.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Actions\\Actions' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/actions.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Actions\\Item\\Action' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/item/action.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Actions\\Item\\Loop' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/item/loop.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Actions\\Item\\Tokens' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/item/tokens.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Actions\\User_Selector' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/user-selector.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Closure' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/closure.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Fields' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/fields.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Miscellaneous' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/miscellaneous.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Pluggable\\Conditions_Pluggable' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/pluggable/conditions-pluggable.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Stats' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/stats.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Triggers\\Trigger\\Tokens' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/triggers/trigger/tokens.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Triggers\\Trigger\\Trigger' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/triggers/trigger/trigger.php',
+        'Uncanny_Automator\\Services\\Recipe\\Structure\\Triggers\\Triggers' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/triggers/triggers.php',
+        'Uncanny_Automator\\Services\\Resolver\\Recipe_Actions_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/recipe-actions-resolver.php',
+        'Uncanny_Automator\\Services\\Structure\\Actions\\Item\\Loop\\Filters_Db' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/item/loop/filters-db.php',
+        'Uncanny_Automator\\Services\\Structure\\Actions\\Item\\Loop\\Loop_Db' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/item/loop/loop-db.php',
         'Uncanny_Automator\\Set_Up_Automator' => __DIR__ . '/../..' . '/src/core/classes/class-set-up-automator.php',
         'Uncanny_Automator\\Settings\\Premium_Integration_Settings' => __DIR__ . '/../..' . '/src/core/lib/settings/premium-integration-settings.php',
         'Uncanny_Automator\\Settings\\Premium_Integrations' => __DIR__ . '/../..' . '/src/core/lib/settings/trait-premium-integrations.php',
@@ -781,6 +819,8 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
         'Uncanny_Automator\\UOA_RECIPEERRORSTIMES' => __DIR__ . '/../..' . '/src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php',
         'Uncanny_Automator\\UOA_RECIPESUCCESSCOMPLETEDTIMES' => __DIR__ . '/../..' . '/src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php',
         'Uncanny_Automator\\UOA_SENDWEBHOOK' => __DIR__ . '/../..' . '/src/integrations/webhooks/actions/uoa-sendwebhook.php',
+        'Uncanny_Automator\\UOA_USER_COMPLETES_RECIPE_NUMTIMES' => __DIR__ . '/../..' . '/src/integrations/uncanny-automator/triggers/uoa-user-completes-recipe-numtimes.php',
+        'Uncanny_Automator\\UOA_USER_RECIPE_COMPLETED_WITH_ERRORS' => __DIR__ . '/../..' . '/src/integrations/uncanny-automator/triggers/uoa-user-recipe-completed-with-errors.php',
         'Uncanny_Automator\\UOG_ADDSEATSTOGROUP' => __DIR__ . '/../..' . '/src/integrations/uncanny-groups/actions/uog-addseatstogroup.php',
         'Uncanny_Automator\\UOG_CREATEUNCANNYGROUP' => __DIR__ . '/../..' . '/src/integrations/uncanny-groups/actions/uog-createuncannygroup.php',
         'Uncanny_Automator\\UOG_GROUPCREATED' => __DIR__ . '/../..' . '/src/integrations/uncanny-groups/triggers/uog-groupcreated.php',
@@ -960,10 +1000,10 @@ class ComposerStaticInit36b852be76ddc511e004f654338f5153
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit36b852be76ddc511e004f654338f5153::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit36b852be76ddc511e004f654338f5153::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit36b852be76ddc511e004f654338f5153::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit36b852be76ddc511e004f654338f5153::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$classMap;
 
         }, null, ClassLoader::class);
     }

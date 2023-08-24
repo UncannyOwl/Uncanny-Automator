@@ -195,9 +195,9 @@ class AUDIENCE_ADDAUSER {
 				// Create array with the data we're going to send
 				let dataToBeSent = {
 					action: 'get_mailchimp_audience_fields',
-					nonce: UncannyAutomator.nonce,
+					nonce: UncannyAutomator._site.rest.nonce,
 
-					recipe_id: UncannyAutomator.recipe.id,
+					recipe_id: UncannyAutomator._recipe.recipe_id,
 					item_id: data.item.id,
 					audience: data.values.MCLIST
 				}

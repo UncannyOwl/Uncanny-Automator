@@ -84,7 +84,7 @@ class Automator_Send_Webhook {
 				// Get the data we're going to send to the AJAX request
 				let dataToBeSent = {
 					action: 'automator_webhook_send_test_data',
-					nonce: UncannyAutomator.nonce,
+					nonce: UncannyAutomator._site.rest.nonce,
 					integration_id: data.item.integrationCode,
 					item_id: data.item.id,
 					values: data.values
@@ -164,7 +164,7 @@ class Automator_Send_Webhook {
 				// Get the data we're going to send to the AJAX request
 				let dataToBeSent = {
 					action: 'automator_webhook_build_test_data',
-					nonce: UncannyAutomator.nonce,
+					nonce: UncannyAutomator._site.rest.nonce,
 					integration_id: data.item.integrationCode,
 					item_id: data.item.id,
 					values: data.values
@@ -189,12 +189,9 @@ class Automator_Send_Webhook {
 							let $notice = jQuery('<div/>', {
 								'class': 'item-options__notice item-options__notice--' + noticeType
 							});
-							// Parse message using markdown
-							let markdown = new modules.Markdown(response.message);
 
 							// Get markdown HTML
-							//let $message = response.message;
-							let $message = markdown.getHTML();
+							let $message = response.message;
 
 							// Add message to the notice container
 							$notice.html("<pre>" + $message + "<pre>");
@@ -361,7 +358,9 @@ class Automator_Send_Webhook {
 			$key   = isset( $field['KEY'] ) ? $this->maybe_parse_tokens( $field['KEY'], $parsing_args ) : null;
 			$type  = isset( $field['VALUE_TYPE'] ) ? $this->maybe_parse_tokens( $field['VALUE_TYPE'], $parsing_args ) : 'text';
 			$value = isset( $field['VALUE'] ) ? $this->maybe_parse_tokens( $field['VALUE'], $parsing_args ) : null;
-			if ( ! is_null( $key ) && ! is_null( $value ) ) {
+
+			// Do not allow empty key.
+			if ( '' !== $key && ! is_null( $key ) && ! is_null( $value ) ) {
 				switch ( $type ) {
 					case 'null':
 					case 'undefined':

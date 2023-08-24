@@ -15,10 +15,12 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Logs_Factory;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Action_Logs_Queries;
+use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Recipe_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Trigger_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Helpers\Conditions_Helper;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Resources;
+use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Loop_Logs_Resources;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Recipe_Logs_Resources;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Trigger_Logs_Resources;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
@@ -103,11 +105,13 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				$recipe_logs_queries  = new Recipe_Logs_Queries( $wpdb );
 				$trigger_logs_queries = new Trigger_Logs_Queries( $wpdb );
 				$action_logs_queries  = new Action_Logs_Queries( $wpdb );
+				$loop_logs_queries    = new Loop_Logs_Queries( $wpdb );
 
 				// Logs resources are logic and mapping class that gets their data from *_Queries class.
 				$recipe_logs_resources  = new Recipe_Logs_Resources( $recipe_logs_queries, $utils, $automator_factory );
 				$trigger_logs_resources = new Trigger_Logs_Resources( $trigger_logs_queries, $utils, $automator_factory );
-				$action_logs_resources  = new Action_Logs_Resources( $action_logs_queries, $utils, $automator_factory );
+				$loops_logs_resources = new Loop_Logs_Resources( $loop_logs_queries, $utils, $automator_factory );
+				$action_logs_resources  = new Action_Logs_Resources( $action_logs_queries, $utils, $automator_factory, $loops_logs_resources );
 
 				// Require the class because its not part of the autoloaded directory.
 				require_once __DIR__ . '/resolver/fields-conditions-resolver.php';
@@ -119,7 +123,7 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				$action_logs_resources->set_conditions( $conditions );
 
 				// Logs Factory is a class for retrieving various logs objects.
-				$logs_factory = new Logs_Factory( $recipe_logs_resources, $trigger_logs_resources, $action_logs_resources );
+				$logs_factory = new Logs_Factory( $recipe_logs_resources, $trigger_logs_resources, $action_logs_resources, $loops_logs_resources );
 
 				// The main endpoint controller.
 				$log_endpoint = new Log_Endpoint( $automator_factory, $logs_factory );

@@ -10,11 +10,30 @@ namespace Uncanny_Automator;
 class Armember_Tokens {
 
 	/**
+	 * @var \ARM_subscription_plans|\ARM_subscription_plans_Lite|string
+	 */
+	private $armember_subscription_class = '';
+	/**
+	 * @var \ARM_members|\ARM_members_Lite|string
+	 */
+	private $armember_class = '';
+
+	/**
 	 * __construct
 	 *
 	 * @return void
 	 */
 	public function __construct() {
+		// If LITE version is active
+		if ( defined( 'MEMBERSHIPLITE_DIR_NAME' ) && ! defined( 'MEMBERSHIP_DIR_NAME' ) ) {
+			$this->armember_subscription_class = new \ARM_subscription_plans_Lite();
+			$this->armember_class              = new \ARM_members_Lite();
+		}
+		// If Pro version is active
+		if ( defined( 'MEMBERSHIP_DIR_NAME' ) ) {
+			$this->armember_subscription_class = new \ARM_subscription_plans();
+			$this->armember_class              = new \ARM_members();
+		}
 		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
 		add_filter( 'automator_maybe_trigger_armember_tokens', array( $this, 'armember_possible_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_armember_tokens' ), 20, 6 );
@@ -173,8 +192,8 @@ class Armember_Tokens {
 		$to_replace        = $pieces[2];
 		$member_id         = Automator()->db->token->get( 'save_user_id', $replace_args );
 		$plan_id           = Automator()->db->token->get( 'save_plan_id', $replace_args );
-		$arm_members       = new \ARM_members_Lite();
-		$arm_subscriptions = new \ARM_subscription_plans_Lite();
+		$arm_members       = $this->armember_class;
+		$arm_subscriptions = $this->armember_subscription_class;
 		$plan              = $arm_subscriptions->arm_get_subscription_plan( $plan_id, 'arm_subscription_plan_name,arm_subscription_plan_options' );
 		$member            = $arm_members->arm_get_member_detail( $member_id );
 

@@ -75,10 +75,13 @@ class Automator_Send_Webhook_Fields {
 	 * @return array
 	 */
 	public function options_group( $action_meta, $data_format_required = true, $default = null, $allowed = array() ) {
+
 		if ( null === $default ) {
 			$default = 'x-www-form-urlencoded';
 		}
+
 		$fields = array();
+
 		// Webhook URL
 		$fields[] = array(
 			'input_type'      => 'url',
@@ -88,6 +91,7 @@ class Automator_Send_Webhook_Fields {
 			'required'        => true,
 			'description'     => esc_attr__( 'Enter the URL of the destination webhook.', 'uncanny-automator' ),
 		);
+
 		// Action event
 		$fields[] = array(
 			'input_type'    => 'select',
@@ -105,6 +109,7 @@ class Automator_Send_Webhook_Fields {
 				'HEAD'   => 'HEAD',
 			),
 		);
+
 		// Data format field
 		if ( $data_format_required ) {
 			$options  = $this->data_format_types;
@@ -165,19 +170,20 @@ class Automator_Send_Webhook_Fields {
 			/* translators: Non-personal infinitive verb */
 			'remove_row_button' => esc_attr__( 'Remove header', 'uncanny-automator' ),
 		);
+
 		// Fields
 		$fields[] = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'WEBHOOK_FIELDS',
 			'label'             => esc_attr__( 'Body', 'uncanny-automator' ),
-			'required'          => true,
+			'required'          => false,
 			'fields'            => array(
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'KEY',
 					'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
 					'supports_tokens' => true,
-					'required'        => true,
+					'required'        => false,
 					'placeholder'     => __( 'first_name', 'uncanny-automator' ),
 					'description'     => sprintf( '<i>%s</i>', esc_html__( 'Separate keys with / to build nested data.', 'uncanny-automator' ) ),
 				),

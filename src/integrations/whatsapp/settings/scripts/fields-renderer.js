@@ -24,8 +24,8 @@ function uap_whatsapp_render_fields($button, data, modules) {
 
     let sendData = {
         action: 'automator_whatsapp_retrieve_template',
-        nonce: UncannyAutomator.nonce,
-        recipe_id: UncannyAutomator.recipe.id,
+        nonce: UncannyAutomator._site.rest.nonce,
+        recipe_id: UncannyAutomator._recipe.recipe_id,
         item_id: data.item.id,
         template: data.values.WHATSAPP_SEND_MESSAGE_TEMPLATE_META
     }

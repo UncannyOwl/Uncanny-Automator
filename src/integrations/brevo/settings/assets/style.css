@@ -1,0 +1,40 @@
+#brevo-transient-sync-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.uap-brevo-transient-sync {
+	border: 1px solid var(--uap-border-color-gray);
+	border-radius: var(--uap-border-radius);
+}
+
+.uap-brevo-transient {
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.uap-brevo-transient-name-count {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.uap-brevo-transient-content {
+	flex: 1 1 auto;
+}
+
+.uap-brevo-transient-actions {
+	flex: 0 0 auto;
+}
+
+.uap-brevo-last-sync-details {
+	padding: 10px;
+	background: rgba(var(--uap-color-gray-rgb), .2);
+	font-size: var(--uap-font-size--body-xxsmall);
+	line-height: var(--uap-line-height--body-xxsmall);
+	color: var(--uap-font-color-secondary);
+	border-bottom-right-radius: var(--uap-border-radius);
+	border-bottom-left-radius: var(--uap-border-radius);
+}

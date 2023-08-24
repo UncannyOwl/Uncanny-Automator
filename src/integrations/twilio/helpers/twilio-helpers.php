@@ -38,6 +38,13 @@ class Twilio_Helpers {
 	public $load_options;
 
 	/**
+	 * The tab's URL.
+	 *
+	 * @var string $tab_url
+	 */
+	public $tab_url = '';
+
+	/**
 	 * Twilio_Helpers constructor.
 	 */
 	public function __construct() {

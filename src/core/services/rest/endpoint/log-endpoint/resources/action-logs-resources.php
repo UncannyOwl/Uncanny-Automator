@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources;
 use Uncanny_Automator\Resolver\Fields_Conditions_Resolver;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Action_Logs_Queries;
+use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Helpers\Conditions_Helper;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 
@@ -13,6 +14,13 @@ class Action_Logs_Resources {
 	 * @var Action_Logs_Queries
 	 */
 	protected $action_logs_queries = null;
+
+	/**
+	 * Requires by this action log to append the loops at the end.
+	 *
+	 * @var Loop_Logs_Resources
+	 */
+	protected $loop_log_resources = null;
 
 	/**
 	 * @var Automator_Factory
@@ -38,16 +46,19 @@ class Action_Logs_Resources {
 	 * @param Action_Logs_Queries $action_logs_queries
 	 * @param Formatters_Utils $utils
 	 * @param Automator_Factory $automator_factory
+	 * @param Loop_Logs_Resources $loop_logs_resources Needs by the action to append the logs.
 	 */
 	public function __construct(
 		Action_Logs_Queries $action_logs_queries,
 		Formatters_Utils $utils,
-		Automator_Factory $automator_factory
+		Automator_Factory $automator_factory,
+		Loop_Logs_Resources $loop_log_resources
 		) {
 
 		$this->utils               = $utils;
 		$this->action_logs_queries = $action_logs_queries;
 		$this->automator_factory   = $automator_factory;
+		$this->loop_log_resources  = $loop_log_resources;
 
 	}
 
@@ -227,20 +238,28 @@ class Action_Logs_Resources {
 			$action_log = wp_parse_args(
 				(array) $action_log,
 				array(
-					'action_completed' => null,
-					'action_date'      => null,
+					'completed' => null,
+					'date_time' => null,
 				)
 			);
 
-			$status_id = $this->automator_factory->status()::get_class_name( $action_log['action_completed'] );
+			$status_id = $this->automator_factory->status()::get_class_name( $action_log['completed'] );
+
+			$properties = (array) maybe_unserialize( Automator()->db->action->get_meta( $action_log['ID'], 'properties' ) );
+
+			$properties = array();
+
+			if ( isset( $action_log['action_log_id'] ) ) {
+				$properties = (array) maybe_unserialize( Automator()->db->action->get_meta( $action_log['action_log_id'], 'properties' ) );
+			}
 
 			$action_runs[] = array(
-				'date'           => $this->utils->date_time_format( $action_log['action_date'] ),
-				'_timestamp'     => $this->utils->strtotime( $action_log['action_date'] ),
+				'date'           => $this->utils->date_time_format( $action_log['date_time'] ),
+				'_timestamp'     => $this->utils->strtotime( $action_log['date_time'] ),
 				'used_credit'    => $this->has_api_log( $params['action_log_id'] ),
 				'status_id'      => $status_id,
 				'result_message' => $action_log['error_message'],
-				'properties'     => array(),
+				'properties'     => $properties,
 			);
 
 		}
@@ -333,16 +352,22 @@ class Action_Logs_Resources {
 			)
 		);
 
-		$action_log = isset( $actions_flattened[ $action_id ] )
-			? $actions_flattened[ $action_id ]
-			: null;
+		// Retrieve the user ID from recipe log.
+		$user_id = apply_filters( 'automator_field_resolver_condition_result_user_id', null );
 
-		$action_log = wp_parse_args(
-			(array) $action_log,
-			array(
-				'action_log_id'    => null,
-				'action_completed' => null,
-			)
+		$action_log_record = Automator()->db->action->get_log(
+			$params['recipe_id'],
+			$params['recipe_log_id'],
+			$action_id,
+			$user_id
+		);
+
+		// Determine whether to use the live recipe action meta or the one from the log.
+		$action_meta = $this->resolve_action_meta( $action_meta, $params, $action_id, $action_log_record );
+
+		$action_log = array(
+			'action_log_id'    => $action_log_record['ID'],
+			'action_completed' => $action_log_record['completed'],
 		);
 
 		$status_id = $this->automator_factory->status()::get_class_name( $action_log['action_completed'] );
@@ -388,13 +413,15 @@ class Action_Logs_Resources {
 			'integration_code' => $action_meta['integration'],
 			'code'             => $action_meta['code'],
 			'status_id'        => $status_id,
+			'is_deleted'       => isset( $action_meta['is_deleted'] ),
 			'title_html'       => htmlspecialchars( $action_sentence_html, ENT_QUOTES ),
 			'can_rerun'        => $can_rerun,
 			'item_log_id'      => $action_log['action_log_id'],
 			'fields'           => $this->get_fields_values( $params, $action_id, $action_log['action_log_id'] ),
 			'start_date'       => $start_date,
-			'_timestamp'       => $_ts,
 			'end_date'         => $end_date, // Defaults to null.
+			'date_elapsed'     => $this->utils::get_date_elapsed( $start_date, $end_date ),
+			'_timestamp'       => $_ts,
 			'runs'             => $action_runs,
 		);
 
@@ -490,6 +517,7 @@ class Action_Logs_Resources {
 
 		$trigger_is_not_yet_completed = empty( $this->get_recipe_actions_logs_raw( $params ) );
 
+		// Delayed and scheduled action from multiple triggers that are not yet completed.
 		if ( $trigger_is_not_yet_completed && isset( $action_meta['async_mode'] ) ) {
 			return $this->fabricate_item_with_delay_not_started( $action_meta );
 		}
@@ -867,8 +895,17 @@ class Action_Logs_Resources {
 		// Append closures if there are any.
 		$this->append_closures_results( $results_formatted, $params );
 
+		// Fetch the loops. Loops are appended at the tail of the actions_items array.
+		$loops = $this->loop_log_resources->get_log( $params );
+		if ( ! empty( $loops ) ) {
+			foreach ( $loops as $loop ) {
+				$results_formatted[] = $loop;
+			}
+		}
+
 		// Actions cannot be empty, unless a fatal error has occured somewhere.
 		if ( empty( $results_formatted ) && empty( $recipe_log_actions ) ) {
+
 			// In this case, both legacy and flow is empty. Which could not happen unless there is some sort of error.
 			$results_formatted[] = array(
 				'from_legacy_log' => empty( $flow ), // Empty flow? Its legacy log.
@@ -879,6 +916,38 @@ class Action_Logs_Resources {
 		}
 
 		return $results_formatted;
+
+	}
+
+	/**
+	 * Replaces action meta value with the one from uap_action_log_meta if its found.
+	 *
+	 * @param mixed[] $action_meta
+	 * @param int[] $params
+	 * @param int $action_id
+	 * @param mixed[] $action_log_record
+	 *
+	 * @return mixed[]
+	 */
+	private function resolve_action_meta( $action_meta, $params, $action_id, $action_log_record ) {
+
+		// If the action was not found, it means its deleted.
+		if ( 'INTEGRATION_CODE_NOT_FOUND' === $action_meta['integration'] ) {
+			// Grab the ction log id.
+			$action_log_id = isset( $action_log_record['ID'] ) ? $action_log_record['ID'] : null;
+			// The existing record is serialize. Unserialized it.
+			$action_meta_record = maybe_unserialize( Automator()->db->action->get_meta( $action_log_id, 'metas' ) );
+			// Flatten the record to make it compatible with the post meta structure.
+			$action_meta_record = $this->utils->flatten_action_log_meta( $action_meta_record );
+			// Pass the value of the meta record to action meta if its a valid record.
+			if ( is_array( $action_meta_record ) && ! empty( $action_meta_record ) ) {
+				// Flag as deleted.
+				$action_meta_record['is_deleted'] = true;
+				$action_meta                      = $action_meta_record;
+			}
+		}
+
+		return $action_meta;
 
 	}
 
