@@ -2940,12 +2940,6 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - WooCommerce Subscriptions */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "A user subscribes to {{a product}}", 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					/* translators: Logged-in trigger - WooCommerce Subscriptions */
-					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user renews a subscription to {{a product}} for the {{nth}} time", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -2953,6 +2947,12 @@ function automator_pro_items_list() {
 					/* translators: Logged-in trigger - WooCommerce Subscriptions */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user renews a subscription to {{a specific}} variation of {{a variable subscription}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - WooCommerce Subscriptions */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user subscribes to {{a product}}", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
@@ -3679,6 +3679,23 @@ function automator_pro_items_list() {
 					'name' => __( "Remove the user from {{a group}}", 'uncanny-automator' ),
 				),
 			),
+		),
+		'WSFORMLITE'        => array(
+			'triggers' => array(
+				array(
+					/* translators: Logged-in trigger - WS Form */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user submits {{a form}} with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Anonymous trigger - WS Form */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A form}} is submitted with {{a specific value}} in {{a specific field}}", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'  => array(),
 		),
 		'ZAPIER'            => array(
 			'triggers' => array(

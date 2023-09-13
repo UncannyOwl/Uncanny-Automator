@@ -252,6 +252,12 @@ class Automator_Recipe_Process_Complete {
 
 		$actions = (array) Automator()->get_recipe_data( 'uo-action', $recipe_id );
 
+		// Complete with error if there are no actions.
+		if ( empty( $actions ) ) {
+			Automator()->db->recipe->mark_complete( $recipe_log_id, Automator_Status::COMPLETED_WITH_ERRORS );
+			return false;
+		}
+
 		$recipe_actions_data = apply_filters(
 			'automator_process_complete_actions',
 			$actions,
@@ -827,12 +833,15 @@ class Automator_Recipe_Process_Complete {
 			if ( ! $skip ) {
 
 				$comp = Automator_Status::DID_NOTHING === absint( $completed ) ? Automator_Status::DID_NOTHING : $complete;
+
 				Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, $comp );
 
 				$args['message']   = $message;
 				$args['completed'] = $complete;
-				do_action( 'automator_recipe_completed_with_errors', $recipe_id, $user_id, $recipe_log_id, $args );
 
+				if ( Automator_Status::COMPLETED_WITH_ERRORS === absint( $comp ) ) {
+					do_action( 'automator_recipe_completed_with_errors', $recipe_id, $user_id, $recipe_log_id, $args );
+				}
 			}
 		}
 

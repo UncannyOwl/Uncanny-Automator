@@ -85,6 +85,11 @@ class MP_PURCHASEPRODUCTRECURRING {
 			return;
 		}
 
+		// Flexibility to prevent running the trigger.
+		if ( ! apply_filters( 'automator_mepr_recurring_subscriptions_trigger_switch', true, $event ) ) {
+			return;
+		}
+
 		if ( apply_filters( 'automator_mepr_check_first_real_payment', false, $event ) ) {
 			$subscription          = $transaction->subscription();
 			$is_first_real_payment = Automator()->helpers->recipe->memberpress->check_if_is_renewal_or_first_payment( $subscription );

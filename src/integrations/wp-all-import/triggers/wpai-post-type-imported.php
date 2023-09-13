@@ -84,6 +84,14 @@ class WPAI_POST_TYPE_IMPORTED {
 			return false;
 		}
 
+		// Check if trigger should run on update.
+		if ( ! empty( $is_updated ) ) {
+			$run_on_update = apply_filters( 'automator_wpai_post_type_imported_run_on_update', false, $post_id );
+			if ( ! $run_on_update ) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 

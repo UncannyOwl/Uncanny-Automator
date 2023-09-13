@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60
+class ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -234,6 +234,7 @@ class ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60
         'Uncanny_Automator\\Admin_Logs_Trigger' => __DIR__ . '/../..' . '/src/core/admin/admin-logs/tabs/trigger.php',
         'Uncanny_Automator\\Admin_Menu' => __DIR__ . '/../..' . '/src/core/admin/class-admin-menu.php',
         'Uncanny_Automator\\Admin_Settings' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/admin-settings.php',
+        'Uncanny_Automator\\Admin_Settings_Addons' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/tabs/addons.php',
         'Uncanny_Automator\\Admin_Settings_Advanced' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/tabs/advanced.php',
         'Uncanny_Automator\\Admin_Settings_Advanced_Automator_Cache' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/tabs/advanced-tabs/automator-cache.php',
         'Uncanny_Automator\\Admin_Settings_Advanced_Background_Actions' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/tabs/advanced-tabs/background-actions.php',
@@ -489,6 +490,31 @@ class ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_HELPERS' => __DIR__ . '/../..' . '/src/integrations/charitable/helpers/charitable-helpers.php',
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
         'Uncanny_Automator\\Integrations\\Charitable\\Charitable_Integration' => __DIR__ . '/../..' . '/src/integrations/charitable/class-charitable-integration.php',
+        'Uncanny_Automator\\Integrations\\Common\\Common_Integration' => __DIR__ . '/../..' . '/src/integrations/common/class-common-integration.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Admin_Email' => __DIR__ . '/../..' . '/src/integrations/common/tokens/admin-email.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Current_Blog_Id' => __DIR__ . '/../..' . '/src/integrations/common/tokens/current-blog-id.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Recipe_Id' => __DIR__ . '/../..' . '/src/integrations/common/tokens/recipe-id.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Recipe_Name' => __DIR__ . '/../..' . '/src/integrations/common/tokens/recipe-name.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Reset_Pass_link' => __DIR__ . '/../..' . '/src/integrations/common/tokens/reset-pass-link.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Name' => __DIR__ . '/../..' . '/src/integrations/common/tokens/site-name.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Tagline' => __DIR__ . '/../..' . '/src/integrations/common/tokens/site-tagline.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Url' => __DIR__ . '/../..' . '/src/integrations/common/tokens/site-url.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Displayname' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-displayname.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Email' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-email.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Firstname' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-firstname.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Id' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-id.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Ip_Address' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-ip-address.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Lastname' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-lastname.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Locale' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-locale.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Reset_Pass_Url' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-reset-pass-url.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Role' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-role.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Username' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-username.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\DateTime_Integration' => __DIR__ . '/../..' . '/src/integrations/datetime/class-date-integration.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date-time.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date-timestamp.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-time.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-timestamp.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_FORM_ENTRY_UPDATED' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-subform.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform.php',
@@ -788,6 +814,8 @@ class ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60
         'Uncanny_Automator\\Thrive_Ovation_Tokens' => __DIR__ . '/../..' . '/src/integrations/thrive-ovation/tokens/thrive-ovation-tokens.php',
         'Uncanny_Automator\\Thrive_Quiz_Builder_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-quiz-builder/helpers/thrive-quiz-builder-helpers.php',
         'Uncanny_Automator\\Thrive_Quiz_Builder_Tokens' => __DIR__ . '/../..' . '/src/integrations/thrive-quiz-builder/tokens/thrive-quiz-builder-tokens.php',
+        'Uncanny_Automator\\Tokens\\Token' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/tokens/abstract-token.php',
+        'Uncanny_Automator\\Tokens\\Universal_Token' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/tokens/abstract-universal-token.php',
         'Uncanny_Automator\\Trello_Api' => __DIR__ . '/../..' . '/src/integrations/trello/functions/trello-api.php',
         'Uncanny_Automator\\Trello_Functions' => __DIR__ . '/../..' . '/src/integrations/trello/functions/trello-functions.php',
         'Uncanny_Automator\\Trello_Helpers' => __DIR__ . '/../..' . '/src/integrations/trello/helpers/trello-helpers.php',
@@ -854,6 +882,7 @@ class ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60
         'Uncanny_Automator\\Usage_Reports' => __DIR__ . '/../..' . '/src/core/classes/class-usage-reports.php',
         'Uncanny_Automator\\Ut_Tokens' => __DIR__ . '/../..' . '/src/integrations/uncanny-toolkit/tokens/ut-tokens.php',
         'Uncanny_Automator\\Utilities' => __DIR__ . '/../..' . '/src/core/class-utilities.php',
+        'Uncanny_Automator\\Utilities\\Automator_Http_Response_Code' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-http-response-code.php',
         'Uncanny_Automator\\WA_MESSAGE_DELIVERY_TOKENS' => __DIR__ . '/../..' . '/src/integrations/whatsapp/tokens/wa-message-delivery-tokens.php',
         'Uncanny_Automator\\WA_MESSAGE_NOT_DELIVERED' => __DIR__ . '/../..' . '/src/integrations/whatsapp/triggers/wa-message-not-delivered.php',
         'Uncanny_Automator\\WA_MESSAGE_NOT_DELIVERED_NO_OPTIN' => __DIR__ . '/../..' . '/src/integrations/whatsapp/triggers/wa-message-not-delivered-no-optin.php',
@@ -1000,10 +1029,10 @@ class ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitd00836abd36c78519a2a8d3fa176ad60::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$classMap;
 
         }, null, ClassLoader::class);
     }

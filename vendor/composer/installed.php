@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '419e523a5788e361c54afd6242d5116c4f54f6ec',
+    'reference' => '652abde9c3208fb5e854abba282d73eab9798c40',
     'name' => 'uncanny-owl/uncanny-automator',
   ),
   'versions' => 
@@ -36,7 +36,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '419e523a5788e361c54afd6242d5116c4f54f6ec',
+      'reference' => '652abde9c3208fb5e854abba282d73eab9798c40',
     ),
   ),
 );

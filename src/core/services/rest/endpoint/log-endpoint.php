@@ -65,6 +65,10 @@ class Log_Endpoint {
 		return $this;
 	}
 
+	public function get_formatter() {
+		return $this->formatter;
+	}
+
 	/**
 	 * Retrieve the specific log.
 	 *
@@ -156,6 +160,8 @@ class Log_Endpoint {
 			return array();
 		}
 
+		$formatter = $this->get_formatter();
+
 		$flow_items = $this->flow_items_rearrange_by_date( $flow_items );
 		usort( $flow_items, array( $this, 'sort_action_items_by_date' ) );
 
@@ -184,7 +190,7 @@ class Log_Endpoint {
 			'status_id'         => $status_id,
 			'start_date'        => $start_date,
 			'end_date'          => $end_date,
-			'date_elapsed'      => $this->formatter::get_date_elapsed( $start_date, $end_date ),
+			'date_elapsed'      => $formatter::get_date_elapsed( $start_date, $end_date ),
 			'triggered_by_user' => $triggered_by_user,
 			'triggers'          => array(
 				'logic' => $logic,
@@ -212,8 +218,10 @@ class Log_Endpoint {
 	 */
 	public function determine_status_id( $status, $recipe_status, $flow_items ) {
 
+		$formatter = $this->formatter;
+
 		// The original recipe status.
-		$status = $this->formatter::status_class_name( $status, intval( $recipe_status ) );
+		$status = $formatter::status_class_name( $status, intval( $recipe_status ) );
 
 		return apply_filters( 'automator_logs_recipe_status', $status, $flow_items );
 

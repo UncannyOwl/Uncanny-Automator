@@ -54,6 +54,7 @@ class Admin_Tools_Tabs_Tools {
 
 				$query_params['database_repaired'] = 'yes';
 
+				do_action( 'automator_repair_tables_after' );
 				break;
 
 			case 'purge_tables':

@@ -109,6 +109,12 @@ class ELEM_POST_PUBLISHED {
 	 * @return bool|void|\WP_Error|null
 	 */
 	public function schedule_a_post( $post_id, $post, $update ) {
+		// only run when posts
+		// are published first time
+		if ( $update ) {
+			return;
+		}
+
 		// if post is not published with Elementor.
 		$created_by_elem = get_post_meta( $post_id, '_elementor_edit_mode', true );
 		if ( empty( $created_by_elem ) ) {

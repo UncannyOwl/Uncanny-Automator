@@ -111,6 +111,16 @@ class Loop_Logs_Resources {
 
 	public function get_log( $params ) {
 
+		$utils = $this->utils;
+
+		if ( ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+			return array();
+		}
+
+		if ( version_compare( AUTOMATOR_PRO_PLUGIN_VERSION, '5.0', '<' ) ) {
+			return array();
+		}
+
 		$loops_log = $this->loop_logs_queries->get_recipe_loops_logs( $params );
 
 		$loops = array();
@@ -128,7 +138,7 @@ class Loop_Logs_Resources {
 			$datetime_ended   = $log['process_date_ended'];
 
 			if ( null === $datetime_ended ) { // It means the loop is still in progress.
-				$datetime_ended = $this->utils::unix_timestamp_to_date( time() );
+				$datetime_ended = $utils::unix_timestamp_to_date( time() );
 			}
 
 			$date_next_process = $this->get_next_process( $log['process_id'] );
@@ -156,10 +166,10 @@ class Loop_Logs_Resources {
 				'id'                  => $loop_id,
 				'status'              => $status,
 				'date_next_process'   => $date_next_process,
-				'start_date'          => $this->utils::date_time_format( $datetime_started ),
-				'end_date'            => $this->utils::date_time_format( $datetime_ended ),
-				'date_elapsed'        => $this->utils::get_date_elapsed( $datetime_started, $datetime_ended ),
-				'_timestamp'          => $this->utils::strtotime( $datetime_ended ),
+				'start_date'          => $utils::date_time_format( $datetime_started ),
+				'end_date'            => $utils::date_time_format( $datetime_ended ),
+				'date_elapsed'        => $utils::get_date_elapsed( $datetime_started, $datetime_ended ),
+				'_timestamp'          => $utils::strtotime( $datetime_ended ),
 				'iterable_expression' => array(
 					'type'       => $type,
 					'value'      => '',
@@ -181,12 +191,14 @@ class Loop_Logs_Resources {
 
 		$health_check = (array) wp_get_scheduled_event( 'uap_loops_' . $process_id . '_cron' );
 
+		$utils = $this->utils;
+
 		if ( isset( $health_check['timestamp'] ) ) {
 
 			$ts = $health_check['timestamp'];
 
 			// Get local TS.
-			$formatted_date = $this->utils::unix_timestamp_to_date( $ts );
+			$formatted_date = $utils::unix_timestamp_to_date( $ts );
 
 			return array(
 				'human_time_diff'  => human_time_diff( time(), $ts ),

@@ -474,15 +474,12 @@ class Recipe_Post_Utilities {
 
 		Automator()->automator_load_textdomain();
 
-		// Main recipe object (new).
-		$recipe = new Services\Recipe\Structure( $post_id );
-
 		// Integrations object (new).
 		$core_integrations = new Services\Integrations\Structure( $post_id );
 
 		$api_setup = array(
 			// UncannyAutomator._recipe
-			'_recipe'        => json_decode( $recipe->retrieve()->toJSON(), true ),
+			'_recipe'        => Automator()->get_recipe_object( $post_id, ARRAY_A ),
 
 			// UncannyAutomator._site
 			'_site'          => array(

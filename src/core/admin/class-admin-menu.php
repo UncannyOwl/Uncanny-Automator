@@ -1048,7 +1048,8 @@ class Admin_Menu {
 				'nonce' => \wp_create_nonce( 'uncanny_automator' ),
 			),
 			'rest'        => array(
-				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
+				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ), // Automator URL endpoint
+				'base'  => esc_url_raw( rest_url() ), // Actual URL of the /wp-json/
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			),
 			'i18n'        => array(

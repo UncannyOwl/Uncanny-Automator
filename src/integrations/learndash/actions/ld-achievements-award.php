@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class LD_ACHIEVEMENTS_AWARD {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -50,6 +52,24 @@ class LD_ACHIEVEMENTS_AWARD {
 			'accepted_args'      => 0,
 			'execution_function' => array( $this, 'award_achievement' ),
 			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		$this->set_action_tokens(
+			array(
+				'ACHIEVEMENT_TITLE'   => array(
+					'name' => __( 'Achievement title', 'uncanny-automator' ),
+					'type' => 'text',
+				),
+				'ACHIEVEMENT_MESSAGE' => array(
+					'name' => __( 'Achievement message', 'uncanny-automator' ),
+					'type' => 'text',
+				),
+				'ACHIEVEMENT_POINTS'  => array(
+					'name' => __( 'Achievement points', 'uncanny-automator' ),
+					'type' => 'text',
+				),
+			),
+			$this->action_code
 		);
 
 		Automator()->register->action( $action );
@@ -102,7 +122,17 @@ class LD_ACHIEVEMENTS_AWARD {
 
 					Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
+					return;
+
 				}
+
+				$this->hydrate_tokens(
+					array(
+						'ACHIEVEMENT_TITLE'   => get_the_title( $award_id ),
+						'ACHIEVEMENT_MESSAGE' => get_post_meta( $award_id, 'achievement_message', true ),
+						'ACHIEVEMENT_POINTS'  => get_post_meta( $award_id, 'points', true ),
+					)
+				);
 
 				Automator()->complete->action( $user_id, $action_data, $recipe_id );
 

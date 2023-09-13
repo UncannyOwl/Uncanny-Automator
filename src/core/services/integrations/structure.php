@@ -2,7 +2,6 @@
 namespace Uncanny_Automator\Services\Integrations;
 
 use Uncanny_Automator\Automator_Exception;
-use Uncanny_Automator\Utilities;
 
 /**
  * Main integration object structure.
@@ -75,7 +74,7 @@ class Structure {
 
 		$this->active_integrations = Automator()->get_integrations();
 		$this->all_integrations    = Automator()->get_all_integrations();
-		$this->pro_item_list       = Utilities::get_instance()::get_pro_items_list();
+		$this->pro_item_list       = \Uncanny_Automator\Utilities::get_pro_items_list();
 
 		self::$action_conditions = (array) apply_filters( 'automator_pro_actions_conditions_list', array() );
 
@@ -102,6 +101,19 @@ class Structure {
 		return $this;
 
 	}
+
+	/**
+	 * Gets the Recipe ID.
+	 *
+	 *
+	 * @return int
+	 */
+	public function get_recipe_id() {
+
+		return $this->recipe_id;
+
+	}
+
 	/**
 	 * Determines if the specific integration is active or not.
 	 *

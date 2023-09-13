@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class LD_MARKCOURSEDONE {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -49,6 +51,10 @@ class LD_MARKCOURSEDONE {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
+		// Set Action tokens.
+		$tokens = Automator()->helpers->recipe->learndash->options->get_course_relevant_tokens( 'action', $this->action_meta );
+		$this->set_action_tokens( $tokens, $this->action_code );
+
 		Automator()->register->action( $action );
 	}
 
@@ -56,13 +62,10 @@ class LD_MARKCOURSEDONE {
 	 * @return array[]
 	 */
 	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
-				),
-			)
-		);
+
+		$options = Automator()->helpers->recipe->learndash->options->all_ld_courses( null, $this->action_meta, false, true );
+		unset( $options['relevant_tokens'] );
+		return Automator()->utilities->keep_order_of_options( array( 'options' => array( $options ) ) );
 	}
 
 
@@ -76,12 +79,14 @@ class LD_MARKCOURSEDONE {
 	public function mark_completes_a_course( $user_id, $action_data, $recipe_id, $args ) {
 
 		$course_id = $action_data['meta'][ $this->action_meta ];
-		//$courses   = learndash_user_get_enrolled_courses( $user_id, array(), true );
-		//if ( in_array( $course_id, $courses ) ) {
 		$this->mark_steps_done( $user_id, $course_id );
 		//all steps done.. mark course complete
 		learndash_process_mark_complete( $user_id, $course_id );
-		//}
+
+		// Hydrate tokens.
+		$tokens = Automator()->helpers->recipe->learndash->options->hydrate_ld_course_action_tokens( $course_id, $user_id, $this->action_meta );
+		$this->hydrate_tokens( $tokens );
+
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 

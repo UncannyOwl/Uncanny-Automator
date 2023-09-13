@@ -249,7 +249,7 @@ trait Action_Tokens {
 			// Do recursive magic ➰ for either of these action tokens.
 			$do_iterate = true;
 
-			while ( $do_iterate && ( strpos( $field_text, '{{ACTION_FIELD' ) || strpos( $field_text, '[ {ACTION_META' ) ) ) {
+			while ( $do_iterate && ( strpos( $field_text, '{{ACTION_FIELD' ) || strpos( $field_text, '{{ACTION_META' ) ) ) {
 
 				$count_iteration ++;
 
@@ -369,7 +369,7 @@ trait Action_Tokens {
 		// If its a repeater field and the value is JSON, get the requested field code from index.
 		$meta_value = isset( $value->meta_value ) ? $value->meta_value : null;
 
-		$repeater_fields = json_decode( $meta_value, true );
+		$repeater_fields = is_string( $meta_value ) ? json_decode( $meta_value, true ) : $meta_value;
 
 		if ( $is_4th_part_correctly_separated && ! empty( $repeater_fields ) ) {
 

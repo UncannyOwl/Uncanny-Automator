@@ -35,10 +35,12 @@ class Wc_Tokens {
 			'billing_last_name'     => esc_attr__( 'Billing last name', 'uncanny-automator' ),
 			'billing_company'       => esc_attr__( 'Billing company', 'uncanny-automator' ),
 			'billing_country'       => esc_attr__( 'Billing country', 'uncanny-automator' ),
+			'billing_country_name'  => esc_attr__( 'Billing country (full name)', 'uncanny-automator' ),
 			'billing_address_1'     => esc_attr__( 'Billing address line 1', 'uncanny-automator' ),
 			'billing_address_2'     => esc_attr__( 'Billing address line 2', 'uncanny-automator' ),
 			'billing_city'          => esc_attr__( 'Billing city', 'uncanny-automator' ),
 			'billing_state'         => esc_attr__( 'Billing state', 'uncanny-automator' ),
+			'billing_state_name'    => esc_attr__( 'Billing state (full name)', 'uncanny-automator' ),
 			'billing_postcode'      => esc_attr__( 'Billing postcode', 'uncanny-automator' ),
 			'billing_phone'         => esc_attr__( 'Billing phone', 'uncanny-automator' ),
 			'billing_email'         => esc_attr__( 'Billing email', 'uncanny-automator' ),
@@ -46,10 +48,12 @@ class Wc_Tokens {
 			'shipping_last_name'    => esc_attr__( 'Shipping last name', 'uncanny-automator' ),
 			'shipping_company'      => esc_attr__( 'Shipping company', 'uncanny-automator' ),
 			'shipping_country'      => esc_attr__( 'Shipping country', 'uncanny-automator' ),
+			'shipping_country_name' => esc_attr__( 'Shipping country (full name)', 'uncanny-automator' ),
 			'shipping_address_1'    => esc_attr__( 'Shipping address line 1', 'uncanny-automator' ),
 			'shipping_address_2'    => esc_attr__( 'Shipping address line 2', 'uncanny-automator' ),
 			'shipping_city'         => esc_attr__( 'Shipping city', 'uncanny-automator' ),
 			'shipping_state'        => esc_attr__( 'Shipping state', 'uncanny-automator' ),
+			'shipping_state_name'   => esc_attr__( 'Shipping state (full name)', 'uncanny-automator' ),
 			'shipping_postcode'     => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
 			'order_date'            => esc_attr__( 'Order date', 'uncanny-automator' ),
 			'order_time'            => esc_attr__( 'Order time', 'uncanny-automator' ),
@@ -493,6 +497,9 @@ class Wc_Tokens {
 					case 'billing_country':
 						$value = $order->get_billing_country();
 						break;
+					case 'billing_country_name':
+						$value = $this->get_country_name_from_code( $order->get_billing_country() );
+						break;
 					case 'billing_address_1':
 						$value = $order->get_billing_address_1();
 						break;
@@ -504,6 +511,9 @@ class Wc_Tokens {
 						break;
 					case 'billing_state':
 						$value = $order->get_billing_state();
+						break;
+					case 'billing_state_name':
+						$value = $this->get_state_name_from_codes( $order->get_billing_state(), $order->get_billing_country() );
 						break;
 					case 'billing_postcode':
 						$value = $order->get_billing_postcode();
@@ -535,6 +545,9 @@ class Wc_Tokens {
 					case 'shipping_country':
 						$value = $order->get_shipping_country();
 						break;
+					case 'shipping_country_name':
+						$value = $this->get_country_name_from_code( $order->get_shipping_country() );
+						break;
 					case 'shipping_address_1':
 						$value = $order->get_shipping_address_1();
 						break;
@@ -546,6 +559,9 @@ class Wc_Tokens {
 						break;
 					case 'shipping_state':
 						$value = $order->get_shipping_state();
+						break;
+					case 'shipping_state_name':
+						$value = $this->get_state_name_from_codes( $order->get_shipping_state(), $order->get_shipping_country() );
 						break;
 					case 'shipping_postcode':
 						$value = $order->get_shipping_postcode();
@@ -1217,5 +1233,46 @@ class Wc_Tokens {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Helper function to return country name from provided code.
+	 *
+	 * @param string $country_code
+	 *
+	 * @return string $country_name if found, otherwise $country_code
+	 */
+	public function get_country_name_from_code( $country_code ) {
+		$countries = WC()->countries->get_countries();
+		if ( ! empty( $countries ) ) {
+			foreach ( $countries as $country_key => $country_name ) {
+				if ( $country_key === $country_code ) {
+					return $country_name;
+				}
+			}
+		}
+
+		return $country_code;
+	}
+
+	/**
+	 * Helper function to return state name from provided codes.
+	 *
+	 * @param string $state_code
+	 * @param string $country_code
+	 *
+	 * @return string $state_name if found, otherwise $state_code
+	 */
+	public function get_state_name_from_codes( $state_code, $country_code ) {
+		$states = WC()->countries->get_states( $country_code );
+		if ( ! empty( $states ) ) {
+			foreach ( $states as $state_key => $state_name ) {
+				if ( $state_key === $state_code ) {
+					return $state_name;
+				}
+			}
+		}
+
+		return $state_code;
 	}
 }

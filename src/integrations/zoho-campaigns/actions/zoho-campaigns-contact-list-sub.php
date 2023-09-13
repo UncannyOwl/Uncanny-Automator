@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator;
 
+use Exception;
+
 /**
  * Class Zoho_Campaigns_Contact_List_Sub
  *
@@ -117,7 +119,34 @@ class Zoho_Campaigns_Contact_List_Sub {
 							'required'                 => true,
 							'options_show_id'          => false,
 						),
+						array(
+							'option_code'  => 'CONTACT_FIELDS',
+							'input_type'   => 'repeater',
+							/* translators: Action field */
+							'label'        => _x( 'Fields', 'ZohoCampaigns', 'uncanny-automator' ),
+							'required'     => false,
+							'fields'       => array(
+								array(
+									'label'       => _x( 'Field name', 'ZohoCampaigns', 'uncanny-automator' ),
+									'option_code' => 'FIELD_NAME',
+									'input_type'  => 'text',
+									'read_only'   => true,
+								),
+								array(
+									'label'       => _x( 'Value', 'ZohoCampaigns', 'uncanny-automator' ),
+									'option_code' => 'FIELD_VALUE',
+									'input_type'  => 'text',
+								),
+							),
+							'ajax'         => array(
+								'event'          => 'on_load',
+								'endpoint'       => 'automator-zoho-campaigns-fetch-fields',
+								'mapping_column' => 'FIELD_NAME',
+							),
+							'hide_actions' => true,
+						),
 					),
+
 				),
 			)
 		);
@@ -135,7 +164,22 @@ class Zoho_Campaigns_Contact_List_Sub {
 		$contact  = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
 		$list     = isset( $parsed['LIST'] ) ? sanitize_text_field( $parsed['LIST'] ) : '';
 
+		// The $parsed is breaking JSON format. Use $action_data instead.
+		$fields = isset( $action_data['meta']['CONTACT_FIELDS'] ) ? $action_data['meta']['CONTACT_FIELDS'] : '';
+
+		$contact_fields = json_decode( $fields, true );
+
 		try {
+
+			// Making sure we have a valid JSON here.
+			if ( false === $contact_fields || ! is_array( $contact_fields ) ) {
+				throw new Exception(
+					sprintf(
+						_x( 'Failed to decode the contact fields from given the JSON input: %s', 'ZohoCampaigns', 'uncanny-automator' ),
+						$fields
+					)
+				);
+			}
 
 			$this->set_helpers( new Zoho_Campaigns_Helpers( false ) );
 
@@ -150,6 +194,7 @@ class Zoho_Campaigns_Contact_List_Sub {
 					'contact'  => $contact,
 					'list_key' => $list,
 					'topic_id' => $topic_id,
+					'fields'   => wp_json_encode( $contact_fields ),
 				),
 				$action_data
 			);

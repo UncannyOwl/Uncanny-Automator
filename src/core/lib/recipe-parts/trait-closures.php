@@ -59,12 +59,14 @@ trait Closure {
 		);
 
 		//if ( Automator()->helpers->recipe->is_ajax() || automator_filter_has_var( 'gform_ajax', INPUT_POST ) ) {
-		if ( Automator()->helpers->recipe->is_ajax() || is_admin() ) {
+		if ( Automator()->helpers->recipe->is_ajax() ) {
 			update_option( 'UO_REDIRECTURL_' . $user_id, $redirect_url );
 
 			return;
 		}
-		if ( is_admin() ) {
+		if ( false === apply_filters( 'automator_recipe_closure_admin_redirect', false, $user_id, $redirect_url ) && is_admin() ) {
+			update_option( 'UO_REDIRECTURL_' . $user_id, $redirect_url );
+
 			return;
 		}
 		?>

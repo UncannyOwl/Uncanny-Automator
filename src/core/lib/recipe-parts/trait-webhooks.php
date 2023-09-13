@@ -46,6 +46,13 @@ trait Webhooks {
 			);
 		}
 
+		$new_tokens[] = array(
+			'tokenId'     => 'WEBHOOK_RESPONSE_BODY',
+			'tokenParent' => get_post_meta( $action_id, 'code', true ),
+			'tokenName'   => _x( 'Response - Body (raw)', 'Webhook', 'uncanny-automator' ),
+			'tokenType'   => 'text',
+		);
+
 		return array_merge( $new_tokens, $tokens );
 
 	}
@@ -155,7 +162,7 @@ trait Webhooks {
 			}
 
 			// Parse response into leafs.
-			$hydration_data = Automator_Send_Webhook::before_hydrate_tokens( $all_tokens );
+			$hydration_data = Automator_Send_Webhook::before_hydrate_tokens( $all_tokens, $response );
 
 			// Pass to hydrate tokens.
 			$this->hydrate_tokens( $hydration_data );

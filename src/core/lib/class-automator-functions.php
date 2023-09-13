@@ -692,8 +692,8 @@ class Automator_Functions {
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$t_id                                                     = absint( $t_id );
-						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$t_id   = absint( $t_id );
+						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
@@ -701,7 +701,7 @@ class Automator_Functions {
 				// Add action tokens to recipe_objects.
 				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
 					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
-						$recipe_action_id                                                    = absint( $recipe_action_id );
+						$recipe_action_id = absint( $recipe_action_id );
 						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'], $recipe_action_id, $recipe_id );
 					}
 				}
@@ -2070,7 +2070,10 @@ WHERE pm.post_id
 	 */
 	public function get_recipe_object( $recipe_id, $format = 'JSON' ) {
 
-		require_once UA_ABSPATH . 'src/core/services/recipe/structure.php';
+		/**
+		 * @since 5.0 - _recipe object not returning actions when added. Need to fully flush cache
+		 */
+		wp_cache_flush();
 
 		$recipe_object = new Services\Recipe\Structure( absint( $recipe_id ) );
 
@@ -2082,12 +2085,8 @@ WHERE pm.post_id
 			return json_decode( $recipe_object->retrieve()->toJSON(), true );
 		}
 
-		/**
-		 * @since 5.0 - _recipe object not returning actions when added. Need to fully flush cache
-		 */
-		wp_cache_flush();
-
 		return $recipe_object->retrieve()->toJSON();
+
 	}
 
 	/**

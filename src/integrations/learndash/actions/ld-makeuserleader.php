@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class LD_MAKEUSERLEADER {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -45,6 +47,16 @@ class LD_MAKEUSERLEADER {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'make_user_leader_of_group' ),
 			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		$this->set_action_tokens(
+			array(
+				'GROUP_TITLE' => array(
+					'name' => __( 'Group title', 'uncanny-automator' ),
+					'type' => 'text',
+				),
+			),
+			$this->action_code
 		);
 
 		Automator()->register->action( $action );
@@ -118,6 +130,12 @@ class LD_MAKEUSERLEADER {
 		if ( is_wp_error( $user ) ) {
 			return;
 		}
+
+		$this->hydrate_tokens(
+			array(
+				'GROUP_TITLE' => get_the_title( $uo_group ),
+			)
+		);
 
 		if ( user_can( $user, 'group_leader' ) ) {
 			ld_update_leader_group_access( $user_id, $uo_group );

@@ -62,6 +62,10 @@ class Action_Logs_Resources {
 
 	}
 
+	public function get_utils() {
+		return $this->utils;
+	}
+
 	/**
 	 * Set the field conditions resolver.
 	 *
@@ -141,7 +145,9 @@ class Action_Logs_Resources {
 			return array();
 		}
 
-		if ( $this->utils::fields_has_combination_of_options_and_options_group( $fields ) ) {
+		$utils = $this->get_utils();
+
+		if ( $utils::fields_has_combination_of_options_and_options_group( $fields ) ) {
 			$fields = array_unique( array_merge( ...$fields ), SORT_REGULAR );
 		}
 
@@ -233,6 +239,8 @@ class Action_Logs_Resources {
 
 		$results = $this->action_logs_queries->action_runs_query( $params );
 
+		$status = $this->automator_factory->status();
+
 		foreach ( $results as $action_log ) {
 
 			$action_log = wp_parse_args(
@@ -243,15 +251,9 @@ class Action_Logs_Resources {
 				)
 			);
 
-			$status_id = $this->automator_factory->status()::get_class_name( $action_log['completed'] );
+			$status_id = $status::get_class_name( $action_log['completed'] );
 
 			$properties = (array) maybe_unserialize( Automator()->db->action->get_meta( $action_log['ID'], 'properties' ) );
-
-			$properties = array();
-
-			if ( isset( $action_log['action_log_id'] ) ) {
-				$properties = (array) maybe_unserialize( Automator()->db->action->get_meta( $action_log['action_log_id'], 'properties' ) );
-			}
 
 			$action_runs[] = array(
 				'date'           => $this->utils->date_time_format( $action_log['date_time'] ),
@@ -340,7 +342,9 @@ class Action_Logs_Resources {
 		// Its a simple action.
 		$action_id = absint( $action_id );
 
-		$action_meta = $this->utils::flatten_post_meta( (array) get_post_meta( $action_id ) );
+		$utils = $this->get_utils();
+
+		$action_meta = $utils::flatten_post_meta( (array) get_post_meta( $action_id ) );
 
 		// Default values for action meta.
 		$action_meta = wp_parse_args(
@@ -370,7 +374,9 @@ class Action_Logs_Resources {
 			'action_completed' => $action_log_record['completed'],
 		);
 
-		$status_id = $this->automator_factory->status()::get_class_name( $action_log['action_completed'] );
+		$status = $this->automator_factory->status();
+
+		$status_id = $status::get_class_name( $action_log['action_completed'] );
 
 		// Null status ID means the action was not invoked yet.
 		if ( null === $status_id ) {
@@ -420,7 +426,7 @@ class Action_Logs_Resources {
 			'fields'           => $this->get_fields_values( $params, $action_id, $action_log['action_log_id'] ),
 			'start_date'       => $start_date,
 			'end_date'         => $end_date, // Defaults to null.
-			'date_elapsed'     => $this->utils::get_date_elapsed( $start_date, $end_date ),
+			'date_elapsed'     => $utils::get_date_elapsed( $start_date, $end_date ),
 			'_timestamp'       => $_ts,
 			'runs'             => $action_runs,
 		);
@@ -457,12 +463,14 @@ class Action_Logs_Resources {
 	 */
 	protected function fabricate_item_with_delay_not_started( $action_meta = array() ) {
 
+		$utils = $this->get_utils();
+
 		if ( 'delay' === $action_meta['async_mode'] ) {
 
 			$time = isset( $action_meta['async_delay_number'] ) ? $action_meta['async_delay_number'] : null;
 			$unit = isset( $action_meta['async_delay_unit'] ) ? $action_meta['async_delay_unit'] : null;
 
-			$time_units = $this->utils::time_units( $time );
+			$time_units = $utils::time_units( $time );
 
 			return array(
 				'status_id'  => 'not-completed',
@@ -510,9 +518,11 @@ class Action_Logs_Resources {
 
 		$item_has_delay = ! empty( $delays[ $action_id ] );
 
+		$status = $this->automator_factory->status();
+
 		$item_is_in_progressed = isset( $action_runs[0]['status_id'] ) /** @phpstan-ignore-line False positive. */
 			&& $action_runs[0]['status_id'] === $this->automator_factory->status()->get_class_name( /** @phpstan-ignore-line False positive. */
-				$this->automator_factory->status()::IN_PROGRESS
+				$status::IN_PROGRESS
 			);
 
 		$trigger_is_not_yet_completed = empty( $this->get_recipe_actions_logs_raw( $params ) );
@@ -564,11 +574,13 @@ class Action_Logs_Resources {
 	 */
 	public function resolve_action_item_legacy( $params, $actions_flattened, $action_id ) {
 
+		$utils = $this->get_utils();
+
 		if ( empty( $actions_flattened ) ) {
 			$actions_flattened = array();
 		}
 
-		$action_meta = $this->utils::flatten_post_meta( (array) get_post_meta( $action_id ) );
+		$action_meta = $utils::flatten_post_meta( (array) get_post_meta( $action_id ) );
 
 		$action_log = array();
 
@@ -584,7 +596,9 @@ class Action_Logs_Resources {
 			)
 		);
 
-		$status_id = $this->automator_factory->status()::get_class_name( $action_log['action_completed'] );
+		$status = $this->automator_factory->status();
+
+		$status_id = $status::get_class_name( $action_log['action_completed'] );
 
 		$runs = $this->get_action_runs(
 			array(

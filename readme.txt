@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailchimp, twitter, facebook, whatsapp, buddyboss, tutor lms
 Requires at least: 5.3
-Tested up to: 6.3
+Tested up to: 6.3.1
 Requires PHP: 5.6
-Stable tag: 5.0
+Stable tag: 5.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -320,6 +320,53 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.0.1 [2023-09-13] =
+
+**New Tokens:**
+
+* WooCommerce  #3866
+	* Billing country (full name)
+	* Billing state (full name)
+	* Shipping country (full name)
+	* Shipping state (full name)
+* Outgoing Webhooks - Response - Body (raw) #3869
+
+**Updated:**
+
+* ActiveCampaign - Improved error messages & error handling and return actual response message #3875
+* MemberPress - A user purchases a recurring subscription product - Filter for recurring payments #3914
+* WP All Import - Specific post type is imported - Erroneously firing when posts are updated during import #3911
+* WordPress - Create a post - Content sanitization for the "Post Content" is removed #3933
+* Zoho Campaigns: Add additional fields like name and other details #3903
+
+**Fixed:**
+
+* Automator - `AUTOLOGINLINK` doesn't show up in the token selector #3857
+* Automator - A recipe completes with errors a number of times - Firing for completed, awaiting status #3900
+* Elementor - A post is published with Elementor - Firing when a post is updated #3932
+* LearnDash - Action Tokens - Not returning correct values #3726
+* OpenAI - Generate a meta description with GPT-4 - Typo in prompt #3921
+* Outgoing Webhooks - Sending incorrect payload body for form-data format #3923
+* Outgoing Webhooks - Response header not properly encoding double quotes #3889
+* Recipe Logs - Logs not working when WordPress is installed in a subdirectory #3826
+* Recipe Logs - Custom Properties not displaying correctly #3874
+* Telegram - Preserve line breaks in messages #3908
+* WPForms - Smart Tags Label Matching for Value / Label Tokens #3928
+* WPForms - The Number slider is returning a string with multiple values instead of a number with the selected value #3910
+* WPForms - Remove extra white space from labels that were preventing multiple choice tokens from matching and rendering values #3896
+* WordPress - Create a post - TinyMCE textarea sanitization breaks tokens inside `<img src="">` tags #3844
+
+**Under the hood:**
+
+* Action tokens - Nested tokens, or a token inside a token causing logs to output an empty record when there is an action field token #3899
+* Closure - WordPress filter - automator_recipe_closure_admin_redirect #3931
+* Core - Additional filters and actions for database repair #3868
+* Fixing some known 5.0 issues #3856
+* Improved PHP 5.6 compatibility #3934
+* Inconsistent recipe objects when both Redis and Object Caching is installed and enabled #3917
+* Re-architect common tokens and move them to Automator core #3905
+* Add "Addon" tab #3935
 
 = 5.0 [2023-08-24] =
 

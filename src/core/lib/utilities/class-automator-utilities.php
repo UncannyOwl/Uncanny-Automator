@@ -495,7 +495,10 @@ class Automator_Utilities {
 						$data[ $k ] = $v;
 						break;
 					case 'WPCPOSTCONTENT':
-						$data[ $k ] = wp_kses_post( $v );
+						if ( apply_filters( 'automator_wpcpostcontent_should_sanitize', false, $data ) ) {
+							$v = wp_kses_post( $v );
+						}
+						$data[ $k ] = $v;
 						break;
 					default:
 						$field_type = $this->maybe_get_field_type( $k, $options );
@@ -738,9 +741,9 @@ class Automator_Utilities {
 
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT ID, post_status FROM $wpdb->posts as post 
-					INNER JOIN $wpdb->postmeta as meta 
-						ON meta.post_id = post.ID 
+				"SELECT ID, post_status FROM $wpdb->posts as post
+					INNER JOIN $wpdb->postmeta as meta
+						ON meta.post_id = post.ID
 					WHERE meta.meta_key = %s
 						AND meta.meta_value = %s
 						AND post.post_status = %s

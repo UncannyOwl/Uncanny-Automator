@@ -201,12 +201,13 @@ class Wpf_Tokens {
 		list( $form_id, $field_id ) = $token_info;
 
 		// Get Field config.
-		$form  = $this->get_wpforms_form( absint( $form_id ) );
-		$field = $form['fields'][ $field_id ];
+		$form       = $this->get_wpforms_form( absint( $form_id ) );
+		$field      = $form['fields'][ $field_id ];
+		$field_type = $form['fields'][ $field_id ]['type'];
 
 		// Fetch label if needed.
 		if ( $this->should_fetch_label( $token_info ) ) {
-			$value = $this->get_field_label( $token_info, $entry, $to_match );
+			$value = $this->get_field_label( $field, $entry, $to_match );
 		} else {
 			// Populate non-dynamic choices values.
 			if ( ! empty( $field['choices'] ) && empty( $field['dynamic_choices'] ) ) {
@@ -217,7 +218,7 @@ class Wpf_Tokens {
 		// Check for WPForms Lite.
 		if ( class_exists( 'WPForms_Lite' ) ) {
 			// Check for Pro Only Fields.
-			if ( $this->is_pro_field( $token_info, $entry, $to_match ) ) {
+			if ( $this->is_pro_field( $field_type ) ) {
 				$value = __( 'This token requires WPForms Pro', 'uncanny-automator' );
 			}
 		}
@@ -225,11 +226,18 @@ class Wpf_Tokens {
 		// Flatten array with value index ( File Uploads etc. ).
 		if ( is_array( $value ) ) {
 			$value_string = '';
-			foreach ( $value as $key => $file ) {
-				if ( isset( $file['value'] ) ) {
-					$value_string .= $file['value'] . ' ';
+			// Simple array with value key.
+			if ( key_exists( 'value', $value ) ) {
+				$value_string .= $value['value'];
+			} else {
+				// Multi - Level arrays File Uploads etc.
+				foreach ( $value as $key => $item ) {
+					if ( isset( $item['value'] ) ) {
+						$value_string .= $item['value'] . ' ';
+					}
 				}
 			}
+
 			$value = ! empty( $value_string ) ? trim( $value_string ) : $value;
 		}
 
@@ -405,13 +413,13 @@ class Wpf_Tokens {
 	/**
 	 * Retrieves the field choice label.
 	 *
-	 * @param array $token_info
+	 * @param array $field
 	 * @param array $entry
 	 * @param string $to_match
 	 *
 	 * @return string
 	 */
-	private function get_field_label( $token_info = array(), $entry = array(), $to_match = '' ) {
+	private function get_field_label( $field = array(), $entry = array(), $to_match = '' ) {
 
 		// Get the enry.
 		$entry_choice = $entry[ str_replace( '|label', '', $to_match ) ];
@@ -421,48 +429,39 @@ class Wpf_Tokens {
 			return '';
 		}
 
-		list( $form_id, $field_id, $label_flag ) = $token_info;
-
-		// Get the form.
-		$form = $this->get_wpforms_form( absint( $form_id ) );
-
-		// Get the field type.
-		$field_type = $form['fields'][ $field_id ]['type'];
-
 		// Check if there are choices.
-		if ( ! empty( $form['fields'][ $field_id ]['choices'] ) ) {
+		if ( ! empty( $field['choices'] ) ) {
 
-			$choices = $form['fields'][ $field_id ]['choices'];
+			$choices = $field['choices'];
 
-			// Handles non-dynamic field labels.
-			$is_non_dynamic_field = empty( $form['fields'][ $field_id ]['dynamic_choices'] );
-
-			if ( $is_non_dynamic_field ) {
-				// Handle checkbox selections.
-				if ( in_array( $field_type, array( 'checkbox' ), true ) ) {
-					return $this->handle_checkbox_labels( $entry_choice, $choices );
-				}
-
-				return $this->handle_non_dynamic_labels( $form['fields'][ $field_id ], $entry_choice );
+			// Dynamic field check.
+			$is_dynamic_field = isset( $field['dynamic_choices'] ) && ! empty( $field['dynamic_choices'] );
+			if ( $is_dynamic_field ) {
+				return $this->handle_dynamic_select_labels( $field, $entry_choice );
 			}
 
-			// Otherwise, handle as dynamic select. Supports post type and taxonomy.
-			return $this->handle_dynamic_select_labels( $token_info, $form, $entry_choice, $choices );
+			// Handle non dynamic checkbox selections.
+			if ( in_array( $field['type'], array( 'checkbox' ), true ) ) {
+				return $this->handle_checkbox_labels( $entry_choice, $choices );
+			}
+
+			// All other non dynamic fields.
+			return $this->handle_non_dynamic_labels( $field, $entry_choice );
 		}
 
+		// No choices.
 		return '';
-
 	}
 
 	/**
 	 * Determines if the field should be parsed as label.
 	 *
+	 * @param array $token_info The token info.
+	 *
 	 * @return bool Returns true if length is 3 and has label flag. Returns false, otherwise.
 	 */
 	private function should_fetch_label( $token_info = array() ) {
-
 		return 3 === count( $token_info ) && 'label' === $token_info[2];
-
 	}
 
 	/**
@@ -491,6 +490,20 @@ class Wpf_Tokens {
 			true
 		);
 
+		// Parse the form data for matching fields functionality.
+		foreach ( $forms[ $form_id ]['fields'] as $field_id => $field ) {
+			if ( ! empty( $field['choices'] ) ) {
+				foreach ( $field['choices'] as $choice_id => $choice ) {
+					// Handle smart tags in label.
+					$label = wpforms()->get( 'smart_tags' )->process( $choice['label'], $forms[ $form_id ] );
+					// Normalize choice label.
+					$forms[ $form_id ]['fields'][ $field_id ]['choices'][ $choice_id ]['label'] = $this->normalize_whitespace( $label );
+					// Normalize choice value.
+					$forms[ $form_id ]['fields'][ $field_id ]['choices'][ $choice_id ]['value'] = $this->normalize_whitespace( $choice['value'] );
+				}
+			}
+		}
+
 		return $forms[ $form_id ];
 	}
 
@@ -511,13 +524,14 @@ class Wpf_Tokens {
 
 		$choices     = $field['choices'];
 		$value_array = array_map( 'trim', explode( ', ', $value ) );
-		$selected    = array();
+		foreach ( $value_array as $key => $value_array_item ) {
+			$value_array[ $key ] = $this->normalize_whitespace( $value_array_item );
+		}
+		$selected = array();
 
 		foreach ( $choices as $key => $choice ) {
-			// Strip whitespace for single space.
-			$label = preg_replace( '/\s+/', ' ', $choice['label'] );
 			// Check if label is in value array.
-			if ( in_array( $label, $value_array, true ) ) {
+			if ( in_array( $choice['label'], $value_array, true ) ) {
 				$selected[] = $key;
 			}
 		}
@@ -538,15 +552,15 @@ class Wpf_Tokens {
 	private function handle_checkbox_labels( $entry_choice = '', $choices = array() ) {
 
 		$entry_choice_arr = explode( ', ', $entry_choice );
+		foreach ( $entry_choice_arr as $key => $entry_choice_arr_item ) {
+			$entry_choice_arr[ $key ] = $this->normalize_whitespace( $entry_choice_arr_item );
+		}
 
 		$choices_column = array_column( $choices, 'label' );
 
 		$selections = array();
 
 		foreach ( $choices_column as $index => $choice_column ) {
-			// Strip whitespace for single space.
-			$choice_column = preg_replace( '/\s+/', ' ', $choice_column );
-
 			if ( in_array( $choice_column, $entry_choice_arr, true ) ) {
 				$selections[] = $choices_column[ $index ];
 			}
@@ -563,17 +577,16 @@ class Wpf_Tokens {
 	/**
 	 * Handles dynamic select field.
 	 *
-	 * @param array $form The form.
+	 * @param array $field The field configuration.
+	 * @param string $entry_choice The selected value.
 	 *
 	 * @return string The selected value label.
 	 */
-	private function handle_dynamic_select_labels( $token_info, $form, $entry_choice, $choices ) {
+	private function handle_dynamic_select_labels( $field, $entry_choice ) {
 
-		list( $form_id, $field_id, $label_flag ) = $token_info;
+		$type = isset( $field['dynamic_choices'] ) ? $field['dynamic_choices'] : null;
 
-		$type = isset( $form['fields'][ $field_id ]['dynamic_choices'] ) ? $form['fields'][ $field_id ]['dynamic_choices'] : null;
-
-		// Return blank string if type is not set.
+		// Return blank string if not dynamic choices.
 		if ( empty( $type ) ) {
 			return '';
 		}
@@ -616,11 +629,12 @@ class Wpf_Tokens {
 		$show_price_after_labels = isset( $field['show_price_after_labels'] ) ? (bool) $field['show_price_after_labels'] : false;
 		$labels                  = array();
 		foreach ( $entry_choice_arr as $entry_choice_arr_item ) {
+			$entry_choice_arr_item = $this->normalize_whitespace( $entry_choice_arr_item );
 			foreach ( $choices as $key => $choice ) {
 				// Payment Fields.
 				if ( $is_payment_field ) {
 					if ( (int) $key === (int) $entry_choice_arr_item ) {
-						$labels[] = $show_price_after_labels ? $choice['label'] . ' - ' . wpforms_format_amount( trim( $choice['value'] ), true ) : $choice['label'];
+						$labels[] = $show_price_after_labels ? $choice['label'] . ' - ' . wpforms_format_amount( $choice['value'], true ) : $choice['label'];
 					}
 				} else {
 					// Non-Payment Fields.
@@ -637,21 +651,11 @@ class Wpf_Tokens {
 	/**
 	 * Check if field is available in pro only.
 	 *
-	 * @param array $token_info
-	 * @param array $entry
-	 * @param string $to_match
+	 * @param string $field_type
 	 *
 	 * @return bool
 	 */
-	private function is_pro_field( $token_info, $entry, $to_match ) {
-
-		list( $form_id, $field_id ) = $token_info;
-
-		// Get the form.
-		$form = $this->get_wpforms_form( absint( $form_id ) );
-
-		// Get the field type.
-		$field_type = $form['fields'][ $field_id ]['type'];
+	private function is_pro_field( $field_type ) {
 
 		// REVIEW - Would be nice to grab these from a function.
 		$pro_only = apply_filters(
@@ -683,6 +687,17 @@ class Wpf_Tokens {
 
 		return in_array( $field_type, $pro_only, true );
 
+	}
+
+	/**
+	 * Strip white space for single spaces.
+	 */
+	public function normalize_whitespace( $string ) {
+		if ( is_string( $string ) && ! empty( $string ) ) {
+			$string = preg_replace( '/\s+/', ' ', $string );
+			$string = trim( $string );
+		}
+		return $string;
 	}
 
 }
