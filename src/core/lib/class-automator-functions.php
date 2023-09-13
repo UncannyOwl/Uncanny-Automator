@@ -325,6 +325,7 @@ class Automator_Functions {
 	 */
 	public function parsed_token_records() {
 		require_once UA_ABSPATH . 'src/core/services/singleton/parsed-token-records-singleton.php';
+
 		return Singleton\Parsed_Token_Records_Singleton::get_instance();
 	}
 
@@ -333,6 +334,7 @@ class Automator_Functions {
 	 */
 	public function async_action_logger() {
 		require_once UA_ABSPATH . 'src/core/services/logger/singleton/async-action-logger-singleton.php';
+
 		return Logger\Singleton\Async_Actions_Logger_Singleton::get_instance();
 	}
 
@@ -341,7 +343,14 @@ class Automator_Functions {
 	 */
 	public function main_aggregate_logger() {
 		require_once UA_ABSPATH . 'src/core/services/logger/singleton/main-aggregate-logger-singleton.php';
+
 		return Logger\Singleton\Main_Aggregate_Logger_Singleton::get_instance();
+	}
+
+	public function loop_filters_db() {
+		require_once UA_ABSPATH . 'src/core/services/recipe/structure/actions/item/loop/filters-db.php';
+
+		return new Services\Structure\Actions\Item\Loop\Filters_Db();
 	}
 
 	/**
@@ -357,7 +366,8 @@ class Automator_Functions {
 	 * @param $integration
 	 */
 	public function set_all_integrations( $integration_code, $integration ) {
-		if ( array_key_exists( $integration_code, $this->all_integrations ) ) {
+		// Only register the integration if it has icon_svg.
+		if ( ! isset( $integration['icon_svg'] ) && array_key_exists( $integration_code, $this->all_integrations ) ) {
 			return;
 		}
 		$this->all_integrations[ $integration_code ] = $integration;
@@ -391,7 +401,51 @@ class Automator_Functions {
 		if ( $this->has_trigger( $code ) ) {
 			return $this->triggers[ $code ];
 		}
+
 		return false;
+	}
+
+	/**
+	 * Does linear search to find the integration triggers by integration code.
+	 *
+	 * @param string $integration_code
+	 *
+	 * @return mixed[]
+	 */
+	public function get_integration_triggers( $integration_code ) {
+
+		$triggers = array();
+
+		foreach ( Automator()->get_triggers() as $code => $trigger ) {
+
+			if ( $integration_code === $trigger['integration'] ) {
+				$triggers[ $code ] = $trigger;
+			}
+		}
+
+		return $triggers;
+	}
+
+	/**
+	 * Does linear search to find the integration actions by integration code.
+	 *
+	 * @param string $integration_code
+	 *
+	 * @return mixed[]
+	 */
+	public function get_integration_actions( $integration_code ) {
+
+		$actions = array();
+
+		foreach ( Automator()->get_actions() as $code => $action ) {
+
+			if ( $integration_code === $action['integration'] ) {
+				$actions[ $code ] = $action;
+			}
+		}
+
+		return $actions;
+
 	}
 
 	/**
@@ -412,6 +466,7 @@ class Automator_Functions {
 		if ( $this->has_action( $code ) ) {
 			return $this->actions[ $code ];
 		}
+
 		return false;
 	}
 
@@ -466,6 +521,23 @@ class Automator_Functions {
 	 */
 	public function get_integrations() {
 		return $this->integrations;
+	}
+
+	public function has_integration( $code ) {
+		return isset( $this->integrations[ $code ] );
+	}
+
+	/**
+	 * @param string $code
+	 *
+	 * @return null|array
+	 */
+	public function get_integration( $code ) {
+		if ( $this->has_integration( $code ) ) {
+			return $this->integrations[ $code ];
+		}
+
+		return null;
 	}
 
 	/**
@@ -552,7 +624,7 @@ class Automator_Functions {
 	 * Get data for all recipe objects
 	 *
 	 * @param $force_new_data_load
-	 * @param int $recipe_id. Defaults to null.
+	 * @param int $recipe_id . Defaults to null.
 	 *
 	 * @return array
 	 */
@@ -563,6 +635,7 @@ class Automator_Functions {
 		}
 
 		$recipes_data = Automator()->cache->get( $this->cache->recipes_data );
+
 		if ( ! empty( $recipes_data ) && false === $force_new_data_load && null === $recipe_id ) {
 			return $recipes_data;
 		}
@@ -608,16 +681,19 @@ class Automator_Functions {
 
 		$recipes_completed = empty( $recipes_completed ) ? array() : $recipes_completed;
 
+		$recipes_loops = Automator()->loop_db()->fetch_all_recipes_loops();
+
 		foreach ( $recipes as $recipe ) {
 
-			$recipe_id = $recipe->ID;
+			$recipe_id = absint( $recipe->ID );
 
 			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'triggers', $recipe_data[ $recipe_id ] ) ) {
 
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$t_id                                                     = absint( $t_id );
+						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
@@ -625,6 +701,7 @@ class Automator_Functions {
 				// Add action tokens to recipe_objects.
 				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
 					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
+						$recipe_action_id                                                    = absint( $recipe_action_id );
 						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'], $recipe_action_id, $recipe_id );
 					}
 				}
@@ -645,6 +722,20 @@ class Automator_Functions {
 			} else {
 				$actions = array();
 			}
+
+			/**
+			 * Add loops inside the actions. This is a temporary solution and must be removed in the future.
+			 *
+			 * Adding loop actions as top level actions.
+			 *
+			 * @since 5.0
+			 */
+			$loop_actions = Automator()->loop_db()->find_recipe_loops_actions( $recipe_id, true, false, $recipes_loops );
+
+			if ( ! empty( $loop_actions ) ) {
+				$actions = array_merge( $actions, $loop_actions );
+			}
+
 			$this->recipes_data[ $recipe_id ]['actions'] = $actions;
 
 			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'closures', $recipe_data[ $recipe_id ] ) ) {
@@ -670,6 +761,9 @@ class Automator_Functions {
 	 * @return array
 	 */
 	public function get_recipe_data_by_recipe_id( $recipe_id = null ) {
+
+		$recipes_loops = Automator()->loop_db()->fetch_all_recipes_loops();
+
 		if ( null === $recipe_id ) {
 			return array();
 		}
@@ -695,8 +789,22 @@ class Automator_Functions {
 		$triggers                   = $this->get_recipe_data( 'uo-trigger', $recipe_id, $triggers_array );
 		$recipe[ $key ]['triggers'] = $triggers;
 
-		$action_array              = array();
-		$actions                   = $this->get_recipe_data( 'uo-action', $recipe_id, $action_array );
+		$action_array = array();
+		$actions      = $this->get_recipe_data( 'uo-action', $recipe_id, $action_array );
+
+		/**
+		 * Add loops inside the actions. This is a temporary solution and must be removed in the future.
+		 *
+		 * Adding loop actions as top level actions.
+		 *
+		 * @since 5.0
+		 */
+		$loop_actions = Automator()->loop_db()->find_recipe_loops_actions( $recipe_id, true, true, $recipes_loops );
+
+		if ( ! empty( $loop_actions ) ) {
+			$actions = array_merge( $actions, $loop_actions );
+		}
+
 		$recipe[ $key ]['actions'] = $actions;
 
 		$closure_array              = array();
@@ -781,20 +889,22 @@ class Automator_Functions {
 
 			global $wpdb;
 			// Fetch uo-trigger, uo-action, uo-closure.
-			$recipe_children = $wpdb->get_results( "SELECT ID, post_status, post_type, menu_order FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = 'uo-recipe')" );
+			$recipe_children = $wpdb->get_results( "SELECT ID, post_status, post_type, menu_order, post_parent FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = 'uo-recipe')" );
 
 			if ( $recipe_children ) {
 				foreach ( $recipe_children as $p ) {
-					$child_id = $p->ID;
-					$p_t      = $p->post_type;
-					$p_s      = $p->post_status;
-					$m_o      = $p->menu_order;
+					$child_id    = absint( $p->ID );
+					$p_t         = $p->post_type;
+					$p_s         = $p->post_status;
+					$m_o         = $p->menu_order;
+					$post_parent = $p->post_parent;
 					switch ( $p_t ) {
 						case 'uo-trigger':
 							$triggers[ $child_id ] = array(
 								'ID'          => $child_id,
 								'post_status' => $p_s,
 								'menu_order'  => $m_o,
+								'post_parent' => $post_parent,
 							);
 							break;
 						case 'uo-action':
@@ -802,6 +912,7 @@ class Automator_Functions {
 								'ID'          => $child_id,
 								'post_status' => $p_s,
 								'menu_order'  => $m_o,
+								'post_parent' => $post_parent,
 							);
 							break;
 						case 'uo-closure':
@@ -809,6 +920,7 @@ class Automator_Functions {
 								'ID'          => $child_id,
 								'post_status' => $p_s,
 								'menu_order'  => $m_o,
+								'post_parent' => $post_parent,
 							);
 							break;
 					}
@@ -830,7 +942,7 @@ WHERE pm.post_id
 
 			if ( $related_metas ) {
 				foreach ( $related_metas as $p ) {
-					$child_id = $p->post_id;
+					$child_id = absint( $p->post_id );
 					$m_k      = $p->meta_key;
 					$m_v      = $p->meta_value;
 					if ( array_key_exists( $child_id, $triggers ) ) {
@@ -1060,7 +1172,7 @@ WHERE pm.post_id
 	 */
 	public function get_recipe_children_query( $recipe_id, $type ) {
 		global $wpdb;
-		$q = $wpdb->prepare( "SELECT ID, post_status, menu_order FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", $recipe_id, $type );
+		$q = $wpdb->prepare( "SELECT ID, post_status, menu_order, post_parent FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", $recipe_id, $type );
 		if ( 'uo-action' === $type ) {
 			$q = "$q ORDER BY menu_order ASC";
 		}
@@ -1113,8 +1225,10 @@ WHERE pm.post_id
 		if ( empty( $recipe_children ) ) {
 			return $recipe_children_data;
 		}
+
 		// Check each trigger for set values
 		foreach ( $recipe_children as $key => $child ) {
+
 			// Collect all meta data for this trigger
 			if ( ! array_key_exists( 'meta', $child ) ) {
 				$child_meta = get_post_custom( $child['ID'] );
@@ -1125,6 +1239,7 @@ WHERE pm.post_id
 			if ( ! $child_meta ) {
 				continue;
 			}
+
 			// Get post custom return an array for each meta_key as there maybe more than one value per key.. we only store and need one value
 			$child_meta_single = array();
 			foreach ( $child_meta as $meta_key => $meta_value ) {
@@ -1152,9 +1267,12 @@ WHERE pm.post_id
 				continue;
 			}
 
+			$post_parent = isset( $child['post_parent'] ) ? absint( $child['post_parent'] ) : null;
+
 			$recipe_children_data[ $key ]['ID']          = absint( $child['ID'] );
 			$recipe_children_data[ $key ]['post_status'] = $child['post_status'];
 			$recipe_children_data[ $key ]['meta']        = $child_meta_single;
+			$recipe_children_data[ $key ]['post_parent'] = $post_parent;
 
 			if ( ! empty( $child['menu_order'] ) ) {
 				$recipe_children_data[ $key ]['menu_order'] = $child['menu_order'];
@@ -1184,10 +1302,11 @@ WHERE pm.post_id
 	 * Retrieve recipe actions ordered by menu number.
 	 *
 	 * @param int $recipe_id The recipe ID.
+	 * @param bool $show_draft Whether to show the draft actions or not.
 	 *
 	 * @return array|object|null — Database query results.
 	 */
-	public function get_recipe_actions( $recipe_id = 0 ) {
+	public function get_recipe_actions( $recipe_id = 0, $show_draft = false ) {
 
 		$key           = 'recipe_' . $recipe_id . 'actions';
 		$results_cache = wp_cache_get( $key );
@@ -1198,21 +1317,38 @@ WHERE pm.post_id
 
 		global $wpdb;
 
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID, post_title, post_status
-                FROM {$wpdb->posts}
-                WHERE post_parent = %d 
-                AND post_type = %s
-                AND post_status = 'publish'
-                ORDER BY menu_order ASC
-                LIMIT 100
-                ",
-				$recipe_id,
-				'uo-action'
-			),
-			ARRAY_A
-		);
+		if ( false === $show_draft ) {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID, post_title, post_status
+					FROM {$wpdb->posts}
+					WHERE post_parent = %d
+					AND post_type = %s
+					AND post_status = 'publish'
+					ORDER BY menu_order ASC
+					LIMIT 100
+					",
+					$recipe_id,
+					'uo-action'
+				),
+				ARRAY_A
+			);
+		} else {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID, post_title, post_status
+					FROM {$wpdb->posts}
+					WHERE post_parent = %d
+					AND post_type = %s
+					ORDER BY menu_order ASC
+					LIMIT 100
+					",
+					$recipe_id,
+					'uo-action'
+				),
+				ARRAY_A
+			);
+		}
 
 		wp_cache_set( $key, $results );
 
@@ -1223,13 +1359,13 @@ WHERE pm.post_id
 	/**
 	 * Retrives the recipe conditions of the given recipe.
 	 *
-	 * @param int $recipe_id
+	 * @param int $recipe_id .
 	 *
 	 * @return mixed[]
 	 */
-	public function get_recipe_conditions( $recipe_id ) {
+	public function get_recipe_conditions( $recipe_id = 0, $parent_id = 0 ) {
 
-		$recipe_conditions = get_post_meta( $recipe_id, 'actions_conditions', true );
+		$recipe_conditions = get_post_meta( absint( $recipe_id ), 'actions_conditions', true );
 
 		// Bail out if recipe_conditions is not string or not empty.
 		if ( ! is_string( $recipe_conditions ) && ! empty( $recipe_conditions ) ) {
@@ -1237,6 +1373,16 @@ WHERE pm.post_id
 		}
 
 		$recipe_conditions = json_decode( $recipe_conditions, true );
+
+		// Filter recipe action conditions by parent id.
+		if ( ! empty( $parent_id ) ) {
+			$recipe_conditions = array_filter(
+				(array) $recipe_conditions,
+				function ( $condition ) use ( $parent_id ) {
+					return isset( $condition['parent_id'] ) && absint( $condition['parent_id'] ) === absint( $parent_id );
+				}
+			);
+		}
 
 		if ( ! is_array( $recipe_conditions ) ) {
 			return array();
@@ -1884,4 +2030,120 @@ WHERE pm.post_id
 		return $condition_id_failure_message;
 
 	}
+
+	/**
+	 * Retrieves the recipe closure.
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return null|object The WordPress post object if not null.
+	 */
+	public function get_recipe_closure( $recipe_id ) {
+
+		global $wpdb;
+
+		if ( empty( $recipe_id ) ) {
+			return null;
+		}
+
+		$closure = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM $wpdb->posts WHERE post_type='uo-closure' AND post_parent = %d",
+				$recipe_id
+			)
+		);
+
+		if ( empty( $closure ) ) {
+			return null;
+		}
+
+		return $closure;
+
+	}
+
+	/**
+	 * Retrieves the recipe object.
+	 *
+	 * @param string $format Could be OBJECT, ARRAY_A, 'JSON'
+	 *
+	 * @return mixed Returns the data in specified format. Otherwise, if not format is set, it will return the JSON string.
+	 */
+	public function get_recipe_object( $recipe_id, $format = 'JSON' ) {
+
+		require_once UA_ABSPATH . 'src/core/services/recipe/structure.php';
+
+		$recipe_object = new Services\Recipe\Structure( absint( $recipe_id ) );
+
+		if ( OBJECT === $format ) {
+			return $recipe_object->retrieve();
+		}
+
+		if ( ARRAY_A === $format ) {
+			return json_decode( $recipe_object->retrieve()->toJSON(), true );
+		}
+
+		/**
+		 * @since 5.0 - _recipe object not returning actions when added. Need to fully flush cache
+		 */
+		wp_cache_flush();
+
+		return $recipe_object->retrieve()->toJSON();
+	}
+
+	/**
+	 * Retrieves the recipe integrations.
+	 *
+	 * @param int $recipe_id
+	 *
+	 * @return string The JSON encoded integrations structure.
+	 */
+	public function get_recipe_integrations( $recipe_id ) {
+
+		$integration_struc = new Services\Integrations\Structure( $recipe_id );
+
+		return $integration_struc->restructure_integrations_object()->toJSON();
+
+	}
+
+	/**
+	 * Creates a new instance of Loop_DB class and returns it.
+	 *
+	 * @return Loop_Db
+	 */
+	public function loop_db() {
+		return new \Uncanny_Automator\Services\Structure\Actions\Item\Loop\Loop_Db();
+	}
+
+	/* Sets the properties of an action that will be displayed in the logs.
+	 *
+	 * @param array{array{type:string,label:string,content:string,code_language:string}} $properties_args The key `code_language` is optional. Only needed for non-text `type`.
+	 *
+	 * @return array{array{type:string,label:string,content:string,code_language:string}} Returns mixed array of the properties args.
+	 */
+	public function set_properties( $properties_args = array() ) {
+
+		$properties = new Services\Properties();
+
+		foreach ( (array) $properties_args as $property_arg ) {
+
+			$props = wp_parse_args(
+				$property_arg,
+				array(
+					'type'          => '',
+					'label'         => '',
+					'value'         => '',
+					'code_language' => '',
+				)
+			);
+
+			$properties->add_item( $props );
+
+		}
+
+		$properties->dispatch();
+
+		return $properties;
+
+	}
+
 }

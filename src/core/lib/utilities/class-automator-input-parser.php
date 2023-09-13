@@ -50,6 +50,7 @@ class Automator_Input_Parser {
 				'currentdate_unix_timestamp',
 				'current_blog_id',
 				'user_ip_address',
+				'user_locale',
 				'reset_pass_link',
 				'user_reset_pass_url',
 				'current_date_and_time',
@@ -242,62 +243,80 @@ class Automator_Input_Parser {
 		$field_text     = $args['field_text'];
 		$meta_key       = $args['meta_key'];
 		$action_data    = $args['action_data'];
-		$user_id        = $this->get_user_id( $args );
+		$user_id        = isset( $trigger_args['user_id'] ) ? $trigger_args['user_id'] : null; // The user ID by default should be the Trigger's user ID. Passes null as default to not accidentally run as everyone type.
 		$recipe_id      = $this->get_recipe_id( $args );
 		$recipe_log_id  = $this->get_recipe_log_id( $args );
 		$trigger_id     = $this->get_trigger_id( $args );
 		$trigger_log_id = $this->get_trigger_log_id( $args, $trigger_id );
 		$run_number     = $this->get_run_number( $args );
 
-		// find brackets and replace with real data
+		// Find brackets and replace with real data.
 		preg_match_all( '/{{\s*(.*?)\s*}}/', $field_text, $arr );
+
 		if ( empty( $arr ) ) {
 			return str_replace( array( '{{', '}}' ), '', $field_text );
 		}
+
 		$matches = $arr[1];
+
 		foreach ( $matches as $match ) {
 
 			$replaceable = '';
 
 			if ( false !== strpos( $match, ':' ) ) {
+
+				// This section is for user meta tokens.
 				if ( preg_match( '/(USERMETA)/', $match ) ) {
-					//Usermeta found!!
+
+					$user_meta_uid = $args['user_id']; // The user meta should be based from the user which owns the action.
+
+					// Attempt user ID recovery from current logged-in user for nulled $user_id.
 					if ( is_null( $user_id ) || 0 === absint( $user_id ) ) {
-						$user_id = wp_get_current_user()->ID;
+						$user_meta_uid = wp_get_current_user()->ID;
 					}
 
-					if ( 0 !== $user_id ) {
-						$pieces = explode( ':', $match );
-						switch ( $pieces[0] ) {
-							case 'USERMETAEMAIL':
-								$user_meta = get_user_meta( $user_id, $pieces[1], true );
+					if ( 0 !== $user_meta_uid ) {
 
+						$pieces = explode( ':', $match );
+
+						switch ( $pieces[0] ) {
+
+							case 'USERMETAEMAIL':
+								$user_meta   = get_user_meta( $user_meta_uid, $pieces[1], true );
 								$replaceable = is_email( $user_meta ) ? $user_meta : '';
+
 								break;
+
 							case 'USERMETA':
-								$user_data = get_userdata( $user_id );
+								$user_data = get_userdata( $user_meta_uid );
 								$user_data = (array) $user_data->data;
+
 								if ( isset( $user_data[ $pieces[1] ] ) ) {
 									$replaceable = $user_data[ $pieces[1] ];
 								} else {
-									$user_meta   = get_user_meta( $user_id, $pieces[1], true );
+									$user_meta   = get_user_meta( $user_meta_uid, $pieces[1], true );
 									$replaceable = $user_meta;
 								}
+
 								if ( is_array( $replaceable ) ) {
 									$replaceable = join( ', ', $replaceable );
 								}
+
 								$trigger_meta_key = $meta_key;
 								$user_meta_key    = $pieces[1];
-								$replaceable      = apply_filters(
+
+								$replaceable = apply_filters(
 									'automator_usermeta_token_parsed',
 									$replaceable,
-									$user_id,
+									$user_meta_uid,
 									$user_meta_key,
 									$trigger_meta_key,
 									$args,
 									$trigger_args
 								);
+
 								break;
+
 							default:
 								$replace_args = array(
 									'pieces'          => $pieces,
@@ -306,27 +325,35 @@ class Automator_Input_Parser {
 									'trigger_id'      => $trigger_id,
 									'trigger_log_id'  => $trigger_log_id,
 									'run_number'      => $run_number,
-									'user_id'         => $user_id,
+									'user_id'         => $user_meta_uid,
 									'recipe_triggers' => array(),
 								);
+
 								if ( isset( $args['recipe_triggers'] ) ) {
 									$replace_args['recipe_triggers'] = $args['recipe_triggers'];
 								}
+
 								$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args, $trigger_id );
+
 								break;
+
 						}
 					}
 					$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable );
 					$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 				} else {
-					//Non usermeta
-					global $wpdb;
-					$parse_args  = array(
+					/**
+					 * This section is for non-usermeta via "else". However, this is actually the Trigger tokens section.
+					 *
+					 * @todo Refactor this condition to not rely on "else" it should have its own condition. Or should be the default one.
+					 */
+					$parse_args = array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $trigger_id,
 						'trigger_log_id' => $trigger_log_id,
 						'run_number'     => $run_number,
 					);
+
 					$parsed_data = Automator()->db->token->get( 'parsed_data', $parse_args );
 					$run_func    = true;
 
@@ -362,11 +389,21 @@ class Automator_Input_Parser {
 						}
 					}
 				}
-			} elseif ( in_array( $match, $this->defined_tokens, true ) ) {
-				if ( null === $user_id ) {
+			}
+			/**
+			 * This section of code is for the "Common tokens"
+			 *
+			 * @todo Refactor this IF condition because the primary IF condition is not related to the "elseif" at all.
+			 */
+			elseif ( in_array( $match, $this->defined_tokens, true ) ) {
+				/**
+				 * The $args['user_id'] is the user ID that is passed into the action.
+				 * While $trigger_args['user_id'] is the user ID of the user who fired the Trigger.
+				 */
+				if ( null === $args['user_id'] ) {
 					$current_user = wp_get_current_user();
 				} else {
-					$current_user = get_user_by( 'ID', $user_id );
+					$current_user = get_user_by( 'ID', $args['user_id'] );
 				}
 
 				switch ( $match ) {
@@ -510,6 +547,10 @@ class Automator_Input_Parser {
 						}
 						break;
 
+					case 'user_locale':
+						$replaceable = get_user_locale( $current_user );
+						break;
+
 					default:
 						$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $current_user );
 						break;
@@ -577,10 +618,10 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false
-			 || strpos( $piece, '_URL' ) !== false
-			 || strpos( $piece, '_EXCERPT' ) !== false
-			 || strpos( $piece, '_THUMB_URL' ) !== false
-			 || strpos( $piece, '_THUMB_ID' ) !== false ) {
+				 || strpos( $piece, '_URL' ) !== false
+				 || strpos( $piece, '_EXCERPT' ) !== false
+				 || strpos( $piece, '_THUMB_URL' ) !== false
+				 || strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -775,8 +816,8 @@ class Automator_Input_Parser {
 				$user_id,
 				$replace_args
 			)
-				) {
-				   $return = do_shortcode( $return );
+			) {
+				$return = do_shortcode( $return );
 			}
 
 			return $return;
@@ -951,11 +992,14 @@ class Automator_Input_Parser {
 		);
 
 		$action_meta_code = isset( $args['action_meta'] ) && isset( $args['action_meta']['code'] ) ? $args['action_meta']['code'] : '';
+		if ( true === apply_filters( 'automator_skip_cslashing_value', false, $field_text, $action_meta_code, $recipe_id, $args ) ) {
+			return $field_text;
+		}
 
 		// If filter is set to true OR action meta matches
 		if ( in_array( $action_meta_code, $skip_do_shortcode_actions, true ) || true === apply_filters( 'automator_skip_do_action_field_parsing', $field_text, $recipe_id, $user_id, $args ) ) {
 			// The function stripcslashes preserves the \a, \b, \f, \n, \r, \t and \v characters.
-			return apply_filters( 'automator_parse_token_parse_text', stripcslashes( $field_text ), $args );
+			return apply_filters( 'automator_parse_token_parse_text', stripcslashes( $field_text ), $field_text, $args );
 		}
 
 		/**
@@ -964,7 +1008,7 @@ class Automator_Input_Parser {
 		 *
 		 * @since 3.0
 		 */
-		return do_shortcode( apply_filters( 'automator_parse_token_parse_text', stripcslashes( $field_text ), $args ) );
+		return do_shortcode( apply_filters( 'automator_parse_token_parse_text', stripcslashes( $field_text ), $field_text, $args ) );
 	}
 
 	/**
@@ -1168,7 +1212,6 @@ class Automator_Input_Parser {
 	 *
 	 * @return string The token value.
 	 * @todo Move this method to a separate class or function for reusability. E.g Uncanny_Automator\Trigger\Token_Handler::fetch_trigger_tokens()
-	 *
 	 */
 	public function fetch_trigger_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_arg ) {
 
@@ -1180,10 +1223,11 @@ class Automator_Input_Parser {
 			return $value;
 		}
 
-		// For brevity.
+		// Assign the $pieces indexes to their respective variables.
 		list( $recipe_id, $token_identifier, $token_id ) = $pieces;
-		$data                                            = Automator()->db->token->get( $token_identifier, $replace_arg );
-		$data                                            = is_array( $data ) ? $data : json_decode( $data, true );
+
+		$data = Automator()->db->token->get( $token_identifier, $replace_arg );
+		$data = is_array( $data ) ? $data : json_decode( $data, true );
 
 		if ( isset( $data[ $token_id ] ) ) {
 			return $data[ $token_id ];

@@ -17,49 +17,34 @@ class Automator_Status {
 	const DID_NOTHING           = 9;
 	const COMPLETED_AWAITING    = 10;
 	const COMPLETED_WITH_NOTICE = 11;
+	const QUEUED                = 12;
 
 	/**
 	 * Action status name
 	 *
-	 * @param  int $status
+	 * @param int $status
+	 *
 	 * @return string
 	 */
 	public static function name( $status ) {
-		$output = $status;
-		switch ( $status ) {
-			case self::NOT_COMPLETED:
-				$output = esc_attr__( 'Not completed', 'uncanny-automator' );
-				break;
-			case self::COMPLETED:
-				$output = esc_attr__( 'Completed', 'uncanny-automator' );
-				break;
-			case self::COMPLETED_WITH_ERRORS:
-				$output = esc_attr__( 'Completed with errors', 'uncanny-automator' );
-				break;
-			case self::IN_PROGRESS:
-				$output = esc_attr__( 'In progress', 'uncanny-automator' );
-				break;
-			case self::CANCELLED:
-				$output = esc_attr__( 'Cancelled', 'uncanny-automator' );
-				break;
-			case self::SKIPPED:
-				$output = esc_attr__( 'Skipped', 'uncanny-automator' );
-				break;
-			case self::DID_NOTHING:
-				$output = esc_attr__( 'Completed, did nothing', 'uncanny-automator' );
-				break;
-			case self::COMPLETED_AWAITING:
-				$output = esc_attr__( 'Completed, awaiting', 'uncanny-automator' );
-				break;
-			case self::COMPLETED_WITH_NOTICE:
-				$output = esc_attr__( 'Completed with notice', 'uncanny-automator' );
-				break;
-			default:
-				$output = $status;
-				break;
-		}
+
+		$status_names = array(
+			self::NOT_COMPLETED         => esc_attr_x( 'Not completed', 'Recipe log status', 'uncanny-automator' ),
+			self::COMPLETED             => esc_attr_x( 'Completed', 'Recipe log status', 'uncanny-automator' ),
+			self::COMPLETED_WITH_ERRORS => esc_attr_x( 'Completed with errors', 'Recipe log status', 'uncanny-automator' ),
+			self::IN_PROGRESS           => esc_attr_x( 'In progress', 'Recipe log status', 'uncanny-automator' ),
+			self::CANCELLED             => esc_attr_x( 'Cancelled', 'Recipe log status', 'uncanny-automator' ),
+			self::QUEUED                => esc_attr_x( 'Queued', 'Recipe log status', 'uncanny-automator' ),
+			self::SKIPPED               => esc_attr_x( 'Skipped', 'Recipe log status', 'uncanny-automator' ),
+			self::DID_NOTHING           => esc_attr_x( 'Completed, did nothing', 'Recipe log status', 'uncanny-automator' ),
+			self::COMPLETED_AWAITING    => esc_attr_x( 'Completed, awaiting', 'Recipe log status', 'uncanny-automator' ),
+			self::COMPLETED_WITH_NOTICE => esc_attr_x( 'Completed with notice', 'Recipe log status', 'uncanny-automator' ),
+		);
+
+		$output = isset( $status_names[ $status ] ) ? $status_names[ $status ] : $status;
 
 		return apply_filters( 'automator_status', $output, $status );
+
 	}
 
 	public static function get_finished_statuses() {
@@ -74,6 +59,7 @@ class Automator_Status {
 		);
 
 		return apply_filters( 'automator_status_finished', $finished_statuses );
+
 	}
 
 	public static function get_class_name( $status ) {
@@ -89,6 +75,8 @@ class Automator_Status {
 				self::DID_NOTHING           => 'completed-do-nothing',
 				self::COMPLETED_AWAITING    => 'completed-awaiting',
 				self::COMPLETED_WITH_NOTICE => 'completed-with-notice',
+				self::CANCELLED             => 'cancelled',
+				self::QUEUED                => 'queued',
 			),
 			$status
 		);
@@ -98,7 +86,9 @@ class Automator_Status {
 	}
 
 	public static function finished( $status ) {
+
 		return in_array( $status, self::get_finished_statuses(), true );
+
 	}
 
 }

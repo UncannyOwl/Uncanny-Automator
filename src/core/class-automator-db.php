@@ -713,6 +713,8 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log_response`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_tokens_log`;" );
 
+		do_action( 'automator_tables_purged' );
+
 		return true;
 
 	}

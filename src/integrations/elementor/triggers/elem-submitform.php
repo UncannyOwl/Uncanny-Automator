@@ -23,6 +23,9 @@ class ELEM_SUBMITFORM {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+		if ( ! defined( 'ELEMENTOR_PRO_VERSION' ) ) {
+			return;
+		}
 		$this->trigger_code = 'ELEMSUBMITFORM';
 		$this->trigger_meta = 'ELEMFORM';
 		$this->define_trigger();

@@ -399,7 +399,33 @@ class Background_Actions {
 			unset( $action['process_further'] );
 		}
 
-		call_user_func_array( $action_execution_function, $action );
+		try {
+
+			call_user_func_array( $action_execution_function, $action );
+			do_action( 'automator_bg_action_after_run', $action );
+
+		} catch ( \Error $e ) {
+			$this->complete_with_error( $action, $e->getMessage() );
+		} catch ( \Exception $e ) {
+			$this->complete_with_error( $action, $e->getMessage() );
+		}
+	}
+
+	/**
+	 * complete_with_error
+	 *
+	 * @param  mixed $action
+	 * @param  mixed $error
+	 * @return void
+	 */
+	public function complete_with_error( $action, $error = '' ) {
+
+		$recipe_id = $action['recipe_id'];
+		$user_id   = $action['user_id'];
+
+		$action['action_data']['complete_with_errors'] = true;
+
+		Automator()->complete->action( $user_id, $action['action_data'], $recipe_id, $error );
 	}
 
 	/**

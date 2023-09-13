@@ -47,14 +47,27 @@ class Active_Campaign_Helpers {
 	public $webhook_endpoint;
 
 	/**
+	 * The settings tab id.
+	 *
+	 * @var string $setting_tab
+	 */
+	public $setting_tab = 'active-campaign';
+
+	/**
+	 * The tab URL.
+	 *
+	 * @var string $tab_url
+	 */
+	public $tab_url = '';
+
+	/**
 	 * Active_Campaign_helpers constructor.
 	 */
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		$this->setting_tab = 'active-campaign';
-		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 
 		// Add the ajax endpoints.
 		add_action( 'wp_ajax_active-campaign-list-tags', array( $this, 'list_tags' ) );

@@ -26,6 +26,13 @@ class WA_MESSAGE_RECEIVED {
 	 */
 	const TRIGGER_META = 'WA_MESSAGE_RECEIVED_META';
 
+	/**
+	 * The WhatsApp tokens.
+	 *
+	 * @var Wa_Message_Received_Tokens $whatsapp_tokens.
+	 */
+	public $whatsapp_tokens = array();
+
 	public function __construct() {
 
 		$this->whatsapp_tokens = new Wa_Message_Received_Tokens();

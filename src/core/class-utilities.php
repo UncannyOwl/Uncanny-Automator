@@ -415,7 +415,7 @@ class Utilities {
 	 * @since    1.0.0
 	 */
 	public static function get_pro_items_list() {
-		include self::automator_get_include( 'pro-items-list.php' );
+		require_once self::automator_get_include( 'pro-items-list.php' );
 
 		return automator_pro_items_list();
 	}
@@ -562,4 +562,24 @@ class Utilities {
 
 		return stream_get_contents( $f );
 	}
+
+	/**
+	 * Accepts post meta array and flattens to to make it compatible with recipe_object.
+	 *
+	 * @param mixed[] $post_metas
+	 *
+	 * @return mixed[]
+	 */
+	public static function flatten_post_meta( $post_metas ) {
+
+		$flattened_array = array();
+
+		foreach ( $post_metas as $key => $item ) {
+			$flattened_array[ $key ] = end( $item );
+		}
+
+		return $flattened_array;
+
+	}
+
 }

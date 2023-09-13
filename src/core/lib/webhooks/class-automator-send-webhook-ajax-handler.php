@@ -29,6 +29,7 @@ class Automator_Send_Webhook_Ajax_Handler {
 	 * Send_Webhook_Ajax_Handler constructor
 	 */
 	public function __construct() {
+
 		// Send sample data ajax catch
 		add_action( 'wp_ajax_nopriv_automator_webhook_send_test_data', array( $this, 'webhook_send_test_data' ) );
 		add_action( 'wp_ajax_automator_webhook_send_test_data', array( $this, 'webhook_send_test_data' ) );
@@ -36,6 +37,7 @@ class Automator_Send_Webhook_Ajax_Handler {
 		// Return field data
 		add_action( 'wp_ajax_nopriv_automator_webhook_build_test_data', array( $this, 'webhook_build_test_data' ) );
 		add_action( 'wp_ajax_automator_webhook_build_test_data', array( $this, 'webhook_build_test_data' ) );
+
 	}
 
 	/**
@@ -84,14 +86,6 @@ class Automator_Send_Webhook_Ajax_Handler {
 				)
 			);
 		}
-		if ( empty( $fields ) ) {
-			wp_send_json(
-				array(
-					'type'    => 'error',
-					'message' => esc_attr__( 'Please enter data in fields.', 'uncanny-automator' ),
-				)
-			);
-		}
 
 		$args = array(
 			'method'  => $request_type,
@@ -104,6 +98,7 @@ class Automator_Send_Webhook_Ajax_Handler {
 		}
 
 		$response = Automator_Send_Webhook::call_webhook( $webhook_url, $args, $request_type );
+
 		if ( $response instanceof WP_Error ) {
 			/* translators: 1. Webhook URL */
 			$error_message = esc_attr__( 'There was an issue sending data to:', 'uncanny-automator' );
@@ -117,30 +112,52 @@ class Automator_Send_Webhook_Ajax_Handler {
 				)
 			);
 		}
-		$header_response = wp_remote_retrieve_headers( $response );
-		$header_leafs    = Automator_Send_Webhook::parse_headers( $header_response );
-		// Parse incoming response
-		$response_leafs = Automator_Send_Webhook::get_leafs( json_decode( wp_remote_retrieve_body( $response ), true ) );
-		$all_tokens     = array_merge( $header_leafs, $response_leafs );
-		// Save response to build action tokens
-		update_post_meta( $action_id, 'webhook_response_tokens', json_encode( $all_tokens ) );
-		/* translators: 1. Webhook URL */
-		//      $body            = wp_remote_retrieve_body( $response );
-		//      $msg             = wp_remote_retrieve_response_message( $response );
-		//      $type            = wp_remote_retrieve_header( $response, 'content-type' );
-		$success_message = esc_attr__( 'Data successfully sent to:', 'uncanny-automator' );
-		$success_message .= sprintf( ' %s', $webhook_url );
-		//      $success_message .= '<h5>' . esc_attr__( 'Response:', 'uncanny-automator' ) . '</h5>';
-		//      $success_message .= "<strong>Message:</strong> $msg";
-		//      $success_message .= "<br /><strong>Contet-Type:</strong> $type";
-		//      $success_message .= "<br /><strong>Body:</strong><pre>$body</pre>";
+
+		$status_code = absint( wp_remote_retrieve_response_code( $response ) );
+
+		$response_headers = wp_remote_retrieve_headers( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
+		$header_leafs     = Automator_Send_Webhook::parse_headers( $response_headers );
+
+		// Parse incoming response.
+		$response_leafs = Automator_Send_Webhook::get_leafs( json_decode( $response_body, true ) );
+
+		$all_tokens = array_merge( $header_leafs, $response_leafs );
+
+		// Save response to build action tokens.
+		update_post_meta( $action_id, 'webhook_response_tokens', wp_json_encode( $all_tokens ) );
+
+		/* translators: Webhook response */
+		$message = '<strong>' . sprintf( esc_attr__( 'Data successfully sent to: %s', 'uncanny-automator' ), $webhook_url ) . '</strong><br/>';
+
+		$response_headers_data = $response_headers instanceof \WpOrg\Requests\Utility\CaseInsensitiveDictionary ? $response_headers->getAll() : $response_headers;
+
+		// Format the response in a nice format.
+		$response = sprintf(
+			/* translators: Webhook response format */
+			esc_attr__( '%1$sHeaders%2$s %3$s %5$s %1$sBody%2$s %4$s', 'uncanny-automator' ),
+			'<br/><strong>',
+			'</strong><br/>',
+			wp_strip_all_tags( wp_json_encode( (array) $response_headers_data ) ),
+			$response_body,
+			'<br />'
+		);
+
+		$type = 'success';
+
+		if ( ! in_array( $status_code, array( 200, 201 ), true ) ) {
+			$type = 'error';
+			/* translators: Webhook response */
+			$message = '<strong>' . sprintf( esc_attr__( 'Server has responded with error code: %1$s %2$s', 'uncanny-automator' ), $status_code, $webhook_url ) . '</strong><br/>';
+		}
 
 		wp_send_json(
 			array(
-				'type'    => 'success',
-				'message' => $success_message,
+				'type'    => $type,
+				'message' => $message . $response,
 			)
 		);
+
 	}
 
 	/**
@@ -155,10 +172,12 @@ class Automator_Send_Webhook_Ajax_Handler {
 		$data_type = Automator()->send_webhook->get_data_type( $data );
 		$fields    = Automator()->send_webhook->get_fields( $data, false, $data_type, array(), true );
 
+		$stripped_fields = is_string( $fields ) ? stripcslashes( $fields ) : '';
+
 		wp_send_json(
 			array(
 				'type'    => 'gray',
-				'message' => stripcslashes( $fields ),
+				'message' => $stripped_fields,
 			),
 			200,
 			JSON_PRETTY_PRINT

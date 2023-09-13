@@ -427,8 +427,11 @@ class Linkedin_Helpers {
 		if ( empty( $this->get_client() ) ) {
 			return;
 		}
+
+		$has_linkedin_live_actions = ! empty( Automator()->utilities->fetch_live_integration_actions( 'LINKEDIN' ) );
+
 		// Also check if there is a live action.
-		if ( $this->is_refresh_token_expiring() && ! empty( Automator()->get->get_integration_publish_actions( 'LINKEDIN' ) ) ) {
+		if ( $this->is_refresh_token_expiring() && $has_linkedin_live_actions ) {
 
 			add_action( 'admin_notices', array( $this, 'admin_notice_show_reminder' ) );
 

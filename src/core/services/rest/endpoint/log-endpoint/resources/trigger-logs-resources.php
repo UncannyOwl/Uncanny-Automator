@@ -35,13 +35,18 @@ class Trigger_Logs_Resources {
 	}
 
 	/**
-	 * @param int $recipe_id
+	 * @param mixed[] $recipe
 	 *
 	 * @return string The trigger logic.
 	 */
-	public function get_logic( $recipe_id = 0 ) {
+	public function get_logic( $recipe ) {
 
-		$logic = get_post_meta( $recipe_id, 'automator_trigger_logic', true );
+		$logic = $this->trigger_logs_queries->get_trigger_logic( $recipe );
+
+		// Fallbacks to live record in case the logic from recipe log meta is missing.
+		if ( empty( $logic ) ) {
+			$logic = get_post_meta( $recipe['automator_recipe_id'], 'automator_trigger_logic', true );
+		}
 
 		if ( ! is_string( $logic ) || empty( $logic ) ) {
 			return 'all';
@@ -105,6 +110,8 @@ class Trigger_Logs_Resources {
 			// Get the last element of the array.
 			$trigger_meta = $this->utils::flatten_post_meta( (array) get_post_meta( $trigger_id ) );
 
+			$is_deleted = empty( $trigger_meta );
+
 			$trigger_runs = $this->get_trigger_runs(
 				array(
 					'recipe_id'      => $params['recipe_id'],
@@ -149,13 +156,31 @@ class Trigger_Logs_Resources {
 				)
 			);
 
+			$start_date = isset( $trigger_runs[0]['date'] ) ? $trigger_runs[0]['date'] : null;
+			$end_date   = isset( $trigger_runs_last['date'] ) ? $trigger_runs_last['date'] : null;
+			// Retrieve the user ID from recipe log.
+			$user_id = apply_filters( 'automator_field_resolver_condition_result_user_id', null );
+
+			$trigger_object = Automator()->db->trigger->get_meta(
+				'trigger_object',
+				$trigger_id,
+				$trigger_log_item['trigger_log_id'],
+				$user_id
+			);
+
+			if ( is_array( $trigger_object ) && ! empty( $trigger_object ) ) {
+				$trigger_meta = $trigger_object['meta'];
+			}
+
 			$trigger_item = array(
 				'type'             => 'trigger',
 				'id'               => $trigger_id,
 				'integration_code' => $trigger_meta['integration'],
+				'is_deleted'       => $is_deleted,
 				'status_id'        => $status_id,
-				'start_date'       => isset( $trigger_runs[0]['date'] ) ? $trigger_runs[0]['date'] : null,
-				'end_date'         => isset( $trigger_runs_last['date'] ) ? $trigger_runs_last['date'] : null,
+				'start_date'       => $start_date,
+				'end_date'         => $end_date,
+				'date_elapsed'     => $this->utils::get_date_elapsed( $start_date, $end_date ),
 				'code'             => $trigger_meta['code'],
 				'title_html'       => htmlspecialchars( $this->resolve_trigger_title( $trigger_meta ), ENT_QUOTES ),
 				'fields'           => $fields,
@@ -190,9 +215,11 @@ class Trigger_Logs_Resources {
 	 */
 	private function resolve_trigger_title( $trigger_meta = array(), $trigger_id = 0 ) {
 
+		// Use the sentence human readable html if available.
 		if ( isset( $trigger_meta['sentence_human_readable_html'] ) ) {
 			return $trigger_meta['sentence_human_readable_html'];
 		} else {
+			// Otherwise, use the non-html format.
 			// E.g. "Magic button" trigger does not have 'sentence_human_readable_html'.
 			if ( isset( $trigger_meta['sentence_human_readable'] ) ) {
 				return $trigger_meta['sentence_human_readable'];
@@ -233,6 +260,7 @@ class Trigger_Logs_Resources {
 					'type'             => 'trigger',
 					'id'               => $recipe_trigger,
 					'integration_code' => isset( $trigger_meta['integration'] ) ? $trigger_meta['integration'] : 'NOT_FOUND',
+					'is_deleted'       => null, // Trigger didn't even run yet.
 					'status_id'        => 'not-completed',
 					'start_date'       => null,
 					'end_date'         => null,

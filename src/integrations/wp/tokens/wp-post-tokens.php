@@ -25,6 +25,7 @@ class Wp_Post_Tokens {
 			'wpviewposttype',
 			'viewcustompost',
 			'WP_POST_PUBLISHED',
+			'ELEM_POST_PUBLISHED',
 			'WP_USER_POST_UPDATED',
 			'ANON_POST_UPDATED_IN_TAXONOMY',
 			'WP_ANON_POST_UPDATED',
@@ -71,7 +72,7 @@ class Wp_Post_Tokens {
 			return;
 		}
 
-		$triggers = array( 'WP_POST_PUBLISHED' );
+		$triggers = array( 'WP_POST_PUBLISHED', 'ELEM_POST_PUBLISHED' );
 
 		if ( in_array( $args['entry_args']['code'], $triggers, true ) ) {
 			$wp_post_data                                        = $args['trigger_args'];
@@ -523,6 +524,7 @@ class Wp_Post_Tokens {
 			! in_array( 'VIEWPAGE', $pieces, true ) &&
 			! in_array( 'VIEWCUSTOMPOST', $pieces, true ) &&
 			! in_array( 'WP_POST_PUBLISHED', $pieces, true ) &&
+			! in_array( 'ELEM_POST_PUBLISHED', $pieces, true ) &&
 			! in_array( 'WP_USER_POST_UPDATED', $pieces, true ) &&
 			! in_array( 'WP_POST_PUBLISHED_IN_TAXONOMY', $pieces, true ) &&
 			! in_array( 'WP_ANON_POST_UPDATED', $pieces, true ) &&

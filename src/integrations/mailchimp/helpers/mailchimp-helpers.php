@@ -62,9 +62,14 @@ class Mailchimp_Helpers {
 	 */
 	public static $hash_string = 'Uncanny Automator Pro Mailchimp Sheet Integration';
 
-	public function __construct() {
+	/**
+	 * The mailchimp public API.
+	 *
+	 * @var string $settings_tab
+	 */
+	public $settings_tab = 'mailchimp_api';
 
-		$this->settings_tab = 'mailchimp_api';
+	public function __construct() {
 
 		add_action( 'init', array( $this, 'validate_oauth_tokens' ), 100, 3 );
 

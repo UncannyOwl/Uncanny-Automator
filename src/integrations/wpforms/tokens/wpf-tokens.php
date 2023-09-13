@@ -110,15 +110,13 @@ class Wpf_Tokens {
 				);
 
 				// Added support for multiple option (label).
-				if ( in_array( $field['type'], array( 'select', 'checkbox', 'radio' ), true ) ) {
-
+				if ( isset( $field['choices'] ) ) {
 					$fields[] = array(
 						'tokenId'         => $token_id . '|label',
 						'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(label)', 'uncanny-automator' ) ),
 						'tokenType'       => in_array( $field['type'], $allowed_token_types, true ) ? $field['type'] : 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
-
 				}
 			}
 
@@ -199,8 +197,21 @@ class Wpf_Tokens {
 
 		$token_info = explode( '|', $pieces[2] );
 
+		// Get the form.
+		list( $form_id, $field_id ) = $token_info;
+
+		// Get Field config.
+		$form  = $this->get_wpforms_form( absint( $form_id ) );
+		$field = $form['fields'][ $field_id ];
+
+		// Fetch label if needed.
 		if ( $this->should_fetch_label( $token_info ) ) {
 			$value = $this->get_field_label( $token_info, $entry, $to_match );
+		} else {
+			// Populate non-dynamic choices values.
+			if ( ! empty( $field['choices'] ) && empty( $field['dynamic_choices'] ) ) {
+				$value = $this->get_non_dynamic_choice_index( $value, $field );
+			}
 		}
 
 		// Check for WPForms Lite.
@@ -289,17 +300,19 @@ class Wpf_Tokens {
 
 						// Separate checkbox and select.
 						if ( in_array( $field['type'], array( 'checkbox', 'select' ), true ) ) {
-
-							$choices = explode( PHP_EOL, $field['value'] );
-
-							// Parse raw value if its set.
-							if ( isset( $field['value_raw'] ) ) {
-								$choices = explode( PHP_EOL, $field['value_raw'] );
-							}
+							$field_value = isset( $field['value_raw'] ) ? $field['value_raw'] : $field['value'];
+							$choices     = explode( PHP_EOL, $field_value );
 
 							if ( is_array( $choices ) ) {
 								$data[ $key ] = implode( ', ', $choices );
 							}
+						}
+
+						// Maybe add spaces after commas.
+						if ( isset( $field['dynamic_items'] ) || ( strpos( $field['type'], 'payment' ) === 0 && 'payment-single' !== $field['type'] ) ) {
+							$data[ $key ] = str_replace( ',', ', ', $data[ $key ] );
+							// Remove any double spaces this may have caused.
+							$data[ $key ] = preg_replace( '/\s+/', ' ', $data[ $key ] );
 						}
 					}
 
@@ -430,7 +443,7 @@ class Wpf_Tokens {
 					return $this->handle_checkbox_labels( $entry_choice, $choices );
 				}
 
-				return $this->handle_non_dynamic_labels( $token_info, $form, $entry_choice, $choices );
+				return $this->handle_non_dynamic_labels( $form['fields'][ $field_id ], $entry_choice );
 			}
 
 			// Otherwise, handle as dynamic select. Supports post type and taxonomy.
@@ -461,9 +474,14 @@ class Wpf_Tokens {
 	 */
 	private function get_wpforms_form( $form_id = 0 ) {
 
+		static $forms = array();
+		if ( ! empty( $forms[ $form_id ] ) ) {
+			return $forms[ $form_id ];
+		}
+
 		global $wpdb;
 
-		return json_decode(
+		$forms[ $form_id ] = json_decode(
 			$wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT post_content FROM $wpdb->posts WHERE id = %d",
@@ -473,6 +491,40 @@ class Wpf_Tokens {
 			true
 		);
 
+		return $forms[ $form_id ];
+	}
+
+	/**
+	 * Retrieves the checkbox value ( index of choice ).
+	 *
+	 * @param mixed $value The value.
+	 * @param array $field The current field config.
+	 *
+	 * @return string The selected value.
+	 */
+	private function get_non_dynamic_choice_index( $value, $field ) {
+
+		// Skip if payment field.
+		if ( strpos( $field['type'], 'payment' ) === 0 ) {
+			return apply_filters( 'automator_wpforms_non_dynamic_choice_value', $value, $field );
+		}
+
+		$choices     = $field['choices'];
+		$value_array = array_map( 'trim', explode( ', ', $value ) );
+		$selected    = array();
+
+		foreach ( $choices as $key => $choice ) {
+			// Strip whitespace for single space.
+			$label = preg_replace( '/\s+/', ' ', $choice['label'] );
+			// Check if label is in value array.
+			if ( in_array( $label, $value_array, true ) ) {
+				$selected[] = $key;
+			}
+		}
+
+		$value = ! empty( $selected ) ? implode( ', ', $selected ) : '';
+
+		return apply_filters( 'automator_wpforms_non_dynamic_choice_value', $value, $field );
 	}
 
 	/**
@@ -492,11 +544,11 @@ class Wpf_Tokens {
 		$selections = array();
 
 		foreach ( $choices_column as $index => $choice_column ) {
+			// Strip whitespace for single space.
+			$choice_column = preg_replace( '/\s+/', ' ', $choice_column );
 
 			if ( in_array( $choice_column, $entry_choice_arr, true ) ) {
-
 				$selections[] = $choices_column[ $index ];
-
 			}
 		}
 
@@ -550,31 +602,36 @@ class Wpf_Tokens {
 	/**
 	 * Handles label token for non-dynamic fields.
 	 *
-	 * @param array $token_info The token parts.
-	 * @param array $form The form.
+	 * @param array $field The field configuration.
 	 * @param string $entry_choice The entry choice.
-	 * @param array $choices The choices.
 	 *
 	 * @return string The label.
 	 */
-	private function handle_non_dynamic_labels( $token_info, $form, $entry_choice, $choices ) {
+	private function handle_non_dynamic_labels( $field, $entry_choice ) {
 
-		list( $form_id, $field_id, $label_flag ) = $token_info;
-
-		$entry_choice_arr = array_map( 'trim', explode( ',', $entry_choice ) );
-
-		$labels = array();
-
+		$choices                 = $field['choices'];
+		$type                    = $field['type'];
+		$entry_choice_arr        = array_map( 'trim', explode( ',', $entry_choice ) );
+		$is_payment_field        = strpos( $type, 'payment' ) === 0;
+		$show_price_after_labels = isset( $field['show_price_after_labels'] ) ? (bool) $field['show_price_after_labels'] : false;
+		$labels                  = array();
 		foreach ( $entry_choice_arr as $entry_choice_arr_item ) {
-			foreach ( $choices as $choice ) {
-				if ( $choice['label'] === $entry_choice_arr_item || $choice['value'] === $entry_choice_arr_item ) {
-					$labels[] = $choice['label'];
+			foreach ( $choices as $key => $choice ) {
+				// Payment Fields.
+				if ( $is_payment_field ) {
+					if ( (int) $key === (int) $entry_choice_arr_item ) {
+						$labels[] = $show_price_after_labels ? $choice['label'] . ' - ' . wpforms_format_amount( trim( $choice['value'] ), true ) : $choice['label'];
+					}
+				} else {
+					// Non-Payment Fields.
+					if ( $choice['label'] === $entry_choice_arr_item || $choice['value'] === $entry_choice_arr_item ) {
+						$labels[] = $choice['label'];
+					}
 				}
 			}
 		}
 
 		return implode( ', ', $labels );
-
 	}
 
 	/**
