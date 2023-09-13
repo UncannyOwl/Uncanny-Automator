@@ -44,8 +44,9 @@ class UOA_ERRORS {
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/automator-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
+			'is_deprecated'       => true,
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'sentence'            => sprintf( esc_attr__( 'An Automator recipe completes with errors', 'uncanny-automator' ) ),
+			'sentence'            => esc_attr__( 'An Automator recipe completes with errors', 'uncanny-automator' ),
 			/* translators: Logged-in trigger - Uncanny Automator */
 			'select_option_name'  => esc_attr__( 'An Automator recipe completes with errors', 'uncanny-automator' ),
 			'action'              => 'automator_recipe_completed',

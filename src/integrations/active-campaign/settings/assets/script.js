@@ -41,6 +41,7 @@ class AutomatorActiveCampaignSettings {
 			onSuccess: (response) => {
 				console.info(response);
 				this.$localSyncBtn.removeAttribute('loading');
+				this.$syncContainer.innerHTML = response.messages;
 			},
 			onFail: (response, message) => {
 				console.warn(message);
@@ -48,6 +49,14 @@ class AutomatorActiveCampaignSettings {
 			},
 		});
 
+	}
+
+	get $syncAlert() {
+		return document.getElementById('active-campaign-local-sync-alert');
+	}
+
+	get $syncContainer() {
+		return document.getElementById('active-campaign-local-sync-p');
 	}
 
 	get $localSyncBtn() {

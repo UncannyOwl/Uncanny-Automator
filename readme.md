@@ -3,9 +3,9 @@
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, openai, learndash, webhooks, woocommerce, mailchimp, twitter, facebook, whatsapp, buddyboss, tutor lms \
 **Requires at least:** 5.3 \
-**Tested up to:** 6.2.2 \
+**Tested up to:** 6.3.1 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 4.16.0.2 \
+**Stable tag:** 5.0.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -58,6 +58,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 ### Supported apps
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -148,6 +149,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Pretty Links](https://automatorplugin.com/integration/pretty-links/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -343,6 +345,143 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.0.1 [2023-09-13]
+
+**New Tokens:**
+
+* WooCommerce  #3866
+	* Billing country (full name)
+	* Billing state (full name)
+	* Shipping country (full name)
+	* Shipping state (full name)
+* Outgoing Webhooks - Response - Body (raw) #3869
+
+**Updated:**
+
+* ActiveCampaign - Improved error messages & error handling and return actual response message #3875
+* MemberPress - A user purchases a recurring subscription product - Filter for recurring payments #3914
+* WP All Import - Specific post type is imported - Erroneously firing when posts are updated during import #3911
+* WordPress - Create a post - Content sanitization for the "Post Content" is removed #3933
+* Zoho Campaigns: Add additional fields like name and other details #3903
+
+**Fixed:**
+
+* Automator - `AUTOLOGINLINK` doesn't show up in the token selector #3857
+* Automator - A recipe completes with errors a number of times - Firing for completed, awaiting status #3900
+* Elementor - A post is published with Elementor - Firing when a post is updated #3932
+* LearnDash - Action Tokens - Not returning correct values #3726
+* OpenAI - Generate a meta description with GPT-4 - Typo in prompt #3921
+* Outgoing Webhooks - Sending incorrect payload body for form-data format #3923
+* Outgoing Webhooks - Response header not properly encoding double quotes #3889
+* Recipe Logs - Logs not working when WordPress is installed in a subdirectory #3826
+* Recipe Logs - Custom Properties not displaying correctly #3874
+* Telegram - Preserve line breaks in messages #3908
+* WPForms - Smart Tags Label Matching for Value / Label Tokens #3928
+* WPForms - The Number slider is returning a string with multiple values instead of a number with the selected value #3910
+* WPForms - Remove extra white space from labels that were preventing multiple choice tokens from matching and rendering values #3896
+* WordPress - Create a post - TinyMCE textarea sanitization breaks tokens inside `<img src="">` tags #3844
+
+**Under the hood:**
+
+* Action tokens - Nested tokens, or a token inside a token causing logs to output an empty record when there is an action field token #3899
+* Closure - WordPress filter - automator_recipe_closure_admin_redirect #3931
+* Core - Additional filters and actions for database repair #3868
+* Fixing some known 5.0 issues #3856
+* Improved PHP 5.6 compatibility #3934
+* Inconsistent recipe objects when both Redis and Object Caching is installed and enabled #3917
+* Re-architect common tokens and move them to Automator core #3905
+* Add "Addon" tab #3935
+
+### 5.0 [2023-08-24]
+
+**New Integrations:**
+
+* [Pretty Links](https://automatorplugin.com/integration/pretty-links/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3472
+* [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3627
+
+**New Triggers:**
+
+* Automator - A user completes a recipe #3681
+* Elementor - A post is published with Elementor #3719
+* Pretty Links - A user clicks a pretty link #3777
+* Pretty Links - A pretty link of a specific redirect type is created #3840
+* Pretty Links - A pretty link is clicked #3611
+
+**New Actions:**
+
+* Brevo - Add a contact to a list #3645
+* Brevo - Create or update a contact #3635
+* Brevo - Delete a contact #3636
+* Brevo - Remove a contact from a list #3646
+* Pretty Links - Create a pretty link for a specific target URL #3610
+
+**New Tokens:**
+
+* Automator - A user completes a recipe with errors #3680
+    * Recipe name
+    * Recipe status
+    * Recipe ID
+    * Number of times
+    * Recipe edit link
+    * Recipe log URL
+    * Action log URL
+    * Trigger log URL
+* Automator - A user completes a recipe without errors #3679
+    * Recipe name
+    * Recipe status
+    * Recipe ID
+    * Number of times
+    * Recipe edit link
+    * Recipe log URL
+    * Action log URL
+    * Trigger log URL
+* Common - User locale #3653
+* WooCommerce #3735 #3788
+    * Order time
+    * Order date & time 
+    * Stripe fee (when Stripe plugin is enabled)
+
+**Updated:**
+
+* Recipe logs - Show action notes (if available) when an action is completed with "do nothing" status  #3767
+* Amelia - A guest registers for an event - Attendee info tokens are now parsed #3804
+* Automator - "A user completes a recipe number of times" renamed to "A user completes a recipe without errors a number of times" #3677
+* Automator - "An Automator recipe completes with errors" renamed to "A user completes a recipe with errors" #3678
+* Facebook Groups - Admin notification query optimization #3555
+* LinkedIn - Refresh token query optimization #3555
+* Gravity Forms - Support for survey tokens #3821
+* WhatsApp - Support image formats and added JSON string as Message value for other replies formats such as Audio, Location, Contacts, etc #3793
+* Webhooks - Send data to a webhook - Response header and body now displayed in logs  #3750
+* Webhooks - Send data to a webhook - Empty body payload support added #3784
+* Webhooks - Send data to a webhook - "Send test" now displays response header and body #3784
+* WooCommerce - Order shipping token renamed to Shipping fee #3823
+
+**Fixed:**
+
+* ARMember - ARMember Pro throws a PHP Error #3751
+* Background actions - PHP Errors will compete the recipe with errors if an error occurs during the execution #3763
+* Closure Redirect - Erroneously breaking the "Publish" post feature in a certain situation #3806
+* MasterStudy - Mark complete a course dropdown fix #3820
+* Trello - Start and due dates tokens are not parsing #3824
+* TutorLMS - A user completes a course not running reliably #3741
+* WPForms - The value options are not returning the correct information of the form #3766
+* Google Calendar - Auto format the Time field base on WordPress settings and update error message #3781
+
+**Under the hood:**
+
+* Loops UI for Automator Pro #3811
+* ARMember - Logo updated #3822
+* Automator - An Automator recipe completes with errors - Deprecated #3830
+* Banner - Text changes #3729
+* Core - Additional sanitization filters #3828
+* Core - Catch action errors and complete recipes if an action throws a fatal error #3803
+* Core - Reduced redundant calls to `automator_pro_actions_conditions_list` filter #3819
+* Core - Improved PHP 8.2 compatibility #3833
+* Core - UI framework updated #3811
+* Recipe logs - Improved logging of triggers and actions when sentences are changed, updated or removed from the recipe #3529
+* Recipe logs - Ability to show custom properties in logs #3750
+* Recipe logs - `add_log_error` not clearing previous action errors #3837
 
 ### 4.16.0.2 [2023-07-18]
 
@@ -1258,157 +1397,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe logs - Reduced number of queries by merging some queries #2628
 * Updated `Automator_Status` to add WhatsApp action status #2624
 * `maybe_validate_trigger_without_postid` no longer breaks unit tests. Updated unit tests #2559 #2558
-
-### 4.4.0.1 [2022-08-25]
-
-**Fixed:**
-
-* Elementor Pro - Tokens are now parsed reliably if the field value is changed during form processing using filte #2537
-* FluentCRM - Updated trigger matching logic to fix Automator Pro triggers #2548
-* Gravity Forms - "Time" type field token now parsed reliably #2551
-
-**Under the hood:**
-
-* Filter `automator_usermeta_token_parsed` - User meta key parameter added #2561
-* "Everyone" recipes no longer stuck "In Progress" in specific situations #2554
-
-### 4.4 [2022-08-23]
-
-**New Integration:**
-
-* [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #1932
-
-**New Triggers:**
-
-* WhatsApp - A message is received #2504
-* WhatsApp - A message to a recipient is not delivered because they have not opted in #2201
-* WhatsApp - A message to a recipient is set to a specific status #2503
-* WhatsApp - A message to a recipient was not delivered #2505
-
-**New Actions:**
-
-* WhatsApp - Send a WhatsApp message template to a number #2208
-* WhatsApp - Send a WhatsApp message to a number #845
-
-**Added:**
-
-* Fluent Forms - "File upload" field token now returns a valid URL #2516
-* Recipe UI - Trigger/Action sentences now show field labels when populated #2465
-
-**Fixed:**
-
-* Background processing - Action running twice if server cron is used instead of WordPress cron #2539
-* Background processing - PHP error when background actions are tested during daily system health check #2544
-* FluentCRM - "A tag is added to a user" trigger now fires reliably #2477
-* Recipe UI - Now displays translations as expected if user language is different than site language #2491
-* Recipe UI - Dropdowns inside a repeater field now support custom values #2540
-* WordPress - "A user views a post" no longer fires on archive pages #2508
-
-**Under the hood:**
-
-* Dashboard - Displayed credits remaining now more accurate #2507
-* Zapier - Logo updated #2498
-* PHP Notice - array key `action_log_id` in `class-automator-recipe-process-complete.php` #2480
-* `Traits_Recipe_Filters` - Added `string_comparison` logic #2485
-
-### 4.3 [2022-08-11]
-
-**New Integrations:**
-
-* [Airtable](https://automatorplugin.com/integration/airtable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2346
-* [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2353
-* [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2377
-* [KonnectzIT](https://automatorplugin.com/integration/konnectzit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2300
-* [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2292
-* [Make](https://automatorplugin.com/integration/make/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2415
-* [WP Mail SMTP Pro](https://automatorplugin.com/integration/wp-mail-smtp-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2389
-
-**New Triggers:**
-
-* Easy Affiliate - A new sale is recorded for an affiliate #2349
-* Easy Affiliate - An affiliate is added #2371
-* Uncanny Codes - A code batch is created #2383
-* WP Mail SMTP Pro - An email with specific text in the subject is opened #1868
-
-**New Action:**
-
-* Airtable - Send data to Airtable #2414
-* FluentCRM - Add a tag to a contact #2256
-* KonnectzIT - Send data to KonnectzIT webhook #2299
-* LinkedIn - Publish a post to a LinkedIn page #2294
-* Mailchimp - Add a contact to an audience #2378
-* Mailchimp - Add a note to a contact #2380
-* Mailchimp - Add a tag to a contact #2381
-* Mailchimp - Remove a tag from a contact #2248
-* Mailchimp - Unsubscribe a contact from an audience #2379
-* Make - Send data to Make webhook #2417
-* Uncanny Codes - Generate a batch of codes for Automator #1437
-
-**New Tokens:**
-
-* LearnDash course triggers - Course access expiry date #2304
-
-**New feature:**
-
-* Premium actions can now be re-sent from detailed recipe log popup #2252
-
-**Added:**
-
-* Advanced settings page
-* Automator cache can now be enabled/disabled #2428, #2281
-* Recipe UI - Ability to duplicate an action #2420
-* Recipe UI - "Delay" button now visible when Automator Pro is not active #2408
-* WordPress - "Create a post" action now supports adding taxonomy and terms to the created post #2318
-
-**Updated:**
-
-* "Send an email" action moved from WordPress to Emails #2400
-* Closure - Redirect now works more reliably with ajax form submissions #2339
-* Facebook Groups - Improved support for line breaks and paragraphs in editor #2335
-* Facebook Pages - Improved support for line breaks and paragraphs in editor #2330
-* Featured image URL - Token now returns full-size image URL instead of thumbnail URL #2438
-* Google Sheets - "Get columns" now keeps existing values #2295
-* Recipe UI - Cancel buttons now only close the respective trigger/action #2307
-* Recipe UI - Disabled ability to drag Triggers and Actions metaboxes #2160
-* Recipe UI - Conditions are now duplicated when a recipe is duplicated #2120
-* Recipe UI - IDs, URLs, and email tokens are now displayed correctly in their corresponding fields #2410
-* Recipe UI - Duplicating a recipe now keeps the original live/draft status of triggers and actions #353
-* WP-Admin - Automator menu item "Recipe logs" renamed to "Logs" #2451
-* WP-Admin - Trigger log and Action log removed from Automator menu #2375
-* In-plugin branding updates #2391
-
-**Fixed:**
-
-* "All Recipes" page now shows colorful indicators for live/draft recipe parts #2433
-* Automator Core - Tokens are now parsed reliably when a recipe contains more than one of the same trigger #2453
-* Automator UI - Conflict with jw-player-plugin-for-wordpress #2368
-* Fluent Forms - PHP Warning for foreach() loop #2398
-* Google Calendar - Misleading error message #2372
-* Recipe UI Field - Multi-selects that use AJAX now load options reliably #2394
-* WordPress - "Any" option is now listed as the first item on post type dropdown #2449
-
-**Under the hood:**
-
-* Automator core - Background processing automatically disabled if unsupported #2456
-* Automator API - Added DB table and view to store API logs #2252
-* GoToTraining/Webinar - Now use Automator API for improved reliability and retries #2429
-* Migration scheduling - Activation hooks added #2457
-* New filter: `automator_conflictive_assets` to dequeue site-specific scripts and styles that may conflict with the recipe UI #2439
-* Updated token framework #116 #118 #119 #130
-* Usage reports - Added detailed recipe information #2455
-* Token Parser - PHP 8 issue when a token is used in a recipe sentence #2365
-* Tools - `automator_log` now shows debug files in the admin #2443
-* `Trait_Recipe_Filters` updated #2364
-
-### 4.2.1.1 [2022-07-21]
-
-**Updated:**
-
-* Background Processing - Additional validation added when REST APIs are set to private or disabled by 3rd-party plugins #2359
-
-**Fixed:**
-
-* Automator core - Improved compatibility with 3rd-party Automator Integrations #2360
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

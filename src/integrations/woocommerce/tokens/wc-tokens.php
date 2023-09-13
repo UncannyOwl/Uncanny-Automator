@@ -35,10 +35,12 @@ class Wc_Tokens {
 			'billing_last_name'     => esc_attr__( 'Billing last name', 'uncanny-automator' ),
 			'billing_company'       => esc_attr__( 'Billing company', 'uncanny-automator' ),
 			'billing_country'       => esc_attr__( 'Billing country', 'uncanny-automator' ),
+			'billing_country_name'  => esc_attr__( 'Billing country (full name)', 'uncanny-automator' ),
 			'billing_address_1'     => esc_attr__( 'Billing address line 1', 'uncanny-automator' ),
 			'billing_address_2'     => esc_attr__( 'Billing address line 2', 'uncanny-automator' ),
 			'billing_city'          => esc_attr__( 'Billing city', 'uncanny-automator' ),
 			'billing_state'         => esc_attr__( 'Billing state', 'uncanny-automator' ),
+			'billing_state_name'    => esc_attr__( 'Billing state (full name)', 'uncanny-automator' ),
 			'billing_postcode'      => esc_attr__( 'Billing postcode', 'uncanny-automator' ),
 			'billing_phone'         => esc_attr__( 'Billing phone', 'uncanny-automator' ),
 			'billing_email'         => esc_attr__( 'Billing email', 'uncanny-automator' ),
@@ -46,12 +48,16 @@ class Wc_Tokens {
 			'shipping_last_name'    => esc_attr__( 'Shipping last name', 'uncanny-automator' ),
 			'shipping_company'      => esc_attr__( 'Shipping company', 'uncanny-automator' ),
 			'shipping_country'      => esc_attr__( 'Shipping country', 'uncanny-automator' ),
+			'shipping_country_name' => esc_attr__( 'Shipping country (full name)', 'uncanny-automator' ),
 			'shipping_address_1'    => esc_attr__( 'Shipping address line 1', 'uncanny-automator' ),
 			'shipping_address_2'    => esc_attr__( 'Shipping address line 2', 'uncanny-automator' ),
 			'shipping_city'         => esc_attr__( 'Shipping city', 'uncanny-automator' ),
 			'shipping_state'        => esc_attr__( 'Shipping state', 'uncanny-automator' ),
+			'shipping_state_name'   => esc_attr__( 'Shipping state (full name)', 'uncanny-automator' ),
 			'shipping_postcode'     => esc_attr__( 'Shipping postcode', 'uncanny-automator' ),
 			'order_date'            => esc_attr__( 'Order date', 'uncanny-automator' ),
+			'order_time'            => esc_attr__( 'Order time', 'uncanny-automator' ),
+			'order_date_time'       => esc_attr__( 'Order date and time', 'uncanny-automator' ),
 			'order_id'              => esc_attr__( 'Order ID', 'uncanny-automator' ),
 			'order_comments'        => esc_attr__( 'Order comments', 'uncanny-automator' ),
 			'order_total'           => esc_attr__( 'Order total', 'uncanny-automator' ),
@@ -70,13 +76,17 @@ class Wc_Tokens {
 			'order_products_links'  => esc_attr__( 'Order products links', 'uncanny-automator' ),
 			'order_summary'         => esc_attr__( 'Order summary', 'uncanny-automator' ),
 			'order_fees'            => esc_attr__( 'Order fees', 'uncanny-automator' ),
-			'order_shipping'        => esc_attr__( 'Order shipping', 'uncanny-automator' ),
+			'order_shipping'        => esc_attr__( 'Shipping fee', 'uncanny-automator' ),
 			'payment_method'        => esc_attr__( 'Payment method', 'uncanny-automator' ),
 			'shipping_method'       => esc_attr__( 'Shipping method', 'uncanny-automator' ),
 			'payment_url'           => esc_attr__( 'Payment URL', 'uncanny-automator' ),
 			'payment_url_checkout'  => esc_attr__( 'Direct checkout URL', 'uncanny-automator' ),
 		);
 
+		if ( function_exists( 'stripe_wc' ) || class_exists( '\WC_Stripe_Helper' ) || function_exists( 'woocommerce_gateway_stripe' ) ) {
+			$this->possible_order_fields['stripe_fee']    = esc_attr__( 'Stripe fee', 'uncanny-automator' );
+			$this->possible_order_fields['stripe_payout'] = esc_attr__( 'Stripe payout', 'uncanny-automator' );
+		}
 		add_action(
 			'uap_wc_trigger_save_meta',
 			array(
@@ -164,12 +174,6 @@ class Wc_Tokens {
 			foreach ( $args as $trigger_result ) {
 
 				if ( true === $trigger_result['result'] && $trigger_result['args']['trigger_id'] && $trigger_result['args']['get_trigger_id'] ) {
-
-					$run_number = Automator()->get->trigger_run_number(
-						$trigger_result['args']['trigger_id'],
-						$trigger_result['args']['get_trigger_id'],
-						$trigger_result['args']['user_id']
-					);
 
 					$trigger_id     = (int) $trigger_result['args']['trigger_id'];
 					$user_id        = (int) $trigger_result['args']['user_id'];
@@ -493,6 +497,9 @@ class Wc_Tokens {
 					case 'billing_country':
 						$value = $order->get_billing_country();
 						break;
+					case 'billing_country_name':
+						$value = $this->get_country_name_from_code( $order->get_billing_country() );
+						break;
 					case 'billing_address_1':
 						$value = $order->get_billing_address_1();
 						break;
@@ -504,6 +511,9 @@ class Wc_Tokens {
 						break;
 					case 'billing_state':
 						$value = $order->get_billing_state();
+						break;
+					case 'billing_state_name':
+						$value = $this->get_state_name_from_codes( $order->get_billing_state(), $order->get_billing_country() );
 						break;
 					case 'billing_postcode':
 						$value = $order->get_billing_postcode();
@@ -517,6 +527,12 @@ class Wc_Tokens {
 					case 'order_date':
 						$value = $order->get_date_created()->format( get_option( 'date_format', 'F j, Y' ) );
 						break;
+					case 'order_time':
+						$value = $order->get_date_created()->format( get_option( 'time_format', 'H:i:s' ) );
+						break;
+					case 'order_date_time':
+						$value = $order->get_date_created()->format( sprintf( '%s %s', get_option( 'date_format', 'F j, Y' ), get_option( 'time_format', 'H:i:s' ) ) );
+						break;
 					case 'shipping_first_name':
 						$value = $order->get_shipping_first_name();
 						break;
@@ -529,6 +545,9 @@ class Wc_Tokens {
 					case 'shipping_country':
 						$value = $order->get_shipping_country();
 						break;
+					case 'shipping_country_name':
+						$value = $this->get_country_name_from_code( $order->get_shipping_country() );
+						break;
 					case 'shipping_address_1':
 						$value = $order->get_shipping_address_1();
 						break;
@@ -540,6 +559,9 @@ class Wc_Tokens {
 						break;
 					case 'shipping_state':
 						$value = $order->get_shipping_state();
+						break;
+					case 'shipping_state_name':
+						$value = $this->get_state_name_from_codes( $order->get_shipping_state(), $order->get_shipping_country() );
 						break;
 					case 'shipping_postcode':
 						$value = $order->get_shipping_postcode();
@@ -651,6 +673,27 @@ class Wc_Tokens {
 						$value = $order->get_checkout_payment_url( true );
 						break;
 
+					case 'stripe_fee':
+						$value = 0;
+						if ( function_exists( 'stripe_wc' ) ) {
+							$value = \WC_Stripe_Utils::display_fee( $order );
+						}
+						if ( ( function_exists( 'woocommerce_gateway_stripe' ) || class_exists( '\WC_Stripe_Helper' ) ) && 0 === $value ) {
+							$value = \WC_Stripe_Helper::get_stripe_fee( $order );
+						}
+
+						break;
+
+					case 'stripe_payout':
+						$value = 0;
+						if ( function_exists( 'stripe_wc' ) ) {
+							$value = \WC_Stripe_Utils::display_net( $order );
+						}
+						if ( class_exists( '\WC_Stripe_Helper' ) && 0 === $value ) {
+							$value = \WC_Stripe_Helper::get_stripe_net( $order );
+						}
+						break;
+
 					case 'shipping_method':
 						$value = $order->get_shipping_method();
 						break;
@@ -718,6 +761,7 @@ class Wc_Tokens {
 				$value = apply_filters( 'automator_woocommerce_token_parser', $value, $token, $token_pieces, $order );
 			}
 		}
+
 		return $value;
 	}
 
@@ -738,6 +782,7 @@ class Wc_Tokens {
 				}
 			}
 		}
+
 		return join( ', ', $product_titles );
 	}
 
@@ -1188,5 +1233,46 @@ class Wc_Tokens {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Helper function to return country name from provided code.
+	 *
+	 * @param string $country_code
+	 *
+	 * @return string $country_name if found, otherwise $country_code
+	 */
+	public function get_country_name_from_code( $country_code ) {
+		$countries = WC()->countries->get_countries();
+		if ( ! empty( $countries ) ) {
+			foreach ( $countries as $country_key => $country_name ) {
+				if ( $country_key === $country_code ) {
+					return $country_name;
+				}
+			}
+		}
+
+		return $country_code;
+	}
+
+	/**
+	 * Helper function to return state name from provided codes.
+	 *
+	 * @param string $state_code
+	 * @param string $country_code
+	 *
+	 * @return string $state_name if found, otherwise $state_code
+	 */
+	public function get_state_name_from_codes( $state_code, $country_code ) {
+		$states = WC()->countries->get_states( $country_code );
+		if ( ! empty( $states ) ) {
+			foreach ( $states as $state_key => $state_name ) {
+				if ( $state_key === $state_code ) {
+					return $state_name;
+				}
+			}
+		}
+
+		return $state_code;
 	}
 }

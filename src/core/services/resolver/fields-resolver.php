@@ -51,6 +51,11 @@ class Fields_Resolver {
 	);
 
 	/**
+	 * Whether to show relevant tokens or not.
+	 */
+	protected $show_relevant_tokens = false;
+
+	/**
 	 * Sets the $object_type property.
 	 *
 	 * @param string $object_type
@@ -119,6 +124,14 @@ class Fields_Resolver {
 	 */
 	public function add_ignored_meta_keys( $meta_key = '' ) {
 		$this->ignored_meta_keys[] = $meta_key;
+	}
+
+	public function get_show_relevant_tokens() {
+		return $this->show_relevant_tokens;
+	}
+
+	public function set_show_relevant_tokens( $bool = false ) {
+		$this->show_relevant_tokens = (bool) $bool;
 	}
 
 	/**
@@ -206,6 +219,13 @@ class Fields_Resolver {
 			),
 		);
 
+		// Show the relevant tokens if object has it configured to true.
+		if ( true === $this->get_show_relevant_tokens() ) {
+			$field['relevant_tokens'] = isset( $args['option_field']['relevant_tokens'] )
+				? $args['option_field']['relevant_tokens'] :
+				null;
+		}
+
 		// Repeater fields handling.
 		if ( 'repeater' === $field['type'] ) {
 
@@ -259,7 +279,8 @@ class Fields_Resolver {
 			foreach ( $repeater_fields as $repeater_field_array_index => $repeater_field ) {
 				foreach ( $repeater_field as $repeater_field_key => $repeater_field_value ) {
 					// Replace the key.
-					$replaced_key                                                                 = strtr( $repeater_field_key, $replace_pairs );
+					$replaced_key = strtr( $repeater_field_key, $replace_pairs );
+					// Add them to repeater field's replace pairs.
 					$repeater_field_replace_pairs[ $repeater_field_array_index ][ $replaced_key ] = $repeater_field_value;
 				}
 			}

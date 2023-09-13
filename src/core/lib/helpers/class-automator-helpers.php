@@ -32,6 +32,16 @@ class Automator_Helpers {
 	public $email;
 
 	/**
+	 * @var \Uncanny_Automator_Pro\Mailerlite_Helpers
+	 */
+	public $mailerlite;
+
+	/**
+	 * @var \Uncanny_Automator_Pro\DateTime_Helpers
+	 */
+	public $datetime;
+
+	/**
 	 * @return Automator_Helpers
 	 */
 	public static function get_instance() {

@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class LD_ENRLCOURSE_A {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -48,20 +50,23 @@ class LD_ENRLCOURSE_A {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
+		// Set Action tokens.
+		$tokens = Automator()->helpers->recipe->learndash->options->get_course_relevant_tokens( 'action', $this->action_meta );
+		$this->set_action_tokens( $tokens, $this->action_code );
+
 		Automator()->register->action( $action );
 	}
 
 	/**
+	 * Load options for this action.
+	 *
 	 * @return array[]
 	 */
 	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					Automator()->helpers->recipe->learndash->options->all_ld_courses( null, 'LDCOURSE', false ),
-				),
-			)
-		);
+
+		$options = Automator()->helpers->recipe->learndash->options->all_ld_courses( null, $this->action_meta, false, true );
+		unset( $options['relevant_tokens'] );
+		return Automator()->utilities->keep_order_of_options( array( 'options' => array( $options ) ) );
 	}
 
 	/**
@@ -82,8 +87,12 @@ class LD_ENRLCOURSE_A {
 
 		$course_id = $action_data['meta'][ $this->action_meta ];
 
-		//Enroll to New Course
+		// Enroll to New Course.
 		ld_update_course_access( $user_id, $course_id );
+
+		// Hydrate Action Tokens.
+		$tokens = Automator()->helpers->recipe->learndash->options->hydrate_ld_course_action_tokens( $course_id, $user_id, $this->action_meta );
+		$this->hydrate_tokens( $tokens );
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}

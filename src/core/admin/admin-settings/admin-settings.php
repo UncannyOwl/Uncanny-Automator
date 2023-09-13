@@ -45,6 +45,7 @@ class Admin_Settings {
 		$this->load_tab( 'general' );
 		$this->load_tab( 'premium-integrations' );
 		$this->load_tab( 'advanced' );
+		$this->load_tab( 'addons' );
 	}
 
 	/**

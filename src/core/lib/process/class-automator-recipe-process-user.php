@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 /**
@@ -167,8 +168,8 @@ class Automator_Recipe_Process_User {
 
 				if ( true === $trigger_steps_completed['result'] ) {
 					/**
-					 * @deprecated  $args['trigger_log_id'] Use $args['trigger_log_id'].
 					 * @version 3.0
+					 * @deprecated  $args['trigger_log_id'] Use $args['trigger_log_id'].
 					 */
 					$args['get_trigger_id'] = $get_trigger_log_id;
 					$args['trigger_log_id'] = $get_trigger_log_id;
@@ -438,7 +439,9 @@ class Automator_Recipe_Process_User {
 			 * @version 2.1.6
 			 * @author  Saad
 			 */
-			if ( ! isset( $trigger['meta'][ $trigger_meta ] ) && ! isset( $trigger['meta'][ $args['code'] ] ) ) {
+			$is_trigger_meta_and_trigger_meta_code_empty = ! isset( $trigger['meta'][ $trigger_meta ] ) && ! isset( $trigger['meta'][ $args['code'] ] );
+
+			if ( $is_trigger_meta_and_trigger_meta_code_empty || $trigger['meta']['code'] !== $args['code'] ) {
 				return array(
 					'result' => false,
 					'error'  => esc_html__( 'Trigger meta not found.', 'uncanny-automator' ),
@@ -447,6 +450,7 @@ class Automator_Recipe_Process_User {
 		}
 
 		return $this->maybe_get_trigger_id( $user_id, $trigger_id, $recipe_id, $recipe_log_id );
+
 	}
 
 	/**
@@ -672,25 +676,40 @@ class Automator_Recipe_Process_User {
 		 *
 		 */
 		$trigger_data = Automator()->get->trigger_sentence( $trigger_id, 'trigger_detail' );
+
 		do_action( 'automator_complete_trigger_detail', $trigger_data, $args );
 
 		$sentence_human_readable = $this->get_trigger_sentence( $trigger_id );
 
 		// Store trigger sentence details for the completion
+		// @Todo: Remove this process if not in used.
 		if ( ! empty( $sentence_human_readable ) ) {
-			$save_meta = array(
+
+			// Inserting `sentence_human_readable` with each run
+			$this->insert_trigger_meta(
+				array(
+					'user_id'        => $user_id,
+					'trigger_id'     => $trigger_id,
+					'trigger_log_id' => $trigger_log_id,
+					'run_number'     => $run_number,
+					'meta_key'       => 'sentence_human_readable',
+					'meta_value'     => $sentence_human_readable,
+				)
+			);
+
+		}
+
+		// Store the trigger object.
+		$this->insert_trigger_meta(
+			array(
 				'user_id'        => $user_id,
 				'trigger_id'     => $trigger_id,
 				'trigger_log_id' => $trigger_log_id,
 				'run_number'     => $run_number,
-				'meta_key'       => 'sentence_human_readable',
-				'meta_value'     => $sentence_human_readable,
-			);
-
-			$this->insert_trigger_meta( $save_meta );
-
-		}
-		/**  */
+				'meta_key'       => 'trigger_object',
+				'meta_value'     => maybe_serialize( $trigger ),
+			)
+		);
 
 		//change completed from -1 to 0
 		$this->maybe_change_recipe_log_to_zero( $recipe_id, $user_id, $recipe_log_id, true );
@@ -966,7 +985,8 @@ class Automator_Recipe_Process_User {
 	/**
 	 * wpdb_get_var
 	 *
-	 * @param  string $query
+	 * @param string $query
+	 *
 	 * @return mixed
 	 */
 	public function wpdb_get_var( $query ) {
@@ -979,7 +999,8 @@ class Automator_Recipe_Process_User {
 	/**
 	 * get_plugin_status
 	 *
-	 * @param  string $integration
+	 * @param string $integration
+	 *
 	 * @return bool
 	 */
 	public function get_plugin_status( $integration ) {
@@ -989,8 +1010,9 @@ class Automator_Recipe_Process_User {
 	/**
 	 * recipe_number_times_completed
 	 *
-	 * @param  mixed $recipe_id
-	 * @param  mixed $results
+	 * @param mixed $recipe_id
+	 * @param mixed $results
+	 *
 	 * @return mixed
 	 */
 	public function recipe_number_times_completed( $recipe_id, $results ) {
@@ -1000,8 +1022,9 @@ class Automator_Recipe_Process_User {
 	/**
 	 * is_recipe_completed
 	 *
-	 * @param  mixed $recipe_id
-	 * @param  mixed $user_id
+	 * @param mixed $recipe_id
+	 * @param mixed $user_id
+	 *
 	 * @return mixed
 	 */
 	public function is_recipe_completed( $recipe_id, $user_id ) {
@@ -1011,8 +1034,9 @@ class Automator_Recipe_Process_User {
 	/**
 	 * recipes_from_trigger_code
 	 *
-	 * @param  mixed $check_trigger_code
-	 * @param  mixed $webhook_recipe
+	 * @param mixed $check_trigger_code
+	 * @param mixed $webhook_recipe
+	 *
 	 * @return mixed
 	 */
 	public function recipes_from_trigger_code( $check_trigger_code, $webhook_recipe = null ) {
@@ -1022,10 +1046,11 @@ class Automator_Recipe_Process_User {
 	/**
 	 * get_trigger_meta
 	 *
-	 * @param  mixed $user_id
-	 * @param  mixed $trigger_id
-	 * @param  mixed $meta_key
-	 * @param  mixed $trigger_log_id
+	 * @param mixed $user_id
+	 * @param mixed $trigger_id
+	 * @param mixed $meta_key
+	 * @param mixed $trigger_log_id
+	 *
 	 * @return mixed
 	 */
 	public function get_trigger_meta( $user_id, $trigger_id, $meta_key, $trigger_log_id ) {
@@ -1035,7 +1060,8 @@ class Automator_Recipe_Process_User {
 	/**
 	 * get_trigger_sentence
 	 *
-	 * @param  mixed $trigger_id
+	 * @param mixed $trigger_id
+	 *
 	 * @return mixed
 	 */
 	public function get_trigger_sentence( $trigger_id ) {
@@ -1045,11 +1071,12 @@ class Automator_Recipe_Process_User {
 	/**
 	 * maybe_get_meta_id_from_trigger_log
 	 *
-	 * @param  mixed $run_number
-	 * @param  mixed $trigger_id
-	 * @param  mixed $trigger_log_id
-	 * @param  mixed $trigger_meta
-	 * @param  mixed $user_id
+	 * @param mixed $run_number
+	 * @param mixed $trigger_id
+	 * @param mixed $trigger_log_id
+	 * @param mixed $trigger_meta
+	 * @param mixed $user_id
+	 *
 	 * @return mixed
 	 */
 	public function maybe_get_meta_id_from_trigger_log( $run_number, $trigger_id, $trigger_log_id, $trigger_meta, $user_id ) {

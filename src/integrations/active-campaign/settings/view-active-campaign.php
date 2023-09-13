@@ -155,10 +155,13 @@
 
 					<uo-alert
 						heading="<?php echo esc_attr( $this->button_labels['default'] ); ?>"
-						type="info"
+						type="default"
+						id="active-campaign-local-sync-alert"
 					>
-						<p class="uap-spacing-bottom uap-spacing-bottom--none">
-							<uo-button id="active-campaign-local-syn-btn" color="secondary">
+						<p id="active-campaign-local-sync-p" class="uap-spacing-bottom uap-spacing-bottom--none">
+							<hr/>
+							<uo-button size="extra-small" id="active-campaign-local-syn-btn" color="secondary">
+								<uo-icon id="sync"></uo-icon>
 								<?php esc_html_e( 'Refresh', 'uncanny-automator' ); ?>
 							</uo-button>
 						</p>

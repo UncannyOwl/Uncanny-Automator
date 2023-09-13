@@ -12,7 +12,12 @@ class Ld_Tokens {
 	/**
 	 *
 	 */
-	public function __construct() {
+	public function __construct( $load_action_hook = true ) {
+
+		if ( ! $load_action_hook ) {
+			return;
+		}
+
 		add_filter(
 			'automator_maybe_trigger_ld_ldquiz_tokens',
 			array(

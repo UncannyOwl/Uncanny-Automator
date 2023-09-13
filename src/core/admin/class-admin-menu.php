@@ -1048,7 +1048,8 @@ class Admin_Menu {
 				'nonce' => \wp_create_nonce( 'uncanny_automator' ),
 			),
 			'rest'        => array(
-				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
+				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ), // Automator URL endpoint
+				'base'  => esc_url_raw( rest_url() ), // Actual URL of the /wp-json/
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			),
 			'i18n'        => array(
@@ -1089,13 +1090,39 @@ class Admin_Menu {
 				'notSaved'        => __( 'Changes you made may not be saved.', 'uncanny-automator' ),
 
 				'utilities'       => array(
-					'confirm' => array(
+					'confirm'      => array(
 						'heading'            => __( 'Are you sure?', 'uncanny-automator' ),
 						// UncannyAutomatorBackend.i18n.utilities.confirm.heading
 						'confirmButtonLabel' => __( 'Confirm', 'uncanny-automator' ),
 						// UncannyAutomatorBackend.i18n.utilities.confirm.confirmButtonLabel
 						'cancelButtonLabel'  => __( 'Cancel', 'uncanny-automator' ),
 						// UncannyAutomatorBackend.i18n.utilities.confirm.cancelButtonLabel
+					),
+					// UncannyAutomatorBackend.i18n.utilities.relativeTime
+					'relativeTime' => array(
+						/* translators: 1. A relative time in the future, like "in 5 seconds" or "in 1 year" */
+						'future' => __( 'in %s', 'uncanny-automator' ),
+						/* translators: 1. A relative time in the past, like "5 seconds ago" or "1 year ago" */
+						'past'   => __( '%s ago', 'uncanny-automator' ),
+						's'      => __( 'a second', 'uncanny-automator' ),
+						/* translators: 1. Number of seconds */
+						'ss'     => __( '%d seconds', 'uncanny-automator' ),
+						'm'      => __( 'a minute', 'uncanny-automator' ),
+						/* translators: 1. Number of minutes */
+						'mm'     => __( '%d minutes', 'uncanny-automator' ),
+						'h'      => __( 'an hour', 'uncanny-automator' ),
+						/* translators: 1. Number of hours */
+						'hh'     => __( '%d hours', 'uncanny-automator' ),
+						'd'      => __( 'a day', 'uncanny-automator' ),
+						/* translators: 1. Number of days */
+						'dd'     => __( '%d days', 'uncanny-automator' ),
+						'M'      => __( 'a month', 'uncanny-automator' ),
+						/* translators: 1. Number of months */
+						'MM'     => __( '%d months', 'uncanny-automator' ),
+						'y'      => __( 'a year', 'uncanny-automator' ),
+						/* translators: 1. Number of years */
+						'yy'     => __( '%d years', 'uncanny-automator' ),
+						'now'    => __( 'now', 'uncanny-automator' ),
 					),
 				),
 
@@ -1159,6 +1186,7 @@ class Admin_Menu {
 					),
 					'logDialogButton'    => array(
 						'i18n' => array(
+							'details'     => __( 'Details', 'uncanny-automator' ),
 							'viewDetails' => __( 'View details', 'uncanny-automator' ),
 						),
 					),
@@ -1183,6 +1211,7 @@ class Admin_Menu {
 								'status'    => __( 'Status', 'uncanny-automator' ),
 								'runs'      => __( 'Runs', 'uncanny-automator' ),
 							),
+							'timesNumber'  => __( '%1$s times', 'uncanny-automator' ),
 							/* translators: 1. Number */
 							'runNumber'    => __( 'Run %1$s', 'uncanny-automator' ),
 							'missingItem'  => __( 'Note: The information about this trigger is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
@@ -1208,6 +1237,20 @@ class Admin_Menu {
 							'unknownError'           => __( 'Unknown error', 'uncanny-automator' ),
 							'cantResendInImportMode' => __( 'Resending is not possible in import mode', 'uncanny-automator' ),
 							'missingItem'            => __( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
+						),
+					),
+					'logItemLoop'        => array(
+						'i18n' => array(
+							'actionInsideTitle' => __( 'Action inside loop', 'uncanny-automator' ),
+							'missingItem'       => __( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
+							'summary'           => array(
+								'status'    => __( 'Status', 'uncanny-automator' ),
+								'date'      => __( 'Date', 'uncanny-automator' ),
+								'startDate' => __( 'Start date', 'uncanny-automator' ),
+								'endDate'   => __( 'End date', 'uncanny-automator' ),
+								'status'    => __( 'Status', 'uncanny-automator' ),
+								'message'   => __( 'Notes', 'uncanny-automator' ),
+							),
 						),
 					),
 					'logItemFilterBlock' => array(
@@ -1243,6 +1286,7 @@ class Admin_Menu {
 							'completedDoNothingStatus'    => __( 'Completed, do nothing', 'uncanny-automator' ),
 							'completedDidNothingStatus'   => __( 'Completed, did nothing', 'uncanny-automator' ),
 							'cancelledStatus'             => __( 'Cancelled', 'uncanny-automator' ),
+							'pausedStatus'                => __( 'Paused', 'uncanny-automator' ),
 							'completedWithNoticeStatus'   => __( 'Completed with notice', 'uncanny-automator' ),
 							'notCompletedStatus'          => __( 'Not completed', 'uncanny-automator' ),
 							'skipped'                     => __( 'Skipped', 'uncanny-automator' ),
@@ -1267,6 +1311,35 @@ class Admin_Menu {
 							/* translators: 1. Number of lines */
 							'expandLines'  => __( 'Expand %1$s lines', 'uncanny-automator' ),
 							'collapse'     => __( 'Collapse', 'uncanny-automator' ),
+						),
+					),
+					// UncannyAutomatorBackend.logs.components.logLoop.i18n
+					'logLoop'            => array(
+						'i18n' => array(
+							/* translators: Noun */
+							'loop'                      => _x( 'Loop', 'Block name, noun', 'uncanny-automator' ),
+							'users'                     => __( 'Users', 'uncanny-automator' ),
+							'posts'                     => __( 'Posts', 'uncanny-automator' ),
+							/* translators: 1. Number of items processed. 2. Total number of items */
+							'progressStatus'            => __( '%1$s/%2$s processed', 'uncanny-automator' ),
+							/* translators: 1. Number of items processed */
+							'progressStatusCompleted'   => __( '%1$s processed', 'uncanny-automator' ),
+							'inProgress'                => __( 'In progress', 'uncanny-automator' ),
+							'matchTheFollowingCriteria' => __( 'that match the following criteria', 'uncanny-automator' ),
+							'timeElapsed'               => __( 'Elapsed:', 'uncanny-automator' ),
+							'nextBatch'                 => __( 'Next batch:', 'uncanny-automator' ),
+							'started'                   => __( 'Started:', 'uncanny-automator' ),
+							/* translators: 1 and 2 are dates */
+							'dateRange'                 => __( '%1$s to %2$s', 'uncanny-automator' ),
+							'openInSidebar'             => __( 'Open in sidebar', 'uncanny-automator' ),
+							'closeSidebar'              => __( 'Close sidebar', 'uncanny-automator' ),
+							'sidebarTitle'              => __( 'Loop filter', 'uncanny-automator' ),
+							'properties'                => __( 'Properties', 'uncanny-automator' ),
+							'cancel'                    => array(
+								'buttonLabel'            => __( 'Cancel', 'uncanny-automator' ),
+								'cancelConfirm'          => __( "You won't be able to resume this loop later.", 'uncanny-automator' ),
+								'cantCancelInImportMode' => __( 'Cancelling a loop is not possible in import mode', 'uncanny-automator' ),
+							),
 						),
 					),
 				),
