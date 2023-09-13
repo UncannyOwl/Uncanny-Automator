@@ -39,21 +39,6 @@ class Formatters_Utils {
 	}
 
 	/**
-	 * Flattens the array from the action log meta.
-	 *
-	 * @param mixed[] $log_meta The 'metas' from the table uap_action_log_meta.
-	 *
-	 * @return array<string>
-	 */
-	public function flatten_action_log_meta( $log_meta = array() ) {
-		$meta_items = array();
-		foreach ( (array) $log_meta as $meta ) {
-			$meta_items[ $meta->meta_key ] = $meta->meta_value;
-		}
-		return $meta_items;
-	}
-
-	/**
 	 * Convert a specific datetime string into its timestamp format, with respect to time zone.
 	 *
 	 * @param  string $date_string
@@ -100,20 +85,6 @@ class Formatters_Utils {
 	}
 
 	/**
-	 * Wrapper function for WordPress' human_time_diff function.
-	 *
-	 * @param string $from - A valid datetime string from which the difference begins.
-	 * @param string $to -  A valid datetime string to end the time difference.
-	 *
-	 * @return string|false - Human time difference. Otherwise, false.
-	 */
-	public static function human_time_diff( $start, $to ) {
-
-		return human_time_diff( strtotime( $start ), strtotime( $to ) );
-
-	}
-
-	/**
 	 * Returns a 'Y-m-d H:i:s' formatted timestamp.
 	 *
 	 * @param $timestamp int The timestamp
@@ -122,12 +93,12 @@ class Formatters_Utils {
 	 */
 	public static function unix_timestamp_to_date( $timestamp ) {
 
-		$datetime_format = 'Y-m-d H:i:s';
+		$datetimeFormat = 'Y-m-d H:i:s';
 
 		$date = new \DateTime( 'now', new \DateTimeZone( Automator()->get_timezone_string() ) );
 		$date->setTimestamp( $timestamp );
 
-		$ds = $date->format( $datetime_format );
+		$ds = $date->format( $datetimeFormat );
 
 		return $ds;
 
@@ -195,26 +166,6 @@ class Formatters_Utils {
 		};
 
 		return false;
-
-	}
-
-	/**
-	 * Calculates the date elapsed.
-	 *
-	 * @param string $start_date
-	 * @param string $end_date
-	 *
-	 * @return mixed[]
-	 */
-	public static function get_date_elapsed( $start_date, $end_date ) {
-
-		$start_date_ts = self::strtotime( $start_date );
-		$end_date_ts   = self::strtotime( $end_date );
-
-		return array(
-			'elapsed_in_seconds' => $end_date_ts - $start_date_ts,
-			'human_time_diff'    => self::human_time_diff( $start_date, $end_date ),
-		);
 
 	}
 

@@ -56,7 +56,7 @@ class TUTORLMS_COURSECOMPLETED {
 			'select_option_name'  => esc_attr__( 'A user completes {{a course}}', 'uncanny-automator' ),
 			'action'              => 'tutor_course_complete_after',
 			'priority'            => 10,
-			'accepted_args'       => 2,
+			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'complete' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options_callback'    => array( $this, 'load_options' ),
@@ -84,32 +84,34 @@ class TUTORLMS_COURSECOMPLETED {
 	 *
 	 * @since 2.4.0
 	 */
-	public function complete( $course_id = 0, $user_id = 0 ) {
-		// Course object
-		$post = null;
-		if ( 0 < $course_id ) {
-			$post = get_post( $course_id );
-		}
+	public function complete() {
 
-		if ( ! is_object( $post ) && isset( $_POST['course_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$course_id = (int) $_POST['course_id']; //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$post      = get_post( $course_id ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		}
-
-		// Is valid post?
-		if ( ! is_object( $post ) || ! $post instanceof \WP_Post ) {
+		// global post object.
+		global $post;
+		if ( ! $post instanceof \WP_Post ) {
 			return;
 		}
 
-		// Is this the registered course post type
+		// Is valid post?
+		if ( ! is_object( $post ) ) {
+			if ( isset( $_POST['course_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$course_id = (int) $_POST['course_id']; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$post      = get_post( $course_id ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			}
+		}
+
+		// Is valid post?
+		if ( ! is_object( $post ) ) {
+			return;
+		}
+
+		// Is this the registered lesson post type
 		if ( tutor()->course_post_type !== $post->post_type ) {
 			return;
 		}
 
 		// current user.
-		if ( ! $user_id ) {
-			$user_id = get_current_user_id();
-		}
+		$user_id = get_current_user_id();
 
 		// trigger entry args.
 		$args = array(

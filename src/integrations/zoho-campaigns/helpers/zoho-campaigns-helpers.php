@@ -31,8 +31,6 @@ class Zoho_Campaigns_Helpers {
 			// The wp_ajax handler to serve the topics.
 			add_action( 'wp_ajax_automator-fetch-topics', array( $this, 'fetch_topics' ), 10 );
 
-			add_action( 'wp_ajax_automator-zoho-campaigns-fetch-fields', array( $this, 'fetch_fields' ), 10 );
-
 		}
 
 	}
@@ -212,39 +210,6 @@ class Zoho_Campaigns_Helpers {
 
 			// Fetch the list.
 			wp_send_json( $actions->wp_ajax_handler_topics_fetch() );
-
-		}
-
-	}
-
-	/**
-	 * Fetches fields from the Zoho Campaigns API.
-	 *
-	 * Sends JSON response back to the client.
-	 *
-	 * @return void
-	 */
-	public function fetch_fields() {
-
-		try {
-
-			// Create a new instance of Zoho_Campaign_Actions. Refresh token is evaluated when the object is created.
-			$actions = new Zoho_Campaigns_Actions( API_Server::get_instance(), new Zoho_Campaigns_Client_Auth() );
-
-		} catch ( \Exception $e ) {
-
-			// Send error the message back to the select field.
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => $e->getMessage(),
-				)
-			);
-
-		} finally {
-
-			// Fetch the list.
-			wp_send_json( $actions->wp_ajax_handler_fields_fetch() );
 
 		}
 

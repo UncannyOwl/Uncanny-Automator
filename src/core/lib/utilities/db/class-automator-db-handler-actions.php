@@ -38,26 +38,23 @@ class Automator_DB_Handler_Actions {
 		$recipe_id     = absint( $args['recipe_id'] );
 		$recipe_log_id = absint( $args['recipe_log_id'] );
 		$completed     = esc_attr( $args['completed'] );
-		$error_message = isset( $args['error_message'] ) ? $args['error_message'] : '';
-		if ( ! empty( $error_message ) ) {
-			$error_message = wp_kses(
-				$error_message,
+		$error_message = wp_kses(
+			$args['error_message'],
+			array(
+				'a' => array(
+					'href'   => array(),
+					'title'  => array(),
+					'target' => array(),
+				),
+				'br',
 				array(
-					'a' => array(
-						'href'   => array(),
-						'title'  => array(),
-						'target' => array(),
-					),
-					'br',
-					array(
-						'data'  => array(),
-						'http'  => array(),
-						'https' => array(),
-					),
-				)
-			);
-		}
-		$date_time = $args['date_time'];
+					'data'  => array(),
+					'http'  => array(),
+					'https' => array(),
+				),
+			)
+		);
+		$date_time     = $args['date_time'];
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->action;
@@ -73,7 +70,7 @@ class Automator_DB_Handler_Actions {
 				'automator_recipe_id'     => $recipe_id,
 				'automator_recipe_log_id' => $recipe_log_id,
 				'completed'               => $completed,
-				'error_message'           => $error_message,
+				'error_message'           => ! empty( $error_message ) ? $error_message : '',
 			),
 			array(
 				'%s',
@@ -296,46 +293,6 @@ class Automator_DB_Handler_Actions {
 				'automator_recipe_id' => $recipe_id,
 			)
 		);
-	}
-
-	/**
-	 * Get specific action log entry from uap_action_log table.
-	 *
-	 * @param int $recipe_id
-	 * @param int $recipe_log_id
-	 * @param int $action_id
-	 * @param int $user_id
-	 *
-	 * @return mixed[]
-	 */
-	public function get_log( $recipe_id, $recipe_log_id, $action_id, $user_id ) {
-
-		global $wpdb;
-
-		$action_log_result = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT *
-					FROM
-					{$wpdb->prefix}uap_action_log
-					WHERE automator_recipe_id = %d
-					AND automator_recipe_log_id = %d
-					AND automator_action_id = %d
-					AND user_id = %d
-				",
-				$recipe_id,
-				$recipe_log_id,
-				$action_id,
-				$user_id
-			),
-			ARRAY_A
-		);
-
-		if ( empty( $action_log_result ) ) {
-			return array();
-		}
-
-		return $action_log_result;
-
 	}
 
 }

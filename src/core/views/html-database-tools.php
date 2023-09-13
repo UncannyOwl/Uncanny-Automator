@@ -48,14 +48,7 @@ $missing_tables = Automator_DB::verify_base_tables();
 			</uo-alert>
 
 		<?php } ?>
-		<?php
 
-		$missing_views = Automator_DB::verify_base_views();
-
-		if ( 0 === count( $missing_tables ) && 0 === count( $missing_views ) ) {
-			echo sprintf( '<uo-alert type="success" style="margin-bottom:5px;">%s</uo-alert>', esc_html__( 'No issues found with Automator DB.', 'uncanny-automator' ) );
-		}
-		?>
 		<table id="status-database" class="automator_status_table widefat" cellspacing="0">
 
 			<thead>
@@ -156,6 +149,15 @@ $missing_tables = Automator_DB::verify_base_tables();
 
 			</tbody>
 		</table>
+
+		<?php
+
+		$missing_views = Automator_DB::verify_base_views();
+
+		if ( 0 === count( $missing_tables ) && 0 === count( $missing_views ) ) {
+			echo sprintf( '<uo-alert type="success">%s</uo-alert>', esc_html__( 'No issues found with Automator DB.', 'uncanny-automator' ) );
+		}
+		?>
 	</div>
 
 	<div class="uap-settings-panel-bottom">

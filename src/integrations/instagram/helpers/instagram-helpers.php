@@ -41,16 +41,11 @@ class Instagram_Helpers {
 
 	const OPTION_KEY = '_uncannyowl_instagram_settings';
 
-	/**
-	 * The wp_ajax callback method.
-	 *
-	 * @var string $wp_ajax_action
-	 */
-	public $wp_ajax_action = 'automator_integration_instagram_capture_token';
-
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
+
+		$this->wp_ajax_action = 'automator_integration_instagram_capture_token';
 
 		// Add a fetch user pages action.
 		add_action(

@@ -80,13 +80,11 @@ $setup_wizard_link = add_query_arg(
 
 						</a>
 						<?php if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) { ?>
-							<a class="uap-dropdown-item"
-							   href="<?php echo esc_url( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ) ); ?>">
+							<a class="uap-dropdown-item" href="<?php echo esc_url( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ) ); ?>">
 								<?php esc_html_e( 'Manage license', 'uncanny-automator' ); ?>
 							</a>
 						<?php } else { ?>
-							<a class="uap-dropdown-item"
-							   href="<?php echo esc_url_raw( $dashboard->connected_user->url->disconnect_account ); ?>">
+							<a class="uap-dropdown-item" href="<?php echo esc_url_raw( $dashboard->connected_user->url->disconnect_account ); ?>">
 								<?php esc_html_e( 'Disconnect account', 'uncanny-automator' ); ?>
 							</a>
 						<?php } ?>
@@ -136,7 +134,7 @@ $setup_wizard_link = add_query_arg(
 					if ( $dashboard->is_pro_installed && ! $dashboard->is_pro ) {
 						esc_attr_e( 'Activate your license to get the most out of Uncanny Automator Pro!', 'uncanny-automator' );
 					} else {
-						esc_attr_e( 'Connect your site and start using app integrations!', 'uncanny-automator' );
+						esc_attr_e( 'Connect your site and start using 3rd-party integrations!', 'uncanny-automator' );
 					}
 					?>
 				</div>
@@ -148,7 +146,7 @@ $setup_wizard_link = add_query_arg(
 							esc_attr__( 'The free version of Uncanny Automator includes %1$s to use with our %2$s like %3$s, and more. See the list of %4$s.', 'uncanny-automator' ),
 							array(
 								/* translators: 1. Number of credits */
-								'<mark>' . sprintf( esc_attr__( '%1$s free app credits', 'uncanny-automator' ), number_format( $dashboard->miscellaneous->free_credits ) ) . '</mark>',
+								'<mark>' . sprintf( esc_attr__( '%1$s free credits', 'uncanny-automator' ), number_format( $dashboard->miscellaneous->free_credits ) ) . '</mark>',
 								'<strong>' . esc_attr__( 'app integrations', 'uncanny-automator' ) . '</strong>',
 								implode(
 									', ',
@@ -226,7 +224,7 @@ $setup_wizard_link = add_query_arg(
 		</div>
 		<div class="uap-dashboard-section__content">
 			<div id="uap-dashboard-learn-featured-integrations"
-				 class="uap-dashboard-box uap-dashboard-learn-featured-integrations">
+				class="uap-dashboard-box uap-dashboard-learn-featured-integrations">
 				<div class="uap-dashboard-box-header">
 					<div class="uap-dashboard-box-header__title">
 						<?php esc_attr_e( 'Start here', 'uncanny-automator' ); ?>
@@ -263,56 +261,56 @@ $setup_wizard_link = add_query_arg(
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/what-is-uncanny-automator/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'What is Uncanny Automator?', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'What is Uncanny Automator?', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Creating a Recipe', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Creating a Recipe', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Recipes for Everyone', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Recipes for Everyone', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/managing-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Managing Triggers', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Managing Triggers', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/managing-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Managing Actions', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Managing Actions', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Scheduled Actions', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Scheduled Actions', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'What are app credits?', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'What are app credits?', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-redirects/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Working with Redirects', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Working with Redirects', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started"
-											   target="_blank"><?php esc_attr_e( 'Where can I find my license key?', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Where can I find my license key?', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 									</ul>
 
@@ -330,33 +328,33 @@ $setup_wizard_link = add_query_arg(
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Uncanny Automator Changelog', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Uncanny Automator Changelog', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/uncanny-automator-pro-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Uncanny Automator Pro Changelog', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Uncanny Automator Pro Changelog', 'uncanny-automator' ); ?>
+												   </a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/important-notes-troubleshooting/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Having trouble? Read this', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Having trouble? Read this', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/using-automator-logs/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Using Automator Logs', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Using Automator Logs', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/developer-resources/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Developer Resources', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Developer Resources', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/upgrading-to-uncanny-automator-3-0/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources"
-											   target="_blank"><?php esc_attr_e( 'Upgrading to Uncanny Automator 3.0+', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Upgrading to Uncanny Automator 3.0+', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 									</ul>
 
@@ -374,18 +372,18 @@ $setup_wizard_link = add_query_arg(
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/contact-form-7/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq"
-											   target="_blank"><?php esc_attr_e( 'Contact Form 7', 'uncanny-automator' ); ?>
-											</a>
+												target="_blank"><?php esc_attr_e( 'Contact Form 7', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gravity-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq"
-											   target="_blank"><?php esc_attr_e( 'Gravity Forms', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Gravity Forms', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/woocommerce/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq"
-											   target="_blank"><?php esc_attr_e( 'WooCommerce', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'WooCommerce', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 									</ul>
 
@@ -403,13 +401,13 @@ $setup_wizard_link = add_query_arg(
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers"
-											   target="_blank"><?php esc_attr_e( 'Webhook Triggers', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Webhook Triggers', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/magic-button/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers"
-											   target="_blank"><?php esc_attr_e( 'Magic Button', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Magic Button', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 									</ul>
 
@@ -427,82 +425,82 @@ $setup_wizard_link = add_query_arg(
 									<ul class="uap-dashboard-box-list">
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/google-sheets/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Google Sheets', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Google Sheets', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/mailchimp/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Mailchimp', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Mailchimp', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-zapier-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Zapier Actions', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Zapier Actions', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/zoom/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Zoom', 'uncanny-automator' ); ?> </a>
+												   target="_blank"><?php esc_attr_e( 'Zoom', 'uncanny-automator' ); ?> </a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Webhook Actions', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Webhook Actions', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/twilio/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Twilio', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Twilio', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/slack/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Slack', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Slack', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/facebook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
 											   target="_blank"><?php esc_attr_e( 'Facebook', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/instagram/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Instagram', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Instagram', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gototraining/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'GoTo Training', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'GoTo Training', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/gotowebinar/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'GoTo Webinar', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'GoTo Webinar', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-popup-maker-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Popup Maker', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Popup Maker', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/working-with-integromat-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Integromat', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Integromat', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/generate-an-email-a-certificate-to-the-user/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Send a certificate', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Send a certificate', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/uncanny-continuing-education-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Uncanny Continuing Education Credits', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Uncanny Continuing Education Credits', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions"
-											   target="_blank"><?php esc_attr_e( 'Run a WordPress hook', 'uncanny-automator' ); ?>
-											</a>
+												   target="_blank"><?php esc_attr_e( 'Run a WordPress hook', 'uncanny-automator' ); ?>
+												</a>
 										</li>
 									</ul>
 
@@ -521,7 +519,7 @@ $setup_wizard_link = add_query_arg(
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/user-meta-tokens/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_tokens"
 											   target="_blank"><?php esc_attr_e( 'User meta tokens', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 									</ul>
 
@@ -540,32 +538,32 @@ $setup_wizard_link = add_query_arg(
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/create-a-registration-form-with-contact-form-7/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users"
 											   target="_blank"><?php esc_attr_e( 'Create a registration form with Contact Form 7', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/create-a-registration-form-with-caldera-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users"
 											   target="_blank"><?php esc_attr_e( 'Create a registration form with Caldera Forms', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/create-a-registration-form-with-ninja-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users"
 											   target="_blank"><?php esc_attr_e( 'Create a registration form with Ninja Forms', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/create-a-registration-form-with-gravity-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users"
 											   target="_blank"><?php esc_attr_e( 'Create a registration form with Gravity Forms', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/create-a-registration-form-with-formidable-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users"
 											   target="_blank"><?php esc_attr_e( 'Create a registration form with Formidable Forms', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 										<li>
 											<a href="https://automatorplugin.com/knowledge-base/create-a-registration-form-with-wpforms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users"
 											   target="_blank"><?php esc_attr_e( 'Create a registration form with WPForms', 'uncanny-automator' ); ?>
-											</a>
+												</a>
 										</li>
 									</ul>
 
@@ -644,8 +642,7 @@ $setup_wizard_link = add_query_arg(
 
 				</div>
 				<div class="uap-dashboard-box-footer">
-					<a href="https://www.youtube.com/watch?v=LMR5YIPu2Kk&list=PL1RknUTvSLClS5ggNPBZXK461vx6kNdTt"
-					   target="_blank">
+					<a href="https://www.youtube.com/watch?v=LMR5YIPu2Kk&list=PL1RknUTvSLClS5ggNPBZXK461vx6kNdTt" target="_blank">
 						<?php esc_attr_e( 'View all videos', 'uncanny-automator' ); ?>
 
 					</a>

@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Recipe;
 
 /**
@@ -32,20 +33,6 @@ trait Action_Tokens {
 	 * @var string The meta_key value used in `uap_action_log_meta` table.
 	 */
 	private $meta_key = 'action_tokens';
-
-	protected $hydrated_tokens_replace_pairs = '';
-
-	public function clear_hydrated_tokens_replace_pairs() {
-
-		$this->hydrated_tokens_replace_pairs = '';
-
-	}
-
-	public function get_hydrated_tokens_replace_pairs() {
-
-		return $this->hydrated_tokens_replace_pairs;
-
-	}
 
 	/**
 	 * Use this method to set tokens per action.
@@ -124,11 +111,11 @@ trait Action_Tokens {
 	 */
 	public function hydrate_tokens( $args = array() ) {
 
-		// Have a reference to the actual value.
-		$this->hydrated_tokens_replace_pairs = wp_json_encode( $args );
+		$closure = function () use ( $args ) {
+			return wp_json_encode( $args );
+		};
 
-		// Persists the token value by registering a hook to automator_action_created.
-		add_action( 'automator_action_created', array( $this, 'persist_token_value' ), 10, 1 );
+		add_filter( 'automator_action_tokens_hydrate_tokens', $closure, 10, 1 );
 
 		return $this;
 
@@ -145,6 +132,9 @@ trait Action_Tokens {
 		if ( did_action( 'automator_action_tokens_parser_loaded' ) ) {
 			return false;
 		}
+
+		// Persists the token value to action meta table `{prefix}uap_action_log_meta`.
+		add_action( 'automator_action_created', array( $this, 'persist_token_value' ), 10, 1 );
 
 		// Manually parse the action tokens.
 		add_filter(
@@ -184,35 +174,15 @@ trait Action_Tokens {
 
 		}
 
-		$action_token = array(
-			'should_skip_add_meta' => false,
-			'value'                => $this->get_hydrated_tokens_replace_pairs(),
-		);
+		$token_value = apply_filters( 'automator_action_tokens_hydrate_tokens', '', $this );
 
-		$action_token = apply_filters( 'automator_action_tokens_hydrated_tokens', $action_token, $args, $this );
-
-		// Clear the tokens so actions that inherits the Traits properties dont get this value.
-		$this->clear_hydrated_tokens_replace_pairs();
-
-		// Allows custom flows to skip adding entry to action meta.
-		if ( true === $action_token['should_skip_add_meta'] ) {
-			return false;
-		}
-
-		// Dont allow empty string values.
-		if ( '' === $action_token['value'] ) {
-			return false;
-		}
-
-		$meta_added = Automator()->db->action->add_meta(
+		return Automator()->db->action->add_meta(
 			$args['user_id'],
 			$args['action_log_id'],
 			$args['action_id'],
 			$this->meta_key,
-			$action_token['value']
+			$token_value
 		);
-
-		return $meta_added;
 
 	}
 
@@ -243,7 +213,7 @@ trait Action_Tokens {
 
 		if ( ! empty( $replaceables ) ) {
 
-			// The strtr array format is '[ {{{ACTION_FIELD: % d: % s}}} ] => $actual_value'.
+			// The strtr array format is '{{{{ACTION_FIELD:%d:%s}}}} => $actual_value'.
 			$field_text = strtr( $args['field_text'], $replaceables );
 
 			// Do recursive magic ➰ for either of these action tokens.
@@ -271,16 +241,16 @@ trait Action_Tokens {
 	 * Iterate through string the match the action tokens and return the replace vars list.
 	 *
 	 * @param string $field_text The haystack.
-	 * @param array $process_args The process args.
+	 * @param array $trigger_args The replace pairs.
 	 *
 	 * @return array The collection of replace vars.
 	 */
-	private function get_replace_pairs( $field_text, $process_args, $args ) {
+	private function get_replace_pairs( $field_text, $trigger_args, $args ) {
 
 		$replaceables = array();
 
 		// Only process tokens that have `ACTION` as prefix. It could either be 'FIELD' or 'META'.
-		// Ensures it doesn't conflict with existing tokens .
+		// Ensures it doesn't conflict with existing tokens.
 		preg_match_all( '/{{ACTION_*\s*(.*?)\s*}}/', $field_text, $matches );
 
 		if ( empty( $matches[1] ) ) {
@@ -300,14 +270,18 @@ trait Action_Tokens {
 
 			list ( $type, $action_id, $parent, $meta_key ) = $token_pieces;
 
-			$action_log_id = $this->get_action_log_id( $action_id, $process_args['recipe_log_id'] );
+			$action_log_id = $this->get_action_log_id( $action_id, $trigger_args['recipe_log_id'] );
 
 			// Action meta type.
 			if ( 'META' === $type ) {
 
 				$raw = sprintf( '{{ACTION_META:%d:%s:%s}}', $action_id, $parent, $meta_key );
 
-				$replaceables[ $raw ] = $this->get_meta_value( $action_log_id, $meta_key, $args, $process_args, $action_id );
+				$replaceables[ $raw ] = $this->get_meta_value(
+					$action_log_id,
+					$meta_key,
+					$args
+				);
 
 			}
 
@@ -316,12 +290,11 @@ trait Action_Tokens {
 
 				$raw = sprintf( '{{ACTION_FIELD:%d:%s:%s}}', $action_id, $parent, $meta_key );
 
-				$replaceables[ $raw ] = $this->get_field_value( $action_log_id, $meta_key, $args, $process_args, $action_id );
+				$replaceables[ $raw ] = $this->get_field_value( $action_log_id, $meta_key );
 
 			}
 
 			$parsed_tokens_record = Automator()->parsed_token_records();
-
 			$parsed_tokens_record->record_token( $raw, $replaceables[ $raw ], $args );
 
 		}
@@ -338,13 +311,13 @@ trait Action_Tokens {
 	 *
 	 * @return string The field value, if available. Otherwise, empty string.
 	 */
-	private function get_field_value( $action_log_id = 0, $action_meta_key = '', $args = array(), $process_args = array(), $action_id = null ) {
+	private function get_field_value( $action_log_id = 0, $action_meta_key = '' ) {
 
 		$value = '';
 
 		$db_action_meta = Automator()->db->action->get_meta( $action_log_id, 'metas' );
 
-		$action_meta = apply_filters( 'automator_action_tokens_field_token_value', (array) maybe_unserialize( $db_action_meta ), $action_id, $process_args );
+		$action_meta = (array) maybe_unserialize( $db_action_meta );
 
 		// Decide whether to split the meta key with parts or go with meta key. Supports repeater field.
 		$is_4th_part_correctly_separated = $this->is_correctly_separated( explode( '|', $action_meta_key ) );
@@ -369,7 +342,7 @@ trait Action_Tokens {
 		// If its a repeater field and the value is JSON, get the requested field code from index.
 		$meta_value = isset( $value->meta_value ) ? $value->meta_value : null;
 
-		$repeater_fields = is_string( $meta_value ) ? json_decode( $meta_value, true ) : $meta_value;
+		$repeater_fields = json_decode( $meta_value, true );
 
 		if ( $is_4th_part_correctly_separated && ! empty( $repeater_fields ) ) {
 
@@ -432,25 +405,17 @@ trait Action_Tokens {
 	 *
 	 * @param int $action_log_id The action log ID.
 	 * @param string $action_meta_key The meta key.
-	 * @param mixed[] $process_args The process args.
-	 * @param int $action_id The reference action ID. Not the action ID that consumes the token.
 	 *
 	 * @return string The meta value, if available. Otherwise, empty string.
 	 */
-	private function get_meta_value( $action_log_id = 0, $action_meta_key = '', $args = array(), $process_args = array(), $action_id = null ) {
+	private function get_meta_value( $action_log_id = 0, $action_meta_key = '', $args = array() ) {
 
-		$action_meta_token = Automator()->db->action->get_meta( $action_log_id, $this->meta_key );
-
-		$action_meta_token = apply_filters( 'automator_action_tokens_meta_token_value', $action_meta_token, $action_id, $process_args );
-
-		$tokens = (array) json_decode( $action_meta_token, true );
+		$tokens = json_decode( Automator()->db->action->get_meta( $action_log_id, $this->meta_key ), true );
 
 		$token_value = isset( $tokens[ $action_meta_key ] ) ? $tokens[ $action_meta_key ] : '';
-
 		if ( ! empty( $args ) && isset( $args['action_data']['should_apply_extra_formatting'] ) ) {
 
 			if ( true === $args['action_data']['should_apply_extra_formatting'] ) {
-
 				// Standardize newline characters to "\n".
 				$token_value = str_replace( array( "\r\n", "\r" ), "\n", $token_value );
 
@@ -462,7 +427,6 @@ trait Action_Tokens {
 
 				// Only apply automatic formatting on the value if it's a paragraph.
 				if ( count( $paragraphs ) > 1 ) {
-
 					$token_value = apply_filters(
 						'automator_action_tokens_apply_auto_formatting',
 						wpautop( $token_value ),
@@ -472,7 +436,6 @@ trait Action_Tokens {
 						$args,
 						$this
 					);
-
 				}
 			}
 		}
@@ -559,4 +522,5 @@ trait Action_Tokens {
 		return true;
 
 	}
+
 }

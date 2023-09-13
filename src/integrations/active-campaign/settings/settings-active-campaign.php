@@ -24,33 +24,6 @@ class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 	protected $disconnect_url;
 	protected $button_labels;
 
-	/**
-	 *
-	 * @var string $kb_link
-	 */
-	public $kb_link = '';
-
-	/**
-	 * The webhook URL.
-	 *
-	 * @var string $webhook_url
-	 */
-	public $webhook_url = '';
-
-	/**
-	 * The regenerate key url.
-	 *
-	 * @var string $regenerate_key_url
-	 */
-	public $regenerate_key_url = '';
-
-	/**
-	 * The regenerate alert.
-	 *
-	 * @var string $regenerate_alert
-	 */
-	public $regenerate_alert = '';
-
 	public function set_properties() {
 
 		$this->set_id( 'active-campaign' );

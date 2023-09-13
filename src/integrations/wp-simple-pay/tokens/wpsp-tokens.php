@@ -134,10 +134,6 @@ class Wpsp_Tokens {
 					$input_id = $field['id'];
 					$token_id = "simpay-form-$form_id-field-$input_id";
 
-					if ( isset( $field['metadata'] ) && ! empty( $field['metadata'] ) ) {
-						$token_id = $field['metadata'];
-					}
-
 					$existing_tokens = array_column( $tokens, 'tokenId' );
 					if ( ! in_array( $token_id, $existing_tokens, true ) ) {
 						$fields[] = array(

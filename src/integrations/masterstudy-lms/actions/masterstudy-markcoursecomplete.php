@@ -34,6 +34,16 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 */
 	public function define_action() {
 
+		$args = array(
+			'post_type'      => 'stm-courses',
+			'posts_per_page' => 999,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+		);
+
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false );
+
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/masterstudy-lms/' ),
@@ -56,17 +66,6 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 * @return array[]
 	 */
 	public function load_options() {
-
-		$args = array(
-			'post_type'      => 'stm-courses',
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
-		);
-
-		$options = Automator()->helpers->recipe->options->wp_query( $args, false );
-
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(

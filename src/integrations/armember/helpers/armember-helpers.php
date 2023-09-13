@@ -10,22 +10,9 @@ namespace Uncanny_Automator;
 class Armember_Helpers {
 
 	/**
-	 * @var \ARM_subscription_plans|\ARM_subscription_plans_Lite|string
-	 */
-	private $armember_subscription_class = '';
-
-	/**
 	 * helpers __construct
 	 */
 	public function __construct() {
-		// If LITE version is active
-		if ( defined( 'MEMBERSHIPLITE_DIR_NAME' ) && ! defined( 'MEMBERSHIP_DIR_NAME' ) ) {
-			$this->armember_subscription_class = new \ARM_subscription_plans_Lite();
-		}
-		// If Pro version is active
-		if ( defined( 'MEMBERSHIP_DIR_NAME' ) ) {
-			$this->armember_subscription_class = new \ARM_subscription_plans();
-		}
 	}
 
 	/**
@@ -47,7 +34,7 @@ class Armember_Helpers {
 		);
 		$args     = wp_parse_args( $args, $defaults );
 
-		$armember_plans = $this->armember_subscription_class;
+		$armember_plans = new \ARM_subscription_plans_Lite();
 		$plans          = $armember_plans->arm_get_all_subscription_plans( 'arm_subscription_plan_id,arm_subscription_plan_name' );
 		$options        = array();
 

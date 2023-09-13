@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator\Resolver;
 
+use Uncanny_Automator\Logger\Recipe_Objects_Logger;
+
 class Fields_Conditions_Resolver {
 
 	/**

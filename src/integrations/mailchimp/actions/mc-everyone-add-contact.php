@@ -196,9 +196,9 @@ class MC_EVERYONE_ADD_CONTACT {
 				// Create array with the data we're going to send
 				let dataToBeSent = {
 					action: 'get_mailchimp_audience_fields',
-					nonce: UncannyAutomator._site.rest.nonce,
+					nonce: UncannyAutomator.nonce,
 
-					recipe_id: UncannyAutomator._recipe.recipe_id,
+					recipe_id: UncannyAutomator.recipe.id,
 					item_id: data.item.id,
 					audience: data.values.MCLIST
 				}

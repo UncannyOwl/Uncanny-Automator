@@ -114,12 +114,6 @@ trait Action_Parser {
 	 * @return mixed
 	 */
 	public function maybe_parse_tokens( $user_id, $action_data, $recipe_id, $args ) {
-
-		// Allows the parser to know that this action is under a loop.
-		if ( isset( $action_data['loop'] ) ) {
-			$args['loop'] = $action_data['loop'];
-		}
-
 		if ( ! array_key_exists( 'meta', $action_data ) ) {
 			return $this->get_parsed();
 		}

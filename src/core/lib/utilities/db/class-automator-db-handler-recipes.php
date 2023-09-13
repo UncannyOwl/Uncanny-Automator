@@ -239,8 +239,8 @@ class Automator_DB_Handler_Recipes {
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->recipe_meta,
 			array(
-				'recipe_id'     => $recipe_id,
-				'recipe_log_id' => $automator_recipe_log_id,
+				'recipe_id' => $recipe_id,
+				'recipe_log_id' => $automator_recipe_log_id
 			)
 		);
 
@@ -248,8 +248,8 @@ class Automator_DB_Handler_Recipes {
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->tokens_logs,
 			array(
-				'recipe_id'     => $recipe_id,
-				'recipe_log_id' => $automator_recipe_log_id,
+				'recipe_id' => $recipe_id,
+				'recipe_log_id' => $automator_recipe_log_id
 			)
 		);
 

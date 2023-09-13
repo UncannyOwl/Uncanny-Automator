@@ -55,34 +55,26 @@ class Activity_Log {
 	 * @return void
 	 */
 	public function remove_specific_run() {
-
 		if ( ! automator_filter_has_var( 'delete_specific_activity' ) ) {
 			return;
 		}
-
 		if ( ! automator_filter_has_var( 'wpnonce' ) ) {
 			return;
 		}
-
 		if ( ! automator_filter_has_var( 'recipe_id' ) ) {
 			return;
 		}
-
 		if ( ! automator_filter_has_var( 'run_number' ) ) {
 			return;
 		}
-
 		if ( ! automator_filter_has_var( 'recipe_log_id' ) ) {
 			return;
 		}
-
 		if ( ! wp_verify_nonce( automator_filter_input( 'wpnonce' ), AUTOMATOR_FREE_ITEM_NAME ) ) {
 			return;
 		}
-
 		$recipe_id     = (int) automator_filter_input( 'recipe_id' );
 		$recipe_log_id = (int) automator_filter_input( 'recipe_log_id' );
-		$run_number    = (int) automator_filter_input( 'run_number' );
 		$page          = (string) automator_filter_input( 'page' );
 
 		// Delete api logs
@@ -99,18 +91,12 @@ class Activity_Log {
 
 		// Delete recipe logs
 		automator_purge_recipe_logs( $recipe_id, $recipe_log_id );
-
-		do_action( 'automator_recipe_log_deleted', $recipe_id, $recipe_log_id, $run_number );
-
 		$get_referer = wp_get_referer();
-
 		if ( preg_match( "/$page/", $get_referer ) ) {
 			wp_safe_redirect( sprintf( '%s&recipe_activity_run_success=1', $get_referer ) );
 			exit;
 		}
-
 		wp_safe_redirect( sprintf( '%s?post_type=%s&page=%s&recipe_activity_run_success=1', admin_url( 'edit.php' ), 'uo-recipe', $page ) );
-
 		exit;
 	}
 

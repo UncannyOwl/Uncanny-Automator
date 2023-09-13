@@ -63,31 +63,31 @@ class Action_Logs_Queries {
 	 */
 	public function action_runs_query( $params ) {
 
-		$args = wp_parse_args(
-			$params,
-			array(
-				'recipe_id'     => 0,
-				'run_number'    => 0,
-				'recipe_log_id' => 0,
-				'action_id'     => 0,
-			)
-		);
+		if ( automator_db_view_exists( 'action' ) ) {
 
-		$results = $this->db->get_results(
-			$this->db->prepare(
-				"SELECT * FROM {$this->db->prefix}uap_action_log 
-					WHERE automator_action_id = %d 
-						AND automator_recipe_id = %d 
-						AND automator_recipe_log_id = %d
-					",
-				$args['action_id'],
-				$args['recipe_id'],
-				$args['recipe_log_id']
-			),
-			ARRAY_A
-		);
+			$results = $this->db->get_results(
+				$this->db->prepare(
+					"SELECT * FROM {$this->db->prefix}uap_action_logs_view 
+						WHERE automator_recipe_id = %d 
+						AND recipe_run_number = %d
+						AND recipe_log_id = %d
+						AND automator_action_id = %d
+						ORDER BY action_date DESC LIMIT 0,100",
+					$params['recipe_id'],
+					$params['run_number'],
+					$params['recipe_log_id'],
+					$params['action_id']
+				),
+				self::QUERY_RESULTS_FORMAT
+			);
 
-		return $this->to_array( $results );
+			return $this->to_array( $results );
+
+		}
+
+		$logs_runs = (array) require __DIR__ . '/view-queries/action-runs.php';
+
+		return $this->to_array( $logs_runs );
 
 	}
 
@@ -100,29 +100,31 @@ class Action_Logs_Queries {
 	 */
 	public function get_recipe_actions_logs_raw( $params ) {
 
-		$args = wp_parse_args(
-			$params,
-			array(
-				'recipe_id'     => 0,
-				'run_number'    => 0,
-				'recipe_log_id' => 0,
-			)
-		);
+		if ( automator_db_view_exists( 'action' ) ) {
 
-		$results = $this->db->get_results(
-			$this->db->prepare(
-				"SELECT * 
-					FROM {$this->db->prefix}uap_action_log
-					WHERE automator_recipe_id = %d
-						AND automator_recipe_log_id = %d
-				",
-				$args['recipe_id'],
-				$args['recipe_log_id']
-			),
-			ARRAY_A
-		);
+			$results = $this->db->get_results(
+				$this->db->prepare(
+					"SELECT * 
+						FROM {$this->db->prefix}uap_action_logs_view 
+						WHERE automator_recipe_id = %d 
+						AND recipe_run_number = %d
+						AND recipe_log_id = %d
+						ORDER BY action_date, action_log_id 
+						DESC LIMIT 0,100",
+					$params['recipe_id'],
+					$params['run_number'],
+					$params['recipe_log_id']
+				),
+				self::QUERY_RESULTS_FORMAT
+			);
 
-		return $this->to_array( $results );
+			return $this->to_array( $results );
+
+		}
+
+		$logs_raw = (array) require __DIR__ . '/view-queries/action-raw.php';
+
+		return $this->to_array( $logs_raw );
 
 	}
 
@@ -240,28 +242,11 @@ class Action_Logs_Queries {
 	 * @return mixed[]
 	 */
 	public function tokens_log_queries( $params ) {
-		return $this->to_array( self::find_replace_pairs( $params ) );
-	}
 
-	/**
-	 * We need to define static method here since the token record
-	 * really belongs to the action. However, there are cases where it needs
-	 * to be re-used without instantiating the class.
-	 *
-	 * @todo Create a separate class for tokens record and have the Actions, and Loop Actions consume it.
-	 *
-	 * @param int[] $params
-	 *
-	 * @return mixed[]
-	 */
-	public static function find_replace_pairs( $params ) {
-
-		global $wpdb; // We're using $wpdb here since static methods dont contain the reference to the current instance of the class.
-
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
+		$results = $this->db->get_results(
+			$this->db->prepare(
 				"SELECT tokens_record 
-					FROM {$wpdb->prefix}uap_tokens_log 
+					FROM {$this->db->prefix}uap_tokens_log 
 					WHERE recipe_id=%d 
 					AND recipe_log_id=%d 
 					AND run_number=%d",
@@ -272,7 +257,7 @@ class Action_Logs_Queries {
 			self::QUERY_RESULTS_FORMAT
 		);
 
-		return (array) $results;
+		return $this->to_array( $results );
 
 	}
 

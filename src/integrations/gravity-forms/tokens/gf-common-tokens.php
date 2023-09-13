@@ -1,5 +1,4 @@
 <?php
-
 namespace Uncanny_Automator;
 
 /**
@@ -9,14 +8,6 @@ namespace Uncanny_Automator;
  */
 class GF_COMMON_TOKENS {
 
-	/**
-	 * @var array|mixed|null
-	 */
-	public $triggers = array();
-
-	/**
-	 *
-	 */
 	public function __construct() {
 
 		// Applying some filter so PRO can extend it.
@@ -30,15 +21,7 @@ class GF_COMMON_TOKENS {
 
 		foreach ( $this->triggers as $trigger ) {
 
-			add_filter(
-				'automator_token_renderable_before_set_' . strtolower( $trigger ),
-				array(
-					$this,
-					'modify_common_tokens',
-				),
-				10,
-				4
-			);
+			add_filter( 'automator_token_renderable_before_set_' . strtolower( $trigger ), array( $this, 'modify_common_tokens' ), 10, 4 );
 
 		}
 
@@ -53,7 +36,7 @@ class GF_COMMON_TOKENS {
 
 		$form_id = ! empty( $args['triggers_meta'][ $trigger_code . '_META' ] ) ? intval( $args['triggers_meta'][ $trigger_code . '_META' ] ) : 0;
 
-		if ( - 1 === $form_id || empty( $form_id ) ) {
+		if ( -1 === $form_id || empty( $form_id ) ) {
 
 			return $tokens_renderable;
 
@@ -120,10 +103,9 @@ class GF_COMMON_TOKENS {
 	/**
 	 * get_hydrated_common_tokens
 	 *
-	 * @param mixed $parsed
-	 * @param mixed $args
-	 * @param mixed $trigger
-	 *
+	 * @param  mixed $parsed
+	 * @param  mixed $args
+	 * @param  mixed $trigger
 	 * @return array
 	 */
 	public static function get_hydrated_common_tokens( $parsed, $args, $trigger ) {
@@ -149,22 +131,21 @@ class GF_COMMON_TOKENS {
 	/**
 	 * get_hydrated_form_tokens
 	 *
-	 * @param mixed $parsed
-	 * @param mixed $args
-	 * @param mixed $trigger
-	 *
+	 * @param  mixed $parsed
+	 * @param  mixed $args
+	 * @param  mixed $trigger
 	 * @return array
 	 */
 	public static function get_hydrated_form_tokens( $parsed, $args, $trigger ) {
 
-		list ( $form, $entry_id, $previous_entry ) = $args['trigger_args'];
+		list ($form, $entry_id, $previous_entry) = $args['trigger_args'];
 
 		$entry = \GFAPI::get_entry( $entry_id );
 
 		// Filter the fields.
 		$fields = array_filter(
 			$entry,
-			function ( $entry_key ) {
+			function( $entry_key ) {
 				return is_numeric( $entry_key );
 			},
 			ARRAY_FILTER_USE_KEY
@@ -179,7 +160,7 @@ class GF_COMMON_TOKENS {
 				// Getting the field type.
 				$current_field = array_filter(
 					$form['fields'],
-					function ( $field ) use ( $id ) {
+					function( $field ) use ( $id ) {
 						return absint( $field['id'] ) === absint( $id );
 					}
 				);

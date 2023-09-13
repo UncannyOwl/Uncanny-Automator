@@ -19,17 +19,6 @@ class Elem_Tokens {
 
 		// Save latest form entry in trigger meta for tokens.
 		add_action( 'automator_save_elementor_form_entry', array( $this, 'elem_save_form_entry' ), 10, 3 );
-		$wp_post_class = new \Uncanny_Automator\Wp_Post_Tokens();
-		add_filter(
-			'automator_maybe_trigger_elem_elem_post_published_tokens',
-			array(
-				$wp_post_class,
-				'wp_possible_tokens',
-			),
-			20,
-			2
-		);
-
 	}
 
 	/**

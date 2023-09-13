@@ -50,9 +50,9 @@ class UOA_RECIPECOMPLETED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'sentence'            => sprintf( esc_attr__( 'A user completes {{a recipe:%1$s}} without errors {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, $this->num_times ),
+			'sentence'            => sprintf( esc_attr__( 'A user completes {{a recipe:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, $this->num_times ),
 			/* translators: Logged-in trigger - Uncanny Automator */
-			'select_option_name'  => esc_attr__( 'A user completes {{a recipe}} without errors {{a number of}} time(s)', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user completes {{a recipe}} {{a number of}} time(s)', 'uncanny-automator' ),
 			'action'              => 'automator_recipe_completed',
 			'priority'            => 99,
 			'accepted_args'       => 4,
@@ -89,7 +89,7 @@ class UOA_RECIPECOMPLETED {
 		global $wpdb;
 		// get recipe actions
 		$table_name = $wpdb->prefix . Automator()->db->tables->action;
-		$errors     = $wpdb->get_var( $wpdb->prepare( "SELECT error_message FROM $table_name WHERE automator_recipe_log_id = %d AND completed = %d", $recipe_log_id, 1 ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$errors     = $wpdb->get_results( $wpdb->prepare( "SELECT automator_action_id FROM $table_name WHERE automator_recipe_log_id = %d AND completed <> %d", $recipe_log_id, 2 ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! empty( $errors ) ) {
 			// bail early
@@ -157,21 +157,72 @@ class UOA_RECIPECOMPLETED {
 				if ( false === $result['result'] ) {
 					continue;
 				}
-				//              $recipe = get_post( $recipe_id );
-				//
-				//              if ( ! $recipe ) {
-				//                  continue;
-				//              }
+				$recipe = get_post( $recipe_id );
 
-				$trigger_meta = array(
-					'user_id'        => $user_id,
-					'trigger_id'     => $result['args']['trigger_id'],
-					'trigger_log_id' => $result['args']['get_trigger_id'],
-					'run_number'     => $result['args']['run_number'],
+				if ( ! $recipe ) {
+					continue;
+				}
+
+				Automator()->insert_trigger_meta(
+					array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'meta_key'       => 'UOARECIPES_recipe_id',
+						'meta_value'     => $recipe->ID,
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					)
 				);
-
-				Automator()->db->token->save( 'recipe_id', $recipe_id, $trigger_meta );
-				Automator()->db->token->save( 'recipe_log_id', $recipe_log_id, $trigger_meta );
+				Automator()->insert_trigger_meta(
+					array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'meta_key'       => 'UOARECIPES_recipe_title',
+						'meta_value'     => $recipe->post_title,
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					)
+				);
+				Automator()->insert_trigger_meta(
+					array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'meta_key'       => 'UOARECIPES_recipe_edit_link',
+						'meta_value'     => get_edit_post_link( $recipe->ID ),
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					)
+				);
+				Automator()->insert_trigger_meta(
+					array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'meta_key'       => 'UOARECIPES_recipe_log_url',
+						'meta_value'     => "recipe_id=$recipe_id&user_id=$user_id",
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					)
+				);
+				Automator()->insert_trigger_meta(
+					array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'meta_key'       => 'UOARECIPES_action_log_url',
+						'meta_value'     => "recipe_id=$recipe_id&user_id=$user_id",
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					)
+				);
+				Automator()->insert_trigger_meta(
+					array(
+						'user_id'        => $user_id,
+						'trigger_id'     => $result['args']['trigger_id'],
+						'meta_key'       => 'UOARECIPES_trigger_log_url',
+						'meta_value'     => "recipe_id=$recipe_id&user_id=$user_id",
+						'trigger_log_id' => $result['args']['get_trigger_id'],
+						'run_number'     => $result['args']['run_number'],
+					)
+				);
 
 				Automator()->maybe_trigger_complete( $result['args'] );
 			}

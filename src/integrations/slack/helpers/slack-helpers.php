@@ -24,30 +24,11 @@ class Slack_Helpers {
 	public $scope;
 
 	/**
-	 * The setting's ID.
-	 *
-	 * @var string $setting_tab
-	 */
-	public $setting_tab = 'slack_api';
-
-	/**
-	 * The settings page URL.
-	 *
-	 * @var string $settings_page_url
-	 */
-	public $settings_page_url = '';
-
-	/**
-	 * The scope.
-	 *
-	 * @var string $slack_scope
-	 */
-	public $slack_scope = '';
-
-	/**
 	 * Slack_Helpers constructor.
 	 */
 	public function __construct() {
+
+		$this->setting_tab = 'slack_api';
 
 		$this->settings_page_url = add_query_arg(
 			array(

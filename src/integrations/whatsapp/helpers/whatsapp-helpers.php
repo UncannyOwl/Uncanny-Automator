@@ -241,7 +241,7 @@ class WhatsApp_Helpers {
 
 		$message = $response['entry'][0]['changes'][0]['value']['messages'][0];
 
-		$text_body = $this->extract_message( $message );
+		$text_body = isset( $message['text']['body'] ) ? $message['text']['body'] : '';
 
 		$args = array(
 			'from'      => $message['from'],
@@ -254,38 +254,6 @@ class WhatsApp_Helpers {
 		do_action( 'automator_whatsapp_webhook_message_received', $args );
 
 		return wp_parse_args( $args, $default );
-
-	}
-
-	/**
-	 * @param mixed[] $message;
-	 *
-	 * @return string Returns the message json string.
-	 */
-	protected function extract_message( $message ) {
-
-		$type = isset( $message['type'] ) ? $message['type'] : 'text';
-
-		switch ( $type ) {
-
-			case 'text':
-				// Return the text body.
-				return isset( $message['text']['body'] ) ? $message['text']['body'] : '';
-			case 'image':
-				$caption          = isset( $message['image']['caption'] ) ? $message['image']['caption'] : '';
-				$image_id         = isset( $message['image']['id'] ) ? $message['image']['id'] : '';
-				$image_id_caption = sprintf( '(%1$s) %2$s', $image_id, $caption );
-				// Return the image id + caption.
-				return apply_filters( 'automator_whatsapp_image_caption', $image_id_caption, $message );
-			case 'button':
-				$button_text = isset( $message['button']['text'] ) ? $message['button']['text'] : '';
-				// Return the button text.
-				return apply_filters( 'automator_whatsapp_button_text', $button_text, $message );
-			default:
-				// Otherwise, just return the type and message ID for now.
-				$default = sprintf( '(%s) %s', $type, $message['id'] );
-				return apply_filters( 'automator_whatsapp_default_type_message_return', $default, $message );
-		}
 
 	}
 

@@ -100,7 +100,7 @@ class TELEGRAM_SEND_MESSAGE {
 	public function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		$chat_id = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( trim( $parsed[ $this->get_action_meta() ] ) ) : '';
-		$text    = isset( $parsed['TEXT'] ) ? sanitize_textarea_field( $parsed['TEXT'] ) : '';
+		$text    = isset( $parsed['TEXT'] ) ? sanitize_text_field( $parsed['TEXT'] ) : '';
 
 		try {
 

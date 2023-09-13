@@ -1,7 +1,7 @@
 <?php
 namespace Uncanny_Automator\Logger;
 
-use Uncanny_Automator\Services\Resolver\Recipe_Actions_Resolver;
+use Recipe_Actions_Resolver;
 use Uncanny_Automator\Automator_Functions;
 use Uncanny_Automator\Resolver\Conditions\Errors_Mapping;
 use Uncanny_Automator\Resolver\Conditions\Errors_Registry;
@@ -61,8 +61,8 @@ function trigger_fields_logger( $hook_args = array() ) {
 
 	// Set the recipe ID, object type, and object ID for the field resolver.
 	$field_resolver->set_recipe_id( $args['recipe_id'] )
-			->set_object_type( 'trigger' )
-			->set_object_id( $args['trigger_id'] );
+						->set_object_type( 'trigger' )
+						->set_object_id( $args['trigger_id'] );
 
 	// Resolve the fields for the trigger.
 	$fields = $field_resolver->resolve_object_fields();
@@ -520,45 +520,6 @@ function collect_async_actions( $action = array() ) {
 	Automator()->async_action_logger()->add_entry( $action_id, wp_json_encode( $data ) );
 
 }
-
-/**
- * Logs triggers logic during recipe completed and num times insufficent.
- *
- * @param mixed[] $args
- *
- * @return void
- */
-function recipe_triggers_logic_logger( $args ) {
-
-	require_once __DIR__ . '/logger/recipe-objects-logger.php';
-
-	$recipe_objects_logger = new Recipe_Objects_Logger();
-
-	$recipe_id = $args['recipe_id'];
-
-	$logic = get_post_meta( $recipe_id, 'automator_trigger_logic', true );
-
-	if ( empty( $logic ) ) {
-		$logic = 'all';
-	}
-
-	$logger_args = array(
-		'recipe_id'     => $recipe_id,
-		'user_id'       => $args['user_id'],
-		'recipe_log_id' => $args['recipe_log_id'],
-	);
-
-	$recipe_objects_logger->add_meta(
-		$logger_args,
-		'triggers_logic',
-		array(
-			'logic' => $logic,
-		),
-		true // <-- Upserts
-	);
-
-}
-
 /**
  * Registers listeners to log various events related to recipe triggers and actions.
  *
@@ -573,16 +534,14 @@ function fields_logger_register_listeners( $args ) {
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\recipe_triggers_logger', 20, 1 );
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\recipe_actions_flow_logger', 30, 1 );
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\closure_logger', 40, 1 );
-	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\recipe_triggers_logic_logger', 50, 1 );
 
 	// Record trigger - recipe_triggers_logger().
 	// Record field during trigger completed - trigger_fields_logger().
 	// Record actions through trigger completed because there can be multiple triggers "in-progress" - recipe_actions_flow_logger().
 	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\recipe_triggers_logger', 10, 1 );
 	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\trigger_fields_logger', 20, 1 );
-	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\recipe_actions_flow_logger', 30, 1 );
-	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\closure_logger', 40, 1 );
-	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\recipe_triggers_logic_logger', 50, 1 );
+	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\recipe_actions_flow_logger', 10, 1 );
+	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\closure_logger', 10, 1 );
 
 	// Log all conditions error after the actions has been completed. Just before the closures begin executing.
 	// Log all gathered async actions.

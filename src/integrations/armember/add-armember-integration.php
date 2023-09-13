@@ -33,6 +33,7 @@ class Add_Armember_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return DEFINED( 'MEMBERSHIPLITE_DIR_NAME' ) || defined( 'MEMBERSHIP_DIR_NAME' );
+		return file_exists( WP_PLUGIN_DIR . '/armember/armember.php' ) || file_exists( WP_PLUGIN_DIR . '/armember-membership/armember-membership.php' );
 	}
+
 }

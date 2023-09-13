@@ -2,10 +2,7 @@
 
 namespace Uncanny_Automator;
 
-use Exception;
 use Uncanny_Automator\Api_Server;
-use Uncanny_Automator\Utilities\Automator_Http_Response_Code;
-use WP_Error;
 
 /**
  * Class Active_Campaign_Helpers
@@ -50,27 +47,14 @@ class Active_Campaign_Helpers {
 	public $webhook_endpoint;
 
 	/**
-	 * The settings tab id.
-	 *
-	 * @var string $setting_tab
-	 */
-	public $setting_tab = 'active-campaign';
-
-	/**
-	 * The tab URL.
-	 *
-	 * @var string $tab_url
-	 */
-	public $tab_url = '';
-
-	/**
 	 * Active_Campaign_helpers constructor.
 	 */
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 
-		$this->tab_url = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
+		$this->setting_tab = 'active-campaign';
+		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
 
 		// Add the ajax endpoints.
 		add_action( 'wp_ajax_active-campaign-list-tags', array( $this, 'list_tags' ) );
@@ -412,16 +396,7 @@ class Active_Campaign_Helpers {
 		$response = $this->api_request( $body );
 
 		if ( empty( $response['data']['contacts'] ) ) {
-
-			$message = sprintf(
-				_x( 'ActiveCampaign has responded with status code: %1$d (%3$s) &mdash; %2$s', 'ActiveCampaign', 'uncanny-automator' ),
-				$response['statusCode'],
-				sprintf( 'The contact %s does not exist in ActiveCampaign', $email ),
-				Automator_Http_Response_Code::text( $response['statusCode'] )
-			);
-
-			throw new \Exception( $message, 404 );
-
+			throw new \Exception( sprintf( 'The contact %s does not exist in ActiveCampaign', $email ), 400 );
 		}
 
 		return array_shift( $response['data']['contacts'] );
@@ -512,52 +487,14 @@ class Active_Campaign_Helpers {
 		$lists          = $this->sync_lists();
 		$contact_fields = $this->sync_contact_fields();
 
-		$response = array(
-			'success'                  => true,
-			'messages'                 => _x( 'Tags, lists, and custom fields has been successfully refreshed', 'ActiveCampaign', 'uncanny-automator' ),
-			'is_tags_synced'           => true,
-			'is_lists_synced'          => true,
-			'is_contact_fields_synced' => true,
+		wp_send_json(
+			array(
+				'success'                  => true,
+				'is_tags_synced'           => ( false !== $tags ),
+				'is_lists_synced'          => ( false !== $lists ),
+				'is_contact_fields_synced' => ( false !== $contact_fields ),
+			)
 		);
-
-		$errors = array();
-
-		// Push lists errors.
-		if ( is_wp_error( $lists ) ) {
-			$errors[] = $lists->get_error_message();
-			// Mark as false.
-			$response['is_lists_synced'] = false;
-		}
-
-		// Push tags errors.
-		if ( is_wp_error( $tags ) ) {
-			$errors[] = $tags->get_error_message();
-			// Mark as false.
-			$response['is_tags_synced'] = false;
-		}
-
-		// Push contact fields.
-		if ( is_wp_error( $contact_fields ) ) {
-			$errors[] = $contact_fields->get_error_message();
-			// Mark as false.
-			$response['is_contact_fields_synced'] = false;
-		}
-
-		if ( ! empty( $errors ) ) {
-
-			$error_html = '<ul style="list-style-position: outside">';
-
-			foreach ( $errors as $error ) {
-				$error_html .= '<li>' . esc_html( $error ) . '</li>';
-			}
-
-			$error_html .= '</ul>';
-
-			$response['messages'] = nl2br( $error_html );
-		}
-
-		wp_send_json( $response, 200 );
-
 	}
 
 	/**
@@ -691,7 +628,7 @@ class Active_Campaign_Helpers {
 
 		if ( $should_verify_nonce ) {
 			if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
-				return new WP_Error( 403, 'Forbidden. Invalid nonce.' );
+				return false;
 			}
 		}
 
@@ -699,7 +636,7 @@ class Active_Campaign_Helpers {
 		$settings_key = get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $settings_url ) || empty( $settings_key ) ) {
-			return new WP_Error( 403, 'Invalid ActiveCampaign URL or Api key' );
+			return false;
 		}
 
 		$offset         = 0;
@@ -720,36 +657,27 @@ class Active_Campaign_Helpers {
 
 			// Logs wp related errors.
 			if ( is_wp_error( $response ) ) {
-				return $response;
+				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_tags Error', true, 'activecampaign' );
+				return false;
 			}
 
 			$status_code = wp_remote_retrieve_response_code( $response );
-
-			$response = (array) json_decode( wp_remote_retrieve_body( $response ), true );
-
 			// Logs generic http error response.
 			if ( 200 !== $status_code ) {
-
-				$error_message = sprintf(
-					'ActiveCampaign API has responded with status code %d (%s) while syncing list tags ',
-					$status_code,
-					Automator_Http_Response_Code::text( $status_code )
-				);
-
-				if ( empty( $response ) ) {
-					$error_message .= '&mdash; Try reconnecting your ActiveCampaign account and try again if the issue persists.';
-				}
-
-				return new \WP_Error( $status_code, $error_message );
+				automator_log( 'ActiveCampaign API has responded with status code: ' . $status_code, 'ActiveCampaign::sync_tags Error', true, 'activecampaign' );
+				return false;
 			}
 
-			if ( isset( $response['tags'] ) ) {
-				foreach ( $response['tags'] as $tag ) {
-					$available_tags[ $tag['id'] ] = $tag['tag'];
+			$response = json_decode( wp_remote_retrieve_body( $response ) );
+
+			if ( isset( $response->tags ) ) {
+
+				foreach ( $response->tags as $tag ) {
+					$available_tags[ $tag->id ] = $tag->tag;
 				}
 			}
 
-			if ( empty( $response['tags'] ) || count( $response['tags'] ) < $limit ) {
+			if ( empty( $response->tags ) || count( $response->tags ) < $limit ) {
 				$has_items = false;
 			}
 
@@ -776,21 +704,19 @@ class Active_Campaign_Helpers {
 	/**
 	 * Get all active campaign contact fields.
 	 *
-	 * @param bool $should_verify_nonce
-	 *
-	 * @return mixed[]|WP_Error
+	 * @return mixed Boolean false if not successful. Otherwise, array list of the active campaign tags.
 	 */
 	public function sync_contact_fields( $should_verify_nonce = true ) {
 
 		$user = get_option( 'uap_active_campaign_connected_user', false );
 
 		if ( empty( $user ) ) {
-			return new WP_Error( 404, 'Cannot initiate request. Option key uap_active_campaign_connected_user is empty.' );
+			return false;
 		}
 
 		if ( $should_verify_nonce ) {
 			if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
-				return new WP_Error( 403, 'Forbidden. Invalid nonce.' );
+				return false;
 			}
 		}
 
@@ -798,13 +724,15 @@ class Active_Campaign_Helpers {
 		$settings_key = get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $settings_url ) || empty( $settings_key ) ) {
-			return new WP_Error( 403, 'Forbidden. Invalid nonce.' );
+			return false;
 		}
 
 		$offset           = 0;
 		$limit            = 100;
 		$has_items        = true;
 		$available_fields = array();
+
+		$api_url = '';
 
 		while ( $has_items ) {
 
@@ -819,29 +747,19 @@ class Active_Campaign_Helpers {
 
 			// Logs wp related errors.
 			if ( is_wp_error( $response ) ) {
-				return $response;
+				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_contact_fields Error', true, 'activecampaign' );
+				return false;
 			}
 
 			$status_code = wp_remote_retrieve_response_code( $response );
 
-			$response = (array) json_decode( wp_remote_retrieve_body( $response ), true );
-
 			// Logs generic http error response.
 			if ( 200 !== $status_code ) {
-
-				$error_message = sprintf(
-					'ActiveCampaign API has responded with status code %d (%s) while syncing contact fields ',
-					$status_code,
-					Automator_Http_Response_Code::text( $status_code )
-				);
-
-				if ( empty( $response ) ) {
-					$error_message .= '&mdash; Try reconnecting your ActiveCampaign account and try again if the issue persists.';
-				}
-
-				return new \WP_Error( $status_code, $error_message );
-
+				automator_log( 'ActiveCampaign API has responded with status code: ' . $status_code, 'ActiveCampaign::sync_contact_fields Error', true, 'activecampaign' );
+				return false;
 			}
+
+			$response = json_decode( wp_remote_retrieve_body( $response ) );
 
 			$action_fields = array();
 
@@ -849,33 +767,33 @@ class Active_Campaign_Helpers {
 			$field_options = array();
 
 			// Get all options.
-			if ( isset( $response['fieldOptions'] ) ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				foreach ( $response['fieldOptions'] as $option ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					$field_options[ $option['id'] ] = $option;
+			if ( isset( $response->fieldOptions ) ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				foreach ( $response->fieldOptions as $option ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$field_options[ $option->id ] = $option;
 				}
 			}
 
 			// Get all the fields and assign the options.
-			if ( isset( $response['fields'] ) ) {
+			if ( isset( $response->fields ) ) {
 
-				foreach ( $response['fields'] as $field ) {
+				foreach ( $response->fields as $field ) {
 
 					$options = false;
 
-					if ( ! empty( $field['options'] ) ) {
-						foreach ( $field['options'] as $field_option ) {
+					if ( ! empty( $field->options ) ) {
+						foreach ( $field->options as $field_option ) {
 							if ( isset( $field_options[ $field_option ] ) ) {
 								$options[] = $field_options[ $field_option ];
 							}
 						}
 					}
 
-					$available_fields[ $field['id'] ] = array(
-						'type'          => $field['type'],
-						'title'         => $field['title'],
-						'description'   => $field['descript'],
-						'is_required'   => $field['isrequired'],
-						'default_value' => $field['defval'],
+					$available_fields[ $field->id ] = array(
+						'type'          => $field->type,
+						'title'         => $field->title,
+						'description'   => $field->descript,
+						'is_required'   => $field->isrequired,
+						'default_value' => $field->defval,
 						'options'       => $options,
 					);
 
@@ -887,7 +805,7 @@ class Active_Campaign_Helpers {
 				}
 			}
 
-			if ( empty( $response['fields'] ) || count( $response['fields'] ) < $limit ) {
+			if ( empty( $response->fields ) || count( $response->fields ) < $limit ) {
 				$has_items = false;
 			}
 
@@ -905,15 +823,13 @@ class Active_Campaign_Helpers {
 	/**
 	 * Get all the list from active campaign.
 	 *
-	 * @param bool $should_verify_nonce
-	 *
-	 * @return mixed[]|\WP_Error
+	 * @return mixed Boolean false if fail. Otherwise, an array of list from AC.
 	 */
 	public function sync_lists( $should_verify_nonce = true ) {
 
 		if ( $should_verify_nonce ) {
 			if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
-				return new WP_Error( 403, 'Forbidden. Invalid nonce.' );
+				return false;
 			}
 		}
 
@@ -921,7 +837,7 @@ class Active_Campaign_Helpers {
 		$settings_key = get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $settings_url ) || empty( $settings_key ) ) {
-			return new WP_Error( 403, 'Invalid ActiveCampaign URL or Api key.' );
+			return false;
 		}
 
 		$offset          = 0;
@@ -940,35 +856,31 @@ class Active_Campaign_Helpers {
 				)
 			);
 
-			// Returns the instance of WP_Error if there is a WordPress related error.
+			// Logs wp related errors.
 			if ( is_wp_error( $response ) ) {
-				return $response;
+				automator_log( $response->get_error_message(), 'ActiveCampaign::sync_lists Error', true, 'activecampaign' );
+				// Exits the loop and return with false.
+				return false;
 			}
 
 			$status_code = wp_remote_retrieve_response_code( $response );
 
-			$response = (array) json_decode( wp_remote_retrieve_body( $response ), true );
-
-			// Return an instance of WP_Error if ActiveCampaign failed to sync the list.
+			// Logs generic http error response.
 			if ( 200 !== $status_code ) {
-
-				$error_message = sprintf(
-					'ActiveCampaign API has responded with status code %d (%s) while syncing list fields ',
-					$status_code,
-					Automator_Http_Response_Code::text( $status_code )
-				);
-
-				if ( empty( $response ) ) {
-					$error_message .= '&mdash; Try reconnecting your ActiveCampaign account and try again if the issue persists.';
-				}
-				return new WP_Error( $status_code, $error_message );
+				automator_log( 'ActiveCampaign API has responded with status code: ' . $status_code, 'ActiveCampaign::sync_lists Error', true, 'activecampaign' );
+				// Exits the loop and return with false.
+				return false;
 			}
 
-			if ( isset( $response['lists'] ) ) {
-				foreach ( $response['lists'] as $list ) {
-					$available_lists[ $list['id'] ] = $list['name'];
+			$response = json_decode( wp_remote_retrieve_body( $response ) );
+
+			if ( isset( $response->lists ) ) {
+
+				foreach ( $response->lists as $list ) {
+					$available_lists[ $list->id ] = $list->name;
 				}
-				if ( count( $response['lists'] ) < $limit ) {
+
+				if ( count( $response->lists ) < $limit ) {
 					$has_items = false;
 				}
 			}
@@ -1088,23 +1000,17 @@ class Active_Campaign_Helpers {
 	 */
 	public function get_registered_fields( $parsed, $prefix = '' ) {
 
-		$registered_fields = (array) get_transient( 'ua_ac_contact_fields_list_action_fields' );
+		$registered_fields = get_transient( 'ua_ac_contact_fields_list_action_fields' );
 
 		$custom_fields = array();
 
 		foreach ( $registered_fields as $registered_field ) {
 
-			if ( ! is_array( $registered_field ) ) {
-				continue;
-			}
+			$postfix = $registered_field['postfix'];
 
-			$postfix      = $registered_field['postfix'];
-			$type         = $registered_field['type'];
+			$type = $registered_field['type'];
+
 			$field_pieces = explode( '_', $postfix );
-
-			if ( ! isset( $field_pieces[3] ) ) {
-				continue;
-			}
 
 			// Get the field id.
 			$field_id = $field_pieces[3];
@@ -1163,12 +1069,6 @@ class Active_Campaign_Helpers {
 		$body['url']   = get_option( 'uap_active_campaign_api_url', '' );
 		$body['token'] = get_option( 'uap_active_campaign_api_key', '' );
 
-		if ( empty( $body['url'] ) || empty( $body['token'] ) ) {
-			throw new Exception(
-				_x( 'Empty Account URL or API key. Go to Automator &rarr; App integrations &rarr; ActiveCampaign to reconnect your account.', 'ActiveCampaign', 'uncanny_automator' ),
-				500
-			);
-		}
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,
 			'body'     => $body,
@@ -1184,45 +1084,25 @@ class Active_Campaign_Helpers {
 
 	}
 
-	/**
-	 * Throws API related errors as exception.
-	 *
-	 * @param mixed[] $response The response from the API-Server.
-	 *
-	 * @return void
-	 *
-	 * @throws Exception
-	 */
 	public function check_for_errors( $response ) {
 
-		$errors = isset( $response['data']['errors'] ) ? $response['data']['errors'] : array();
+		if ( 200 !== $response['statusCode'] ) {
+			throw new \Exception( 'Request to ActiveCampaign returned with status: ' . $response['statusCode'], $response['statusCode'] );
+		}
 
-		$error_messages = array();
+		$errors = isset( $response['data']['errors'] ) ? $response['data']['errors'] : '';
+
+		if ( empty( $errors ) ) {
+			return;
+		}
+
+		$error_message = array();
 
 		foreach ( $errors as $error ) {
-			$error_messages[] = $error['title'];
+			$error_message[] = $error['title'];
 		}
 
-		// Throw an exception if status code is included in list of successful response codes.
-		if ( ! in_array( absint( $response['statusCode'] ), array( 201, 200 ), true ) ) {
-
-			$message = implode( ', ', $error_messages );
-
-			if ( empty( $message ) ) {
-				// Fallback message in-case the error message is empty.
-				$message = _x( 'Try reconnecting your ActiveCampaign account and try again', 'ActiveCampaign', 'uncanny-automator' );
-			}
-
-			$error_message = sprintf(
-				_x( 'ActiveCampaign has responded with status code: %1$d (%3$s) &mdash; %2$s', 'ActiveCampaign', 'uncanny-automator' ),
-				$response['statusCode'],
-				$message,
-				Automator_Http_Response_Code::text( $response['statusCode'] )
-			);
-
-			throw new \Exception( $error_message );
-		}
-
+		throw new \Exception( implode( ', ', $error_message ) );
 	}
 
 	public function complete_with_errors( $user_id, $action_data, $recipe_id, $error_message ) {

@@ -431,7 +431,7 @@ class Automator_Utilities {
 				break;
 		}
 
-		return apply_filters( 'automator_sanitized_data', $data, $type, $meta_key, $options );
+		return $data;
 	}
 
 	/**
@@ -465,7 +465,7 @@ class Automator_Utilities {
 			$filtered[ $key ] = filter_var( $value, $filters[ $key ], $options[ $key ] );
 		}
 
-		return apply_filters( 'automator_sanitized_json', wp_slash( wp_json_encode( $filtered ) ), $type, $meta_key, $options );
+		return wp_slash( wp_json_encode( $filtered ) );
 	}
 
 	/**
@@ -495,10 +495,7 @@ class Automator_Utilities {
 						$data[ $k ] = $v;
 						break;
 					case 'WPCPOSTCONTENT':
-						if ( apply_filters( 'automator_wpcpostcontent_should_sanitize', false, $data ) ) {
-							$v = wp_kses_post( $v );
-						}
-						$data[ $k ] = $v;
+						$data[ $k ] = wp_kses_post( $v );
 						break;
 					default:
 						$field_type = $this->maybe_get_field_type( $k, $options );
@@ -635,7 +632,6 @@ class Automator_Utilities {
 
 		// Return type
 		$type = (string) $options['fields'][ $option_code ]['type'];
-
 		return apply_filters( 'automator_sanitize_get_field_type_' . $type, $type, $option_code, $options );
 	}
 
@@ -722,42 +718,5 @@ class Automator_Utilities {
 
 		// Otherwise, return true
 		return true;
-	}
-
-	/**
-	 * Fetches the live or 'publish' actions from specified integration.
-	 *
-	 * @param string $integration_code The integration code.
-	 *
-	 * @return array{}|array{array{ID:string,post_status:string}}
-	 */
-	public function fetch_live_integration_actions( $integration_code = '' ) {
-
-		global $wpdb;
-
-		if ( empty( $integration_code ) || ! is_string( $integration_code ) ) {
-			return array();
-		}
-
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID, post_status FROM $wpdb->posts as post
-					INNER JOIN $wpdb->postmeta as meta
-						ON meta.post_id = post.ID
-					WHERE meta.meta_key = %s
-						AND meta.meta_value = %s
-						AND post.post_status = %s
-						AND post.post_type = %s
-				",
-				'integration',
-				$integration_code,
-				'publish',
-				'uo-action'
-			),
-			ARRAY_A
-		);
-
-		return (array) $results;
-
 	}
 }

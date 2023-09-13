@@ -110,11 +110,10 @@ class Learndash_Helpers {
 	 * @param string $label
 	 * @param string $option_code
 	 * @param bool $any_option
-	 * @param bool $include_relevant_tokens
 	 *
 	 * @return mixed
 	 */
-	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true, $include_relevant_tokens = true ) {
+	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true, $relevant_tokens = true ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -134,25 +133,32 @@ class Learndash_Helpers {
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
-		$relevant_tokens = array();
-		if ( $include_relevant_tokens ) {
-			$relevant_tokens = wp_list_pluck( $this->get_course_relevant_tokens( 'trigger', $option_code ), 'name' );
-
-			if ( self::is_course_timer_activated() ) {
-				$relevant_tokens[ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = __( 'Course cumulative time', 'uncanny-automator' );
-				$relevant_tokens[ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = __( 'Course time at completion', 'uncanny-automator' );
-			}
-		}
-
 		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $options,
-			'relevant_tokens'          => $relevant_tokens,
+			'relevant_tokens'          => array(
+				$option_code                    => esc_attr__( 'Course title', 'uncanny-automator' ),
+				$option_code . '_ID'            => esc_attr__( 'Course ID', 'uncanny-automator' ),
+				$option_code . '_STATUS'        => esc_attr__( 'Course status', 'uncanny-automator' ),
+				$option_code . '_ACCESS_EXPIRY' => esc_attr__( 'Course access expiry date', 'uncanny-automator' ),
+				$option_code . '_URL'           => esc_attr__( 'Course URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'      => esc_attr__( 'Course featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL'     => esc_attr__( 'Course featured image URL', 'uncanny-automator' ),
+			),
 			'custom_value_description' => _x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 		);
+
+		if ( self::is_course_timer_activated() ) {
+				$option['relevant_tokens'][ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = __( 'Course cumulative time', 'uncanny-automator' );
+				$option['relevant_tokens'][ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = __( 'Course time at completion', 'uncanny-automator' );
+		}
+
+		if ( false === $relevant_tokens ) {
+			$option['relevant_tokens'] = array();
+		}
 
 		return apply_filters( 'uap_option_all_ld_courses', $option );
 	}
@@ -168,96 +174,6 @@ class Learndash_Helpers {
 		$this->load_options = true;
 
 		return $this->all_ld_courses( $label, $option_code, $any_option );
-	}
-
-	/**
-	 * Get Relevant Tokens for Course
-	 *
-	 * @param string $type - 'trigger' or 'action'
-	 * @param string $option_code - option code
-	 *
-	 * @return array
-	 */
-	public function get_course_relevant_tokens( $type = 'trigger', $option_code = 'LDCOURSE' ) {
-
-		$tokens = array(
-			$option_code                    => array(
-				'name' => esc_attr_x( 'Course title', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_ID'            => array(
-				'name' => esc_attr_x( 'Course ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_STATUS'        => array(
-				'name' => esc_attr_x( 'Course status', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_ACCESS_EXPIRY' => array(
-				'name' => esc_attr_x( 'Course access expiry date', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_URL'           => array(
-				'name' => esc_attr_x( 'Course URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_THUMB_ID'      => array(
-				'name' => esc_attr_x( 'Course featured image ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_THUMB_URL'     => array(
-				'name' => esc_attr_x( 'Course featured image URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-		);
-
-		return apply_filters( "automator_set_learndash_course_{$type}_tokens", $tokens );
-
-	}
-
-	/**
-	 * Hydrate the relevant course tokens for the action.
-	 *
-	 * @param int $course_id - the course ID
-	 * @param int $user_id - the option code for the action
-	 * @param string $action_meta - the meta key
-	 *
-	 * @return array
-	 */
-	public function hydrate_ld_course_action_tokens( $course_id, $user_id, $action_meta ) {
-
-		$relevant_tokens = $this->get_course_relevant_tokens( 'action', $action_meta );
-		$tokens          = array();
-		foreach ( $relevant_tokens as $token => $config ) {
-			switch ( $token ) {
-				case $action_meta:
-					$tokens[ $token ] = get_the_title( $course_id );
-					break;
-				case $action_meta . '_ID':
-					$tokens[ $token ] = $course_id;
-					break;
-				case $action_meta . '_STATUS':
-					$tokens[ $token ] = learndash_course_status( $course_id, $user_id );
-					break;
-				case $action_meta . '_ACCESS_EXPIRY':
-					$tokens[ $token ] = learndash_adjust_date_time_display( ld_course_access_expires_on( $course_id, $user_id ) );
-					break;
-				case $action_meta . '_URL':
-					$tokens[ $token ] = get_permalink( $course_id );
-					break;
-				case $action_meta . '_THUMB_ID':
-					$tokens[ $token ] = get_post_thumbnail_id( $course_id );
-					break;
-				case $action_meta . '_THUMB_URL':
-					$tokens[ $token ] = get_the_post_thumbnail_url( $course_id );
-					break;
-				default:
-					$tokens[ $token ] = apply_filters( "automator_hydrate_learndash_action_token_{$token}", '', $course_id, $user_id );
-					break;
-			}
-		}
-
-		return $tokens;
 	}
 
 	/**
@@ -285,92 +201,24 @@ class Learndash_Helpers {
 		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_lesson, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
-		$option  = array(
+
+		$option = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $options,
-			'relevant_tokens'          => wp_list_pluck( $this->get_lesson_relevant_tokens( 'trigger', $option_code ), 'name' ),
+			'relevant_tokens'          => array(
+				$option_code                => esc_attr__( 'Lesson title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Lesson featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Lesson featured image URL', 'uncanny-automator' ),
+			),
 			'custom_value_description' => _x( 'Lesson ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		return apply_filters( 'uap_option_all_ld_lessons', $option );
-	}
-
-	/**
-	 * Get Relevant Tokens for Lessons
-	 *
-	 * @param string $type - 'trigger' or 'action'
-	 * @param string $option_code - option code
-	 *
-	 * @return array
-	 */
-	public function get_lesson_relevant_tokens( $type = 'trigger', $option_code = 'LDLESSON' ) {
-
-		$tokens = array(
-			$option_code                => array(
-				'name' => esc_attr_x( 'Lesson title', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_ID'        => array(
-				'name' => esc_attr_x( 'Lesson ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_URL'       => array(
-				'name' => esc_attr_x( 'Lesson URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_THUMB_ID'  => array(
-				'name' => esc_attr_x( 'Lesson featured image ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_THUMB_URL' => array(
-				'name' => esc_attr_x( 'Lesson featured image URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-		);
-
-		return apply_filters( "automator_set_learndash_lesson_{$type}_tokens", $tokens );
-	}
-
-	/**
-	 * Hydrate the relevant lesson tokens for the action.
-	 *
-	 * @param int $lesson_id - the lesson ID
-	 * @param int $user_id - the option code for the action
-	 * @param string $action_meta - the meta key
-	 *
-	 * @return array
-	 */
-	public function hydrate_ld_lesson_action_tokens( $lesson_id, $user_id, $action_meta ) {
-
-		$relevant_tokens = $this->get_lesson_relevant_tokens( 'action', $action_meta );
-		$tokens          = array();
-		foreach ( $relevant_tokens as $token => $config ) {
-			switch ( $token ) {
-				case $action_meta:
-					$tokens[ $token ] = get_the_title( $lesson_id );
-					break;
-				case $action_meta . '_ID':
-					$tokens[ $token ] = $lesson_id;
-					break;
-				case $action_meta . '_URL':
-					$tokens[ $token ] = get_permalink( $lesson_id );
-					break;
-				case $action_meta . '_THUMB_ID':
-					$tokens[ $token ] = get_post_thumbnail_id( $lesson_id );
-					break;
-				case $action_meta . '_THUMB_URL':
-					$tokens[ $token ] = get_the_post_thumbnail_url( $lesson_id );
-					break;
-				default:
-					$tokens[ $token ] = apply_filters( "automator_hydrate_learndash_action_token_{$token}", '', $lesson_id, $user_id );
-					break;
-			}
-		}
-
-		return $tokens;
 	}
 
 	/**
@@ -405,84 +253,17 @@ class Learndash_Helpers {
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $options,
-			'relevant_tokens'          => wp_list_pluck( $this->get_topic_relevant_tokens( 'trigger', $option_code ), 'name' ),
+			'relevant_tokens'          => array(
+				$option_code                => esc_attr__( 'Topic title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Topic ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_attr__( 'Topic URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Topic featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Topic featured image URL', 'uncanny-automator' ),
+			),
 			'custom_value_description' => _x( 'Topic ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		return apply_filters( 'uap_option_all_ld_topics', $option );
-	}
-
-	/**
-	 * @param string $label
-	 * @param string $option_code
-	 *
-	 * @return mixed
-	 */
-	public function get_topic_relevant_tokens( $type = 'trigger', $option_code = 'LDTOPIC' ) {
-
-		$tokens = array(
-			$option_code                => array(
-				'name' => esc_attr_x( 'Topic title', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_ID'        => array(
-				'name' => esc_attr_x( 'Topic ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_URL'       => array(
-				'name' => esc_attr_x( 'Topic URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_THUMB_ID'  => array(
-				'name' => esc_attr_x( 'Topic featured image ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_THUMB_URL' => array(
-				'name' => esc_attr_x( 'Topic featured image URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-		);
-
-		return apply_filters( "automator_set_learndash_topic_{$type}_tokens", $tokens );
-	}
-
-	/**
-	 * Hydrate the relevant topic tokens for the action.
-	 *
-	 * @param int $topic_id - the topic ID
-	 * @param int $user_id - user ID
-	 * @param string $action_meta - the meta key
-	 *
-	 * @return array
-	 */
-	public function hydrate_ld_topic_action_tokens( $topic_id, $user_id, $action_meta ) {
-
-		$relevant_tokens = $this->get_topic_relevant_tokens( 'action', $action_meta );
-		$tokens          = array();
-		foreach ( $relevant_tokens as $token => $config ) {
-			switch ( $token ) {
-				case $action_meta:
-					$tokens[ $token ] = get_the_title( $topic_id );
-					break;
-				case $action_meta . '_ID':
-					$tokens[ $token ] = $topic_id;
-					break;
-				case $action_meta . '_URL':
-					$tokens[ $token ] = get_permalink( $topic_id );
-					break;
-				case $action_meta . '_THUMB_ID':
-					$tokens[ $token ] = get_post_thumbnail_id( $topic_id );
-					break;
-				case $action_meta . '_THUMB_URL':
-					$tokens[ $token ] = get_the_post_thumbnail_url( $topic_id );
-					break;
-				default:
-					$tokens[ $token ] = apply_filters( "automator_hydrate_learndash_action_token_{$token}", '', $topic_id, $user_id );
-					break;
-			}
-		}
-
-		return $tokens;
 	}
 
 	/**
@@ -522,7 +303,13 @@ class Learndash_Helpers {
 			'required'                 => true,
 			'options'                  => $options,
 			'supports_multiple_values' => $multiple_values,
-			'relevant_tokens'          => wp_list_pluck( $this->get_group_relevant_tokens( 'trigger', $option_code ), 'name' ),
+			'relevant_tokens'          => array(
+				$option_code                => esc_attr__( 'Group title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr__( 'Group ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_attr__( 'Group URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_attr__( 'Group featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_attr__( 'Group featured image URL', 'uncanny-automator' ),
+			),
 			'custom_value_description' => _x( 'Group ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
@@ -531,79 +318,6 @@ class Learndash_Helpers {
 		}
 
 		return apply_filters( 'uap_option_all_ld_groups', $option );
-	}
-
-	/**
-	 * @param string $label
-	 * @param string $option_code
-	 *
-	 * @return mixed
-	 */
-	public function get_group_relevant_tokens( $type = 'trigger', $option_code = 'LDGROUP' ) {
-
-		$tokens = array(
-			$option_code                => array(
-				'name' => esc_attr_x( 'Group title', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_ID'        => array(
-				'name' => esc_attr_x( 'Group ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_URL'       => array(
-				'name' => esc_attr_x( 'Group URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_THUMB_ID'  => array(
-				'name' => esc_attr_x( 'Group featured image ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_THUMB_URL' => array(
-				'name' => esc_attr_x( 'Group featured image ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-		);
-
-		return apply_filters( "automator_set_learndash_group_{$type}_tokens", $tokens );
-	}
-
-	/**
-	 * Hydrate the relevant group tokens for the action.
-	 *
-	 * @param int $group_id - the group ID
-	 * @param int $user_id - user ID
-	 * @param string $action_meta - the meta key
-	 *
-	 * @return array
-	 */
-	public function hydrate_ld_group_action_tokens( $group_id, $user_id, $action_meta ) {
-
-		$relevant_tokens = $this->get_group_relevant_tokens( 'action', $action_meta );
-		$tokens          = array();
-		foreach ( $relevant_tokens as $token => $config ) {
-			switch ( $token ) {
-				case $action_meta:
-					$tokens[ $token ] = get_the_title( $group_id );
-					break;
-				case $action_meta . '_ID':
-					$tokens[ $token ] = $group_id;
-					break;
-				case $action_meta . '_URL':
-					$tokens[ $token ] = get_permalink( $group_id );
-					break;
-				case $action_meta . '_THUMB_ID':
-					$tokens[ $token ] = get_post_thumbnail_id( $group_id );
-					break;
-				case $action_meta . '_THUMB_URL':
-					$tokens[ $token ] = get_the_post_thumbnail_url( $group_id );
-					break;
-				default:
-					$tokens[ $token ] = apply_filters( "automator_hydrate_learndash_action_token_{$token}", '', $group_id, $user_id );
-					break;
-			}
-		}
-
-		return $tokens;
 	}
 
 	/**
@@ -638,127 +352,24 @@ class Learndash_Helpers {
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $options,
-			'relevant_tokens'          => wp_list_pluck( $this->get_quiz_relevant_tokens( 'trigger', $option_code ), 'name' ),
+			'relevant_tokens'          => array(
+				$option_code                      => esc_attr_x( 'Quiz title', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_ID'              => esc_attr_x( 'Quiz ID', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_URL'             => esc_attr_x( 'Quiz URL', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'        => esc_attr_x( 'Quiz featured image ID', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL'       => esc_attr_x( 'Quiz featured image URL', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_TIME'            => esc_attr_x( 'Quiz time spent', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_SCORE'           => esc_attr_x( 'Quiz score', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_POINTS'          => esc_attr_x( 'Quiz points scored', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_CORRECT'         => esc_attr_x( 'Quiz number of correct answers', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_CATEGORY_SCORES' => esc_attr_x( 'Quiz category scores', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_Q_AND_A'         => esc_attr_x( 'Quiz questions and answers', 'LearnDash Token', 'uncanny-automator' ),
+				$option_code . '_Q_AND_A_CSV'     => esc_attr_x( 'Quiz question & answers (unformatted)', 'LearnDash Token', 'uncanny-automator' ),
+			),
 			'custom_value_description' => _x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		return apply_filters( 'uap_option_all_ld_quiz', $option );
-	}
-
-	/**
-	 * @param string $label
-	 * @param string $option_code
-	 *
-	 * @return mixed
-	 */
-	public function get_quiz_relevant_tokens( $type = 'trigger', $option_code = 'LDQUIZ' ) {
-
-		$tokens = array(
-			$option_code                      => array(
-				'name' => esc_attr_x( 'Quiz title', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_ID'              => array(
-				'name' => esc_attr_x( 'Quiz ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_URL'             => array(
-				'name' => esc_attr_x( 'Quiz URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_THUMB_ID'        => array(
-				'name' => esc_attr_x( 'Quiz featured image ID', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_THUMB_URL'       => array(
-				'name' => esc_attr_x( 'Quiz featured image URL', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_TIME'            => array(
-				'name' => esc_attr_x( 'Quiz time spent', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_SCORE'           => array(
-				'name' => esc_attr_x( 'Quiz score', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_CORRECT'         => array(
-				'name' => esc_attr_x( 'Quiz number of correct answers', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'int',
-			),
-			$option_code . '_CATEGORY_SCORES' => array(
-				'name' => esc_attr_x( 'Quiz category scores', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_Q_AND_A'         => array(
-				'name' => esc_attr_x( 'Quiz questions and answers', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-			$option_code . '_Q_AND_A_CSV'     => array(
-				'name' => esc_attr_x( 'Quiz question & answers (unformatted)', 'LearnDash Token', 'uncanny-automator' ),
-				'type' => 'text',
-			),
-		);
-
-		return apply_filters( "automator_set_learndash_quiz_{$type}_tokens", $tokens );
-	}
-
-	/**
-	 * Hydrate the relevant quiz tokens for the action.
-	 *
-	 * @param int $quiz_id - the quiz ID
-	 * @param int $user_id - user ID
-	 * @param string $action_meta - the meta key
-	 *
-	 * @return array
-	 */
-	public function hydrate_ld_quiz_action_tokens( $quiz_id, $user_id, $action_meta ) {
-
-		$relevant_tokens = $this->get_quiz_relevant_tokens( 'action', $action_meta );
-		$tokens          = array();
-		$token_class     = new Ld_Tokens( false );
-		foreach ( $relevant_tokens as $token => $config ) {
-			switch ( $token ) {
-				case $action_meta:
-					$tokens[ $token ] = get_the_title( $quiz_id );
-					break;
-				case $action_meta . '_ID':
-					$tokens[ $token ] = $quiz_id;
-					break;
-				case $action_meta . '_URL':
-					$tokens[ $token ] = get_permalink( $quiz_id );
-					break;
-				case $action_meta . '_THUMB_ID':
-					$tokens[ $token ] = get_post_thumbnail_id( $quiz_id );
-					break;
-				case $action_meta . '_THUMB_URL':
-					$tokens[ $token ] = get_the_post_thumbnail_url( $quiz_id );
-					break;
-				case $action_meta . '_TIME':
-					$tokens[ $token ] = $token_class->get_quiz_token_data( 'LDQUIZ_TIME', $user_id, $quiz_id );
-					break;
-				case $action_meta . '_SCORE':
-					$tokens[ $token ] = $token_class->get_quiz_token_data( 'LDQUIZ_SCORE', $user_id, $quiz_id );
-					break;
-				case $action_meta . '_CORRECT':
-					$tokens[ $token ] = $token_class->get_quiz_token_data( 'LDQUIZ_CORRECT', $user_id, $quiz_id );
-					break;
-				case $action_meta . '_CATEGORY_SCORES':
-					$tokens[ $token ] = $token_class->get_quiz_token_data( 'LDQUIZ_CATEGORY_SCORES', $user_id, $quiz_id );
-					break;
-				case $action_meta . '_Q_AND_A':
-					$tokens[ $token ] = $token_class->get_quiz_token_data( 'LDQUIZ_Q_AND_A', $user_id, $quiz_id );
-					break;
-				case $action_meta . '_Q_AND_A_CSV':
-					$tokens[ $token ] = $token_class->get_quiz_token_data( 'LDQUIZ_Q_AND_A_CSV', $user_id, $quiz_id );
-					break;
-				default:
-					$tokens[ $token ] = apply_filters( "automator_hydrate_learndash_action_token_{$token}", '', $quiz_id, $user_id );
-					break;
-			}
-		}
-
-		return $tokens;
 	}
 
 	/**

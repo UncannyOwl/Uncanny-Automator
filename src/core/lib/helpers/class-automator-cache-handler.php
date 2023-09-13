@@ -294,7 +294,6 @@ class Automator_Cache_Handler {
 		$key = 'automator_recipe_data_of_' . $post_id;
 		$this->remove( $key );
 		$this->remove( 'get_recipe_type' );
-
 		do_action( 'automator_cache_clear_automator_recipe_part_cache', $post_id );
 	}
 
@@ -602,10 +601,10 @@ class Automator_Cache_Handler {
 		<div class="uap-field uap-spacing-top--small">
 
 			<uo-switch
-					id="<?php echo esc_attr( self::OPTION_NAME ); ?>"
+				id="<?php echo esc_attr( self::OPTION_NAME ); ?>"
 				<?php echo true === $cache_enabled ? 'checked' : ''; ?>
-					status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"
-					class="uap-spacing-top"
+				status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"
+				class="uap-spacing-top"
 			></uo-switch>
 
 			<div class="uap-field-description">

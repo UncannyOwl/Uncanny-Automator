@@ -84,7 +84,7 @@ class Automator_Send_Webhook {
 				// Get the data we're going to send to the AJAX request
 				let dataToBeSent = {
 					action: 'automator_webhook_send_test_data',
-					nonce: UncannyAutomator._site.rest.nonce,
+					nonce: UncannyAutomator.nonce,
 					integration_id: data.item.integrationCode,
 					item_id: data.item.id,
 					values: data.values
@@ -164,7 +164,7 @@ class Automator_Send_Webhook {
 				// Get the data we're going to send to the AJAX request
 				let dataToBeSent = {
 					action: 'automator_webhook_build_test_data',
-					nonce: UncannyAutomator._site.rest.nonce,
+					nonce: UncannyAutomator.nonce,
 					integration_id: data.item.integrationCode,
 					item_id: data.item.id,
 					values: data.values
@@ -189,9 +189,12 @@ class Automator_Send_Webhook {
 							let $notice = jQuery('<div/>', {
 								'class': 'item-options__notice item-options__notice--' + noticeType
 							});
+							// Parse message using markdown
+							let markdown = new modules.Markdown(response.message);
 
 							// Get markdown HTML
-							let $message = response.message;
+							//let $message = response.message;
+							let $message = markdown.getHTML();
 
 							// Add message to the notice container
 							$notice.html("<pre>" + $message + "<pre>");
@@ -343,31 +346,22 @@ class Automator_Send_Webhook {
 	 * @throws \Exception
 	 */
 	public function get_fields( $data, $legacy = false, $data_type = '', $parsing_args = array(), $is_check_sample = false ) {
-
 		$prepared_data = array();
-
 		if ( $legacy ) {
 			return $this->prepare_legacy_fields( $data, $parsing_args );
 		}
-
 		if ( ! isset( $data['WEBHOOK_FIELDS'] ) ) {
 			return $prepared_data;
 		}
-
 		$fields = ! is_array( $data['WEBHOOK_FIELDS'] ) ? json_decode( $data['WEBHOOK_FIELDS'], true ) : $data['WEBHOOK_FIELDS'];
-
 		if ( empty( $fields ) ) {
 			return $prepared_data;
 		}
-
 		foreach ( $fields as $field ) {
-
 			$key   = isset( $field['KEY'] ) ? $this->maybe_parse_tokens( $field['KEY'], $parsing_args ) : null;
 			$type  = isset( $field['VALUE_TYPE'] ) ? $this->maybe_parse_tokens( $field['VALUE_TYPE'], $parsing_args ) : 'text';
 			$value = isset( $field['VALUE'] ) ? $this->maybe_parse_tokens( $field['VALUE'], $parsing_args ) : null;
-
-			// Do not allow empty key.
-			if ( '' !== $key && ! is_null( $key ) && ! is_null( $value ) ) {
+			if ( ! is_null( $key ) && ! is_null( $value ) ) {
 				switch ( $type ) {
 					case 'null':
 					case 'undefined':
@@ -412,11 +406,9 @@ class Automator_Send_Webhook {
 				$prepared_data[ $key ] = apply_filters( 'automator_outgoing_webhook_value', $value, $key, $type, $this );
 			}
 		}
-
 		$prepared_data = $this->create_tree( $prepared_data, $data_type );
 
 		return $this->format_outgoing_data( $prepared_data, $data_type, $is_check_sample );
-
 	}
 
 	/**
@@ -758,56 +750,24 @@ class Automator_Send_Webhook {
 	/**
 	 * Build multipart/form-data
 	 *
-	 * @param mixed[] $data
+	 * @param $data
 	 *
 	 * @return string
 	 */
 	public function build_multipart_form_data( $data ) {
+		$eol = PHP_EOL;
 
 		$boundary = $this->boundary;
-
 		if ( empty( $boundary ) ) {
-			$boundary = '--' . sha1( time() );
+			$boundary = sha1( time() );
+		}
+		// Build data
+		$rtn = '';
+		foreach ( $data as $key => $value ) {
+			$rtn .= '--' . $boundary . $eol . 'Content-Disposition: form-data; name="' . $key . '"' . $eol . $eol . $value . $eol;
 		}
 
-		/**
-		 * @see <https://proxyman.io/posts/2021-06-24-preview-multipart-formdata>
-		 */
-		$separator = "\r\n";
-
-		// Build the form-data body.
-		$body_start = 'Content-Type: multipart/form-data; boundary=' . $boundary . $separator . $separator;
-
-		$form_data_body = $body_start;
-
-		$data_count = count( $data );
-
-		$counter = 1;
-
-		foreach ( (array) $data as $key => $value ) {
-
-			$form_data_body .=
-				$boundary
-				. $separator
-				. 'Content-Disposition: form-data; name="' . $key . '"'
-				. $separator
-				. 'Content-Type: text/plain'
-				. $separator
-				. $separator
-				. $value
-				. $separator;
-
-			// Proper line breaks. The last form-data should only have one space.
-			if ( $data_count < $counter ) {
-				$form_data_body .= PHP_EOL;
-			}
-
-			$counter ++;
-		}
-
-		$form_data_body .= $boundary . '--';
-
-		return trim( $form_data_body );
+		return $rtn;
 	}
 
 	/**
@@ -885,29 +845,21 @@ class Automator_Send_Webhook {
 	}
 
 	/**
-	 * @param mixed[] $raw
-	 * @param mixed[] $response
+	 * @param $raw
 	 *
 	 * @return array
 	 */
-	public static function before_hydrate_tokens( $raw = array(), $response = array() ) {
-
+	public static function before_hydrate_tokens( $raw ) {
 		if ( empty( $raw ) ) {
 			return array();
 		}
-
 		$hydration_data = array();
-
 		foreach ( $raw as $action_token ) {
 			$tag                    = strtoupper( $action_token['key'] );
 			$hydration_data[ $tag ] = $action_token['data'];
 		}
 
-		// Hydrate the "WEBHOOK_RESPONSE_BODY" action token.
-		$hydration_data['WEBHOOK_RESPONSE_BODY'] = (string) wp_remote_retrieve_body( $response );
-
 		return $hydration_data;
-
 	}
 
 	/**
@@ -929,31 +881,12 @@ class Automator_Send_Webhook {
 		foreach ( $header->getAll() as $k => $v ) {
 			$tokens[] = array(
 				'key'  => "header|$k",
-				'data' => self::esc_html_string( $v ),
+				'data' => $v,
 				'type' => 'text',
 			);
 		}
 
 		return $tokens;
-	}
-
-	/**
-	 * Escaping for HTML blocks.
-	 *
-	 * @param mixed $value The value to parse.
-	 * @param bool  $is_html Whether the value has HTML contents or not.
-	 *
-	 * @return string
-	 */
-	public static function esc_html_string( $value = '' ) {
-
-		// Return the empty value if its not scalar.
-		if ( ! is_scalar( $value ) || ! is_string( $value ) ) {
-			return '';
-		}
-
-		return esc_html( $value );
-
 	}
 
 	/**

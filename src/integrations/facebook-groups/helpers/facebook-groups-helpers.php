@@ -101,20 +101,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function has_live_integration() {
 
-		return ! empty( $this->fetch_live_actions() );
-
-	}
-
-	/**
-	 * Fetches live Facebook Group actions.
-	 *
-	 * @return array{}|array{array{ID:string,post_status:string}}
-	 */
-	protected function fetch_live_actions() {
-
-		$results = Automator()->utilities->fetch_live_integration_actions( 'FACEBOOK_GROUPS' );
-
-		return (array) $results;
+		return ! empty( Automator()->get->get_integration_publish_actions( 'FACEBOOK_GROUPS' ) );
 
 	}
 
@@ -127,16 +114,12 @@ class Facebook_Groups_Helpers {
 
 		$n_days = $this->get_token_days_remaining( $this->get_token_info() );
 
-		$fb_groups_integration = Automator()->get_integration( 'FACEBOOK_GROUPS' );
-
-		if ( isset( $fb_groups_integration['connected'] ) && false === $fb_groups_integration['connected'] ) {
-			return;
-		}
-
 		$token_notice_n_days = apply_filters( 'automator_facebook_group_token_notice_n_days', 14 );
 
 		if ( $n_days <= $token_notice_n_days && $this->has_live_integration() ) {
+
 			add_action( 'admin_notices', array( $this, 'admin_notice_template' ) );
+
 		}
 
 	}

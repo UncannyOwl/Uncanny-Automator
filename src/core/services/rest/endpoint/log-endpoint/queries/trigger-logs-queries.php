@@ -150,44 +150,4 @@ class Trigger_Logs_Queries {
 
 	}
 
-	/**
-	 * Retrieves the trigger logic from recipe log meta.
-	 *
-	 * @param mixed[] $params
-	 *
-	 * @return null|string 'ALL' or 'ANY'. Otherwise, null.
-	 */
-	public function get_trigger_logic( $params = array() ) {
-
-		$result = $this->db->get_var(
-			$this->db->prepare(
-				"SELECT meta_value 
-					FROM {$this->db->prefix}uap_recipe_log_meta AS recipe_log_meta
-					INNER JOIN {$this->db->prefix}uap_recipe_log AS recipe_log
-						ON recipe_log.ID = recipe_log_meta.recipe_log_id
-					WHERE recipe_log_meta.recipe_log_id = %d
-						AND recipe_log_meta.recipe_id = %d
-						AND recipe_log_meta.meta_key = 'triggers_logic'
-						AND recipe_log.run_number = %d
-					",
-				$params['recipe_log_id'],
-				$params['automator_recipe_id'],
-				$params['run_number']
-			)
-		);
-
-		if ( empty( $result ) ) {
-			return null;
-		}
-
-		$result = (array) json_decode( $result, ARRAY_A );
-
-		if ( isset( $result['logic'] ) ) {
-			return $result['logic'];
-		}
-
-		return null;
-
-	}
-
 }

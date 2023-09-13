@@ -50,7 +50,6 @@ class Automator_DB {
 		}
 		$queries        = dbDelta( self::get_schema(), false );
 		$missing_tables = array();
-
 		foreach ( $queries as $table_name => $result ) {
 			if ( "Created table $table_name" === $result ) {
 				$missing_tables[] = $table_name;
@@ -65,7 +64,7 @@ class Automator_DB {
 			delete_option( 'automator_schema_missing_views' );
 		}
 
-		return apply_filters( 'automator_db_missing_tables', $missing_tables );
+		return $missing_tables;
 	}
 
 	/**
@@ -713,8 +712,6 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log_response`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_tokens_log`;" );
-
-		do_action( 'automator_tables_purged' );
 
 		return true;
 

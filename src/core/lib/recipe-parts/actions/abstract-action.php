@@ -113,13 +113,10 @@ abstract class Action {
 
 		add_filter( 'automator_actions', array( $this, 'register_action' ) );
 
-		if ( ! empty( $this->get_action_code() ) ) {
-			$this->set_action_tokens(
-				$this->define_tokens(),
-				$this->get_action_code()
-			);
-		}
-
+		$this->set_action_tokens(
+			$this->define_tokens(),
+			$this->get_action_code()
+		);
 	}
 
 	/**
@@ -214,9 +211,6 @@ abstract class Action {
 	 */
 	public function do_action( $user_id, $action_data, $recipe_id, $args ) {
 
-		// Clear errors in case there are some left from a previous action.
-		$this->errors = array();
-
 		$this->user_id     = $user_id;
 		$this->action_data = $action_data;
 		$this->recipe_id   = $recipe_id;
@@ -231,9 +225,6 @@ abstract class Action {
 
 		try {
 			$result = $this->process_action( $this->user_id, $this->action_data, $this->recipe_id, $this->args, $this->maybe_parsed );
-		} catch ( \Error $e ) {
-			$result = false;
-			$this->add_log_error( $e->getMessage() );
 		} catch ( \Exception $e ) {
 			$result = false;
 			$this->add_log_error( $e->getMessage() );

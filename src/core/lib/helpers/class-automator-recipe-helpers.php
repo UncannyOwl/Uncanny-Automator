@@ -7,7 +7,6 @@ namespace Uncanny_Automator;
  *
  * @package Uncanny_Automator
  */
-#[\AllowDynamicProperties]
 class Automator_Helpers_Recipe extends Automator_Helpers {
 
 	/**
@@ -91,7 +90,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $paid_memberships_pro;
 	/**
-	 * @var \Popup_Maker_Helpers
+	 * @var Popup_Maker_Helpers
 	 */
 	public $popup_maker;
 	/**
@@ -211,7 +210,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $presto;
 	/**
-	 * @var \Modern_Events_Calendar_Helpers;
+	 * @var Modern_Events_Calendar_Helpers;
 	 */
 	public $modern_events_calendar;
 	/**
@@ -298,75 +297,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $load_helpers = false;
 
-	/**
-	 * @var mixed $active_campaign
-	 */
-	public $active_campaign;
-
-	/**
-	 * @var mixed $clickup
-	 */
-	public $clickup;
-
-	/**
-	 * @var mixed $convertkit
-	 */
-	public $convertkit;
-
-	/**
-	 * @var mixed $drip
-	 */
-	public $drip;
-
-	/**
-	 * @var mixed $emails
-	 */
-	public $emails;
-
-	/**
-	 * @var mixed $gotowebinar
-	 */
-	public $gotowebinar;
-
-	/**
-	 * @var mixed $helpscout
-	 */
-	public $helpscout;
-
-	/**
-	 * @var mixed $integromat
-	 */
-	public $integromat;
-
-	/**
-	 * @var mixed $linkedin
-	 */
-	public $linkedin;
-
-	/**
-	 * @var mixed $open_ai
-	 */
-	public $open_ai;
-
-	/**
-	 * @var mixed $telegram
-	 */
-	public $telegram;
-
-	/**
-	 * @var mixed $trello
-	 */
-	public $trello;
-
-	/**
-	 * @var mixed $whatsapp
-	 */
-	public $whatsapp;
-
-	/**
-	 * @var mixed $zoho_campaigns
-	 */
-	public $zoho_campaigns;
 
 	/**
 	 * Automator_Helpers_Recipe constructor.
@@ -1072,42 +1002,4 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		return \Uncanny_Automator\Automator_Status::finished( $action_status );
 	}
-
-	/**
-	 * Sets the properties of an action that will be displayed in the logs.
-	 *
-	 * @param array{array{type:string,label:string,content:string,code_language:string}} $properties_args The key `code_language` is optional. Only needed for non-text `type`.
-	 *
-	 * @return array{array{type:string,label:string,content:string,code_language:string}} Returns mixed array of the properties args.
-	 */
-	public function set_log_properties( $properties_args = array() ) {
-
-		$properties = new Services\Properties();
-
-		foreach ( (array) $properties_args as $property_arg ) {
-
-			$props = wp_parse_args(
-				$property_arg,
-				array(
-					'type'       => '',
-					'label'      => '',
-					'value'      => '',
-					'attributes' => array(),
-				)
-			);
-
-			if ( empty( $props['type'] ) || empty( $props['label'] || empty( $props['value'] ) ) ) {
-				continue; // Skip. The "type", "label", and "value" are required.
-			}
-
-			$properties->add_item( $props );
-
-		}
-
-		$properties->dispatch();
-
-		return $properties;
-
-	}
-
 }

@@ -24,13 +24,6 @@ class Helpscout_Helpers {
 
 	const TRANSIENT_EXPIRES_TIME = 3600; // 1 hour in seconds.
 
-	/**
-	 * The setting's ID.
-	 *
-	 * @var string $setting_tab
-	 */
-	public $setting_tab = 'helpscout';
-
 	protected $webhook_endpoint = null;
 
 	public function __construct( $load_hooks = true ) {
@@ -69,6 +62,8 @@ class Helpscout_Helpers {
 			$this->webhook_endpoint = apply_filters( 'automator_helpscout_webhook_endpoint', '/helpscout', $this );
 
 		}
+
+		$this->setting_tab = 'helpscout';
 
 		// Load the settings page.
 		require_once __DIR__ . '/../settings/settings-helpscout.php';

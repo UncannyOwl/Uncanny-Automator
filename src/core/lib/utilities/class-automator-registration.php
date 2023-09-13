@@ -242,11 +242,6 @@ class Automator_Registration {
 	 */
 	public function integration( $integration_code = null, $integration = null ) {
 
-		// Only registers the integration if its not yet registered.
-		if ( ! isset( Automator()->all_integrations[ $integration_code ] ) ) {
-			Automator()->set_all_integrations( $integration_code, $integration );
-		}
-
 		if ( null === $integration_code || ! is_string( $integration_code ) ) {
 			throw new Automator_Exception( 'You are trying to register an integration without passing an integration code.', 1002 );
 		}

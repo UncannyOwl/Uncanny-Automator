@@ -12,10 +12,6 @@ class Automator_System_Report {
 	 * @var
 	 */
 	public static $instance;
-	/**
-	 * @var
-	 */
-	public $available_updates;
 
 	/**
 	 * @return Automator_System_Report
@@ -316,21 +312,21 @@ class Automator_System_Report {
 			$core_tables = (object) apply_filters(
 				'automator_database_tables',
 				(object) array(
-					'recipe_logs'       => 'uap_recipe_logs_view',
-					'trigger_logs'      => 'uap_trigger_logs_view',
-					'action_logs'       => 'uap_action_logs_view',
-					'api_logs'          => 'uap_api_logs_view',
-					'recipe'            => 'uap_recipe_log',
-					'recipe_meta'       => 'uap_recipe_log_meta',
-					'trigger'           => 'uap_trigger_log',
-					'trigger_meta'      => 'uap_trigger_log_meta',
-					'action'            => 'uap_action_log',
-					'action_meta'       => 'uap_action_log_meta',
-					'closure'           => 'uap_closure_log',
-					'closure_meta'      => 'uap_closure_log_meta',
-					'api'               => 'uap_api_log',
+					'recipe'       => 'uap_recipe_log',
+					'recipe_meta'  => 'uap_recipe_log_meta',
+					'trigger'      => 'uap_trigger_log',
+					'trigger_meta' => 'uap_trigger_log_meta',
+					'action'       => 'uap_action_log',
+					'action_meta'  => 'uap_action_log_meta',
+					'closure'      => 'uap_closure_log',
+					'closure_meta' => 'uap_closure_log_meta',
+					'api'          => 'uap_api_log',
+					'recipe_logs'  => 'uap_recipe_logs_view',
+					'trigger_logs' => 'uap_trigger_logs_view',
+					'action_logs'  => 'uap_action_logs_view',
+					'api_logs'     => 'uap_api_logs_view',
 					'api_response_logs' => 'uap_api_log_response',
-					'tokens_logs'       => 'uap_tokens_log',
+					'tokens_logs'  => 'uap_tokens_log'
 				)
 			);
 
@@ -594,9 +590,9 @@ class Automator_System_Report {
 	 */
 	public function get_automator_stats() {
 
-		if (
+		if ( 
 			// Disable in Status > Tools page.
-			'uncanny-automator-admin-tools' === filter_input( INPUT_GET, 'page' )
+			'uncanny-automator-admin-tools' === filter_input( INPUT_GET, 'page' ) 
 			&& 'tools' === filter_input( INPUT_GET, 'tab' ) ) {
 			return;
 		}

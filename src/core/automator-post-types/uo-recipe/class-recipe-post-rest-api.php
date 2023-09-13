@@ -419,11 +419,8 @@ class Recipe_Post_Rest_Api {
 			'post_modified'     => $recipe->post_modified,
 			'post_modified_gmt' => $recipe->post_modified_gmt,
 			'post_parent'       => $recipe->ID,
-		);
 
-		if ( ! empty( $request->get_param( 'parent_id' ) ) ) {
-			$post['post_parent'] = absint( $request->get_param( 'parent_id' ) );
-		}
+		);
 
 		// Insert the post into the database
 		$post_id = wp_insert_post( $post );
@@ -442,7 +439,6 @@ class Recipe_Post_Rest_Api {
 			$trigger_integration = Automator()->get->trigger_integration_from_trigger_code( $item_code );
 			update_post_meta( $post_id, 'integration', $trigger_integration );
 			update_post_meta( $post_id, 'uap_trigger_version', Utilities::automator_get_version() );
-			update_post_meta( $post_id, 'sentence_human_readable', $sentence );
 			$add_action_hook = Automator()->get->trigger_actions_from_trigger_code( $item_code );
 			update_post_meta( $post_id, 'add_action', $add_action_hook );
 			/**
@@ -524,8 +520,6 @@ class Recipe_Post_Rest_Api {
 		$return['post_ID']        = $post_id;
 		$return['action']         = $action;
 		$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe->ID );
-		$return['_integrations']  = Automator()->get_recipe_integrations( $recipe->ID );
-		$return['_recipe']        = Automator()->get_recipe_object( $recipe->ID );
 
 		return new WP_REST_Response( $return, 200 );
 	}
@@ -560,7 +554,6 @@ class Recipe_Post_Rest_Api {
 				$return['delete_posts']   = $delete_posts;
 				$return['action']         = 'deleted-' . $delete_posts->post_type;
 				$return['recipes_object'] = Automator()->get_recipes_data( true );
-				$return['_recipe']        = Automator()->get_recipe_object( absint( $request->get_param( 'recipe_id' ) ) );
 
 				return new WP_REST_Response( $return, 200 );
 			}
@@ -585,7 +578,7 @@ class Recipe_Post_Rest_Api {
 	public function update( WP_REST_Request $request ) {
 		if ( $request->has_param( 'itemId' ) && is_numeric( $request->get_param( 'itemId' ) ) && $request->has_param( 'optionCode' ) && $request->has_param( 'optionValue' ) ) {
 			$item_id    = absint( $request->get_param( 'itemId' ) );
-			$recipe_id  = absint( $request->get_param( 'recipe_id' ) );
+			$recipe_id  = Automator()->get->maybe_get_recipe_id( $item_id );
 			$meta_key   = (string) Automator()->utilities->automator_sanitize( $request->get_param( 'optionCode' ) );
 			$meta_value = $request->get_param( 'optionValue' );
 			$meta_value = Automator()->utilities->automator_sanitize( $meta_value, 'mixed', $meta_key, $request->get_param( 'options' ) );
@@ -649,7 +642,6 @@ class Recipe_Post_Rest_Api {
 				$return['action']         = 'updated_option';
 				$return['data']           = array( $item, $meta_key, $meta_value );
 				$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
-				$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 				$return = apply_filters( 'automator_option_updated', $return, $item, $meta_key, $meta_value );
 
@@ -797,14 +789,6 @@ class Recipe_Post_Rest_Api {
 
 					$return['recipes_object'] = Automator()->get_recipes_data( true );
 
-					$recipe_object = null;
-
-					if ( $request->has_param( 'recipe_id' ) ) {
-						$recipe_object = Automator()->get_recipe_object( absint( $request->get_param( 'recipe_id' ) ) );
-					}
-
-					$return['_recipe'] = $recipe_object;
-
 					return new WP_REST_Response( $return, 200 );
 				}
 			}
@@ -842,7 +826,6 @@ class Recipe_Post_Rest_Api {
 					$return['success']        = true;
 					$return['action']         = 'updated_post';
 					$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
-					$return['_recipe']        = Automator()->get_recipe_object( $post_id );
 
 					return new WP_REST_Response( $return, 200 );
 				}
@@ -884,7 +867,6 @@ class Recipe_Post_Rest_Api {
 					$return['success']        = true;
 					$return['action']         = 'updated_post';
 					$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
-					$return['_recipe']        = Automator()->get_recipe_object( $post_id, 'JSON' );
 
 					return new WP_REST_Response( $return, 200 );
 				}
@@ -928,7 +910,6 @@ class Recipe_Post_Rest_Api {
 			$return['success']        = true;
 			$return['action']         = 'updated_recipe_completions_allowed';
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
-			$return['_recipe']        = Automator()->get_recipe_object( $post_id );
 
 			return new WP_REST_Response( $return, 200 );
 		}
@@ -970,7 +951,6 @@ class Recipe_Post_Rest_Api {
 			$return['action']  = 'updated_recipe_max_completions_allowed';
 
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
-			$return['_recipe']        = Automator()->get_recipe_object( $post_id );
 
 			return new WP_REST_Response( $return, 200 );
 		}
@@ -1060,7 +1040,6 @@ class Recipe_Post_Rest_Api {
 			$return['success']        = true;
 			$return['action']         = 'user_selector';
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
-			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 			return new WP_REST_Response( $return, 200 );
 		}
@@ -1133,7 +1112,6 @@ class Recipe_Post_Rest_Api {
 				$return['post_ID']        = $post_id;
 				$return['action']         = 'schedule_action';
 				$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
-				$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 				return new WP_REST_Response( $return, 200 );
 			}
@@ -1174,7 +1152,6 @@ class Recipe_Post_Rest_Api {
 			$return['post_ID']        = $post_id;
 			$return['action']         = 'remove_schedule';
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
-			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 			return new WP_REST_Response( $return, 200 );
 
@@ -1207,7 +1184,6 @@ class Recipe_Post_Rest_Api {
 			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
 			$return['recipes_object'] = Automator()->get_recipes_data( true );
-			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 			return new WP_REST_Response( $return, 200 );
 
@@ -1249,7 +1225,6 @@ class Recipe_Post_Rest_Api {
 			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
-			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 			return new WP_REST_Response( $return, 200 );
 
@@ -1345,7 +1320,6 @@ class Recipe_Post_Rest_Api {
 		$return['post_ID']        = $recipe_id;
 		$return['action']         = 'add-new-action';
 		$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
-		$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 		return new WP_REST_Response( $return, 200 );
 	}
@@ -1589,7 +1563,6 @@ class Recipe_Post_Rest_Api {
 
 		$return            = array();
 		$return['success'] = true;
-		$return['_recipe'] = Automator()->get_recipe_object( absint( $request->get_param( 'recipe_id' ) ) );
 
 		return new WP_REST_Response( $return, 200 );
 	}

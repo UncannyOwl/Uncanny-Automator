@@ -92,13 +92,6 @@ class Google_Sheet_Helpers {
 	public static $hash_string = 'Uncanny Automator Pro Google Sheet Integration';
 
 	/**
-	 * The API endpoint.
-	 *
-	 * @var string $automator_api
-	 */
-	public $automator_api = '';
-
-	/**
 	 * Googlesheet_Pro_Helpers constructor.
 	 */
 	public function __construct() {
@@ -944,8 +937,8 @@ class Google_Sheet_Helpers {
 				// Create array with the data we're going to send
 				let dataToBeSent = {
 					action: 'get_worksheet_ROWS_GOOGLESHEETS',
-					nonce: UncannyAutomator._site.rest.nonce,
-					recipe_id: UncannyAutomator._recipe.recipe_id,
+					nonce: UncannyAutomator.nonce,
+					recipe_id: UncannyAutomator.recipe.id,
 					item_id: data.item.id,
 					drive: data.values.GSDRIVE,
 					sheet: data.values.GSSPREADSHEET,

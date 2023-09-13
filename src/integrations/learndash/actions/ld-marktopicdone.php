@@ -9,8 +9,6 @@ namespace Uncanny_Automator;
  */
 class LD_MARKTOPICDONE {
 
-	use Recipe\Action_Tokens;
-
 	/**
 	 * Integration code
 	 *
@@ -52,12 +50,6 @@ class LD_MARKTOPICDONE {
 			'execution_function' => array( $this, 'mark_completes_a_topic' ),
 			'options_callback'   => array( $this, 'load_options' ),
 		);
-
-		// Set Action Tokens for Topic, Lesson and Course.
-		$topic_tokens  = Automator()->helpers->recipe->learndash->options->get_topic_relevant_tokens( 'action', $this->action_meta );
-		$lesson_tokens = Automator()->helpers->recipe->learndash->options->get_lesson_relevant_tokens( 'action', 'LDLESSON' );
-		$course_tokens = Automator()->helpers->recipe->learndash->options->get_course_relevant_tokens( 'action', 'LDCOURSE' );
-		$this->set_action_tokens( $topic_tokens + $lesson_tokens + $course_tokens, $this->action_code );
 
 		Automator()->register->action( $action );
 	}
@@ -150,7 +142,6 @@ class LD_MARKTOPICDONE {
 
 		//Mark complete a lesson
 		$course_id = $action_data['meta']['LDCOURSE'];
-		$lesson_id = $action_data['meta']['LDLESSON'];
 
 		//Mark complete a topic quiz
 		$topic_quiz_list = learndash_get_lesson_quiz_list( $topic_id, $user_id, $course_id );
@@ -163,12 +154,6 @@ class LD_MARKTOPICDONE {
 		$this->mark_quiz_complete( $user_id, $course_id );
 
 		learndash_process_mark_complete( $user_id, $topic_id, false, $course_id );
-
-		// Hydrate Lesson & Course Action Tokens.
-		$topic_tokens  = Automator()->helpers->recipe->learndash->options->hydrate_ld_topic_action_tokens( $topic_id, $user_id, $this->action_meta );
-		$lesson_tokens = Automator()->helpers->recipe->learndash->options->hydrate_ld_lesson_action_tokens( $lesson_id, $user_id, 'LDLESSON' );
-		$course_tokens = Automator()->helpers->recipe->learndash->options->hydrate_ld_course_action_tokens( $course_id, $user_id, 'LDCOURSE' );
-		$this->hydrate_tokens( $topic_tokens + $lesson_tokens + $course_tokens );
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}

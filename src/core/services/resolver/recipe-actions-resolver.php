@@ -1,5 +1,4 @@
 <?php
-namespace Uncanny_Automator\Services\Resolver;
 
 class Recipe_Actions_Resolver {
 
@@ -49,17 +48,11 @@ class Recipe_Actions_Resolver {
 
 		if ( is_array( $recipe_conditions ) ) {
 
-			foreach ( $recipe_conditions as $index => $recipe_condition ) {
-
-				$condition_actions = isset( $recipe_condition['actions'] ) ? (array) $recipe_condition['actions'] : array();
-
-				if ( ! empty( $condition_actions ) ) {
-					foreach ( $condition_actions as $recipe_condition_action ) {
+			foreach ( $recipe_conditions as $recipe_condition ) {
+				if ( is_array( $recipe_condition['actions'] ) ) {
+					foreach ( $recipe_condition['actions'] as $recipe_condition_action ) {
 						$actions_conditions[ $recipe_condition_action ] = $recipe_condition['id'];
 					}
-				} else {
-					// Empty actions inside the action conditions block, mark the action id as -1.
-					$actions_conditions[ $recipe_condition['id'] ] = null;
 				}
 			}
 		}
@@ -78,7 +71,6 @@ class Recipe_Actions_Resolver {
 
 		$buckets = array();
 
-		// If there are actions.
 		foreach ( $recipe_actions as $recipe_action ) {
 			// If action has condition.
 			$action_id = $recipe_action['ID'];
@@ -92,13 +84,6 @@ class Recipe_Actions_Resolver {
 
 		$flipped = array_flip( $buckets ); /** @phpstan-ignore-line */
 
-		// If there are action conditions without actions. Insert them manually into the flipped data and put null as actions.
-		foreach ( (array) $actions_conditions as $key => $value ) {
-			if ( ! is_numeric( $key ) && null === $value ) {
-				$flipped[ $key ] = null;
-			}
-		}
-
 		foreach ( $flipped as $k => $v ) {
 			$flipped[ $k ] = implode( ', ', array_keys( $buckets, $k, true ) );
 		}
@@ -108,44 +93,15 @@ class Recipe_Actions_Resolver {
 	}
 
 	/**
-	 * @param bool $show_draft Whether to show the draft or not.
-	 *
 	 * @return mixed[]
 	 */
-	public function resolve_recipe_actions( $show_draft = false ) {
-
-		$recipe_id = $this->get_recipe_id();
+	public function resolve_recipe_actions() {
 
 		// 1. Get all actions order by menu from recipe ID.
-		$recipe_actions = $this->automator->get_recipe_actions( $recipe_id, $show_draft );
+		$recipe_actions = $this->automator->get_recipe_actions( $this->get_recipe_id() );
 
 		// 2. Get recipe conditions
-		$recipe_conditions = $this->automator->get_recipe_conditions( $recipe_id, $recipe_id );
-
-		if ( is_array( $recipe_actions ) && is_array( $recipe_conditions ) ) {
-			// 3. Hydrate actions that has conditions.
-			$this->hydrate_actions_conditions( $recipe_conditions, $actions_conditions );
-			// 4. Flip the keys accordingly.
-			return $this->flip_ordered_action_conditions( $recipe_actions, $actions_conditions );
-		}
-
-		return array();
-
-	}
-
-	/**
-	 * @param int $loop_id The ID of the loop.
-	 * @param int $recipe_id The ID of the loop.
-	 *
-	 * @return mixed[]
-	 */
-	public function resolve_loop_actions( $recipe_id, $loop_id ) {
-
-		// 1. Get all actions order by menu from recipe ID.
-		$recipe_actions = $this->automator->get_recipe_actions( $loop_id, true );
-
-		// 2. Get recipe conditions
-		$recipe_conditions = $this->automator->get_recipe_conditions( $recipe_id, $loop_id );
+		$recipe_conditions = $this->automator->get_recipe_conditions( $this->get_recipe_id() );
 
 		if ( is_array( $recipe_actions ) && is_array( $recipe_conditions ) ) {
 			// 3. Hydrate actions that has conditions.
