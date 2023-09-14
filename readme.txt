@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailc
 Requires at least: 5.3
 Tested up to: 6.3.1
 Requires PHP: 5.6
-Stable tag: 5.0.1
+Stable tag: 5.0.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -321,6 +321,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 5.0.1.1 [2023-09-14] =
+
+**Fixed:**
+
+* PHP error related to an IP address token in Windows environments #3940
+
 = 5.0.1 [2023-09-13] =
 
 **New Tokens:**
@@ -338,7 +344,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * MemberPress - A user purchases a recurring subscription product - Filter for recurring payments #3914
 * WP All Import - Specific post type is imported - Erroneously firing when posts are updated during import #3911
 * WordPress - Create a post - Content sanitization for the "Post Content" is removed #3933
-* Zoho Campaigns: Add additional fields like name and other details #3903
+* Zoho Campaigns - Add additional fields like name and other details #3903
 
 **Fixed:**
 

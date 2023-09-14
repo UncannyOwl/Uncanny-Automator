@@ -470,7 +470,7 @@ return array(
     'Uncanny_Automator\\Integrations\\Common\\Tokens\\Current_Blog_Id' => $baseDir . '/src/integrations/common/tokens/current-blog-id.php',
     'Uncanny_Automator\\Integrations\\Common\\Tokens\\Recipe_Id' => $baseDir . '/src/integrations/common/tokens/recipe-id.php',
     'Uncanny_Automator\\Integrations\\Common\\Tokens\\Recipe_Name' => $baseDir . '/src/integrations/common/tokens/recipe-name.php',
-    'Uncanny_Automator\\Integrations\\Common\\Tokens\\Reset_Pass_link' => $baseDir . '/src/integrations/common/tokens/reset-pass-link.php',
+    'Uncanny_Automator\\Integrations\\Common\\Tokens\\Reset_Pass_Link' => $baseDir . '/src/integrations/common/tokens/reset-pass-link.php',
     'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Name' => $baseDir . '/src/integrations/common/tokens/site-name.php',
     'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Tagline' => $baseDir . '/src/integrations/common/tokens/site-tagline.php',
     'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Url' => $baseDir . '/src/integrations/common/tokens/site-url.php',

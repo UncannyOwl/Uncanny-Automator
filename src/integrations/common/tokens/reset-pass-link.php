@@ -3,7 +3,7 @@ namespace Uncanny_Automator\Integrations\Common\Tokens;
 
 use Uncanny_Automator\Tokens\Token;
 
-class Reset_Pass_link extends Token {
+class Reset_Pass_Link extends Token {
 
 	/**
 	 * setup

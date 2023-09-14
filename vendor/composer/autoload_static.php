@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e
+class ComposerStaticInitde93f2c2e867ef526f672d5d65c7b9e8
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -495,7 +495,7 @@ class ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Current_Blog_Id' => __DIR__ . '/../..' . '/src/integrations/common/tokens/current-blog-id.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Recipe_Id' => __DIR__ . '/../..' . '/src/integrations/common/tokens/recipe-id.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Recipe_Name' => __DIR__ . '/../..' . '/src/integrations/common/tokens/recipe-name.php',
-        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Reset_Pass_link' => __DIR__ . '/../..' . '/src/integrations/common/tokens/reset-pass-link.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\Reset_Pass_Link' => __DIR__ . '/../..' . '/src/integrations/common/tokens/reset-pass-link.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Name' => __DIR__ . '/../..' . '/src/integrations/common/tokens/site-name.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Tagline' => __DIR__ . '/../..' . '/src/integrations/common/tokens/site-tagline.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Site_Url' => __DIR__ . '/../..' . '/src/integrations/common/tokens/site-url.php',
@@ -1029,10 +1029,10 @@ class ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit1e505c46e8d86d4dd78974de88453f7e::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitde93f2c2e867ef526f672d5d65c7b9e8::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitde93f2c2e867ef526f672d5d65c7b9e8::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitde93f2c2e867ef526f672d5d65c7b9e8::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitde93f2c2e867ef526f672d5d65c7b9e8::$classMap;
 
         }, null, ClassLoader::class);
     }

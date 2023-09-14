@@ -30,7 +30,7 @@ class Common_Integration extends \Uncanny_Automator\Integration {
 		new Tokens\Current_Blog_Id();
 		new Tokens\Recipe_Id();
 		new Tokens\Recipe_Name();
-		new Tokens\Reset_Pass_link();
+		new Tokens\Reset_Pass_Link();
 		new Tokens\Site_Name();
 		new Tokens\Site_Tagline();
 		new Tokens\Site_Url();
@@ -38,7 +38,7 @@ class Common_Integration extends \Uncanny_Automator\Integration {
 		new Tokens\User_Email();
 		new Tokens\User_Firstname();
 		new Tokens\User_Id();
-		new Tokens\User_Ip_address();
+		new Tokens\User_Ip_Address();
 		new Tokens\User_Lastname();
 		new Tokens\User_Locale();
 		new Tokens\User_Reset_Pass_Url();
