@@ -287,7 +287,7 @@ abstract class Token {
 			return $replaceable;
 		}
 
-		return $this->parse( $replaceable, $field_text, $match, $current_user );
+		return $this->parse( $replaceable, $field_text, $match, $args['user_id'] );
 	}
 
 	/**
