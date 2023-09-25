@@ -192,6 +192,8 @@ class Action_Logs_Resources {
 			// A token can break a JSON so make sure its handled.
 			if ( 'repeater' === $field['type'] ) {
 
+				$individual_repeater = array();
+
 				$repeater_fields_array = (array) json_decode( $fields[ $key ]['value']['raw'], true );
 
 				foreach ( $repeater_fields_array as $index => $repeater_fields ) {
@@ -211,11 +213,11 @@ class Action_Logs_Resources {
 							)
 						);
 
-						$temp[ $index ][ $code ] = $parsed_value;
+						$individual_repeater[ $index ][ $code ] = $parsed_value;
 					}
 				}
 
-				$fields[ $key ]['value']['parsed'] = wp_json_encode( $temp );
+				$fields[ $key ]['value']['parsed'] = wp_json_encode( $individual_repeater );
 
 			} else {
 				// Otherwise, proceed as normal.

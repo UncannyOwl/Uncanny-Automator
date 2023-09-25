@@ -277,26 +277,115 @@ class Affwp_Tokens {
 				 in_array( 'AFFWPREJECTREFERRAL', $pieces ) ||
 				 in_array( 'AFFWPPAIDREFERRAL', $pieces )
 			) {
-				global $wpdb;
-				$trigger_id     = $pieces[0];
-				$trigger_meta   = $pieces[2];
-				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
 
-				$entry = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT meta_value
+				if ( 'SPECIFICETYPEREF' === $pieces[1] || 'AFFWPREFERRAL' === $pieces[1] ) {
+					$to_replace = $pieces[2];
+					/** @var \AffWP\Referral $referral */
+					$referral    = maybe_unserialize( Automator()->db->token->get( 'referral', $replace_args ) );
+					$referral_id = $referral->referral_id;
+					// Refresh Referral object
+					$referral = affwp_get_referral( $referral_id );
+
+					switch ( $to_replace ) {
+						case 'SPECIFICETYPEREF':
+							$value = $referral->type;
+							break;
+						case 'AFFILIATEWPID':
+							$value = $referral->affiliate_id;
+							break;
+						case 'REFERRALAMOUNT':
+							$value = $referral->amount;
+							break;
+						case 'REFERRALDATE':
+							$value = $referral->date;
+							break;
+						case 'REFERRALDESCRIPTION':
+							$value = $referral->description;
+							break;
+						case 'REFERRALCONTEXT':
+							$value = $referral->context;
+							break;
+						case 'REFERRALREFERENCE':
+							$value = $referral->reference;
+							break;
+						case 'REFERRALCUSTOM':
+							$value = $referral->custom;
+							break;
+						case 'REFERRALSTATUS':
+							$value = $referral->status;
+							break;
+						case 'AFFILIATEWPCOUPON':
+							$dynamic_coupons = affwp_get_dynamic_affiliate_coupons( $referral->affiliate_id, false );
+							$coupons         = '';
+							if ( isset( $dynamic_coupons ) && is_array( $dynamic_coupons ) ) {
+								foreach ( $dynamic_coupons as $coupon ) {
+									$coupons .= $coupon->coupon_code . '<br/>';
+								}
+							}
+							$value = $coupons;
+							break;
+						case 'AFFILIATEWPSTATUS':
+							$affiliate = affwp_get_affiliate( $referral->affiliate_id );
+							$value     = $affiliate->status;
+							break;
+						case 'AFFILIATEWPREGISTERDATE':
+							$affiliate = affwp_get_affiliate( $referral->affiliate_id );
+							$value     = $affiliate->date_registered;
+							break;
+						case 'AFFILIATEWPPAYMENTEMAIL':
+							$value = affwp_get_affiliate_payment_email( $referral->affiliate_id );
+							break;
+						case 'AFFILIATEWPREFRATE':
+							$affiliate = affwp_get_affiliate( $referral->affiliate_id );
+							$value     = ! empty( $affiliate->rate ) ? $affiliate->rate : '0';
+							break;
+						case 'AFFILIATEWPREFRATETYPE':
+							$affiliate = affwp_get_affiliate( $referral->affiliate_id );
+							$value     = ! empty( $affiliate->rate_type ) ? $affiliate->rate_type : '0';
+							break;
+						case 'AFFILIATEWPPROMOMETHODS':
+							$affiliate = affwp_get_affiliate( $referral->affiliate_id );
+							$value     = get_user_meta( $affiliate->user_id, 'affwp_promotion_method', true );
+							break;
+						case 'AFFILIATEWPNOTES':
+							$value = affwp_get_affiliate_meta( $referral->affiliate_id, 'notes', true );
+							break;
+						case 'AFFILIATEWPACCEMAIL':
+							$user_id = affwp_get_affiliate_user_id( $referral->affiliate_id );
+							$user    = get_user_by( 'id', $user_id );
+							$value   = $user->user_email;
+							break;
+						case 'AFFILIATEWPWEBSITE':
+							$user_id = affwp_get_affiliate_user_id( $referral->affiliate_id );
+							$user    = get_user_by( 'id', $user_id );
+							$value   = $user->user_url;
+							break;
+						case 'AFFILIATEWPURL':
+							$value = affwp_get_affiliate_referral_url( array( 'affiliate_id' => $referral->affiliate_id ) );
+							break;
+					}
+				} else {
+					global $wpdb;
+					$trigger_id     = $pieces[0];
+					$trigger_meta   = $pieces[2];
+					$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
+
+					$entry = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT meta_value
 						FROM {$wpdb->prefix}uap_trigger_log_meta
 						WHERE meta_key = %s
 						AND automator_trigger_log_id = %d
 						AND automator_trigger_id = %d
 						LIMIT 0,1",
-						$trigger_meta,
-						$trigger_log_id,
-						$trigger_id
-					)
-				);
+							$trigger_meta,
+							$trigger_log_id,
+							$trigger_id
+						)
+					);
 
-				$value = maybe_unserialize( $entry );
+					$value = maybe_unserialize( $entry );
+				}
 			}
 		}
 

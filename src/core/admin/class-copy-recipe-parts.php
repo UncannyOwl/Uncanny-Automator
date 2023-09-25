@@ -23,7 +23,6 @@ class Copy_Recipe_Parts {
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'copy_recipe_parts' ) );
 		add_filter( 'post_row_actions', array( $this, 'add_copy_recipe_action_rows' ), 10, 2 );
-
 	}
 
 	/**
@@ -81,11 +80,14 @@ class Copy_Recipe_Parts {
 		}
 
 		// Copy the post and insert it
-		$new_id = $this->copy_this_recipe( $recipe_id );
+		$new_recipe_id = $this->copy_this_recipe( $recipe_id );
+
+		do_action( 'automator_recipe_duplicated', $new_recipe_id, $recipe_id );
+
 		if ( automator_filter_has_var( 'return_to_recipe' ) ) {
-			wp_safe_redirect( admin_url( 'post.php?post=' . $new_id . '&action=edit' ) );
+			wp_safe_redirect( admin_url( 'post.php?post=' . $new_recipe_id . '&action=edit' ) );
 		} else {
-			if ( false === $new_id ) {
+			if ( false === $new_recipe_id ) {
 				wp_safe_redirect( admin_url( 'post.php?post=' . $recipe_id . '&action=edit' ) );
 				exit;
 			}
@@ -104,15 +106,20 @@ class Copy_Recipe_Parts {
 
 		// Copy recipe post
 		$new_recipe_id = $this->copy( $recipe_id );
+
 		if ( is_wp_error( $new_recipe_id ) ) {
 			return false;
 		}
+
 		// Copy triggers
 		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-trigger' );
+
 		// Copy actions
 		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-action' );
+
 		// Copy closures
 		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-closure' );
+
 		// Fallback to update tokens for Anonymous recipes that is stored in recipe's post meta itself
 		$this->copy_recipe_metas( $recipe_id, $new_recipe_id );
 
@@ -159,8 +166,14 @@ class Copy_Recipe_Parts {
 				continue;
 			}
 
-			$this->copy( $recipe_part->ID, $new_recipe_id );
+			$new_id = $this->copy( $recipe_part->ID, $new_recipe_id );
+
+			// Part duplicated
+			do_action( 'automator_recipe_part_duplicated', $new_id, $new_recipe_id, $recipe_part, $recipe_id, $type );
 		}
+
+		// Parts duplicated
+		do_action( 'automator_recipe_parts_duplicated', $new_recipe_id, $recipe_id );
 
 		return true;
 	}
@@ -174,19 +187,25 @@ class Copy_Recipe_Parts {
 	 */
 	public function copy( $post_id, $post_parent = 0, $status = '' ) {
 		$post = get_post( $post_id );
+
 		// We don't want to clone revisions
 		if ( 'revision' === $post->post_type ) {
 			return false;
 		}
+
 		$new_post_author = wp_get_current_user();
+
 		// Keep the same status of triggers and actions as original recipe, but draft the recipe
 		$status = ! empty( $status ) ? $status : $post->post_status;
+
 		if ( 'uo-recipe' === $post->post_type ) {
 			$status = 'draft';
 		}
+
 		/* translators: Original Post title & Post ID */
-		$post_title  = 'uo-recipe' === $post->post_type ? sprintf( __( '%1$s (Duplicated from #%2$d)', 'uncanny-automator' ), $post->post_title, $post_id ) : $post->post_title;
-		$new_post    = array(
+		$post_title = 'uo-recipe' === $post->post_type ? sprintf( __( '%1$s (Duplicated from #%2$d)', 'uncanny-automator' ), $post->post_title, $post_id ) : $post->post_title;
+
+		$new_post = array(
 			'menu_order'     => $post->menu_order,
 			'comment_status' => $post->comment_status,
 			'ping_status'    => $post->ping_status,
@@ -201,27 +220,34 @@ class Copy_Recipe_Parts {
 			'post_type'      => $post->post_type,
 			'post_date'      => current_time( 'mysql' ),
 		);
+
+		// New ID of the part
 		$new_post_id = wp_insert_post( $new_post );
 
 		if ( is_wp_error( $new_post_id ) ) {
 			wp_die( esc_html( $new_post_id->get_error_message() ) );
 		}
 
-		// Store previous => new trigger ID to replace in trigger tokens
-		if ( 'uo-trigger' === $post->post_type ) {
-			$this->trigger_tokens[ $post->ID ] = $new_post_id;
+		// Store the original recipe, trigger, action ID
+		if ( ! empty( $this->store_duplicated_id( $new_post_id, $post_id ) ) ) {
+
+			// Store previous => new trigger ID to replace in trigger tokens
+			if ( 'uo-trigger' === $post->post_type ) {
+				$this->trigger_tokens[ $post->ID ] = $new_post_id;
+			}
+
+			// Store previous => new trigger ID to replace in action tokens
+			if ( 'uo-action' === $post->post_type ) {
+				$this->action_tokens[ $post->ID ] = $new_post_id;
+			}
+
+			$this->copy_recipe_metas( $post_id, $new_post_id, $post_parent );
+
+			// A new recipe part is duplicated
+			do_action( 'automator_recipe_part_duplicated', $new_post_id, $post, $new_post );
+
+			return $new_post_id;
 		}
-
-		// Store previous => new trigger ID to replace in action tokens
-		if ( 'uo-action' === $post->post_type ) {
-			$this->action_tokens[ $post->ID ] = $new_post_id;
-		}
-
-		$this->copy_recipe_metas( $post_id, $new_post_id, $post_parent );
-
-		do_action( 'automator_recipe_part_duplicated', $new_post_id, $post );
-
-		return $new_post_id;
 	}
 
 	/**
@@ -230,9 +256,9 @@ class Copy_Recipe_Parts {
 	 * @param int $post_parent
 	 */
 	public function copy_recipe_metas( $post_id, $new_post_id, $post_parent = 0 ) {
+
 		$post_meta = get_post_meta( $post_id );
-		// Store the original recipe, trigger, action ID
-		update_post_meta( $new_post_id, 'automator_duplicated_from', $post_id );
+
 		foreach ( $post_meta as $key => $value ) {
 			if ( 'automator_duplicated_from' === $key ) {
 				continue;
@@ -251,15 +277,31 @@ class Copy_Recipe_Parts {
 			}
 
 			$val = isset( $value[0] ) ? maybe_unserialize( $value[0] ) : '';
+
 			// Modify conditions
 			if ( 'actions_conditions' === $key ) {
 				$val = $this->modify_conditions( $val, $post_id, $new_post_id );
+				$val = apply_filters( 'automator_recipe_copy_action_conditions_value', $val, $post_id, $new_post_id );
+
+				update_post_meta( $new_post_id, $key, $val );
+
+				// Hooked in Pro to fix conditions
+				do_action( 'automator_recipe_copy_action_conditions', $val, $post_id, $new_post_id );
+
+				continue;
 			}
+
 			// Replace IDs in tokens
 			$val = $this->modify_tokens( $val, $post_parent, $new_post_id );
+
+			// Pass it thru a filter
 			$val = apply_filters( 'automator_recipe_part_meta_value', $val, $post_id, $new_post_id, $key );
+
 			// any remaining meta
 			update_post_meta( $new_post_id, $key, $val );
+
+			// Action to hook into meta
+			do_action( 'automator_recipe_part_copy_meta_value', $key, $value, $post_id, $new_post_id );
 		}
 	}
 
@@ -369,6 +411,7 @@ class Copy_Recipe_Parts {
 	 * @param $post_id
 	 * @param $new_post_id
 	 *
+	 * @depreacated v5.1 - See do_action in Pro 5.1
 	 * @return false|mixed|string
 	 */
 	public function modify_conditions( $content, $post_id = 0, $new_post_id = 0 ) {
@@ -410,5 +453,29 @@ AND pm.meta_key = %s;",
 
 		// return encoded string
 		return wp_json_encode( $content );
+	}
+
+	/**
+	 * @param $new_post_id
+	 * @param $post_id
+	 *
+	 * @return bool|int|\mysqli_result|resource|null
+	 */
+	public function store_duplicated_id( $new_post_id, $post_id ) {
+		global $wpdb;
+
+		return $wpdb->insert(
+			$wpdb->postmeta,
+			array(
+				'post_id'    => $new_post_id,
+				'meta_key'   => 'automator_duplicated_from',
+				'meta_value' => $post_id,
+			),
+			array(
+				'%d',
+				'%s',
+				'%d',
+			)
+		);
 	}
 }

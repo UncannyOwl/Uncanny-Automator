@@ -219,7 +219,7 @@ class Wp_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool   $any_option
+	 * @param bool $any_option
 	 *
 	 * @return mixed
 	 */
@@ -383,7 +383,7 @@ class Wp_Helpers {
 		$group_id   = automator_filter_input( 'group_id', INPUT_POST );
 		$taxonomies = $this->get_taxonomies( automator_filter_input( 'value', INPUT_POST ) );
 		if ( 'CREATEPOST' === $group_id ) {
-			$post_type  = $_POST['values']['CREATEPOST'];
+			$post_type  = sanitize_text_field( $_POST['values']['CREATEPOST'] ); //phpcs:ignore
 			$taxonomies = $this->get_taxonomies( $post_type );
 		}
 
@@ -579,9 +579,9 @@ class Wp_Helpers {
 	}
 
 	/**
-	 * @param null   $label
+	 * @param null $label
 	 * @param string $option_code
-	 * @param array  $args
+	 * @param array $args
 	 *
 	 * @return mixed|void
 	 */
@@ -598,9 +598,9 @@ class Wp_Helpers {
 	/**
 	 * Method get_post_types_options
 	 *
-	 * @param string  $label                 The label of the field.
-	 * @param string  $option_code           The option code of the field.
-	 * @param array   $args                  The field arguments.
+	 * @param string $label The label of the field.
+	 * @param string $option_code The option code of the field.
+	 * @param array $args The field arguments.
 	 * @param boolean $apply_relevant_tokens Previous method `all_post_types` does not apply the relevant tokens. Set
 	 *                                       to true to apply the 'relevant_tokens' argument.
 	 *

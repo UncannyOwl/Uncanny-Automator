@@ -356,7 +356,7 @@ class Automator_Input_Parser {
 								'trigger_id'      => $trigger_id,
 								'trigger_log_id'  => $trigger_log_id,
 								'run_number'      => $run_number,
-								'user_id'         => $user_id,
+								'user_id'         => isset( $args['user_id'] ) ? $args['user_id'] : $user_id,
 								'recipe_triggers' => array(),
 							);
 							if ( isset( $args['recipe_triggers'] ) ) {

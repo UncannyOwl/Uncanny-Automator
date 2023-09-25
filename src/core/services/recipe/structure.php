@@ -136,11 +136,11 @@ final class Structure implements JsonSerializable {
 		$triggers      = new Structure\Triggers\Triggers( $this );
 		$actions       = new Structure\Actions\Actions( $this, self::$meta );
 
-		$this->stats         = $stats;
-		$this->miscellaneous = $miscellaneous;
-		$this->triggers      = $triggers;
+		$this->stats         = apply_filters( 'automator_recipe_main_object\structure\stats', $stats, $this );
+		$this->miscellaneous = apply_filters( 'automator_recipe_main_object\structure\miscellaneous', $miscellaneous, $this );
+		$this->triggers      = apply_filters( 'automator_recipe_main_object\structure\triggers', $triggers, $this );
 		// @see Conditions_Pluggable::register_hooks().
-		$this->actions = apply_filters( 'automator_recipe_main_object\structure\actions', $actions ); //phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		$this->actions = apply_filters( 'automator_recipe_main_object\structure\actions', $actions, $this ); //phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 
 		return $this;
 
@@ -183,7 +183,16 @@ final class Structure implements JsonSerializable {
 	 */
 	public function toJSON() {
 
-		$decoded = wp_json_encode( $this );
+		// Pass default option by default.
+		$flags = apply_filters( 'automator_recipe_object_json_encoding_flags', 0, $this );
+
+		// If its a php 7.2 where constant "JSON_INVALID_UTF8_SUBSTITUTE" is available.
+		if ( defined( 'JSON_INVALID_UTF8_SUBSTITUTE' ) ) {
+			// Provide a different filter and by default, substitute invalid utf-8 characters.
+			$flags = apply_filters( 'automator_recipe_object_json_encoding_flags_php72', JSON_INVALID_UTF8_SUBSTITUTE, $this );
+		}
+
+		$decoded = wp_json_encode( $this, $flags );
 
 		if ( false === $decoded || ! is_string( $decoded ) ) {
 			return '';

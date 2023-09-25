@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailc
 Requires at least: 5.3
 Tested up to: 6.3.1
 Requires PHP: 5.6
-Stable tag: 5.0.1.2
+Stable tag: 5.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -72,7 +72,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Instagram](https://automatorplugin.com/integration/instagram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro 4.8+)
+- [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro v4.8+)
+- [Mautic](https://automatorplugin.com/integration/mautic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -98,6 +99,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Autonami](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [bbPress](https://automatorplugin.com/integration/bbpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro v5.1+)
 - [BuddyBoss](https://automatorplugin.com/integration/buddyboss/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -106,6 +108,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Divi](https://automatorplugin.com/integration/divi/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Easy Digital Downloads - Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Elementor Pro](https://automatorplugin.com/integration/elementor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -320,6 +323,44 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.1 [2023-09-25] =
+
+**New Integrations:**
+
+* [Easy Digital Downloads - Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3277
+* [Mautic](https://automatorplugin.com/integration/mautic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #3200
+
+**New Trigger:**
+
+* EDD Recurring Payments - A user subscribes to a download #3446
+
+**New Actions:**
+
+* EDD Recurring Payments - Cancel the user's subscription to a download #3511
+* Mautic - Create or update a contact #3464
+
+**Updated:**
+
+* Brevo - Create or update a contact - Update existing bool variable support for PHP 7.4 #3950
+* Facebook Groups - Disconnect now only disconnect the current site #3262
+* Recipe object - Handle invalid UTF-8 characters #3946
+
+**Fixed:**
+
+* AffiliateWP - An affiliate makes a referral of a specific type - Not working when creating a referral in the back end #3692 #3919
+* Gravity Forms - An entry for a form is updated - Not firing when fields are updated by `GFAPI` #3977
+* User Loops - User tokens not parsing for universal tokens #3964
+* User Loops - Action buttons hidden on Firefox because of invalid selector #3947
+* Zoho Campaigns - Subscribe a contact to a list - Not parsing repeater fields #3970
+
+**Under the hood:**
+
+* Core - Additional WordPress hooks for recipe duplication in Automator Pro #3930
+* Internal debug logs - PHP notice #3623
+* Internal debug logs - Update to put the contents in `file.txt` instead of `file.log` #3623
+* Recipe Logs - Action Repeater Fields - Not displaying the data correctly when multiple repeater fields are in the action #3972
+* Support for Run Now in Automator Pro v5.1+ #3957
 
 = 5.0.1.2 [2023-09-14] =
 
@@ -1290,100 +1331,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe UI Field - `create_field`'s `input_type` is hard-coded to `int` even when `float` is used #2733
 * Recipe logs - Display "Deleted user" message when a log entry references a user that was subsequently deleted #2685
 * Slack - Uncanny Automator App icon updated
-
-= 4.5.0.2 [2022-09-29] =
-
-**Fixed:**
-
-* JetFormBuilder - Email fields in forms now appear as email tokens #2662
-* JetFormBuilder - Handle `:` in dynamic tokens #2662
-* WordPress - Create a post - Shortcodes are no longer parsed before the post content is saved #2667
-
-**Under the hood:**
-
-* Notification - Hide notification if Automator Pro is installed #2654
-* Google integrations - Added "Sign in with Google" branding
-
-= 4.5.0.1 [2022-09-23] =
-
-**Fixed:**
-
-* Automator core - Triggers added before v3.0 (May 2021) in a recipe now trigger reliably #2661
-
-= 4.5 [2022-09-21] =
-
-**New Integrations:**
-
-* [Advanced Ads](https://automatorplugin.com/integration/advanced-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2460
-* [JetFormBuilder](https://automatorplugin.com/integration/jetformbuilder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2599
-* [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2519
-* [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2461
-
-**New Triggers:**
-
-* Advanced Ads - An ad is set to a specific status #2495
-* Fluent Support - A user's ticket receives a reply from an agent #2470
-* Gravity Forms & Uncanny Groups - A form is submitted with a key from a specific group #2077
-* JetFormBuilder - A form is submitted #2533
-* JetFormBuilder - A user submits a form #2535
-* SureCart - A user purchases a product #2525
-* WordPress Download Manager - A specific file is downloaded #2497
-* WP Simple Pay - A payment for a form is completed #2584
-* WordPress - A user logs out of a site #2594
-
-**New Actions:**
-
-* Advanced Ads - Set an ad to a specific status #2496
-
-**New Tokens:**
-
-* New token category - Date #2583
-* bbPress - Guest name and website #2501
-
-**Added:**
-
-* Automator admin bar menu - Entry added for Settings #2580
-* Database tools - Button to Reset Automator log tables and Drop individual VIEWS #188
-* Gamipress - "Award an achievement to the user" - Now implements "Maximum Earnings Per User" setting #43510 #2621
-* Webhooks - `automator_webhook_action_completed` action hook added to enable developers to parse Webhook response #43601 #2635
-
-**Updated:**
-
-* Recipe Logs - Improved UI #2527 #2604 #2616 #2620 #2614
-* Tools - Improved UI #2499
-* Gravity Forms & WPForms - Now generate tokens for both dropdown values and dropdown labels #36803 #1498
-* Tutor LMS - Mark a lesson complete for a user - Added support for "All lessons" option (Pro) #43132 #2597
-* Twitter - Post a Tweet - Updated field description #2595
-* User IP token - Now parses reliably if proxy is used #42751 #2531
-* WP Simple Pay - "A user completes a purchase with a form" deprecated #2585
-* Webhooks - Send data to a webhook - Handle 200 response code with error message #2639
-
-**Fixed:**
-
-* Automator Dashboard - PHP warning: Undefined array key #2630
-* Emails - Send an email - PHP Error when body field is empty #42885 #2570
-* Gravity Forms - Token parsing of Advanced fields #2547
-* Hide empty Automator menu for non-admins #2582
-* Recipe UI - Fix Calculation token consistency issues with TinyMCE #2500
-* Redirect closure - URL no longer breaks with ampersand usage #43463 #2618
-* WordPress - A user creates a post - PHP Notice when post_author is not available #2567
-* WordPress - A user publishes a type of post with a taxonomy term in a taxonomy - Now works if there are multiple triggers in a recipe and are draft #2633
-
-**Under the hood:**
-
-* Automator Dashboard - Guest icon updated #2111
-* Automator UI - Some assets missing on new installs #2492
-* Automator web component - uo-button onclick does not honor return confirm #2532
-* Class Actionify_Triggers - Reduced unnecessary do_action hooks when the trigger is in draft #2625
-* Dashboard - Reduced credit queries to the API #2605
-* Incoming premium triggers - Check if Pro license is active when an incoming trigger should be charged #2557
-* Recipe UI - Group actions by condition support for Automator Pro (Pro 4.5) #1414
-* Recipe UI - Conditions list - Sentences are now sorted alphabetically (Pro) #2518
-* Recipe UI - Set options_show_id default to true #2598
-* Recipe logs - Improved MySQL query sanity checks #2623
-* Recipe logs - Reduced number of queries by merging some queries #2628
-* Updated `Automator_Status` to add WhatsApp action status #2624
-* `maybe_validate_trigger_without_postid` no longer breaks unit tests. Updated unit tests #2559 #2558
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

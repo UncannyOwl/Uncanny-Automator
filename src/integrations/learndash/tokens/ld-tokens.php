@@ -633,6 +633,21 @@ class Ld_Tokens {
 			return $tokens;
 		}
 
+		$q_a_triggers = apply_filters(
+			'automator_learndash_quiz_q_and_a_tokens',
+			array(
+				'LD_PASSQUIZ',
+				'LD_FAILQUIZ',
+				'LD_QUIZDONE',
+				'LD_QUIZPERCENT',
+				'LD_QUIZPOINT',
+				'LD_QUIZSCORE',
+			)
+		);
+		if ( ! in_array( $args['triggers_meta']['code'], $q_a_triggers, true ) ) {
+			return $tokens;
+		}
+
 		static $quiz_q_and_a_tokens = array();
 
 		// Generate Tokens for Quiz Questions and Answers.

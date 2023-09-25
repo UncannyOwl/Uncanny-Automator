@@ -12,7 +12,15 @@ use Uncanny_Automator\Services\Recipe\Common;
  */
 final class Miscellaneous implements \JsonSerializable {
 
+	/**
+	 * @since 5.0
+	 */
 	use Common\Trait_JSON_Serializer;
+
+	/**
+	 * @since 5.1
+	 */
+	use Common\Trait_Setter_Getter;
 
 	protected $created_on_date                = null;
 	protected $has_loop                       = false;

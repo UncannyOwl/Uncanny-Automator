@@ -547,6 +547,8 @@ class Recipe_Post_Utilities {
 						// UncannyAutomator._site.automator.links.loops_guide
 						'loops_guide'        => 'https://automatorplugin.com/knowledge-base/user-loops/',
 
+						'all_recipes'        => admin_url( 'edit.php?post_type=uo-recipe' ),
+
 						// UncannyAutomator._site.automator.links.tools
 						'tools'              => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-tools' ),
 

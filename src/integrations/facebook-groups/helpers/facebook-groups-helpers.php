@@ -385,8 +385,6 @@ class Facebook_Groups_Helpers {
 
 			try {
 
-				$this->deauthorized_app( automator_get_option( self::OPTION_KEY, false ) );
-
 				$this->remove_credentials();
 
 				// Redirect.

@@ -180,10 +180,10 @@ function automator_add_integration_icon( $icon_path, $plugin_path = AUTOMATOR_BA
  * Get the $_POST/$_GET/$_REQUEST variable
  *
  * @param $type
- * @param null $variable
+ * @param string $variable Defaults to null.
  * @param $flags
  *
- * @return mixed
+ * @return string
  *
  * @since 3.0
  * @version 3.0

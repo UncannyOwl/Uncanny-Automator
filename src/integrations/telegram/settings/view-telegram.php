@@ -72,8 +72,8 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr(
 						<?php
 						echo sprintf(
 							/* translators: Knowledge base article link */
-							_x( 'Connecting to Telegram requires creating a Telegram bot and retrieving an HTTP access token value (a.k.a. "Bot secret"). Visit our %s for instructions.', 'Telegram', 'uncanny-automator' ),
-							$kb_link
+							_x( 'Connecting to Telegram requires creating a Telegram bot and retrieving an HTTP access token value (a.k.a. "Bot secret"). Visit our %s for instructions.', 'Telegram', 'uncanny-automator' ), //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							$kb_link //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						);
 						?>
 					</uo-alert>

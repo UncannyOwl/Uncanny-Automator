@@ -94,8 +94,7 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 	 */
 	public function load_options() {
 		global $wpdb;
-		$table   = $wpdb->prefix . 'userfeedback_surveys';
-		$surveys = $wpdb->get_results( $wpdb->prepare( "SELECT * from $table WHERE status = %s", 'publish' ) );
+		$surveys = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_surveys WHERE status = %s", 'publish' ) );
 		$options = array( '-1' => esc_html( __( 'Any survey', 'uncanny-automator' ) ) );
 		foreach ( $surveys as $survey ) {
 			$options[ $survey->id ] = $survey->title;
@@ -133,11 +132,8 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 
 			$survey_id       = $args['trigger_args'][0];
 			$response_id     = $args['trigger_args'][1];
-			$survey_table    = $wpdb->prefix . 'userfeedback_surveys';
-			$responses_table = $wpdb->prefix . 'userfeedback_survey_responses';
-
-			$survey          = $wpdb->get_row( $wpdb->prepare( "SELECT * from $survey_table WHERE id = %d", $survey_id ) );
-			$survey_response = $wpdb->get_row( $wpdb->prepare( "SELECT * from $responses_table WHERE id = %d", $response_id ) );
+			$survey          = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_surveys WHERE id = %d", $survey_id ) );
+			$survey_response = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_survey_responses WHERE id = %d", $response_id ) );
 
 			$survey_questions = array_map(
 				function ( $question ) {
