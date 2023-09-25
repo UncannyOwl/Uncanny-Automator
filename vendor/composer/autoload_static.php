@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9
+class ComposerStaticInitf517d747629e2530a8ae546d5dd4a395
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -367,9 +367,11 @@ class ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9
         'Uncanny_Automator\\Drip_Settings' => __DIR__ . '/../..' . '/src/integrations/drip/settings/settings-drip.php',
         'Uncanny_Automator\\EC_REGISTER' => __DIR__ . '/../..' . '/src/integrations/event-tickets/triggers/ec-register.php',
         'Uncanny_Automator\\EDD_ANON_PRODUCT_PURCHASE' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-anon-product-purchase.php',
+        'Uncanny_Automator\\EDD_CANCEL_USERS_SUBSCRIPTION' => __DIR__ . '/../..' . '/src/integrations/edd/actions/edd-cancel-users-subscription.php',
         'Uncanny_Automator\\EDD_ORDERDONE' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-orderdone.php',
         'Uncanny_Automator\\EDD_ORDERREFUNDED' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-orderrefunded.php',
         'Uncanny_Automator\\EDD_PRODUCTPURCHASE' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-productpurchase.php',
+        'Uncanny_Automator\\EDD_USER_SUBSCRIBES_TO_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd/triggers/edd-user-subscribes-to-download.php',
         'Uncanny_Automator\\ELEM_POST_PUBLISHED' => __DIR__ . '/../..' . '/src/integrations/elementor/triggers/elem-post-published.php',
         'Uncanny_Automator\\ELEM_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/elementor/triggers/elem-submitform.php',
         'Uncanny_Automator\\EMAILS_SEND_EMAILS' => __DIR__ . '/../..' . '/src/integrations/emails/actions/emails-send-emails.php',
@@ -522,6 +524,11 @@ class ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM_GROUPS' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform-groups.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Integration' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/class-gf-integration.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Tokens' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/tokens/gf-new-tokens.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\CONTACT_UPSERT' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/contact-upsert.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Client_Auth' => __DIR__ . '/../..' . '/src/integrations/mautic/client/auth/auth.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Helpers' => __DIR__ . '/../..' . '/src/integrations/mautic/helpers/mautic-helpers.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Integration' => __DIR__ . '/../..' . '/src/integrations/mautic/mautic-integration.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Settings' => __DIR__ . '/../..' . '/src/integrations/mautic/settings/mautic-settings.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CHANNEL_MESSAGE' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_CHANNEL' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_TEAM' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php',
@@ -1029,10 +1036,10 @@ class ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit9f590249d9a40b1b5cab3dd8241313e9::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitf517d747629e2530a8ae546d5dd4a395::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitf517d747629e2530a8ae546d5dd4a395::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitf517d747629e2530a8ae546d5dd4a395::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitf517d747629e2530a8ae546d5dd4a395::$classMap;
 
         }, null, ClassLoader::class);
     }

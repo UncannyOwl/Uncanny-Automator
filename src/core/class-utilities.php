@@ -485,7 +485,7 @@ class Utilities {
 			mkdir( $log_directory, 0755 );
 		}
 
-		$file = $log_directory . 'uo-' . sanitize_file_name( $file_name ) . '.log';
+		$file = $log_directory . 'uo-' . sanitize_file_name( $file_name ) . '.txt';
 
 		if ( ! $backtrace ) {
 			$complete_message = $trace_start . $trace_heading . $trace_msg_start . $trace_message . $trace_finish;
@@ -493,7 +493,11 @@ class Utilities {
 			$complete_message = $trace_start . $trace_heading . $backtrace_start . $error_string . $backtrace_end . $trace_msg_start . $trace_message . $trace_finish;
 		}
 
-		error_log( $complete_message, 3, $file );
+		// Make sure the directory exists.
+		if ( is_dir( $log_directory ) ) {
+			error_log( $complete_message, 3, $file );
+		}
+
 	}
 
 	/**

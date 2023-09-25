@@ -1158,6 +1158,12 @@ class Automator_Translations {
 				),
 			),
 			'core'                => array(
+				// UncannyAutomator._core.i18n.core.runNow
+				'runNow'     => array(
+					'starting' => esc_html__( 'Starting recipe', 'uncanny-automator' ),
+					'started'  => esc_html__( 'Recipe started successfully', 'uncanny-automator' ),
+				),
+
 				// UncannyAutomator._core.i18n.core.title
 				'title'      => array(
 					'updating' => esc_html__( 'Updating recipe title', 'uncanny-automator' ),
@@ -1244,6 +1250,29 @@ class Automator_Translations {
 						'updatingFilters' => esc_html__( 'Updating filters', 'uncanny-automator' ),
 						'filtersUpdated'  => esc_html__( 'Filters updated successfully', 'uncanny-automator' ),
 					),
+				),
+			),
+			'runNow'              => array(
+				'runNowButtonLabel' => esc_html__( 'Run now', 'uncanny-automator' ),
+				// UncannyAutomator._core.i18n.runNow.runNowButtonLabel
+				'dialog'            => array(
+					'heading'            => esc_html__( 'The recipe run has been initiated', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.runNow.dialog.heading
+					'contentLine1'       => __( 'Actions are now running in the background and results will be available in the logs.', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.runNow.dialog.contentLine1
+					'contentLine2'       => __( "Changes cannot be made to the recipe while it's running. Progress can be monitored from the logs and actions that haven't run yet can be cancelled.", 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.runNow.dialog.contentLine2
+					'contentLine3'       => __( 'You can also return to the list of recipes or create a copy of this recipe.', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.runNow.dialog.contentLine3
+
+					'duplicateRecipe'    => __( 'Duplicate this recipe', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.runNow.dialog.duplicateRecipe
+
+					'viewItsLogs'        => esc_html__( 'View log entry', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.runNow.dialog.viewItsLogs
+
+					'returnToRecipeList' => esc_html__( 'Return to recipe list', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.runNow.dialog.returnToRecipeList
 				),
 			),
 			'viewLogs'            => esc_html__( 'View logs', 'uncanny-automator' ),

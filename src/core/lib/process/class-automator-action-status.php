@@ -8,15 +8,45 @@ namespace Uncanny_Automator;
  */
 class Automator_Status {
 
+	/**
+	 *
+	 */
 	const NOT_COMPLETED         = 0;
+	/**
+	 *
+	 */
 	const COMPLETED             = 1;
+	/**
+	 *
+	 */
 	const COMPLETED_WITH_ERRORS = 2;
+	/**
+	 *
+	 */
 	const IN_PROGRESS           = 5;
+	/**
+	 *
+	 */
 	const CANCELLED             = 7;
+	/**
+	 *
+	 */
 	const SKIPPED               = 8;
+	/**
+	 *
+	 */
 	const DID_NOTHING           = 9;
+	/**
+	 *
+	 */
 	const COMPLETED_AWAITING    = 10;
+	/**
+	 *
+	 */
 	const COMPLETED_WITH_NOTICE = 11;
+	/**
+	 *
+	 */
 	const QUEUED                = 12;
 
 	/**
@@ -47,6 +77,9 @@ class Automator_Status {
 
 	}
 
+	/**
+	 * @return mixed|null
+	 */
 	public static function get_finished_statuses() {
 
 		$finished_statuses = array(
@@ -62,6 +95,11 @@ class Automator_Status {
 
 	}
 
+	/**
+	 * @param $status
+	 *
+	 * @return mixed
+	 */
 	public static function get_class_name( $status ) {
 
 		$label = apply_filters(
@@ -85,6 +123,11 @@ class Automator_Status {
 
 	}
 
+	/**
+	 * @param $status
+	 *
+	 * @return bool
+	 */
 	public static function finished( $status ) {
 
 		return in_array( $status, self::get_finished_statuses(), true );

@@ -29,7 +29,7 @@ class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_type( 'anonymous' );
 
 		// The action hook to attach this trigger into.
-		$this->add_action( 'gform_after_update_entry' );
+		$this->add_action( array( 'gform_after_update_entry', 'gform_post_update_entry' ) );
 
 		// The number of arguments that the action hook accepts.
 		$this->set_action_args_count( 3 );
@@ -46,7 +46,42 @@ class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 			/* Translators: Trigger sentence */
 			esc_html__( 'An entry for {{a form}} is updated', 'uncanny-automator' )
 		);
+	}
 
+	public function process_data_from_two_hooks( $hook_args ) {
+
+		list( $arg1, $arg2, $arg3 ) = $hook_args;
+
+		$current_action = current_action();
+
+		switch ( $current_action ) {
+			case 'gform_after_update_entry':
+				$form           = $arg1;
+				$entry_id       = $arg2;
+				$original_entry = $arg3;
+				break;
+			case 'gform_post_update_entry':
+				$entry          = $arg1;
+				$entry_id       = $entry['id'];
+				$form_id        = $entry['form_id'];
+				$form           = \GFAPI::get_form( $form_id );
+				$original_entry = $arg2;
+				break;
+			default:
+				# code...
+				break;
+		}
+
+		return array( $form, $entry_id, $original_entry );
+	}
+
+	public function is_form( $array ) {
+
+		if ( isset( $array['title'] ) && isset( $array['fields'] ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -97,6 +132,8 @@ class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 			return true;
 		}
 
+		$hook_args = $this->process_data_from_two_hooks( $hook_args );
+
 		list( $form, $entry_id, $original_entry ) = $hook_args;
 
 		if ( absint( $form['id'] ) === absint( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {
@@ -116,6 +153,8 @@ class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return array
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		$hook_args = $this->process_data_from_two_hooks( $hook_args );
 
 		list( $form, $entry_id, $original_entry ) = $hook_args;
 

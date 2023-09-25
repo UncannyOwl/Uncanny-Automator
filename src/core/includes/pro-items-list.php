@@ -305,6 +305,16 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'WP_BITLY'          => array(
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - Bitly */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Shorten {{a URL}}", 'uncanny-automator' ),
+				),
+			),
+		),
 		'BDB'               => array(
 			'triggers' => array(
 				array(
@@ -919,8 +929,31 @@ function automator_pro_items_list() {
 					'name' => __( "{{A product}} is purchased with {{a discount code}}", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
+				array(
+					/* translators: Logged-in trigger - EDD – Recurring Payments */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user cancels a subscription to {{a download}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - EDD – Recurring Payments */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user's subscription to {{a download}} expires", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
 			),
-			'actions'  => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - EDD – Recurring Payments */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Delete a customer", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - EDD – Recurring Payments */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Set {{a subscription download}} to expire on {{a specific date}} for the user", 'uncanny-automator' ),
+				),
+			),
 		),
 		'ELEM'              => array(
 			'triggers' => array(
@@ -2408,6 +2441,17 @@ function automator_pro_items_list() {
 					'name' => __( "Remove the user from {{a membership level}}", 'uncanny-automator' ),
 				),
 			),
+		),
+		'Run_Now'           => array(
+			'triggers' => array(
+				array(
+					/* translators: Logged-in trigger - Run now */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Trigger recipe manually", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'  => array(),
 		),
 		'STUDIOCART'        => array(
 			'triggers' => array(

@@ -43,13 +43,19 @@ class Admin_Tools_Debug_Debug {
 					'automator_admin_tools_debug_tabs',
 					function( $tabs ) use ( $file ) {
 
-						$tab_id = str_replace( '.log', '', strtolower( sanitize_file_name( $file ) ) );
+						$tab_id = strtolower( sanitize_file_name( $file ) );
 
-						$tabs[ $tab_id ] = (object) array(
-							'name'     => $tab_id,
-							'function' => array( $this, 'tab_log_output' ),
-							'preload'  => false,
-						);
+						$ext = pathinfo( $tab_id, PATHINFO_EXTENSION );
+
+						$allowed_file_types = array( 'txt', 'log' );
+
+						if ( in_array( $ext, $allowed_file_types, true ) ) {
+							$tabs[ $tab_id ] = (object) array(
+								'name'     => str_replace( array( '.txt', '.log' ), '', $tab_id ),
+								'function' => array( $this, 'tab_log_output' ),
+								'preload'  => false,
+							);
+						}
 
 						return $tabs;
 					},
@@ -117,18 +123,21 @@ class Admin_Tools_Debug_Debug {
 
 	public function get_requested_log() {
 
-		$requested_log = sanitize_file_name( automator_filter_input( 'debug' ) ) . '.log';
+		$requested_log = sanitize_file_name( automator_filter_input( 'debug' ) );
 
 		if ( empty( $requested_log ) ) {
-
 			return false;
-
 		}
 
-		if ( is_file( trailingslashit( UA_DEBUG_LOGS_DIR ) . $requested_log ) ) {
+		$dir = trailingslashit( UA_DEBUG_LOGS_DIR );
+
+		$log_file = $dir . $requested_log;
+		$ext      = pathinfo( $log_file, PATHINFO_EXTENSION );
+
+		if ( is_file( $log_file ) && in_array( $ext, array( 'txt', 'log' ), true ) ) {
 
 			return file_get_contents(
-				trailingslashit( UA_DEBUG_LOGS_DIR ) . $requested_log,
+				$log_file,
 				false,
 				null,
 				0,

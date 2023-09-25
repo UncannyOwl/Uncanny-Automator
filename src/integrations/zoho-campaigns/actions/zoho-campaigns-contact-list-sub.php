@@ -181,6 +181,8 @@ class Zoho_Campaigns_Contact_List_Sub {
 				);
 			}
 
+			$contact_fields = $this->parse_fields( $contact_fields, $recipe_id, $user_id, $args );
+
 			$this->set_helpers( new Zoho_Campaigns_Helpers( false ) );
 
 			$this->get_helpers()->require_dependency( 'client/actions/zoho-campaigns-actions' );
@@ -224,6 +226,34 @@ class Zoho_Campaigns_Contact_List_Sub {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}
+
+	}
+
+	/**
+	 * Parse the contact fields.
+	 *
+	 * @param mixed[] $contact_fields
+	 * @param string $field_text
+	 * @param int $recipe_id
+	 * @param int $user_id
+	 * @param int $args
+	 *
+	 * @return mixed[]
+	 */
+	public function parse_fields( $contact_fields, $recipe_id, $user_id, $args ) {
+
+		$contact_fields_parsed = array();
+
+		foreach ( (array) $contact_fields as $field ) {
+			if ( is_array( $field ) && ( isset( $field['FIELD_NAME'] ) && isset( $field['FIELD_VALUE'] ) ) ) {
+				$contact_fields_parsed[] = array(
+					'FIELD_NAME'  => $field['FIELD_NAME'],
+					'FIELD_VALUE' => Automator()->parse->text( $field['FIELD_VALUE'], $recipe_id, $user_id, $args ),
+				);
+			}
+		}
+
+		return $contact_fields_parsed;
 
 	}
 

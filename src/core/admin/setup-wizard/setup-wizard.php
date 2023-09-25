@@ -65,7 +65,7 @@ class Setup_Wizard {
 
 		$message = Automator_Helpers_Recipe::encrypt( $message_to_decrypt, $secret );
 
-		wp_redirect(
+		wp_redirect(  //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			add_query_arg(
 				array(
 					'client'       => $message,

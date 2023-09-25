@@ -64,7 +64,7 @@ class Edd_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true, $is_relevant_tokens = true ) {
+	public function all_edd_downloads( $label = null, $option_code = 'EDDPRODUCTS', $any_option = true, $is_relevant_tokens = true, $is_recurring = false ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -81,6 +81,16 @@ class Edd_Helpers {
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		);
+
+		if ( true === $is_recurring ) {
+			$args['meta_query'] = array(
+				array(
+					'key'     => 'edd_recurring',
+					'value'   => 'yes',
+					'compare' => '=',
+				),
+			);
+		}
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any download', 'uncanny-automator' ) );
 
