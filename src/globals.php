@@ -97,3 +97,11 @@ if ( ! defined( 'AUTOMATOR_FREE_ITEM_NAME' ) ) {
 if ( ! defined( 'AUTOMATOR_FREE_STORE_CONNECT_URL' ) ) {
 	define( 'AUTOMATOR_FREE_STORE_CONNECT_URL', 'signup/' );
 }
+
+if ( ! defined( 'AUTOMATOR_INTEGRATIONS_JSON_LIST' ) ) {
+	define( 'AUTOMATOR_INTEGRATIONS_JSON_LIST', 'https://integrations.automatorplugin.com/list.json' );
+}
+
+if ( ! defined( 'AUTOMATOR_INTEGRATIONS_JSON_LIST_WITH_ITEMS' ) ) {
+	define( 'AUTOMATOR_INTEGRATIONS_JSON_LIST_WITH_ITEMS', 'https://integrations.automatorplugin.com/full.json' );
+}

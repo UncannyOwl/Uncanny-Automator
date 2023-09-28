@@ -129,6 +129,7 @@ trait Action_Tokens {
 
 		// Persists the token value by registering a hook to automator_action_created.
 		add_action( 'automator_action_created', array( $this, 'persist_token_value' ), 10, 1 );
+		add_action( 'automator_pro_async_action_after_run_execution', array( $this, 'persist_token_value' ), 10, 1 );
 
 		return $this;
 
@@ -172,7 +173,12 @@ trait Action_Tokens {
 	 */
 	public function persist_token_value( $args ) {
 
-		if ( 'automator_action_created' !== current_action() ) {
+		$supported_hooks = array(
+			'automator_action_created',
+			'automator_pro_async_action_after_run_execution',
+		);
+
+		if ( ! in_array( current_action(), $supported_hooks, true ) ) {
 
 			_doing_it_wrong(
 				'Uncanny_Automator\Recipe\Action_Tokens::persist_token_value',
@@ -204,10 +210,21 @@ trait Action_Tokens {
 			return false;
 		}
 
+		$user_id       = $args['user_id'];
+		$action_log_id = isset( $args['action_log_id'] ) ? $args['action_log_id'] : null;
+		$action_id     = isset( $args['action_id'] ) ? $args['action_id'] : null;
+
+		if ( 'automator_pro_async_action_after_run_execution' === current_action() ) {
+			$action_data   = $args['action_data'];
+			$user_id       = $args['user_id'];
+			$action_log_id = $action_data['action_log_id'];
+			$action_id     = $action_data['ID'];
+		}
+
 		$meta_added = Automator()->db->action->add_meta(
-			$args['user_id'],
-			$args['action_log_id'],
-			$args['action_id'],
+			$user_id,
+			$action_log_id,
+			$action_id,
 			$this->meta_key,
 			$action_token['value']
 		);
@@ -441,7 +458,7 @@ trait Action_Tokens {
 
 		$action_meta_token = Automator()->db->action->get_meta( $action_log_id, $this->meta_key );
 
-		$action_meta_token = apply_filters( 'automator_action_tokens_meta_token_value', $action_meta_token, $action_id, $process_args );
+		$action_meta_token = $this->stringify( apply_filters( 'automator_action_tokens_meta_token_value', $action_meta_token, $action_id, $process_args ) );
 
 		$tokens = (array) json_decode( $action_meta_token, true );
 
@@ -479,6 +496,22 @@ trait Action_Tokens {
 
 		return $token_value;
 
+	}
+
+	/**
+	 * Converts the given string to its string value.
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	private function stringify( $string = '' ) {
+
+		if ( ! is_scalar( $string ) || empty( $string ) ) {
+			return '';
+		}
+
+		return (string) $string;
 	}
 
 	/**

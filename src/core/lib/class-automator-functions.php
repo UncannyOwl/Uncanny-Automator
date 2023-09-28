@@ -286,6 +286,9 @@ class Automator_Functions {
 		add_filter( 'plugins_loaded', array( $this, 'filter_recipe_parts' ), AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function filter_recipe_parts() {
 
 		$this->integrations = apply_filters_deprecated( 'uap_integrations', array( $this->integrations ), '3.0', 'automator_integrations' );
@@ -347,6 +350,9 @@ class Automator_Functions {
 		return Logger\Singleton\Main_Aggregate_Logger_Singleton::get_instance();
 	}
 
+	/**
+	 * @return Services\Structure\Actions\Item\Loop\Filters_Db
+	 */
 	public function loop_filters_db() {
 		require_once UA_ABSPATH . 'src/core/services/recipe/structure/actions/item/loop/filters-db.php';
 
@@ -458,10 +464,20 @@ class Automator_Functions {
 		}
 	}
 
+	/**
+	 * @param $code
+	 *
+	 * @return bool
+	 */
 	public function has_action( $code = '' ) {
 		return isset( $this->actions[ $code ] );
 	}
 
+	/**
+	 * @param $code
+	 *
+	 * @return false|mixed
+	 */
 	public function get_action( $code = '' ) {
 		if ( $this->has_action( $code ) ) {
 			return $this->actions[ $code ];
@@ -523,6 +539,11 @@ class Automator_Functions {
 		return $this->integrations;
 	}
 
+	/**
+	 * @param $code
+	 *
+	 * @return bool
+	 */
 	public function has_integration( $code ) {
 		return isset( $this->integrations[ $code ] );
 	}
@@ -2118,6 +2139,11 @@ WHERE pm.post_id
 	 * @param array{array{type:string,label:string,content:string,code_language:string}} $properties_args The key `code_language` is optional. Only needed for non-text `type`.
 	 *
 	 * @return array{array{type:string,label:string,content:string,code_language:string}} Returns mixed array of the properties args.
+	 */
+	/**
+	 * @param $properties_args
+	 *
+	 * @return Services\Properties
 	 */
 	public function set_properties( $properties_args = array() ) {
 

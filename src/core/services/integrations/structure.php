@@ -1,14 +1,16 @@
 <?php
+
 namespace Uncanny_Automator\Services\Integrations;
 
 use Uncanny_Automator\Automator_Exception;
+use Uncanny_Automator\Utilities;
 
 /**
  * Main integration object structure.
  *
+ * @since 5.0
  * @package Uncanny_Automator\Services\Integrations
  *
- * @since 5.0
  */
 class Structure {
 
@@ -50,7 +52,7 @@ class Structure {
 	/**
 	 * The recipe action conditions.
 	 *
-	 * @var string $recipe_action_conditions.
+	 * @var string $recipe_action_conditions .
 	 */
 	protected $recipe_action_conditions = null;
 
@@ -68,13 +70,18 @@ class Structure {
 	 *
 	 * @param int $recipe_id
 	 *
-	 * @return mixed[] The restructured integrations object.
+	 * @return Structure The restructured integrations object.
 	 */
 	public function __construct( $recipe_id ) {
 
 		$this->active_integrations = Automator()->get_integrations();
-		$this->all_integrations    = Automator()->get_all_integrations();
-		$this->pro_item_list       = \Uncanny_Automator\Utilities::get_pro_items_list();
+		$this->pro_item_list       = Utilities::get_pro_items_list();
+
+		// Combine both Free & Pro integrations
+		$this->all_integrations = array_merge( Automator()->get_all_integrations(), Utilities::get_pro_only_items() );
+
+		// Sort alphabetically
+		ksort( $this->all_integrations );
 
 		self::$action_conditions = (array) apply_filters( 'automator_pro_actions_conditions_list', array() );
 
@@ -84,7 +91,6 @@ class Structure {
 		$this->recipe_action_conditions = get_post_meta( $this->recipe_id, 'actions_conditions', true );
 
 		return $this->restructure_integrations_object();
-
 	}
 
 	/**
@@ -280,7 +286,77 @@ class Structure {
 		unset( $items['pro'] );
 
 		return $items;
+	}
 
+	/**
+	 * @param $integration_code
+	 * @param $type
+	 *
+	 * @return array|array[]
+	 */
+	public function get_pro_integration_property( $integration_code, $type ) {
+		$pro_only_items_list = Utilities::get_pro_only_items_list();
+
+		$integration_items = isset( $pro_only_items_list[ $integration_code ][ $type ] ) ? $pro_only_items_list[ $integration_code ][ $type ] : array();
+
+		$items = array(
+			'free' => array(),
+			'pro'  => array(),
+		);
+
+		// Assign the list of Pro items.
+		$pro_item_list = $integration_items;
+
+		if ( empty( $pro_item_list ) ) {
+			return array();
+		}
+
+		foreach ( $integration_items as $code => $property ) {
+
+			$support_link = isset( $property['support_link'] ) ? $property['support_link'] : '';
+
+			$property_type = isset( $property['type'] ) && 'logged-in' === $property['type'] ? 'user' : 'anonymous';
+
+			$structure = array(
+				'is_pro'        => true,
+				'is_deprecated' => false,
+				'sentence'      => array(
+					'short'   => $property['name'],
+					'dynamic' => $property['name'],
+				),
+				'miscellaneous' => array(
+					'url_support' => $support_link,
+				),
+			);
+
+			// Only Triggers have type.
+			if ( 'triggers' === $type ) {
+				$structure['type'] = $property_type;
+			}
+
+			// Only Actions 'requires_user' attribute.
+			if ( 'actions' === $type ) {
+				$structure['miscellaneous']['requires_user_data'] = 'user' === $property_type;
+			}
+
+			// Classifies the Action as either Free or Pro.
+			// Otherwise, classify as Pro.
+			$items['pro'][ $code ] = $structure;
+
+			// If pro is not active.
+			if ( ! defined( 'UAPro_ABSPATH' ) ) {
+				// Move Free Triggers to 'available'.
+				$items['available'] = false;
+				// As unavailable.
+				$items['unavailable'] = $this->restructure_pro_item_list( $pro_item_list, $type );
+			}
+		}
+
+		// Then unset both Free and Pro classifications because we don't need them anymore.
+		unset( $items['free'] );
+		unset( $items['pro'] );
+
+		return $items;
 	}
 
 	/**
@@ -372,13 +448,18 @@ class Structure {
 		foreach ( (array) $this->all_integrations as $code => $props ) {
 
 			$is_app_connected = isset( $this->active_integrations[ $code ]['connected'] )
-			? $this->active_integrations[ $code ]['connected']
-			: null;
+				? $this->active_integrations[ $code ]['connected']
+				: null;
 
 			$url_settings_page = isset( $this->active_integrations[ $code ]['settings_url'] )
-			? $this->active_integrations[ $code ]['settings_url']
-			: null;
+				? $this->active_integrations[ $code ]['settings_url']
+				: null;
 
+			$is_pro_only = isset( $props['is_pro_only'] ) && 'yes' === $props['is_pro_only'];
+			// If it's Pro only, continue
+			if ( $is_pro_only ) {
+				continue;
+			}
 			$triggers = $this->get_integration_property( $code, 'triggers' );
 			$actions  = $this->get_integration_property( $code, 'actions' );
 
@@ -391,6 +472,30 @@ class Structure {
 					'is_app_connected'  => $is_app_connected,
 					'url_settings_page' => $url_settings_page,
 				),
+				'triggers'      => $triggers,
+				'actions'       => $actions,
+				'conditions'    => $this->restructure_conditions( $code ),
+				'loop_filters'  => isset( $filters[ $code ] ) ? $filters[ $code ] : array(),
+			);
+		}
+
+		foreach ( (array) $this->all_integrations as $code => $props ) {
+
+			$is_pro_only = isset( $props['is_pro_only'] ) && 'yes' === $props['is_pro_only'];
+			// If it's not a Pro only, continue
+			if ( ! $is_pro_only ) {
+				continue;
+			}
+
+			$triggers = $this->get_pro_integration_property( $code, 'triggers' );
+			$actions  = $this->get_pro_integration_property( $code, 'actions' );
+
+			$items[ $code ] = array(
+				'name'          => $props['name'],
+				'icon'          => $props['icon_svg'],
+				'is_available'  => $this->is_integration_active( $code ),
+				'is_app'        => $this->has_settings_and_has_connected_prop( $code ),
+				'miscellaneous' => array(),
 				'triggers'      => $triggers,
 				'actions'       => $actions,
 				'conditions'    => $this->restructure_conditions( $code ),

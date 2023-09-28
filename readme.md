@@ -5,7 +5,7 @@
 **Requires at least:** 5.3 \
 **Tested up to:** 6.3.1 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 5.1 \
+**Stable tag:** 5.1.0.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -348,6 +348,14 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.1.0.1 [2023-09-28]
+
+**Under the hood:**
+
+* Action tokens do not work when the source action has a delay or schedule #3988
+* All Integrations - Data source switched to a static `.json` file #3356
+* Recipe UI - Show Pro-only integrations preview when Automator Pro is not active #3800
 
 ### 5.1 [2023-09-25]
 

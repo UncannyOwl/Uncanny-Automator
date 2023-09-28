@@ -597,7 +597,7 @@ class Recipe_Post_Utilities {
 
 			// TODO Remove once `UncannyAutomator._core.integrations is finished
 			// UncannyAutomator.integrations
-			'integrations'   => Automator()->get_integrations(),
+			'integrations'   => array_merge( Automator()->get_integrations(), Utilities::get_pro_only_items() ),
 
 			// TODO Remove once the JS stops using both `recipes_object` and `recipe` objects
 			'recipes_object' => Automator()->get_recipes_data( true, $post_id ),
@@ -658,8 +658,9 @@ class Recipe_Post_Utilities {
 	/**
 	 * Delete all children triggers and actions of recipe
 	 *
-	 * @deprecated 4.15.2
 	 * @param $post_ID
+	 *
+	 * @deprecated 4.15.2
 	 */
 	public function delete_triggers_actions( $post_ID ) {
 

@@ -1436,14 +1436,14 @@ class Admin_Menu {
 				// Check if the current page is the "Integrations" page
 				if ( 'uo-recipe_page_uncanny-automator-integrations' === (string) $hook ) {
 					// Check if integrations are already loaded in transient.
-					$integrations = get_transient( 'uo-automator-integration-items' );
+					$integrations = get_transient( 'automator_all_integration_items' );
 
 					if ( false === $integrations ) {
 						$integrations = $this->get_integrations();
 					}
 
 					// Check if integrations' collections are already loaded in transient.
-					$collections = get_transient( 'uo-automator-integration-collection-items' );
+					$collections = get_transient( 'automator_integration_collection_items' );
 
 					if ( false === $collections ) {
 						$collections = $this->get_collections();
@@ -1514,7 +1514,7 @@ class Admin_Menu {
 		$user_has_automator_pro = defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' );
 
 		// Check if integrations are already loaded in transient.
-		$integrations = get_transient( 'uo-automator-integration-items' );
+		$integrations = get_transient( 'automator_all_integration_items' );
 
 		$is_refresh = automator_filter_input( 'refresh' );
 
@@ -1523,7 +1523,7 @@ class Admin_Menu {
 		}
 
 		// Check if integrations' collections are already loaded in transient.
-		$collections = get_transient( 'uo-automator-integration-collection-items' );
+		$collections = get_transient( 'automator_integration_collection_items' );
 
 		if ( false === $collections ) {
 			$collections = $this->get_collections();
@@ -1539,44 +1539,56 @@ class Admin_Menu {
 	public function get_collections() {
 
 		// The endpoint url. Change this to live site later.
-		$endpoint_url = 'https://automatorplugin.com/wp-json/automator-integrations-collections/v1/list/all?time=' . time(); // Append time to prevent caching.
+		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST; // Append time to prevent caching.
 
 		// Get integrations from Automator plugin.
 		$response = wp_remote_get( esc_url_raw( $endpoint_url ) );
 
 		$collections = array();
 
-		if ( ! is_wp_error( $response ) ) {
-
-			$api_response = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( isset( $api_response['result'] ) && ! empty( $api_response['result'] ) ) {
-
-				foreach ( $api_response['result'] as $collection ) {
-
-					$collections[ $collection['slug'] ] = (object) array(
-						'id'           => $collection['slug'],
-						'name'         => $collection['name'],
-						'description'  => $collection['description'],
-						'integrations' => $collection['integrations'],
-					);
-				}
-
-				// Add "Installed integrations"
-				$collections['installed-integrations'] = (object) array(
-					'id'           => 'installed-integrations',
-					'name'         => esc_html__( 'Installed integrations', 'uncanny-automator' ),
-					'description'  => esc_html__( 'Ready-to-use integrations', 'uncanny-automator' ),
-					'integrations' => $this->get_installed_integrations_ids(),
-				);
-
-				// Save in transients. Refreshes every hour.
-				set_transient( 'uo-automator-integration-collection-items', $collections, HOUR_IN_SECONDS );
-			}
+		if ( is_wp_error( $response ) ) {
+			return $collections;
 		}
 
-		return $collections;
+		$api_response = json_decode( $response['body'], true );
 
+		foreach ( $api_response as $integration ) {
+
+			$collection = $integration['collection'];
+
+			if ( empty( $collection ) ) {
+				continue;
+			}
+
+			$collection = array_shift( $collection );
+
+			$collection_slug = $collection['slug'];
+
+			if ( isset( $collections[ $collection_slug ] ) ) {
+				$collections[ $collection_slug ]->integrations[] = $integration['post_id'];
+				continue;
+			}
+
+			$collections[ $collection_slug ] = (object) array(
+				'id'           => $collection['slug'],
+				'name'         => $collection['name'],
+				'description'  => $collection['description'],
+				'integrations' => array( $integration['post_id'] ),
+			);
+		}
+
+		// Add "Installed integrations"
+		$collections['installed-integrations'] = (object) array(
+			'id'           => 'installed-integrations',
+			'name'         => esc_html__( 'Installed integrations', 'uncanny-automator' ),
+			'description'  => esc_html__( 'Ready-to-use integrations', 'uncanny-automator' ),
+			'integrations' => $this->get_installed_integrations_ids(),
+		);
+
+		// Save in transients. Refreshes every day.
+		set_transient( 'automator_integration_collection_items', $collections, DAY_IN_SECONDS );
+
+		return $collections;
 	}
 
 	/**
@@ -1586,56 +1598,59 @@ class Admin_Menu {
 	 */
 	public function get_integrations() {
 
-		// The endpoint url. Change this to live site later.
-		$endpoint_url = 'https://automatorplugin.com/wp-json/automator-integrations/v1/list/all?time=' . time(); // Append time to prevent caching.
+		// The endpoint url to S3
+		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST; // Append time to prevent caching.
 
-		// Get integrations from Automator plugin.
-		$response = wp_remote_get( esc_url_raw( $endpoint_url ) );
+		$response = wp_remote_get( $endpoint_url );
+
+		if ( is_wp_error( $response ) ) {
+			return array();
+		}
 
 		$integrations = array();
 
-		if ( ! is_wp_error( $response ) ) {
+		$api_response = json_decode( $response['body'], true );
 
-			$api_response = json_decode( wp_remote_retrieve_body( $response ), true );
+		foreach ( $api_response as $integration ) {
 
-			if ( isset( $api_response['result'] ) && ! empty( $api_response['result'] ) ) {
+			// Requires on "All integrations" page to sort by categories
+			$post_id = isset( $integration['post_id'] ) ? $integration['post_id'] : 0;
 
-				foreach ( $api_response['result']['integrations'] as $integration ) {
+			$integration_id   = $integration['integration_id'];
+			$integration_name = $integration['integration_name'];
+			$permalink        = add_query_arg(
+				array(
+					'post_type'   => 'uo-recipe',
+					'page'        => 'uncanny-automator-integrations',
+					'integration' => $integration_id,
+				),
+				admin_url( 'edit.php' )
+			);
 
-					// Construct the permalink.
-					$permalink = add_query_arg(
-						array(
-							'post_type'   => 'uo-recipe',
-							'page'        => 'uncanny-automator-integrations',
-							'integration' => $integration['post_id'],
-						),
-						admin_url( 'edit.php' )
-					);
-
-					$integration_id = $integration['integration_id'];
-
-					$integrations[ $integration['post_id'] ] = (object) array(
-						'id'                 => $integration['post_id'],
-						'integration_id'     => $integration['integration_id'],
-						'name'               => $integration['name'],
-						'permalink'          => $permalink,
-						'external_permalink' => $integration['external_permalink'],
-						'is_pro'             => $integration['is_pro'],
-						'is_built_in'        => $integration['is_built_in'],
-						'is_installed'       => $this->is_installed( $integration_id ),
-						'short_description'  => $integration['short_description'],
-						'icon_url'           => $integration['icon_url'],
-					);
-
-				}
-
-				// Save in transients. Refreshes every hour.
-				set_transient( 'uo-automator-integration-items', $integrations, HOUR_IN_SECONDS );
+			// Assume that the integration name is
+			// different but the code is same
+			if ( isset( $integrations[ $integration_id ] ) ) {
+				$integration_id = Utilities::decouple_integration_id_name( $integration_id, $integration_name );
 			}
+
+			$integrations[ $post_id ] = (object) array(
+				'id'                 => $post_id,
+				'integration_id'     => $integration['integration_id'],
+				'name'               => $integration_name,
+				'permalink'          => $permalink,
+				'external_permalink' => $integration['integration_link'],
+				'is_pro'             => $integration['is_pro_integration'],
+				'is_built_in'        => $integration['is_app_integration'],
+				'is_installed'       => $this->is_installed( $integration_id ),
+				'short_description'  => $integration['short_description'],
+				'icon_url'           => $integration['integration_icon'],
+			);
+
 		}
 
-		return $integrations;
+		set_transient( 'automator_all_integration_items', $integrations, DAY_IN_SECONDS );
 
+		return $integrations;
 	}
 
 	/**
@@ -1645,7 +1660,7 @@ class Admin_Menu {
 	 */
 	public function get_installed_integrations_ids() {
 		// Check if integrations are already loaded in transient.
-		$integrations = get_transient( 'uo-automator-integration-items' );
+		$integrations = get_transient( 'automator_all_integration_items' );
 
 		if ( false === $integrations ) {
 			$integrations = $this->get_integrations();
@@ -1670,7 +1685,7 @@ class Admin_Menu {
 	 */
 	public function get_all_integrations_collection() {
 		// Check if integrations are already loaded in transient.
-		$integrations = get_transient( 'uo-automator-integration-items' );
+		$integrations = get_transient( 'automator_all_integration_items' );
 
 		if ( false === $integrations ) {
 			$integrations = $this->get_integrations();

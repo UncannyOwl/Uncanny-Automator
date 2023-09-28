@@ -63,7 +63,8 @@ class Utilities {
 	/**
 	 * Utilities constructor.
 	 */
-	public function __construct() {}
+	public function __construct() {
+	}
 
 	/**
 	 * Adds the autoloaded class in an accessible object
@@ -421,6 +422,115 @@ class Utilities {
 	}
 
 	/**
+	 * @return array
+	 */
+	public static function get_pro_only_items() {
+
+		$pro_only = get_transient( 'automator_pro_integrations_list' );
+
+		if ( ! empty( $pro_only ) ) {
+			return $pro_only;
+		}
+
+		// The endpoint url to S3
+		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST; // Append time to prevent caching.
+
+		$response = wp_remote_get( $endpoint_url );
+
+		if ( is_wp_error( $response ) ) {
+			return array();
+		}
+
+		$api_response = json_decode( $response['body'], true );
+		$pro_only     = array();
+
+		foreach ( $api_response as $integration ) {
+			if ( ! $integration['is_pro_integration'] ) {
+				continue;
+			}
+
+			$integration_id = $integration['integration_id'];
+
+			if ( array_key_exists( $integration_id, $pro_only ) ) {
+				$integration_id = self::decouple_integration_id_name( $integration_id, $integration['integration_name'] );
+			}
+
+			$pro_only[ $integration_id ] = array(
+				'name'         => $integration['integration_name'],
+				'icon_svg'     => $integration['integration_icon'],
+				'is_pro_only'  => 'yes',
+				'settings_url' => '',
+			);
+		}
+
+		set_transient( 'automator_pro_integrations_list', $pro_only, DAY_IN_SECONDS );
+
+		return $pro_only;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function get_pro_only_items_list() {
+		$pro_only = get_transient( 'automator_pro_integrations_list_items' );
+
+		if ( ! empty( $pro_only ) ) {
+			return $pro_only;
+		}
+
+		// The endpoint url to S3
+		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST_WITH_ITEMS; // Append time to prevent caching.
+
+		$response = wp_remote_get( $endpoint_url );
+
+		if ( is_wp_error( $response ) ) {
+			return array();
+		}
+
+		$api_response = json_decode( $response['body'], true );
+		$pro_only     = array();
+
+		foreach ( $api_response as $integration ) {
+
+			if ( ! $integration['is_pro_integration'] ) {
+				continue;
+			}
+
+			$integration_id = $integration['integration_id'];
+
+			if ( array_key_exists( $integration_id, $pro_only ) ) {
+				$integration_id = self::decouple_integration_id_name( $integration_id, $integration['integration_name'] );
+			}
+
+			$pro_only[ $integration_id ] = array(
+				'triggers' => $integration['integration_triggers'],
+				'actions'  => $integration['integration_actions'],
+			);
+		}
+
+		set_transient( 'automator_pro_integrations_list_items', $pro_only, DAY_IN_SECONDS );
+
+		return $pro_only;
+	}
+
+
+	/**
+	 * For example, WooCommerce & WooCommerce Subscriptions have
+	 * the same Integration code. List them separately
+	 *
+	 * @param $integration_id
+	 * @param $integration_name
+	 *
+	 * @return string
+	 */
+	public static function decouple_integration_id_name( $integration_id, $integration_name ) {
+
+		$shortened_name = strtoupper( str_replace( ' ', '', $integration_name ) );
+
+		return "{$integration_id}{$shortened_name}";
+	}
+
+	/**
 	 * Returns the full server path for the passed include file
 	 *
 	 * @param $file_name
@@ -524,6 +634,7 @@ class Utilities {
 	 * Convert seconds to hours.
 	 *
 	 * @param int $seconds Seconds to convert.
+	 *
 	 * @return string Hours in HH:MM:SS format.
 	 */
 	public static function seconds_to_hours( $seconds ) {
