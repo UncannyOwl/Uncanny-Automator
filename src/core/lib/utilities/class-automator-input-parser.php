@@ -732,44 +732,55 @@ class Automator_Input_Parser {
 	}
 
 	/**
-	 * @param $user_id
+	 * Generates reset password URL from token.
 	 *
-	 * @return bool|string
+	 * @param int $user_id
+	 *
+	 * @return string Returns empty string if provided $user_id is not found.
 	 */
-	public function reset_password_url_token( $user_id ) {
+	public function reset_password_url_token( $user_id = 0 ) {
 
 		$user = get_user_by( 'ID', $user_id );
-		if ( $user ) {
-			$adt_rp_key = get_password_reset_key( $user );
-			$user_login = $user->user_login;
-			$rp_link    = network_site_url( "wp-login.php?action=rp&key=$adt_rp_key&login=" . rawurlencode( $user_login ), 'login' );
-		} else {
-			$rp_link = '';
+
+		if ( false !== $user && $user instanceof \WP_User ) {
+
+			return add_query_arg(
+				array(
+					'action' => 'rp',
+					'key'    => get_password_reset_key( $user ),
+					'login'  => $user->user_login,
+				),
+				wp_login_url()
+			);
+
 		}
 
-		return $rp_link;
+		return ''; // Returns empty string if user is not valid.
 
 	}
 
 	/**
-	 * @param $user_id
+	 * Generates reset password HTML link.
 	 *
-	 * @return bool|string
+	 * @param int $user_id
+	 *
+	 * @see automator_token_reset_password_link_html
+	 *
+	 * @return string
 	 */
-	public function generate_reset_token( $user_id ) {
+	public function generate_reset_token( $user_id = 0 ) {
 
-		$user = get_user_by( 'ID', $user_id );
-		if ( $user ) {
-			$adt_rp_key = get_password_reset_key( $user );
-			$user_login = $user->user_login;
-			$url        = network_site_url( "wp-login.php?action=rp&key=$adt_rp_key&login=" . rawurlencode( $user_login ), 'login' );
-			$text       = esc_attr__( 'Click here to reset your password.', 'uncanny-automator' );
-			$rp_link    = sprintf( '<a href="%s">%s</a>', $url, $text );
-		} else {
-			$rp_link = '';
-		}
+		$text = esc_attr_x( 'Click here to reset your password.', 'Reset password token text', 'uncanny-automator' );
 
-		return $rp_link;
+		$reset_pw_url = $this->reset_password_url_token( $user_id );
+
+		return apply_filters(
+			'automator_token_reset_password_link_html',
+			'<a href="' . esc_url( $reset_pw_url ) . '" title="' . esc_attr( $text ) . '">'
+				. esc_html( $text )
+			. '</a>',
+			$user_id
+		);
 
 	}
 

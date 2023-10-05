@@ -466,26 +466,46 @@ class Automator_Review {
 	 */
 	public function maybe_ask_review() {
 
-		if ( $this->has_credits_notification() ) {
+		// Credits notifications.
+		add_action( 'admin_notices', array( $this, 'load_credits_notif_required_assets' ) );
 
-			wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ), array(), Utilities::automator_get_version() );
+		// Review banner notices.
+		add_action( 'admin_notices', array( $this, 'view_review_banner' ) );
 
-			// Register main JS in case it wasnt registered.
-			wp_register_script(
-				'uap-admin',
-				Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
-				array(),
-				Utilities::automator_get_version(),
-				true
-			);
+	}
 
-			// Enqueue uap-admin.
-			wp_enqueue_script( 'uap-admin' );
+	public function load_credits_notif_required_assets() {
 
+		if ( ! $this->should_display_credits_notif() ) {
+			return;
 		}
 
-		// Add conditions here before showing admin_notice.
-		add_action( 'admin_notices', array( $this, 'view_review_banner' ) );
+		if ( ! $this->has_credits_notification() ) {
+			return;
+		}
+
+		wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ), array(), Utilities::automator_get_version() );
+
+		// Register main JS in case it wasnt registered.
+		wp_register_script(
+			'uap-admin',
+			Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
+			array(),
+			Utilities::automator_get_version(),
+			true
+		);
+
+		$admin_menu_instance = Admin_Menu::get_instance();
+
+		// Get data for the main script
+		wp_localize_script(
+			'uap-admin',
+			'UncannyAutomatorBackend',
+			$admin_menu_instance->get_js_backend_inline_data( null )
+		);
+
+		// Enqueue uap-admin.
+		wp_enqueue_script( 'uap-admin' );
 
 	}
 
@@ -497,17 +517,22 @@ class Automator_Review {
 	 * @return void
 	 */
 	public function view_review_banner() {
+
+		// Disable both credits notification and review banner notification in the "uncanny-automator-app-integrations" page.
 		if ( automator_filter_has_var( 'page' ) && 'uncanny-automator-app-integrations' === automator_filter_input( 'page' ) ) {
-			// Placeholder redirect page, bail
 			return;
 		}
 
-		if ( $this->has_credits_notification() ) {
+		// Do check before rendering the credits notification.
+		if ( $this->should_display_credits_notif() && $this->has_credits_notification() ) {
 			return $this->display_credits_notification();
 		}
 
-		// Bail if not on automator related pages.
+		/**
+		 * Proceed to review banner rendering.
+		 */
 		if ( ! $this->is_page_automator_related() ) {
+			// Bail if not on automator related pages.
 			return;
 		}
 
@@ -523,6 +548,74 @@ class Automator_Review {
 
 		// Loads the template.
 		$this->display_review_banner_template();
+
+	}
+
+	/**
+	 * Determines whether the current page should display the credits notification.
+	 *
+	 * @return bool
+	 */
+	public function should_display_credits_notif() {
+
+		// Make sure to only display on admin side.
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		return self::can_display_credits_notif();
+
+	}
+
+	/**
+	 * Determines whether the current screen can display the credits notification or not.
+	 *
+	 * @return boolean
+	 */
+	public static function can_display_credits_notif() {
+
+		$current_screen = get_current_screen();
+
+		// Do not show if we cannot identify which screen it is.
+		if ( ! $current_screen instanceof \WP_Screen ) {
+			return false;
+		}
+
+		// Safe check in case WP_Screen changed its structure.
+		if ( ! isset( $current_screen->id ) ) {
+			return false;
+		}
+
+		return in_array( $current_screen->id, self::get_allowed_page_for_credits_notif(), true );
+
+	}
+
+	/**
+	 * Get the pages that are allowed for credits notification.
+	 *
+	 * @return string[]
+	 */
+	public static function get_allowed_page_for_credits_notif() {
+
+		$allowed_pages = array(
+			'dashboard',
+			'plugins',
+			'edit-recipe_category',
+			'edit-recipe_tag',
+			'uo-recipe_page_uncanny-automator-dashboard',
+			'uo-recipe_page_uncanny-automator-integrations',
+			'uo-recipe_page_uncanny-automator-config',
+			'uo-recipe_page_uncanny-automator-admin-logs',
+			'uo-recipe_page_uncanny-automator-admin-tools',
+			'uo-recipe_page_uncanny-automator-config',
+			'uo-recipe_page_uncanny-automator-pro-upgrade',
+			'uo-recipe',
+			'edit-uo-recipe',
+			'edit-page', // The 'edit-page' refers to wp-admin/edit.php?post-type=page not the edit screen.
+			'edit-post', // The 'edit-post' refers to wp-admin/edit.php not the edit screen.
+		);
+
+		return $allowed_pages;
 
 	}
 

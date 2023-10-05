@@ -49,6 +49,7 @@ class UOG_REMOVESEATSFROMGROUP {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/uncanny-groups/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
 			/* translators: Logged-in action - Uncanny Groups */
 			'sentence'           => sprintf( esc_attr__( 'Remove {{a number of:%1$s}} seats from {{an Uncanny group:%2$s}}', 'uncanny-automator' ), 'NUMOFSEATS', $this->action_meta ),
 			/* translators: Logged-in action - Uncanny Groups */

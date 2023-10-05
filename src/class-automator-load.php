@@ -105,10 +105,30 @@ class Automator_Load {
 
 		add_action( 'admin_init', array( $this, 'automator_schedule_healthchecks' ) );
 
+		add_action( 'admin_notices', array( $this, 'check_runtime_environment' ) );
+
 		$this->load_automator();
 
 		// Show set-up wizard.
 		$this->initiate_setup_wizard();
+
+	}
+
+	/**
+	 * Checks runtime environtment.
+	 *
+	 * - Displays some message on web assembly.
+	 *
+	 * @return void
+	 */
+	public function check_runtime_environment() {
+
+		if ( is_array( $_SERVER ) && isset( $_SERVER['SERVER_SOFTWARE'] ) && 'php.wasm' === strtolower( trim( $_SERVER['SERVER_SOFTWARE'] ) ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+
+			echo '<div class="notice notice-error"><p>'
+				. esc_html_x( 'Uncanny Automator cannot currently run in WP Playground environments because Playground cannot support custom tables, cURL or SSL PHP functions. Please consider trying the free Uncanny Automator plugin in your own environment instead.', 'Uncanny Automator', 'uncanny-automator' )
+				. '</p></div>';
+		}
 
 	}
 

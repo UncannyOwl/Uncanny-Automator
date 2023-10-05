@@ -86,7 +86,7 @@ if ( ! defined( 'AUTOMATOR_FREE_STORE_URL' ) ) {
 }
 
 if ( ! defined( 'AUTOMATOR_API_URL' ) ) {
-	define( 'AUTOMATOR_API_URL', 'https://api.automatorplugin.com/' );
+	define( 'AUTOMATOR_API_URL', apply_filters( 'automator_api_url', 'https://api.automatorplugin.com/' ) );
 }
 
 if ( ! defined( 'AUTOMATOR_FREE_ITEM_NAME' ) ) {

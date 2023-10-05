@@ -78,8 +78,13 @@ class Nf_Tokens {
 	 */
 	public function nf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'NFFORMS', $pieces, true ) || in_array( 'NFSUBFIELD', $pieces, true ) || in_array( 'ANONNFSUBFIELD', $pieces, true ) || in_array( 'ANONNFFORMS', $pieces, true ) || in_array( 'ANONNFSUBFORM', $pieces, true ) ) {
+			if ( in_array( 'NFFORMS', $pieces, true ) || in_array( 'NFSUBFIELD', $pieces, true )
+				 || in_array( 'SUBMISSION_ID', $pieces, true ) || in_array( 'ANONNFSUBFIELD', $pieces, true ) ||
+				 in_array( 'ANONNFFORMS', $pieces, true ) || in_array( 'ANONNFSUBFORM', $pieces, true ) ) {
 
+				if ( isset( $pieces[2] ) && 'SUBMISSION_ID' === $pieces[2] ) {
+					return Automator()->db->token->get( 'SUBMISSION_ID', $replace_args );
+				}
 
 				// Render Form Name
 				if ( isset( $pieces[2] ) && ( 'NFFORMS' === $pieces[2] || 'ANONNFFORMS' === $pieces[2] ) ) {

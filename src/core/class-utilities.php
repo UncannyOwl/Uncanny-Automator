@@ -592,7 +592,8 @@ class Utilities {
 		$log_directory = UA_DEBUG_LOGS_DIR;
 
 		if ( ! is_dir( $log_directory ) ) {
-			mkdir( $log_directory, 0755 );
+			// Recursively create the directory in case the 'uploads' folder doesn't exist yet.
+			mkdir( $log_directory, 0755, true );
 		}
 
 		$file = $log_directory . 'uo-' . sanitize_file_name( $file_name ) . '.txt';

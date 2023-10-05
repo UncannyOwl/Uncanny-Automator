@@ -47,6 +47,7 @@ class UOG_ADDSEATSTOGROUP {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/uncanny-groups/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
+			'requires_user'      => false,
 			/* translators: Logged-in action - Uncanny Groups */
 			'sentence'           => sprintf( esc_attr__( 'Add {{a number of:%1$s}} seats to {{an Uncanny group:%2$s}}', 'uncanny-automator' ), 'NUMOFSEATS', $this->action_meta ),
 			/* translators: Logged-in action - Uncanny Groups */

@@ -38,9 +38,9 @@ class EDD_PRODUCTPURCHASE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a product:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr__( 'A user purchases {{a download:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'select_option_name'  => esc_attr__( 'A user purchases {{a product}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr__( 'A user purchases {{a download}}', 'uncanny-automator' ),
 			'action'              => 'edd_complete_purchase',
 			'priority'            => 10,
 			'accepted_args'       => 1,

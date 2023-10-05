@@ -1040,7 +1040,7 @@ class Admin_Menu {
 	 *
 	 * @return array        The inline data
 	 */
-	private function get_js_backend_inline_data( $hook ) {
+	public function get_js_backend_inline_data( $hook ) {
 		// Set default data
 		$automator_backend_js = array(
 			'ajax'        => array(

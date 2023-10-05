@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailc
 Requires at least: 5.3
 Tested up to: 6.3.1
 Requires PHP: 5.6
-Stable tag: 5.1.0.1
+Stable tag: 5.1.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -323,6 +323,29 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.1.0.2 [2023-10-05] =
+
+**New Token:**
+
+* Ninja Forms - Submission ID #3996
+
+**Fixed:**
+
+* MasterStudy LMS - Lesson and Quiz By Course ID Changes #3959
+* Reset password link and Reset password URL token not working with Paid Memberships Pro #4000
+* WPForms - Support legacy Smart Tags #4005
+
+**Updated:**
+
+* Easy Digital Downloads - "A user purchases a product" renamed to "A user purchases a download" #4017
+* Uncanny Groups - Add / Remove seats actions now available for both logged-in and Everyone recipes #3994
+
+**Under the hood:**
+
+* Review Banner - Credits left warning banner can't be dismissed on the dashboard #4003
+* Recipe Logs - Properties Framework - Added Trigger properties to support Incoming Webhooks in Pro #4001
+* WordPress Playground updates to fix some notices #4020
 
 = 5.1.0.1 [2023-09-28] =
 

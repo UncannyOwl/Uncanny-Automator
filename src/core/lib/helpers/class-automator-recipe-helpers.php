@@ -1074,13 +1074,28 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	}
 
 	/**
-	 * Sets the properties of an action that will be displayed in the logs.
+	 * Sets the properties of a Trigger that will be displayed in the logs.
 	 *
 	 * @param array{array{type:string,label:string,content:string,code_language:string}} $properties_args The key `code_language` is optional. Only needed for non-text `type`.
+	 * @param string $type Defaults to 'action'.
 	 *
 	 * @return array{array{type:string,label:string,content:string,code_language:string}} Returns mixed array of the properties args.
 	 */
-	public function set_log_properties( $properties_args = array() ) {
+	public function set_trigger_log_properties( $properties_args ) {
+
+		return $this->set_log_properties( $properties_args, 'trigger' );
+
+	}
+
+	/**
+	 * Sets the properties of an action that will be displayed in the logs.
+	 *
+	 * @param array{array{type:string,label:string,content:string,code_language:string}} $properties_args The key `code_language` is optional. Only needed for non-text `type`.
+	 * @param string $type Defaults to 'action'.
+	 *
+	 * @return array{array{type:string,label:string,content:string,code_language:string}} Returns mixed array of the properties args.
+	 */
+	public function set_log_properties( $properties_args = array(), $type = 'action' ) {
 
 		$properties = new Services\Properties();
 
@@ -1104,7 +1119,13 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		}
 
-		$properties->dispatch();
+		if ( 'action' === $type ) {
+			$properties->dispatch();
+		}
+
+		if ( 'trigger' === $type ) {
+			$properties->dispatch_trigger();
+		}
 
 		return $properties;
 

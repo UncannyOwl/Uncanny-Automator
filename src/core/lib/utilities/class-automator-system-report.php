@@ -357,22 +357,31 @@ class Automator_System_Report {
 			);
 
 			$site_tables_prefix = $wpdb->get_blog_prefix( get_current_blog_id() );
-			$global_tables      = $wpdb->tables( 'global', true );
+
+			$global_tables = $wpdb->tables( 'global', true );
+
 			foreach ( $database_table_information as $table ) {
+
+				$table_name   = isset( $table->name ) ? $table->name : null;
+				$table_index  = isset( $table->index ) ? $table->index : null;
+				$table_engine = isset( $table->engine ) ? $table->engine : null;
+				$table_data   = isset( $table->data ) ? $table->data : null;
+
 				// Only include tables matching the prefix of the current site, this is to prevent displaying all tables on a MS install not relating to the current.
-				if ( is_multisite() && 0 !== strpos( $table->name, $site_tables_prefix ) && ! in_array( $table->name, $global_tables, true ) ) {
+				if ( is_multisite() && 0 !== strpos( $table_name, $site_tables_prefix ) && ! in_array( $table_name, $global_tables, true ) ) {
 					continue;
 				}
-				$table_type = in_array( $table->name, $core_tables, true ) ? 'automator' : 'other';
+				$table_type = in_array( $table_name, $core_tables, true ) ? 'automator' : 'other';
 
-				$tables[ $table_type ][ $table->name ] = array(
-					'data'   => $table->data,
-					'index'  => $table->index,
-					'engine' => $table->engine,
+				$tables[ $table_type ][ $table_name ] = array(
+					'data'   => $table_data,
+					'index'  => $table_index,
+					'engine' => $table_engine,
 				);
 
-				$database_size['data']  += $table->data;
-				$database_size['index'] += $table->index;
+				$database_size['data']  += $table_data;
+				$database_size['index'] += $table_index;
+
 			}
 		}
 

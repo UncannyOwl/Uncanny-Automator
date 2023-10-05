@@ -71,6 +71,7 @@ class Trigger_Logs_Resources {
 		$results      = (array) $this->trigger_logs_queries->trigger_runs_query( $params );
 
 		$utils = $this->get_utils();
+
 		foreach ( $results as $result ) {
 
 			$status_id = $utils::status_class_name(
@@ -81,11 +82,13 @@ class Trigger_Logs_Resources {
 			// Format the trigger run sentence.
 			$has_api_log = null !== $this->automator_factory->db_api()->get_by_log_id( 'trigger', $params['recipe_log_id'] );
 
+			$properties = Automator()->db->trigger->get_meta( 'properties', $params['trigger_id'], $params['trigger_log_id'], $result['user_id'] );
+
 			$trigger_runs[] = array(
 				'date'        => $utils::date_time_format( $result['trigger_run_time'] ),
 				'used_credit' => $has_api_log,
 				'status_id'   => $status_id,
-				'properties'  => array(),
+				'properties'  => (array) $properties,
 			);
 
 		}

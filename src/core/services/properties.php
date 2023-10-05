@@ -67,6 +67,43 @@ class Properties {
 	}
 
 	/**
+	 * Dispatches the method "record_trigger_properties" into "automator_trigger_completed" hook for saving the props.
+	 *
+	 * @return void
+	 */
+	public function dispatch_trigger() {
+		add_action( 'automator_trigger_completed', array( $this, 'record_trigger_properties' ), 20, 1 );
+	}
+
+	/**
+	 * Records the trigger properties.
+	 *
+	 * @param mixed[] $process_further
+	 * @return void
+	 */
+	public function record_trigger_properties( $process_further ) {
+
+		$trigger_args = $process_further['args'];
+
+		$meta = array(
+			'user_id'    => $trigger_args['user_id'],
+			'meta_key'   => 'properties',
+			'meta_value' => maybe_serialize( $this->get_items() ),
+		);
+
+		Automator()->db->trigger->add_meta(
+			$trigger_args['trigger_id'],
+			$trigger_args['trigger_log_id'],
+			$trigger_args['run_number'],
+			$meta
+		);
+
+		// Remove the action hook from filters db to make sure subsequent triggers renew the action hook.
+		remove_action( 'automator_trigger_completed', array( $this, 'record_trigger_properties' ), 20 );
+
+	}
+
+	/**
 	 * Callback method to action hook "automator_action_created".
 	 *
 	 * @param mixed[] $action

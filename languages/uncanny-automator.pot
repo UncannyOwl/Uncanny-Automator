@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-09-28T16:04:59+00:00\n"
+"POT-Creation-Date: 2023-10-05T16:36:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: uncanny-automator\n"
@@ -31,17 +31,22 @@ msgstr ""
 msgid "Uncanny Automator, Uncanny Owl"
 msgstr ""
 
+#: src/class-automator-load.php:129
+msgctxt "Uncanny Automator"
+msgid "Uncanny Automator cannot currently run in WP Playground environments because Playground cannot support custom tables, cURL or SSL PHP functions. Please consider trying the free Uncanny Automator plugin in your own environment instead."
+msgstr ""
+
 #. translators: 2. Recipes. 3. PHP version
-#: src/class-automator-load.php:186
+#: src/class-automator-load.php:206
 msgid "%2$s recipes have been disabled because your version of PHP (%3$s) is not fully compatible with the version of %1$s that's installed."
 msgstr ""
 
 #. translators: 1. Trademarked term. 2. Version number
-#: src/class-automator-load.php:188
+#: src/class-automator-load.php:208
 msgid "Please update %1$s to version %2$s or later."
 msgstr ""
 
-#: src/class-automator-load.php:475
+#: src/class-automator-load.php:495
 msgid "Heads up!"
 msgstr ""
 
@@ -1737,7 +1742,7 @@ msgid "Count me in!"
 msgstr ""
 
 #: src/core/admin/setup-wizard/src/views/step-2.php:67
-#: src/core/lib/utilities/class-automator-system-report.php:612
+#: src/core/lib/utilities/class-automator-system-report.php:621
 #: src/core/lib/utilities/class-automator-translations.php:703
 msgid "Not connected"
 msgstr ""
@@ -4554,7 +4559,8 @@ msgstr ""
 msgid "Any"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:766
+#: src/core/lib/utilities/class-automator-input-parser.php:773
+msgctxt "Reset password token text"
 msgid "Click here to reset your password."
 msgstr ""
 
@@ -4567,13 +4573,13 @@ msgstr ""
 msgid "Missing base tables: %s. Some Automator functionality may not work as expected."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-system-report.php:570
+#: src/core/lib/utilities/class-automator-system-report.php:579
 #: src/core/views/html-admin-status.php:757
 msgid "Visit plugin homepage"
 msgstr ""
 
 #. translators: %s: plugin author
-#: src/core/lib/utilities/class-automator-system-report.php:582
+#: src/core/lib/utilities/class-automator-system-report.php:591
 #: src/core/views/html-admin-status.php:771
 msgid "by %s"
 msgstr ""
@@ -12041,21 +12047,13 @@ msgid "A user's Stripe payment is refunded"
 msgstr ""
 
 #. translators: Logged-in trigger - Easy Digital Downloads
-#. translators: Logged-in trigger - Studiocart
 #: src/integrations/edd/triggers/edd-productpurchase.php:41
-#: src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php:51
-msgid "A user purchases {{a product:%1$s}}"
+msgid "A user purchases {{a download:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Easy Digital Downloads
-#. translators: Logged-in trigger - Studiocart
-#. translators: Logged-in trigger - Upsell
-#. translators: Logged-in trigger - WooCommerce
 #: src/integrations/edd/triggers/edd-productpurchase.php:43
-#: src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php:53
-#: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:44
-#: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:53
-msgid "A user purchases {{a product}}"
+msgid "A user purchases {{a download}}"
 msgstr ""
 
 #: src/integrations/edd/triggers/edd-user-subscribes-to-download.php:24
@@ -16091,12 +16089,17 @@ msgctxt "MasterStudy"
 msgid "Course ID"
 msgstr ""
 
-#: src/integrations/masterstudy-lms/helpers/masterstudy-helpers.php:81
+#: src/integrations/masterstudy-lms/actions/masterstudy-markcoursecomplete.php:101
+msgctxt "Masterstudy LMS - Complete course action"
+msgid "Course does not have any lessons or quizzes to complete."
+msgstr ""
+
+#: src/integrations/masterstudy-lms/helpers/masterstudy-helpers.php:85
 msgctxt "MasterStudy LMS"
 msgid "Any lesson"
 msgstr ""
 
-#: src/integrations/masterstudy-lms/helpers/masterstudy-helpers.php:145
+#: src/integrations/masterstudy-lms/helpers/masterstudy-helpers.php:138
 msgctxt "MasterStudy LMS"
 msgid "Any quiz"
 msgstr ""
@@ -16645,6 +16648,10 @@ msgstr ""
 
 #: src/integrations/mycred/helpers/mycred-helpers.php:223
 msgid "Badge ID"
+msgstr ""
+
+#: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:100
+msgid "Submission ID"
 msgstr ""
 
 #. translators: Action sentence
@@ -17800,6 +17807,20 @@ msgstr ""
 #. translators: Logged-in trigger - Studiocart
 #: src/integrations/studiocart/triggers/studiocart-userorderrefunded.php:53
 msgid "A user's order for {{a product}} is refunded"
+msgstr ""
+
+#. translators: Logged-in trigger - Studiocart
+#: src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php:51
+msgid "A user purchases {{a product:%1$s}}"
+msgstr ""
+
+#. translators: Logged-in trigger - Studiocart
+#. translators: Logged-in trigger - Upsell
+#. translators: Logged-in trigger - WooCommerce
+#: src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php:53
+#: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:44
+#: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:53
+msgid "A user purchases {{a product}}"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens.php:18
@@ -19062,29 +19083,29 @@ msgid "A user redeems a code with a {{specific}} suffix"
 msgstr ""
 
 #. translators: Logged-in action - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:51
+#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:52
 msgid "Add {{a number of:%1$s}} seats to {{an Uncanny group:%2$s}}"
 msgstr ""
 
 #. translators: Logged-in action - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:53
+#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:54
 msgid "Add {{a number of}} seats to {{an Uncanny group}}"
 msgstr ""
 
-#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:76
-#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:78
+#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:77
+#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:79
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:664
 #: src/integrations/woocommerce/tokens/wc-tokens.php:968
 msgid "Quantity"
 msgstr ""
 
-#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:99
-#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:102
+#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:100
+#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:103
 msgid "The selected group is not found."
 msgstr ""
 
-#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:110
-#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:113
+#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:111
+#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:114
 msgid "Group management is not enabled on the selected group."
 msgstr ""
 
@@ -19107,16 +19128,16 @@ msgid "Number of seats"
 msgstr ""
 
 #. translators: Logged-in action - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:53
+#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:54
 msgid "Remove {{a number of:%1$s}} seats from {{an Uncanny group:%2$s}}"
 msgstr ""
 
 #. translators: Logged-in action - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:55
+#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:56
 msgid "Remove {{a number of}} seats from {{an Uncanny group}}"
 msgstr ""
 
-#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:122
+#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:123
 msgid "No empty seats in the selected group."
 msgstr ""
 

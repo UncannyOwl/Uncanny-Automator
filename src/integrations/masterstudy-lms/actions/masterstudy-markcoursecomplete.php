@@ -92,79 +92,70 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 	 */
 	public function mark_course_complete( $user_id, $action_data, $recipe_id, $args ) {
 
-		$course_id = $action_data['meta'][ $this->action_meta ];
+		$course_id  = $action_data['meta'][ $this->action_meta ];
+		$helpers    = new Masterstudy_Helpers( false );
+		$curriculum = $helpers->get_course_curriculum_materials( $course_id );
 
-		/*Check if lesson in course*/
-		$curriculum = get_post_meta( $course_id, 'curriculum', true );
+		if ( empty( $curriculum ) ) {
+			$action_data['complete_with_errors'] = true;
+			$error                               = _x( 'Course does not have any lessons or quizzes to complete.', 'Masterstudy LMS - Complete course action', 'uncanny-automator' );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error );
+			return;
+		}
 
-		if ( ! empty( $curriculum ) ) {
-			$curriculum = \STM_LMS_Helpers::only_array_numbers( explode( ',', $curriculum ) );
+		// Enroll the user is the course if they are not already enrolled
+		$course = stm_lms_get_user_course( $user_id, $course_id, array( 'user_course_id' ) );
+		if ( ! count( $course ) ) {
+			\STM_LMS_Course::add_user_course( $course_id, $user_id, \STM_LMS_Course::item_url( $course_id, '' ), 0 );
+			\STM_LMS_Course::add_student( $course_id );
+		}
 
-			$curriculum_posts = get_posts(
-				array(
-					'post__in'       => $curriculum,
-					'posts_per_page' => 999,
-					'post_type'      => array( 'stm-lessons', 'stm-quizzes' ),
-					'post_status'    => 'publish',
-				)
-			);
+		foreach ( $curriculum as $post ) {
 
-			if ( ! empty( $curriculum_posts ) ) {
+			if ( 'stm-lessons' === $post['post_type'] ) {
 
-				// Enroll the user is the course if they are not already enrolled
-				$course = stm_lms_get_user_course( $user_id, $course_id, array( 'user_course_id' ) );
-				if ( ! count( $course ) ) {
-					\STM_LMS_Course::add_user_course( $course_id, $user_id, \STM_LMS_Course::item_url( $course_id, '' ), 0 );
-					\STM_LMS_Course::add_student( $course_id );
+				// Complete Lesson
+				$lesson_id = $post['post_id'];
+
+				if ( \STM_LMS_Lesson::is_lesson_completed( $user_id, $course_id, $lesson_id ) ) {
+					continue;
+				};
+
+				$end_time   = time();
+				$start_time = get_user_meta( $user_id, "stm_lms_course_started_{$course_id}_{$lesson_id}", true );
+
+				stm_lms_add_user_lesson( compact( 'user_id', 'course_id', 'lesson_id', 'start_time', 'end_time' ) );
+				\STM_LMS_Course::update_course_progress( $user_id, $course_id );
+
+				do_action( 'stm_lms_lesson_passed', $user_id, $lesson_id );
+
+				delete_user_meta( $user_id, "stm_lms_course_started_{$course_id}_{$lesson_id}" );
+			}
+
+			if ( 'stm-quizzes' === $post['post_type'] ) {
+
+				// Complete quiz
+				$quiz_id = $post['post_id'];
+
+				if ( \STM_LMS_Quiz::quiz_passed( $quiz_id, $user_id ) ) {
+					continue;
 				}
 
-				foreach ( $curriculum_posts as $post ) {
+				$progress  = 100;
+				$status    = 'passed';
+				$user_quiz = compact( 'user_id', 'course_id', 'quiz_id', 'progress', 'status' );
+				stm_lms_add_user_quiz( $user_quiz );
+				stm_lms_get_delete_user_quiz_time( $user_id, $quiz_id );
 
-					if ( 'stm-lessons' === $post->post_type ) {
+				\STM_LMS_Course::update_course_progress( $user_id, $course_id );
 
-						// Complete Lesson
-						$lesson_id = $post->ID;
+				$user_quiz['progress'] = round( $user_quiz['progress'], 1 );
+				do_action( 'stm_lms_quiz_' . $status, $user_id, $quiz_id, $user_quiz['progress'] );
 
-						if ( \STM_LMS_Lesson::is_lesson_completed( $user_id, $course_id, $lesson_id ) ) {
-							continue;
-						};
-
-						$end_time   = time();
-						$start_time = get_user_meta( $user_id, "stm_lms_course_started_{$course_id}_{$lesson_id}", true );
-
-						stm_lms_add_user_lesson( compact( 'user_id', 'course_id', 'lesson_id', 'start_time', 'end_time' ) );
-						\STM_LMS_Course::update_course_progress( $user_id, $course_id );
-
-						do_action( 'stm_lms_lesson_passed', $user_id, $lesson_id );
-
-						delete_user_meta( $user_id, "stm_lms_course_started_{$course_id}_{$lesson_id}" );
-					}
-
-					if ( 'stm-quizzes' === $post->post_type ) {
-
-						// Complete quiz
-						$quiz_id = $post->ID;
-
-						if ( \STM_LMS_Quiz::quiz_passed( $quiz_id, $user_id ) ) {
-							continue;
-						}
-
-						$progress  = 100;
-						$status    = 'passed';
-						$user_quiz = compact( 'user_id', 'course_id', 'quiz_id', 'progress', 'status' );
-						stm_lms_add_user_quiz( $user_quiz );
-						stm_lms_get_delete_user_quiz_time( $user_id, $quiz_id );
-
-						\STM_LMS_Course::update_course_progress( $user_id, $course_id );
-
-						$user_quiz['progress'] = round( $user_quiz['progress'], 1 );
-						do_action( 'stm_lms_quiz_' . $status, $user_id, $quiz_id, $user_quiz['progress'] );
-
-					}
-				}
-				Automator()->complete_action( $user_id, $action_data, $recipe_id );
 			}
 		}
+
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
 
 }

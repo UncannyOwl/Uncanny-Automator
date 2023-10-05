@@ -495,7 +495,13 @@ class Wpf_Tokens {
 			if ( ! empty( $field['choices'] ) ) {
 				foreach ( $field['choices'] as $choice_id => $choice ) {
 					// Handle smart tags in label.
-					$label = wpforms()->get( 'smart_tags' )->process( $choice['label'], $forms[ $form_id ] );
+					$smart_tags = wpforms()->get( 'smart_tags' );
+					// Support Legacy Smart Tags version 1.6.7
+					if ( ! is_a( $smart_tags, '\WPForms\SmartTags\SmartTags' ) ) {
+						$smart_tags = wpforms()->smart_tags;
+					}
+					$label = $smart_tags->process( $choice['label'], $forms[ $form_id ] );
+
 					// Normalize choice label.
 					$forms[ $form_id ]['fields'][ $field_id ]['choices'][ $choice_id ]['label'] = $this->normalize_whitespace( $label );
 					// Normalize choice value.

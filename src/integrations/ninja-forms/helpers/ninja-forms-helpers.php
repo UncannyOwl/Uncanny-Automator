@@ -53,7 +53,7 @@ class Ninja_Forms_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param array $args
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
@@ -97,6 +97,7 @@ class Ninja_Forms_Helpers {
 			'relevant_tokens' => array(
 				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
 				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				'SUBMISSION_ID'      => esc_attr__( 'Submission ID', 'uncanny-automator' ),
 			),
 		);
 
@@ -142,6 +143,12 @@ class Ninja_Forms_Helpers {
 
 				Automator()->insert_trigger_meta( $insert );
 			}
+
+			if ( isset( $entry['actions']['save']['sub_id'] ) ) {
+				$submission_id = get_post_meta( $entry['actions']['save']['sub_id'], '_seq_num', true );
+
+				Automator()->db->token->save( 'SUBMISSION_ID', $submission_id, $args );
+			}
 		}
 
 		return $data;
@@ -150,10 +157,10 @@ class Ninja_Forms_Helpers {
 	/**
 	 * Matching form fields values.
 	 *
-	 * @param array $entry form data.
-	 * @param array|null $recipes recipe data.
-	 * @param string|null $trigger_meta trigger meta key.
-	 * @param string|null $trigger_code trigger code key.
+	 * @param array       $entry               form data.
+	 * @param array|null  $recipes             recipe data.
+	 * @param string|null $trigger_meta        trigger meta key.
+	 * @param string|null $trigger_code        trigger code key.
 	 * @param string|null $trigger_second_code trigger second code key.
 	 *
 	 * @return array|bool

@@ -32,13 +32,9 @@ class Migrate_Triggers {
 	 */
 	public function migrate() {
 
-		automator_log( 'Trigger migration event started... ' . time(), 'Trigger Migration', true, '4-7-migration' );
-
 		$this->fill_missing_hook_name_records();
 
 		update_option( self::MIGRATED_FLAG, time(), true );
-
-		automator_log( 'Trigger migration event finished... ' . time(), 'Trigger Migration', true, '4-7-migration' );
 
 	}
 
