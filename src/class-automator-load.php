@@ -394,7 +394,7 @@ class Automator_Load {
 	 */
 	public function initialize_utilities() {
 
-		require UA_ABSPATH . 'src/core/class-utilities.php';
+		require_once UA_ABSPATH . 'src/core/class-utilities.php';
 		Utilities::get_instance();
 
 	}

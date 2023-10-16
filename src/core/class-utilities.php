@@ -60,10 +60,65 @@ class Utilities {
 		return self::$instance;
 	}
 
+
+	/**
+	 * Creates a key if it doesnt exists yet and returns it.
+	 *
+	 * Otherwise, just returns the key. Most of the site has AUTH_KEY in place so most of the time this will not create additional options.
+	 *
+	 * @return string
+	 */
+	public static function get_key() {
+
+		$opt_key = 'automator_logs_auth_key';
+
+		if ( defined( 'AUTH_KEY' ) ) {
+			return substr( AUTH_KEY, 0, 8 );
+		}
+
+		$key = get_option( $opt_key, false );
+
+		// Generate the key if its falsy.
+		if ( empty( $key ) ) {
+			$key = md5( uniqid( time() ) );
+			// Make sure to autoload.
+			add_option( $opt_key, $key, 'yes' );
+		}
+
+		return substr( $key, 0, 8 );
+
+	}
+
 	/**
 	 * Utilities constructor.
 	 */
 	public function __construct() {
+		add_action(
+			'activated_plugin',
+			array(
+				$this,
+				'reset_integration_list_transients',
+			),
+			99999,
+			2
+		);
+		add_action(
+			'deactivated_plugin',
+			array(
+				$this,
+				'reset_integration_list_transients',
+			),
+			99999,
+			2
+		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function reset_integration_list_transients() {
+		delete_transient( 'automator_pro_integrations_list_items' );
+		delete_transient( 'automator_pro_integrations_list' );
 	}
 
 	/**
@@ -441,22 +496,29 @@ class Utilities {
 			return array();
 		}
 
-		$api_response = json_decode( $response['body'], true );
-		$pro_only     = array();
+		$api_response   = json_decode( $response['body'], true );
+		$pro_only       = array();
+		$active_plugins = self::get_plugins_info();
 
 		foreach ( $api_response as $integration ) {
+			// If it's not pro, continue;
 			if ( ! $integration['is_pro_integration'] ) {
 				continue;
 			}
 
-			$integration_id = $integration['integration_id'];
+			$integration_id   = $integration['integration_id'];
+			$integration_name = $integration['integration_name'];
+
+			if ( ! in_array( $integration_name, $active_plugins, true ) && ! $integration['is_app_integration'] ) {
+				continue;
+			}
 
 			if ( array_key_exists( $integration_id, $pro_only ) ) {
 				$integration_id = self::decouple_integration_id_name( $integration_id, $integration['integration_name'] );
 			}
 
 			$pro_only[ $integration_id ] = array(
-				'name'         => $integration['integration_name'],
+				'name'         => $integration_name,
 				'icon_svg'     => $integration['integration_icon'],
 				'is_pro_only'  => 'yes',
 				'settings_url' => '',
@@ -531,6 +593,31 @@ class Utilities {
 	}
 
 	/**
+	 * Return active plugins info
+	 * @return array
+	 */
+	public static function get_plugins_info() {
+
+		if ( ! \function_exists( 'wp_get_active_and_valid_plugins' ) ) {
+			return array();
+		}
+
+		$plugins = wp_get_active_and_valid_plugins();
+		if ( empty( $plugins ) ) {
+			return array();
+		}
+
+		$names = array();
+
+		foreach ( $plugins as $plugin ) {
+			$data    = get_plugin_data( $plugin );
+			$names[] = $data['Name'];
+		}
+
+		return $names;
+	}
+
+	/**
 	 * Returns the full server path for the passed include file
 	 *
 	 * @param $file_name
@@ -596,7 +683,10 @@ class Utilities {
 			mkdir( $log_directory, 0755, true );
 		}
 
-		$file = $log_directory . 'uo-' . sanitize_file_name( $file_name ) . '.txt';
+		self::remove_old_logs();
+
+		$filename = AUTOMATOR_SITE_KEY . '-' . $file_name;
+		$file     = sprintf( '%s%s.%s', $log_directory, sanitize_file_name( $filename ), AUTOMATOR_LOGS_EXT );
 
 		if ( ! $backtrace ) {
 			$complete_message = $trace_start . $trace_heading . $trace_msg_start . $trace_message . $trace_finish;
@@ -609,6 +699,17 @@ class Utilities {
 			error_log( $complete_message, 3, $file );
 		}
 
+	}
+
+	private static function remove_old_logs() {
+		$old_path = trailingslashit( WP_CONTENT_DIR ) . 'uploads' . DIRECTORY_SEPARATOR . 'automator-logs' . DIRECTORY_SEPARATOR;
+		if ( ! is_dir( $old_path ) ) {
+			return;
+		}
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+		$wp_filesystem_direct = new \WP_Filesystem_Direct( false );
+		$wp_filesystem_direct->rmdir( $old_path, true );
 	}
 
 	/**

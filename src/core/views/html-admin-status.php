@@ -557,7 +557,7 @@ $automator_stats    = $report['automator_stats'];
 		<td data-export-label="App credits left"><?php esc_html_e( 'App credits left', 'uncanny-automator' ); ?>:</td>
 		<td class="help"><?php echo esc_html__( 'Available app credits.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>
 		<td><?php echo esc_html( $automator_stats['credits_left'] ); ?></td>
-	</tr>	
+	</tr>
 	<tr>
 		<td data-export-label="Recipes using app credits"><?php esc_html_e( 'Recipes using app credits', 'uncanny-automator' ); ?>:</td>
 		<td class="help"><?php echo esc_html__( 'Total number of recipes using app credits on your site.', 'uncanny-automator' ); /* phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped */ ?></td>

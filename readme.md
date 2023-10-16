@@ -3,9 +3,9 @@
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, openai, learndash, webhooks, woocommerce, mailchimp, twitter, facebook, whatsapp, buddyboss, tutor lms \
 **Requires at least:** 5.3 \
-**Tested up to:** 6.3.1 \
+**Tested up to:** 6.3.2 \
 **Requires PHP:** 5.6 \
-**Stable tag:** 5.1.0.2 \
+**Stable tag:** 5.1.0.3 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -348,6 +348,14 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.1.0.3 [2023-10-16]
+
+**Fixed:**
+
+* Status page - PHP error related to 'mysql_get_server_info' in a specific situation #4032
+* Debug logs - Improved security when debugging is enabled #4033
+* Recipe UI - Show built-in or active Pro integrations only #4038
 
 ### 5.1.0.2 [2023-10-05]
 

@@ -18,6 +18,11 @@ class Background_Actions {
 	public $action_code;
 
 	/**
+	 * @var
+	 */
+	public $last_response;
+
+	/**
 	 *
 	 */
 	const IS_USED_FOR_ACTION_TOKEN = 'is_used_for_action_token';
@@ -414,8 +419,9 @@ class Background_Actions {
 	/**
 	 * complete_with_error
 	 *
-	 * @param  mixed $action
-	 * @param  mixed $error
+	 * @param mixed $action
+	 * @param mixed $error
+	 *
 	 * @return void
 	 */
 	public function complete_with_error( $action, $error = '' ) {

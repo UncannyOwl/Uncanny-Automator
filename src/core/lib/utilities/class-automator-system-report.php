@@ -219,10 +219,9 @@ class Automator_System_Report {
 		}
 
 		// phpcs:disable WordPress.DB.RestrictedFunctions, PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved
-		if ( $wpdb->use_mysqli ) {
+		$server_info = '"mysqli_get_server_info" does not exist.';
+		if ( \function_exists( 'mysqli_get_server_info' ) ) {
 			$server_info = mysqli_get_server_info( $wpdb->dbh );
-		} else {
-			$server_info = mysql_get_server_info( $wpdb->dbh );
 		}
 
 		// phpcs:enable WordPress.DB.RestrictedFunctions, PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved

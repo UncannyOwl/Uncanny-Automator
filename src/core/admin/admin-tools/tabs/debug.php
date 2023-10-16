@@ -9,10 +9,21 @@ namespace Uncanny_Automator;
 
 class Admin_Tools_Tab_Debug {
 
+	/**
+	 * @var int
+	 */
 	const PRIORITY = 10;
 
+	/**
+	 * @var int
+	 */
 	const ACCEPTED_ARGS = 1;
 
+	/**
+	 * Creates the tab and registers delete log method to wp_ajax_automator_log_delete action hook.
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 
 		$this->create_tab();
@@ -21,50 +32,85 @@ class Admin_Tools_Tab_Debug {
 
 	}
 
+	/**
+	 * Deletes the log. Invokes die after redirecting.
+	 *
+	 * @see redirect
+	 *
+	 * @return void
+	 */
 	public function delete_log() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Insufficient permission.' );
+			wp_die( 'Insufficient permission.', 401 );
 		}
 
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_log_delete' ) ) {
-			wp_die( 'Invalid nonce.' );
+			wp_die( 'Invalid nonce.', 403 );
 		}
 
-		$log = sanitize_file_name( automator_filter_input( 'log_id' ) . '.log' );
+		// Strips '/' characters. Prevents directory traversal.
+		$requested_log = automator_filter_input( 'log_id', INPUT_GET, FILTER_SANITIZE_ENCODED );
+
+		// The absolute path to the log file. Also sanitizes the file name.
+		$log_file_path = trailingslashit( UA_DEBUG_LOGS_DIR ) . sanitize_file_name( $requested_log );
+
+		// Make sure the file exists and has a valid extension.
+		if ( false === $this->has_log_extension( $requested_log ) || ! file_exists( $log_file_path ) ) {
+			$this->redirect( false );
+		}
+
+		// Finally delete the file. Redirects with success if the file is deleted.
+		if ( unlink( $log_file_path ) ) {
+			$this->redirect( true );
+		}
+
+		$this->redirect( false );
+
+	}
+
+	/**
+	 * Redirects with failure or success message. Invokes die statement after redirecting.
+	 *
+	 * @param bool $success
+	 *
+	 * @return void
+	 */
+	public function redirect( $success = true ) {
 
 		$query_params = array(
 			'post_type'    => 'uo-recipe',
 			'page'         => 'uncanny-automator-admin-tools',
 			'tab'          => 'debug',
-			'log'          => $log,
 			'file_removed' => 'yes',
 		);
 
-		if ( ! is_file( UA_DEBUG_LOGS_DIR . $log ) ) {
-
+		if ( false === $success ) {
 			$query_params['failed'] = 'yes';
-
-			wp_safe_redirect( add_query_arg( $query_params, admin_url( 'edit.php' ) ) );
-
-			die;
-
 		}
-
-		if ( unlink( UA_DEBUG_LOGS_DIR . $log ) ) {
-
-			wp_safe_redirect( add_query_arg( $query_params, admin_url( 'edit.php' ) ) );
-
-			die;
-
-		}
-
-		$query_params['failed'] = 'yes';
 
 		wp_safe_redirect( add_query_arg( $query_params, admin_url( 'edit.php' ) ) );
 
 		die;
+	}
 
+	/**
+	 * Determines whether the specific file has .log extension or not.
+	 *
+	 * @param string $log
+	 *
+	 * @return bool
+	 */
+	public function has_log_extension( $log ) {
+
+		$file_parts = pathinfo( $log );
+
+		// Readability.
+		if ( ! isset( $file_parts['extension'] ) || AUTOMATOR_LOGS_EXT !== $file_parts['extension'] ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -88,12 +134,13 @@ class Admin_Tools_Tab_Debug {
 		// Add the tab using the filter.
 		add_filter(
 			'automator_admin_tools_tabs',
-			function( $tabs ) {
+			function ( $tabs ) {
 				$tabs['debug'] = (object) array(
 					'name'     => esc_html__( 'Debug', 'uncanny-automator' ),
 					'function' => array( $this, 'tab_output' ),
 					'preload'  => false,
 				);
+
 				return $tabs;
 			},
 			self::PRIORITY,
@@ -149,8 +196,9 @@ class Admin_Tools_Tab_Debug {
 	/**
 	 * Returns the link of the general tab subtab
 	 *
-	 * @param  string $selected_tab Optional. The ID of the subtab
-	 * @return string               The URL
+	 * @param string $selected_tab Optional. The ID of the subtab
+	 *
+	 * @return string
 	 */
 	public static function utility_get_debug_page_link( $selected_tab = '' ) {
 

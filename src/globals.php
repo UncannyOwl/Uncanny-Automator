@@ -77,7 +77,7 @@ if ( ! defined( 'UA_DEBUG_LOGS_DIR' ) ) {
 	/**
 	 * Automator ABSPATH for automator logs directory
 	 */
-	define( 'UA_DEBUG_LOGS_DIR', trailingslashit( WP_CONTENT_DIR ) . 'uploads' . DIRECTORY_SEPARATOR . 'automator-logs' . DIRECTORY_SEPARATOR );
+	define( 'UA_DEBUG_LOGS_DIR', trailingslashit( UA_ABSPATH ) . 'logs' . DIRECTORY_SEPARATOR );
 }
 
 if ( ! defined( 'AUTOMATOR_FREE_STORE_URL' ) ) {
@@ -104,4 +104,14 @@ if ( ! defined( 'AUTOMATOR_INTEGRATIONS_JSON_LIST' ) ) {
 
 if ( ! defined( 'AUTOMATOR_INTEGRATIONS_JSON_LIST_WITH_ITEMS' ) ) {
 	define( 'AUTOMATOR_INTEGRATIONS_JSON_LIST_WITH_ITEMS', 'https://integrations.automatorplugin.com/full.json' );
+}
+
+if ( ! defined( 'AUTOMATOR_LOGS_EXT' ) ) {
+	define( 'AUTOMATOR_LOGS_EXT', apply_filters( 'automator_logs_extension', 'log' ) );
+}
+
+if ( ! defined( 'AUTOMATOR_SITE_KEY' ) ) {
+
+	define( 'AUTOMATOR_SITE_KEY', Utilities::get_key() );
+
 }

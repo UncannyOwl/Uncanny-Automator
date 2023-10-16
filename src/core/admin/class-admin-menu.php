@@ -1248,7 +1248,6 @@ class Admin_Menu {
 								'date'      => __( 'Date', 'uncanny-automator' ),
 								'startDate' => __( 'Start date', 'uncanny-automator' ),
 								'endDate'   => __( 'End date', 'uncanny-automator' ),
-								'status'    => __( 'Status', 'uncanny-automator' ),
 								'message'   => __( 'Notes', 'uncanny-automator' ),
 							),
 						),

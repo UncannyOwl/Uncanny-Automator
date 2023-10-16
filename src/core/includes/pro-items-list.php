@@ -2595,10 +2595,10 @@ function automator_pro_items_list() {
 			'pro_only' => 'yes',
 			'triggers' => array(
 				array(
-					/* translators: Logged-in trigger - Run now */
+					/* translators: Anonymous trigger - Run now */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Trigger recipe manually", 'uncanny-automator' ),
-					'type' => 'logged-in',
+					'type' => 'anonymous',
 				),
 			),
 			'actions'  => array(),
@@ -3088,6 +3088,12 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Anonymous trigger - WooCommerce */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A product}} in {{a specific term}} in {{a specific taxonomy}} has its associated order set to {{a specific status}}", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					/* translators: Anonymous trigger - WooCommerce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "{{A product variation's}} inventory status is set to {{a specific status}}", 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
@@ -3225,6 +3231,11 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'  => array(
+				array(
+					/* translators: Action - WooCommerce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add {{a product}} to {{an order}}", 'uncanny-automator' ),
+				),
 				array(
 					/* translators: Action - WooCommerce */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
