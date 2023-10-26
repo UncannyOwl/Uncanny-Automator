@@ -1,8 +1,12 @@
 <?php
+
 namespace Uncanny_Automator;
 
 use Uncanny_Automator\Recipe;
 
+/**
+ *
+ */
 class JETFB_USER_FORM_SUBMIT {
 
 	use Recipe\Triggers;
@@ -21,13 +25,21 @@ class JETFB_USER_FORM_SUBMIT {
 	 */
 	const TRIGGER_META = 'JETFB_USER_FORM_SUBMIT_META';
 
+	/**
+	 * @var Jetfb_Tokens
+	 */
+	public $jetfb_tokens;
+
+	/**
+	 *
+	 */
 	public function __construct() {
 
-			$this->set_helper( new Jetfb_Helpers() );
+		$this->set_helper( new Jetfb_Helpers() );
 
-			$this->jetfb_tokens = new Jetfb_Tokens();
+		$this->jetfb_tokens = new Jetfb_Tokens();
 
-			$this->setup_trigger();
+		$this->setup_trigger();
 
 	}
 
@@ -45,7 +57,7 @@ class JETFB_USER_FORM_SUBMIT {
 		/* Translators: Trigger sentence */
 		$this->set_sentence(
 			sprintf(
-				/* Translators: Trigger sentence */
+			/* Translators: Trigger sentence */
 				esc_html__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
@@ -71,12 +83,20 @@ class JETFB_USER_FORM_SUBMIT {
 
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function load_options() {
 
 		return $this->get_helper()->get_option_fields( $this );
 
 	}
 
+	/**
+	 * @param ...$args
+	 *
+	 * @return mixed
+	 */
 	public function validate_trigger( ...$args ) {
 
 		list( $form_handler, $is_success ) = $args[0];
@@ -85,12 +105,22 @@ class JETFB_USER_FORM_SUBMIT {
 
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return void
+	 */
 	public function prepare_to_run( $data ) {
 
 		$this->set_conditional_trigger( true );
 
 	}
 
+	/**
+	 * @param ...$args
+	 *
+	 * @return array
+	 */
 	public function validate_conditions( ...$args ) {
 
 		list( $form_handler, $is_success ) = $args[0];
@@ -100,10 +130,10 @@ class JETFB_USER_FORM_SUBMIT {
 		}
 
 		$matching_recipes_triggers = $this->find_all( $this->trigger_recipes() )
-			->where( array( $this->get_trigger_meta() ) )
-			->match( array( absint( $form_handler->action_handler->form_id ) ) )
-			->format( array( 'intval' ) )
-			->get();
+										  ->where( array( $this->get_trigger_meta() ) )
+										  ->match( array( absint( $form_handler->action_handler->form_id ) ) )
+										  ->format( array( 'intval' ) )
+										  ->get();
 
 		return $matching_recipes_triggers;
 

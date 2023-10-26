@@ -14,6 +14,16 @@ class SURECART_ORDER_CONFIRMED {
 	use Recipe\Triggers;
 
 	/**
+	 * @var SureCart_Tokens
+	 */
+	public $surecart_tokens;
+
+	/**
+	 * @var SureCart_Helpers
+	 */
+	public $helpers;
+
+	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
@@ -72,7 +82,8 @@ class SURECART_ORDER_CONFIRMED {
 	 *
 	 * @param $data
 	 */
-	public function prepare_to_run( $data ) {}
+	public function prepare_to_run( $data ) {
+	}
 
 
 	/**

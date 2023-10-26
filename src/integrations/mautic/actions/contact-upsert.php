@@ -133,7 +133,8 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 				'action'      => 'upsert',
 				'fields'      => $fields_item_json,
 				'credentials' => $credentials,
-			)
+			),
+			$action_data
 		);
 
 		return true;

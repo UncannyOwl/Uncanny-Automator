@@ -19,6 +19,10 @@ class Give_Helpers {
 	 * @var Give_Pro_Helpers
 	 */
 	public $pro;
+	/**
+	 * @var true
+	 */
+	public $load_options;
 
 	/**
 	 * Give_Helpers constructor.
@@ -41,6 +45,14 @@ class Give_Helpers {
 		$this->pro = $pro;
 	}
 
+	/**
+	 * @param $label
+	 * @param $option_code
+	 * @param $args
+	 * @param $tokens
+	 *
+	 * @return mixed|null
+	 */
 	public function list_all_give_forms( $label = null, $option_code = 'MAKEDONATION', $args = array(), $tokens = array() ) {
 
 		if ( ! $label ) {

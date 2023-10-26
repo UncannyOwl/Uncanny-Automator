@@ -79,7 +79,7 @@ class Automator_Registration {
 	public function recipe_type( $type, $details ) {
 
 		if ( null === $type || ! is_string( $type ) ) {
-			Automator()->error->add_error( 'register_integration', 'ERROR: You are trying to register an integration without passing an integration code.', $this );
+			Automator()->wp_error->add_error( 'register_integration', 'ERROR: You are trying to register an integration without passing an integration code.', $this );
 
 			return null;
 		}

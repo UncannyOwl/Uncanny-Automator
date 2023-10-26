@@ -23,6 +23,11 @@ class Mec_Event_Tokens {
 	private $token = 'MECTOKENS_';
 
 	/**
+	 * @var bool
+	 */
+	private $load_options;
+
+	/**
 	 * Our class constructor. Hooks `parse_tokens` method to `automator_maybe_parse_token` filter.
 	 *
 	 * @return void
@@ -38,12 +43,12 @@ class Mec_Event_Tokens {
 	/**
 	 * Process the tokens.
 	 *
-	 * @param  mixed $value The value accepted from `automator_maybe_parse_token`.
-	 * @param  mixed $pieces The pieces accepted from `automator_maybe_parse_token`.
-	 * @param  mixed $recipe_id The recipe id accepted from `automator_maybe_parse_token`.
-	 * @param  mixed $trigger_data The trigger data accepted from `automator_maybe_parse_token`.
-	 * @param  mixed $user_id The user id accepted from `automator_maybe_parse_token`.
-	 * @param  mixed $replace_args The arguments accepted from `automator_maybe_parse_token`.
+	 * @param mixed $value The value accepted from `automator_maybe_parse_token`.
+	 * @param mixed $pieces The pieces accepted from `automator_maybe_parse_token`.
+	 * @param mixed $recipe_id The recipe id accepted from `automator_maybe_parse_token`.
+	 * @param mixed $trigger_data The trigger data accepted from `automator_maybe_parse_token`.
+	 * @param mixed $user_id The user id accepted from `automator_maybe_parse_token`.
+	 * @param mixed $replace_args The arguments accepted from `automator_maybe_parse_token`.
 	 *
 	 * @return mixed The token value to display.
 	 */
@@ -155,10 +160,10 @@ class Mec_Event_Tokens {
 	/**
 	 * Get the event id from the trigger log table.
 	 *
-	 * @param  mixed $user_id The user id.
-	 * @param  mixed $meta_key The meta key.
-	 * @param  mixed $trigger_id The trigger id.
-	 * @param  mixed $trigger_log_id The trigger log id.
+	 * @param mixed $user_id The user id.
+	 * @param mixed $meta_key The meta key.
+	 * @param mixed $trigger_id The trigger id.
+	 * @param mixed $trigger_log_id The trigger log id.
 	 *
 	 * @return mixed The event ID | Empty String when not found.
 	 */
@@ -172,12 +177,12 @@ class Mec_Event_Tokens {
 
 		$meta_value = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT meta_value 
-				FROM {$wpdb->prefix}uap_trigger_log_meta 
-				WHERE user_id = %d 
-				AND meta_key = %s 
-				AND automator_trigger_id = %d 
-				AND automator_trigger_log_id = %d 
+				"SELECT meta_value
+				FROM {$wpdb->prefix}uap_trigger_log_meta
+				WHERE user_id = %d
+				AND meta_key = %s
+				AND automator_trigger_id = %d
+				AND automator_trigger_log_id = %d
 				ORDER BY ID DESC LIMIT 0,1",
 				$user_id,
 				$meta_key,

@@ -3,7 +3,7 @@
 namespace Uncanny_Automator;
 
 /**
- * Class TWITTER_POSTSTATUS
+ * Class TWITTER_POSTSTATUS_2
  *
  * @package Uncanny_Automator
  */
@@ -52,8 +52,8 @@ class TWITTER_POSTSTATUS_2 {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Tweet text */
-			'sentence'              => sprintf( __( 'Post {{a tweet:%1$s}} to Twitter', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Post {{a tweet}} to Twitter', 'uncanny-automator' ),
+			'sentence'              => sprintf( __( 'Post {{a tweet:%1$s}} to X/Twitter', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => __( 'Post {{a tweet}} to X/Twitter', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'requires_user'         => false,
@@ -67,7 +67,7 @@ class TWITTER_POSTSTATUS_2 {
 						'textarea',
 						'',
 						true,
-						esc_attr__( 'Messages posted to Twitter have a 280 character limit.', 'uncanny-automator' ),
+						esc_attr__( 'Messages posted to X/Twitter have a 280 character limit.', 'uncanny-automator' ),
 						__( 'Enter the message', 'uncanny-automator' ),
 						278
 					),

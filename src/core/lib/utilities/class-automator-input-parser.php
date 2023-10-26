@@ -356,7 +356,7 @@ class Automator_Input_Parser {
 								'trigger_id'      => $trigger_id,
 								'trigger_log_id'  => $trigger_log_id,
 								'run_number'      => $run_number,
-								'user_id'         => isset( $args['user_id'] ) ? $args['user_id'] : $user_id,
+								'user_id'         => $user_id,
 								'recipe_triggers' => array(),
 							);
 							if ( isset( $args['recipe_triggers'] ) ) {
@@ -607,6 +607,10 @@ class Automator_Input_Parser {
 		}
 
 		$return = $this->v3_parser( $return, $replace_args, $args );
+
+		if ( isset( $args['loop'] ) && is_array( $args['loop'] ) ) {
+			$replace_args['loop'] = $args['loop'];
+		}
 
 		$return = apply_filters( 'automator_maybe_parse_token', $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 

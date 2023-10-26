@@ -16,7 +16,13 @@ class UC_CODESBATCH {
 	 */
 	public static $integration = 'UNCANNYCODE';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -27,7 +33,7 @@ class UC_CODESBATCH {
 		$this->trigger_meta = 'UNCANNYCODESBATCH';
 
 		// Batch names are not available before version 4
-		if ( floatval( UNCANNY_LEARNDASH_CODES_VERSION ) >= 4 ) {
+		if ( defined( 'UNCANNY_LEARNDASH_CODES_VERSION' ) && version_compare( UNCANNY_LEARNDASH_CODES_VERSION, '4.0', '>=' ) ) {
 			$this->define_trigger();
 		}
 	}

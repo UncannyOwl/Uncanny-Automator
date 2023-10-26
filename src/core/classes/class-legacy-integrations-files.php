@@ -69,8 +69,9 @@ class Legacy_Integrations {
 	/**
 	 * process_path
 	 *
-	 * @param  string $path
-	 * @param  string $class
+	 * @param string $path
+	 * @param string $class
+	 *
 	 * @return void
 	 */
 	public function process_path( $path, $class ) {
@@ -78,6 +79,10 @@ class Legacy_Integrations {
 		$relative_path = $this->get_relative_path( $path );
 
 		if ( ! str_starts_with( $relative_path, 'src/integrations/' ) ) {
+			return;
+		}
+
+		if ( 'index.php' === basename( $path ) ) {
 			return;
 		}
 
@@ -92,6 +97,7 @@ class Legacy_Integrations {
 		if ( str_starts_with( $folder, 'add' ) && str_ends_with( $folder, 'integration.php' ) ) {
 			// It's not a folder, it's the add-integration file.
 			$this->files[ $integration_name ]['main'] = $this->uniform_slashes( $integration_path . $folder );
+
 			return;
 		}
 
@@ -124,7 +130,8 @@ class Legacy_Integrations {
 	/**
 	 * uniform_slashes
 	 *
-	 * @param  string $input
+	 * @param string $input
+	 *
 	 * @return string
 	 */
 	public function uniform_slashes( $input ) {
@@ -134,7 +141,8 @@ class Legacy_Integrations {
 	/**
 	 * get_relative_path
 	 *
-	 * @param  string $path
+	 * @param string $path
+	 *
 	 * @return string
 	 */
 	public function get_relative_path( $path ) {

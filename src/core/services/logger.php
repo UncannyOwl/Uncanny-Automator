@@ -99,15 +99,28 @@ function action_fields_logger( $hook_args = array() ) {
 		)
 	);
 
-	// Include required files.
-	require_once __DIR__ . '/resolver/fields-resolver.php';
-	require_once __DIR__ . '/logger/action-fields-logger.php';
+	/**
+	 * This method is attached into two action hooks: "automator_action_created", and "automator_pro_async_action_execution_after_invoked"
+	 *
+	 * Action hook "automator_action_created" runs regardless whether the action is scheduled or not.
+	 *
+	 * The problem is that when the admin edits the action while the Action is delayed, it already saves the field values.
+	 *
+	 * Therefore it was hook into "automator_pro_async_action_execution_after_invoked" so that it will be log again when the action is run from delay.
+	 *
+	 * The hooks have different arguments therefore we need to resolve it.
+	 */
+	if ( 'automator_pro_async_action_execution_after_invoked' === current_action() ) {
+		$hook_args['user_id']   = $hook_args['args']['user_id'];
+		$hook_args['action_id'] = $hook_args['ID'];
+		$hook_args['recipe_id'] = $hook_args['args']['recipe_id'];
+	}
 
 	// Extract required arguments.
 	$args = array(
-		'action_log_id' => absint( $hook_args['action_log_id'] ),
-		'action_id'     => absint( $hook_args['action_id'] ),
 		'user_id'       => absint( $hook_args['user_id'] ),
+		'action_id'     => absint( $hook_args['action_id'] ),
+		'action_log_id' => absint( $hook_args['action_log_id'] ),
 	);
 
 	// Create an instance of Fields_Resolver class
@@ -562,11 +575,9 @@ function recipe_triggers_logic_logger( $args ) {
 /**
  * Registers listeners to log various events related to recipe triggers and actions.
  *
- * @param mixed[] $args The arguments passed to the function.
- *
  * @return void
  */
-function fields_logger_register_listeners( $args ) {
+function fields_logger_register_listeners() {
 
 	// Record field during insufficient num times with the same hooks and callbacks.
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\trigger_fields_logger', 10, 1 );

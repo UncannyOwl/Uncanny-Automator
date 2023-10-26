@@ -52,6 +52,7 @@ class Background_Actions {
 
 		add_action( 'automator_activation_before', array( $this, 'add_option' ) );
 		add_action( 'automator_daily_healthcheck', array( $this, 'add_option' ) );
+		add_action( 'automator_daily_healthcheck', array( self::class, 'renew_license_check' ) );
 
 		add_filter( 'perfmatters_rest_api_exceptions', array( $this, 'add_rest_api_exception' ) );
 	}
@@ -67,6 +68,24 @@ class Background_Actions {
 		$exceptions[] = 'uap';
 
 		return $exceptions;
+	}
+
+	/**
+	 * Renews the license check automatically by deleting the stored transient
+	 * that tells Automator that the connected license is invalid.
+	 *
+	 * Made static so that its portable anywhere in case its needed to renew the license check.
+	 *
+	 * @since 5.2
+	 *
+	 * @return void
+	 */
+	public static function renew_license_check() {
+		// Make sure the transients are renewed.
+		delete_transient( Api_Server::TRANSIENT_LICENSE_CHECK_FAILED );
+		delete_transient( 'automator_api_license' );
+		// Initiate the license check.
+		return Api_Server::get_license();
 	}
 
 	/**

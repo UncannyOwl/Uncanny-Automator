@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use memberpress\courses as base;
-
 /**
  * Class MP_LESSONDONE
  *
@@ -44,7 +42,7 @@ class MPC_LESSONDONE {
 			'sentence'            => sprintf( esc_attr__( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Memberpress */
 			'select_option_name'  => esc_attr__( 'A user completes {{a lesson}}', 'uncanny-automator' ),
-			'action'              => base\SLUG_KEY . '_completed_lesson',
+			'action'              => 'mpcs_completed_lesson',
 			'priority'            => 10,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'lesson_done' ),

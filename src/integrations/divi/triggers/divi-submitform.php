@@ -123,9 +123,10 @@ class DIVI_SUBMITFORM {
 				continue;
 			}
 			foreach ( $args as $result ) {
-				Divi_Helpers::save_tokens( $result, $fields_values, $form_id, $this->trigger_meta, $user_id );
-
-				Automator()->process->user->maybe_trigger_complete( $result['args'] );
+				if ( isset( $result['args'] ) && ! empty( $result['args'] ) && is_array( $result['args'] ) ) {
+					Divi_Helpers::save_tokens( $result, $fields_values, $form_id, $this->trigger_meta, $user_id );
+					Automator()->process->user->maybe_trigger_complete( $result['args'] );
+				}
 			}
 		}
 	}

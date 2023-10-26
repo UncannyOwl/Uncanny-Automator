@@ -475,7 +475,13 @@ class Recipe_Post_Utilities {
 		Automator()->automator_load_textdomain();
 
 		// Integrations object (new).
-		$core_integrations = new Services\Integrations\Structure( $post_id );
+		try {
+			$core_integrations = new Services\Integrations\Structure( $post_id );
+		} catch ( \Error $e ) {
+			automator_log( $e->getMessage(), $post_id, AUTOMATOR_DEBUG_MODE, '$core_integrations' );
+		} catch ( \Exception $e ) {
+			automator_log( $e->getMessage(), $post_id, AUTOMATOR_DEBUG_MODE, '$core_integrations' );
+		}
 
 		$api_setup = array(
 			// UncannyAutomator._recipe
@@ -518,7 +524,7 @@ class Recipe_Post_Utilities {
 					'version_pro'           => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : '',
 
 					// UncannyAutomator._site.automator.has_account_connected
-					'has_account_connected' => ( ! Api_Server::is_automator_connected() ? false : true ),
+					'has_account_connected' => ( ! Api_Server::is_automator_connected( automator_filter_has_var( 'ua_connecting_integration' ) ) ? false : true ),
 
 					// UncannyAutomator._site.automator.has_valid_pro_license
 					'has_valid_pro_license' => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),

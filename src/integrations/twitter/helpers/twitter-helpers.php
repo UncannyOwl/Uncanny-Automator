@@ -3,7 +3,7 @@
 namespace Uncanny_Automator;
 
 /**
- * Class Twitter_Helpers
+ * Class X_Twitter_Helpers
  *
  * @package Uncanny_Automator
  */

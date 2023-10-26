@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Services\Integrations;
 
 use Uncanny_Automator\Automator_Exception;
@@ -6,9 +7,9 @@ use Uncanny_Automator\Automator_Exception;
 /**
  * Handles the fields from integrations object.
  *
+ * @since 5.0
  * @package Uncanny_Automator\Services\Integrations
  *
- * @since 5.0
  */
 class Fields {
 
@@ -44,13 +45,13 @@ class Fields {
 	/**
 	 * Retrieves the object field.
 	 *
+	 * @return mixed[] The fields
+	 * - 'options_group' - When available
+	 * - 'options' - When available
 	 * @throws Automator_Exception
 	 * - If the object does not implement 'options_callback'
 	 * - If the the options_callback is not a valid callable.
 	 *
-	 * @return mixed[] The fields
-	 * - 'options_group' - When available
-	 * - 'options' - When available
 	 */
 	public function get() {
 
@@ -92,7 +93,13 @@ class Fields {
 				);
 			}
 
-			$fields = call_user_func( $callable );
+			try {
+				$fields = call_user_func( $callable );
+			} catch ( \Error $e ) {
+				throw new \Uncanny_Automator\Automator_Error( $e->getMessage() );
+			} catch ( \Exception $e ) {
+				throw new \Uncanny_Automator\Automator_Exception( $e->getMessage() );
+			}
 
 			$options       = isset( $fields['options'] ) ? $fields['options'] : array();
 			$options_group = isset( $fields['options_group'] ) ? $fields['options_group'] : array();

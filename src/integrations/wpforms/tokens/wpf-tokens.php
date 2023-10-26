@@ -209,9 +209,13 @@ class Wpf_Tokens {
 		if ( $this->should_fetch_label( $token_info ) ) {
 			$value = $this->get_field_label( $field, $entry, $to_match );
 		} else {
-			// Populate non-dynamic choices values.
+			// Populate non-dynamic choices index(es).
 			if ( ! empty( $field['choices'] ) && empty( $field['dynamic_choices'] ) ) {
 				$value = $this->get_non_dynamic_choice_index( $value, $field );
+				// Populate values for dynamic choices if show values is enabled.
+				if ( isset( $field['show_values'] ) && absint( $field['show_values'] ) > 0 ) {
+					$value = $this->populate_choice_index_show_values( $value, $field );
+				}
 			}
 		}
 
@@ -421,7 +425,7 @@ class Wpf_Tokens {
 	 */
 	private function get_field_label( $field = array(), $entry = array(), $to_match = '' ) {
 
-		// Get the enry.
+		// Get the entry.
 		$entry_choice = $entry[ str_replace( '|label', '', $to_match ) ];
 
 		// Bail if no selection.
@@ -432,17 +436,14 @@ class Wpf_Tokens {
 		// Check if there are choices.
 		if ( ! empty( $field['choices'] ) ) {
 
-			$choices = $field['choices'];
-
 			// Dynamic field check.
-			$is_dynamic_field = isset( $field['dynamic_choices'] ) && ! empty( $field['dynamic_choices'] );
-			if ( $is_dynamic_field ) {
+			if ( isset( $field['dynamic_choices'] ) && ! empty( $field['dynamic_choices'] ) ) {
 				return $this->handle_dynamic_select_labels( $field, $entry_choice );
 			}
 
-			// Handle non dynamic checkbox selections.
-			if ( in_array( $field['type'], array( 'checkbox' ), true ) ) {
-				return $this->handle_checkbox_labels( $entry_choice, $choices );
+			// Payment field check.
+			if ( 0 === strpos( $field['type'], 'payment' ) ) {
+				return $this->handle_payment_labels( $field, $entry_choice );
 			}
 
 			// All other non dynamic fields.
@@ -519,7 +520,7 @@ class Wpf_Tokens {
 	 * @param mixed $value The value.
 	 * @param array $field The current field config.
 	 *
-	 * @return string The selected value.
+	 * @return string The selected index(es).
 	 */
 	private function get_non_dynamic_choice_index( $value, $field ) {
 
@@ -528,56 +529,143 @@ class Wpf_Tokens {
 			return apply_filters( 'automator_wpforms_non_dynamic_choice_value', $value, $field );
 		}
 
-		$choices     = $field['choices'];
-		$value_array = array_map( 'trim', explode( ', ', $value ) );
-		foreach ( $value_array as $key => $value_array_item ) {
-			$value_array[ $key ] = $this->normalize_whitespace( $value_array_item );
+		$label_key        = isset( $field['show_values'] ) && absint( $field['show_values'] ) > 0 ? 'value' : 'label';
+		$labels           = wp_list_pluck( $field['choices'], $label_key );
+		$multiple         = isset( $field['multiple'] ) && absint( $field['multiple'] ) > 0 || $field['type'] === 'checkbox';
+		$value_has_commas = strpos( $value, ',' ) !== false;
+
+		// Multiple Choice and value contains commas.
+		if ( $multiple && $value_has_commas ) {
+			$selected = $this->get_non_dynamic_multiple_choice_index( $value, $labels );
+		} else {
+			// Single choice.
+			$value    = $this->normalize_whitespace( $value );
+			$selected = array_search( $value, $labels, true );
+			$selected = false !== $selected ? $selected : '';
 		}
-		$selected = array();
 
-		foreach ( $choices as $key => $choice ) {
-			// Check if label is in value array.
-			if ( in_array( $choice['label'], $value_array, true ) ) {
-				$selected[] = $key;
-			}
-		}
-
-		$value = ! empty( $selected ) ? implode( ', ', $selected ) : '';
-
-		return apply_filters( 'automator_wpforms_non_dynamic_choice_value', $value, $field );
+		return apply_filters( 'automator_wpforms_non_dynamic_choice_value', $selected, $field );
 	}
 
 	/**
-	 * Handles the token for checkbox fields.
+	 * Retrieves matched indexes of non dynamic multiple choice fields.
 	 *
-	 * @param string $entry_choice The selected value.
-	 * @param array $choices The available choices.
+	 * @param mixed $value The value.
+	 * @param array $labels - Choice Labels.
 	 *
-	 * @return string The selections
+	 * @return string The selected index(es).
 	 */
-	private function handle_checkbox_labels( $entry_choice = '', $choices = array() ) {
+	private function get_non_dynamic_multiple_choice_index( $value, $labels ) {
 
-		$entry_choice_arr = explode( ', ', $entry_choice );
-		foreach ( $entry_choice_arr as $key => $entry_choice_arr_item ) {
-			$entry_choice_arr[ $key ] = $this->normalize_whitespace( $entry_choice_arr_item );
-		}
+		// Add a trailing comma to the value to avoid partial matches if label contains commas.
+		$value    .= ',';
+		$selected = array();
 
-		$choices_column = array_column( $choices, 'label' );
-
-		$selections = array();
-
-		foreach ( $choices_column as $index => $choice_column ) {
-			if ( in_array( $choice_column, $entry_choice_arr, true ) ) {
-				$selections[] = $choices_column[ $index ];
+		// Loop through choices and search for label.
+		foreach ( $labels as $key => $label ) {
+			// Check if string is in value.
+			$pos = strpos( $value, $label . ',' );
+			if ( false !== $pos ) {
+				// Store the choice and its position
+				$selected[] = array(
+					'index'    => $key,
+					'position' => $pos,
+				);
 			}
 		}
 
-		if ( ! empty( $selections ) ) {
-			return implode( ', ', $selections );
+		if ( ! empty( $selected ) ) {
+			// Sort the found choices by their positions in ascending order
+			usort(
+				$selected,
+				function ( $a, $b ) {
+					return $a['position'] - $b['position'];
+				}
+			);
+			// Extract the sorted indexes
+			$selected = array_column( $selected, 'index' );
 		}
 
-		return '';
+		return ! empty( $selected ) ? implode( ', ', $selected ) : '';
+	}
 
+	/**
+	 * Retrieves the selected values for show values.
+	 *
+	 * @param string $value - The selected value index(es).
+	 * @param array $field - The field configuration.
+	 *
+	 * @return string The selected values.
+	 */
+	private function populate_choice_index_show_values( $value, $field ) {
+
+		if ( empty( $value ) ) {
+			return '';
+		}
+
+		$indexes = array_map( 'intval', explode( ', ', $value ) );
+		$value   = '';
+		foreach ( $indexes as $index ) {
+			if ( isset( $field['choices'][ $index ] ) ) {
+				$value .= $field['choices'][ $index ]['value'] . ', ';
+			}
+		}
+
+		return empty( $value ) ? '' : rtrim( $value, ', ' );
+	}
+
+	/**
+	 * Handles non dynamic labels.
+	 *
+	 * @param array $field - The field configuration.
+	 * @param string $value - The selected value.
+	 *
+	 * @return string The selections
+	 */
+	private function handle_non_dynamic_labels( $field, $value ) {
+
+		// Get Selected Indexes.
+		$indexes = $this->get_non_dynamic_choice_index( $value, $field );
+		if ( empty( $indexes ) ) {
+			return '';
+		}
+		// Explode and map to int.
+		$indexes  = array_map( 'intval', explode( ', ', $indexes ) );
+		$selected = array();
+		foreach ( $indexes as $index ) {
+			if ( isset( $field['choices'][ $index ] ) ) {
+				$selected[] = $field['choices'][ $index ]['label'];
+			}
+		}
+
+		return ! empty( $selected ) ? implode( ', ', $selected ) : '';
+	}
+
+	/**
+	 * Handles payment field labels.
+	 *
+	 * @param array $field The field configuration.
+	 * @param string $value The selected value.
+	 *
+	 * @return string The label.
+	 */
+	private function handle_payment_labels( $field, $value ) {
+
+		$show_price_after_labels = isset( $field['show_price_after_labels'] ) ? (bool) $field['show_price_after_labels'] : false;
+		$indexes                 = array_map( 'intval', explode( ',', $value ) );
+
+		if ( empty( $indexes ) ) {
+			return '';
+		}
+
+		$selected = array();
+		foreach ( $indexes as $index ) {
+			if ( isset( $field['choices'][ $index ] ) ) {
+				$selected[] = $show_price_after_labels ? $field['choices'][ $index ]['label'] . ' - ' . wpforms_format_amount( $field['choices'][ $index ]['value'], true ) : $field['choices'][ $index ]['label'];
+			}
+		}
+
+		return ! empty( $selected ) ? implode( ', ', $selected ) : '';
 	}
 
 	/**
@@ -612,42 +700,6 @@ class Wpf_Tokens {
 			if ( 'taxonomy' === $type ) {
 				$term     = get_term( $choice );
 				$labels[] = isset( $term->name ) ? $term->name : '';
-			}
-		}
-
-		return implode( ', ', $labels );
-	}
-
-	/**
-	 * Handles label token for non-dynamic fields.
-	 *
-	 * @param array $field The field configuration.
-	 * @param string $entry_choice The entry choice.
-	 *
-	 * @return string The label.
-	 */
-	private function handle_non_dynamic_labels( $field, $entry_choice ) {
-
-		$choices                 = $field['choices'];
-		$type                    = $field['type'];
-		$entry_choice_arr        = array_map( 'trim', explode( ',', $entry_choice ) );
-		$is_payment_field        = strpos( $type, 'payment' ) === 0;
-		$show_price_after_labels = isset( $field['show_price_after_labels'] ) ? (bool) $field['show_price_after_labels'] : false;
-		$labels                  = array();
-		foreach ( $entry_choice_arr as $entry_choice_arr_item ) {
-			$entry_choice_arr_item = $this->normalize_whitespace( $entry_choice_arr_item );
-			foreach ( $choices as $key => $choice ) {
-				// Payment Fields.
-				if ( $is_payment_field ) {
-					if ( (int) $key === (int) $entry_choice_arr_item ) {
-						$labels[] = $show_price_after_labels ? $choice['label'] . ' - ' . wpforms_format_amount( $choice['value'], true ) : $choice['label'];
-					}
-				} else {
-					// Non-Payment Fields.
-					if ( $choice['label'] === $entry_choice_arr_item || $choice['value'] === $entry_choice_arr_item ) {
-						$labels[] = $choice['label'];
-					}
-				}
 			}
 		}
 

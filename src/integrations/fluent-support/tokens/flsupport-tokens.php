@@ -35,16 +35,40 @@ class Flsupport_Tokens {
 
 		$trigger_integration = (string) $args['integration'];
 
-		if ( 'FLSUPPORT' === $trigger_integration ) {
+		if ( 'FLSUPPORT' === $trigger_integration && 'FLST_TICKET_OPENED' !== (string) $args['triggers_meta']['code'] ) {
 
 			$add_action   = (string) $args['triggers_meta']['add_action'];
 			$trigger_meta = (string) $args['meta'];
 
-			$ticket_token_actions = apply_filters( 'uap_fl_support_ticket_tokens', array( 'fluent_support/ticket_created', 'fluent_support/response_added_by_customer', 'fluent_support/ticket_closed_by_customer', 'fluent_support/response_added_by_agent' ), $args );
+			$ticket_token_actions = apply_filters(
+				'uap_fl_support_ticket_tokens',
+				array(
+					'fluent_support/ticket_created',
+					'fluent_support/response_added_by_customer',
+					'fluent_support/ticket_closed_by_customer',
+					'fluent_support/response_added_by_agent',
+				),
+				$args
+			);
 
-			$agent_token_actions = apply_filters( 'uap_fl_support_agent_tokens', array( 'fluent_support/response_added_by_customer', 'fluent_support/ticket_closed_by_customer', 'fluent_support/response_added_by_agent' ), $args );
+			$agent_token_actions = apply_filters(
+				'uap_fl_support_agent_tokens',
+				array(
+					'fluent_support/response_added_by_customer',
+					'fluent_support/ticket_closed_by_customer',
+					'fluent_support/response_added_by_agent',
+				),
+				$args
+			);
 
-			$ticket_response_token_actions = apply_filters( 'uap_fl_support_ticket_response_tokens', array( 'fluent_support/response_added_by_customer', 'fluent_support/response_added_by_agent' ), $args );
+			$ticket_response_token_actions = apply_filters(
+				'uap_fl_support_ticket_response_tokens',
+				array(
+					'fluent_support/response_added_by_customer',
+					'fluent_support/response_added_by_agent',
+				),
+				$args
+			);
 
 			if ( in_array( $add_action, $ticket_token_actions, true ) ) {
 
@@ -286,12 +310,14 @@ class Flsupport_Tokens {
 		if ( 0 === $id ) {
 			return false;
 		}
+
 		return $this->fillin_wpuser_data( \FluentSupport\App\Models\Person::where( 'id', $id )->first() );
 	}
 
 	protected function get_response_object( $response_id ) {
 		$response_id = absint( $response_id );
 		$response    = \FluentSupport\App\Models\Conversation::where( 'id', $response_id )->first();
+
 		return $response;
 	}
 
@@ -302,6 +328,7 @@ class Flsupport_Tokens {
 			$ticket->load( 'product' );
 		}
 		$ticket->admin_url = admin_url( "admin.php?page=fluent-support#/tickets/{$ticket_id}/view" );
+
 		return $ticket;
 	}
 

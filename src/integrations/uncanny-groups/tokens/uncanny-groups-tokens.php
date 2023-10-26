@@ -202,6 +202,16 @@ class Uncanny_Groups_Tokens {
 				'tokenIdentifier' => $trigger_meta,
 			),
 		);
+
+		if ( Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
+			$fields[] = array(
+				'tokenId'         => 'UNCANNYGROUP_SIGNUP_URL',
+				'tokenName'       => __( 'Group signup URL', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			);
+		}
+
 		$tokens = array_merge( $tokens, $fields );
 
 		return $tokens;
@@ -297,6 +307,13 @@ class Uncanny_Groups_Tokens {
 
 						if ( is_array( $courses ) ) {
 							$value = join( ', ', $courses );
+						}
+						break;
+					case 'UNCANNYGROUP_SIGNUP_URL':
+						if ( Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
+							$value = Uncanny_Toolkit_Helpers::get_group_sign_up_url( $group_id );
+						} else {
+							$value = '';
 						}
 						break;
 					case 'UNCANNYGROUP_ID':

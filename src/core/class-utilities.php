@@ -233,7 +233,7 @@ class Utilities {
 		if ( ! empty( $file_name ) && is_dir( dirname( $file_name ) ) ) {
 			$icon            = basename( $file_name ); // icon with extension.
 			$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
-			$path            = self::cleanup_icon_path( AUTOMATOR_BASE_FILE, $icon, $file_name ); // path relative to plugin.
+			$path            = self::cleanup_icon_path( $plugin_path, $icon, $file_name ); // path relative to plugin.
 			$path            = apply_filters( 'automator_integration_icon_path', $path . $icon, $icon, $integration_dir, $plugin_path );
 			$base_path       = apply_filters( 'automator_integration_icon_base_path', $plugin_path, $path, $icon, $integration_dir );
 			if ( ! empty( $path ) && ! empty( $base_path ) ) {

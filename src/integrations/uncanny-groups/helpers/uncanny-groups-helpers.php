@@ -147,4 +147,5 @@ class Uncanny_Groups_Helpers {
 
 		return array();
 	}
+
 }

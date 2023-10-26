@@ -59,15 +59,8 @@ class Uoa_Helpers {
 		}
 
 		// post query arguments.
-		$args = array(
-			'post_type'      => 'uo-recipe',
-			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => array( 'publish', 'draft' ),
-		);
-
-		$results       = get_posts( $args );
+		global $wpdb;
+		$results       = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_status FROM $wpdb->posts WHERE post_status IN ('publish', 'draft') AND post_type = %s ORDER BY post_title ASC", 'uo-recipe' ) );
 		$options       = array();
 		$options['-1'] = esc_attr__( 'Any recipe', 'uncanny-automator' );
 		if ( $results ) {

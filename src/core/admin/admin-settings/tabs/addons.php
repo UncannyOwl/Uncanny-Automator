@@ -43,7 +43,7 @@ class Admin_Settings_Addons {
 	public function tab_output() {
 
 		// Get the current tab
-		$current_addon_tab = automator_filter_has_var( 'addons' ) ? sanitize_text_field( automator_filter_input( 'addons' ) ) : 'user_fields';
+		$current_addon_tab = automator_filter_has_var( 'addons' ) ? sanitize_text_field( automator_filter_input( 'addons' ) ) : array_key_first( $this->addons_tabs );
 
 		// Check if the user is requesting the focus version
 		// This variable is used in the admin-settings/tab/addons.php.

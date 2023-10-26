@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Adds Integration to Automator.
+ *
  * @since 2.4.0
  */
 class Add_Twitter_Integration {
@@ -31,8 +32,8 @@ class Add_Twitter_Integration {
 	 */
 	protected function setup() {
 		$this->set_integration( 'TWITTER' );
-		$this->set_name( 'Twitter' );
-		$this->set_icon( 'twitter-icon.svg' );
+		$this->set_name( 'X/Twitter' );
+		$this->set_icon( 'x-twitter-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( '' );
 

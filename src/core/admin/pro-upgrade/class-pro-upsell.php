@@ -283,7 +283,7 @@ class Pro_Upsell {
 					),
 					array(
 						/* translators: 1. Application name */
-						'label' => sprintf( esc_html__( 'Unlimited use of %1$s', 'uncanny-automator' ), '<uo-icon integration="TWITTER"></uo-icon>' . esc_html__( 'Twitter', 'uncanny-automator' ) ),
+						'label' => sprintf( esc_html__( 'Unlimited use of %1$s', 'uncanny-automator' ), '<uo-icon integration="TWITTER"></uo-icon>' . esc_html__( 'X/Twitter', 'uncanny-automator' ) ),
 						'free'  => false,
 						'pro'   => true,
 						'link'  => '',

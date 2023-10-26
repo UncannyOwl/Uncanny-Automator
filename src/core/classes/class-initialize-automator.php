@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use Error;
 use Exception;
 
 /**
@@ -67,6 +68,8 @@ class Initialize_Automator extends Set_Up_Automator {
 		// Loads integrations
 		try {
 			$this->initialize_add_integrations();
+		} catch ( Error $e ) {
+			throw new Automator_Error( $e->getMessage() );
 		} catch ( Exception $e ) {
 			throw new Automator_Exception( $e->getMessage() );
 		}
@@ -115,6 +118,8 @@ class Initialize_Automator extends Set_Up_Automator {
 		// Loads all options and provide a hook for external options
 		try {
 			$this->initialize_integration_helpers();
+		} catch ( Error $e ) {
+			throw new Automator_Error( $e->getMessage() );
 		} catch ( Exception $e ) {
 			throw new Automator_Exception( $e->getMessage() );
 		}
@@ -132,6 +137,8 @@ class Initialize_Automator extends Set_Up_Automator {
 		// Loads all internal triggers, actions, and closures then provides hooks for external ones
 		try {
 			$this->initialize_triggers_actions_closures();
+		} catch ( Error $e ) {
+			throw new Automator_Error( $e->getMessage() );
 		} catch ( Exception $e ) {
 			throw new Automator_Exception( $e->getMessage() );
 		}

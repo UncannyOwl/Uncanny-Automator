@@ -519,21 +519,67 @@ class Facebook_Helpers {
 	/**
 	 * Get the user page access tokens.
 	 *
+	 * @param string $page_id
+	 *
 	 * @return string
 	 */
 	public function get_user_page_access_token( $page_id ) {
 
-		$options_pages = get_option( '_uncannyowl_facebook_pages_settings' );
+		$options_pages = (array) get_option( '_uncannyowl_facebook_pages_settings', array() );
 
 		if ( ! empty( $options_pages ) ) {
 			foreach ( $options_pages as $page ) {
+				// These are both strings.
 				if ( $page['value'] === $page_id ) {
 					return $page['page_access_token'];
 				}
 			}
 		}
 
-		throw new \Exception( __( 'Facebook is not connected', 'uncanny-automator' ) );
+		// Details for debugging.
+		$details = array(
+			'selected_page_id' => $page_id,
+			'options_pages'    => $this->redact_page_access_token( $options_pages ),
+		);
+
+		throw new \Exception(
+			sprintf(
+				/* translators: Error exception message */
+				esc_html_x(
+					'Unable to locate a valid access token for the specified Facebook Page. Please edit the recipe and ensure that you have selected the correct Facebook page, then resave the action. Additionally, you can attempt to reconnect the account by navigating to Automator > App Integrations > Facebook Pages. %s',
+					'Facebook pages',
+					'uncanny-automator'
+				),
+				wp_json_encode( $details )
+			),
+			400
+		);
+	}
+
+	/**
+	 * Redacts the page access token for privacy.
+	 *
+	 * @since 5.2
+	 *
+	 * @param array $options_pages
+	 *
+	 * @return mixed[] The options_pages value
+	 */
+	private function redact_page_access_token( $options_pages = array() ) {
+
+		$redacted = array();
+
+		if ( ! empty( $options_pages ) ) {
+			foreach ( $options_pages as $page ) {
+				$redacted[] = array(
+					'value'             => isset( $page['value'] ) ? $page['value'] : null,
+					'text'              => isset( $page['text'] ) ? $page['text'] : null,
+					'page_access_token' => substr( $page['page_access_token'], 0, 10 ) . '-<redacted>',
+				);
+			}
+		}
+
+		return $redacted;
 	}
 
 	/**
@@ -633,7 +679,7 @@ class Facebook_Helpers {
 
 		// Determine if user is connecting Facebook groups.
 		$is_capturing_token = wp_doing_ajax()
-			&& $this->wp_ajax_action === automator_filter_input( 'action' );
+			&& automator_filter_input( 'action' ) === $this->wp_ajax_action;
 
 		// Checks if from recipe edit page.
 		$current_screen           = get_current_screen();

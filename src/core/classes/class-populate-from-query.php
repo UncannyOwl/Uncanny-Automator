@@ -58,7 +58,7 @@ class Populate_From_Query {
 				return false;
 			}
 		} catch ( \Exception $e ) {
-			Automator()->error->add_error( 555, 'Uncanny_Automator\Populate_From_Query: ' . $e->getMessage() );
+			Automator()->wp_error->add_error( 555, 'Uncanny_Automator\Populate_From_Query: ' . $e->getMessage() );
 		}
 
 		return true;

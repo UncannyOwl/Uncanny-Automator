@@ -69,7 +69,39 @@ trait Action_Helpers_Email {
 	private $all = array();
 
 	/**
+	 * @var array
+	 */
+	private $actions_data = array();
+
+	/**
+	 * @return array
+	 */
+	public function get_actions_data() {
+		return $this->actions_data;
+	}
+
+	/**
 	 * @param $data
+	 * @param $user_id
+	 * @param $recipe_id
+	 * @param $args
+	 *
+	 * @return void
+	 */
+	public function set_actions_data( $data, $user_id, $recipe_id, $args ) {
+		$this->actions_data = array(
+			'data'      => $data,
+			'user_id'   => $user_id,
+			'recipe_id' => $recipe_id,
+			'args'      => $args,
+		);
+	}
+
+	/**
+	 * @param array $data
+	 * @param null $user_id
+	 * @param null $recipe_id
+	 * @param array $args
 	 */
 	public function set_mail_values( $data = array(), $user_id = null, $recipe_id = null, $args = array() ) {
 
@@ -116,6 +148,7 @@ trait Action_Helpers_Email {
 		$this->set_subject( $subject );
 		$this->set_body( $body );
 
+		$this->set_actions_data( $data, $user_id, $recipe_id, $args );
 	}
 
 	/**
@@ -301,11 +334,9 @@ trait Action_Helpers_Email {
 	}
 
 	/**
-	 * maybe_santize_email
+	 * @param $emails
 	 *
-	 * @param mixed $emails
-	 *
-	 * @return void
+	 * @return array
 	 */
 	public function santize_emails( $emails ) {
 
@@ -346,7 +377,15 @@ trait Action_Helpers_Email {
 			'attachment' => $attachments,
 			'is_html'    => $this->is_is_html(),
 		);
-		$mailed      = Automator()->helpers->email->send( $pass );
+
+		if ( true === apply_filters( 'automator_send_email', true, $pass, $this->get_actions_data(), $this ) ) {
+			$mailed = Automator()->helpers->email->send( $pass );
+		} else {
+			$error = Automator()->error;
+			$error->add_error( 'wp_mail', esc_attr__( 'Email action is disabled by `automator_send_email` filter.', 'uncanny-automator' ), $pass );
+			$mailed = $error;
+		}
+
 		if ( is_automator_error( $mailed ) ) {
 			$errors = $mailed->get_messages( 'wp_mail' ) + $mailed->get_messages( 'wp_mail_to' );
 			if ( $errors ) {

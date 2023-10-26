@@ -29,6 +29,11 @@ class ESAF_SALE_RECORDED {
 	const TRIGGER_META = 'SALE_RECORDED_META';
 
 	/**
+	 * @var Easy_Affiliate_Helpers
+	 */
+	public $helpers;
+
+	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
@@ -107,6 +112,11 @@ class ESAF_SALE_RECORDED {
 		$this->set_conditional_trigger( true );
 	}
 
+	/**
+	 * @param $args
+	 *
+	 * @return void
+	 */
 	protected function trigger_conditions( $args ) {
 		$event = $args[0];
 		$data  = ModelFactory::fetch( $event->evt_id_type, $event->evt_id );

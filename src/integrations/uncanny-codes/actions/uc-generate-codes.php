@@ -24,6 +24,10 @@ class UC_GENERATE_CODES {
 	 * @var string
 	 */
 	private $action_code;
+	/**
+	 * @var string
+	 */
+	private $action_meta;
 
 	/**
 	 * Set up Automator action constructor.

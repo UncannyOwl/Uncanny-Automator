@@ -77,7 +77,7 @@ class Admin_Settings_General_License {
 			function() {
 
 				// Get data of the connected site
-				$site_data = Api_Server::is_automator_connected();
+				$site_data = Api_Server::is_automator_connected( true ); // Force check if its in the settings page.
 
 				// Check if the user connected their site to automatorplugin.com
 				$site_is_connected = isset( $site_data ) && isset( $site_data['license'] );

@@ -1159,22 +1159,22 @@ class Automator_Translations {
 			),
 			'core'                => array(
 				// UncannyAutomator._core.i18n.core.runNow
-				'runNow'     => array(
+				'runNow'       => array(
 					'starting' => esc_html__( 'Starting recipe', 'uncanny-automator' ),
 					'started'  => esc_html__( 'Recipe started successfully', 'uncanny-automator' ),
 				),
 
 				// UncannyAutomator._core.i18n.core.title
-				'title'      => array(
+				'title'        => array(
 					'updating' => esc_html__( 'Updating recipe title', 'uncanny-automator' ),
 					'updated'  => esc_html__( 'Recipe title updated successfully', 'uncanny-automator' ),
 				),
-				'recipeType' => array(
+				'recipeType'   => array(
 					'settingRecipeType' => esc_html__( 'Setting recipe type', 'uncanny-automator' ),
 					'recipeTypeSet'     => esc_html__( 'Recipe type set successfully', 'uncanny-automator' ),
 				),
 				// UncannyAutomator._core.i18n.core.item
-				'item'       => array(
+				'item'         => array(
 					// UncannyAutomator._core.i18n.core.item.deleteItem
 					'deleteItem'           => array(
 						'warningMessage'  => esc_attr__( 'Deleting items in a live recipe can lead to unexpected behaviors.', 'uncanny-automator' ),
@@ -1218,7 +1218,7 @@ class Automator_Translations {
 						'triggerLogicUpdated'  => esc_html__( 'Trigger logic updated successfully', 'uncanny-automator' ),
 					),
 				),
-				'itemLoop'   => array(
+				'itemLoop'     => array(
 					'createNew'           => array(
 						'creatingLoop' => esc_html__( 'Adding new loop', 'uncanny-automator' ),
 						'loopCreated'  => esc_html__( 'Loop added successfully', 'uncanny-automator' ),
@@ -1245,10 +1245,18 @@ class Automator_Translations {
 						'loopFilterUpdated'  => esc_html__( 'Loop filter updated successfully', 'uncanny-automator' ),
 					),
 				),
-				'itemFilter' => array(
+				'itemFilter'   => array(
 					'updateFilters' => array(
 						'updatingFilters' => esc_html__( 'Updating filters', 'uncanny-automator' ),
 						'filtersUpdated'  => esc_html__( 'Filters updated successfully', 'uncanny-automator' ),
+					),
+				),
+				// UncannyAutomator._core.i18n.core.userSelector
+				'userSelector' => array(
+					'setRequiresUserSelector' => array(
+						'updatingFlag'   => esc_html__( 'Removing user selector', 'uncanny-automator' ),
+						'flagUpdated'    => esc_html__( 'User selector removed successfully', 'uncanny-automator' ),
+						'warningMessage' => esc_html__( 'Removing the user selector may result in unexpected behavior if any actions or tokens require user data.', 'uncanny-automator' ),
 					),
 				),
 			),

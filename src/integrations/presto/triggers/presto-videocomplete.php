@@ -16,7 +16,13 @@ class PRESTO_VIDEOCOMPLETE {
 	 */
 	public static $integration = 'PRESTO';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -65,6 +71,12 @@ class PRESTO_VIDEOCOMPLETE {
 		);
 	}
 
+	/**
+	 * @param $video_id
+	 * @param $percent
+	 *
+	 * @return void
+	 */
 	public function video_progress( $video_id, $percent ) {
 		if ( $percent == 100 ) {
 

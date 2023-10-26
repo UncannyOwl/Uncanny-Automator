@@ -10,6 +10,10 @@ namespace Uncanny_Automator;
 class WPDM_FILE_DOWNLOADED {
 
 	use Recipe\Triggers;
+	/**
+	 * @var
+	 */
+	public $helpers;
 
 	/**
 	 * Set up Automator trigger constructor.

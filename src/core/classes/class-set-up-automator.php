@@ -375,15 +375,15 @@ class Set_Up_Automator {
 			}
 			// Loop through all files in directory to create class names from file name
 			foreach ( $files as $file ) {
+				if ( ! is_file( $file ) ) {
+					continue;
+				}
 				// bail early if the $file is not a string
 				if ( is_array( $file ) ) {
 					continue;
 				}
 				$class = apply_filters( 'automator_recipe_parts_class_name', $this->get_class_name( $file, true, $mod ), $file );
 				if ( ! class_exists( $class, false ) ) {
-					if ( ! is_file( $file ) ) {
-						continue;
-					}
 					include_once $file;
 					Utilities::add_class_instance( $class, new $class() );
 				}

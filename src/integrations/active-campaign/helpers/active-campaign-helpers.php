@@ -880,8 +880,8 @@ class Active_Campaign_Helpers {
 					);
 
 					$action_fields[] = array(
-						'type'    => $field->type,
-						'postfix' => '_CUSTOM_FIELD_' . $field->id,
+						'type'    => $field['type'],
+						'postfix' => '_CUSTOM_FIELD_' . $field['id'],
 					);
 
 				}

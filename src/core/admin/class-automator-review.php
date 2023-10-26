@@ -115,6 +115,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function handle_feedback_credits() {
 
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_handle_credits_notification_feedback' ) ) {
@@ -474,6 +477,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function load_credits_notif_required_assets() {
 
 		if ( ! $this->should_display_credits_notif() ) {
@@ -650,6 +656,9 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return false|int|void
+	 */
 	public function display_credits_notification() {
 
 		$user_connected = $this->get_connected_user();
@@ -684,6 +693,12 @@ class Automator_Review {
 	}
 
 
+	/**
+	 * @param $type
+	 * @param $procedure
+	 *
+	 * @return string
+	 */
 	function credits_feedback_url( $type = 100, $procedure = 'dismiss' ) {
 
 		$action = 'automator_handle_credits_notification_feedback';
@@ -930,9 +945,12 @@ class Automator_Review {
 
 	}
 
+	/**
+	 * @return false|null
+	 */
 	public function get_connected_user() {
 
-		return Api_Server::is_automator_connected( false );
+		return Api_Server::is_automator_connected();
 
 	}
 

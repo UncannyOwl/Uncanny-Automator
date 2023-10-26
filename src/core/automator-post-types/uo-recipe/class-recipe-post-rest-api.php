@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Exception;
+use Uncanny_Automator\Webhooks\Response_Validator;
 use WP_Error;
 use WP_Post;
 use WP_REST_Request;
@@ -555,11 +557,18 @@ class Recipe_Post_Rest_Api {
 				}
 				Automator()->cache->clear_automator_recipe_part_cache( $request->get_param( 'ID' ) );
 
+				$recipe_id = absint( $request->get_param( 'recipe_id' ) );
+
+				if ( 'uo-recipe' !== get_post_type( $recipe_id ) ) {
+					$ancestors = get_post_ancestors( $recipe_id );
+					$recipe_id = array_pop( $ancestors );
+				}
+
 				$return['message']        = 'Deleted!';
 				$return['success']        = true;
 				$return['delete_posts']   = $delete_posts;
 				$return['action']         = 'deleted-' . $delete_posts->post_type;
-				$return['recipes_object'] = Automator()->get_recipes_data( true );
+				$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 				$return['_recipe']        = Automator()->get_recipe_object( absint( $request->get_param( 'recipe_id' ) ) );
 
 				return new WP_REST_Response( $return, 200 );
@@ -795,13 +804,19 @@ class Recipe_Post_Rest_Api {
 					$return['action']  = 'updated_post';
 					Automator()->cache->clear_automator_recipe_part_cache( $post_id );
 
-					$return['recipes_object'] = Automator()->get_recipes_data( true );
-
-					$recipe_object = null;
-
-					if ( $request->has_param( 'recipe_id' ) ) {
-						$recipe_object = Automator()->get_recipe_object( absint( $request->get_param( 'recipe_id' ) ) );
+					if ( ! $request->has_param( 'recipe_id' ) ) {
+						$recipe_id = $post_id;
+						if ( 'uo-recipe' !== get_post_type( $post_id ) ) {
+							$ancestors = get_post_ancestors( $post_id );
+							$recipe_id = array_pop( $ancestors );
+						}
+					} else {
+						$recipe_id = absint( $request->get_param( 'recipe_id' ) );
 					}
+
+					$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
+
+					$recipe_object = Automator()->get_recipe_object( $recipe_id );
 
 					$return['_recipe'] = $recipe_object;
 
@@ -1199,14 +1214,20 @@ class Recipe_Post_Rest_Api {
 
 			$recipe_id     = absint( $request->get_param( 'recipePostID' ) );
 			$requires_user = $request->get_param( 'requiresUser' );
+			// Adding user selector
 			update_post_meta( $recipe_id, 'recipe_requires_user', $requires_user );
+			// User selector is removed
+			if ( ! $requires_user ) {
+				delete_post_meta( $recipe_id, 'source' );
+				delete_post_meta( $recipe_id, 'fields' );
+			}
 
 			$return['message'] = 'Updated!';
 			$return['success'] = true;
 			$return['action']  = 'updated_recipe';
 			Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
-			$return['recipes_object'] = Automator()->get_recipes_data( true );
+			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 			return new WP_REST_Response( $return, 200 );
@@ -1378,9 +1399,13 @@ class Recipe_Post_Rest_Api {
 
 		$params['resend'] = true;
 
+		if ( 'internal:webhook' === $api_request->endpoint ) {
+			return $this->replay_as_webhook( $api_request );
+		}
+
 		try {
 			$response = Api_Server::api_call( $params );
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			$return['success'] = false;
 			$return['message'] = $e->getMessage();
 			automator_log( $e->getMessage() );
@@ -1410,6 +1435,68 @@ class Recipe_Post_Rest_Api {
 		}
 
 		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * Replay the action as webhook.
+	 *
+	 * @param mixed $api_request
+	 *
+	 * @return WP_REST_Response
+	 */
+	protected function replay_as_webhook( $api_request ) {
+
+		$success = true;
+		$message = _x( 'The request has been successfully resent', 'Webhooks', 'uncanny-automator' );
+
+		if ( ! isset( $api_request->request ) || ! isset( $api_request->params ) ) {
+			$success = false;
+			$message = _x( 'Invalid data. Property "request" or "params" is missing.', 'Webhooks', 'uncanny-automator' );
+		}
+
+		$params  = (array) maybe_unserialize( $api_request->params );
+		$request = (array) maybe_unserialize( $api_request->request );
+
+		try {
+
+			if ( ! isset( $request['http_url'] ) || ! isset( $params['method'] ) ) {
+				throw new Exception( 'Invalid data. Cannot find "http_url" or "method".', 400 );
+			}
+
+			Response_Validator::validate_webhook_response(
+				Automator_Send_Webhook::call_webhook( $request['http_url'], $params, $params['method'] )
+			);
+
+		} catch ( Exception $e ) {
+
+			$this->log_api_retry_response(
+				$api_request->item_log_id,
+				Automator_Status::get_class_name( Automator_Status::COMPLETED_WITH_ERRORS ),
+				$e->getMessage()
+			);
+
+			return new WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => $e->getMessage(),
+				),
+				200
+			);
+
+		}
+
+		$response = array(
+			'success' => $success,
+			'message' => $message,
+		);
+
+		$this->log_api_retry_response(
+			$api_request->item_log_id,
+			Automator_Status::get_class_name( Automator_Status::COMPLETED ),
+			$message
+		);
+
+		return new WP_REST_Response( $response, 200 );
 	}
 
 	/**

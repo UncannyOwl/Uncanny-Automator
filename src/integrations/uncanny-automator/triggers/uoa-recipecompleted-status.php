@@ -20,6 +20,9 @@ class UOA_RECIPECOMPLETED_STATUS {
 	 * @var string
 	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -49,28 +52,39 @@ class UOA_RECIPECOMPLETED_STATUS {
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'on_completion' ),
-			'options'             => array(
-				Automator()->helpers->recipe->uncanny_automator->options->get_recipes( null, $this->trigger_meta, true ),
-				array(
-					'option_code'     => 'RECIPESTATUS',
-					/* translators: Noun */
-					'label'           => esc_attr__( 'Status', 'uncanny-automator' ),
-					'input_type'      => 'select',
-					'required'        => true,
-					'options'         => array(
-						'0' => esc_attr__( 'In progress', 'uncanny-automator' ),
-						'1' => esc_attr__( 'Completed', 'uncanny-automator' ),
-						'2' => esc_attr__( 'Completed with errors', 'uncanny-automator' ),
-						//'5' => esc_attr__( 'Scheduled', 'uncanny-automator' ), will be dealt in a separate trigger
-						'9' => esc_attr__( 'Completed - do nothing', 'uncanny-automator' ),
-					),
-					'relevant_tokens' => array(
-						'UOARECIPES_recipe_status' => esc_attr__( 'Recipe status', 'uncanny-automator' ),
-					),
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->uncanny_automator->options->get_recipes( null, $this->trigger_meta, true ),
+					array(
+						'option_code'     => 'RECIPESTATUS',
+						/* translators: Noun */
+						'label'           => esc_attr__( 'Status', 'uncanny-automator' ),
+						'input_type'      => 'select',
+						'required'        => true,
+						'options'         => array(
+							'0' => esc_attr__( 'In progress', 'uncanny-automator' ),
+							'1' => esc_attr__( 'Completed', 'uncanny-automator' ),
+							'2' => esc_attr__( 'Completed with errors', 'uncanny-automator' ),
+							//'5' => esc_attr__( 'Scheduled', 'uncanny-automator' ), will be dealt in a separate trigger
+							'9' => esc_attr__( 'Completed - do nothing', 'uncanny-automator' ),
+						),
+						'relevant_tokens' => array(
+							'UOARECIPES_recipe_status' => esc_attr__( 'Recipe status', 'uncanny-automator' ),
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**

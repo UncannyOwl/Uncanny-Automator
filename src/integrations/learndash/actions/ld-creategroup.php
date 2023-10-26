@@ -49,33 +49,39 @@ class LD_CREATEGROUP {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
-		$this->set_action_tokens(
-			array(
-				'GROUP_ID'            => array(
-					'name' => __( 'Group ID', 'uncanny-automator' ),
-				),
-				'GROUP_COURSES'       => array(
-					'name' => __( 'Group courses', 'uncanny-automator' ),
-				),
-				'GROUP_LEADER_EMAILS' => array(
-					'name' => __( 'Group Leader emails', 'uncanny-automator' ),
-				),
+		$tokens = array(
+			'GROUP_ID'            => array(
+				'name' => __( 'Group ID', 'uncanny-automator' ),
 			),
-			$this->action_code
+			'GROUP_COURSES'       => array(
+				'name' => __( 'Group courses', 'uncanny-automator' ),
+			),
+			'GROUP_LEADER_EMAILS' => array(
+				'name' => __( 'Group Leader emails', 'uncanny-automator' ),
+			),
 		);
+		if ( Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
+			$tokens['GROUP_SIGNUP_URL'] = array(
+				'name' => __( 'Group signup URL', 'uncanny-automator' ),
+			);
+		}
+
+		$this->set_action_tokens( $tokens, $this->action_code );
 
 		Automator()->register->action( $action );
 
 	}
 
 	/**
+	 * Load options for this action
+	 *
 	 * @return array[]
 	 */
 	public function load_options() {
 
 		$args = array(
 			'post_type'      => 'sfwd-courses',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
@@ -192,13 +198,17 @@ class LD_CREATEGROUP {
 			}
 		}
 
-		$this->hydrate_tokens(
-			array(
-				'GROUP_ID'            => $group_id,
-				'GROUP_COURSES'       => $this->get_group_names( $group_id ),
-				'GROUP_LEADER_EMAILS' => $this->get_group_leaders_email_addresses( $group_id ),
-			)
+		$tokens = array(
+			'GROUP_ID'            => $group_id,
+			'GROUP_COURSES'       => $this->get_group_names( $group_id ),
+			'GROUP_LEADER_EMAILS' => $this->get_group_leaders_email_addresses( $group_id ),
 		);
+
+		if ( Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
+			$tokens['GROUP_SIGNUP_URL'] = Uncanny_Toolkit_Helpers::get_group_sign_up_url( $group_id );
+		}
+
+		$this->hydrate_tokens( $tokens );
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
@@ -223,6 +233,4 @@ class LD_CREATEGROUP {
 
 		return implode( ', ', $group_names );
 	}
-
-
 }
