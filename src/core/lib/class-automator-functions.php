@@ -171,6 +171,11 @@ class Automator_Functions {
 	/**
 	 * @var Automator_WP_Error
 	 */
+	public $wp_error;
+
+	/**
+	 * @var \Uncanny_Automator\Automator_Error
+	 */
 	public $error;
 
 	/**
@@ -218,11 +223,15 @@ class Automator_Functions {
 
 		// Automator WP_Error Handler
 		require_once __DIR__ . '/utilities/error/class-automator-wp-error.php';
-		$this->error = Automator_WP_Error::get_instance();
+		$this->wp_error = Automator_WP_Error::get_instance();
 
 		// Automator_Exception Handler
 		require_once __DIR__ . '/utilities/error/class-automator-exception.php';
 		$this->exception = Automator_Exception::get_instance();
+
+		// Automator_Exception Handler
+		require_once __DIR__ . '/utilities/error/class-automator-error.php';
+		$this->error = Automator_Error::get_instance();
 
 		// Automator integration, trigger, action and closure registration
 		require_once __DIR__ . '/utilities/class-automator-registration.php';
@@ -667,7 +676,7 @@ class Automator_Functions {
 		}
 
 		if ( null !== $recipe_id && is_numeric( $recipe_id ) ) {
-			return $this->get_recipe_data_by_recipe_id( $recipe_id );
+			return $this->get_recipe_data_by_recipe_id( $recipe_id, $force_new_data_load );
 		}
 
 		global $wpdb;
@@ -713,8 +722,8 @@ class Automator_Functions {
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$t_id   = absint( $t_id );
-						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$t_id                                                     = absint( $t_id );
+						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
@@ -722,7 +731,7 @@ class Automator_Functions {
 				// Add action tokens to recipe_objects.
 				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
 					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
-						$recipe_action_id = absint( $recipe_action_id );
+						$recipe_action_id                                                    = absint( $recipe_action_id );
 						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'], $recipe_action_id, $recipe_id );
 					}
 				}
@@ -781,23 +790,27 @@ class Automator_Functions {
 	 *
 	 * @return array
 	 */
-	public function get_recipe_data_by_recipe_id( $recipe_id = null ) {
+	public function get_recipe_data_by_recipe_id( $recipe_id = null, $force_new = false ) {
 
 		$recipes_loops = Automator()->loop_db()->fetch_all_recipes_loops();
 
 		if ( null === $recipe_id ) {
 			return array();
 		}
+
 		$key    = 'automator_recipe_data_of_' . $recipe_id;
 		$recipe = Automator()->cache->get( $key );
-		if ( ! empty( $recipe ) ) {
+
+		if ( ! empty( $recipe ) && false === $force_new ) {
 			return $recipe;
 		}
+
 		$recipe  = array();
 		$recipes = get_post( $recipe_id );
 		if ( ! $recipes ) {
 			return array();
 		}
+
 		$cached = Automator()->cache->get( 'get_recipe_type' );
 
 		$is_recipe_completed           = $this->is_recipe_completed( $recipe_id );
@@ -1032,7 +1045,7 @@ WHERE pm.post_id
 	public function are_recipes_completed( $user_id = null, $recipe_ids = array() ) {
 
 		if ( empty( $recipe_ids ) ) {
-			Automator()->error->trigger( 'You are trying to check if a recipe is completed without providing a recipe_ids.' );
+			Automator()->wp_error->trigger( 'You are trying to check if a recipe is completed without providing a recipe_ids.' );
 
 			return null;
 		}
@@ -1044,7 +1057,7 @@ WHERE pm.post_id
 
 		// No user id is available.
 		if ( 0 === $user_id ) {
-			Automator()->error->trigger( 'You are trying to check if a recipe is completed when a there is no logged in user.' );
+			Automator()->wp_error->trigger( 'You are trying to check if a recipe is completed when a there is no logged in user.' );
 
 			return null;
 		}
@@ -1096,7 +1109,7 @@ WHERE pm.post_id
 	public function is_recipe_completed( $recipe_id = null, $user_id = null ) {
 
 		if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
-			Automator()->error->trigger( 'You are trying to check if a recipe is completed without providing a recipe_id.' );
+			Automator()->wp_error->trigger( 'You are trying to check if a recipe is completed without providing a recipe_id.' );
 
 			return null;
 		}
@@ -1160,7 +1173,7 @@ WHERE pm.post_id
 	public function is_recipe_completed_max_times( $recipe_id = null ) {
 
 		if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
-			Automator()->error->add_error( 'is_recipe_completed', 'ERROR: You are trying to check if a recipe is completed without providing a recipe_id.', $this );
+			Automator()->wp_error->add_error( 'is_recipe_completed', 'ERROR: You are trying to check if a recipe is completed without providing a recipe_id.', $this );
 
 			return null;
 		}
@@ -1232,7 +1245,7 @@ WHERE pm.post_id
 		}
 
 		if ( ! is_numeric( $recipe_id ) ) {
-			Automator()->error->trigger( 'You are trying to get recipe data without providing a recipe_id' );
+			Automator()->wp_error->trigger( 'You are trying to get recipe data without providing a recipe_id' );
 
 			return null;
 		}
@@ -1278,10 +1291,10 @@ WHERE pm.post_id
 			}
 
 			$item_not_found = $this->child_item_not_found_handle( $type, $code );
-			if ( $item_not_found ) {
-				//$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_status = 'draft' WHERE ID = %d", absint( $child['ID'] ) ) );
-				//$child['post_status'] = 'draft';
-			}
+			//if ( $item_not_found ) {
+			//$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_status = 'draft' WHERE ID = %d", absint( $child['ID'] ) ) );
+			//$child['post_status'] = 'draft';
+			//}
 
 			// The trigger is create/stored automatically but may not have been saved. Delete if not saved!
 			if ( empty( $child_meta ) && isset( $child['ID'] ) ) {

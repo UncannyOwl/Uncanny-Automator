@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, mailc
 Requires at least: 5.3
 Tested up to: 6.3.2
 Requires PHP: 5.6
-Stable tag: 5.1.0.3
+Stable tag: 5.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -59,6 +59,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -138,6 +139,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [MailPoet](https://automatorplugin.com/integration/mailpoet/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Make](https://automatorplugin.com/integration/make/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Memberium For Keap](https://automatorplugin.com/integration/memberium-for-keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Meta Box](https://automatorplugin.com/integration/meta-box/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
@@ -323,6 +325,63 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.2 [2023-10-26] =
+
+**New Integrations:**
+
+* [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3879
+* [Memberium for Keap](https://automatorplugin.com/integration/memberium-for-keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3755
+
+**New Trigger:**
+
+* Fluent Support - A ticket is opened #4035
+
+**New Actions:**
+
+* Constant Contact - Add a contact to a list #3881
+* Constant Contact - Add a tag to a contact #3883
+* Constant Contact - Create or update a contact #3880
+* Constant Contact - Delete a contact #3882
+* Mautic - Add a contact to a segment #3454
+* Mautic - Create a segment #3458
+* Mautic - Remove a contact from a segment #3455
+* Memberium for Keap - Update a contact field #3762
+
+**New Action Tokens:**
+
+* Uncanny Groups - Create an Uncanny group - Group signup URL token when the Group Sign up module is active in Uncanny Toolkit Pro #4012
+* LearnDash - Create a group - Group signup URL token when the Group Sign up module is active in Uncanny Toolkit Pro #4011
+
+**Added:**
+
+* Automator Pro - Ability to remove user selector from recipe #4072
+* Outgoing Webhooks - Manual retries #4056
+* X/Twitter - App settings now let you choose between default and your own Custom App #3533
+
+**Fixed:**
+
+* ActiveCampaign - Custom fields not working due to misassigned object variable #4054
+* Contact Form7 - Tokens like Menu fields and attachment/File upload are not working #4069
+* Divi - Everyone trigger is not firing as expected #4029
+* Facebook Page - Facebook showing disconnected and can't resend from logs #4009
+* WPForms - Intermittent token issue doesn't work for other selection values #4022
+* WPForms - The Dropdown, Checkboxes, and Multiple Choice fields are not showing the values if a user modifies them #4052
+* WSForm - PHP Error in on some sites #4044
+* WordPress - A specific role is added to the user - Firing twice with the latest WordPress version #4099
+
+**Under the hood:**
+
+* Improved PHP 8.2 compatibility #4043
+* Action logs - Large error messages break layout #3982
+* Emails - WP Filter `automator_send_email` to optionally turn off email for a user ID or recipe ID #4050
+* License checks - Move license checks to nightly health calls #3978
+* Uncanny Automator - Social icons in the footer #3980
+* Recipe UI - Delay button not appearing for Pro-only integrations #4093
+* Recipe logs - Delayed action token logging #3764
+* Recipe logs - Fields not showing for the API integrations when background actions are enabled #3764
+* Several core framework improvements to reduce memory usage #4079 #4089
+* Twitter - Renamed to X/Twitter #4051
 
 = 5.1.0.3 [2023-10-16] =
 
@@ -1263,113 +1322,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **Fixed:**
 
 * Webhooks - Receive data from a webhook (Automator Pro only) - Legacy tokens are shown as invalid in some situations #2785
-
-= 4.6 [2022-10-19] =
-
-**New Feature:**
-
-* Action tokens - Actions now generate tokens for subsequent actions, enabling powerful automations where actions are linked and build upon each other #1312
-
-**New Triggers:**
-
-* Uncanny Groups - A number of seats greater than, less than, equal to, not equal to a specific number are added to an Uncanny group #2658
-* Uncanny Groups - A number of seats greater than, less than, equal to, not equal to a specific number are removed from an Uncanny group #2659
-* WP Simple Pay - A subscription for a form is created #2697
-
-**New Trigger Tokens:**
-
-* WooCommerce - Order fees, Order shipping #2670
-* WooCommerce - Product price in all Product triggers #2669
-
-**New Action Tokens:**
-
-* Facebook Groups #2741
-	* Publish a post to a Facebook group
-		* Link to Facebook post
-	* Publish a post with an image to a Facebook group
-		* Link to Facebook post
-	* Share a link with a message to a Facebook group
-		* Link to Facebook post
-* Facebook Pages #2742
-	* Publish a post to a Facebook page
-		* Link to Facebook post
-	* Publish a post with an image to a Facebook page
-		* Link to Facebook post
-	* Share a link with a message to a Facebook page
-		* Link to Facebook post
-* LearnDash #2723
-	* Create a group
-		* Group ID
-		* Group course IDs
-		* Group courses
-		* Group Leader emails
-* Slack #2720
-	* Create a channel
-		* Channel ID
-* Twitter #2744
-	* Post a tweet to Twitter
-		* Link to Tweet
-* Uncanny Groups #2721
-	* Create an Uncanny group
-		* Group ID
-		* Group course IDs
-		* Group courses
-		* Group Leader emails
-* Uncanny Codes #2722
-	* Generate a batch of codes for Automator
-		* Generated codes
-		* Batch ID
-* WordPress #2719
-	* Create a post
-		* Post ID
-		* Post URL
-		* Post edit URL
-	* Add a new role to the user's roles
-		* List of user's roles
-	* Change the user's role to a new role
-		* List of user's roles
-
-**Added:**
-
-* Duplicate recipe - Support for action tokens #2758
-* Outgoing Webhooks - "Data type" field added to define the type of the value #2673
-* Outgoing Webhooks - Now logs 20x, 30x, 40x and 50x statuses, if returned by the destination server #2672
-* Recipe UI - Support adding an empty conditions block before adding an action #2709
-
-**Updated:**
-
-* Autonami renamed to FunnelKit Automations #2739
-* HubSpot & Recipe logs - More descriptive error messages in logs #2737
-* The Event Calendar - Attendee tokens are now parsed reliably #2711
-* WordPress - Post excerpt token now auto-generates excerpt when no excerpt exists #2724
-
-**Fixed:**
-
-* CEU - Award a number of custom CEUs to the user - Decimal values now supported #2692
-* Gravity Forms - Fixed "list" and "multi-select" token parsing #2665
-* Elementor - Tokens only appear if the page is published #2718
-* MailPoet - Add a subscriber to a list - Do not send confirmation email checkbox now adds subscriber directly to list with "Subscribed" status
-* MailPoet - Add a subscriber to a list now adds the selected status #2761
-* MasterStudy LMS - A user completes a course - Not firing in some situations #2687
-* Recipe UI - User selector - "Role" field label missing #974
-
-**Known issues:**
-
-* MailPoet - Add a subscriber to a list - Email confirmation when subscribing a user to a list is bypassed even if the user is sent a confirmation email
-
-**Under the hood:**
-
-* Action logs - Fixed In progress status display in action #2701
-* Automator Free - Setup wizard - Updated branding #2674
-* Duplicate recipe - No longer breaks if there are no tokens in a recipe #2749
-* Duplicate recipe - Now duplicates actions in a recipe with no triggers #2753
-* Duplicate recipe - Now properly updates ID of the Magic button and Magic link triggers #2754
-* Input parser - Uncaught TypeError: `strpos()`: Argument #1 (`$haystack`) must be of type `string`, `array` given #2745
-* PHP Deprecated: Constant `FILTER_SANITIZE_STRING` is deprecated - PHP 8.1 #2751
-* Recipe Traits\Filters: Added PHPDoc Comments, and formatted `$this->explain` to make clearer. Also supports number conditions #2703
-* Recipe UI Field - `create_field`'s `input_type` is hard-coded to `int` even when `float` is used #2733
-* Recipe logs - Display "Deleted user" message when a log entry references a user that was subsequently deleted #2685
-* Slack - Uncanny Automator App icon updated
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

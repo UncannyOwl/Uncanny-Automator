@@ -135,6 +135,9 @@ class Mautic_Settings extends Premium_Integration_Settings {
 		// Actions.
 		$vars['actions'] = array(
 			_x( 'Create or update a contact', 'Mautic', 'uncanny-automator' ),
+			_x( 'Create a segment', 'Mautic', 'uncanny-automator' ),
+			_x( 'Add a contact to a segment', 'Mautic', 'uncanny-automator' ),
+			_x( 'Remove a contact from a segment', 'Mautic', 'uncanny-automator' ),
 		);
 
 		include_once 'mautic-settings-view.php';

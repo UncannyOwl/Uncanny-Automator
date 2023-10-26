@@ -944,4 +944,22 @@ $setup_wizard_link = add_query_arg(
 			</div>
 		</div>
 	</div>
+
+	<!-- Social media icons section -->
+	<div id="uap-dashboard-social-media">
+		<div class="uap-dashboard-social-media__text">
+			<?php esc_attr_e( 'Connect with us:', 'uncanny-automator' ); ?>
+		</div>
+		<div class="uap-dashboard-social-media__icons">
+			<a href="https://www.facebook.com/uncannyautomator/" target="_blank" class="uap-dashboard-social-media__icon uap-dashboard-social-media__icon--facebook">
+				<uo-icon id="facebook"></uo-icon>
+			</a>
+			<a href="https://twitter.com/automatorplugin" target="_blank" class="uap-dashboard-social-media__icon uap-dashboard-social-media__icon--x-twitter">
+				<uo-icon id="x-twitter"></uo-icon>
+			</a>
+			<a href="https://www.youtube.com/channel/UChaGT08W7WslSNMy_F-iATA" target="_blank" class="uap-dashboard-social-media__icon uap-dashboard-social-media__icon--youtube">
+				<uo-icon id="youtube"></uo-icon>
+			</a>
+		</div>
+	</div>
 </div>

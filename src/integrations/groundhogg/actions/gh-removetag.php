@@ -19,7 +19,13 @@ class GH_REMOVETAG {
 	 */
 	public static $integration = 'GH';
 
+	/**
+	 * @var string
+	 */
 	private $action_code;
+	/**
+	 * @var string
+	 */
 	private $action_meta;
 
 	/**
@@ -36,21 +42,6 @@ class GH_REMOVETAG {
 	 */
 	public function define_action() {
 
-		$tags = new Tags();
-
-		$tag_options = array();
-		foreach ( $tags->get_tags() as $tag ) {
-			$tag_options[ $tag->tag_id ] = $tag->tag_name;
-		}
-
-		$option = array(
-			'option_code' => $this->action_meta,
-			'label'       => esc_attr__( 'Tags', 'uncanny-automator' ),
-			'input_type'  => 'select',
-			'required'    => true,
-			'options'     => $tag_options,
-		);
-
 		$action = array(
 			'author'             => Automator()->get_author_name(),
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/groundhogg/' ),
@@ -63,18 +54,39 @@ class GH_REMOVETAG {
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'remove_tag_to_user' ),
-			'options'            => array(
-				$option,
-			),
+			'options_callback'   => array( $this, 'options_callback' ),
 		);
 
 		Automator()->register->action( $action );
 	}
 
 	/**
+	 * @return array
+	 */
+	public function options_callback() {
+		$tags = new Tags();
+
+		$tag_options = array();
+		foreach ( $tags->get_tags() as $tag ) {
+			$tag_options[ $tag->tag_id ] = $tag->tag_name;
+		}
+
+		$options = array(
+			'option_code' => $this->action_meta,
+			'label'       => esc_attr__( 'Tags', 'uncanny-automator' ),
+			'input_type'  => 'select',
+			'required'    => true,
+			'options'     => $tag_options,
+		);
+
+		return Automator()->utilities->keep_order_of_options( array( 'options' => array( $options ) ) );
+	}
+
+	/**
 	 * @param $user_id
 	 * @param $action_data
 	 * @param $recipe_id
+	 * @param $args
 	 */
 	public function remove_tag_to_user( $user_id, $action_data, $recipe_id, $args ) {
 

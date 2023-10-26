@@ -44,7 +44,7 @@ class Automator_Integrations_Status {
 
 		// Sanity check that there was a trigger passed
 		if ( null === $integration || ! is_string( $integration ) ) {
-			Automator()->error->add_error( 'get_plugin_status', 'ERROR: You are try to get a plugin\'s status without passing its proper integration code.', $this );
+			Automator()->wp_error->add_error( 'get_plugin_status', 'ERROR: You are try to get a plugin\'s status without passing its proper integration code.', $this );
 
 			return null;
 		}

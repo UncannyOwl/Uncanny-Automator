@@ -3,6 +3,12 @@ namespace Uncanny_Automator\Integrations\Mautic;
 
 use Uncanny_Automator\Api_Server as Automator_Client;
 
+/**
+ *
+ * Class Mautic_Client_Auth
+ *
+ * @package Uncanny_Automator\Integrations\Mautic
+ */
 class Mautic_Client_Auth {
 
 	/**

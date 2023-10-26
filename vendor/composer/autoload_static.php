@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit59181e030dd0b90f30268bbb82007118
+class ComposerStaticInit470995bc78f507758ae5cc1727f5fa53
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -272,6 +272,7 @@ class ComposerStaticInit59181e030dd0b90f30268bbb82007118
         'Uncanny_Automator\\Automator_DB_Handler_Tokens' => __DIR__ . '/../..' . '/src/core/lib/utilities/db/class-automator-db-handler-tokens.php',
         'Uncanny_Automator\\Automator_DB_Handler_Triggers' => __DIR__ . '/../..' . '/src/core/lib/utilities/db/class-automator-db-handler-triggers.php',
         'Uncanny_Automator\\Automator_Email_Helpers' => __DIR__ . '/../..' . '/src/core/lib/helpers/class-automator-email-helpers.php',
+        'Uncanny_Automator\\Automator_Error' => __DIR__ . '/../..' . '/src/core/lib/utilities/error/class-automator-error.php',
         'Uncanny_Automator\\Automator_Error_Messages' => __DIR__ . '/../..' . '/src/core/lib/utilities/error/class-automator-error-messages.php',
         'Uncanny_Automator\\Automator_Exception' => __DIR__ . '/../..' . '/src/core/lib/utilities/error/class-automator-exception.php',
         'Uncanny_Automator\\Automator_Functions' => __DIR__ . '/../..' . '/src/core/lib/class-automator-functions.php',
@@ -404,6 +405,7 @@ class ComposerStaticInit59181e030dd0b90f30268bbb82007118
         'Uncanny_Automator\\FCRM_USER_STATUS_UPDATED' => __DIR__ . '/../..' . '/src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php',
         'Uncanny_Automator\\FCRM_USER_TO_LIST' => __DIR__ . '/../..' . '/src/integrations/fluent-crm/actions/fcrm-user-to-list.php',
         'Uncanny_Automator\\FI_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/formidable/triggers/fi-submitform.php',
+        'Uncanny_Automator\\FLSUPPORT_ANON_TICKET_OPENED' => __DIR__ . '/../..' . '/src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php',
         'Uncanny_Automator\\FLSUPPORT_TICKETCLOSEDCUSTOMER' => __DIR__ . '/../..' . '/src/integrations/fluent-support/triggers/flsupport-ticketclosedcustomer.php',
         'Uncanny_Automator\\FLSUPPORT_TICKETCREATEDCUSTOMER' => __DIR__ . '/../..' . '/src/integrations/fluent-support/triggers/flsupport-ticketcreatedcustomer.php',
         'Uncanny_Automator\\FLSUPPORT_TICKETREPLIEDAGENT' => __DIR__ . '/../..' . '/src/integrations/fluent-support/triggers/flsupport-ticketrepliedagent.php',
@@ -511,6 +513,13 @@ class ComposerStaticInit59181e030dd0b90f30268bbb82007118
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Reset_Pass_Url' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-reset-pass-url.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Role' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-role.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Username' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-username.php',
+        'Uncanny_Automator\\Integrations\\Constant_Contact\\CONTACT_DELETE' => __DIR__ . '/../..' . '/src/integrations/constant-contact/actions/contact-delete.php',
+        'Uncanny_Automator\\Integrations\\Constant_Contact\\CONTACT_LIST_ADD_TO' => __DIR__ . '/../..' . '/src/integrations/constant-contact/actions/contact-list-add-to.php',
+        'Uncanny_Automator\\Integrations\\Constant_Contact\\CONTACT_TAG_ADD_TO' => __DIR__ . '/../..' . '/src/integrations/constant-contact/actions/contact-tag-add-to.php',
+        'Uncanny_Automator\\Integrations\\Constant_Contact\\CREATE' => __DIR__ . '/../..' . '/src/integrations/constant-contact/actions/create.php',
+        'Uncanny_Automator\\Integrations\\Constant_Contact\\Constant_Contact_Helpers' => __DIR__ . '/../..' . '/src/integrations/constant-contact/helpers/constant-contact-helpers.php',
+        'Uncanny_Automator\\Integrations\\Constant_Contact\\Constant_Contact_Integration' => __DIR__ . '/../..' . '/src/integrations/constant-contact/constant-contact-integration.php',
+        'Uncanny_Automator\\Integrations\\Constant_Contact\\Constant_Contact_Settings' => __DIR__ . '/../..' . '/src/integrations/constant-contact/settings/constant-contact-settings.php',
         'Uncanny_Automator\\Integrations\\DateTime\\DateTime_Integration' => __DIR__ . '/../..' . '/src/integrations/datetime/class-date-integration.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date-time.php',
@@ -524,11 +533,17 @@ class ComposerStaticInit59181e030dd0b90f30268bbb82007118
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM_GROUPS' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform-groups.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Integration' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/class-gf-integration.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Tokens' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/tokens/gf-new-tokens.php',
+        'Uncanny_Automator\\Integrations\\M4IS\\M4IS_HELPERS' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/helpers/m4is-helpers.php',
+        'Uncanny_Automator\\Integrations\\M4IS\\M4IS_Integration' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/m4is-integration.php',
+        'Uncanny_Automator\\Integrations\\M4IS\\M4IS_UPDATE_CONTACT_FIELD' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/actions/m4is-update-contact-field.php',
         'Uncanny_Automator\\Integrations\\Mautic\\CONTACT_UPSERT' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/contact-upsert.php',
         'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Client_Auth' => __DIR__ . '/../..' . '/src/integrations/mautic/client/auth/auth.php',
         'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Helpers' => __DIR__ . '/../..' . '/src/integrations/mautic/helpers/mautic-helpers.php',
         'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Integration' => __DIR__ . '/../..' . '/src/integrations/mautic/mautic-integration.php',
         'Uncanny_Automator\\Integrations\\Mautic\\Mautic_Settings' => __DIR__ . '/../..' . '/src/integrations/mautic/settings/mautic-settings.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\SEGMENT_CONTACT_ADD' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/segment-contact-add.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\SEGMENT_CONTACT_REMOVE' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/segment-contact-remove.php',
+        'Uncanny_Automator\\Integrations\\Mautic\\SEGMENT_CREATE' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/segment-create.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CHANNEL_MESSAGE' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_CHANNEL' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_TEAM' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php',
@@ -971,6 +986,7 @@ class ComposerStaticInit59181e030dd0b90f30268bbb82007118
         'Uncanny_Automator\\Wc_Memberships_Helpers' => __DIR__ . '/../..' . '/src/integrations/wc-memberships/helpers/wc-memberships-helpers.php',
         'Uncanny_Automator\\Wc_Tokens' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/wc-tokens.php',
         'Uncanny_Automator\\Wcm_Tokens' => __DIR__ . '/../..' . '/src/integrations/wc-memberships/tokens/wcm-tokens.php',
+        'Uncanny_Automator\\Webhooks\\Response_Validator' => __DIR__ . '/../..' . '/src/core/lib/webhooks/response-validator.php',
         'Uncanny_Automator\\WhatsApp_Helpers' => __DIR__ . '/../..' . '/src/integrations/whatsapp/helpers/whatsapp-helpers.php',
         'Uncanny_Automator\\WhatsApp_Settings' => __DIR__ . '/../..' . '/src/integrations/whatsapp/settings/settings-whatsapp.php',
         'Uncanny_Automator\\Wholesale_Suite_Helpers' => __DIR__ . '/../..' . '/src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php',
@@ -1036,10 +1052,10 @@ class ComposerStaticInit59181e030dd0b90f30268bbb82007118
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit59181e030dd0b90f30268bbb82007118::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit59181e030dd0b90f30268bbb82007118::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit59181e030dd0b90f30268bbb82007118::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit59181e030dd0b90f30268bbb82007118::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit470995bc78f507758ae5cc1727f5fa53::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit470995bc78f507758ae5cc1727f5fa53::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit470995bc78f507758ae5cc1727f5fa53::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit470995bc78f507758ae5cc1727f5fa53::$classMap;
 
         }, null, ClassLoader::class);
     }

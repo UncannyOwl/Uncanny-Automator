@@ -52,6 +52,9 @@ class Mautic_Integration extends Integration {
 		// Contact fields.
 		add_action( 'wp_ajax_automator_mautic_render_contact_fields', array( $this->helpers, 'render_contact_fields' ) );
 
+		// Fetch the segments.
+		add_action( 'wp_ajax_automator_mautic_segment_fetch', array( $this->helpers, 'segments_fetch' ) );
+
 	}
 
 	/**
@@ -63,6 +66,9 @@ class Mautic_Integration extends Integration {
 		new Mautic_Settings( $this->helpers );
 		// Actions.
 		new CONTACT_UPSERT();
+		new SEGMENT_CREATE();
+		new SEGMENT_CONTACT_ADD();
+		new SEGMENT_CONTACT_REMOVE();
 
 	}
 }

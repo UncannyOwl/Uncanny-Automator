@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 5.1.0.3\n"
+"Project-Id-Version: Uncanny Automator 5.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-10-16T17:38:00+00:00\n"
+"POT-Creation-Date: 2023-10-26T14:11:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: uncanny-automator\n"
@@ -24,29 +24,19 @@ msgid "https://automatorplugin.com/"
 msgstr ""
 
 #. Description of the plugin
-msgid "Connect WordPress plugins together to create powerful recipes that save time and improve the user experience. With no coding required, Uncanny Automator can replace dozens of plugins with millions of recipe combinations!"
+msgid "Connect your WordPress plugins, sites and apps together with powerful automations. Save time and money with the #1 automation plugin for WordPress!"
 msgstr ""
 
 #. Author of the plugin
 msgid "Uncanny Automator, Uncanny Owl"
 msgstr ""
 
-#: src/class-automator-load.php:129
+#: src/class-automator-load.php:139
 msgctxt "Uncanny Automator"
 msgid "Uncanny Automator cannot currently run in WP Playground environments because Playground cannot support custom tables, cURL or SSL PHP functions. Please consider trying the free Uncanny Automator plugin in your own environment instead."
 msgstr ""
 
-#. translators: 2. Recipes. 3. PHP version
-#: src/class-automator-load.php:206
-msgid "%2$s recipes have been disabled because your version of PHP (%3$s) is not fully compatible with the version of %1$s that's installed."
-msgstr ""
-
-#. translators: 1. Trademarked term. 2. Version number
-#: src/class-automator-load.php:208
-msgid "Please update %1$s to version %2$s or later."
-msgstr ""
-
-#: src/class-automator-load.php:495
+#: src/class-automator-load.php:442
 msgid "Heads up!"
 msgstr ""
 
@@ -114,7 +104,7 @@ msgstr ""
 #: src/core/admin/class-logs-list-table.php:371
 #: src/core/admin/class-logs-list-table.php:479
 #: src/core/admin/class-logs-list-table.php:570
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:814
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:866
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:42
 #: src/integrations/armember/helpers/armember-helpers.php:56
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:137
@@ -165,7 +155,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1096
 #: src/core/admin/class-admin-menu.php:1178
 #: src/core/lib/utilities/class-automator-translations.php:1152
-#: src/core/lib/utilities/class-automator-translations.php:1300
+#: src/core/lib/utilities/class-automator-translations.php:1308
 #: src/integrations/helpscout/settings/view-helpscout.php:79
 msgid "Confirm"
 msgstr ""
@@ -302,7 +292,7 @@ msgstr ""
 #: src/integrations/rafflepress/helpers/rafflepress-helpers.php:71
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:65
 #: src/integrations/twitter/actions/twitter-poststatus.php:64
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:57
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:71
 #: src/integrations/whatsapp/triggers/wa-message-status-updated.php:87
 #: src/integrations/wp/actions/wp-createpost.php:141
 msgid "Status"
@@ -416,7 +406,7 @@ msgstr ""
 #: src/core/admin/api-log/class-api-log.php:82
 #: src/core/admin/class-admin-menu.php:1164
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:111
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:933
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:939
 #: src/core/includes/recipe-logs-view.php:51
 #: src/core/includes/recipe-logs-view.php:194
 #: src/core/lib/utilities/class-automator-translations.php:86
@@ -535,7 +525,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1094
 #: src/core/admin/class-admin-menu.php:1350
 #: src/core/lib/utilities/class-automator-translations.php:652
-#: src/core/lib/utilities/class-automator-translations.php:1363
+#: src/core/lib/utilities/class-automator-translations.php:1371
 msgid "Are you sure?"
 msgstr ""
 
@@ -543,7 +533,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1098
 #: src/core/admin/class-admin-menu.php:1338
 #: src/core/lib/utilities/class-automator-translations.php:1151
-#: src/core/lib/utilities/class-automator-translations.php:1305
+#: src/core/lib/utilities/class-automator-translations.php:1313
 msgid "Cancel"
 msgstr ""
 
@@ -633,7 +623,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:1153
 #: src/core/classes/class-usage-reports.php:705
-#: src/core/lib/utilities/class-automator-translations.php:1302
+#: src/core/lib/utilities/class-automator-translations.php:1310
 #: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:354
 msgid "Something went wrong"
 msgstr ""
@@ -650,7 +640,7 @@ msgstr ""
 
 #. translators: Log column.
 #: src/core/admin/class-admin-menu.php:1158
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:906
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:912
 #: src/core/includes/recipe-logs-view.php:49
 #: src/core/includes/recipe-logs-view.php:96
 #: src/core/includes/recipe-logs-view.php:147
@@ -697,7 +687,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1163
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:52
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:57
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:932
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:938
 #: src/core/lib/utilities/class-automator-translations.php:43
 msgid "Triggers"
 msgstr ""
@@ -863,7 +853,7 @@ msgstr ""
 
 #. translators: Noun
 #: src/core/admin/class-admin-menu.php:1266
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:598
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:650
 #: src/core/lib/utilities/class-automator-translations.php:271
 #: src/integrations/advanced-coupons/triggers/advanced-coupons-user-receives-credit.php:67
 #: src/integrations/advanced-coupons/triggers/advanced-coupons-user-spends-credit.php:64
@@ -881,7 +871,7 @@ msgid "Error: \"%1$s\" is not a valid status ID."
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:1284
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:62
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:76
 msgid "Completed"
 msgstr ""
 
@@ -919,13 +909,13 @@ msgid "Queued"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:1293
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:63
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:77
 msgid "Completed with errors"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:1294
 #: src/core/admin/class-admin-menu.php:1326
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:61
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:75
 msgid "In progress"
 msgstr ""
 
@@ -965,7 +955,7 @@ msgid "\"%1$s\" preview"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:1308
-#: src/core/lib/utilities/class-automator-translations.php:1338
+#: src/core/lib/utilities/class-automator-translations.php:1346
 msgid "(empty)"
 msgstr ""
 
@@ -1066,7 +1056,7 @@ msgstr ""
 
 #. translators: The number of times a recipe was completed
 #: src/core/admin/class-admin-menu.php:1405
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:935
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:941
 msgid "Completed runs"
 msgstr ""
 
@@ -1099,7 +1089,7 @@ msgid "Put your WordPress site on autopilot"
 msgstr ""
 
 #: src/core/admin/class-copy-recipe-parts.php:47
-#: src/core/lib/utilities/class-automator-translations.php:1268
+#: src/core/lib/utilities/class-automator-translations.php:1276
 msgid "Duplicate this recipe"
 msgstr ""
 
@@ -1155,7 +1145,7 @@ msgstr ""
 #: src/core/admin/class-logs-list-table.php:440
 #: src/core/lib/utilities/class-automator-translations.php:1131
 #: src/core/lib/utilities/class-automator-translations.php:1143
-#: src/core/lib/utilities/class-automator-translations.php:1311
+#: src/core/lib/utilities/class-automator-translations.php:1319
 msgid "Delete"
 msgstr ""
 
@@ -1608,9 +1598,9 @@ msgstr ""
 
 #. translators: 1. Application name
 #: src/core/admin/pro-upgrade/class-pro-upsell.php:286
-#: src/integrations/twitter/settings/view-twitter-user-app.php:44
-#: src/integrations/twitter/settings/view-twitter.php:52
-msgid "Twitter"
+#: src/integrations/twitter/settings/view-twitter-user-app.php:36
+#: src/integrations/twitter/settings/view-twitter.php:53
+msgid "X/Twitter"
 msgstr ""
 
 #. translators: 1. Application name
@@ -1781,41 +1771,51 @@ msgstr ""
 msgid "Anonymous recipe user action set to do nothing."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:311
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:432
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:313
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:434
 msgid "The action failed to create the post. The response was"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:335
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:337
 msgid "The data that was sent was malformed. Please reload the page and try again."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:342
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:344
 msgid "Recipe ID is missing."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:347
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:349
 msgid "Trigger code or Item code is missing."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:355
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:357
 msgid "Post ID sent is not a recipe post"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:400
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:402
 msgid "Post type is not defined."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1363
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1384
 msgid "Action Log ID is empty"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1374
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1395
 msgid "Missing action params"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1400
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1425
 msgid "The request has been successfully resent"
+msgstr ""
+
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1450
+msgctxt "Webhooks"
+msgid "The request has been successfully resent"
+msgstr ""
+
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1454
+msgctxt "Webhooks"
+msgid "Invalid data. Property \"request\" or \"params\" is missing."
 msgstr ""
 
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:33
@@ -1886,26 +1886,26 @@ msgctxt "Recipe"
 msgid "Not found in trash"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:910
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:916
 #: src/core/lib/utilities/class-automator-translations.php:1129
 msgid "Live"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:910
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:916
 #: src/core/lib/utilities/class-automator-translations.php:1130
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:76
 msgid "Draft"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:936
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:942
 #: src/core/includes/recipe-logs-view.php:88
 #: src/core/includes/recipe-logs-view.php:141
 #: src/core/views/admin-logs/component/logs.php:79
 #: src/core/views/admin-logs/component/logs.php:134
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:143
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:376
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:68
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:82
 msgid "Recipe status"
 msgstr ""
 
@@ -1924,8 +1924,8 @@ msgstr ""
 
 #: src/core/automator-post-types/uo-taxonomies/class-automator-taxonomies.php:75
 #: src/core/automator-post-types/uo-taxonomies/class-automator-taxonomies.php:157
-#: src/integrations/groundhogg/actions/gh-addtag.php:48
-#: src/integrations/groundhogg/actions/gh-removetag.php:48
+#: src/integrations/groundhogg/actions/gh-addtag.php:76
+#: src/integrations/groundhogg/actions/gh-removetag.php:76
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:132
 #: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:92
 #: src/integrations/mailchimp/actions/audience-addusertag.php:74
@@ -1936,66 +1936,62 @@ msgstr ""
 msgid "Tags"
 msgstr ""
 
-#: src/core/classes/class-api-server.php:406
-msgid "Unable to fetch the license: "
-msgstr ""
-
-#: src/core/classes/class-api-server.php:420
+#: src/core/classes/class-api-server.php:460
 msgid "License is not valid"
 msgstr ""
 
-#: src/core/classes/class-api-server.php:440
+#: src/core/classes/class-api-server.php:480
 msgid "Not enough credits"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:153
+#: src/core/classes/class-background-actions.php:172
 msgid "This action is scheduled or delayed"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:169
+#: src/core/classes/class-background-actions.php:188
 msgid "This action was prevented from processing earlier"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:187
+#: src/core/classes/class-background-actions.php:206
 msgid "This action is not set to run in background"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:204
+#: src/core/classes/class-background-actions.php:223
 msgid "WP cron is running"
 msgstr ""
 
 #. translators: Action ID
-#: src/core/classes/class-background-actions.php:219
+#: src/core/classes/class-background-actions.php:238
 msgid "Action's token used in ID: %d action"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:346
+#: src/core/classes/class-background-actions.php:365
 msgid "Unknown REST API error"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:484
+#: src/core/classes/class-background-actions.php:503
 msgid "Background actions have been automatically disabled because an error was detected:"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:517
+#: src/core/classes/class-background-actions.php:536
 #: src/core/lib/helpers/class-automator-cache-handler.php:607
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:34
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:179
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:192
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:181
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:194
 msgid "Enabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:517
+#: src/core/classes/class-background-actions.php:536
 #: src/core/lib/helpers/class-automator-cache-handler.php:607
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:38
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:179
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:192
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:181
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:194
 msgid "Disabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:523
+#: src/core/classes/class-background-actions.php:542
 msgid "When enabled, actions that send data to an external site or service will be run in a background process to accelerate the execution of recipes.  We recommend leaving this setting enabled unless instructed otherwise by support."
 msgstr ""
 
@@ -2034,7 +2030,7 @@ msgstr ""
 #. translators: Non-personal infinitive verb
 #: src/core/includes/automator-settings.php:139
 #: src/core/includes/automator-settings.php:293
-#: src/core/lib/utilities/class-automator-translations.php:1290
+#: src/core/lib/utilities/class-automator-translations.php:1298
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:54
 msgid "Save"
 msgstr ""
@@ -2756,7 +2752,7 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:3692
 #: src/core/includes/pro-items-list.php:3697
 #: src/integrations/active-campaign/actions/ac-user-remove-tag.php:42
-#: src/integrations/groundhogg/actions/gh-removetag.php:62
+#: src/integrations/groundhogg/actions/gh-removetag.php:53
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:44
 msgid "Remove {{a tag}} from the user"
 msgstr ""
@@ -4162,13 +4158,13 @@ msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:28
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:79
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:571
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:623
 #: src/integrations/learndash/triggers/ld-quizpoint.php:73
 #: src/integrations/learndash/triggers/ld-quizscore.php:69
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:66
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:59
-#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:65
-#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:56
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:78
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:71
+#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:77
+#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:68
 msgid "Example: 1"
 msgstr ""
 
@@ -4191,88 +4187,88 @@ msgstr ""
 msgid "Option"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:563
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:65
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:58
-#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:64
-#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:55
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:615
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:77
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:70
+#: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:76
+#: src/integrations/uncanny-automator/triggers/uoa-recipesuccesscompletedtimes.php:67
 msgid "Number of times"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:602
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:654
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:122
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:275
 #: src/integrations/woocommerce/tokens/wc-tokens.php:469
 msgid "equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:603
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:655
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:123
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:278
 #: src/integrations/woocommerce/tokens/wc-tokens.php:472
 msgid "not equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:604
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:656
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:124
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:269
 #: src/integrations/woocommerce/tokens/wc-tokens.php:463
 msgid "less than"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:605
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:657
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:125
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:272
 #: src/integrations/woocommerce/tokens/wc-tokens.php:466
 msgid "greater than"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:606
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:658
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:126
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:281
 #: src/integrations/woocommerce/tokens/wc-tokens.php:475
 msgid "greater or equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:607
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:659
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:127
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:284
 #: src/integrations/woocommerce/tokens/wc-tokens.php:478
 msgid "less or equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:625
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:677
 #: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:730
 #: src/integrations/gototraining/settings/view-gototraining.php:93
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:93
 msgid "Redirect URL"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:660
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:861
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:712
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:913
 #: src/integrations/wp/helpers/wp-helpers.php:244
 msgid "Any page"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:859
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:911
 msgid "All pages"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:867
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:919
 msgid "All posts"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:869
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:921
 #: src/integrations/wp/helpers/wp-helpers.php:191
 #: src/integrations/wp/helpers/wp-helpers.php:532
 msgid "Any post"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:875
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:927
 msgid "All courses"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:877
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:929
 #: src/integrations/learndash/actions/ld-achievements-award.php:170
 #: src/integrations/learndash/actions/ld-marklessondone.php:75
 #: src/integrations/learndash/actions/ld-marktopicdone.php:78
@@ -4297,12 +4293,12 @@ msgstr ""
 msgid "Any course"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:883
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:935
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:286
 msgid "All lessons"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:885
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:937
 #: src/integrations/learndash/actions/ld-marktopicdone.php:88
 #: src/integrations/learndash/helpers/learndash-helpers.php:287
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:144
@@ -4313,23 +4309,23 @@ msgstr ""
 msgid "Any lesson"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:891
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:943
 msgid "All topics"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:893
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:945
 #: src/integrations/buddypress/helpers/buddypress-helpers.php:181
 #: src/integrations/learndash/helpers/learndash-helpers.php:400
 #: src/integrations/learndash/helpers/learndash-helpers.php:898
 msgid "Any topic"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:899
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:951
 #: src/integrations/thrive-quiz-builder/helpers/thrive-quiz-builder-helpers.php:47
 msgid "All quizzes"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:901
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:953
 #: src/integrations/learndash/helpers/learndash-helpers.php:633
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:266
 #: src/integrations/thrive-quiz-builder/helpers/thrive-quiz-builder-helpers.php:43
@@ -4338,12 +4334,12 @@ msgstr ""
 msgid "Any quiz"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:907
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:959
 #: src/integrations/armember/helpers/armember-helpers.php:67
 msgid "All memberships"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:909
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:961
 #: src/integrations/armember/helpers/armember-helpers.php:63
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:217
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:219
@@ -4354,39 +4350,39 @@ msgstr ""
 msgid "Any membership"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:915
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:967
 msgid "All downloads"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:917
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:969
 #: src/integrations/edd/helpers/edd-helpers.php:95
 msgid "Any download"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:923
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:975
 msgid "All units"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:925
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:977
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:166
 #: src/integrations/wplms/helpers/wplms-helpers.php:170
 msgid "Any unit"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:931
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:983
 msgid "All popups"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:933
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:985
 #: src/integrations/popup-maker/actions/pm-popupshow.php:78
 msgid "Any popup"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:939
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:991
 msgid "All products"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:941
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:993
 #: src/integrations/formidable/helpers/formidable-helpers.php:75
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:74
 #: src/integrations/studiocart/helpers/studiocart-helpers.php:66
@@ -4399,11 +4395,11 @@ msgstr ""
 msgid "Any product"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:947
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:999
 msgid "All awards"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:949
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:1001
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:265
 msgid "Any award"
 msgstr ""
@@ -4508,49 +4504,34 @@ msgstr ""
 msgid "No action happened."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:44
+#: src/core/lib/recipe-parts/actions/trait-action-helpers-email.php:385
+msgid "Email action is disabled by `automator_send_email` filter."
+msgstr ""
+
+#: src/core/lib/recipe-parts/trait-webhooks.php:52
 #: src/integrations/open-ai/actions/open-ai-chat-generate.php:56
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:61
 msgid "Response"
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:52
+#: src/core/lib/recipe-parts/trait-webhooks.php:60
 msgctxt "Webhook"
 msgid "Response - Body (raw)"
 msgstr ""
 
 #. translators: 1. Webhook URL
-#: src/core/lib/recipe-parts/trait-webhooks.php:93
+#: src/core/lib/recipe-parts/trait-webhooks.php:104
 msgid "Webhook URL is empty."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:127
+#: src/core/lib/recipe-parts/trait-webhooks.php:140
 msgctxt "Send webhook action response headers property"
 msgid "Response headers"
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:136
+#: src/core/lib/recipe-parts/trait-webhooks.php:149
 msgctxt "Send webhook action log response body property"
 msgid "Response body"
-msgstr ""
-
-#. translators: 1. Webhook URL
-#: src/core/lib/recipe-parts/trait-webhooks.php:233
-msgid "An error was found in the webhook (%1$s) response."
-msgstr ""
-
-#: src/core/lib/recipe-parts/trait-webhooks.php:271
-msgid "Request redirected to another URL."
-msgstr ""
-
-#. translators: Response code
-#: src/core/lib/recipe-parts/trait-webhooks.php:277
-msgid "Client error, request responded with %d error."
-msgstr ""
-
-#. translators: Response code
-#: src/core/lib/recipe-parts/trait-webhooks.php:283
-msgid "Server error, request responded with %d error."
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-get-data.php:1486
@@ -4566,7 +4547,7 @@ msgstr ""
 msgid "Any"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-input-parser.php:773
+#: src/core/lib/utilities/class-automator-input-parser.php:777
 msgctxt "Reset password token text"
 msgid "Click here to reset your password."
 msgstr ""
@@ -5625,7 +5606,7 @@ msgid "Refresh this page and add your %1$s action."
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:731
-#: src/core/lib/utilities/class-automator-translations.php:1280
+#: src/core/lib/utilities/class-automator-translations.php:1288
 #: src/integrations/active-campaign/settings/view-active-campaign.php:165
 #: src/integrations/instagram/settings/settings-instagram.php:107
 msgid "Refresh"
@@ -5760,7 +5741,7 @@ msgstr ""
 #: src/integrations/drip/actions/drip-subscribe-to-campaign.php:58
 #: src/integrations/drip/actions/drip-unsubscribe-all.php:58
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:169
-#: src/integrations/give/helpers/give-helpers.php:117
+#: src/integrations/give/helpers/give-helpers.php:129
 #: src/integrations/jet-crm/actions/jetcrm-tag-to-company.php:55
 #: src/integrations/jet-crm/actions/jetcrm-tag-to-contact.php:55
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:208
@@ -5841,7 +5822,7 @@ msgstr ""
 #: src/integrations/learndash/actions/ld-makeuserleader.php:102
 #: src/integrations/mailchimp/actions/audience-addauser.php:185
 #: src/integrations/mailchimp/actions/mc-everyone-add-contact.php:186
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:136
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:152
 msgid "Do nothing"
 msgstr ""
 
@@ -5855,7 +5836,7 @@ msgstr ""
 #: src/integrations/convertkit/actions/convertkit-form-subscriber-add.php:119
 #: src/integrations/convertkit/actions/convertkit-subscriber-sequence-add.php:114
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:153
-#: src/integrations/give/helpers/give-helpers.php:105
+#: src/integrations/give/helpers/give-helpers.php:117
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:191
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:109
 #: src/integrations/mailpoet/helpers/mailpoet-helpers.php:192
@@ -5874,7 +5855,7 @@ msgstr ""
 #: src/integrations/active-campaign/actions/ac-annon-add.php:137
 #: src/integrations/active-campaign/tokens/ac-tokens.php:61
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:161
-#: src/integrations/give/helpers/give-helpers.php:111
+#: src/integrations/give/helpers/give-helpers.php:123
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:192
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:110
 #: src/integrations/mailpoet/helpers/mailpoet-helpers.php:193
@@ -6069,7 +6050,7 @@ msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/core/lib/utilities/class-automator-translations.php:1015
-#: src/core/lib/utilities/class-automator-translations.php:1323
+#: src/core/lib/utilities/class-automator-translations.php:1331
 #: src/core/views/admin-integrations/single/sidebar.php:41
 #: src/core/views/admin-settings/tab/premium-integrations/not-connected.php:73
 #: src/core/views/credits-remaining-25.php:33
@@ -6388,7 +6369,7 @@ msgid "Search loop filters"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1154
-#: src/core/lib/utilities/class-automator-translations.php:1284
+#: src/core/lib/utilities/class-automator-translations.php:1292
 msgid "No results found"
 msgstr ""
 
@@ -6600,166 +6581,178 @@ msgstr ""
 msgid "Filters updated successfully"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1256
-msgid "Run now"
+#: src/core/lib/utilities/class-automator-translations.php:1257
+msgid "Removing user selector"
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:1258
+msgid "User selector removed successfully"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1259
+msgid "Removing the user selector may result in unexpected behavior if any actions or tokens require user data."
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:1264
+msgid "Run now"
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:1267
 msgid "The recipe run has been initiated"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1261
+#: src/core/lib/utilities/class-automator-translations.php:1269
 msgid "Actions are now running in the background and results will be available in the logs."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1263
+#: src/core/lib/utilities/class-automator-translations.php:1271
 msgid "Changes cannot be made to the recipe while it's running. Progress can be monitored from the logs and actions that haven't run yet can be cancelled."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1265
+#: src/core/lib/utilities/class-automator-translations.php:1273
 msgid "You can also return to the list of recipes or create a copy of this recipe."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1271
+#: src/core/lib/utilities/class-automator-translations.php:1279
 msgid "View log entry"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1274
+#: src/core/lib/utilities/class-automator-translations.php:1282
 msgid "Return to recipe list"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1278
+#: src/core/lib/utilities/class-automator-translations.php:1286
 msgid "View logs"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1282
+#: src/core/lib/utilities/class-automator-translations.php:1290
 msgid "Refresh options"
 msgstr ""
 
 #. translators: Character to separate items
-#: src/core/lib/utilities/class-automator-translations.php:1287
+#: src/core/lib/utilities/class-automator-translations.php:1295
 #: src/integrations/fluent-crm/actions/fcrm-user-to-list.php:141
 msgid ","
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1293
+#: src/core/lib/utilities/class-automator-translations.php:1301
 #: src/core/views/admin-logs/filters.php:172
 #: src/core/views/filters.php:173
 msgid "Search"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1295
+#: src/core/lib/utilities/class-automator-translations.php:1303
 msgid "Search..."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1297
+#: src/core/lib/utilities/class-automator-translations.php:1305
 msgid "Searching"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1308
+#: src/core/lib/utilities/class-automator-translations.php:1316
 msgid "Duplicate"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1314
+#: src/core/lib/utilities/class-automator-translations.php:1322
 msgid "Clear"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1317
+#: src/core/lib/utilities/class-automator-translations.php:1325
 msgid "Edit"
 msgstr ""
 
 #. translators: Noun
-#: src/core/lib/utilities/class-automator-translations.php:1320
+#: src/core/lib/utilities/class-automator-translations.php:1328
 msgctxt "Item options"
 msgid "Support"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1325
+#: src/core/lib/utilities/class-automator-translations.php:1333
 msgid "True"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1327
+#: src/core/lib/utilities/class-automator-translations.php:1335
 msgid "False"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1329
+#: src/core/lib/utilities/class-automator-translations.php:1337
 #: src/core/views/admin-tools/tab/debug/log-viewer.php:74
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:507
 msgid "Yes"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1331
+#: src/core/lib/utilities/class-automator-translations.php:1339
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:512
 msgid "No"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1333
+#: src/core/lib/utilities/class-automator-translations.php:1341
 msgid "Loading more results..."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1342
+#: src/core/lib/utilities/class-automator-translations.php:1350
 msgid "This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1344
+#: src/core/lib/utilities/class-automator-translations.php:1352
 msgid "(no label)"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1347
+#: src/core/lib/utilities/class-automator-translations.php:1355
 msgid "Upgrade now"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1350
+#: src/core/lib/utilities/class-automator-translations.php:1358
 msgid "Add"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1353
+#: src/core/lib/utilities/class-automator-translations.php:1361
 msgid "Add row"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:1356
+#: src/core/lib/utilities/class-automator-translations.php:1364
 msgid "Remove row"
 msgstr ""
 
 #. translators: 1. Row number
-#: src/core/lib/utilities/class-automator-translations.php:1359
+#: src/core/lib/utilities/class-automator-translations.php:1367
 msgid "Row %1$s"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1361
+#: src/core/lib/utilities/class-automator-translations.php:1369
 msgctxt "Verb"
 msgid "Close"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1365
+#: src/core/lib/utilities/class-automator-translations.php:1373
 msgid "Needs user data"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1367
+#: src/core/lib/utilities/class-automator-translations.php:1375
 msgid "Scroll to increment"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-translations.php:1369
+#: src/core/lib/utilities/class-automator-translations.php:1377
 msgid "Click to toggle"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-utilities.php:261
+#: src/core/lib/utilities/class-automator-utilities.php:264
 msgid "Automator did not receive nonce."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-utilities.php:272
+#: src/core/lib/utilities/class-automator-utilities.php:275
 msgid "You do not have permission to update options."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-utilities.php:280
+#: src/core/lib/utilities/class-automator-utilities.php:283
 msgid "nonce validation failed."
 msgstr ""
 
@@ -6946,6 +6939,29 @@ msgstr ""
 
 #: src/core/lib/webhooks/class-automator-send-webhook.php:606
 msgid "XML body wrapper cannot be empty. Please use `automator_send_webhook_xml_body` filter to define a wrapper."
+msgstr ""
+
+#. translators: 1. Webhook URL
+#: src/core/lib/webhooks/response-validator.php:54
+msgctxt "Webhook"
+msgid "An error was found in the webhook response: (%1$s)."
+msgstr ""
+
+#: src/core/lib/webhooks/response-validator.php:93
+msgctxt "Webhook"
+msgid "Request redirected to another URL."
+msgstr ""
+
+#. translators: Response code
+#: src/core/lib/webhooks/response-validator.php:101
+msgctxt "Webhook"
+msgid "Client error, request responded with: %2$d &mdash; %1$s error."
+msgstr ""
+
+#. translators: Response code
+#: src/core/lib/webhooks/response-validator.php:112
+msgctxt "Webhook"
+msgid "Server error, request responded with: %2$d &mdash; %1$s error."
 msgstr ""
 
 #. translators: Units of time (seconds)
@@ -7355,6 +7371,10 @@ msgstr ""
 #. translators: 1. Site URL
 #: src/core/views/admin-dashboard.php:867
 msgid "Recipes using app credits on %1$s"
+msgstr ""
+
+#: src/core/views/admin-dashboard.php:951
+msgid "Connect with us:"
 msgstr ""
 
 #: src/core/views/admin-debug-log.php:34
@@ -8607,7 +8627,7 @@ msgstr ""
 #. translators: Action - WP Fusion
 #: src/integrations/active-campaign/actions/ac-user-add-tag.php:39
 #: src/integrations/autonami/actions/autonami-add-user-tag.php:36
-#: src/integrations/groundhogg/actions/gh-addtag.php:60
+#: src/integrations/groundhogg/actions/gh-addtag.php:51
 #: src/integrations/mailchimp/actions/audience-addusertag.php:43
 #: src/integrations/wp-fusion/actions/wf-setusertag.php:42
 msgid "Add {{a tag:%1$s}} to the user"
@@ -8619,7 +8639,7 @@ msgstr ""
 #. translators: Action - WP Fusion
 #: src/integrations/active-campaign/actions/ac-user-add-tag.php:42
 #: src/integrations/autonami/actions/autonami-add-user-tag.php:38
-#: src/integrations/groundhogg/actions/gh-addtag.php:62
+#: src/integrations/groundhogg/actions/gh-addtag.php:53
 #: src/integrations/mailchimp/actions/audience-addusertag.php:44
 #: src/integrations/wp-fusion/actions/wf-setusertag.php:44
 msgid "Add {{a tag}} to the user"
@@ -8651,7 +8671,7 @@ msgstr ""
 #. translators: Action - Groundhogg
 #. translators: Mailchimp tag
 #: src/integrations/active-campaign/actions/ac-user-remove-tag.php:39
-#: src/integrations/groundhogg/actions/gh-removetag.php:60
+#: src/integrations/groundhogg/actions/gh-removetag.php:51
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:43
 msgid "Remove {{a tag:%1$s}} from the user"
 msgstr ""
@@ -8765,8 +8785,8 @@ msgstr ""
 #: src/integrations/telegram/settings/view-telegram.php:59
 #: src/integrations/trello/settings/view-trello.php:53
 #: src/integrations/twilio/settings/view-twilio.php:57
-#: src/integrations/twitter/settings/view-twitter-user-app.php:84
-#: src/integrations/twitter/settings/view-twitter.php:115
+#: src/integrations/twitter/settings/view-twitter-user-app.php:76
+#: src/integrations/twitter/settings/view-twitter.php:116
 #: src/integrations/whatsapp/settings/view-whatsapp.php:64
 #: src/integrations/zoho-campaigns/settings/zoho-campaigns-view.php:41
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:62
@@ -8816,6 +8836,10 @@ msgstr ""
 #: src/integrations/brevo/settings/settings-brevo.php:128
 #: src/integrations/brevo/settings/settings-brevo.php:131
 #: src/integrations/clickup/settings/view-clickup.php:72
+#: src/integrations/constant-contact/settings/view-not-connected.php:16
+#: src/integrations/constant-contact/settings/view-not-connected.php:20
+#: src/integrations/constant-contact/settings/view-not-connected.php:24
+#: src/integrations/constant-contact/settings/view-not-connected.php:28
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:57
 #: src/integrations/drip/settings/view-drip.php:52
 #: src/integrations/drip/settings/view-drip.php:55
@@ -8870,8 +8894,8 @@ msgstr ""
 #: src/integrations/trello/settings/view-trello.php:70
 #: src/integrations/trello/settings/view-trello.php:73
 #: src/integrations/twilio/settings/view-twilio.php:62
-#: src/integrations/twitter/settings/view-twitter-user-app.php:89
-#: src/integrations/twitter/settings/view-twitter.php:120
+#: src/integrations/twitter/settings/view-twitter-user-app.php:81
+#: src/integrations/twitter/settings/view-twitter.php:121
 #: src/integrations/whatsapp/settings/view-whatsapp.php:105
 #: src/integrations/whatsapp/settings/view-whatsapp.php:112
 #: src/integrations/zoho-campaigns/settings/zoho-campaigns-view.php:48
@@ -8946,6 +8970,7 @@ msgstr ""
 #: src/integrations/open-ai/settings/view-open-ai.php:95
 #: src/integrations/telegram/settings/view-telegram.php:71
 #: src/integrations/twilio/settings/view-twilio.php:69
+#: src/integrations/twitter/settings/view-twitter-form.php:20
 #: src/integrations/whatsapp/settings/view-whatsapp.php:120
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:83
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:61
@@ -8976,7 +9001,7 @@ msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:146
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:93
-#: src/integrations/twitter/settings/view-twitter-user-app.php:114
+#: src/integrations/twitter/settings/view-twitter-form.php:37
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:105
 #: src/integrations/zoom/settings/view-zoom-v2.php:106
 msgid "API key"
@@ -8999,6 +9024,7 @@ msgstr ""
 #: src/integrations/mailchimp/settings/view-mailchimp.php:72
 #: src/integrations/telegram/settings/view-telegram.php:23
 #: src/integrations/twilio/settings/view-twilio.php:76
+#: src/integrations/twitter/settings/view-twitter-form.php:25
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:89
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v3.php:64
 #: src/integrations/zoom/settings/view-zoom-v2.php:90
@@ -9030,6 +9056,7 @@ msgstr ""
 #: src/integrations/active-campaign/settings/view-active-campaign.php:277
 #: src/integrations/brevo/settings/settings-brevo.php:249
 #: src/integrations/clickup/settings/view-clickup.php:128
+#: src/integrations/constant-contact/settings/constant-contact-settings.php:162
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:167
 #: src/integrations/drip/settings/view-drip.php:145
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:205
@@ -9049,8 +9076,8 @@ msgstr ""
 #: src/integrations/telegram/settings/view-telegram.php:165
 #: src/integrations/trello/settings/view-trello.php:135
 #: src/integrations/twilio/settings/view-twilio.php:204
-#: src/integrations/twitter/settings/view-twitter-user-app.php:215
-#: src/integrations/twitter/settings/view-twitter.php:194
+#: src/integrations/twitter/settings/view-twitter-user-app.php:156
+#: src/integrations/twitter/settings/view-twitter.php:220
 #: src/integrations/whatsapp/settings/view-whatsapp.php:247
 #: src/integrations/zoho-campaigns/settings/zoho-campaigns-view.php:97
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:221
@@ -9346,19 +9373,19 @@ msgstr ""
 msgid "Send data to Airtable {{webhook}}"
 msgstr ""
 
-#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:61
+#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:70
 msgid "Category"
 msgstr ""
 
-#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:72
+#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:81
 msgid "Service"
 msgstr ""
 
-#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:92
+#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:101
 msgid "Any service"
 msgstr ""
 
-#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:186
+#: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:198
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:80
 #: src/integrations/events-manager/helpers/events-manager-helpers.php:71
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:104
@@ -9444,14 +9471,14 @@ msgstr ""
 
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:580
 #: src/integrations/edd/tokens/edd-tokens.php:474
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:127
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:151
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:99
 msgid "Customer first name"
 msgstr ""
 
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:584
 #: src/integrations/edd/tokens/edd-tokens.php:480
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:133
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:157
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:105
 msgid "Customer last name"
 msgstr ""
@@ -9466,7 +9493,8 @@ msgstr ""
 #: src/integrations/ameliabooking/tokens/ameliabooking-tokens.php:592
 #: src/integrations/edd/tokens/edd-tokens.php:260
 #: src/integrations/edd/tokens/edd-tokens.php:486
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:121
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:145
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:78
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:111
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:89
 #: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:87
@@ -10604,7 +10632,7 @@ msgstr ""
 #: src/integrations/elementor/helpers/elementor-helpers.php:56
 #: src/integrations/formidable/helpers/formidable-helpers.php:68
 #: src/integrations/forminator/helpers/forminator-helpers.php:66
-#: src/integrations/give/helpers/give-helpers.php:47
+#: src/integrations/give/helpers/give-helpers.php:59
 #: src/integrations/give/triggers/anon-make-donation.php:68
 #: src/integrations/give/triggers/make-donation.php:69
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:67
@@ -10637,7 +10665,7 @@ msgstr ""
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:111
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:177
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:314
-#: src/integrations/wpforms/tokens/wpf-tokens.php:358
+#: src/integrations/wpforms/tokens/wpf-tokens.php:362
 msgid "Entry ID"
 msgstr ""
 
@@ -10646,7 +10674,7 @@ msgstr ""
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:109
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:189
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:332
-#: src/integrations/wpforms/tokens/wpf-tokens.php:370
+#: src/integrations/wpforms/tokens/wpf-tokens.php:374
 msgid "Entry submission date"
 msgstr ""
 
@@ -10669,7 +10697,7 @@ msgstr ""
 #: src/integrations/forminator/triggers/anon-fr-submitform.php:48
 #: src/integrations/gravity-forms/triggers/anon-gf-subform.php:36
 #: src/integrations/happyforms/triggers/anon-hf-submitform.php:48
-#: src/integrations/jetformbuilder/triggers/jetfb-everyone-form-submit.php:52
+#: src/integrations/jetformbuilder/triggers/jetfb-everyone-form-submit.php:65
 #: src/integrations/mailpoet/triggers/anon-mailpoet-subform.php:30
 #: src/integrations/ninja-forms/triggers/anon-nf-subform.php:49
 #: src/integrations/thrive-leads/triggers/anon-tl-form-submitted.php:33
@@ -10697,7 +10725,7 @@ msgstr ""
 #: src/integrations/forminator/triggers/anon-fr-submitform.php:50
 #: src/integrations/gravity-forms/triggers/anon-gf-subform.php:43
 #: src/integrations/happyforms/triggers/anon-hf-submitform.php:50
-#: src/integrations/jetformbuilder/triggers/jetfb-everyone-form-submit.php:58
+#: src/integrations/jetformbuilder/triggers/jetfb-everyone-form-submit.php:71
 #: src/integrations/mailpoet/triggers/anon-mailpoet-subform.php:33
 #: src/integrations/ninja-forms/triggers/anon-nf-subform.php:51
 #: src/integrations/thrive-leads/triggers/anon-tl-form-submitted.php:36
@@ -10742,7 +10770,7 @@ msgstr ""
 #: src/integrations/forminator/triggers/fr-submitform.php:44
 #: src/integrations/gravity-forms/triggers/gf-subform.php:43
 #: src/integrations/happyforms/triggers/hf-formsubmit.php:50
-#: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:55
+#: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:67
 #: src/integrations/mailpoet/triggers/mailpoet-subform.php:55
 #: src/integrations/ninja-forms/triggers/nf-subform.php:44
 #: src/integrations/thrive-leads/triggers/tl-form-submitted.php:35
@@ -10760,7 +10788,7 @@ msgstr ""
 #: src/integrations/charitable/helpers/charitable-helpers.php:58
 #: src/integrations/drip/actions/drip-remove-from-campaign.php:71
 #: src/integrations/drip/actions/drip-subscribe-to-campaign.php:65
-#: src/integrations/optinmonster/actions/optinmonster-show-campaign.php:176
+#: src/integrations/optinmonster/actions/optinmonster-show-campaign.php:156
 msgid "Campaign"
 msgstr ""
 
@@ -11248,11 +11276,215 @@ msgstr ""
 msgid "N/A"
 msgstr ""
 
+#. translators: Action sentence
+#: src/integrations/constant-contact/actions/contact-delete.php:31
+msgctxt "Constant Contact"
+msgid "Delete {{a contact:%1$s}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/contact-delete.php:40
+msgctxt "Constant Contact"
+msgid "Delete {{a contact}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/contact-delete.php:54
+#: src/integrations/constant-contact/actions/contact-list-add-to.php:55
+#: src/integrations/constant-contact/actions/contact-tag-add-to.php:56
+#: src/integrations/constant-contact/actions/create.php:45
+msgctxt "Constant Contact"
+msgid "Email"
+msgstr ""
+
+#. translators: Action sentence
+#: src/integrations/constant-contact/actions/contact-list-add-to.php:31
+msgctxt "Constant Contact"
+msgid "Add {{a contact:%1$s}} to {{a list:%2$s}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/contact-list-add-to.php:41
+msgctxt "Constant Contact"
+msgid "Add {{a contact}} to {{a list}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/contact-list-add-to.php:61
+#: src/integrations/constant-contact/actions/create.php:51
+msgctxt "Constant Contact"
+msgid "List"
+msgstr ""
+
+#. translators: Action sentence
+#: src/integrations/constant-contact/actions/contact-tag-add-to.php:32
+msgctxt "Constant Contact"
+msgid "Add {{a tag:%1$s}} to {{a contact:%2$s}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/contact-tag-add-to.php:42
+msgctxt "Constant Contact"
+msgid "Add {{a tag}} to {{a contact}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/contact-tag-add-to.php:62
+msgctxt "Constant Contact"
+msgid "Tag"
+msgstr ""
+
+#. translators: Contact Email
+#: src/integrations/constant-contact/actions/create.php:30
+msgctxt "Constant Contact"
+msgid "Create or update {{a contact:%1$s}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:31
+msgctxt "Constant Contact"
+msgid "Create or update {{a contact}}"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:62
+msgctxt "Constant Contact"
+msgid "First name"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:67
+msgctxt "Constant Contact"
+msgid "Last name"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:72
+msgctxt "Constant Contact"
+msgid "Job title"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:77
+msgctxt "Constant Contact"
+msgid "Company name"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:82
+msgctxt "Constant Contact"
+msgid "Phone number"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:87
+msgctxt "Constant Contact"
+msgid "Anniversary"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:93
+msgctxt "Constant Contact"
+msgid "Address"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:98
+msgctxt "Constant Contact"
+msgid "Type"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:102
+msgctxt "Constant Contact"
+msgid "Street"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:106
+msgctxt "Constant Contact"
+msgid "City"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:110
+msgctxt "Constant Contact"
+msgid "State"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:114
+msgctxt "Constant Contact"
+msgid "Postal code"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:118
+msgctxt "Constant Contact"
+msgid "Country"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:127
+#: src/integrations/constant-contact/actions/create.php:158
+msgctxt "Constant Contact"
+msgid "Value"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:136
+msgctxt "Constant Contact"
+msgid "Custom fields"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:146
+msgctxt "Constant Contact"
+msgid "ID"
+msgstr ""
+
+#: src/integrations/constant-contact/actions/create.php:152
+msgctxt "Constant Contact"
+msgid "Name"
+msgstr ""
+
+#: src/integrations/constant-contact/helpers/constant-contact-helpers.php:112
+msgctxt "Constant Contact"
+msgid "An error has occured while fetching the connected account information."
+msgstr ""
+
+#: src/integrations/constant-contact/settings/constant-contact-settings.php:114
+msgctxt "Constant Contact"
+msgid "Connect Constant Contact account"
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-connected.php:8
+msgctxt "Constant Contact"
+msgid "Uncanny Automator only supports connecting to one Constant Contact account at a time."
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-connected.php:12
+msgctxt "Constant Contact"
+msgid "Your account has been successfully connected."
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-not-connected.php:2
+msgctxt "Constant Contact"
+msgid "Connect Uncanny Automator to Constant Contact"
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-not-connected.php:6
+msgctxt "Constant Contact"
+msgid "Connect Uncanny Automator to Constant Contact to connect contact and list management to WordPress activities like submitting forms, making purchases and joining groups."
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-not-connected.php:10
+msgctxt "Constant Contact"
+msgid "Activating this integration will enable the following for use in your recipes:"
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-not-connected.php:16
+msgctxt "Constant Contact"
+msgid "Create or update a contact"
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-not-connected.php:20
+msgctxt "Constant Contact"
+msgid "Add a tag to a contact"
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-not-connected.php:24
+msgctxt "Constant Contact"
+msgid "Add a contact to a list"
+msgstr ""
+
+#: src/integrations/constant-contact/settings/view-not-connected.php:28
+msgctxt "Constant Contact"
+msgid "Delete a contact"
+msgstr ""
+
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:94
 #: src/integrations/elementor/helpers/elementor-helpers.php:122
 #: src/integrations/formidable/helpers/formidable-helpers.php:117
 #: src/integrations/forminator/helpers/forminator-helpers.php:105
-#: src/integrations/give/helpers/give-helpers.php:56
+#: src/integrations/give/helpers/give-helpers.php:68
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:108
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:113
 #: src/integrations/gravity-forms/triggers/anon-gf-subform.php:83
@@ -11273,7 +11505,7 @@ msgstr ""
 #: src/integrations/elementor/helpers/elementor-helpers.php:123
 #: src/integrations/formidable/helpers/formidable-helpers.php:118
 #: src/integrations/forminator/helpers/forminator-helpers.php:106
-#: src/integrations/give/helpers/give-helpers.php:57
+#: src/integrations/give/helpers/give-helpers.php:69
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:109
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:114
 #: src/integrations/gravity-forms/triggers/anon-gf-subform.php:89
@@ -11517,7 +11749,7 @@ msgstr ""
 #: src/integrations/divi/helpers/divi-helpers.php:68
 #: src/integrations/elementor/helpers/elementor-helpers.php:63
 #: src/integrations/forminator/helpers/forminator-helpers.php:73
-#: src/integrations/give/helpers/give-helpers.php:69
+#: src/integrations/give/helpers/give-helpers.php:81
 #: src/integrations/gravity-forms/class-gf-integration.php:74
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:79
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:338
@@ -11564,7 +11796,7 @@ msgstr ""
 #: src/integrations/formidable/triggers/fi-submitform.php:41
 #: src/integrations/forminator/triggers/fr-submitform.php:42
 #: src/integrations/happyforms/triggers/hf-formsubmit.php:48
-#: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:49
+#: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:61
 #: src/integrations/thrive-leads/triggers/tl-form-submitted.php:32
 #: src/integrations/ws-form-lite/triggers/wsf-form-submitted.php:33
 msgid "A user submits {{a form:%1$s}}"
@@ -11803,11 +12035,11 @@ msgid "An affiliate is added"
 msgstr ""
 
 #. Translators: Trigger sentence
-#: src/integrations/easy-affiliate/triggers/esaf-sale-recorded.php:52
+#: src/integrations/easy-affiliate/triggers/esaf-sale-recorded.php:57
 msgid "A new sale is recorded for {{an affiliate:%1$s}}"
 msgstr ""
 
-#: src/integrations/easy-affiliate/triggers/esaf-sale-recorded.php:57
+#: src/integrations/easy-affiliate/triggers/esaf-sale-recorded.php:62
 msgid "A new sale is recorded for {{an affiliate}}"
 msgstr ""
 
@@ -12441,8 +12673,8 @@ msgid "The group you select must have the \"Uncanny Automator\" app installed. C
 msgstr ""
 
 #: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:667
-#: src/integrations/learndash/actions/ld-creategroup.php:55
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:65
+#: src/integrations/learndash/actions/ld-creategroup.php:54
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:73
 #: src/integrations/uncanny-groups/helpers/uncanny-groups-helpers.php:84
 #: src/integrations/uncanny-groups/tokens/uncanny-groups-tokens.php:39
 #: src/integrations/uncanny-groups/tokens/uncanny-groups-tokens.php:62
@@ -12610,8 +12842,10 @@ msgstr ""
 msgid "Pages are fetched successfully"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:536
-msgid "Facebook is not connected"
+#. translators: Error exception message
+#: src/integrations/facebook/helpers/facebook-helpers.php:548
+msgctxt "Facebook pages"
+msgid "Unable to locate a valid access token for the specified Facebook Page. Please edit the recipe and ensure that you have selected the correct Facebook page, then resave the action. Additionally, you can attempt to reconnect the account by navigating to Automator > App Integrations > Facebook Pages. %s"
 msgstr ""
 
 #: src/integrations/facebook/settings/view-facebook.php:44
@@ -12666,25 +12900,25 @@ msgid "Date of birth"
 msgstr ""
 
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:194
-#: src/integrations/give/helpers/give-helpers.php:141
+#: src/integrations/give/helpers/give-helpers.php:153
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:124
 msgid "Address line 1"
 msgstr ""
 
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:201
-#: src/integrations/give/helpers/give-helpers.php:147
+#: src/integrations/give/helpers/give-helpers.php:159
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:131
 msgid "Address line 2"
 msgstr ""
 
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:208
-#: src/integrations/give/helpers/give-helpers.php:153
+#: src/integrations/give/helpers/give-helpers.php:165
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:138
 msgid "City"
 msgstr ""
 
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:215
-#: src/integrations/give/helpers/give-helpers.php:159
+#: src/integrations/give/helpers/give-helpers.php:171
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:145
 msgid "State"
 msgstr ""
@@ -12694,7 +12928,7 @@ msgid "Postal code"
 msgstr ""
 
 #: src/integrations/fluent-crm/actions/fcrm-add-contact.php:229
-#: src/integrations/give/helpers/give-helpers.php:171
+#: src/integrations/give/helpers/give-helpers.php:183
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:117
 msgid "Country"
 msgstr ""
@@ -12877,72 +13111,84 @@ msgstr ""
 msgid "A user is set to a {{specific}} status"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:54
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:78
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:48
 msgid "Ticket ID"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:60
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:84
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:53
 msgid "Ticket subject"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:66
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:90
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:58
 msgid "Ticket details"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:72
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:96
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:63
 msgid "Ticket priority"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:78
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:102
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:68
 msgid "Ticket product"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:88
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:112
 msgid "Ticket response"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:98
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:122
 msgid "Ticket assignee username"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:105
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:129
 msgid "Ticket assignee email"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:113
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:137
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:73
 msgid "Ticket admin URL"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:139
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:163
 msgid "Customer job title"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:145
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:169
 msgid "Customer note"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:151
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:175
 msgid "Customer status"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:157
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:181
 msgid "Customer address line 1"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:163
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:187
 msgid "Customer city"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:169
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:193
 msgid "Customer state"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:175
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:199
 msgid "Customer zip code"
 msgstr ""
 
-#: src/integrations/fluent-support/tokens/flsupport-tokens.php:181
+#: src/integrations/fluent-support/tokens/flsupport-tokens.php:205
 msgid "Customer country"
+msgstr ""
+
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:21
+#: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:22
+msgctxt "Fluent Support"
+msgid "A ticket is opened"
 msgstr ""
 
 #. translators: Logged-in trigger - Fluent Support
@@ -12973,7 +13219,7 @@ msgstr ""
 #: src/integrations/gravity-forms/tokens/gf-common-tokens.php:115
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:183
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:320
-#: src/integrations/wpforms/tokens/wpf-tokens.php:364
+#: src/integrations/wpforms/tokens/wpf-tokens.php:368
 msgid "User IP"
 msgstr ""
 
@@ -13045,28 +13291,28 @@ msgstr ""
 msgid "Example: 15"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:55
+#: src/integrations/give/helpers/give-helpers.php:67
 msgid "Donated amount"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:99
+#: src/integrations/give/helpers/give-helpers.php:111
 msgid "Name title prefix"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:123
+#: src/integrations/give/helpers/give-helpers.php:135
 msgid "Donation amount"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:129
+#: src/integrations/give/helpers/give-helpers.php:141
 msgid "Currency"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:135
+#: src/integrations/give/helpers/give-helpers.php:147
 #: src/integrations/trello/actions/trello-add-card-comment.php:115
 msgid "Comment"
 msgstr ""
 
-#: src/integrations/give/helpers/give-helpers.php:165
+#: src/integrations/give/helpers/give-helpers.php:177
 msgid "Zip"
 msgstr ""
 
@@ -13518,7 +13764,7 @@ msgstr ""
 
 #: src/integrations/gototraining/actions/gtt-unregisteruser.php:98
 #: src/integrations/gotowebinar/actions/gtw-unregisteruser.php:87
-#: src/integrations/learndash/actions/ld-creategroup.php:145
+#: src/integrations/learndash/actions/ld-creategroup.php:151
 #: src/integrations/zoom-webinar/actions/zoom-webinar-registeruser.php:161
 msgid "User not found."
 msgstr ""
@@ -13745,7 +13991,7 @@ msgstr ""
 
 #: src/integrations/gravity-forms/triggers/gf-subform-codes.php:76
 #: src/integrations/uncanny-codes/helpers/uncanny-codes-helpers.php:200
-#: src/integrations/uncanny-codes/triggers/uc-codesbatch.php:67
+#: src/integrations/uncanny-codes/triggers/uc-codesbatch.php:73
 msgid "Batch"
 msgstr ""
 
@@ -13758,7 +14004,7 @@ msgstr ""
 msgid "{{A form}} is submitted with a key from {{a specific group}}"
 msgstr ""
 
-#: src/integrations/groundhogg/actions/gh-addtag.php:85
+#: src/integrations/groundhogg/actions/gh-addtag.php:97
 msgid "Contact was not found."
 msgstr ""
 
@@ -14521,7 +14767,7 @@ msgid "Company"
 msgstr ""
 
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:190
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:85
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:89
 #: src/integrations/uncanny-codes/helpers/uncanny-codes-helpers.php:92
 #: src/integrations/uncanny-codes/helpers/uncanny-codes-helpers.php:117
 #: src/integrations/uncanny-codes/helpers/uncanny-codes-helpers.php:184
@@ -14776,55 +15022,61 @@ msgstr ""
 msgid "Create {{a group:%1$s}}"
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:58
-#: src/integrations/learndash/actions/ld-creategroup.php:100
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:68
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:113
+#: src/integrations/learndash/actions/ld-creategroup.php:57
+#: src/integrations/learndash/actions/ld-creategroup.php:106
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:76
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:129
 #: src/integrations/uncanny-groups/tokens/uncanny-groups-tokens.php:194
 msgid "Group courses"
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:61
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:71
+#: src/integrations/learndash/actions/ld-creategroup.php:60
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:79
 msgid "Group Leader emails"
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:94
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:107
+#: src/integrations/learndash/actions/ld-creategroup.php:65
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:85
+#: src/integrations/uncanny-groups/tokens/uncanny-groups-tokens.php:209
+msgid "Group signup URL"
+msgstr ""
+
+#: src/integrations/learndash/actions/ld-creategroup.php:100
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:123
 msgid "Group name"
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:104
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:118
+#: src/integrations/learndash/actions/ld-creategroup.php:110
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:134
 msgid "Group course IDs"
 msgstr ""
 
 #. translators: Uncanny Groups
-#: src/integrations/learndash/actions/ld-creategroup.php:111
+#: src/integrations/learndash/actions/ld-creategroup.php:117
 #: src/integrations/learndash/actions/ld-makeuserleader.php:97
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:131
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:147
 msgid "If the user does not currently have the Group Leader role"
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:112
+#: src/integrations/learndash/actions/ld-creategroup.php:118
 #: src/integrations/learndash/actions/ld-makeuserleader.php:98
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:97
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:113
 msgid "Only users with the Group Leader role can be made the leader of a group."
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:116
+#: src/integrations/learndash/actions/ld-creategroup.php:122
 msgid "Do not add the Group Leader role"
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:117
+#: src/integrations/learndash/actions/ld-creategroup.php:123
 #: src/integrations/learndash/actions/ld-makeuserleader.php:103
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:137
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:153
 msgid "Add the role to their existing role(s)"
 msgstr ""
 
-#: src/integrations/learndash/actions/ld-creategroup.php:118
+#: src/integrations/learndash/actions/ld-creategroup.php:124
 #: src/integrations/learndash/actions/ld-makeuserleader.php:104
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:138
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:154
 msgid "Replace their existing role(s) with the Group Leader role"
 msgstr ""
 
@@ -14884,7 +15136,7 @@ msgstr ""
 #: src/integrations/masterstudy-lms/actions/masterstudy-markcoursecomplete.php:75
 #: src/integrations/memberpress-courses/actions/mpc-marklessondone.php:79
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:144
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:96
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:94
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:94
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:95
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:131
@@ -14911,7 +15163,7 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:73
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:73
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:164
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:73
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:71
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:242
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:157
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:74
@@ -14931,7 +15183,7 @@ msgstr ""
 #: src/integrations/lifterlms/actions/lf-marklessondone.php:61
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:112
 #: src/integrations/memberpress-courses/actions/mpc-marklessondone.php:91
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:108
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:106
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:105
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:82
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:113
@@ -14948,7 +15200,7 @@ msgstr ""
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:136
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:141
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:80
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:81
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:79
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:274
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:108
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:108
@@ -15199,7 +15451,7 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:72
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:72
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:163
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:72
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:70
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:246
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:156
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:68
@@ -15219,7 +15471,7 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:74
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:74
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:165
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:74
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:72
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:243
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:158
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:80
@@ -15234,7 +15486,7 @@ msgstr ""
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:156
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:135
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:79
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:80
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:78
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:276
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:107
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:75
@@ -15248,7 +15500,7 @@ msgstr ""
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:158
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:137
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:81
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:82
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:80
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:275
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:109
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:77
@@ -15282,7 +15534,7 @@ msgstr ""
 #: src/integrations/learndash/triggers/ld-coursedone.php:42
 #: src/integrations/learnpress/triggers/lp-coursedone.php:42
 #: src/integrations/lifterlms/triggers/lf-coursedone.php:42
-#: src/integrations/memberpress-courses/triggers/mpc-coursedone.php:44
+#: src/integrations/memberpress-courses/triggers/mpc-coursedone.php:42
 #: src/integrations/tutorlms/triggers/tutorlms-coursecompleted.php:54
 #: src/integrations/wp-courseware/triggers/wpcw-coursecompleted.php:42
 #: src/integrations/wplms/triggers/wplms-coursecompleted.php:42
@@ -15301,7 +15553,7 @@ msgstr ""
 #: src/integrations/learnpress/triggers/lp-coursedone.php:44
 #: src/integrations/lifterlms/triggers/lf-coursedone.php:44
 #: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:44
-#: src/integrations/memberpress-courses/triggers/mpc-coursedone.php:46
+#: src/integrations/memberpress-courses/triggers/mpc-coursedone.php:44
 #: src/integrations/tutorlms/triggers/tutorlms-coursecompleted.php:56
 #: src/integrations/wp-courseware/triggers/wpcw-coursecompleted.php:44
 #: src/integrations/wplms/triggers/wplms-coursecompleted.php:44
@@ -15334,7 +15586,7 @@ msgstr ""
 #: src/integrations/learndash/triggers/ld-lessondone.php:43
 #: src/integrations/learnpress/triggers/lp-lessondone.php:42
 #: src/integrations/lifterlms/triggers/lf-lessondone.php:40
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:44
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:42
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:54
 msgid "A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
@@ -15349,7 +15601,7 @@ msgstr ""
 #: src/integrations/learnpress/triggers/lp-lessondone.php:44
 #: src/integrations/lifterlms/triggers/lf-lessondone.php:42
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:45
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:46
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:44
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:56
 msgid "A user completes {{a lesson}}"
 msgstr ""
@@ -15363,7 +15615,7 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:75
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:75
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:166
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:75
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:73
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:159
 #: src/integrations/wplms/helpers/wplms-helpers.php:138
 msgid "Course featured image ID"
@@ -15378,7 +15630,7 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:76
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:76
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:167
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:76
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:74
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:160
 #: src/integrations/wplms/helpers/wplms-helpers.php:139
 msgid "Course featured image URL"
@@ -15388,7 +15640,7 @@ msgstr ""
 #: src/integrations/learndash/triggers/ld-topicdone.php:90
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:138
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:82
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:83
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:81
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:110
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:78
 msgid "Lesson featured image ID"
@@ -15398,7 +15650,7 @@ msgstr ""
 #: src/integrations/learndash/triggers/ld-topicdone.php:91
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:139
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:83
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:84
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:82
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:111
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:79
 msgid "Lesson featured image URL"
@@ -16184,6 +16436,8 @@ msgid "Create or update {{a contact}}"
 msgstr ""
 
 #: src/integrations/mautic/actions/contact-upsert.php:43
+#: src/integrations/mautic/actions/segment-contact-add.php:61
+#: src/integrations/mautic/actions/segment-contact-remove.php:54
 msgctxt "Mautic"
 msgid "Email"
 msgstr ""
@@ -16209,7 +16463,73 @@ msgctxt "Mautic"
 msgid "Value"
 msgstr ""
 
-#: src/integrations/mautic/client/auth/auth.php:88
+#. translators: Action sentence
+#: src/integrations/mautic/actions/segment-contact-add.php:27
+msgctxt "Mautic"
+msgid "Add {{a contact:%1$s}} to {{a segment:%2$s}}"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-contact-add.php:40
+#: src/integrations/mautic/actions/segment-contact-remove.php:37
+msgctxt "Mautic"
+msgid "Segment name"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-contact-add.php:47
+msgctxt "Mautic"
+msgid "Add {{a contact}} to {{a segment}}"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-contact-add.php:68
+#: src/integrations/mautic/actions/segment-contact-remove.php:61
+msgctxt "Mautic"
+msgid "Segment"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-contact-add.php:69
+#: src/integrations/mautic/actions/segment-contact-remove.php:62
+msgctxt "Mautic"
+msgid "Segment ID"
+msgstr ""
+
+#. translators: Action sentence
+#: src/integrations/mautic/actions/segment-contact-remove.php:23
+msgctxt "Mautic"
+msgid "Remove {{a contact:%1$s}} from {{a segment:%2$s}}"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-contact-remove.php:32
+msgctxt "Mautic"
+msgid "Remove {{a contact}} from {{a segment}}"
+msgstr ""
+
+#. translators: Action sentence
+#: src/integrations/mautic/actions/segment-create.php:25
+msgctxt "Mautic"
+msgid "Create {{a segment:%1$s}}"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-create.php:33
+msgctxt "Mautic"
+msgid "Create {{a segment}}"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-create.php:45
+msgctxt "Mautic"
+msgid "Name"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-create.php:52
+msgctxt "Mautic"
+msgid "Alias"
+msgstr ""
+
+#: src/integrations/mautic/actions/segment-create.php:58
+msgctxt "Mautic"
+msgid "Description"
+msgstr ""
+
+#: src/integrations/mautic/client/auth/auth.php:94
 msgctxt "Mautic"
 msgid "Credentials verification failed"
 msgstr ""
@@ -16281,6 +16601,93 @@ msgstr ""
 #: src/integrations/mautic/settings/mautic-settings.php:137
 msgctxt "Mautic"
 msgid "Create or update a contact"
+msgstr ""
+
+#: src/integrations/mautic/settings/mautic-settings.php:138
+msgctxt "Mautic"
+msgid "Create a segment"
+msgstr ""
+
+#: src/integrations/mautic/settings/mautic-settings.php:139
+msgctxt "Mautic"
+msgid "Add a contact to a segment"
+msgstr ""
+
+#: src/integrations/mautic/settings/mautic-settings.php:140
+msgctxt "Mautic"
+msgid "Remove a contact from a segment"
+msgstr ""
+
+#. translators: %1$s Contact Email, %2$s Field
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:32
+msgctxt "M4IS - update contact field action"
+msgid "Update {{a contact:%1$s}} {{field(s):%2$s}}"
+msgstr ""
+
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:37
+msgctxt "M4IS - update contact field action"
+msgid "Update {{a contact}} {{field(s)}}"
+msgstr ""
+
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:50
+msgctxt "M4IS - update contact field action"
+msgid "Email"
+msgstr ""
+
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:58
+msgctxt "M4IS - update contact field action"
+msgid "Contact fields"
+msgstr ""
+
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:63
+msgctxt "M4IS - update contact field action"
+msgid "Contact field name"
+msgstr ""
+
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:71
+msgctxt "M4IS - update contact field action"
+msgid "Contact field value"
+msgstr ""
+
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:73
+msgctxt "M4IS - update contact field action"
+msgid "Add contact field"
+msgstr ""
+
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:74
+msgctxt "M4IS - update contact field action"
+msgid "Remove contact field"
+msgstr ""
+
+#. translators: %s - error message
+#: src/integrations/memberium-keap/actions/m4is-update-contact-field.php:119
+msgctxt "M4IS - update contact field action"
+msgid "Error updating contact field(s). %s"
+msgstr ""
+
+#: src/integrations/memberium-keap/helpers/m4is-helpers.php:53
+msgctxt "M4IS"
+msgid "Missing email"
+msgstr ""
+
+#: src/integrations/memberium-keap/helpers/m4is-helpers.php:58
+msgctxt "M4IS"
+msgid "Invalid email"
+msgstr ""
+
+#: src/integrations/memberium-keap/helpers/m4is-helpers.php:102
+msgctxt "M4IS"
+msgid "Contact not found by email"
+msgstr ""
+
+#: src/integrations/memberium-keap/helpers/m4is-helpers.php:113
+msgctxt "M4IS"
+msgid "Invalid connection to Keap"
+msgstr ""
+
+#: src/integrations/memberium-keap/helpers/m4is-helpers.php:118
+msgctxt "M4IS"
+msgid "Invalid response from Keap"
 msgstr ""
 
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:169
@@ -17007,11 +17414,11 @@ msgstr ""
 msgid "Show {{a campaign}}"
 msgstr ""
 
-#: src/integrations/optinmonster/actions/optinmonster-show-campaign.php:135
+#: src/integrations/optinmonster/actions/optinmonster-show-campaign.php:114
 msgid "The campaign is not active"
 msgstr ""
 
-#: src/integrations/optinmonster/actions/optinmonster-show-campaign.php:177
+#: src/integrations/optinmonster/actions/optinmonster-show-campaign.php:157
 msgid "Inline campaigns are not supported as they are always displayed."
 msgstr ""
 
@@ -17108,27 +17515,27 @@ msgstr ""
 msgid "Any field"
 msgstr ""
 
-#: src/integrations/peepso/helpers/peepso-helpers.php:254
+#: src/integrations/peepso/helpers/peepso-helpers.php:261
 msgid "Allow others to \"like\" my profile"
 msgstr ""
 
-#: src/integrations/peepso/helpers/peepso-helpers.php:255
+#: src/integrations/peepso/helpers/peepso-helpers.php:262
 msgid "Hide my birthday year"
 msgstr ""
 
-#: src/integrations/peepso/helpers/peepso-helpers.php:256
+#: src/integrations/peepso/helpers/peepso-helpers.php:263
 msgid "Who can see my profile"
 msgstr ""
 
-#: src/integrations/peepso/helpers/peepso-helpers.php:257
+#: src/integrations/peepso/helpers/peepso-helpers.php:264
 msgid "Who can post on my profile"
 msgstr ""
 
-#: src/integrations/peepso/helpers/peepso-helpers.php:258
+#: src/integrations/peepso/helpers/peepso-helpers.php:265
 msgid "Don't show my online status"
 msgstr ""
 
-#: src/integrations/peepso/helpers/peepso-helpers.php:259
+#: src/integrations/peepso/helpers/peepso-helpers.php:266
 msgid "My timezone"
 msgstr ""
 
@@ -17267,37 +17674,37 @@ msgid "A user follows {{another PeepSo member}}"
 msgstr ""
 
 #. translators: Logged-in trigger - PeepSo Core
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:48
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:52
 msgid "A user updates {{a specific field:%1$s}} in their profile"
 msgstr ""
 
 #. translators: Logged-in trigger - PeepSo Core
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:50
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:54
 msgid "A user updates {{a specific field}} in their profile"
 msgstr ""
 
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:70
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:72
 msgid "Profile field"
 msgstr ""
 
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:156
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:158
 msgid "Male"
 msgstr ""
 
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:159
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:161
 msgid "Female"
 msgstr ""
 
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:267
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:274
 #: src/integrations/zoho-campaigns/actions/zoho-campaigns-list-add.php:92
 msgid "Public"
 msgstr ""
 
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:270
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:277
 msgid "Site Members"
 msgstr ""
 
-#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:273
+#: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:280
 msgid "Only Me"
 msgstr ""
 
@@ -17363,12 +17770,12 @@ msgid "Video ID"
 msgstr ""
 
 #. translators: Logged-in trigger - Presto Player
-#: src/integrations/presto/triggers/presto-videocomplete.php:42
+#: src/integrations/presto/triggers/presto-videocomplete.php:48
 msgid "A user completes {{a video:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Presto Player
-#: src/integrations/presto/triggers/presto-videocomplete.php:44
+#: src/integrations/presto/triggers/presto-videocomplete.php:50
 msgid "A user completes {{a video}}"
 msgstr ""
 
@@ -17578,7 +17985,7 @@ msgid "Add the user to {{a membership level:%1$s}}"
 msgstr ""
 
 #: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:67
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:83
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:87
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:144
 msgid "Expiry date"
 msgstr ""
@@ -17748,7 +18155,7 @@ msgstr ""
 
 #. translators: 1. ID
 #: src/integrations/slack/settings/view-slack.php:261
-#: src/integrations/twitter/settings/view-twitter.php:169
+#: src/integrations/twitter/settings/view-twitter.php:195
 msgid "ID: %1$s"
 msgstr ""
 
@@ -18675,85 +19082,118 @@ msgstr ""
 #. translators: Tweet text
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:55
 #: src/integrations/twitter/actions/twitter-poststatus.php:53
-msgid "Post {{a tweet:%1$s}} to Twitter"
+msgid "Post {{a tweet:%1$s}} to X/Twitter"
 msgstr ""
 
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:56
 #: src/integrations/twitter/actions/twitter-poststatus.php:54
-msgid "Post {{a tweet}} to Twitter"
+msgid "Post {{a tweet}} to X/Twitter"
 msgstr ""
 
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:70
 #: src/integrations/twitter/actions/twitter-poststatus.php:69
-msgid "Messages posted to Twitter have a 280 character limit."
+msgid "Messages posted to X/Twitter have a 280 character limit."
 msgstr ""
 
 #: src/integrations/twitter/actions/twitter-poststatus-2.php:94
 msgid "Link to Tweet"
 msgstr ""
 
-#: src/integrations/twitter/settings/settings-twitter.php:100
-msgid "You have successfully connected your Twitter account."
+#: src/integrations/twitter/settings/settings-twitter.php:112
+msgid "You have successfully connected your X/Twitter account."
 msgstr ""
 
-#: src/integrations/twitter/settings/settings-twitter.php:114
-msgid "There was an error connecting your Twitter account: "
+#: src/integrations/twitter/settings/settings-twitter.php:126
+msgid "There was an error connecting your X/Twitter account: "
 msgstr ""
 
-#: src/integrations/twitter/settings/view-twitter-user-app.php:59
-#: src/integrations/twitter/settings/view-twitter.php:79
-msgid "Uncanny Automator only supports connecting to one Twitter account at a time."
+#: src/integrations/twitter/settings/view-twitter-form.php:24
+msgid "Connect your own X/Twitter developer app by adding the app details in the fields below. Visit our %1$s for full instructions."
 msgstr ""
 
-#: src/integrations/twitter/settings/view-twitter-user-app.php:76
-#: src/integrations/twitter/settings/view-twitter.php:107
-msgid "Connect Uncanny Automator to Twitter"
+#: src/integrations/twitter/settings/view-twitter-form.php:49
+msgid "API key secret"
 msgstr ""
 
-#: src/integrations/twitter/settings/view-twitter-user-app.php:80
-#: src/integrations/twitter/settings/view-twitter.php:111
-msgid "Post to Twitter directly from your WordPress site – no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers."
+#: src/integrations/twitter/settings/view-twitter-form.php:61
+#: src/integrations/whatsapp/settings/view-whatsapp.php:142
+msgid "Access token"
 msgstr ""
 
-#: src/integrations/twitter/settings/view-twitter-user-app.php:89
-#: src/integrations/twitter/settings/view-twitter.php:120
+#: src/integrations/twitter/settings/view-twitter-form.php:73
+msgid "Access token secret"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter-user-app.php:51
+#: src/integrations/twitter/settings/view-twitter.php:80
+msgid "Uncanny Automator only supports connecting to one X/Twitter account at a time."
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter-user-app.php:68
+#: src/integrations/twitter/settings/view-twitter.php:108
+msgid "Connect Uncanny Automator to X/Twitter"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter-user-app.php:72
+#: src/integrations/twitter/settings/view-twitter.php:112
+msgid "Post to X/Twitter directly from your WordPress site – no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers."
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter-user-app.php:81
+#: src/integrations/twitter/settings/view-twitter.php:121
 msgid "Send a tweet"
 msgstr ""
 
-#. translators: Link to Twitter knowledgebase article
-#: src/integrations/twitter/settings/view-twitter-user-app.php:97
-msgid "To connect Automator to Twitter you will need to create a Twitter app first. %1$s."
+#. translators: Link to X/Twitter knowledgebase article
+#: src/integrations/twitter/settings/view-twitter-user-app.php:89
+msgid "To connect Automator to X/Twitter you will need to create a X/Twitter app first. %1$s."
 msgstr ""
 
 #. translators: Link to Zoom knowledgebase article
-#: src/integrations/twitter/settings/view-twitter-user-app.php:101
+#: src/integrations/twitter/settings/view-twitter-user-app.php:93
 #: src/integrations/zoom-webinar/settings/view-zoom-webinar-v2.php:144
 #: src/integrations/zoom/settings/view-zoom-v2.php:143
 msgid "Learn More"
 msgstr ""
 
-#: src/integrations/twitter/settings/view-twitter-user-app.php:126
-msgid "API key secret"
-msgstr ""
-
-#: src/integrations/twitter/settings/view-twitter-user-app.php:138
-#: src/integrations/whatsapp/settings/view-whatsapp.php:142
-msgid "Access token"
-msgstr ""
-
-#: src/integrations/twitter/settings/view-twitter-user-app.php:150
-msgid "Access token secret"
-msgstr ""
-
-#: src/integrations/twitter/settings/view-twitter-user-app.php:229
-#: src/integrations/twitter/settings/view-twitter.php:207
-msgid "Connect Twitter account"
+#: src/integrations/twitter/settings/view-twitter-user-app.php:168
+#: src/integrations/twitter/settings/view-twitter.php:228
+#: src/integrations/twitter/settings/view-twitter.php:234
+msgid "Connect X/Twitter account"
 msgstr ""
 
 #. translators: 1. The account username
-#: src/integrations/twitter/settings/view-twitter.php:66
-msgctxt "Twitter"
+#: src/integrations/twitter/settings/view-twitter.php:67
+msgctxt "X/Twitter"
 msgid "Your account \"%1$s\" has been connected successfully!"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter.php:127
+msgid "Connection method"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter.php:134
+msgid "Quick connect"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter.php:137
+msgid "The most convenient option: Connect our app to your X/Twitter account"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter.php:140
+msgid "Limit: 5 tweets/day"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter.php:148
+msgid "Custom app"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter.php:151
+msgid "The most powerful option: Use your own app to unlock more tweets"
+msgstr ""
+
+#: src/integrations/twitter/settings/view-twitter.php:154
+msgid "Limit: 100 tweets/day"
 msgstr ""
 
 #. translators: Logged-in trigger - Ultimate Member
@@ -18793,7 +19233,7 @@ msgstr ""
 msgid "A user's role changes to {{a specific role}}"
 msgstr ""
 
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:72
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:65
 msgid "Any recipe"
 msgstr ""
 
@@ -18839,16 +19279,16 @@ msgid "An Automator recipe completes with errors"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Automator
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:45
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:48
 msgid "{{A recipe:%1$s}} completes with a {{specific:%2$s}} status"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Automator
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:47
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:50
 msgid "{{A recipe}} completes with a {{specific}} status"
 msgstr ""
 
-#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:65
+#: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:79
 msgid "Completed - do nothing"
 msgstr ""
 
@@ -18929,79 +19369,79 @@ msgid "Number of %1$s to award"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny CEUs. 1. Credit designation label (plural)
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:50
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:53
 msgid "A user earns {{a number of:%1$s}} %2$s"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny CEUs. 1. Credit designation label (plural)
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:52
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:55
 msgid "A user earns {{a number of}} %1$s"
 msgstr ""
 
 #. translators: Uncanny CEUs. 1. Credit designation label (plural)
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:76
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php:95
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:79
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php:98
 msgid "Number of %1$s"
 msgstr ""
 
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:81
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:84
 msgid "%1$s amount"
 msgstr ""
 
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:82
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:85
 msgid "Course or %1$s title"
 msgstr ""
 
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:83
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php:86
 msgid "Date awarded"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny CEUs. 1. Credit designation label (plural)
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php:69
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php:72
 msgid "The total number of %1$s earned by a user is greater than or equal to {{a specific number:%2$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny CEUs. 1. Credit designation label (plural)
-#: src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php:71
+#: src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php:74
 msgid "The total number of %1$s earned by a user is greater than or equal to {{a specific number}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Codes.
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:48
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:52
 msgid "Generate {{a batch of codes:%1$s}} for Automator"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Codes.
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:50
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:54
 msgid "Generate {{a batch of codes}} for Automator"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:60
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:64
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:102
 msgid "Batch ID"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:63
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:67
 msgid "Generated codes"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:80
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:84
 msgid "Batch name"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:81
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:85
 msgid "Number of codes"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:82
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:86
 msgid "Number of uses per code"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:84
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:88
 msgid "Expiry time"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:86
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:90
 #: src/integrations/uncanny-codes/helpers/uncanny-codes-helpers.php:137
 #: src/integrations/uncanny-codes/helpers/uncanny-codes-helpers.php:163
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:120
@@ -19009,7 +19449,7 @@ msgstr ""
 msgid "Suffix"
 msgstr ""
 
-#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:149
+#: src/integrations/uncanny-codes/actions/uc-generate-codes.php:153
 msgid "Something went wrong! Codes not generated, Try again."
 msgstr ""
 
@@ -19060,12 +19500,12 @@ msgid "A user redeems a code"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Codes
-#: src/integrations/uncanny-codes/triggers/uc-codesbatch.php:47
+#: src/integrations/uncanny-codes/triggers/uc-codesbatch.php:53
 msgid "A user redeems a code from {{a batch:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Codes
-#: src/integrations/uncanny-codes/triggers/uc-codesbatch.php:49
+#: src/integrations/uncanny-codes/triggers/uc-codesbatch.php:55
 msgid "A user redeems a code from {{a batch}}"
 msgstr ""
 
@@ -19117,20 +19557,20 @@ msgid "Group management is not enabled on the selected group."
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:53
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:62
 msgid "Create {{an Uncanny group:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - Uncanny Groups
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:55
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:64
 msgid "Create {{an Uncanny group}}"
 msgstr ""
 
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:98
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:114
 msgid "This action will not alter the roles of Admin users."
 msgstr ""
 
-#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:122
+#: src/integrations/uncanny-groups/actions/uog-createuncannygroup.php:138
 msgid "Number of seats"
 msgstr ""
 
@@ -20289,12 +20729,12 @@ msgid "Downloadable file"
 msgstr ""
 
 #. Translators: Trigger sentence
-#: src/integrations/wp-download-manager/triggers/wpdm-file-downloaded.php:35
+#: src/integrations/wp-download-manager/triggers/wpdm-file-downloaded.php:39
 msgid "{{A specific file:%1$s}} is downloaded"
 msgstr ""
 
 #. Translators: Trigger sentence
-#: src/integrations/wp-download-manager/triggers/wpdm-file-downloaded.php:38
+#: src/integrations/wp-download-manager/triggers/wpdm-file-downloaded.php:42
 msgid "{{A specific file}} is downloaded"
 msgstr ""
 
@@ -20614,12 +21054,12 @@ msgstr ""
 msgid "Any trigger"
 msgstr ""
 
-#: src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php:42
+#: src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php:48
 msgid "{{A webhook trigger:%1$s}} is triggered"
 msgstr ""
 
 #. translators: Logged-in trigger - Formidable
-#: src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php:44
+#: src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php:50
 msgid "{{A webhook trigger}} is triggered"
 msgstr ""
 
@@ -21057,12 +21497,12 @@ msgid "Term"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress Core
-#: src/integrations/wp/triggers/wp-userroleadded.php:49
+#: src/integrations/wp/triggers/wp-userroleadded.php:68
 msgid "{{A specific:%1$s}} role is added to the user"
 msgstr ""
 
 #. translators: Logged-in trigger - WordPress Core
-#: src/integrations/wp/triggers/wp-userroleadded.php:51
+#: src/integrations/wp/triggers/wp-userroleadded.php:70
 msgid "{{A specific}} role is added to the user"
 msgstr ""
 
@@ -21250,8 +21690,8 @@ msgstr ""
 msgid "No name"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:222
-#: src/integrations/wpforms/tokens/wpf-tokens.php:401
+#: src/integrations/wpforms/tokens/wpf-tokens.php:226
+#: src/integrations/wpforms/tokens/wpf-tokens.php:405
 msgid "This token requires WPForms Pro"
 msgstr ""
 

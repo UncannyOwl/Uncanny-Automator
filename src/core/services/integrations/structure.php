@@ -77,8 +77,12 @@ class Structure {
 		$this->active_integrations = Automator()->get_integrations();
 		$this->pro_item_list       = Utilities::get_pro_items_list();
 
+		$this->all_integrations = Automator()->get_all_integrations();
+
 		// Combine both Free & Pro integrations
-		$this->all_integrations = array_merge( Automator()->get_all_integrations(), Utilities::get_pro_only_items() );
+		if ( ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+			$this->all_integrations = array_merge( $this->all_integrations, Utilities::get_pro_only_items() );
+		}
 
 		// Sort alphabetically
 		ksort( $this->all_integrations );

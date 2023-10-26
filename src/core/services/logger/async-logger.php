@@ -26,7 +26,23 @@ add_action(
 	1
 );
 
-// Records failed conditions.
+/**
+ * Async actions fields are recorded when the action is created.
+ *
+ * Updates the action fields in the log when the action is run from async.
+ *
+ * @since 5.0
+ */
+add_action(
+	'automator_pro_async_action_execution_after_invoked',
+	'\Uncanny_Automator\Logger\action_fields_logger',
+	10,
+	1
+);
+
+/**
+ * Records failed action concitions.
+ */
 add_action(
 	'automator_pro_action_condition_failed',
 	function( $action, $code, $message ) {
@@ -44,7 +60,9 @@ add_action(
 	3
 );
 
-// Record the conditions result.
+/**
+ * Records conditions result.
+ */
 add_action(
 	'automator_pro_actions_conditions_result',
 	function( $condition_result, $conditions, $action ) {

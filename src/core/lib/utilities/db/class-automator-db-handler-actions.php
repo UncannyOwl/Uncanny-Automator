@@ -135,6 +135,32 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
+	 * @param int $user_id
+	 * @param int $action_log_id
+	 * @param int $action_id
+	 * @param string $meta_key
+	 *
+	 * @return bool|int
+	 */
+	public function delete_meta( $user_id, $action_log_id, $action_id, $meta_key ) {
+
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
+
+		return $wpdb->delete(
+			$table_name,
+			array(
+				'user_id'                 => $user_id,
+				'automator_action_log_id' => $action_log_id,
+				'automator_action_id'     => $action_id,
+				'meta_key'                => $meta_key,
+			)
+		);
+
+	}
+
+	/**
 	 * @param $action_log_id
 	 * @param $meta_key
 	 *

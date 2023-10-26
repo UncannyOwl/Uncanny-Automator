@@ -474,6 +474,57 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	}
 
 	/**
+	 * Is it a valid endpoint to return query and return tokens
+	 * @return bool
+	 */
+	public function is_valid_token_endpoint() {
+
+		// If it's not a valid rest call, return
+		if ( ! $this->is_rest() ) {
+			return false;
+		}
+
+		//      $current_url = wp_parse_url( add_query_arg( array() ) );
+		//      $match       = isset( $current_url['path'] ) ? $current_url['path'] : '';
+		//
+		//      $valid_endpoints = array(
+		//          'add',
+		//          'change_post_status',
+		//          'user-selector',
+		//          'update',
+		//          'schedule_actions',
+		//          'actions_conditions_update',
+		//      );
+		//
+		//      return in_array( basename( $match ), $valid_endpoints, true );
+		return true;
+	}
+
+	/**
+	 * @param $meta
+	 *
+	 * @return bool
+	 */
+	public function is_action_or_trigger_active( $meta ) {
+		global $wpdb;
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.ID AS child_ID, pp.ID AS recipe_ID
+FROM $wpdb->postmeta pm
+JOIN $wpdb->posts p
+ON pm.post_id = p.ID AND pm.meta_value = %s AND p.post_status = %s
+JOIN $wpdb->posts pp
+ON p.post_parent = pp.ID AND pp.post_status = %s;",
+				$meta,
+				'publish',
+				'publish'
+			)
+		);
+
+		return empty( $results );
+	}
+
+	/**
 	 * Decode data coming from Automator API.
 	 *
 	 * @param string $message Original message string to decode.
@@ -510,6 +561,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		$iv                 = openssl_random_pseudo_bytes( $ivlen );
 		$encrypted_message  = openssl_encrypt( $message_to_encrypt, $method, $secret, 0, $iv );
 		$encrypted_message  = base64_encode( $iv . $encrypted_message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+
 		return urlencode( $encrypted_message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode
 	}
 
@@ -1059,7 +1111,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	/**
 	 * action_is_finished
 	 *
-	 * @param  array $action
+	 * @param array $action
+	 *
 	 * @return bool
 	 */
 	public function action_is_finished( $action ) {
@@ -1128,7 +1181,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		}
 
 		return $properties;
-
 	}
 
 }

@@ -54,6 +54,63 @@ class Mautic_Helpers {
 	}
 
 	/**
+	 * Fetches all segments.
+	 *
+	 * @return void
+	 */
+	public function segments_fetch() {
+
+		$segments = array();
+
+		try {
+
+			$client_auth = new Mautic_Client_Auth( Api_Server::get_instance() );
+
+			$response = (array) $this->api_call(
+				array(
+					'action'      => 'segment_list',
+					'credentials' => $client_auth->get_credentials(),
+				),
+				null
+			);
+
+			$response_data = isset( $response['data'] ) ? (array) $response['data'] : array();
+
+			if ( ! isset( $response_data['lists'] ) ) {
+				throw new \Exception( 'Invalid response format', 421 );
+			}
+
+			$lists = (array) $response_data['lists'];
+
+			foreach ( $lists as $list ) {
+				if ( ! is_array( $list ) || ! isset( $list['id'] ) || ! isset( $list['name'] ) ) {
+					continue;
+				}
+				$segments[] = array(
+					'value' => $list['id'],
+					'text'  => $list['name'],
+				);
+			}
+			// Pushed errors below.
+		} catch ( \Exception $e ) {
+			wp_send_json(
+				array(
+					'success' => false,
+					'error'   => $e->getMessage(),
+				)
+			);
+		}
+
+		$segments = array(
+			'success' => true,
+			'options' => $segments,
+		);
+
+		wp_send_json( $segments );
+
+	}
+
+	/**
 	 * Renders the contact fields. Prints json_encoded result and dies.
 	 *
 	 * @return void

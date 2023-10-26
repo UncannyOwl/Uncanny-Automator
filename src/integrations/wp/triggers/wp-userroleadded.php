@@ -31,6 +31,25 @@ class WP_USERROLEADDED {
 	public function __construct() {
 		$this->trigger_code = 'USERROLEADDED';
 		$this->trigger_meta = 'WPROLE';
+
+		add_action(
+			'admin_init',
+			function () {
+				if ( 'yes' === get_option( 'USERROLEADDED_migrated', 'no' ) ) {
+					return;
+				}
+				global $wpdb;
+				$results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s", 'code', $this->trigger_code ) );
+				if ( ! empty( $results ) ) {
+					foreach ( $results as $post_id ) {
+						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id = %d AND meta_key LIKE %s", 'add_user_role', $post_id, 'add_action' ) );
+					}
+				}
+				update_option( 'USERROLEADDED_migrated', 'yes' );
+			},
+			99
+		);
+
 		$this->define_trigger();
 	}
 
@@ -49,9 +68,9 @@ class WP_USERROLEADDED {
 			'sentence'            => sprintf( __( '{{A specific:%1$s}} role is added to the user', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WordPress Core */
 			'select_option_name'  => __( '{{A specific}} role is added to the user', 'uncanny-automator' ),
-			'action'              => array( 'add_user_role', 'set_user_role' ),
+			'action'              => 'add_user_role',
 			'priority'            => 90,
-			'accepted_args'       => 3,
+			'accepted_args'       => 2,
 			'validation_function' => array( $this, 'add_user_role' ),
 			'options_callback'    => array( $this, 'load_options' ),
 		);
@@ -65,9 +84,9 @@ class WP_USERROLEADDED {
 	 * @return void
 	 */
 	public function load_options() {
-		
+
 		Automator()->helpers->recipe->wp->options->load_options = true;
-		
+
 		$options = Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
@@ -75,6 +94,7 @@ class WP_USERROLEADDED {
 				),
 			)
 		);
+
 		return $options;
 	}
 
@@ -83,7 +103,7 @@ class WP_USERROLEADDED {
 	 * @param $role
 	 * @param $old_roles
 	 */
-	public function add_user_role( $user_id, $role, $old_roles = array() ) {
+	public function add_user_role( $user_id, $role ) {
 
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_user_role = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );

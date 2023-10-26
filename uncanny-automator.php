@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name:         Uncanny Automator
- * Description:         Connect WordPress plugins together to create powerful recipes that save time and improve the user experience. With no coding required, Uncanny Automator can replace dozens of plugins with millions of recipe combinations!
+ * Description:         Connect your WordPress plugins, sites and apps together with powerful automations. Save time and money with the #1 automation plugin for WordPress!
  * Author:              Uncanny Automator, Uncanny Owl
  * Author URI:          https://automatorplugin.com/
  * Plugin URI:          https://automatorplugin.com/
@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             5.1.0.3
+ * Version:             5.2
  * Requires at least:   5.3
  * Requires PHP:        5.6
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '5.1.0.3' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '5.2' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {

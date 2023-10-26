@@ -23,6 +23,9 @@ class UNCANNYCEUS_EARNSCEUS {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+		if ( ! class_exists( '\uncanny_ceu\Utilities' ) ) {
+			return;
+		}
 		// The hook is only available on or after CEU version 3.0.7
 		$version = \uncanny_ceu\Utilities::get_version();
 		if ( version_compare( $version, '3.0.6', '>' ) ) {

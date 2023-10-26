@@ -9,6 +9,16 @@ namespace Uncanny_Automator;
  */
 class Api_Server {
 
+	/**
+	 * @var string The key used for marking the failed license.
+	 */
+	const TRANSIENT_LICENSE_CHECK_FAILED = 'automator_license_check_failed';
+
+	/**
+	 * @var int The frequency of license check.
+	 */
+	private static $transient_api_license_expires = 60; // 1 minute by default.
+
 	public static $url;
 
 	public static $mock_response = null;
@@ -25,6 +35,13 @@ class Api_Server {
 	private function __construct() {
 
 		self::$url = apply_filters( 'automator_api_url', AUTOMATOR_API_URL );
+
+		/**
+		 * Set the cache expiry to 12 hours. The nightly check is 24 hours. This is a
+		 * safe number so the license check is atleast performed twice a day. One when actively
+		 * editing the recipe page, and two, when nightly checks are made.
+		 */
+		self::$transient_api_license_expires = HOUR_IN_SECONDS * 12;
 
 		add_filter( 'http_request_args', array( $this, 'add_api_headers' ), 10, 2 );
 		add_filter( 'http_request_timeout', array( $this, 'default_api_timeout' ), 10, 2 );
@@ -61,14 +78,14 @@ class Api_Server {
 	 */
 	public function add_api_headers( $args, $request_url ) {
 
-		$license_key = self::get_license_key();
-
-		if ( ! $license_key ) {
+		// If the request URL starts with the Automator API url
+		if ( ! $this->is_api_url( $request_url ) ) {
 			return $args;
 		}
 
-		// If the request URL starts with the Automator API url
-		if ( ! $this->is_api_url( $request_url ) ) {
+		$license_key = self::get_license_key();
+
+		if ( ! $license_key ) {
 			return $args;
 		}
 
@@ -384,6 +401,14 @@ class Api_Server {
 
 		$cached_license = get_transient( 'automator_api_license' );
 
+		$has_failed = false !== get_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
+
+		// Early bail if failing.
+		if ( true === $has_failed ) {
+			return false;
+		}
+
+		// Serve the cached license if its there.
 		if ( false !== $cached_license ) {
 			return $cached_license;
 		}
@@ -396,14 +421,29 @@ class Api_Server {
 		);
 
 		try {
-			$response      = self::api_call( $params );
-			$license       = $response['data'];
+
+			$response = self::api_call( $params );
+
+			$license = $response['data'];
+
 			self::$license = $license;
-			set_transient( 'automator_api_license', $license, MINUTE_IN_SECONDS );
+
+			// Save the license.
+			set_transient( 'automator_api_license', $license, self::$transient_api_license_expires );
+
+			// Removes any failed license checks.
+			delete_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
 
 			return $license;
+
 		} catch ( \Exception $e ) {
-			throw new \Exception( __( 'Unable to fetch the license: ', 'uncanny-automator' ) . $e->getMessage() );
+
+			$error_message = 'Unable to fetch the license: ' . $e->getMessage();
+
+			set_transient( self::TRANSIENT_LICENSE_CHECK_FAILED, $error_message );
+
+			throw new \Exception( $error_message );
+
 		}
 	}
 
@@ -463,7 +503,7 @@ class Api_Server {
 
 		$license = self::api_call( $params );
 
-		set_transient( 'automator_api_license', $license['data'], MINUTE_IN_SECONDS );
+		set_transient( 'automator_api_license', $license['data'], self::$transient_api_license_expires );
 
 		return $license;
 
@@ -638,6 +678,7 @@ class Api_Server {
 
 		if ( $force_refresh ) {
 			delete_transient( 'automator_api_license' );
+			delete_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
 		}
 
 		$license_key = self::get_license_key();

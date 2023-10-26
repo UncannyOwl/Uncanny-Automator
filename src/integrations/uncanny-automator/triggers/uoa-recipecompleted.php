@@ -57,20 +57,32 @@ class UOA_RECIPECOMPLETED {
 			'priority'            => 99,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'on_completion' ),
-			'options'             => array(
-				Automator()->helpers->recipe->uncanny_automator->options->get_recipes(),
-				Automator()->helpers->recipe->field->int(
-					array(
-						'option_code' => $this->num_times,
-						'label'       => esc_attr__( 'Number of times', 'uncanny-automator' ),
-						'placeholder' => esc_attr__( 'Example: 1', 'uncanny-automator' ),
-						'default'     => '1',
-					)
-				),
-			),
+			'options_callback'    => array( $this, 'load_options' ),
 		);
 
 		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		return Automator()->utilities->keep_order_of_options(
+			array(
+				'options' => array(
+					Automator()->helpers->recipe->uncanny_automator->options->get_recipes(),
+					Automator()->helpers->recipe->field->int(
+						array(
+							'option_code' => $this->num_times,
+							'label'       => esc_attr__( 'Number of times', 'uncanny-automator' ),
+							'placeholder' => esc_attr__( 'Example: 1', 'uncanny-automator' ),
+							'default'     => '1',
+						)
+					),
+				),
+
+			)
+		);
 	}
 
 	/**

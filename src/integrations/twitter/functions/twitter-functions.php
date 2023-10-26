@@ -65,7 +65,7 @@ class Twitter_Functions {
 	/**
 	 * @param string $option_code
 	 * @param string $label
-	 * @param bool $tokens
+	 * @param bool   $tokens
 	 * @param string $type
 	 * @param string $default
 	 * @param bool
@@ -107,9 +107,10 @@ class Twitter_Functions {
 	/**
 	 * api_request
 	 *
-	 * @param  array $body
-	 * @param  array $action_data
-	 * @param  int $timeout
+	 * @param array $body
+	 * @param array $action_data
+	 * @param int   $timeout
+	 *
 	 * @return mixed
 	 */
 	public function api_request( $body, $action_data = null, $timeout = null ) {
@@ -258,7 +259,8 @@ class Twitter_Functions {
 	 *
 	 * Makes a request to the API to verify the entered credentials.
 	 *
-	 * @param  array $client
+	 * @param array $client
+	 *
 	 * @return mixed
 	 */
 	public function verify_credentials( $client ) {
@@ -274,7 +276,7 @@ class Twitter_Functions {
 		$response = Api_Server::api_call( $params );
 
 		if ( 200 !== $response['statusCode'] || empty( $response['data'] ) ) {
-			throw new \Exception( 'Could not verify your Twitter app credentials.' );
+			throw new \Exception( 'Could not verify your X/Twitter app credentials.' );
 		}
 
 		return $response['data'];
@@ -422,6 +424,7 @@ class Twitter_Functions {
 
 		try {
 			$client = $this->get_client();
+
 			return $client['screen_name'];
 		} catch ( \Exception $e ) {
 			return '';

@@ -108,18 +108,29 @@ class Ws_Form_Lite_Helpers {
 			return $fields[ $id ];
 		}
 
-		$form          = new \WS_Form_Form();
-		$form->id      = $id;
-		$form_object   = $form->db_read_published( true );
-		$fields[ $id ] = \WS_Form_Common::get_fields_from_form( $form_object, true );
-		foreach ( $fields[ $id ] as $field_id => $field ) {
-			// Remove submit button - Review may be other fields to omit.
-			if ( 'submit' === $field->type ) {
-				unset( $fields[ $id ][ $field_id ] );
+		try {
+
+			$form        = new \WS_Form_Form();
+			$form->id    = $id;
+			$form_object = $form->db_read_published( true );
+
+			// Check form object to prevent fatals.
+			if ( ! is_object( $form_object ) || ! property_exists( $form_object, 'id' ) || ! property_exists( $form_object, 'label' ) ) {
+				throw new Exception( 'Invalid form object' );
 			}
+
+			$fields[ $id ] = \WS_Form_Common::get_fields_from_form( $form_object, true );
+			foreach ( $fields[ $id ] as $field_id => $field ) {
+				// Remove submit button - Review may be other fields to omit.
+				if ( 'submit' === $field->type ) {
+					unset( $fields[ $id ][ $field_id ] );
+				}
+			}
+		} catch ( \Exception $e ) {
+			$fields[ $id ] = array();
 		}
 
-		return apply_filters( 'automator_ws_form_get_form_fields', $fields[ $id ] );
+		return apply_filters( 'automator_ws_form_get_form_fields', $fields[ $id ], $id );
 	}
 
 }

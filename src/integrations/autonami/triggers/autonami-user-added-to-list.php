@@ -12,6 +12,10 @@ use Uncanny_Automator\Recipe;
 class AUTONAMI_USER_ADDED_TO_LIST {
 
 	use Recipe\Triggers;
+	/**
+	 * @var
+	 */
+	public $helpers;
 
 	/**
 	 * Set up Automator trigger constructor.

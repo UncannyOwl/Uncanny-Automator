@@ -16,7 +16,13 @@ class WPWH_TRIGGERTRIGGERED {
 	 */
 	public static $integration = 'WPWEBHOOKS';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -46,14 +52,23 @@ class WPWH_TRIGGERTRIGGERED {
 			'priority'            => 10,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'save_data' ),
-			'options'             => array(
+			'options_callback'    => array( $this, 'load_options' ),
+		);
+
+		Automator()->register->trigger( $trigger );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function load_options() {
+		$options = array(
+			'options' => array(
 				Automator()->helpers->recipe->wp_webhooks->options->list_webhook_triggers( null, $this->trigger_meta ),
 			),
 		);
 
-		Automator()->register->trigger( $trigger );
-
-		return;
+		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**

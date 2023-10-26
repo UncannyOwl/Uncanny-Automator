@@ -121,6 +121,9 @@ class Automator_Utilities {
 		// Create an array with a list of integrations name
 		$list_of_names = array();
 		foreach ( Automator()->integrations as $integration_id => $integration ) {
+			if ( null === $integration || ! isset( $integration['name'] ) ) {
+				continue;
+			}
 			$list_of_names[ $integration_id ] = strtolower( $integration['name'] );
 		}
 

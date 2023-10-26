@@ -273,7 +273,7 @@ function automator_exception( $message, $code = 999 ) {
  * @package Uncanny_Automator
  */
 function automator_wp_error( $message, $error_code = 'something_wrong', $data = '' ) {
-	Automator()->error->add_error( $error_code, $message, $data );
+	Automator()->wp_error->add_error( $error_code, $message, $data );
 }
 
 
@@ -287,7 +287,7 @@ function automator_wp_error( $message, $error_code = 'something_wrong', $data = 
  * @package Uncanny_Automator
  */
 function automator_wp_error_messages( $error_code = '' ) {
-	Automator()->error->get_messages( $error_code );
+	Automator()->wp_error->get_messages( $error_code );
 }
 
 /**
@@ -300,7 +300,7 @@ function automator_wp_error_messages( $error_code = '' ) {
  * @package Uncanny_Automator
  */
 function automator_wp_error_get_message( $error_code = 'something_wrong' ) {
-	Automator()->error->get_message( $error_code );
+	Automator()->wp_error->get_message( $error_code );
 }
 
 /**
@@ -517,6 +517,11 @@ function clear_recipe_logs( $recipe_id ) {
  * @return bool
  */
 function automator_do_identify_tokens() {
+	// If it's cron, do not identify tokens
+	if ( defined( 'DOING_CRON' ) ) {
+		return false;
+	}
+
 	if (
 		isset( $_REQUEST['action'] ) && //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		(
@@ -528,7 +533,7 @@ function automator_do_identify_tokens() {
 		return false;
 	}
 
-	if ( ! Automator()->helpers->recipe->is_edit_page() && ! Automator()->helpers->recipe->is_rest() ) {
+	if ( ! Automator()->helpers->recipe->is_edit_page() && ! Automator()->helpers->recipe->is_valid_token_endpoint() ) {
 		// If not automator edit page or rest call, bail
 		return false;
 	}
@@ -573,7 +578,8 @@ function automator_sort_options( $a, $b ) {
 /**
  * automator_array_as_options
  *
- * @param  array $array
+ * @param array $array
+ *
  * @return array
  */
 function automator_array_as_options( $array ) {
@@ -593,28 +599,47 @@ function automator_array_as_options( $array ) {
 // String oprtations fallback for old PHP versions.
 
 if ( ! function_exists( 'str_starts_with' ) ) {
+	/**
+	 * @param $haystack
+	 * @param $needle
+	 *
+	 * @return bool
+	 */
 	function str_starts_with( $haystack, $needle ) {
-		return (string) $needle !== '' && strncmp( $haystack, $needle, strlen( $needle ) ) === 0;
+		return '' !== (string) $needle && strncmp( $haystack, $needle, strlen( $needle ) ) === 0;
 	}
 }
 
 if ( ! function_exists( 'str_ends_with' ) ) {
+	/**
+	 * @param $haystack
+	 * @param $needle
+	 *
+	 * @return bool
+	 */
 	function str_ends_with( $haystack, $needle ) {
-		return $needle !== '' && substr( $haystack, -strlen( $needle ) ) === (string) $needle;
+		return '' !== $needle && substr( $haystack, - strlen( $needle ) ) === (string) $needle;
 	}
 }
 
 if ( ! function_exists( 'str_contains' ) ) {
+	/**
+	 * @param $haystack
+	 * @param $needle
+	 *
+	 * @return bool
+	 */
 	function str_contains( $haystack, $needle ) {
-		return $needle !== '' && mb_strpos( $haystack, $needle ) !== false;
+		return '' !== $needle && mb_strpos( $haystack, $needle ) !== false;
 	}
 }
 
 /**
  * automator_get_option
  *
- * @param  string $option
- * @param  mixed $default_value
+ * @param string $option
+ * @param mixed $default_value
+ *
  * @return mixed
  */
 function automator_get_option( $option, $default_value = false ) {
@@ -627,6 +652,7 @@ function automator_get_option( $option, $default_value = false ) {
 
 	if ( $default_value === $value ) {
 		add_option( $option, $default_value, '', true );
+
 		return $default_value;
 	}
 

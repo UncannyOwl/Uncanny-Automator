@@ -22,6 +22,13 @@ class Uncanny_Toolkit_Helpers {
 	public $load_options;
 
 	/**
+	 * Checks if the Toolkit Pro Group Sign Up module is activated.
+	 *
+	 * @var mixed null || bool once checked
+	 */
+	public static $is_groups_sign_up_activated = null;
+
+	/**
 	 *
 	 */
 	public function __construct() {
@@ -202,5 +209,47 @@ class Uncanny_Toolkit_Helpers {
 	 */
 	public function setPro( Uncanny_Toolkit_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
+	}
+
+	/**
+	 * Check if Toolkit Pro Group Sign Up module is activated
+	 */
+	public static function is_group_sign_up_activated() {
+
+		if ( is_null( self::$is_groups_sign_up_activated ) ) {
+			if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
+				self::$is_groups_sign_up_activated = false;
+			} else {
+				$active_modules                    = get_option( 'uncanny_toolkit_active_classes', true );
+				self::$is_groups_sign_up_activated = ! empty( $active_modules['uncanny_pro_toolkit\LearnDashGroupSignUp'] );
+			}
+		}
+
+		return self::$is_groups_sign_up_activated;
+	}
+
+	/**
+	 * Return the generated Group Sign Up URL.
+	 *
+	 * @param int $group_id Group ID.
+	 *
+	 * @return string
+	 */
+	public static function get_group_sign_up_url( $group_id ) {
+		// Validate Post Type.
+		if ( 'groups' !== get_post_type( $group_id ) ) {
+			return '';
+		}
+
+		// Generate the group key from the ID.
+		$group_key = str_replace( array( ' ', '.', '[', '-' ), '_', crypt( $group_id, 'uncanny-group' ) );
+		$slug      = get_post_field( 'post_name', $group_id, 'raw' );
+		// Generate the signup URL.
+		return add_query_arg(
+			array(
+				'gid' => $group_id,
+			),
+			site_url( 'sign-up/' . $slug . '/' )
+		) . '&' . $group_key;
 	}
 }

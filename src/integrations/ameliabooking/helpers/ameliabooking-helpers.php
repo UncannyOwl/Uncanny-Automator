@@ -32,6 +32,9 @@ class Ameliabooking_Helpers {
 	public $load_options;
 
 
+	/**
+	 *
+	 */
 	public function __construct() {
 
 		global $wpdb;
@@ -51,6 +54,12 @@ class Ameliabooking_Helpers {
 		$this->options = $options;
 	}
 
+	/**
+	 * @param $trigger_code
+	 * @param $trigger_meta
+	 *
+	 * @return array[]
+	 */
 	public function get_option_fields( $trigger_code = '', $trigger_meta = '' ) {
 		return array(
 			$trigger_meta => array(
@@ -149,8 +158,8 @@ class Ameliabooking_Helpers {
 
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, name FROM {$wpdb->prefix}amelia_services 
-				WHERE categoryId = %d AND status = %s 
+				"SELECT id, name FROM {$wpdb->prefix}amelia_services
+				WHERE categoryId = %d AND status = %s
 				ORDER BY name ASC LIMIT 100",
 				$category_id,
 				'visible'
@@ -178,6 +187,9 @@ class Ameliabooking_Helpers {
 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_events_dropdown() {
 
 		$events = $this->get_events();
@@ -198,6 +210,9 @@ class Ameliabooking_Helpers {
 
 	}
 
+	/**
+	 * @return array|object|\stdClass[]|null
+	 */
 	public function get_events() {
 
 		global $wpdb;
@@ -399,7 +414,7 @@ class Ameliabooking_Helpers {
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT name FROM {$wpdb->prefix}amelia_coupons_to_events as coupons
-					INNER JOIN {$wpdb->prefix}amelia_events as events 
+					INNER JOIN {$wpdb->prefix}amelia_events as events
 					ON coupons.eventId = events.id
 					WHERE couponId = %d",
 				$coupon_id
@@ -425,7 +440,7 @@ class Ameliabooking_Helpers {
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT name FROM {$wpdb->prefix}amelia_coupons_to_events as coupons
-					INNER JOIN {$wpdb->prefix}amelia_services as services 
+					INNER JOIN {$wpdb->prefix}amelia_services as services
 					ON coupons.eventId = services.id
 					WHERE couponId = %d",
 				$coupon_id
@@ -450,7 +465,7 @@ class Ameliabooking_Helpers {
 
 		$results = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT count(*) as total FROM {$wpdb->prefix}amelia_customer_bookings 
+				"SELECT count(*) as total FROM {$wpdb->prefix}amelia_customer_bookings
 					WHERE couponId = %d",
 				$coupon_id
 			),

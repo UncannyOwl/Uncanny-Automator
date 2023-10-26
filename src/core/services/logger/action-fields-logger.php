@@ -29,10 +29,21 @@ class Action_Fields_Logger {
 			)
 		);
 
+		$user_id       = $args['user_id'];
+		$action_log_id = $args['action_log_id'];
+		$action_id     = $args['action_id'];
+
+		$has_field_meta = ! empty( Automator()->db->action->get_meta( $action_log_id, self::META_KEY ) );
+
+		// If meta exists, delete it.
+		if ( $has_field_meta ) {
+			Automator()->db->action->delete_meta( $user_id, $action_log_id, $action_id, self::META_KEY );
+		}
+
 		return Automator()->db->action->add_meta(
-			$args['user_id'],
-			$args['action_log_id'],
-			$args['action_id'],
+			$user_id,
+			$action_log_id,
+			$action_id,
 			self::META_KEY,
 			wp_json_encode( array_merge( (array) $fields['options'], (array) $fields['options_group'] ) )
 		);

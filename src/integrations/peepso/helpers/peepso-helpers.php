@@ -235,6 +235,13 @@ class PeepSo_Helpers {
 		return apply_filters( 'uap_option_peepso_users_profile_fields', $option );
 	}
 
+	/**
+	 * @param $user_id
+	 * @param $any
+	 * @param $args
+	 *
+	 * @return array
+	 */
 	public function get_user_fields( $user_id = 0, $any = false, $args = array() ) {
 		$options    = array();
 		$PeepSoUser = PeepSoUser::get_instance( $user_id );
@@ -261,6 +268,11 @@ class PeepSo_Helpers {
 		return $options;
 	}
 
+	/**
+	 * @param $gmt_time
+	 *
+	 * @return string|void
+	 */
 	public function get_gmt_value( $gmt_time ) {
 		$offset_range = array(
 			- 12,

@@ -11,20 +11,12 @@ $user = get_option( 'automator_twitter_user', array() );
 $twitter_name     = ! empty( $user['name'] ) ? $user['name'] : '';
 $twitter_username = ! empty( $user['screen_name'] ) ? '@' . $user['screen_name'] : '';
 
-// Get the link to disconnect Twitter
+// Get the link to disconnect X/Twitter
 $this->disconnect_url = $this->functions->get_disconnect_url();
 
-$this->api_key = get_option( 'automator_twitter_api_key', '' );
-
-$this->api_secret = get_option( 'automator_twitter_api_secret', '' );
-
-$this->access_token = get_option( 'automator_twitter_access_token', '' );
-
-$this->access_token_secret = get_option( 'automator_twitter_access_token_secret', '' );
-
 /**
- * Twitter user app settings
- * Settings > Premium Integrations > Twitter
+ * X/Twitter user app settings
+ * Settings > Premium Integrations > X/Twitter
  *
  * @since   4.8
  * @version 4.8
@@ -41,7 +33,7 @@ $this->access_token_secret = get_option( 'automator_twitter_access_token_secret'
 		<div class="uap-settings-panel-top">
 
 			<div class="uap-settings-panel-title">
-				<uo-icon integration="TWITTER"></uo-icon> <?php esc_html_e( 'Twitter', 'uncanny-automator' ); ?>
+				<uo-icon integration="TWITTER"></uo-icon> <?php esc_html_e( 'X/Twitter', 'uncanny-automator' ); ?>
 			</div>
 
 			<div class="uap-settings-panel-content">
@@ -50,13 +42,13 @@ $this->access_token_secret = get_option( 'automator_twitter_access_token_secret'
 
 				<?php
 
-				// Check if Twitter is connected
+				// Check if X/Twitter is connected
 				if ( $this->is_connected ) {
 
 					?>
 
 					<uo-alert
-						heading="<?php esc_html_e( 'Uncanny Automator only supports connecting to one Twitter account at a time.', 'uncanny-automator' ); ?>"
+						heading="<?php esc_html_e( 'Uncanny Automator only supports connecting to one X/Twitter account at a time.', 'uncanny-automator' ); ?>"
 					></uo-alert>
 
 					<?php
@@ -67,17 +59,17 @@ $this->access_token_secret = get_option( 'automator_twitter_access_token_secret'
 
 				<?php
 
-				// Check if Twitter is not connected
+				// Check if X/Twitter is not connected
 				if ( ! $this->is_connected ) {
 
 					?>
 
 					<div class="uap-settings-panel-content-subtitle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Twitter', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Connect Uncanny Automator to X/Twitter', 'uncanny-automator' ); ?>
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Post to Twitter directly from your WordPress site – no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers.', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Post to X/Twitter directly from your WordPress site – no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers.', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
@@ -93,9 +85,9 @@ $this->access_token_secret = get_option( 'automator_twitter_access_token_secret'
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
 						<?php
 						echo sprintf(
-								// translators: Link to Twitter knowledgebase article
+								// translators: Link to X/Twitter knowledgebase article
 							esc_html__(
-								'To connect Automator to Twitter you will need to create a Twitter app first. %1$s.',
+								'To connect Automator to X/Twitter you will need to create a X/Twitter app first. %1$s.',
 								'uncanny-automator'
 							),
 							'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twitter/', 'settings', 'twitter-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Learn More', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
@@ -103,60 +95,9 @@ $this->access_token_secret = get_option( 'automator_twitter_access_token_secret'
 						?>
 					</div>
 
-					<?php
+					<?php include trailingslashit( __DIR__ ) . 'view-twitter-form.php'; ?>
 
-					$hide_fields = $this->is_connected ? true : '';
-
-					$this->text_input_html(
-						array(
-							'id'       => 'automator_twitter_api_key',
-							'value'    => $this->api_key,
-							'label'    => __( 'API key', 'uncanny-automator' ),
-							'required' => true,
-							'class'    => 'uap-spacing-top',
-							'hidden'   => $hide_fields,
-							'disabled' => $hide_fields,
-						)
-					);
-
-					$this->text_input_html(
-						array(
-							'id'       => 'automator_twitter_api_secret',
-							'value'    => $this->api_secret,
-							'label'    => __( 'API key secret', 'uncanny-automator' ),
-							'required' => true,
-							'class'    => 'uap-spacing-top',
-							'hidden'   => $hide_fields,
-							'disabled' => $hide_fields,
-						)
-					);
-
-					$this->text_input_html(
-						array(
-							'id'       => 'automator_twitter_access_token',
-							'value'    => $this->access_token,
-							'label'    => __( 'Access token', 'uncanny-automator' ),
-							'required' => true,
-							'class'    => 'uap-spacing-top',
-							'hidden'   => $hide_fields,
-							'disabled' => $hide_fields,
-						)
-					);
-
-					$this->text_input_html(
-						array(
-							'id'       => 'automator_twitter_access_token_secret',
-							'value'    => $this->access_token_secret,
-							'label'    => __( 'Access token secret', 'uncanny-automator' ),
-							'required' => true,
-							'class'    => 'uap-spacing-top',
-							'hidden'   => $hide_fields,
-							'disabled' => $hide_fields,
-						)
-					);
-				}
-
-				?>
+				<?php } ?>
 
 			</div>
 
@@ -223,10 +164,8 @@ $this->access_token_secret = get_option( 'automator_twitter_access_token_secret'
 				?>
 
 
-				<uo-button
-					type="submit"
-				>
-					<?php esc_html_e( 'Connect Twitter account', 'uncanny-automator' ); ?>
+				<uo-button type="submit">
+					<?php esc_html_e( 'Connect X/Twitter account', 'uncanny-automator' ); ?>
 				</uo-button>
 
 				<?php

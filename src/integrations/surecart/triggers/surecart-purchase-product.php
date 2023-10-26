@@ -14,6 +14,16 @@ class SURECART_PURCHASE_PRODUCT {
 	use Recipe\Triggers;
 
 	/**
+	 * @var SureCart_Tokens
+	 */
+	public $surecart_tokens;
+
+	/**
+	 * @var SureCart_Helpers
+	 */
+	public $helpers;
+
+	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
@@ -63,6 +73,7 @@ class SURECART_PURCHASE_PRODUCT {
 	 */
 	public function load_options() {
 		$options[] = $this->helpers->get_products_dropdown();
+
 		return array( 'options' => $options );
 
 	}

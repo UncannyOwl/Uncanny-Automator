@@ -102,7 +102,7 @@ class Automator_Email_Helpers {
 		$headers     = $mail['headers'];
 		$attachments = $mail['attachment'];
 		$is_html     = $mail['is_html'];
-		$error       = Automator()->error;
+		$error       = Automator()->wp_error;
 
 		if ( ! $error->get_message( 'wp_mail_to' ) ) {
 			if ( is_array( $to ) ) {

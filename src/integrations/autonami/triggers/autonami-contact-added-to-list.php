@@ -14,6 +14,11 @@ class AUTONAMI_CONTACT_ADDED_TO_LIST {
 	use Recipe\Triggers;
 
 	/**
+	 * @var
+	 */
+	public $helpers;
+
+	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
@@ -56,6 +61,7 @@ class AUTONAMI_CONTACT_ADDED_TO_LIST {
 	 */
 	public function load_options() {
 		$options[] = $this->helpers->get_list_dropdown();
+
 		return array( 'options' => $options );
 
 	}
@@ -73,7 +79,8 @@ class AUTONAMI_CONTACT_ADDED_TO_LIST {
 	/**
 	 * Method do_continue_anon_trigger
 	 *
-	 * @param  mixed $args
+	 * @param mixed $args
+	 *
 	 * @return void
 	 */
 	public function do_continue_anon_trigger( ...$args ) {

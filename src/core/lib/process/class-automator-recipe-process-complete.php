@@ -61,13 +61,13 @@ class Automator_Recipe_Process_Complete {
 		}
 
 		if ( null === $trigger_id || ! is_numeric( $trigger_id ) ) {
-			Automator()->error->add_error( 'complete_trigger', 'ERROR: You are trying to complete a trigger without providing a trigger_id.', $this );
+			Automator()->wp_error->add_error( 'complete_trigger', 'ERROR: You are trying to complete a trigger without providing a trigger_id.', $this );
 
 			return null;
 		}
 
 		if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
-			Automator()->error->add_error( 'complete_trigger', 'ERROR: You are trying to complete a trigger without providing a recipe_id.', $this );
+			Automator()->wp_error->add_error( 'complete_trigger', 'ERROR: You are trying to complete a trigger without providing a recipe_id.', $this );
 
 			return null;
 		}
@@ -84,7 +84,7 @@ class Automator_Recipe_Process_Complete {
 		$trigger_integration = Automator()->get->trigger_integration_from_trigger_code( $trigger_code );
 		if ( 0 === Automator()->plugin_status->get( $trigger_integration ) ) {
 			// The plugin for this action is NOT active
-			Automator()->error->add_error( 'complete_trigger', 'ERROR: You are trying to complete ' . $trigger_code . ' and the plugin ' . $trigger_integration . ' is not active.', $this );
+			Automator()->wp_error->add_error( 'complete_trigger', 'ERROR: You are trying to complete ' . $trigger_code . ' and the plugin ' . $trigger_integration . ' is not active.', $this );
 
 			return null;
 		}
@@ -150,7 +150,7 @@ class Automator_Recipe_Process_Complete {
 	public function triggers_completed( $recipe_id = 0, $user_id = 0, $recipe_log_id = 0, $args = array() ) {
 
 		if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
-			Automator()->error->add_error( 'triggers_completed', 'ERROR: You are trying to check if triggers are completed without providing a recipe_id.', $this );
+			Automator()->wp_error->add_error( 'triggers_completed', 'ERROR: You are trying to check if triggers are completed without providing a recipe_id.', $this );
 
 			return null;
 		}
@@ -167,7 +167,7 @@ class Automator_Recipe_Process_Complete {
 
 				if ( 0 === Automator()->plugin_status->get( $trigger_integration ) ) {
 					// The plugin for this trigger is NOT active
-					Automator()->error->add_error( 'complete_trigger', 'ERROR: You are trying to complete ' . $recipe_trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. @recipe_id ' . $recipe_id, $this );
+					Automator()->wp_error->add_error( 'complete_trigger', 'ERROR: You are trying to complete ' . $recipe_trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. @recipe_id ' . $recipe_id, $this );
 				}
 
 				$trigger_completed                         = Automator()->db->trigger->is_completed( $user_id, $recipe_trigger['ID'], $recipe_id, $recipe_log_id, true, $args );
@@ -276,7 +276,7 @@ class Automator_Recipe_Process_Complete {
 
 			if ( false === $completed ) {
 				Utilities::log(
-					Automator()->error->get_messages( 'complete_action' ),
+					Automator()->wp_error->get_messages( 'complete_action' ),
 					'Method complete_action has returned false',
 					AUTOMATOR_DEBUG_MODE,
 					'complete_actions'
@@ -363,7 +363,7 @@ class Automator_Recipe_Process_Complete {
 
 				if ( false === $action['process_further'] ) {
 					$action = apply_filters( 'automator_action_complete_action_skipped', $action, $args );
-					Automator()->error->add_error( 'complete_action', 'Action was skipped by uap_before_action_executed filter' );
+					Automator()->wp_error->add_error( 'complete_action', 'Action was skipped by uap_before_action_executed filter' );
 					return false;
 				}
 
@@ -417,7 +417,7 @@ class Automator_Recipe_Process_Complete {
 	 */
 	public function complete_with_error( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args ) {
 		$action_data['complete_with_errors'] = true;
-		Automator()->error->add_error( 'complete_action', $error_message, array( $action_data, $this ) );
+		Automator()->wp_error->add_error( 'complete_action', $error_message, array( $action_data, $this ) );
 		$this->action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 	}
 
@@ -443,13 +443,13 @@ class Automator_Recipe_Process_Complete {
 		$action_id = (int) $action_data['ID'];
 
 		if ( null === $action_id || ! is_numeric( $action_id ) ) {
-			Automator()->error->add_error( 'complete_action', 'ERROR: You are trying to complete an action without providing a action_id.', $this );
+			Automator()->wp_error->add_error( 'complete_action', 'ERROR: You are trying to complete an action without providing a action_id.', $this );
 
 			return null;
 		}
 
 		if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
-			Automator()->error->add_error( 'complete_action', 'ERROR: You are trying to complete an action without providing a recipe_id.', $this );
+			Automator()->wp_error->add_error( 'complete_action', 'ERROR: You are trying to complete an action without providing a recipe_id.', $this );
 
 			return null;
 		}
@@ -459,7 +459,7 @@ class Automator_Recipe_Process_Complete {
 		}
 
 		if ( is_null( $recipe_log_id ) || empty( $recipe_log_id ) ) {
-			Automator()->error->add_error( 'complete_action', 'ERROR: You are trying to complete an action without providing a recipe_log_id.', $this );
+			Automator()->wp_error->add_error( 'complete_action', 'ERROR: You are trying to complete an action without providing a recipe_log_id.', $this );
 
 			return null;
 		}
@@ -795,7 +795,7 @@ class Automator_Recipe_Process_Complete {
 		if ( null === $recipe_log_id ) {
 
 			if ( null === $recipe_id || ! is_numeric( $recipe_id ) ) {
-				Automator()->error->add_error( 'complete_recipe', 'ERROR: You are trying to completed a recipe without providing a recipe_id', $this );
+				Automator()->wp_error->add_error( 'complete_recipe', 'ERROR: You are trying to completed a recipe without providing a recipe_id', $this );
 
 				return null;
 			}
@@ -928,7 +928,7 @@ class Automator_Recipe_Process_Complete {
 			} else {
 
 				// The plugin for this action is NOT active
-				Automator()->error->add_error( 'complete_closures', 'ERROR: You are trying to complete ' . $closure_code . ' and the plugin ' . $closure_integration . ' is not active.', $this );
+				Automator()->wp_error->add_error( 'complete_closures', 'ERROR: You are trying to complete ' . $closure_code . ' and the plugin ' . $closure_integration . ' is not active.', $this );
 
 				// Do not log error in closures for now.
 			}

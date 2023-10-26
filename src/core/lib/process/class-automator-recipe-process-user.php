@@ -148,7 +148,7 @@ class Automator_Recipe_Process_User {
 					if ( 0 !== absint( $post_id ) ) {
 						$meta_results = $this->maybe_trigger_add_any_option_meta( $meta_arg, $trigger_meta );
 						if ( isset( $meta_results['result'] ) && false === $meta_results['result'] ) {
-							Automator()->error->add_error( 'uap_maybe_add_meta_entry', 'ERROR: You are trying to add entry ' . $trigger['meta'][ $trigger_meta ] . ' and post_id = ' . $post_id . '.', $this );
+							Automator()->wp_error->add_error( 'uap_maybe_add_meta_entry', 'ERROR: You are trying to add entry ' . $trigger['meta'][ $trigger_meta ] . ' and post_id = ' . $post_id . '.', $this );
 						}
 					}
 				}
@@ -395,7 +395,7 @@ class Automator_Recipe_Process_User {
 		// Skip completion if the plugin is not active
 		if ( 0 === $this->get_plugin_status( $trigger_integration ) ) {
 			// The plugin for this trigger is NOT active
-			Automator()->error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
+			Automator()->wp_error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
 
 			return array(
 				'result' => false,
@@ -558,7 +558,7 @@ class Automator_Recipe_Process_User {
 		// Skip completion if the plugin is not active
 		if ( 0 === $this->get_plugin_status( $trigger_integration ) ) {
 			// The plugin for this trigger is NOT active
-			Automator()->error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
+			Automator()->wp_error->add_error( 'uap_do_trigger_log', 'ERROR: You are trying to complete ' . $trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. ', $this );
 
 			return array(
 				'result' => false,
@@ -862,19 +862,19 @@ class Automator_Recipe_Process_User {
 
 		// No user id is aviable.
 		if ( 0 === $user_id ) {
-			Automator()->error->add_error( 'update_trigger_meta', 'ERROR: You are trying to update trigger meta when a there is no logged in user.', $this );
+			Automator()->wp_error->add_error( 'update_trigger_meta', 'ERROR: You are trying to update trigger meta when a there is no logged in user.', $this );
 
 			return null;
 		}
 
 		if ( null === $trigger_id || ! is_numeric( $trigger_id ) ) {
-			Automator()->error->add_error( 'update_trigger_meta', 'ERROR: You are trying to update trigger meta without providing a trigger_id', $this );
+			Automator()->wp_error->add_error( 'update_trigger_meta', 'ERROR: You are trying to update trigger meta without providing a trigger_id', $this );
 
 			return null;
 		}
 
 		if ( null === $meta_key || ! is_string( $meta_key ) ) {
-			Automator()->error->add_error( 'update_trigger_meta', 'ERROR: You are trying to update trigger meta without providing a meta_key', $this );
+			Automator()->wp_error->add_error( 'update_trigger_meta', 'ERROR: You are trying to update trigger meta without providing a meta_key', $this );
 
 			return null;
 		}
@@ -954,19 +954,19 @@ class Automator_Recipe_Process_User {
 
 		// No user id is available.
 		if ( 0 === $user_id ) {
-			Automator()->error->add_error( 'get_trigger_meta_id', 'ERROR: You are trying to get trigger meta ID when a there is no logged in user.', $this );
+			Automator()->wp_error->add_error( 'get_trigger_meta_id', 'ERROR: You are trying to get trigger meta ID when a there is no logged in user.', $this );
 
 			return null;
 		}
 
 		if ( null === $trigger_id || ! is_numeric( $trigger_id ) ) {
-			Automator()->error->add_error( 'get_trigger_meta_id', 'ERROR: You are trying to get trigger meta ID without providing a trigger_id', $this );
+			Automator()->wp_error->add_error( 'get_trigger_meta_id', 'ERROR: You are trying to get trigger meta ID without providing a trigger_id', $this );
 
 			return null;
 		}
 
 		if ( null === $meta_key || ! is_string( $meta_key ) ) {
-			Automator()->error->add_error( 'get_trigger_meta_id', 'ERROR: You are trying to get trigger meta ID without providing a meta_key', $this );
+			Automator()->wp_error->add_error( 'get_trigger_meta_id', 'ERROR: You are trying to get trigger meta ID without providing a meta_key', $this );
 
 			return null;
 		}

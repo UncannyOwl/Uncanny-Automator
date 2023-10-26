@@ -20,7 +20,13 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 	 */
 	public static $integration = 'PP';
 
+	/**
+	 * @var string
+	 */
 	private $trigger_code;
+	/**
+	 * @var string
+	 */
 	private $trigger_meta;
 
 	/**
@@ -36,8 +42,6 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function define_trigger() {
-		$user_fields = Automator()->helpers->recipe->peepso->get_user_fields( 0 );
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/peepso/' ),
@@ -56,8 +60,6 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 		);
 
 		Automator()->register->trigger( $trigger );
-
-		return;
 	}
 
 	/**
@@ -262,6 +264,11 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 		}
 	}
 
+	/**
+	 * @param $merit
+	 *
+	 * @return string|null
+	 */
 	public function get_privacy_status( $merit ) {
 		if ( $merit == PeepSo::ACCESS_PUBLIC ) {
 			$field_value = __( 'Public', 'uncanny-automator' );
