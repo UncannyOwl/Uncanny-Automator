@@ -661,6 +661,7 @@ class Automator_Load {
 			$load_on_pages = array(
 				'post.php',
 				'edit.php',
+				'options.php',
 			);
 
 			if ( 'edit.php' === $pagenow && ( ! automator_filter_has_var( 'post_type' ) || 'uo-recipe' !== automator_filter_input( 'post_type' ) ) && ! self::$any_recipes_active ) {

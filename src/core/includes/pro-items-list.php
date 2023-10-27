@@ -1503,6 +1503,11 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Action - Gravity Forms */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Delete the entry that matches {{an entry ID}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Gravity Forms */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Register a new user", 'uncanny-automator' ),
 				),
 			),
@@ -1896,6 +1901,16 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Action - LearnDash */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Mark {{a quiz}} complete for the user", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Mark {{a quiz}} not complete for the user", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Mark {{a topic}} not complete for the user", 'uncanny-automator' ),
 				),
 				array(
@@ -2152,6 +2167,38 @@ function automator_pro_items_list() {
 					/* translators: Action - MasterStudy LMS */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Reset the user's progress in {{a course}}", 'uncanny-automator' ),
+				),
+			),
+		),
+		'M4IS'              => array(
+			'name'     => 'Memberium for Keap',
+			'pro_only' => 'no',
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - Memberium for Keap */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add {{a tag(s)}} to {{a contact}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Memberium for Keap */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add or remove {{a contact}} {{tag(s)}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Memberium for Keap */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add the user to {{a membership level}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Memberium for Keap */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Remove {{a tag(s)}} from {{a contact}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Memberium for Keap */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Remove the user from {{a membership level}}", 'uncanny-automator' ),
 				),
 			),
 		),
@@ -3870,6 +3917,18 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'  => array(),
+		),
+		'WPCODE_IHAF'       => array(
+			'name'     => 'WPCode',
+			'pro_only' => 'no',
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - WPCode */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Create a code snippet", 'uncanny-automator' ),
+				),
+			),
 		),
 		'WPF'               => array(
 			'name'     => 'WPForms',
