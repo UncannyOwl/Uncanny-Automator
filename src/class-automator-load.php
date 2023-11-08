@@ -620,6 +620,7 @@ class Automator_Load {
 		$classes['Recipe_Post_Rest_Api']                = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php';
 		$classes['Background_Actions']                  = UA_ABSPATH . 'src/core/classes/class-background-actions.php';
 		$classes['Calculation_Token']                   = UA_ABSPATH . 'src/core/classes/class-calculation-token.php';
+		$classes['Copy_Recipe_Parts']                   = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
 
 		require_once UA_ABSPATH . 'src/core/classes/class-api-server.php';
 
@@ -653,8 +654,7 @@ class Automator_Load {
 				return $classes;
 			}
 
-			$classes['Usage_Reports']     = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
-			$classes['Copy_Recipe_Parts'] = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
+			$classes['Usage_Reports'] = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 
 			global $pagenow;
 

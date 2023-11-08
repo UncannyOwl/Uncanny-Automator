@@ -1342,12 +1342,7 @@ WHERE pm.post_id
 	 */
 	public function get_recipe_actions( $recipe_id = 0, $show_draft = false ) {
 
-		$key           = 'recipe_' . $recipe_id . 'actions';
-		$results_cache = wp_cache_get( $key );
-
-		if ( false !== $results_cache ) {
-			return $results_cache;
-		}
+		// Do not add cache to this function. Memcached on SG created issue here.
 
 		global $wpdb;
 
@@ -1384,10 +1379,7 @@ WHERE pm.post_id
 			);
 		}
 
-		wp_cache_set( $key, $results );
-
 		return $results;
-
 	}
 
 	/**
