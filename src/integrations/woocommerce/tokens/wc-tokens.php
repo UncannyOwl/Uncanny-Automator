@@ -211,8 +211,8 @@ class Wc_Tokens {
 	}
 
 	/**
-	 * @param array $tokens
-	 * @param array $args
+	 * @param array  $tokens
+	 * @param array  $args
 	 * @param string $type
 	 *
 	 * @return array
@@ -809,9 +809,9 @@ class Wc_Tokens {
 
 	/**
 	 * @param \WC_Order $order
-	 * @param $value_to_match
-	 * @param bool $unformatted
-	 * @param bool $sale
+	 * @param           $value_to_match
+	 * @param bool      $unformatted
+	 * @param bool      $sale
 	 *
 	 * @return string
 	 */
@@ -938,7 +938,7 @@ class Wc_Tokens {
 	 *
 	 * @return string
 	 */
-	private function build_summary_style_html( $order ) {
+	public function build_summary_style_html( $order ) {
 		$font_colour      = apply_filters( 'automator_woocommerce_order_summary_text_color', '#000', $order );
 		$font_family      = apply_filters( 'automator_woocommerce_order_summary_font_family', "'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif", $order );
 		$table_styles     = apply_filters( 'automator_woocommerce_order_summary_table_style', '', $order );
@@ -1085,7 +1085,7 @@ class Wc_Tokens {
 
 	/**
 	 * @param WC_Order $order
-	 * @param $value_to_match
+	 * @param          $value_to_match
 	 *
 	 * @return string
 	 */
@@ -1118,7 +1118,7 @@ class Wc_Tokens {
 
 	/**
 	 * @param WC_Order $order
-	 * @param $value_to_match
+	 * @param          $value_to_match
 	 *
 	 * @return string
 	 */

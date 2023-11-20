@@ -74,6 +74,11 @@ class WP_USER_UPDATES_POST {
 	 * @return bool
 	 */
 	protected function validate_trigger( ...$args ) {
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return false;
+		}
+
 		list( $post_id, $wp_post_after, $wp_post_before ) = $args[0];
 		$include_non_public_posts                         = apply_filters( 'automator_wp_post_updates_include_non_public_posts', false, $post_id );
 		if ( false === $include_non_public_posts ) {

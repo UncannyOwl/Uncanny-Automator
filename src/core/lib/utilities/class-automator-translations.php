@@ -1134,6 +1134,7 @@ class Automator_Translations {
 					'duplicate'     => _x( 'Duplicate', 'Verb', 'uncanny-automator' ),
 					'delaySchedule' => _x( 'Delay or schedule', 'Verb', 'uncanny-automator' ),
 				),
+				// UncannyAutomator._core.i18n.components.itemLoop
 				'itemLoop' => array(
 					'loop'                   => _x( 'Loop', 'Block name, noun', 'uncanny-automator' ),
 					'users'                  => __( 'Users', 'uncanny-automator' ),
@@ -1144,10 +1145,12 @@ class Automator_Translations {
 					'support'                => _x( 'Support', 'Noun', 'uncanny-automator' ),
 					'matchCriteria'          => __( 'that match the following criteria', 'uncanny-automator' ),
 					'filterUsersButtonLabel' => __( 'Filter users', 'uncanny-automator' ),
+					'filterPostsButtonLabel' => __( 'Filter posts', 'uncanny-automator' ),
 					'editLoopFilter'         => __( 'Edit filter', 'uncanny-automator' ),
 					'deleteLoopFilter'       => __( 'Delete filter', 'uncanny-automator' ),
 					'configureTheFilter'     => __( 'Configure the loop filter', 'uncanny-automator' ),
 					'filterUsers'            => __( 'Filter users', 'uncanny-automator' ),
+					'filterPosts'            => __( 'Filter posts', 'uncanny-automator' ),
 					'cancel'                 => __( 'Cancel', 'uncanny-automator' ),
 					'confirm'                => __( 'Confirm', 'uncanny-automator' ),
 					'searchLoopFilters'      => __( 'Search loop filters', 'uncanny-automator' ),
@@ -1155,6 +1158,7 @@ class Automator_Translations {
 					'instructionsHeading'    => __( "What's a loop filter?", 'uncanny-automator' ),
 					'instructionsContent'    => __( 'Loop filters decide which users will be included in the loop. Action filters within the block, on the other hand, choose what actions are performed for each individual user.', 'uncanny-automator' ),
 					'userLoop'               => __( 'User loop', 'uncanny-automator' ),
+					'postLoop'               => __( 'Post loop', 'uncanny-automator' ),
 				),
 			),
 			'core'                => array(

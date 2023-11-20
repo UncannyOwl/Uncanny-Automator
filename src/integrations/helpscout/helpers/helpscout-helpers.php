@@ -64,6 +64,9 @@ class Helpscout_Helpers {
 			// Fetch mailbox users.
 			add_action( 'wp_ajax_automator_helpscout_fetch_mailbox_users', array( $this, 'fetch_mailbox_users' ) );
 
+			// Fetch properties' fields.
+			add_action( 'wp_ajax_automator_helpscout_fetch_properties', array( $this, 'fetch_properties' ) );
+
 			add_action( 'rest_api_init', array( $this, 'init_webhook' ) );
 
 			$this->webhook_endpoint = apply_filters( 'automator_helpscout_webhook_endpoint', '/helpscout', $this );
@@ -118,6 +121,64 @@ class Helpscout_Helpers {
 
 	}
 
+	/**
+	 * Fetches properties.
+	 *
+	 * @return void
+	 */
+	public function fetch_properties() {
+
+		$rows = array();
+
+		try {
+
+			$response = $this->api_request(
+				array(
+					'action' => 'get_properties',
+				),
+				null
+			);
+
+			if ( ! empty( $response['data']['_embedded']['customer-properties'] ) ) {
+				foreach ( $response['data']['_embedded']['customer-properties'] as $prop ) {
+					$rows[] = array(
+						'PROPERTY_SLUG'  => $prop['slug'],
+						'PROPERTY_NAME'  => $prop['name'],
+						'PROPERTY_VALUE' => '',
+					);
+				}
+			}
+		} catch ( \Exception $e ) {
+
+			$error_message = json_decode( $e->getMessage(), true );
+
+			if ( isset( $error_message['data']['_embedded']['errors'] ) ) {
+				$error_message = implode( '. ', array_column( $error_message['data']['_embedded']['errors'], 'message' ) );
+			}
+
+			$data = array(
+				'success' => false,
+				'message' => $error_message,
+			);
+
+			wp_send_json( $data );
+
+		}
+
+		$data = array(
+			'success' => true,
+			'rows'    => $rows,
+		);
+
+		wp_send_json( $data );
+
+	}
+
+	/**
+	 * Fetches mailbox users.
+	 *
+	 * @return void
+	 */
 	public function fetch_mailbox_users() {
 
 		$selected_mailbox = filter_input( INPUT_POST, 'value' );

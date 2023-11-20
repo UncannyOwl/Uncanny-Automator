@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Rest\Endpoint;
 
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
@@ -9,9 +10,9 @@ use WP_REST_Request;
 /**
  * The controller class for the log endpoint.
  *
+ * @since 4.12
  * @see <src/core/rest/rest-routes.php>
  *
- * @since 4.12
  */
 class Log_Endpoint {
 
@@ -41,7 +42,8 @@ class Log_Endpoint {
 	 */
 	public function __construct(
 		Automator_Factory $automator_factory,
-		Logs_Factory $logs_factory ) {
+		Logs_Factory $logs_factory
+	) {
 
 		$this->logs_factory      = $logs_factory;
 		$this->automator_factory = $automator_factory;
@@ -62,6 +64,7 @@ class Log_Endpoint {
 	 */
 	public function set_utils( Formatters_Utils $formatter ) {
 		$this->formatter = $formatter;
+
 		return $this;
 	}
 
@@ -122,14 +125,15 @@ class Log_Endpoint {
 			'recipe_id'     => 0,
 			'recipe_log_id' => 0,
 			'run_number'    => 0,
-		) ) {
+		)
+	) {
 
 		$recipe = $this->logs_factory->recipe()->get_log( $params );
 
 		// Pass the user id to the field resolver.
 		add_filter(
 			'automator_field_resolver_condition_result_user_id',
-			function() use ( $recipe ) {
+			function () use ( $recipe ) {
 				return isset( $recipe['user_id'] ) ? absint( $recipe['user_id'] ) : 0;
 			}
 		);
@@ -171,7 +175,7 @@ class Log_Endpoint {
 		$status_id         = $this->determine_status_id( $this->automator_factory->status(), $recipe['completed'], $flow_items );
 		$recipe_id         = absint( $recipe['automator_recipe_id'] );
 		$end_date          = $this->resolve_end_date( $flow_items );
-		$title             = trim( $recipe['recipe_title'], "\t\n\r\0\x0B" );
+		$title             = trim( $recipe['recipe_title'] );
 		$logic             = strtoupper( $this->logs_factory->trigger()->get_logic( $recipe ) );
 
 		$triggers_statuses = array_column( $triggers_items, 'status_id' );
@@ -268,6 +272,7 @@ class Log_Endpoint {
 			$dt->setTimezone( new \DateTimeZone( Automator()->get_timezone_string() ) );
 
 			require_once __DIR__ . '/log-endpoint/utils/formatters-utils.php';
+
 			return Formatters_Utils::date_time_format( $dt->format( 'Y-m-d H:i:s' ) );
 
 		} catch ( \Exception $e ) {
@@ -291,7 +296,7 @@ class Log_Endpoint {
 		if ( $a['_timestamp'] > $b['_timestamp'] ) { // @phpstan-ignore-line Assume correct when sorting already.
 			return 1;
 		} elseif ( $a['_timestamp'] < $b['_timestamp'] ) { // @phpstan-ignore-line Assume correct when sorting already.
-			return -1;
+			return - 1;
 		}
 
 		return 0;
@@ -309,7 +314,7 @@ class Log_Endpoint {
 
 		$delete_url = sprintf(
 			'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&delete_specific_activity=1&wpnonce='
-				. wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ),
+			. wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ),
 			admin_url( 'edit.php' ),
 			'uo-recipe',
 			'uncanny-automator-admin-logs',

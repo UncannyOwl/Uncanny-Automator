@@ -18,12 +18,18 @@ final class Loop implements \JsonSerializable {
 
 	protected $type = 'loop';
 	protected $id   = null;
-	// 0 = Instant actions, 1 = Closures, 2 = Loop
+
+	/**
+	 * The order of items based on its type.
+	 * 0 = normal actions; 1 = closures; 2 = loop.
+	 * @var int
+	 */
 	protected $_ui_order           = 2; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 	protected $iterable_expression = array();
 	protected $run_on              = null;
 	protected $filters             = array();
 	protected $items               = array();
+	protected $tokens              = array();
 
 	protected static $loop_id;
 	protected static $recipe;
@@ -37,9 +43,19 @@ final class Loop implements \JsonSerializable {
 
 		$this->id = absint( $loop_id );
 		$this->hydrate_iterable_expression();
+		$this->hydrate_tokens();
 		$this->hydrate_filters();
 		$this->hydrate_items( $recipe );
 
+	}
+
+	/**
+	 * Hydrates the tokens properties.
+	 *
+	 * @return void
+	 */
+	private function hydrate_tokens() {
+		$this->tokens = (array) apply_filters( 'automator_recipe_main_object_loop_tokens_items', array(), $this );
 	}
 
 	/**

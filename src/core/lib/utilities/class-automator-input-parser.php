@@ -362,18 +362,21 @@ class Automator_Input_Parser {
 							if ( isset( $args['recipe_triggers'] ) ) {
 								$replace_args['recipe_triggers'] = $args['recipe_triggers'];
 							}
+
+							if ( isset( $trigger_args['loop'] ) && is_array( $trigger_args['loop'] ) ) {
+								$replace_args['loop'] = $trigger_args['loop'];
+							}
+
 							$replaceable = $this->replace_recipe_variables( $replace_args, $trigger_args, $trigger_id );
 						}
 					}
 				}
-			}
-			/**
-			 * This section of code is for the "Common tokens"
-			 *
-			 * @todo Refactor this IF condition because the primary IF condition is not related to the "elseif" at all.
-			 */
-			elseif ( in_array( $match, $this->defined_tokens, true ) ) {
+			} elseif ( in_array( $match, $this->defined_tokens, true ) ) {
 				/**
+				 * ☝️☝️☝️ This section of code is for the "Common tokens"
+				 *
+				 * @todo Refactor this IF condition because the primary IF condition is not related to the "elseif" at all.
+				 *
 				 * The $args['user_id'] is the user ID that is passed into the action.
 				 * While $trigger_args['user_id'] is the user ID of the user who fired the Trigger.
 				 */
@@ -416,7 +419,20 @@ class Automator_Input_Parser {
 
 			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable, $args );
 
+			/**
+			 * @since 5.3 Parsing 3rd-party tokens here. Loop is considered as 3rd-party.
+			 */
+			if ( str_starts_with( $match, 'TOKEN_EXTENDED' ) ) {
+				// Each token parts is separated by a ':' colon.
+				$token_parts = (array) explode( ':', strtolower( $match ) );
+				// We need to extract the first and second argument.
+				list( $extended_flag, $extension_identifier ) = $token_parts;
+				// Then use it as a filter so we dont have to check it. It is also safer.
+				$field_text = apply_filters( "automator_token_parser_extended_{$extension_identifier}", $field_text, $match, $args, $trigger_args );
+			}
+
 			$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
+
 		} // End foreach.
 
 		// Only replace open/close curly brackets if it's {{TOKEN}} style structure.
@@ -468,10 +484,10 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false
-				 || strpos( $piece, '_URL' ) !== false
-				 || strpos( $piece, '_EXCERPT' ) !== false
-				 || strpos( $piece, '_THUMB_URL' ) !== false
-				 || strpos( $piece, '_THUMB_ID' ) !== false ) {
+				|| strpos( $piece, '_URL' ) !== false
+				|| strpos( $piece, '_EXCERPT' ) !== false
+				|| strpos( $piece, '_THUMB_URL' ) !== false
+				|| strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];

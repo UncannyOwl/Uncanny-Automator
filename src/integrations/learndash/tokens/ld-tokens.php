@@ -1189,9 +1189,11 @@ class Ld_Tokens {
 			return '';
 		}
 
+		// Retrieve the questions in the same order as the quiz.
 		$quiz_questions = learndash_get_quiz_questions( $quiz_post_id );
 		if ( empty( $quiz_questions ) ) {
-			return '';
+			// Issues arose with LearnDash 4.10 where this function is no longer returning questions consistently.
+			return $statistics;
 		}
 
 		// Order the questions in the same order as the quiz see WpProQuiz_View_StatisticsAjax.

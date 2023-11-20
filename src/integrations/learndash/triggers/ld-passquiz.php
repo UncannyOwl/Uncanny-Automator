@@ -23,8 +23,19 @@ class LD_PASSQUIZ {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+
 		$this->trigger_code = 'LD_PASSQUIZ';
 		$this->trigger_meta = 'LDQUIZ';
+
+		// Migrate saved add_action data.
+		add_action(
+			'admin_init',
+			function () {
+				Learndash_Helpers::migrate_trigger_learndash_quiz_submitted_action_data( $this->trigger_code );
+			},
+			99
+		);
+
 		$this->define_trigger();
 	}
 
@@ -42,10 +53,13 @@ class LD_PASSQUIZ {
 			'sentence'            => sprintf( esc_attr__( 'A user passes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
 			'select_option_name'  => esc_attr__( 'A user passes {{a quiz}}', 'uncanny-automator' ),
-			'action'              => 'learndash_quiz_completed',
+			'action'              => array(
+				'learndash_quiz_submitted',
+				'learndash_essay_quiz_data_updated',
+			),
 			'priority'            => 15,
-			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'learndash_quiz_completed' ),
+			'accepted_args'       => 4,
+			'validation_function' => array( $this, 'validate_trigger' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options_callback'    => array( $this, 'load_options' ),
 		);
@@ -70,54 +84,72 @@ class LD_PASSQUIZ {
 	/**
 	 * Validation function when the trigger action is hit
 	 *
-	 * @param $data
+	 * @param $args - Params added to hook.
+	 *
+	 * @return void
 	 */
-	public function learndash_quiz_completed( $data, $current_user ) {
+	public function validate_trigger( ...$args ) {
+		$user    = false;
+		$quiz    = false;
+		$helpers = new Learndash_Helpers( false );
 
-		if ( empty( $data ) ) {
-			return;
-		}
+		if ( did_action( 'learndash_quiz_submitted' ) ) {
 
-		$q_status = $data['pass'];
-
-		if ( 0 !== (int) $q_status ) {
-
-			$user    = $current_user;
-			$quiz    = $data['quiz'];
-			$post_id = is_object( $quiz ) ? $quiz->ID : $quiz;
-
-			if ( empty( $user ) ) {
-				$user = wp_get_current_user();
+			list( $data, $current_user ) = $args;
+			$passed                      = $helpers->submitted_quiz_pased( $data );
+			if ( is_wp_error( $passed ) || empty( $passed ) ) {
+				return;
 			}
 
-			$pass_args = array(
-				'code'    => $this->trigger_code,
-				'meta'    => $this->trigger_meta,
-				'post_id' => (int) $post_id,
-				'user_id' => $user->ID,
-			);
+			$quiz = $data['quiz'];
+			$user = $current_user;
 
-			$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+		} elseif ( did_action( 'learndash_essay_quiz_data_updated' ) ) {
+			list ( $pro_quiz_id, $question_id, $updated_scoring, $essay ) = $args;
+			$passed                                                       = $helpers->graded_quiz_passed( $essay, $pro_quiz_id );
+			if ( is_wp_error( $passed ) || empty( $passed ) ) {
+				return;
+			}
 
-			if ( $args ) {
-				foreach ( $args as $result ) {
-					if ( true === $result['result'] ) {
-						$insert = array(
-							'user_id'        => (int) $result['args']['user_id'],
-							'trigger_id'     => (int) $result['args']['trigger_id'],
-							'trigger_log_id' => (int) $result['args']['trigger_log_id'],
-							'run_number'     => (int) $result['args']['run_number'],
-						);
+			$quiz = get_post_meta( $essay->ID, 'quiz_post_id', true );
+			$user = get_user_by( 'id', $essay->post_author );
+		}
 
-						$insert['meta_key']   = 'quiz_id';
-						$insert['meta_value'] = $post_id;
-						Automator()->insert_trigger_meta( $insert );
+		// Process passed trigger.
+		$post_id = is_object( $quiz ) ? $quiz->ID : $quiz;
+		if ( empty( $user ) ) {
+			$user = wp_get_current_user();
+		}
 
-						Automator()->maybe_trigger_complete( $result['args'] );
+		$pass_args = array(
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => (int) $post_id,
+			'user_id' => $user->ID,
+		);
 
-					}
+		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+
+		if ( $args ) {
+			foreach ( $args as $result ) {
+				if ( true === $result['result'] ) {
+					$insert = array(
+						'user_id'        => (int) $result['args']['user_id'],
+						'trigger_id'     => (int) $result['args']['trigger_id'],
+						'trigger_log_id' => (int) $result['args']['trigger_log_id'],
+						'run_number'     => (int) $result['args']['run_number'],
+					);
+
+					$insert['meta_key']   = 'quiz_id';
+					$insert['meta_value'] = $post_id;
+					Automator()->insert_trigger_meta( $insert );
+
+					Automator()->maybe_trigger_complete( $result['args'] );
+
 				}
 			}
 		}
+
 	}
+
 }

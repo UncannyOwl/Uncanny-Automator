@@ -110,7 +110,7 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 				'target_field'        => 'WPTAXONOMIES',
 				'endpoint'            => 'select_post_type_taxonomies',
 				'use_zero_as_default' => intval( '-1' ),
-				'default_value'       => 'post',
+			//              'default_value'       => 'post',
 			)
 		);
 

@@ -23,8 +23,19 @@ class LD_FAILQUIZ {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+
 		$this->trigger_code = 'LD_FAILQUIZ';
 		$this->trigger_meta = 'LDQUIZ';
+
+		// Migrate saved add_action data.
+		add_action(
+			'admin_init',
+			function () {
+				Learndash_Helpers::migrate_trigger_learndash_quiz_submitted_action_data( $this->trigger_code );
+			},
+			99
+		);
+
 		$this->define_trigger();
 	}
 
@@ -42,10 +53,13 @@ class LD_FAILQUIZ {
 			'sentence'            => sprintf( esc_attr__( 'A user fails {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
 			'select_option_name'  => esc_attr__( 'A user fails {{a quiz}}', 'uncanny-automator' ),
-			'action'              => 'learndash_quiz_submitted',
+			'action'              => array(
+				'learndash_quiz_submitted',
+				'learndash_essay_quiz_data_updated',
+			),
 			'priority'            => 15,
-			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'quiz_submitted' ),
+			'accepted_args'       => 4,
+			'validation_function' => array( $this, 'validate_trigger' ),
 			// very last call in WP, we need to make sure they viewed the page and didn't skip before is was fully viewable
 			'options_callback'    => array( $this, 'load_options' ),
 		);
@@ -70,34 +84,51 @@ class LD_FAILQUIZ {
 	/**
 	 * Validation function when the trigger action is hit
 	 *
-	 * @param $data
+	 * @param $args - Params added to hook.
+	 *
+	 * @return void
 	 */
-	public function quiz_submitted( $data, $current_user ) {
+	public function validate_trigger( ...$args ) {
+		$user    = false;
+		$quiz    = false;
+		$helpers = new Learndash_Helpers( false );
 
-		if ( empty( $data ) ) {
-			return;
-		}
+		if ( did_action( 'learndash_quiz_submitted' ) ) {
 
-		$q_status = $data['pass'];
-
-		if ( 0 === (int) $q_status ) {
-
-			$user    = $current_user;
-			$quiz    = $data['quiz'];
-			$post_id = is_object( $quiz ) ? $quiz->ID : $quiz;
-
-			if ( empty( $user ) ) {
-				$user = wp_get_current_user();
+			list( $data, $current_user ) = $args;
+			$passed                      = $helpers->submitted_quiz_pased( $data );
+			if ( is_wp_error( $passed ) || ! empty( $passed ) ) {
+				return;
 			}
 
-			$args = array(
-				'code'    => $this->trigger_code,
-				'meta'    => $this->trigger_meta,
-				'post_id' => (int) $post_id,
-				'user_id' => $user->ID,
-			);
+			$quiz = $data['quiz'];
+			$user = $current_user;
 
-			Automator()->maybe_add_trigger_entry( $args );
+		} elseif ( did_action( 'learndash_essay_quiz_data_updated' ) ) {
+			list ( $pro_quiz_id, $question_id, $updated_scoring, $essay ) = $args;
+			$passed                                                       = $helpers->graded_quiz_passed( $essay, $pro_quiz_id );
+			if ( is_wp_error( $passed ) || ! empty( $passed ) ) {
+				return;
+			}
+
+			$quiz = get_post_meta( $essay->ID, 'quiz_post_id', true );
+			$user = get_user_by( 'id', $essay->post_author );
 		}
+
+		// Process failed trigger.
+		$post_id = is_object( $quiz ) ? $quiz->ID : $quiz;
+		if ( empty( $user ) ) {
+			$user = wp_get_current_user();
+		}
+
+		$args = array(
+			'code'    => $this->trigger_code,
+			'meta'    => $this->trigger_meta,
+			'post_id' => (int) $post_id,
+			'user_id' => $user->ID,
+		);
+
+		Automator()->maybe_add_trigger_entry( $args );
 	}
+
 }

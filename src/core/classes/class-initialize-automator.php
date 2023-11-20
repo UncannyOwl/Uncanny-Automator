@@ -157,19 +157,24 @@ class Initialize_Automator extends Set_Up_Automator {
 	 */
 	public function load_framework_integrations() {
 
-		$dirs = scandir( $this->integrations_directory_path );
+		$vendor_dir = dirname( AUTOMATOR_BASE_FILE ) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR;
 
-		foreach ( $dirs as $integration ) {
+		$automator_file_map = include $vendor_dir . 'autoload_filemap.php';
 
-			if ( '.' === $integration || '..' === $integration ) {
-				continue;
-			}
+		if ( empty( $automator_file_map ) ) {
+			return;
+		}
 
-			$load_file_path = $this->integrations_directory_path . DIRECTORY_SEPARATOR . $integration . DIRECTORY_SEPARATOR . 'load.php';
+		foreach ( $automator_file_map as $file ) {
+			include_once $file;
+		}
 
-			if ( file_exists( $load_file_path ) ) {
-				include_once $load_file_path;
-			}
+		if ( empty( $automator_file_map ) ) {
+			return;
+		}
+
+		foreach ( $automator_file_map as $file ) {
+			include_once $file;
 		}
 	}
 }

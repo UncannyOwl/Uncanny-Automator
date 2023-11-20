@@ -114,6 +114,18 @@ class Wpsp_Tokens {
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
+			array(
+				'tokenId'         => 'PRICE_OPTION',
+				'tokenName'       => __( 'Price option', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
+			),
+			array(
+				'tokenId'         => 'QUANTITY_PURCHASED',
+				'tokenName'       => __( 'Quantity', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
+			),
 		);
 
 		$skip_types = apply_filters(
@@ -262,6 +274,12 @@ class Wpsp_Tokens {
 				case 'BILLING_COUNTRY':
 					$value = $customer_data->address->country;
 					break;
+				case 'PRICE_OPTION':
+					$value = $this->get_price_option_values( $replace_args );
+					break;
+				case 'QUANTITY_PURCHASED':
+					$value = $this->get_price_option_values( $replace_args, 'qty' );
+					break;
 			}
 
 			return $value;
@@ -274,6 +292,29 @@ class Wpsp_Tokens {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * @param $replace_args
+	 * @param $type
+	 *
+	 * @return mixed|void
+	 */
+	private function get_price_option_values( $replace_args, $type = 'price' ) {
+		$meta_data = maybe_unserialize( Automator()->db->token->get( 'meta_data', $replace_args ) );
+		if ( 'qty' === $type ) {
+			return $meta_data['simpay_quantity'];
+
+		}
+
+		$price_instance = explode( ':', $meta_data['simpay_price_instances'] );
+		$price_meta_key = simpay_is_livemode() ? '_simpay_prices_live' : '_simpay_prices_test';
+		$prices         = get_post_meta( $meta_data['simpay_form_id'], $price_meta_key, true );
+		foreach ( $prices as $price_key => $price_details ) {
+			if ( $price_key === $price_instance[0] ) {
+				return $price_details['label'];
+			}
+		}
 	}
 
 }

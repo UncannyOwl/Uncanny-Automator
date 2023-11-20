@@ -102,6 +102,13 @@ class Studiocart_Tokens {
 				'tokenIdentifier' => $trigger_meta,
 			);
 
+			$fields[] = array(
+				'tokenId'         => 'payment_option_label',
+				'tokenName'       => __( 'Payment option label', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			);
+
 			if ( ! empty( $fields ) ) {
 				$tokens = array_merge( $tokens, $fields );
 			}
@@ -148,7 +155,7 @@ class Studiocart_Tokens {
 				$order_id       = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'sc_order_id', $trigger_id, $trigger_log_id, $user_id );
 
 				if ( ! empty( $order_id ) ) {
-						$order = sc_setup_order( $order_id, true );
+					$order = sc_setup_order( $order_id, true );
 					if ( ! empty( $order ) ) {
 						switch ( $parse ) {
 							case 'order_id':
@@ -191,6 +198,10 @@ class Studiocart_Tokens {
 								break;
 							case 'product_title':
 								$value = get_the_title( $order['product_id'] );
+								break;
+							case 'payment_option_label':
+								$scorder = new \ScrtOrder( $order_id );
+								$value   = $scorder->item_name;
 								break;
 							default:
 								$token        = $parse;

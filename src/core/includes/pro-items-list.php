@@ -3360,6 +3360,25 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'WC_BOOKINGS'       => array(
+			'name'     => 'WooCommerce Bookings',
+			'pro_only' => 'no',
+			'triggers' => array(
+				array(
+					/* translators: Logged-in trigger - WooCommerce Bookings */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A booking status is changed to {{a specific status}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Anonymous trigger - WooCommerce Bookings */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A booking is updated", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'  => array(),
+		),
 		'WP'                => array(
 			'name'     => 'WordPress Core',
 			'pro_only' => 'no',
