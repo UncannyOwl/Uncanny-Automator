@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Google_Contacts;
 
 use Uncanny_Automator\Integration;
@@ -23,14 +24,17 @@ class Google_Contacts_Integration extends Integration {
 
 		$this->load_hooks();
 
-		$connected = true;
+		$connected = false;
+
+		if ( false !== $this->get_google_client() ) {
+			$connected = true;
+		}
 
 		$this->set_integration( 'GOOGLE_CONTACTS' );
 		$this->set_name( 'Google Contacts' );
 		$this->set_connected( $connected );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/google-contacts-icon.svg' );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'google_contacts' ) );
-
+		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'google-contacts' ) );
 	}
 
 	/**
@@ -39,10 +43,22 @@ class Google_Contacts_Integration extends Integration {
 	protected function load_hooks() {
 
 		// Contact fields.
-		add_action( 'wp_ajax_automator_google_contacts_render_contact_fields', array( $this->helpers, 'render_contact_fields' ) );
+		add_action(
+			'wp_ajax_automator_google_contacts_render_contact_fields',
+			array(
+				$this->helpers,
+				'render_contact_fields',
+			)
+		);
 
 		// Process code callback.
-		add_action( 'wp_ajax_automator_google_contacts_process_code_callback', array( $this->helpers, 'automator_google_contacts_process_code_callback' ) );
+		add_action(
+			'wp_ajax_automator_google_contacts_process_code_callback',
+			array(
+				$this->helpers,
+				'automator_google_contacts_process_code_callback',
+			)
+		);
 
 		// Disconnect.
 		add_action( 'wp_ajax_automator_google_contacts_disconnect', array( $this->helpers, 'disconnect' ) );
@@ -69,5 +85,19 @@ class Google_Contacts_Integration extends Integration {
 		// Contact create.
 		new CONTACT_GROUP_CREATE( $this->helpers );
 
+	}
+
+	/**
+	 * @return false|mixed
+	 */
+	public function get_google_client() {
+
+		$access_token = automator_get_option( 'automator_google_contacts_credentials', array() );
+
+		if ( empty( $access_token ) || ! isset( $access_token['access_token'] ) ) {
+			return false;
+		}
+
+		return $access_token;
 	}
 }
