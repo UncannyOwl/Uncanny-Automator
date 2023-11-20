@@ -133,6 +133,18 @@ class Pro_Upsell {
 						'link'  => 'https://automatorplugin.com/knowledge-base/action-filters-conditions/',
 					),
 					array(
+						'label' => esc_html__( 'Loops', 'uncanny-automator' ),
+						'free'  => false,
+						'pro'   => true,
+						'link'  => 'https://automatorplugin.com/knowledge-base/user-loops/',
+					),
+					array(
+						'label' => esc_html__( 'Run now', 'uncanny-automator' ),
+						'free'  => false,
+						'pro'   => true,
+						'link'  => 'https://automatorplugin.com/knowledge-base/run-now/',
+					),
+					array(
 						'label' => esc_html__( 'Magic buttons and magic links', 'uncanny-automator' ),
 						'free'  => false,
 						'pro'   => true,

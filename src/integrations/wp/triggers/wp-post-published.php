@@ -85,7 +85,7 @@ class WP_POST_PUBLISHED {
 			array(
 				'token'               => false,
 				'use_zero_as_default' => true,
-				'default_value'       => 'post',
+			//              'default_value'       => 'post',
 			)
 		);
 

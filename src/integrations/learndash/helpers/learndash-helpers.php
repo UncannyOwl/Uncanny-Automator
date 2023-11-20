@@ -127,9 +127,9 @@ class Learndash_Helpers {
 		$args = array(
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
+		'orderby'            => 'title',
+		'order'              => 'ASC',
+		'post_status'        => 'publish',
 		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
@@ -279,9 +279,9 @@ class Learndash_Helpers {
 		$args = array(
 			'post_type'      => 'sfwd-lessons',
 			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
+		'orderby'            => 'title',
+		'order'              => 'ASC',
+		'post_status'        => 'publish',
 		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_lesson, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
@@ -392,9 +392,9 @@ class Learndash_Helpers {
 		$args = array(
 			'post_type'      => 'sfwd-topic',
 			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
+		'orderby'            => 'title',
+		'order'              => 'ASC',
+		'post_status'        => 'publish',
 		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any topic', 'uncanny-automator' ) );
@@ -504,9 +504,9 @@ class Learndash_Helpers {
 		$args = array(
 			'post_type'      => 'groups',
 			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
+		'orderby'            => 'title',
+		'order'              => 'ASC',
+		'post_status'        => 'publish',
 		);
 
 		if ( $all_label ) {
@@ -625,9 +625,9 @@ class Learndash_Helpers {
 		$args = array(
 			'post_type'      => 'sfwd-quiz',
 			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
+		'orderby'            => 'title',
+		'order'              => 'ASC',
+		'post_status'        => 'publish',
 		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any quiz', 'uncanny-automator' ) );
@@ -1036,4 +1036,132 @@ class Learndash_Helpers {
 		return $is_activated;
 	}
 
+	/**
+	 * Submitted Quiz passed check.
+	 *
+	 * @param array $data - submitted quiz data.
+	 *
+	 * @return mixed - WP_Error || true if passed, false otherwise.
+	 */
+	public function submitted_quiz_pased( $data ) {
+		if ( empty( $data ) || ! is_array( $data ) ) {
+			return new \WP_Error( 'no_data', __( 'No data provided', 'uncanny-automator' ) );
+		}
+
+		$passed = ! empty( (int) $data['pass'] );
+		// Quiz has been passed return true.
+		if ( $passed ) {
+			return true;
+		}
+
+		// Check if grading is enabled.
+		$has_graded = isset( $data['has_graded'] ) ? absint( $data['has_graded'] ) : 0;
+		$has_graded = ! empty( $has_graded );
+		$graded     = $has_graded && isset( $data['graded'] ) ? $data['graded'] : false;
+
+		if ( $has_graded ) {
+			if ( ! empty( $graded ) ) {
+				foreach ( $graded as $grade_item ) {
+					// Quiz has not been graded yet.
+					if ( isset( $grade_item['status'] ) && 'not_graded' === $grade_item['status'] ) {
+						return new \WP_Error( 'not_graded', __( 'Quiz has not been graded', 'uncanny-automator' ) );
+					}
+				}
+			}
+		}
+
+		// Quiz has not been passed.
+		return false;
+	}
+
+	/**
+	 * Graded Essay - Quiz passed check.
+	 *
+	 * @param array $essay - essay post object.
+	 * @param int $pro_quiz_id - quiz ID.
+	 *
+	 * @return mixed - WP_Error || true if passed, false otherwise.
+	 */
+	public function graded_quiz_passed( $essay, $pro_quiz_id ) {
+
+		if ( ! is_a( $essay, 'WP_Post' ) || 'sfwd-essays' !== $essay->post_type ) {
+			return new \WP_Error( 'essay', __( 'Not an essay post.', 'uncanny-automator' ) );
+		}
+
+		// Not graded yet.
+		if ( 'graded' !== $essay->post_status ) {
+			return new \WP_Error( 'not_graded', __( 'Quiz has not been graded', 'uncanny-automator' ) );
+		}
+
+		// Set vars to determine if the Quiz passed.
+		$course_id      = get_post_meta( $essay->ID, 'course_id', true );
+		$course_id      = absint( $course_id );
+		$pro_quiz_id    = absint( $pro_quiz_id );
+		$user_quiz_meta = get_user_meta( $essay->post_author, '_sfwd-quizzes', true );
+		$user_quiz_meta = maybe_unserialize( $user_quiz_meta );
+		if ( ! is_array( $user_quiz_meta ) ) {
+			return new \WP_Error( 'no_data', __( 'No user quiz data recorded', 'uncanny-automator' ) );
+		}
+		// Reverse the array so we can loop from the latest quiz attempt.
+		$user_quiz_meta = array_reverse( $user_quiz_meta );
+
+		foreach ( $user_quiz_meta as $quiz ) {
+			if ( $pro_quiz_id === absint( $quiz['pro_quizid'] ) && $course_id === absint( $quiz['course'] ) ) {
+				$graded = isset( $quiz['graded'] ) ? $quiz['graded'] : false;
+				if ( ! empty( $graded ) && is_array( $graded ) ) {
+					// Ensure the currently graded quiz ID is in the Graded array.
+					$graded_posts = wp_list_pluck( $graded, 'status', 'post_id' );
+					if ( ! key_exists( $essay->ID, $graded_posts ) ) {
+						continue;
+					}
+					// Validate all graded items have been graded.
+					if ( in_array( 'not_graded', $graded_posts, true ) ) {
+						return new \WP_Error( 'not_graded', __( 'All quizzes have not been graded', 'uncanny-automator' ) );
+					}
+					// All graded items have been graded return pass or fail bool.
+					return absint( $quiz['pass'] );
+				}
+			}
+		}
+
+		return new \WP_Error( 'no_data', __( 'No quiz data recorded', 'uncanny-automator' ) );
+	}
+
+	/**
+	 * Migrate Graded Quiz Trigger Action Data.
+	 *
+	 * @param string $code - trigger code.
+	 *
+	 * @return void
+	 */
+	public static function migrate_trigger_learndash_quiz_submitted_action_data( $code ) {
+		$option_key = strtolower( $code . '_action_migrated' );
+		// Bail if already migrated.
+		if ( 'yes' === get_option( $option_key, 'no' ) ) {
+			return;
+		}
+		global $wpdb;
+		// Get all post IDs where `code` = $code and `add_action` = `learndash_quiz_submitted`
+		$post_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s AND post_id IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s)",
+				'code',
+				$code,
+				'add_action',
+				'learndash_quiz_submitted'
+			)
+		);
+		// Update the `meta_value` of the `add_action` meta key for the selected posts
+		if ( ! empty( $post_ids ) ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id IN (" . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ') AND meta_key = %s AND meta_value = %s',
+					maybe_serialize( array( 'learndash_quiz_submitted', 'learndash_essay_quiz_data_updated' ) ),
+					...array_merge( $post_ids, array( 'add_action', 'learndash_quiz_submitted' ) )
+				)
+			);
+		}
+		// Update option flag.
+		update_option( $option_key, 'yes' );
+	}
 }

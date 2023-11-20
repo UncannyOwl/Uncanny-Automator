@@ -70,19 +70,8 @@ class FCRM_ADD_CONTACT {
 	 * @return void
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-		$data['email'] = Automator()->parse->text( $action_data['meta']['FCRMUSEREMAIL'], $recipe_id, $user_id, $args );
-		//      $subscriber    = Subscriber::where( 'email', $data['email'] )->first();
-		//
-		//      if ( ! is_null( $subscriber ) ) {
-		//          $action_data['do-nothing']           = true;
-		//          $action_data['complete_with_errors'] = true;
-		//          /* translators: Subscriber email */
-		//          $message = sprintf( esc_html__( 'Duplicate email: %s, please use different email address.', 'uncanny-automator' ), $data['email'] );
-		//          Automator()->complete_action( $user_id, $action_data, $recipe_id, $message );
-		//
-		//          return;
-		//      }
 
+		$data['email']           = Automator()->parse->text( $action_data['meta']['FCRMUSEREMAIL'], $recipe_id, $user_id, $args );
 		$data['first_name']      = Automator()->parse->text( $action_data['meta']['FCRMFIRSTNAME'], $recipe_id, $user_id, $args );
 		$data['last_name']       = Automator()->parse->text( $action_data['meta']['FCRMLASTNAME'], $recipe_id, $user_id, $args );
 		$data['phone']           = Automator()->parse->text( $action_data['meta']['FCRMPHONE'], $recipe_id, $user_id, $args );
@@ -121,7 +110,8 @@ class FCRM_ADD_CONTACT {
 			}
 		}
 
-		$contact = FluentCrmApi( 'contacts' )->createOrUpdate( $data );
+		$contact = FluentCrmApi( 'contacts' )->createOrUpdate( $data, true );
+
 		if ( ! $contact ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;

@@ -102,7 +102,11 @@ class WPF_SUBFORM {
 		}
 
 		$user_id = get_current_user_id();
-		$args    = array(
+		if ( empty( $user_id ) ) {
+			return;
+		}
+
+		$args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
 			'post_id' => intval( $form_data['id'] ),

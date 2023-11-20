@@ -9,6 +9,8 @@ namespace Uncanny_Automator\Integrations\Brevo;
  */
 class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
+	public $prefix = 'BREVO_ADD_UPDATE_CONTACT';
+
 	/**
 	 * Define and register the action by pushing it into the Automator object.
 	 *
@@ -19,7 +21,7 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$this->helpers = array_shift( $this->dependencies );
 
 		$this->set_integration( 'BREVO' );
-		$this->set_action_code( 'ADD_UPDATE_CONTACT' );
+		$this->set_action_code( $this->prefix . '_CODE' );
 		$this->set_action_meta( 'CONTACT_EMAIL' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/brevo/' ) );

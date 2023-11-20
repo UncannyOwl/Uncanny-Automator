@@ -172,41 +172,72 @@ class Automator_Load {
 	 */
 	public function automator_activated( $plugin ) {
 
-		if ( plugin_basename( AUTOMATOR_BASE_FILE ) === $plugin && true === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
+		// If it's not Automator, bail
+		if ( plugin_basename( AUTOMATOR_BASE_FILE ) !== $plugin ) {
+			return;
+		}
 
-			$checked = filter_input( INPUT_POST, 'checked', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		// If disbaled by filter
+		if ( false === apply_filters( 'automator_on_activate_redirect_to_dashboard', true ) ) {
+			return;
+		}
 
-			// Bail if bulked activated and there are more than 1 plugin.
-			if ( is_array( $checked ) && count( $checked ) >= 2 ) {
-				return;
-			}
+		// Check if the current user can activate plugin
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
 
-			// Bail if not from `wp-admin/plugins.php` (e.g coming from an ajax, or unit test)
-			if ( false !== wp_get_referer() && ! strpos( wp_get_referer(), 'wp-admin/plugins.php' ) ) {
-				return;
-			}
+		// If activated via AJAX or REST
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX || defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return;
+		}
 
-			// Bail if from Codeception WPTestCase.
-			if ( class_exists( '\Codeception\TestCase\WPTestCase' ) ) {
-				return;
-			}
+		// If activated via CRON
+		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+			return;
+		}
 
-			// Bail if in WP CLI mode.
-			if ( defined( 'WP_CLI' ) && WP_CLI ) {
-				return;
-			}
+		// If not defined cli
+		if ( function_exists( 'php_sapi_name' ) && php_sapi_name() === 'cli' ) {
+			return;
+		}
 
-			// If the site is not previously connected, let's redirect to Setup Wizard
-			if ( class_exists( '\Uncanny_Automator\Api_Server' ) && empty( Api_Server::get_license_key() ) ) {
-				wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-setup-wizard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
-				exit();
+		// Bail if from Codeception WPTestCase.
+		if ( class_exists( '\Codeception\TestCase\WPTestCase' ) ) {
+			return;
+		}
 
-			}
+		// Bail if in WP CLI mode.
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
 
-			// Else, redirect back to Dashboard
-			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		// If HTTP_USER_AGENT is missing for an automated script
+		if ( empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
+			return;
+		}
+
+		$checked = filter_input( INPUT_POST, 'checked', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+		// Bail if bulked activated and there are more than 1 plugin.
+		if ( is_array( $checked ) && count( $checked ) >= 2 ) {
+			return;
+		}
+
+		// Bail if not from `wp-admin/plugins.php` (e.g coming from an ajax, or unit test)
+		if ( ! check_admin_referer( 'activate-plugin_' . $plugin ) ) {
+			return;
+		}
+
+		// If the site is not previously connected, let's redirect to Setup Wizard
+		if ( class_exists( '\Uncanny_Automator\Api_Server' ) && empty( Api_Server::get_license_key() ) ) {
+			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-setup-wizard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}
+
+		// Else, redirect back to Dashboard
+		wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		exit();
 	}
 
 	/**
@@ -689,7 +720,9 @@ class Automator_Load {
 	 * @return bool
 	 */
 	public function any_active_recipe() {
-		$results = get_transient( 'automator_any_recipes_active' );
+		// Check if cache exists
+		$results = wp_cache_get( 'automator_any_recipes_active' );
+
 		if ( ! empty( $results ) && 'yes' === $results ) {
 			return true;
 		}
@@ -707,7 +740,9 @@ class Automator_Load {
 			if ( false === $results ) {
 				$val = 'no';
 			}
-			set_transient( 'automator_any_recipes_active', $val, 10 );
+
+			// Instead of transient, lets use cache
+			wp_cache_set( 'automator_any_recipes_active', $val, '', 2 * MINUTE_IN_SECONDS );
 		}
 
 		return $results;

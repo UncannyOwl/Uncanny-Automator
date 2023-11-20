@@ -252,38 +252,61 @@ class Automator_Utilities {
 	}
 
 	/**
+	 * Wrapper method for ajax_auth_check for convenience.
+	 *
+	 * Sends back JSON reponse if nonce is failing.
+	 *
+	 * @return void
+	 */
+	public function verify_nonce( $post = array() ) {
+		return $this->ajax_auth_check( $post );
+	}
+
+	/**
 	 * Verifies that a correct security nonce was used with time limit.
 	 *
-	 * @param array $post
+	 * @param mixed[] $post
+	 *
+	 * @return void
 	 */
 	public function ajax_auth_check( $post = array() ) {
+
 		$return = array();
+
 		// Check if nonce is available, if not just bail.
 		if ( ! isset( $_POST['nonce'] ) && ! isset( $post['nonce'] ) ) {
+
 			$return['status'] = 'auth-failed';
 			$return['error']  = esc_html__( 'Automator did not receive nonce.', 'uncanny-automator' );
-			echo wp_json_encode( $return );
-			die();
+
+			wp_send_json( $return );
+
 		}
 
 		$capability = 'manage_options';
 		$capability = apply_filters_deprecated( 'modify_recipe', array( $capability ), '3.0', 'automator_capability_required' );
 		$capability = apply_filters( 'automator_capability_required', $capability, $post );
+
 		// Check if the current user is capable of calling this auth.
 		if ( ! current_user_can( $capability ) ) {
+
 			$return['status'] = 'auth-failed';
 			$return['error']  = esc_html__( 'You do not have permission to update options.', 'uncanny-automator' );
-			echo wp_json_encode( $return );
-			die();
+
+			wp_send_json( $return );
+
 		}
 
 		// check if the nonce is verifiable.
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wp_rest' ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wp_rest' )
+			&& ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) ) {
+
 			$return['status'] = 'auth-failed';
 			$return['error']  = esc_html__( 'nonce validation failed.', 'uncanny-automator' );
-			echo wp_json_encode( $return );
-			die();
+
+			wp_send_json( $return );
 		}
+
 	}
 
 	/**
@@ -341,7 +364,7 @@ class Automator_Utilities {
 		$recipe_types = $this->get_recipe_types();
 
 		foreach ( $recipe_types as $r_t ) {
-			if ( $recipe_id === absint( $r_t->post_id ) ) {
+			if ( absint( $r_t->post_id ) === $recipe_id ) {
 				return $r_t->meta_value;
 			}
 		}

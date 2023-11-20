@@ -82,6 +82,11 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var Memberpress_Helpers
 	 */
 	public $memberpress;
+
+	/**
+	 * @var Memberpress_Courses_Helpers
+	 */
+	public $memberpress_courses;
 	/**
 	 * @var Ninja_Forms_Helpers
 	 */

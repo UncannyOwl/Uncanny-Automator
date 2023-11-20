@@ -381,7 +381,15 @@ class Bdb_Tokens {
 			)
 		);
 
-		// Checkbox
+		$field = xprofile_get_field( absint( $piece ) );
+
+		// Handle social media type first.
+		if ( isset( $field->id ) && isset( $field->type ) && 'socialnetworks' === $field->type ) {
+			list( $field_id, $field_key ) = explode( '|', $piece );
+			return $this->field_social_media_value_retrieve( $field_key, $field->id, $user_id );
+		}
+
+		// Checkbox.
 		if ( is_array( $profile_field_value ) ) {
 
 			return implode( ', ', $profile_field_value );
@@ -439,6 +447,47 @@ class Bdb_Tokens {
 		$tokens = array_merge( $tokens, $fields );
 
 		return $tokens;
+
+	}
+
+	/**
+	 * This method assumes that the field is of social media type.
+	 *
+	 * @param string $field_key The social media field key (e.g. 'facebook', 'twitter').
+	 * @param int $field_id The social media field ID.
+	 * @param int $user_id The user ID.
+	 *
+	 * @return string The field value. Returns empty string if there is not value found.
+	 */
+	private function field_social_media_value_retrieve( $field_key, $field_id, $user_id ) {
+
+		global $wpdb;
+
+		/**
+		 * Retrieve the field value directly from the DB. Can't locate a buddyboss function
+		 * that does this for us. If you found one, replace this with BB built-in function.
+		 * @since 4.15
+		 **/
+		$social_media_value_serialized = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT value 
+					FROM {$wpdb->prefix}bp_xprofile_data
+						WHERE field_id = %d
+							AND user_id = %d
+				",
+				$field_id,
+				$user_id
+			)
+		);
+
+		// The value is stored as a serialized array in the DB.
+		$field_val = maybe_unserialize( $social_media_value_serialized );
+
+		if ( is_array( $field_val ) && isset( $field_val[ $field_key ] ) ) {
+			return $field_val[ $field_key ];
+		}
+
+		return ''; // Return empty string.
 
 	}
 

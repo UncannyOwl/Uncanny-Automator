@@ -82,7 +82,7 @@ class Utilities {
 		if ( empty( $key ) ) {
 			$key = md5( uniqid( time() ) );
 			// Make sure to autoload.
-			add_option( $opt_key, $key, 'yes' );
+			add_option( $opt_key, $key, '', 'yes' );
 		}
 
 		return substr( $key, 0, 8 );

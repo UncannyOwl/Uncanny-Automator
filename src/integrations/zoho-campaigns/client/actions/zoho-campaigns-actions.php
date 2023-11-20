@@ -12,9 +12,18 @@ use \Uncanny_Automator\Api_Server as Automator_Client;
  */
 class Zoho_Campaigns_Actions {
 
+	/**
+	 * @var \Uncanny_Automator\Api_Server|null
+	 */
 	protected $client = null;
-	protected $auth   = null;
+	/**
+	 * @var \Uncanny_Automator\Zoho_Campaigns_Client_Auth|null
+	 */
+	protected $auth = null;
 
+	/**
+	 *
+	 */
 	const API_ENDPOINT = 'v2/zoho-campaigns';
 
 	/**
@@ -159,6 +168,13 @@ class Zoho_Campaigns_Actions {
 
 	}
 
+	/**
+	 * @param $body
+	 * @param $action_data
+	 *
+	 * @return array|null
+	 * @throws \Exception
+	 */
 	protected function request( $body, $action_data = null ) {
 
 		$body['access_token'] = $this->auth->get_access_token();
@@ -170,7 +186,7 @@ class Zoho_Campaigns_Actions {
 			'timeout'  => 45,
 		);
 
-		$response = $this->client::api_call( $params );
+		$response = Automator_Client::api_call( $params );
 
 		$this->handle_zoho_campaigns_errors( $response );
 

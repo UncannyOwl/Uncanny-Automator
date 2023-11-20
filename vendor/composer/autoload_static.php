@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit475cef1632b4210643a5d7c9dabd587b
+class ComposerStaticInitd7fed6d09bf0a5fb5956c1310e313be9
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -455,6 +455,7 @@ class ComposerStaticInit475cef1632b4210643a5d7c9dabd587b
         'Uncanny_Automator\\H5p_Helpers' => __DIR__ . '/../..' . '/src/integrations/h5p/helpers/h5p-helpers.php',
         'Uncanny_Automator\\HELPSCOUT_CONVERSATION_CREATE' => __DIR__ . '/../..' . '/src/integrations/helpscout/actions/helpscout-conversation-create.php',
         'Uncanny_Automator\\HELPSCOUT_CONVERSATION_TAG_ADD' => __DIR__ . '/../..' . '/src/integrations/helpscout/actions/helpscout-conversation-tag-add.php',
+        'Uncanny_Automator\\HELPSCOUT_CUSTOMER_PROPERTIES_UPDATE' => __DIR__ . '/../..' . '/src/integrations/helpscout/actions/helpscout-customer-properties-update.php',
         'Uncanny_Automator\\HF_FORMSUBMIT' => __DIR__ . '/../..' . '/src/integrations/happyforms/triggers/hf-formsubmit.php',
         'Uncanny_Automator\\HS_CONVERSATION_CUSTOMER_REPLY_RECEIVED' => __DIR__ . '/../..' . '/src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php',
         'Uncanny_Automator\\HS_CONVERSATION_TAG_UPDATED' => __DIR__ . '/../..' . '/src/integrations/helpscout/triggers/hs-conversation-tag-updated.php',
@@ -526,6 +527,12 @@ class ComposerStaticInit475cef1632b4210643a5d7c9dabd587b
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date-timestamp.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-time.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-timestamp.php',
+        'Uncanny_Automator\\Integrations\\Google_Contacts\\CONTACT_GROUP_ADD_TO' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/contact-group-add-to.php',
+        'Uncanny_Automator\\Integrations\\Google_Contacts\\CONTACT_GROUP_CREATE' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/contact-group-create.php',
+        'Uncanny_Automator\\Integrations\\Google_Contacts\\CREATE' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/create.php',
+        'Uncanny_Automator\\Integrations\\Google_Contacts\\Google_Contacts_Helpers' => __DIR__ . '/../..' . '/src/integrations/google-contacts/helpers/google-contacts-helper.php',
+        'Uncanny_Automator\\Integrations\\Google_Contacts\\Google_Contacts_Integration' => __DIR__ . '/../..' . '/src/integrations/google-contacts/google-contacts-integration.php',
+        'Uncanny_Automator\\Integrations\\Google_Contacts\\Google_Contacts_Settings' => __DIR__ . '/../..' . '/src/integrations/google-contacts/settings/google-contacts-settings.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_FORM_ENTRY_UPDATED' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-subform.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform.php',
@@ -560,6 +567,19 @@ class ComposerStaticInit475cef1632b4210643a5d7c9dabd587b
         'Uncanny_Automator\\Integrations\\RafflePress\\RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY' => __DIR__ . '/../..' . '/src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php',
         'Uncanny_Automator\\Integrations\\RafflePress\\RafflePress_Integration' => __DIR__ . '/../..' . '/src/integrations/rafflepress/class-rafflepress-integration.php',
         'Uncanny_Automator\\Integrations\\RafflePress\\Rafflepress_Helpers' => __DIR__ . '/../..' . '/src/integrations/rafflepress/helpers/rafflepress-helpers.php',
+        'Uncanny_Automator\\Integrations\\Sendy\\SENDY_ADD_UPDATE_LIST_CONTACT' => __DIR__ . '/../..' . '/src/integrations/sendy/actions/sendy-add-update-list-contact.php',
+        'Uncanny_Automator\\Integrations\\Sendy\\SENDY_DELETE_LIST_CONTACT' => __DIR__ . '/../..' . '/src/integrations/sendy/actions/sendy-delete-list-contact.php',
+        'Uncanny_Automator\\Integrations\\Sendy\\SENDY_UNSUBSCRIBE_LIST_CONTACT' => __DIR__ . '/../..' . '/src/integrations/sendy/actions/sendy-unsubscribe-list-contact.php',
+        'Uncanny_Automator\\Integrations\\Sendy\\Sendy_Helpers' => __DIR__ . '/../..' . '/src/integrations/sendy/helpers/sendy-helpers.php',
+        'Uncanny_Automator\\Integrations\\Sendy\\Sendy_Integration' => __DIR__ . '/../..' . '/src/integrations/sendy/sendy-integration.php',
+        'Uncanny_Automator\\Integrations\\Sendy\\Sendy_Settings' => __DIR__ . '/../..' . '/src/integrations/sendy/settings/sendy-settings.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Architect\\FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/triggers/form-submitted.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/helpers/thrive-architect-helpers.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/thrive-architect-integration.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Architect\\USER_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/triggers/user-form-submitted.php',
+        'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\WC_BOOKINGS_ANON_BOOKING_CREATED' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/triggers/wc-bookings-anon-booking-created.php',
+        'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Wc_Bookings_Helpers' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php',
+        'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Woocommerce_Bookings_Integration' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/woocommerce-bookings-integration.php',
         'Uncanny_Automator\\Integromat_Helpers' => __DIR__ . '/../..' . '/src/integrations/integromat/helpers/integromat-helpers.php',
         'Uncanny_Automator\\JETCRM_COMPANY_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-company-created.php',
         'Uncanny_Automator\\JETCRM_CONTACT_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-contact-created.php',
@@ -861,6 +881,7 @@ class ComposerStaticInit475cef1632b4210643a5d7c9dabd587b
         'Uncanny_Automator\\UM_USERROLECHANGE' => __DIR__ . '/../..' . '/src/integrations/ultimate-member/triggers/um-userrolechange.php',
         'Uncanny_Automator\\UNCANNYCEUS_AWARDCEUS' => __DIR__ . '/../..' . '/src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php',
         'Uncanny_Automator\\UNCANNYCEUS_EARNSCEUS' => __DIR__ . '/../..' . '/src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php',
+        'Uncanny_Automator\\UNCANNYCEUS_EARNS_NUMBERS_MORE_THAN' => __DIR__ . '/../..' . '/src/integrations/uncanny-ceus/triggers/uncannyceus-earns-numbers-more-than.php',
         'Uncanny_Automator\\UNCANNYCEUS_EARNS_NUMBER_CEUS' => __DIR__ . '/../..' . '/src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php',
         'Uncanny_Automator\\UOA_ERRORS' => __DIR__ . '/../..' . '/src/integrations/uncanny-automator/triggers/uoa-errors.php',
         'Uncanny_Automator\\UOA_RECIPECOMPLETED' => __DIR__ . '/../..' . '/src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php',
@@ -1052,10 +1073,10 @@ class ComposerStaticInit475cef1632b4210643a5d7c9dabd587b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit475cef1632b4210643a5d7c9dabd587b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit475cef1632b4210643a5d7c9dabd587b::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit475cef1632b4210643a5d7c9dabd587b::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit475cef1632b4210643a5d7c9dabd587b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd7fed6d09bf0a5fb5956c1310e313be9::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd7fed6d09bf0a5fb5956c1310e313be9::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitd7fed6d09bf0a5fb5956c1310e313be9::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitd7fed6d09bf0a5fb5956c1310e313be9::$classMap;
 
         }, null, ClassLoader::class);
     }

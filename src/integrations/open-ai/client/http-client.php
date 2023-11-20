@@ -18,6 +18,8 @@ use Uncanny_Automator\Api_Server;
  *     error_log( var_export( $e->getMessage(), true ) );\
  * }\
  *
+ * Dall-E 3 sizes [1024x1024, 1024x1792 or 1792x1024]
+ *
  * @since 4.13
  */
 class HTTP_Client {
@@ -52,6 +54,9 @@ class HTTP_Client {
 	 */
 	protected $response = null;
 
+	/**
+	 * @param \Uncanny_Automator\Api_Server $api
+	 */
 	public function __construct( Api_Server $api ) {
 		$this->api = $api;
 	}
@@ -171,6 +176,9 @@ class HTTP_Client {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function get_url() {
 		return self::API_URL . $this->get_endpoint();
 	}
@@ -182,7 +190,7 @@ class HTTP_Client {
 	 */
 	private function reduce_credits() {
 
-		$this->api::api_call(
+		Api_Server::api_call(
 			array(
 				'endpoint' => 'v2/credits',
 				'body'     => array(
