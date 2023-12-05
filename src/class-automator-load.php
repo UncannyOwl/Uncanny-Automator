@@ -91,7 +91,8 @@ class Automator_Load {
 		// Add the pro links utm_r attributes.
 		add_action( 'admin_footer', array( $this, 'global_utm_r_links' ) );
 
-		add_action( 'activated_plugin', array( $this, 'automator_activated' ) );
+		// Disabling for WP Hive test
+		//add_action( 'activated_plugin', array( $this, 'automator_activated' ) );
 
 		// Show 'Upgrade to Pro' on plugins page.
 		add_filter(

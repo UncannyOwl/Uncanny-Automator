@@ -76,7 +76,13 @@ class Automator_Review {
 
 		add_action( 'wp_ajax_automator_handle_feedback', array( $this, 'handle_feedback' ) );
 
-		add_action( 'wp_ajax_automator_handle_credits_notification_feedback', array( $this, 'handle_feedback_credits' ) );
+		add_action(
+			'wp_ajax_automator_handle_credits_notification_feedback',
+			array(
+				$this,
+				'handle_feedback_credits',
+			)
+		);
 
 		return true;
 
@@ -645,8 +651,8 @@ class Automator_Review {
 
 		// Otherwise, if either of the option below is not 'hidden_forever', return true.
 		$has_undismissed_notification = ! $this->is_credits_notification_hidden_forever( 100 )
-			|| ! $this->is_credits_notification_hidden_forever( 25 )
-			|| ! $this->is_credits_notification_hidden_forever( 0 );
+										|| ! $this->is_credits_notification_hidden_forever( 25 )
+										|| ! $this->is_credits_notification_hidden_forever( 0 );
 
 		if ( $has_undismissed_notification ) {
 			return true;
@@ -678,16 +684,19 @@ class Automator_Review {
 		// Can be an assoc array without if then else condition, but might be hard to read.
 		if ( $credits_remaining <= 0 && ! $this->is_credits_notification_hidden_forever( 0 ) ) {
 			$credits_remaining_args['dismiss_link'] = $this->credits_feedback_url( 0, 'dismiss' );
+
 			return $this->get_template( 'credits-remaining-0', $credits_remaining_args );
 		}
 
 		if ( $credits_remaining <= 25 && ! $this->is_credits_notification_hidden_forever( 25 ) ) {
 			$credits_remaining_args['dismiss_link'] = $this->credits_feedback_url( 25, 'dismiss' );
+
 			return $this->get_template( 'credits-remaining-25', $credits_remaining_args );
 		}
 
 		if ( $credits_remaining <= 100 && ! $this->is_credits_notification_hidden_forever( 100 ) ) {
 			$credits_remaining_args['dismiss_link'] = $this->credits_feedback_url( 100, 'dismiss' );
+
 			return $this->get_template( 'credits-remaining-100', $credits_remaining_args );
 		}
 	}
@@ -724,6 +733,9 @@ class Automator_Review {
 
 		// User spent N_CREDITS_TO_SHOW (20 @ 4.10) credits. Only shows if Automator Pro is not enabled.
 		if ( $this->has_spent_credits( self::N_CREDITS_TO_SHOW ) && ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+
+			$this->review_love_dont_love_banners();
+
 			// Show free credits template.
 			return $this->get_template(
 				'review-credits-used',
@@ -736,6 +748,9 @@ class Automator_Review {
 
 		// Sent count is greater than or equal to self::N_EMAILS_COUNT (30 @ 4.10).
 		if ( $this->get_sent_emails_count() >= self::N_EMAILS_COUNT ) {
+
+			$this->review_love_dont_love_banners();
+
 			// Show sent emails template.
 			return $this->get_template(
 				'review-emails-sent',
@@ -747,6 +762,9 @@ class Automator_Review {
 
 		// Completed recipes count is greater or equals to N_COMPLETED_RECIPE_COUNT (30 @ 4.10).
 		if ( $this->get_completed_recipes_count() >= self::N_COMPLETED_RECIPE_COUNT ) {
+
+			$this->review_love_dont_love_banners();
+
 			// Show recipe count template.
 			return $this->get_template(
 				'review-recipes-count',
@@ -756,6 +774,13 @@ class Automator_Review {
 			);
 		}
 
+		return false;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function review_love_dont_love_banners() {
 		/**
 		 * Always load the following templates.
 		 *
@@ -764,9 +789,6 @@ class Automator_Review {
 		$this->get_template( 'review-user-love-automator' );
 
 		$this->get_template( 'review-user-dont-love-automator' );
-
-		return false;
-
 	}
 
 	/**

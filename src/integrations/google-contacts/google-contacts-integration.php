@@ -35,6 +35,7 @@ class Google_Contacts_Integration extends Integration {
 		$this->set_connected( $connected );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/google-contacts-icon.svg' );
 		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'google-contacts' ) );
+
 	}
 
 	/**

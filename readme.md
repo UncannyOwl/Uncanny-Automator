@@ -5,7 +5,7 @@
 **Requires at least:** 5.4 \
 **Tested up to:** 6.4.1 \
 **Requires PHP:** 7.0 \
-**Stable tag:** 5.3 \
+**Stable tag:** 5.3.0.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -362,6 +362,22 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.3.0.1 [2023-12-05]
+
+**Fixed:**
+
+* Gravity Forms with Uncanny Codes or Uncanny Groups - PHP Error when code is redeemed #4175
+* Instagram - Publish a photo to an Instagram account - Caption line spacing issue #4189
+* Recipe builder - "Add ▼" button doesn't work on Safari #4196
+* Wishlist Member - Add the user to a membership level - Replace deprecated functions #4169
+* WordPress - Post is published triggers - Firing when WordPress auto saves a draft #4191
+
+**Under the hood:**
+
+* Fix uncaught exception during the weekly license check #4193
+* Integration transient type warning in a specific situation #4194
+* Review Banner - Link to WP.org to leave a review is not working as expected #4146
 
 ### 5.3 [2023-11-20]
 

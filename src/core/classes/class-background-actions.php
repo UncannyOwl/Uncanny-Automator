@@ -84,8 +84,12 @@ class Background_Actions {
 		// Make sure the transients are renewed.
 		delete_transient( Api_Server::TRANSIENT_LICENSE_CHECK_FAILED );
 		delete_transient( 'automator_api_license' );
-		// Initiate the license check.
-		return Api_Server::get_license();
+
+		try {
+			return Api_Server::get_license();
+		} catch ( \Exception $e ) {
+			automator_log( $e->getMessage(), 'renew_license_check failed', AUTOMATOR_DEBUG_MODE );
+		}
 	}
 
 	/**

@@ -153,6 +153,11 @@ class INSTAGRAM_PUBLISH_PHOTO {
 		// Get the business account id.
 		$business_account_id = $page_ig_account['instagram_business_account'];
 
+		if ( ! empty( $hashtags ) ) {
+			// Replace new lines with double new lines.
+			$hashtags = str_replace( "\r\n", "\n\n", $hashtags );
+		}
+
 		// Pass as arguments to body.
 		$body = array(
 			'action'                 => 'page-ig-media-publish',

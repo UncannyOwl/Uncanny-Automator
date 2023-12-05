@@ -722,6 +722,12 @@ class Automator_Utilities {
 	 * @return bool
 	 */
 	public function is_wp_post_being_published( $post, $post_before ) {
+
+		// If this is an autosave, bail
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return false;
+		}
+
 		// If this post is not published yet, bail
 		if ( 'publish' !== $post->post_status ) {
 			return false;

@@ -4,6 +4,8 @@ namespace Uncanny_Automator;
 
 use GFFormsModel;
 use Uncanny_Automator_Pro\Gravity_Forms_Pro_Helpers;
+use Uncanny_Automator\Integrations\Gravity_Forms\GF_SUBFORM_CODES;
+use Uncanny_Automator\Integrations\Gravity_Forms\GF_SUBFORM_GROUPS;
 
 /**
  * Class Gravity_Forms_Helpers
@@ -185,7 +187,7 @@ class Gravity_Forms_Helpers {
 	public static function is_uncanny_group_field_exist( $fields ) {
 		$uo_groups_fields = false;
 		foreach ( $fields as $field ) {
-			if ( Integrations\Gravity_Forms\GF_SUBFORM_GROUPS::UO_GROUP_FIELD_TYPE !== $field->type ) {
+			if ( GF_SUBFORM_GROUPS::UO_GROUP_FIELD_TYPE !== $field->type ) {
 				continue;
 			}
 			$uo_groups_fields = true;
@@ -335,7 +337,7 @@ class Gravity_Forms_Helpers {
 
 		$forms = \GFAPI::get_forms();
 
-		$options[-1] = __( 'Any form', 'uncanny-automator' );
+		$options[- 1] = __( 'Any form', 'uncanny-automator' );
 
 		foreach ( $forms as $form ) {
 

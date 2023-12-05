@@ -1563,7 +1563,10 @@ class Admin_Menu {
 
 			$collection_slug = $collection['slug'];
 
-			if ( isset( $collections[ $collection_slug ] ) ) {
+			if ( isset( $collections[ $collection_slug ] ) && is_object( $collections[ $collection_slug ] ) ) {
+				if ( ! isset( $collections[ $collection_slug ]->integrations ) || ! is_array( $collections[ $collection_slug ]->integrations ) ) {
+					$collections[ $collection_slug ]->integrations = array();
+				}
 				$collections[ $collection_slug ]->integrations[] = $integration['post_id'];
 				continue;
 			}

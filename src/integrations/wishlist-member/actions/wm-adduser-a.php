@@ -131,8 +131,11 @@ class WM_ADDUSER_A {
 			'SendMailPerLevel'             => false,
 			'ObeyLevelsAdditionalSettings' => false,
 		);
+
+		$wlm_api = new \WLMAPIMethods( 3600 );
+
 		foreach ( $level_ids as $level_id ) {
-			wlmapi_add_member_to_level( $level_id, $args );
+			$wlm_api->add_member_to_level( $level_id, $args );
 		}
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
