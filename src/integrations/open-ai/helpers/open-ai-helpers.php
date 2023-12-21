@@ -151,7 +151,7 @@ class Open_AI_Helpers {
 
 		try {
 
-			$client->send_request( 'GET' );
+			$client->send_request( 'GET', false );
 			$response = $client->get_response();
 			$models   = array_column( (array) $response['data'], 'id' );
 
@@ -257,7 +257,7 @@ class Open_AI_Helpers {
 
 		try {
 
-			$client->send_request( 'GET' );
+			$client->send_request( 'GET', false );
 			$response        = $client->get_response();
 			$has_gpt4_access = ! empty( $response ) ? 'yes' : 'no';
 

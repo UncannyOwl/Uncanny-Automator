@@ -19,6 +19,13 @@ class Automator_DB {
 	private static $instance;
 
 	/**
+	 *
+	 */
+	public function __construct() {
+		add_action( 'automator_daily_healthcheck', array( __CLASS__, 'fix_automator_db_tables' ) );
+	}
+
+	/**
 	 * Creates singleton instance of class
 	 *
 	 * @return Automator_DB $instance
@@ -48,6 +55,7 @@ class Automator_DB {
 			self::create_tables();
 			self::create_views();
 		}
+
 		$queries        = dbDelta( self::get_schema(), false );
 		$missing_tables = array();
 
@@ -112,6 +120,8 @@ class Automator_DB {
 		$tbl_api_response_log = $wpdb->prefix . 'uap_api_log_response';
 		// API logs tables.
 		$tbl_api_log = $wpdb->prefix . 'uap_api_log';
+		// Count recipe runs
+		$tbl_recipe_counts = $wpdb->prefix . 'uap_recipe_count';
 
 		return "CREATE TABLE {$tbl_recipe_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -258,6 +268,13 @@ CREATE TABLE {$tbl_api_log} (
 `notes` longtext NULL,
 PRIMARY KEY  (`ID`),
 KEY item_log_id (`item_log_id`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_recipe_counts} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`recipe_id` bigint unsigned NOT NULL,
+`runs` bigint unsigned DEFAULT 0 NOT NULL,
+PRIMARY KEY  (`ID`),
+KEY recipe_id (`recipe_id`)
 ) ENGINE=InnoDB {$charset_collate};";
 	}
 
@@ -337,7 +354,6 @@ KEY item_log_id (`item_log_id`)
 		}
 
 		do_action( 'automator_activation_views_after' );
-
 	}
 
 	/**
@@ -698,6 +714,9 @@ FROM {$wpdb->prefix}uap_recipe_log r
 
 	}
 
+	/**
+	 * @return true
+	 */
 	public static function purge_tables() {
 
 		global $wpdb;
@@ -720,4 +739,17 @@ FROM {$wpdb->prefix}uap_recipe_log r
 
 	}
 
+	/**
+	 * @return void
+	 */
+	public static function fix_automator_db_tables() {
+		$missing_views = self::all_views( true );
+
+		// If nothing is missing, bail
+		if ( empty( $missing_views ) ) {
+			return;
+		}
+
+		self::verify_base_tables( true );
+	}
 }

@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Exception;
+
 /**
  * Class Api.
  *
@@ -232,6 +234,11 @@ class Api_Server {
 	 * @return array
 	 */
 	public static function api_call( $params ) {
+
+		if ( true === AUTOMATOR_DISABLE_APP_INTEGRATION_REQUESTS ) {
+			throw new Exception( 'App integrations have been disabled in wp-config.php.', 500 );
+		}
+
 		$api = self::get_instance();
 
 		if ( null !== self::$mock_response ) {

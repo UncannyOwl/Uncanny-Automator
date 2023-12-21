@@ -1,6 +1,8 @@
 <?php
+
 namespace Uncanny_Automator\OpenAI;
 
+use Exception;
 use Uncanny_Automator\Api_Server;
 
 /**
@@ -35,7 +37,7 @@ class HTTP_Client {
 	protected $api = null;
 
 	/**
-	 * @var string $endpoint.
+	 * @var string $endpoint .
 	 */
 	protected $endpoint = '';
 
@@ -60,6 +62,7 @@ class HTTP_Client {
 	public function __construct( Api_Server $api ) {
 		$this->api = $api;
 	}
+
 	/**
 	 * Get $endpoint.
 	 *
@@ -72,7 +75,7 @@ class HTTP_Client {
 	/**
 	 * Set $endpoint.
 	 *
-	 * @param  string  $endpoint  $endpoint.
+	 * @param string $endpoint $endpoint.
 	 *
 	 * @return  self
 	 */
@@ -128,9 +131,15 @@ class HTTP_Client {
 	/**
 	 * @throws \Exception
 	 */
-	public function send_request( $method = 'POST' ) {
+	public function send_request( $method = 'POST', $reduce_credit = true ) {
 
-		$this->reduce_credits();
+		if ( true === AUTOMATOR_DISABLE_APP_INTEGRATION_REQUESTS ) {
+			throw new Exception( 'App integrations have been disabled in wp-config.php.', 500 );
+		}
+
+		if ( $reduce_credit ) {
+			$this->reduce_credits();
+		}
 
 		$body = $this->get_request_body();
 
@@ -189,6 +198,10 @@ class HTTP_Client {
 	 * @throws \Exception
 	 */
 	private function reduce_credits() {
+
+		if ( 'automator_openai_get_models' === automator_filter_input( 'action', INPUT_POST ) ) {
+			return;
+		}
 
 		Api_Server::api_call(
 			array(

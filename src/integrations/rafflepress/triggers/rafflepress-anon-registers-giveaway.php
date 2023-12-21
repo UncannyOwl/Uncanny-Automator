@@ -9,12 +9,19 @@ namespace Uncanny_Automator\Integrations\RafflePress;
  */
 class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trigger {
 
+
+	/**
+	 * @var Rafflepress_Helpers
+	 */
 	protected $helpers;
 
 	/**
 	 * @return mixed|void
 	 */
 	protected function setup_trigger() {
+
+		add_action( 'admin_init', array( $this, 'migrate_the_hook' ) );
+
 		$this->helpers = array_shift( $this->dependencies );
 		$this->set_integration( 'RAFFLE_PRESS' );
 		$this->set_trigger_code( 'ANON_REGISTERED_FOR_GIVEAWAY' );
@@ -23,7 +30,7 @@ class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trig
 		// Trigger sentence - RafflePress
 		$this->set_sentence( sprintf( esc_attr_x( 'Someone registers for {{a giveaway:%1$s}}', 'RafflePress', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Someone registers for {{a giveaway}}', 'RafflePress', 'uncanny-automator' ) );
-		$this->add_action( 'rafflepress_post_entry_add', 90, 4 );
+		$this->add_action( 'rafflepress_giveaway_webhooks', 90, 1 );
 	}
 
 	/**
@@ -103,12 +110,44 @@ class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trig
 			$giveaway_tokens = $this->helpers->hydrate_giveaway_tokens( $hook_args[0]['giveaway_id'] );
 		}
 
-		if ( ! empty( $hook_args[0]['contestant_id'] ) ) {
+		if ( ! empty( $hook_args[0]['name'] ) ) {
 			// Hydrate contestant tokens.
-			$contestant_tokens = $this->helpers->hydrate_contestant_tokens( $hook_args[0]['contestant_id'] );
+			$defaults          = wp_list_pluck( $this->helpers->rafflepress_common_tokens_for_contestant(), 'tokenId' );
+			$tokens            = array_fill_keys( $defaults, '' );
+			$data              = array(
+				'fname'  => $hook_args[0]['first_name'],
+				'lname'  => $hook_args[0]['last_name'],
+				'email'  => $hook_args[0]['email'],
+				'status' => '',
+			);
+			$contestant_tokens = $this->helpers->contestant_token( $data, $tokens );
 		}
 
 		return array_merge( $giveaway_tokens, $contestant_tokens );
 	}
 
+	/**
+	 * @return void
+	 */
+	public function migrate_the_hook() {
+		if ( 'yes' === get_option( 'automator_rafflepress_hook_migration' ) ) {
+			return;
+		}
+
+		global $wpdb;
+		$current_triggers = $wpdb->get_results( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = 'ANON_REGISTERED_FOR_GIVEAWAY' AND meta_key = 'code'" );
+
+		if ( empty( $current_triggers ) ) {
+			update_option( 'automator_rafflepress_hook_migration', 'yes', true );
+
+			return;
+		}
+
+		foreach ( $current_triggers as $t ) {
+			$trigger_id = $t->post_id;
+			update_post_meta( $trigger_id, 'add_action', 'rafflepress_giveaway_webhooks' );
+		}
+
+		update_option( 'automator_rafflepress_hook_migration', 'yes', true );
+	}
 }

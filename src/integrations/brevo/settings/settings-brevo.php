@@ -67,6 +67,22 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 	}
 
 	/**
+	 * Save Submitted Settings.
+	 *
+	 * @return void
+	 */
+	public function settings_updated() {
+		// Gets and saves account details if connected.
+		$account = $this->helpers->get_account();
+		if ( ! empty( $account['status'] ) ) {
+			// Set initial transient data.
+			$options = $this->helpers->get_contact_attributes();
+			$options = $this->helpers->get_lists();
+			$options = $this->helpers->get_templates();
+		}
+	}
+
+	/**
 	 * Main panel content.
 	 *
 	 * @return string - HTML
@@ -74,8 +90,8 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 	public function output_panel_content() {
 
 		$this->api_key              = $this->helpers->get_api_key();
-		$this->is_account_connected = ! empty( $this->get_status() );
-		$this->account              = ! empty( $this->is_account_connected ) ? $this->helpers->get_account() : false;
+		$this->account              = $this->helpers->get_saved_account_details();
+		$this->is_account_connected = ! empty( $this->account['status'] );
 		$this->disconnect_url       = $this->helpers->get_disconnect_url();
 
 		// Formatting.
@@ -95,7 +111,7 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 
 			<?php
 			// If we have an API Key but unable to connect show error message with disconnect button.
-			if ( ! empty( $this->api_key ) && $this->helpers->is_api_key_invalid() ) {
+			if ( ! empty( $this->account['error'] ) ) {
 				?>
 				<uo-alert type="error" heading="<?php echo esc_attr_x( 'Unable to connect to Brevo', 'Brevo', 'uncanny-automator' ); ?>">
 					<?php echo esc_html_x( 'The API key you entered is invalid. Please re-enter your API key again.', 'Brevo', 'uncanny-automator' ); ?>
@@ -305,7 +321,7 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 					<?php
 						printf(
 							/* translators: %s Data type name */
-							esc_html_x( "Use the sync button if %s were updated in the last hour and aren't yet showing in your recipes.", 'Brevo', 'uncanny-automator' ),
+							esc_html_x( "Use the sync button if %s were updated within the last 24hrs and aren't yet showing in your recipes.", 'Brevo', 'uncanny-automator' ),
 							esc_html( strtolower( $name ) )
 						);
 					?>

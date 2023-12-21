@@ -3377,7 +3377,18 @@ function automator_pro_items_list() {
 					'type' => 'anonymous',
 				),
 			),
-			'actions'  => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - WooCommerce Bookings */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Change booking to a specific status", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - WooCommerce Bookings */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Create a booking", 'uncanny-automator' ),
+				),
+			),
 		),
 		'WP'                => array(
 			'name'     => 'WordPress Core',

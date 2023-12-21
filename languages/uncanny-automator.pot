@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 5.3.0.1\n"
+"Project-Id-Version: Uncanny Automator 5.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-05T20:33:18+00:00\n"
+"POT-Creation-Date: 2023-12-21T17:17:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: uncanny-automator\n"
@@ -31,20 +31,18 @@ msgstr ""
 msgid "Uncanny Automator, Uncanny Owl"
 msgstr ""
 
-#: src/class-automator-load.php:140
+#: src/class-automator-load.php:143
 msgctxt "Uncanny Automator"
 msgid "Uncanny Automator cannot currently run in WP Playground environments because Playground cannot support custom tables, cURL or SSL PHP functions. Please consider trying the free Uncanny Automator plugin in your own environment instead."
 msgstr ""
 
-#: src/class-automator-load.php:474
+#: src/class-automator-load.php:486
 msgid "Heads up!"
 msgstr ""
 
 #: src/core/admin/admin-logs/admin-logs.php:42
 #: src/core/admin/admin-logs/admin-logs.php:43
-#: src/core/admin/admin-settings/tabs/general-tabs/logs.php:32
-#: src/core/lib/helpers/class-automator-cache-handler.php:498
-#: src/core/views/admin-settings/tab/general/logs.php:22
+#: src/core/lib/helpers/class-automator-cache-handler.php:500
 #: src/core/views/admin-tools-header.php:6
 #: src/core/views/admin-tools/tab/debug/debug.php:44
 msgid "Logs"
@@ -217,7 +215,7 @@ msgstr ""
 
 #: src/core/admin/admin-settings/admin-settings.php:33
 #: src/core/admin/admin-tools/tabs/debug/debug.php:102
-#: src/core/lib/helpers/class-automator-cache-handler.php:507
+#: src/core/lib/helpers/class-automator-cache-handler.php:509
 #: src/core/views/admin-settings/admin-settings.php:31
 msgid "Settings"
 msgstr ""
@@ -250,6 +248,11 @@ msgstr ""
 #: src/core/admin/admin-settings/tabs/general-tabs/license.php:35
 #: src/core/views/admin-settings/tab/general/license.php:21
 msgid "License"
+msgstr ""
+
+#: src/core/admin/admin-settings/tabs/general-tabs/logs.php:32
+#: src/core/views/admin-settings/tab/general/logs.php:22
+msgid "Data management"
 msgstr ""
 
 #: src/core/admin/admin-settings/tabs/general.php:54
@@ -345,7 +348,7 @@ msgstr ""
 #: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:62
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:108
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:238
-#: src/integrations/wp/actions/wp-createpost.php:492
+#: src/integrations/wp/actions/wp-createpost.php:608
 msgid "Type"
 msgstr ""
 
@@ -355,6 +358,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1224
 #: src/core/admin/class-admin-menu.php:1248
 #: src/core/includes/recipe-logs-view.php:133
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:88
 #: src/integrations/telegram/triggers/telegram-message-received.php:89
 #: src/integrations/thrive-ovation/tokens/thrive-ovation-tokens.php:98
 #: src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php:70
@@ -406,7 +410,7 @@ msgstr ""
 #: src/core/admin/api-log/class-api-log.php:82
 #: src/core/admin/class-admin-menu.php:1164
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:111
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:939
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:941
 #: src/core/includes/recipe-logs-view.php:51
 #: src/core/includes/recipe-logs-view.php:194
 #: src/core/lib/utilities/class-automator-translations.php:86
@@ -640,7 +644,7 @@ msgstr ""
 
 #. translators: Log column.
 #: src/core/admin/class-admin-menu.php:1158
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:912
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:914
 #: src/core/includes/recipe-logs-view.php:49
 #: src/core/includes/recipe-logs-view.php:96
 #: src/core/includes/recipe-logs-view.php:147
@@ -687,7 +691,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1163
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:52
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:57
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:938
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:940
 #: src/core/lib/utilities/class-automator-translations.php:43
 msgid "Triggers"
 msgstr ""
@@ -1056,7 +1060,7 @@ msgstr ""
 
 #. translators: The number of times a recipe was completed
 #: src/core/admin/class-admin-menu.php:1405
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:941
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:943
 msgid "Completed runs"
 msgstr ""
 
@@ -1216,6 +1220,21 @@ msgstr ""
 #: src/core/admin/class-logs-list-table.php:776
 msgctxt "Action"
 msgid "In progress"
+msgstr ""
+
+#: src/core/admin/class-prune-logs.php:182
+msgctxt "Prune logs"
+msgid "Invalid nonce."
+msgstr ""
+
+#: src/core/admin/class-prune-logs.php:344
+msgctxt "Prune logs"
+msgid "Invalid input. Please ensure that the \"Days\" field contains a valid numeric value, is not empty, and is not equal to zero."
+msgstr ""
+
+#: src/core/admin/class-prune-logs.php:352
+msgctxt "Prune logs"
+msgid "The field \"Days\" must be greater than or equals to "
 msgstr ""
 
 #. translators: %s - Lite plugin download URL.
@@ -1740,7 +1759,7 @@ msgid "Count me in!"
 msgstr ""
 
 #: src/core/admin/setup-wizard/src/views/step-2.php:67
-#: src/core/lib/utilities/class-automator-system-report.php:620
+#: src/core/lib/utilities/class-automator-system-report.php:621
 #: src/core/lib/utilities/class-automator-translations.php:703
 msgid "Not connected"
 msgstr ""
@@ -1781,7 +1800,7 @@ msgid "Anonymous recipe user action set to do nothing."
 msgstr ""
 
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:313
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:434
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:433
 msgid "The action failed to create the post. The response was"
 msgstr ""
 
@@ -1801,28 +1820,28 @@ msgstr ""
 msgid "Post ID sent is not a recipe post"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:402
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:401
 msgid "Post type is not defined."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1384
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1391
 msgid "Action Log ID is empty"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1395
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1402
 msgid "Missing action params"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1425
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1432
 msgid "The request has been successfully resent"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1450
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1457
 msgctxt "Webhooks"
 msgid "The request has been successfully resent"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1454
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1461
 msgctxt "Webhooks"
 msgid "Invalid data. Property \"request\" or \"params\" is missing."
 msgstr ""
@@ -1838,7 +1857,7 @@ msgid "%1$s recipe"
 msgstr ""
 
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:41
-#: src/core/lib/helpers/class-automator-cache-handler.php:480
+#: src/core/lib/helpers/class-automator-cache-handler.php:482
 #: src/core/views/admin-logs/filters.php:27
 #: src/core/views/admin-logs/filters.php:62
 #: src/core/views/admin-logs/filters.php:109
@@ -1850,7 +1869,7 @@ msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:43
-#: src/core/lib/helpers/class-automator-cache-handler.php:489
+#: src/core/lib/helpers/class-automator-cache-handler.php:491
 msgid "Add new recipe"
 msgstr ""
 
@@ -1895,19 +1914,19 @@ msgctxt "Recipe"
 msgid "Not found in trash"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:916
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:918
 #: src/core/lib/utilities/class-automator-translations.php:1129
 msgid "Live"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:916
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:918
 #: src/core/lib/utilities/class-automator-translations.php:1130
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:76
 msgid "Draft"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:942
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:944
 #: src/core/includes/recipe-logs-view.php:88
 #: src/core/includes/recipe-logs-view.php:141
 #: src/core/views/admin-logs/component/logs.php:79
@@ -1945,11 +1964,11 @@ msgstr ""
 msgid "Tags"
 msgstr ""
 
-#: src/core/classes/class-api-server.php:460
+#: src/core/classes/class-api-server.php:467
 msgid "License is not valid"
 msgstr ""
 
-#: src/core/classes/class-api-server.php:480
+#: src/core/classes/class-api-server.php:487
 msgid "Not enough credits"
 msgstr ""
 
@@ -1983,18 +2002,22 @@ msgid "Background actions have been automatically disabled because an error was 
 msgstr ""
 
 #: src/core/classes/class-background-actions.php:540
-#: src/core/lib/helpers/class-automator-cache-handler.php:607
+#: src/core/lib/helpers/class-automator-cache-handler.php:609
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:34
+#: src/core/views/admin-settings/tab/general/logs/delete-user-records.php:39
+#: src/core/views/admin-settings/tab/general/logs/remove-recipe-log-on-completion.php:46
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:181
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:194
 msgid "Enabled"
 msgstr ""
 
 #: src/core/classes/class-background-actions.php:540
-#: src/core/lib/helpers/class-automator-cache-handler.php:607
+#: src/core/lib/helpers/class-automator-cache-handler.php:609
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:39
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:38
+#: src/core/views/admin-settings/tab/general/logs/delete-user-records.php:39
+#: src/core/views/admin-settings/tab/general/logs/remove-recipe-log-on-completion.php:46
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:181
 #: src/integrations/peepso/triggers/peepso-userupdatespecificfield.php:194
 msgid "Disabled"
@@ -2041,6 +2064,8 @@ msgstr ""
 #: src/core/includes/automator-settings.php:293
 #: src/core/lib/utilities/class-automator-translations.php:1302
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:54
+#: src/core/views/admin-settings/tab/general/logs/delete-user-records.php:48
+#: src/core/views/admin-settings/tab/general/logs/remove-recipe-log-on-completion.php:61
 msgid "Save"
 msgstr ""
 
@@ -2300,7 +2325,7 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:423
 #: src/core/includes/pro-items-list.php:691
 #: src/core/includes/pro-items-list.php:2045
-#: src/core/includes/pro-items-list.php:3903
+#: src/core/includes/pro-items-list.php:3914
 msgid "A user leaves {{a group}}"
 msgstr ""
 
@@ -2524,8 +2549,8 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:1603
 #: src/core/includes/pro-items-list.php:1698
 #: src/core/includes/pro-items-list.php:2462
-#: src/core/includes/pro-items-list.php:3959
-#: src/core/includes/pro-items-list.php:4027
+#: src/core/includes/pro-items-list.php:3970
+#: src/core/includes/pro-items-list.php:4038
 msgid "A user submits {{a form}} with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
@@ -2539,8 +2564,8 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:1609
 #: src/core/includes/pro-items-list.php:1704
 #: src/core/includes/pro-items-list.php:2468
-#: src/core/includes/pro-items-list.php:3977
-#: src/core/includes/pro-items-list.php:4033
+#: src/core/includes/pro-items-list.php:3988
+#: src/core/includes/pro-items-list.php:4044
 msgid "{{A form}} is submitted with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
@@ -2555,7 +2580,7 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:1655
 #: src/core/includes/pro-items-list.php:2476
 #: src/core/includes/pro-items-list.php:2507
-#: src/core/includes/pro-items-list.php:3997
+#: src/core/includes/pro-items-list.php:4008
 msgid "Register a new user"
 msgstr ""
 
@@ -2670,8 +2695,8 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:1149
 #: src/core/includes/pro-items-list.php:1283
 #: src/core/includes/pro-items-list.php:1547
-#: src/core/includes/pro-items-list.php:3738
-#: src/core/includes/pro-items-list.php:3750
+#: src/core/includes/pro-items-list.php:3749
+#: src/core/includes/pro-items-list.php:3761
 msgid "{{A tag}} is removed from a user"
 msgstr ""
 
@@ -2758,8 +2783,8 @@ msgstr ""
 #. translators: Action - Groundhogg
 #. translators: Mailchimp tag
 #: src/core/includes/pro-items-list.php:1329
-#: src/core/includes/pro-items-list.php:3758
-#: src/core/includes/pro-items-list.php:3763
+#: src/core/includes/pro-items-list.php:3769
+#: src/core/includes/pro-items-list.php:3774
 #: src/integrations/active-campaign/actions/ac-user-remove-tag.php:42
 #: src/integrations/groundhogg/actions/gh-removetag.php:53
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:44
@@ -2872,8 +2897,8 @@ msgid "An entry for {{a specific form}} is rejected"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1541
-#: src/core/includes/pro-items-list.php:3732
-#: src/core/includes/pro-items-list.php:3744
+#: src/core/includes/pro-items-list.php:3743
+#: src/core/includes/pro-items-list.php:3755
 msgid "{{A tag}} is added to a user"
 msgstr ""
 
@@ -3067,7 +3092,7 @@ msgid "Remove the user as a leader of {{a group}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:1934
-#: src/core/includes/pro-items-list.php:4016
+#: src/core/includes/pro-items-list.php:4027
 msgid "Remove the user from {{a group}}"
 msgstr ""
 
@@ -3127,8 +3152,8 @@ msgstr ""
 #: src/core/includes/pro-items-list.php:2006
 #: src/core/includes/pro-items-list.php:2053
 #: src/core/includes/pro-items-list.php:2810
-#: src/core/includes/pro-items-list.php:3716
-#: src/core/includes/pro-items-list.php:3830
+#: src/core/includes/pro-items-list.php:3727
+#: src/core/includes/pro-items-list.php:3841
 #: src/integrations/learndash/actions/ld-enrlcourse-a.php:46
 msgid "Enroll the user in {{a course}}"
 msgstr ""
@@ -3146,7 +3171,7 @@ msgstr ""
 
 #: src/core/includes/pro-items-list.php:2016
 #: src/core/includes/pro-items-list.php:2068
-#: src/core/includes/pro-items-list.php:3721
+#: src/core/includes/pro-items-list.php:3732
 msgid "Remove the user from {{a course}}"
 msgstr ""
 
@@ -3157,7 +3182,7 @@ msgid "A user cancels {{a membership}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2039
-#: src/core/includes/pro-items-list.php:3897
+#: src/core/includes/pro-items-list.php:3908
 msgid "A user joins {{a group}}"
 msgstr ""
 
@@ -3809,321 +3834,329 @@ msgstr ""
 msgid "A booking is updated"
 msgstr ""
 
+#: src/core/includes/pro-items-list.php:3384
+msgid "Change booking to a specific status"
+msgstr ""
+
 #: src/core/includes/pro-items-list.php:3389
+msgid "Create a booking"
+msgstr ""
+
+#: src/core/includes/pro-items-list.php:3400
 msgid "{{A post}} is moved to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3395
+#: src/core/includes/pro-items-list.php:3406
 msgid "{{A specific}} role is removed from the user"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3401
+#: src/core/includes/pro-items-list.php:3412
 msgid "A user is created"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3407
+#: src/core/includes/pro-items-list.php:3418
 msgid "A user is created with {{a specific}} role"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3413
+#: src/core/includes/pro-items-list.php:3424
 msgid "A user is deleted"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3419
+#: src/core/includes/pro-items-list.php:3430
 msgid "A user resets their password"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3425
+#: src/core/includes/pro-items-list.php:3436
 msgid "A user updates {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3431
+#: src/core/includes/pro-items-list.php:3442
 msgid "A user updates a post in {{a specific}} status"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3437
+#: src/core/includes/pro-items-list.php:3448
 msgid "A user updates a post in {{a specific taxonomy}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3443
+#: src/core/includes/pro-items-list.php:3454
 msgid "A user updates a post not in {{a specific}} status"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3449
+#: src/core/includes/pro-items-list.php:3460
 msgid "A user updates {{a specific meta key}} of a {{specific type of post}} to {{a specific value}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3455
+#: src/core/includes/pro-items-list.php:3466
 msgid "A user views {{a term}} archive"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3461
+#: src/core/includes/pro-items-list.php:3472
 msgid "{{A user's post}} is set to {{a specific}} status"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3467
+#: src/core/includes/pro-items-list.php:3478
 msgid "A user's {{profile field}} is updated"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3473
+#: src/core/includes/pro-items-list.php:3484
 msgid "A user's role changed from {{a specific role}} to {{a specific role}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3479
+#: src/core/includes/pro-items-list.php:3490
 msgid "A user's {{specific}} meta key is updated"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3485
+#: src/core/includes/pro-items-list.php:3496
 msgid "A user's {{specific}} meta key is updated to {{a specific value}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3491
+#: src/core/includes/pro-items-list.php:3502
 msgid "A user's {{specific type of post}} is moved to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3497
+#: src/core/includes/pro-items-list.php:3508
 msgid "A user's {{specific type of post}} is set to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3503
+#: src/core/includes/pro-items-list.php:3514
 msgid "A user's {{specific type of post}} is updated"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3509
+#: src/core/includes/pro-items-list.php:3520
 msgid "A user's comment on {{a post}} is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3515
+#: src/core/includes/pro-items-list.php:3526
 msgid "A user's comment on {{a specific type of post}} receives a reply"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3521
+#: src/core/includes/pro-items-list.php:3532
 msgid "A guest comment is submitted on a user's {{post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3527
+#: src/core/includes/pro-items-list.php:3538
 msgid "A guest comment on a user's {{post}} is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3533
+#: src/core/includes/pro-items-list.php:3544
 msgid "{{A specific meta key}} of a {{specific type of post}} updates to {{a specific value}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3539
+#: src/core/includes/pro-items-list.php:3550
 msgid "{{A specific type of post}} is set to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3545
+#: src/core/includes/pro-items-list.php:3556
 msgid "{{A taxonomy term}} is added to a {{specific type of post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3551
+#: src/core/includes/pro-items-list.php:3562
 msgid "{{A term}} archive is viewed"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3559
+#: src/core/includes/pro-items-list.php:3570
 msgid "Add a comment to {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3564
+#: src/core/includes/pro-items-list.php:3575
 msgid "Add {{a taxonomy term}} to {{a post}} in {{a post type}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3569
+#: src/core/includes/pro-items-list.php:3580
 msgid "Add {{an image}} to the media library"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3574
+#: src/core/includes/pro-items-list.php:3585
 msgid "Create a {{user}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3579
+#: src/core/includes/pro-items-list.php:3590
 msgid "Delete {{a user}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3584
+#: src/core/includes/pro-items-list.php:3595
 msgid "Delete {{user meta}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3589
+#: src/core/includes/pro-items-list.php:3600
 msgid "Fetch {{an existing user}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3594
+#: src/core/includes/pro-items-list.php:3605
 msgid "Move {{a post}} to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3599
+#: src/core/includes/pro-items-list.php:3610
 msgid "Move all {{of a specific type of posts}} with {{a taxonomy term}} in {{a taxonomy}} to the trash"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3604
+#: src/core/includes/pro-items-list.php:3615
 msgid "Remove {{a role}} from the user's roles"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3609
+#: src/core/includes/pro-items-list.php:3620
 msgid "Remove {{a taxonomy term}} from {{a post}} in {{a post type}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3614
+#: src/core/includes/pro-items-list.php:3625
 msgid "Set {{a post}} to {{a status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3619
+#: src/core/includes/pro-items-list.php:3630
 msgid "Set {{post meta}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3624
+#: src/core/includes/pro-items-list.php:3635
 msgid "Set the featured image of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3629
+#: src/core/includes/pro-items-list.php:3640
 msgid "Set {{user meta}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3634
+#: src/core/includes/pro-items-list.php:3645
 msgid "Update the author of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3639
+#: src/core/includes/pro-items-list.php:3650
 msgid "Update the content of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3644
+#: src/core/includes/pro-items-list.php:3655
 msgid "Update the slug of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3649
+#: src/core/includes/pro-items-list.php:3660
 msgid "Update the title of {{a post}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3654
+#: src/core/includes/pro-items-list.php:3665
 msgid "Update the user's {{details}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3665
+#: src/core/includes/pro-items-list.php:3676
 msgid "A user downloads {{a file}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3678
+#: src/core/includes/pro-items-list.php:3689
 msgid "A user is added to {{a subsite}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3686
+#: src/core/includes/pro-items-list.php:3697
 msgid "Add {{a specific user}} to {{a specific subsite}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3691
+#: src/core/includes/pro-items-list.php:3702
 msgid "Add the user to {{a subsite}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3702
+#: src/core/includes/pro-items-list.php:3713
 msgid "An import fails"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3774
+#: src/core/includes/pro-items-list.php:3785
 msgid "{{A job}} is filled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3780
+#: src/core/includes/pro-items-list.php:3791
 msgid "A user marks a {{specific type of}} job as filled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3786
+#: src/core/includes/pro-items-list.php:3797
 msgid "A user marks a {{specific type of}} job as not filled"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3792
+#: src/core/includes/pro-items-list.php:3803
 msgid "A user receives an application to a {{specific type of}} job"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3798
+#: src/core/includes/pro-items-list.php:3809
 msgid "A user updates {{a job}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3804
+#: src/core/includes/pro-items-list.php:3815
 msgid "A user's application is set to {{a specific status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3810
+#: src/core/includes/pro-items-list.php:3821
 msgid "A user's application to a {{specific type of}} job is set to {{a specific status}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3816
+#: src/core/includes/pro-items-list.php:3827
 msgid "An application is received for {{a job}} of {{a specific type}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3841
+#: src/core/includes/pro-items-list.php:3852
 msgid "In an email with {{specific text}} in the subject, a URL containing {{a string}} is clicked"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3847
+#: src/core/includes/pro-items-list.php:3858
 msgid "In any email, a URL containing {{a string}} is clicked"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3860
+#: src/core/includes/pro-items-list.php:3871
 msgid "A subscription for {{a form}} is renewed"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3873
+#: src/core/includes/pro-items-list.php:3884
 msgid "A user is approved"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3879
+#: src/core/includes/pro-items-list.php:3890
 msgid "A user is approved to join {{a private group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3885
+#: src/core/includes/pro-items-list.php:3896
 msgid "A user is rejected"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3891
+#: src/core/includes/pro-items-list.php:3902
 msgid "A user is rejected from joining {{a private group}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3909
+#: src/core/includes/pro-items-list.php:3920
 msgid "A user registers using {{a form}} with {{a specific value}} in {{a specific field}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3915
+#: src/core/includes/pro-items-list.php:3926
 msgid "A user updates their account information"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3921
+#: src/core/includes/pro-items-list.php:3932
 msgid "A user verifies their email address"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3934
+#: src/core/includes/pro-items-list.php:3945
 msgid "A user submits {{a poll}} with {{a specific answer}} selected"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3948
+#: src/core/includes/pro-items-list.php:3959
 msgid "Create a code snippet"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3965
+#: src/core/includes/pro-items-list.php:3976
 msgid "A user submits {{a form}} with {{a specific value}} in {{a specific field}} with PayPal payment"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3971
+#: src/core/includes/pro-items-list.php:3982
 msgid "A user submits {{a form}} with PayPal payment"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3983
+#: src/core/includes/pro-items-list.php:3994
 msgid "{{A form}} is submitted with {{a specific value}} in {{a specific field}} with PayPal payment"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:3989
+#: src/core/includes/pro-items-list.php:4000
 msgid "{{A form}} is submitted with PayPal payment "
 msgstr ""
 
 #. translators: Logged-in trigger - bbPress
-#: src/core/includes/pro-items-list.php:4008
+#: src/core/includes/pro-items-list.php:4019
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:44
 msgid "A user replies to {{a topic}} in {{a forum}}"
 msgstr ""
 
-#: src/core/includes/pro-items-list.php:4046
+#: src/core/includes/pro-items-list.php:4057
 msgid "Receive data from Zapier webhook"
 msgstr ""
 
@@ -4170,16 +4203,16 @@ msgstr ""
 msgid "Trigger run #"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:467
-#: src/core/lib/helpers/class-automator-cache-handler.php:471
+#: src/core/lib/helpers/class-automator-cache-handler.php:469
+#: src/core/lib/helpers/class-automator-cache-handler.php:473
 msgid "Automator"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:518
+#: src/core/lib/helpers/class-automator-cache-handler.php:520
 msgid "Flush cache"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-cache-handler.php:612
+#: src/core/lib/helpers/class-automator-cache-handler.php:614
 msgid "Automator uses object caching to accelerate some processes. Disable when troubleshooting recipes."
 msgstr ""
 
@@ -4242,42 +4275,42 @@ msgstr ""
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:659
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:122
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:275
-#: src/integrations/woocommerce/tokens/wc-tokens.php:469
+#: src/integrations/woocommerce/tokens/wc-tokens.php:446
 msgid "equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:660
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:123
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:278
-#: src/integrations/woocommerce/tokens/wc-tokens.php:472
+#: src/integrations/woocommerce/tokens/wc-tokens.php:449
 msgid "not equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:661
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:124
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:269
-#: src/integrations/woocommerce/tokens/wc-tokens.php:463
+#: src/integrations/woocommerce/tokens/wc-tokens.php:440
 msgid "less than"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:662
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:125
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:272
-#: src/integrations/woocommerce/tokens/wc-tokens.php:466
+#: src/integrations/woocommerce/tokens/wc-tokens.php:443
 msgid "greater than"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:663
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:126
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:281
-#: src/integrations/woocommerce/tokens/wc-tokens.php:475
+#: src/integrations/woocommerce/tokens/wc-tokens.php:452
 msgid "greater or equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:664
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:127
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:284
-#: src/integrations/woocommerce/tokens/wc-tokens.php:478
+#: src/integrations/woocommerce/tokens/wc-tokens.php:455
 msgid "less or equal to"
 msgstr ""
 
@@ -4448,52 +4481,52 @@ msgstr ""
 msgid "Any award"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:62
+#: src/core/lib/process/class-automator-action-status.php:71
 msgctxt "Recipe log status"
 msgid "Not completed"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:63
+#: src/core/lib/process/class-automator-action-status.php:72
 msgctxt "Recipe log status"
 msgid "Completed"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:64
+#: src/core/lib/process/class-automator-action-status.php:73
 msgctxt "Recipe log status"
 msgid "Completed with errors"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:65
+#: src/core/lib/process/class-automator-action-status.php:74
 msgctxt "Recipe log status"
 msgid "In progress"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:66
+#: src/core/lib/process/class-automator-action-status.php:75
 msgctxt "Recipe log status"
 msgid "Cancelled"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:67
+#: src/core/lib/process/class-automator-action-status.php:76
 msgctxt "Recipe log status"
 msgid "Queued"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:68
+#: src/core/lib/process/class-automator-action-status.php:77
 msgctxt "Recipe log status"
 msgid "Skipped"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:69
+#: src/core/lib/process/class-automator-action-status.php:78
 msgctxt "Recipe log status"
 msgid "Completed, did nothing"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:70
+#: src/core/lib/process/class-automator-action-status.php:79
 msgctxt "Recipe log status"
 msgid "Completed, awaiting"
 msgstr ""
 
-#: src/core/lib/process/class-automator-action-status.php:71
+#: src/core/lib/process/class-automator-action-status.php:80
 msgctxt "Recipe log status"
 msgid "Completed with notice"
 msgstr ""
@@ -4552,28 +4585,33 @@ msgstr ""
 msgid "Email action is disabled by `automator_send_email` filter."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:52
+#: src/core/lib/recipe-parts/trait-webhooks.php:38
+msgctxt "webhook"
+msgid "Response - Status code"
+msgstr ""
+
+#: src/core/lib/recipe-parts/trait-webhooks.php:58
 #: src/integrations/open-ai/actions/open-ai-chat-generate.php:56
 #: src/integrations/open-ai/actions/open-ai-text-generate.php:61
 msgid "Response"
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:60
+#: src/core/lib/recipe-parts/trait-webhooks.php:66
 msgctxt "Webhook"
 msgid "Response - Body (raw)"
 msgstr ""
 
 #. translators: 1. Webhook URL
-#: src/core/lib/recipe-parts/trait-webhooks.php:104
+#: src/core/lib/recipe-parts/trait-webhooks.php:114
 msgid "Webhook URL is empty."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:140
+#: src/core/lib/recipe-parts/trait-webhooks.php:150
 msgctxt "Send webhook action response headers property"
 msgid "Response headers"
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:149
+#: src/core/lib/recipe-parts/trait-webhooks.php:159
 msgctxt "Send webhook action log response body property"
 msgid "Response body"
 msgstr ""
@@ -4605,13 +4643,13 @@ msgstr ""
 msgid "Missing base tables: %s. Some Automator functionality may not work as expected."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-system-report.php:578
+#: src/core/lib/utilities/class-automator-system-report.php:579
 #: src/core/views/html-admin-status.php:757
 msgid "Visit plugin homepage"
 msgstr ""
 
 #. translators: %s: plugin author
-#: src/core/lib/utilities/class-automator-system-report.php:590
+#: src/core/lib/utilities/class-automator-system-report.php:591
 #: src/core/views/html-admin-status.php:771
 msgid "by %s"
 msgstr ""
@@ -4771,7 +4809,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: src/core/lib/utilities/class-automator-translations.php:145
-#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:82
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:73
 msgid "Days"
 msgstr ""
 
@@ -5810,8 +5848,10 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:809
 #: src/core/lib/utilities/class-automator-translations.php:833
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:96
 #: src/integrations/peepso/tokens/peepso-tokens.php:139
 #: src/integrations/telegram/triggers/telegram-message-received.php:80
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:65
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:435
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:103
 #: src/integrations/wp-download-manager/tokens/wpdm-tokens.php:133
@@ -5840,7 +5880,7 @@ msgstr ""
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:245
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:260
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:284
-#: src/integrations/wp/actions/wp-createpost.php:229
+#: src/integrations/wp/actions/wp-createpost.php:323
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:646
 #: src/integrations/zoom/helpers/zoom-helpers.php:276
 msgid "Value"
@@ -6935,7 +6975,7 @@ msgid "Body"
 msgstr ""
 
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:184
-#: src/integrations/wp/actions/wp-createpost.php:222
+#: src/integrations/wp/actions/wp-createpost.php:316
 msgid "Key"
 msgstr ""
 
@@ -6957,7 +6997,7 @@ msgstr ""
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:164
 #: src/integrations/mailchimp/actions/audience-addauser.php:143
 #: src/integrations/mailchimp/actions/mc-everyone-add-contact.php:142
-#: src/integrations/wp/actions/wp-createpost.php:234
+#: src/integrations/wp/actions/wp-createpost.php:328
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:648
 #: src/integrations/zoom/helpers/zoom-helpers.php:278
 msgid "Add pair"
@@ -6969,7 +7009,7 @@ msgstr ""
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:165
 #: src/integrations/mailchimp/actions/audience-addauser.php:144
 #: src/integrations/mailchimp/actions/mc-everyone-add-contact.php:143
-#: src/integrations/wp/actions/wp-createpost.php:235
+#: src/integrations/wp/actions/wp-createpost.php:329
 #: src/integrations/zoom-webinar/helpers/zoom-webinar-helpers.php:649
 #: src/integrations/zoom/helpers/zoom-helpers.php:279
 msgid "Remove pair"
@@ -7711,28 +7751,52 @@ msgstr ""
 msgid "This is a pro-only feature that requires %1$s"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:33
-msgid "Prune activity logs"
+#: src/core/views/admin-settings/tab/general/logs/delete-user-records.php:32
+msgid "Delete recipe records when user is deleted"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:46
-msgid "Activity logs successfully pruned."
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:29
+msgid "Prune recipe logs"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:65
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:35
+msgid "Activity logs successfully pruned"
+msgstr ""
+
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:43
+msgid "An error has occured while pruning logs"
+msgstr ""
+
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:58
 msgid "Action last performed on:"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:83
-msgid "Enter a number of days to delete recipe log entries older than the specified number of days. Logs will only be deleted for recipes that are not In Progress."
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:74
+msgid "Log entries older than the number of days specified above will be automatically purged (unless they are In Progress). Decimals are supported, so a value of 0.5 will remove log entries older than 12 hours."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:84
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:75
 msgid "Ex: 10"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:93
+#: src/core/views/admin-settings/tab/general/logs/prune-logs.php:84
 msgid "Delete logs"
+msgstr ""
+
+#: src/core/views/admin-settings/tab/general/logs/remove-recipe-log-on-completion.php:39
+msgid "Immediately delete log entries when recipes are completed"
+msgstr ""
+
+#: src/core/views/admin-settings/tab/general/logs/remove-recipe-log-on-completion.php:47
+msgid "Turning on this setting will automatically purge new recipe log entries with any of the following statuses:"
+msgstr ""
+
+#: src/core/views/admin-settings/tab/general/logs/remove-recipe-log-on-completion.php:53
+msgid "This setting only affects new recipe completions. Historical records will not be deleted."
+msgstr ""
+
+#: src/core/views/admin-settings/tab/general/logs/remove-recipe-log-on-completion.php:54
+msgid "With this setting enabled, the \"Times per user\" setting for logged-in recipes will be ignored."
 msgstr ""
 
 #: src/core/views/admin-settings/tab/premium-integrations/none-selected.php:29
@@ -8883,10 +8947,10 @@ msgstr ""
 #: src/integrations/active-campaign/settings/view-active-campaign.php:102
 #: src/integrations/active-campaign/settings/view-active-campaign.php:106
 #: src/integrations/active-campaign/settings/view-active-campaign.php:110
-#: src/integrations/brevo/settings/settings-brevo.php:122
-#: src/integrations/brevo/settings/settings-brevo.php:125
-#: src/integrations/brevo/settings/settings-brevo.php:128
-#: src/integrations/brevo/settings/settings-brevo.php:131
+#: src/integrations/brevo/settings/settings-brevo.php:138
+#: src/integrations/brevo/settings/settings-brevo.php:141
+#: src/integrations/brevo/settings/settings-brevo.php:144
+#: src/integrations/brevo/settings/settings-brevo.php:147
 #: src/integrations/clickup/settings/view-clickup.php:72
 #: src/integrations/constant-contact/settings/view-not-connected.php:16
 #: src/integrations/constant-contact/settings/view-not-connected.php:20
@@ -9109,7 +9173,7 @@ msgid "Connect ActiveCampaign account"
 msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:277
-#: src/integrations/brevo/settings/settings-brevo.php:249
+#: src/integrations/brevo/settings/settings-brevo.php:265
 #: src/integrations/clickup/settings/view-clickup.php:128
 #: src/integrations/constant-contact/settings/constant-contact-settings.php:162
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:167
@@ -10288,208 +10352,209 @@ msgctxt "Brevo"
 msgid "Remove {{a contact}} from {{a list}}"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:40
+#: src/integrations/brevo/helpers/brevo-helpers.php:52
 msgctxt "Brevo"
 msgid "Invalid API Key : "
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:329
+#: src/integrations/brevo/helpers/brevo-helpers.php:271
+#: src/integrations/brevo/helpers/brevo-helpers.php:683
+msgctxt "Brevo"
+msgid "Brevo API Error"
+msgstr ""
+
+#: src/integrations/brevo/helpers/brevo-helpers.php:357
 msgctxt "Brevo"
 msgid "Contact with that email already exists"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:390
+#: src/integrations/brevo/helpers/brevo-helpers.php:418
 msgctxt "Brevo API"
 msgid "No attributes were returned from the API"
 msgstr ""
 
 #. translators: %s - type of item templates or lists
-#: src/integrations/brevo/helpers/brevo-helpers.php:561
+#: src/integrations/brevo/helpers/brevo-helpers.php:589
 msgctxt "Brevo API"
 msgid "No %s were found"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:602
+#: src/integrations/brevo/helpers/brevo-helpers.php:630
 msgctxt "Brevo"
 msgid "Invalid request"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:607
+#: src/integrations/brevo/helpers/brevo-helpers.php:635
 msgctxt "Brevo"
 msgid "Invalid key"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:627
+#: src/integrations/brevo/helpers/brevo-helpers.php:655
 msgctxt "Brevo"
 msgid "No data returned from the API"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:655
-msgctxt "Brevo"
-msgid "Brevo API Error"
-msgstr ""
-
-#: src/integrations/brevo/helpers/brevo-helpers.php:671
+#: src/integrations/brevo/helpers/brevo-helpers.php:705
 msgctxt "Brevo"
 msgid "Missing email"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:677
+#: src/integrations/brevo/helpers/brevo-helpers.php:711
 msgctxt "Brevo"
 msgid "Invalid email"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:693
-#: src/integrations/brevo/helpers/brevo-helpers.php:699
+#: src/integrations/brevo/helpers/brevo-helpers.php:727
+#: src/integrations/brevo/helpers/brevo-helpers.php:733
 msgctxt "Brevo"
 msgid "List ID is required."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:100
+#: src/integrations/brevo/settings/settings-brevo.php:116
 msgctxt "Brevo"
 msgid "Unable to connect to Brevo"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:101
+#: src/integrations/brevo/settings/settings-brevo.php:117
 msgctxt "Brevo"
 msgid "The API key you entered is invalid. Please re-enter your API key again."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:109
+#: src/integrations/brevo/settings/settings-brevo.php:125
 msgctxt "Brevo"
 msgid "Connect Uncanny Automator to Brevo"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:113
+#: src/integrations/brevo/settings/settings-brevo.php:129
 msgctxt "Brevo"
 msgid "Connect Uncanny Automator to Brevo to connect contact and list management to WordPress activities like submitting forms, making purchases and joining groups."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:117
+#: src/integrations/brevo/settings/settings-brevo.php:133
 msgctxt "Brevo"
 msgid "Activating this integration will enable the following for use in your recipes:"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:122
+#: src/integrations/brevo/settings/settings-brevo.php:138
 msgctxt "Brevo"
 msgid "Create or update a contact"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:125
+#: src/integrations/brevo/settings/settings-brevo.php:141
 msgctxt "Brevo"
 msgid "Delete a contact"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:128
+#: src/integrations/brevo/settings/settings-brevo.php:144
 msgctxt "Brevo"
 msgid "Add a contact to a list"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:131
+#: src/integrations/brevo/settings/settings-brevo.php:147
 msgctxt "Brevo"
 msgid "Remove a contact from a list"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:135
+#: src/integrations/brevo/settings/settings-brevo.php:151
 msgctxt "Brevo"
 msgid "Setup instructions"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:137
+#: src/integrations/brevo/settings/settings-brevo.php:153
 msgctxt "Brevo"
 msgid "To obtain your Brevo API Key, follow these steps in your <a href=\"https://app.brevo.com/\" target=\"_blank\">Brevo</a> account:"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:140
+#: src/integrations/brevo/settings/settings-brevo.php:156
 msgctxt "Brevo"
 msgid "Click your Profile button in the upper right side of the screen to see your profile options."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:141
+#: src/integrations/brevo/settings/settings-brevo.php:157
 msgctxt "Brevo"
 msgid "Select <strong>SMTP & API</strong>."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:142
+#: src/integrations/brevo/settings/settings-brevo.php:158
 msgctxt "Brevo"
 msgid "On the <i>SMTP & API</i> page, click <strong>API Keys</strong>."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:143
+#: src/integrations/brevo/settings/settings-brevo.php:159
 msgctxt "Brevo"
 msgid "In the upper right, click <strong>Generate a new API key</strong>."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:144
+#: src/integrations/brevo/settings/settings-brevo.php:160
 msgctxt "Brevo"
 msgid "A pop-up window will ask you to <i>Name your API key</i>. Enter a name such as \"your-website-automator\" and click <strong>Generate</strong>."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:146
+#: src/integrations/brevo/settings/settings-brevo.php:162
 msgctxt "Brevo"
 msgid "You will now have an API key to enter in the field below. Once entered, click the <strong>Connect Brevo account</strong> button to enable your integration with Automator."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:148
+#: src/integrations/brevo/settings/settings-brevo.php:164
 msgctxt "Brevo"
 msgid "<strong>Note :</strong><i> Save this key somewhere safe as it will not be accessible again and you will have to generate a new one.</i>"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:158
+#: src/integrations/brevo/settings/settings-brevo.php:174
 msgctxt "Brevo"
 msgid "API key"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:169
+#: src/integrations/brevo/settings/settings-brevo.php:185
 msgctxt "Brevo"
 msgid "Uncanny Automator only supports connecting to one Brevo account at a time."
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:173
+#: src/integrations/brevo/settings/settings-brevo.php:189
 msgctxt "Brevo"
 msgid "Brevo Data"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:177
+#: src/integrations/brevo/settings/settings-brevo.php:193
 msgctxt "Brevo"
 msgid "The following data is available for use in your recipes:"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:202
+#: src/integrations/brevo/settings/settings-brevo.php:218
 msgctxt "Brevo"
 msgid "Connect Brevo account"
 msgstr ""
 
 #. translators: 1. Email address
-#: src/integrations/brevo/settings/settings-brevo.php:226
+#: src/integrations/brevo/settings/settings-brevo.php:242
 msgctxt "Brevo"
 msgid "Account email: %1$s"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:271
+#: src/integrations/brevo/settings/settings-brevo.php:287
 msgctxt "Brevo"
 msgid "Contact lists"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:275
+#: src/integrations/brevo/settings/settings-brevo.php:291
 msgctxt "Brevo"
 msgid "Custom contact attributes"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:279
+#: src/integrations/brevo/settings/settings-brevo.php:295
 msgctxt "Brevo"
 msgid "Email Templates"
 msgstr ""
 
-#: src/integrations/brevo/settings/settings-brevo.php:297
+#: src/integrations/brevo/settings/settings-brevo.php:313
 msgctxt "Brevo"
 msgid "Refresh"
 msgstr ""
 
 #. translators: %s Data type name
-#: src/integrations/brevo/settings/settings-brevo.php:308
+#: src/integrations/brevo/settings/settings-brevo.php:324
 msgctxt "Brevo"
-msgid "Use the sync button if %s were updated in the last hour and aren't yet showing in your recipes."
+msgid "Use the sync button if %s were updated within the last 24hrs and aren't yet showing in your recipes."
 msgstr ""
 
 #. translators: Action - BuddyBoss
@@ -10542,6 +10607,7 @@ msgstr ""
 #: src/integrations/helpscout/triggers/hs-rating-received.php:89
 #: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:88
 #: src/integrations/thrive-quiz-builder/tokens/thrive-quiz-builder-tokens.php:99
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:60
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:429
 #: src/integrations/wp-download-manager/tokens/wpdm-tokens.php:127
 msgid "User ID"
@@ -10662,7 +10728,7 @@ msgid "A user updates their profile"
 msgstr ""
 
 #. translators: Error message
-#: src/integrations/buddypress/actions/bp-addtogroup.php:98
+#: src/integrations/buddypress/actions/bp-addtogroup.php:101
 msgid "Failed to add member into the group. User ID: %1$d | Group ID %2$d"
 msgstr ""
 
@@ -10720,8 +10786,8 @@ msgstr ""
 
 #: src/integrations/caldera-forms/tokens/cf-tokens.php:117
 #: src/integrations/formidable/tokens/fi-tokens.php:257
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:106
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:111
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:107
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:112
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:177
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:314
 #: src/integrations/wpforms/tokens/wpf-tokens.php:362
@@ -10730,7 +10796,7 @@ msgstr ""
 
 #: src/integrations/caldera-forms/tokens/cf-tokens.php:123
 #: src/integrations/formidable/tokens/fi-tokens.php:269
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:109
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:110
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:189
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:332
 #: src/integrations/wpforms/tokens/wpf-tokens.php:374
@@ -10857,6 +10923,7 @@ msgid "Example: %d"
 msgstr ""
 
 #: src/integrations/charitable/helpers/charitable-helpers.php:244
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:22
 msgid "Campaign title"
 msgstr ""
 
@@ -10865,6 +10932,7 @@ msgid "Campaign link"
 msgstr ""
 
 #: src/integrations/charitable/helpers/charitable-helpers.php:254
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:17
 msgid "Campaign ID"
 msgstr ""
 
@@ -10878,7 +10946,7 @@ msgstr ""
 
 #. translators: Email field
 #: src/integrations/charitable/helpers/charitable-helpers.php:269
-#: src/integrations/wp/actions/wp-createpost.php:195
+#: src/integrations/wp/actions/wp-createpost.php:289
 msgid "Featured image URL"
 msgstr ""
 
@@ -10887,6 +10955,7 @@ msgid "Featured image ID"
 msgstr ""
 
 #: src/integrations/charitable/helpers/charitable-helpers.php:279
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:37
 msgid "Campaign end date"
 msgstr ""
 
@@ -10982,7 +11051,7 @@ msgstr ""
 #: src/integrations/surecart/tokens/surecart-tokens.php:96
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:100
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:136
-#: src/integrations/woocommerce/tokens/wc-tokens.php:80
+#: src/integrations/woocommerce/tokens/wc-tokens.php:76
 msgid "Payment method"
 msgstr ""
 
@@ -11545,7 +11614,7 @@ msgstr ""
 #: src/integrations/forminator/helpers/forminator-helpers.php:105
 #: src/integrations/give/helpers/give-helpers.php:68
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:110
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:113
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:114
 #: src/integrations/gravity-forms/triggers/anon-gf-subform.php:83
 #: src/integrations/gravity-forms/triggers/gf-subform.php:88
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:108
@@ -11566,7 +11635,7 @@ msgstr ""
 #: src/integrations/forminator/helpers/forminator-helpers.php:106
 #: src/integrations/give/helpers/give-helpers.php:69
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:111
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:114
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:115
 #: src/integrations/gravity-forms/triggers/anon-gf-subform.php:89
 #: src/integrations/gravity-forms/triggers/gf-subform.php:94
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:109
@@ -12102,6 +12171,85 @@ msgstr ""
 msgid "A new sale is recorded for {{an affiliate}}"
 msgstr ""
 
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:53
+#: src/integrations/edd/helpers/edd-helpers.php:100
+#: src/integrations/edd/tokens/edd-tokens.php:360
+msgid "Download ID"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:58
+#: src/integrations/edd/tokens/edd-tokens.php:366
+msgid "Download name"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:63
+#: src/integrations/edd/tokens/edd-tokens.php:396
+msgid "Download quantity"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:68
+#: src/integrations/edd/tokens/edd-tokens.php:402
+msgid "Download subtotal"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:73
+#: src/integrations/edd/tokens/edd-tokens.php:408
+msgid "Download tax"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:78
+#: src/integrations/edd/tokens/edd-tokens.php:390
+msgid "Download price"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:83
+#: src/integrations/edd/helpers/edd-helpers.php:104
+#: src/integrations/edd/tokens/edd-tokens.php:319
+msgid "License key"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:88
+msgid "License purchase date"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:93
+msgid "License expiration date"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:98
+msgid "License term"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:103
+msgid "License activation limit"
+msgstr ""
+
+#: src/integrations/edd-sl/triggers/edd-sl-license-created-for-download.php:24
+msgctxt "EDD - Software Licensing"
+msgid "A license for {{a download:%1$s}} is created"
+msgstr ""
+
+#: src/integrations/edd-sl/triggers/edd-sl-license-created-for-download.php:25
+msgctxt "EDD - Software Licensing"
+msgid "A license for {{a download}} is created"
+msgstr ""
+
+#: src/integrations/edd-sl/triggers/edd-sl-license-created-for-download.php:37
+#: src/integrations/edd-sl/triggers/edd-sl-license-expired-for-download.php:37
+msgctxt "EDD - Software Licensing"
+msgid "Download"
+msgstr ""
+
+#: src/integrations/edd-sl/triggers/edd-sl-license-expired-for-download.php:24
+msgctxt "EDD - Software Licensing"
+msgid "A license for {{a download:%1$s}} expires"
+msgstr ""
+
+#: src/integrations/edd-sl/triggers/edd-sl-license-expired-for-download.php:25
+msgctxt "EDD - Software Licensing"
+msgid "A license for {{a download}} expires"
+msgstr ""
+
 #: src/integrations/edd/actions/edd-cancel-users-subscription.php:24
 msgctxt "EDD Recurring"
 msgid "Cancel the user's subscription to {{a download:%1$s}}"
@@ -12144,7 +12292,7 @@ msgstr ""
 #: src/integrations/upsell-plugin/triggers/upsell-plugin-purchprod.php:62
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:663
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:109
-#: src/integrations/woocommerce/tokens/wc-tokens.php:967
+#: src/integrations/woocommerce/tokens/wc-tokens.php:995
 #: src/integrations/woocommerce/triggers/wc-purchasesproduct.php:78
 #: src/integrations/woocommerce/triggers/wc-purchprod-dep.php:74
 msgid "Product"
@@ -12157,11 +12305,6 @@ msgstr ""
 
 #: src/integrations/edd/helpers/edd-helpers.php:99
 msgid "Download title"
-msgstr ""
-
-#: src/integrations/edd/helpers/edd-helpers.php:100
-#: src/integrations/edd/tokens/edd-tokens.php:360
-msgid "Download ID"
 msgstr ""
 
 #: src/integrations/edd/helpers/edd-helpers.php:101
@@ -12179,16 +12322,11 @@ msgstr ""
 msgid "Download featured image URL"
 msgstr ""
 
-#: src/integrations/edd/helpers/edd-helpers.php:104
-#: src/integrations/edd/tokens/edd-tokens.php:319
-msgid "License key"
-msgstr ""
-
 #: src/integrations/edd/helpers/edd-helpers.php:105
 #: src/integrations/edd/tokens/edd-tokens.php:278
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:96
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:126
-#: src/integrations/woocommerce/tokens/wc-tokens.php:70
+#: src/integrations/woocommerce/tokens/wc-tokens.php:64
 msgid "Order discounts"
 msgstr ""
 
@@ -12197,7 +12335,7 @@ msgstr ""
 #: src/integrations/surecart/tokens/surecart-tokens.php:87
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:94
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:122
-#: src/integrations/woocommerce/tokens/wc-tokens.php:66
+#: src/integrations/woocommerce/tokens/wc-tokens.php:60
 msgid "Order subtotal"
 msgstr ""
 
@@ -12205,7 +12343,7 @@ msgstr ""
 #: src/integrations/edd/tokens/edd-tokens.php:290
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:95
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:124
-#: src/integrations/woocommerce/tokens/wc-tokens.php:68
+#: src/integrations/woocommerce/tokens/wc-tokens.php:62
 msgid "Order tax"
 msgstr ""
 
@@ -12214,7 +12352,7 @@ msgstr ""
 #: src/integrations/surecart/tokens/surecart-tokens.php:90
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:92
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:119
-#: src/integrations/woocommerce/tokens/wc-tokens.php:63
+#: src/integrations/woocommerce/tokens/wc-tokens.php:57
 msgid "Order total"
 msgstr ""
 
@@ -12224,32 +12362,12 @@ msgstr ""
 #: src/integrations/surecart/tokens/surecart-tokens.php:162
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:90
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:117
-#: src/integrations/woocommerce/tokens/wc-tokens.php:61
+#: src/integrations/woocommerce/tokens/wc-tokens.php:55
 msgid "Order ID"
 msgstr ""
 
 #: src/integrations/edd/tokens/edd-tokens.php:302
 msgid "Ordered items"
-msgstr ""
-
-#: src/integrations/edd/tokens/edd-tokens.php:366
-msgid "Download name"
-msgstr ""
-
-#: src/integrations/edd/tokens/edd-tokens.php:390
-msgid "Download price"
-msgstr ""
-
-#: src/integrations/edd/tokens/edd-tokens.php:396
-msgid "Download quantity"
-msgstr ""
-
-#: src/integrations/edd/tokens/edd-tokens.php:402
-msgid "Download subtotal"
-msgstr ""
-
-#: src/integrations/edd/tokens/edd-tokens.php:408
-msgid "Download tax"
 msgstr ""
 
 #: src/integrations/edd/tokens/edd-tokens.php:414
@@ -12454,7 +12572,7 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#: src/integrations/emails/actions/emails-send-emails.php:230
+#: src/integrations/emails/actions/emails-send-emails.php:236
 msgid "Cannot send email with an empty body."
 msgstr ""
 
@@ -12675,7 +12793,7 @@ msgid "Image URL"
 msgstr ""
 
 #: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:100
-#: src/integrations/wp/actions/wp-createpost.php:196
+#: src/integrations/wp/actions/wp-createpost.php:290
 msgid "https://examplewebsite.com/path/to/image.jpg"
 msgstr ""
 
@@ -13275,7 +13393,7 @@ msgid "A ticket receives a reply from a customer"
 msgstr ""
 
 #: src/integrations/formidable/tokens/fi-tokens.php:263
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:115
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:116
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:183
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:320
 #: src/integrations/wpforms/tokens/wpf-tokens.php:368
@@ -13283,7 +13401,7 @@ msgid "User IP"
 msgstr ""
 
 #: src/integrations/formidable/tokens/fi-tokens.php:275
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:112
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:113
 #: src/integrations/gravity-forms/tokens/gf-tokens.php:195
 #: src/integrations/wp-fluent-forms/tokens/wpff-tokens.php:326
 msgid "Entry source URL"
@@ -14383,7 +14501,7 @@ msgstr ""
 msgid "Connect GoTo Webinar account"
 msgstr ""
 
-#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:110
+#: src/integrations/gravity-forms/tokens/gf-common-tokens.php:111
 msgid "Entry date updated"
 msgstr ""
 
@@ -14782,6 +14900,7 @@ msgstr ""
 #: src/integrations/helpscout/triggers/hs-rating-received.php:90
 #: src/integrations/peepso/tokens/peepso-tokens.php:187
 #: src/integrations/thrive-quiz-builder/tokens/thrive-quiz-builder-tokens.php:105
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:75
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:441
 msgid "User email"
 msgstr ""
@@ -14826,6 +14945,86 @@ msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-rating-received.php:120
 msgid "Not Good"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:28
+msgid "Any article"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:58
+msgid "Article title"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:63
+msgid "Article ID"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:68
+msgid "Article URL"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:73
+msgid "Article categories"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:78
+msgid "Article tags"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:83
+msgid "Comments"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:104
+msgid "IP"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-negative-rating.php:24
+msgctxt "Heroic Knowledge Base"
+msgid "{{An article:%1$s}} receives a negative rating"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-negative-rating.php:25
+msgctxt "Heroic Knowledge Base"
+msgid "{{An article}} receives a negative rating"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-negative-rating.php:37
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-positive-rating.php:37
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-negative-rating.php:36
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-positive-rating.php:36
+msgctxt "Heroic Knowledge Base"
+msgid "Article"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-positive-rating.php:24
+msgctxt "Heroic Knowledge Base"
+msgid "{{An article:%1$s}} receives a positive rating"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-positive-rating.php:25
+msgctxt "Heroic Knowledge Base"
+msgid "{{An article}} receives a positive rating"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-negative-rating.php:23
+msgctxt "Heroic Knowledge Base"
+msgid "A user gives a negative rating to {{an article:%1$s}}"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-negative-rating.php:24
+msgctxt "Heroic Knowledge Base"
+msgid "A user gives a negative rating to {{an article}}"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-positive-rating.php:23
+msgctxt "Heroic Knowledge Base"
+msgid "A user gives a positive rating to {{an article:%1$s}}"
+msgstr ""
+
+#: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-positive-rating.php:24
+msgctxt "Heroic Knowledge Base"
+msgid "A user gives a positive rating to {{an article}}"
 msgstr ""
 
 #. translators: the selected HubSpot static list name
@@ -18487,17 +18686,17 @@ msgstr ""
 msgid "Contestant email verified"
 msgstr ""
 
-#: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:24
+#: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:31
 msgctxt "RafflePress"
 msgid "Someone registers for {{a giveaway:%1$s}}"
 msgstr ""
 
-#: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:25
+#: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:32
 msgctxt "RafflePress"
 msgid "Someone registers for {{a giveaway}}"
 msgstr ""
 
-#: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:37
+#: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:44
 msgctxt "RafflePress"
 msgid "Giveaway"
 msgstr ""
@@ -18547,6 +18746,68 @@ msgstr ""
 #. translators: Logged-in trigger - Wishlist Member
 #: src/integrations/restrict-content/triggers/restrict-content-purchasesmembership.php:51
 msgid "A user purchases {{a membership level}}"
+msgstr ""
+
+#: src/integrations/seedprod/helpers/seedprod-helpers.php:42
+msgctxt "Seedprod"
+msgid "Any landing page"
+msgstr ""
+
+#. translators: Trigger sentence
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:27
+msgctxt "SeedProd"
+msgid "An Optin Form is submitted on {{a page:%1$s}}"
+msgstr ""
+
+#. translators: Trigger sentence
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:38
+msgctxt "SeedProd"
+msgid "An Optin Form is submitted on {{a page}}"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:56
+msgctxt "Seedprod"
+msgid "Page"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:105
+msgctxt "SeedProd"
+msgid "First name"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:106
+msgctxt "SeedProd"
+msgid "Last name"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:107
+msgctxt "SeedProd"
+msgid "Email"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:108
+msgctxt "SeedProd"
+msgid "IP Address"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:109
+msgctxt "SeedProd"
+msgid "Page ID"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:110
+msgctxt "SeedProd"
+msgid "Page title"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:111
+msgctxt "SeedProd"
+msgid "Page URL"
+msgstr ""
+
+#: src/integrations/seedprod/triggers/optin-form-submitted.php:112
+msgctxt "SeedProd"
+msgid "Page UUID"
 msgstr ""
 
 #. translators: Contact Email, List Name
@@ -18981,7 +19242,7 @@ msgstr ""
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:65
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:76
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:102
-#: src/integrations/woocommerce/tokens/wc-tokens.php:41
+#: src/integrations/woocommerce/tokens/wc-tokens.php:35
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:95
 msgid "Billing city"
 msgstr ""
@@ -18989,7 +19250,7 @@ msgstr ""
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:72
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:77
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:103
-#: src/integrations/woocommerce/tokens/wc-tokens.php:42
+#: src/integrations/woocommerce/tokens/wc-tokens.php:36
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:101
 msgid "Billing state"
 msgstr ""
@@ -18997,14 +19258,14 @@ msgstr ""
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:79
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:78
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:104
-#: src/integrations/woocommerce/tokens/wc-tokens.php:44
+#: src/integrations/woocommerce/tokens/wc-tokens.php:38
 msgid "Billing postcode"
 msgstr ""
 
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:86
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:79
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:105
-#: src/integrations/woocommerce/tokens/wc-tokens.php:45
+#: src/integrations/woocommerce/tokens/wc-tokens.php:39
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:77
 msgid "Billing phone"
 msgstr ""
@@ -19105,14 +19366,14 @@ msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens.php:75
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:116
-#: src/integrations/woocommerce/tokens/wc-tokens.php:58
+#: src/integrations/woocommerce/tokens/wc-tokens.php:52
 msgid "Order date"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens.php:78
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:93
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:121
-#: src/integrations/woocommerce/tokens/wc-tokens.php:65
+#: src/integrations/woocommerce/tokens/wc-tokens.php:59
 msgid "Order status"
 msgstr ""
 
@@ -19172,21 +19433,21 @@ msgstr ""
 #: src/integrations/surecart/tokens/surecart-tokens.php:176
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:84
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:110
-#: src/integrations/woocommerce/tokens/wc-tokens.php:50
+#: src/integrations/woocommerce/tokens/wc-tokens.php:44
 msgid "Shipping country"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens.php:179
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:88
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:114
-#: src/integrations/woocommerce/tokens/wc-tokens.php:55
+#: src/integrations/woocommerce/tokens/wc-tokens.php:49
 msgid "Shipping state"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens.php:182
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:87
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:113
-#: src/integrations/woocommerce/tokens/wc-tokens.php:54
+#: src/integrations/woocommerce/tokens/wc-tokens.php:48
 msgid "Shipping city"
 msgstr ""
 
@@ -19205,7 +19466,7 @@ msgstr ""
 #: src/integrations/surecart/tokens/surecart-tokens.php:194
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:89
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:115
-#: src/integrations/woocommerce/tokens/wc-tokens.php:57
+#: src/integrations/woocommerce/tokens/wc-tokens.php:51
 msgid "Shipping postcode"
 msgstr ""
 
@@ -19217,7 +19478,7 @@ msgstr ""
 #: src/integrations/surecart/tokens/surecart-tokens.php:208
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:80
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:106
-#: src/integrations/woocommerce/tokens/wc-tokens.php:46
+#: src/integrations/woocommerce/tokens/wc-tokens.php:40
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:71
 msgid "Billing email"
 msgstr ""
@@ -19509,6 +19770,64 @@ msgstr ""
 #. Translators: Trigger sentence - Thrive Quiz Builder
 #: src/integrations/thrive-quiz-builder/triggers/anon-thrive-qb-quiz-completed.php:36
 msgid "{{A quiz}} is completed"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:27
+msgid "Campaign type"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:32
+msgid "Campaign start date"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:42
+msgid "Campaign trigger type"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:47
+msgid "Campaign countdown"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:70
+#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:64
+#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:101
+msgid "Membership level"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:80
+msgid "IP address"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:85
+msgid "User agent"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:90
+msgid "Number of comments"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:95
+msgid "Last logged-in"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:100
+msgid "Registered date"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:105
+msgid "Last updated"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-evergreen-campaign-triggered.php:24
+#: src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-evergreen-campaign-triggered.php:25
+msgctxt "Thrive Ultimatum"
+msgid "An evergreen campaign is triggered"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-user-triggers-evergreen-campaign.php:23
+#: src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-user-triggers-evergreen-campaign.php:24
+msgctxt "Thrive Ultimatum"
+msgid "A user triggers an evergreen campaign"
 msgstr ""
 
 #. translators: card name
@@ -20424,7 +20743,7 @@ msgstr ""
 #: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:77
 #: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:79
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:664
-#: src/integrations/woocommerce/tokens/wc-tokens.php:968
+#: src/integrations/woocommerce/tokens/wc-tokens.php:996
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:125
 msgid "Quantity"
 msgstr ""
@@ -20789,98 +21108,98 @@ msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:70
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:96
-#: src/integrations/woocommerce/tokens/wc-tokens.php:34
+#: src/integrations/woocommerce/tokens/wc-tokens.php:28
 msgid "Billing first name"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:71
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:97
-#: src/integrations/woocommerce/tokens/wc-tokens.php:35
+#: src/integrations/woocommerce/tokens/wc-tokens.php:29
 msgid "Billing last name"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:72
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:98
-#: src/integrations/woocommerce/tokens/wc-tokens.php:36
+#: src/integrations/woocommerce/tokens/wc-tokens.php:30
 msgid "Billing company"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:73
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:99
-#: src/integrations/woocommerce/tokens/wc-tokens.php:37
+#: src/integrations/woocommerce/tokens/wc-tokens.php:31
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:113
 msgid "Billing country"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:74
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:100
-#: src/integrations/woocommerce/tokens/wc-tokens.php:39
+#: src/integrations/woocommerce/tokens/wc-tokens.php:33
 msgid "Billing address line 1"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:75
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:101
-#: src/integrations/woocommerce/tokens/wc-tokens.php:40
+#: src/integrations/woocommerce/tokens/wc-tokens.php:34
 msgid "Billing address line 2"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:81
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:107
-#: src/integrations/woocommerce/tokens/wc-tokens.php:47
+#: src/integrations/woocommerce/tokens/wc-tokens.php:41
 msgid "Shipping first name"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:82
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:108
-#: src/integrations/woocommerce/tokens/wc-tokens.php:48
+#: src/integrations/woocommerce/tokens/wc-tokens.php:42
 msgid "Shipping last name"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:83
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:109
-#: src/integrations/woocommerce/tokens/wc-tokens.php:49
+#: src/integrations/woocommerce/tokens/wc-tokens.php:43
 msgid "Shipping company"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:85
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:111
-#: src/integrations/woocommerce/tokens/wc-tokens.php:52
+#: src/integrations/woocommerce/tokens/wc-tokens.php:46
 msgid "Shipping address line 1"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:86
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:112
-#: src/integrations/woocommerce/tokens/wc-tokens.php:53
+#: src/integrations/woocommerce/tokens/wc-tokens.php:47
 msgid "Shipping address line 2"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:91
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:118
-#: src/integrations/woocommerce/tokens/wc-tokens.php:62
+#: src/integrations/woocommerce/tokens/wc-tokens.php:56
 msgid "Order comments"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:97
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:128
-#: src/integrations/woocommerce/tokens/wc-tokens.php:72
+#: src/integrations/woocommerce/tokens/wc-tokens.php:66
 msgid "Order coupons"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:98
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:129
-#: src/integrations/woocommerce/tokens/wc-tokens.php:73
+#: src/integrations/woocommerce/tokens/wc-tokens.php:67
 msgid "Order products"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:99
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:130
-#: src/integrations/woocommerce/tokens/wc-tokens.php:74
+#: src/integrations/woocommerce/tokens/wc-tokens.php:68
 msgid "Order products and quantity"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:101
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:132
-#: src/integrations/woocommerce/tokens/wc-tokens.php:76
+#: src/integrations/woocommerce/tokens/wc-tokens.php:70
 msgid "Order products links"
 msgstr ""
 
@@ -21122,54 +21441,53 @@ msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:92
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:93
-#: src/integrations/woocommerce/tokens/wc-tokens.php:32
+#: src/integrations/woocommerce/tokens/wc-tokens.php:26
 msgid "Product categories"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:93
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:94
-#: src/integrations/woocommerce/tokens/wc-tokens.php:33
+#: src/integrations/woocommerce/tokens/wc-tokens.php:27
 msgid "Product tags"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:95
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:92
-#: src/integrations/woocommerce/tokens/wc-tokens.php:31
+#: src/integrations/woocommerce/tokens/wc-tokens.php:25
 msgid "Product SKU"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:120
-#: src/integrations/woocommerce/tokens/wc-tokens.php:64
+#: src/integrations/woocommerce/tokens/wc-tokens.php:58
 msgid "Order total (unformatted)"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:123
-#: src/integrations/woocommerce/tokens/wc-tokens.php:67
+#: src/integrations/woocommerce/tokens/wc-tokens.php:61
 msgid "Order subtotal (unformatted)"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:125
-#: src/integrations/woocommerce/tokens/wc-tokens.php:69
+#: src/integrations/woocommerce/tokens/wc-tokens.php:63
 msgid "Order tax (unformatted)"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:127
-#: src/integrations/woocommerce/tokens/wc-tokens.php:71
+#: src/integrations/woocommerce/tokens/wc-tokens.php:65
 msgid "Order discounts (unformatted)"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:131
-#: src/integrations/woocommerce/tokens/wc-tokens.php:75
+#: src/integrations/woocommerce/tokens/wc-tokens.php:69
 msgid "Order quantity"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:133
-#: src/integrations/woocommerce/tokens/wc-tokens.php:77
+#: src/integrations/woocommerce/tokens/wc-tokens.php:71
 msgid "Order summary"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:134
-#: src/integrations/woocommerce/tokens/wc-tokens.php:78
 msgid "Order fees"
 msgstr ""
 
@@ -21178,7 +21496,7 @@ msgid "Order shipping"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:137
-#: src/integrations/woocommerce/tokens/wc-tokens.php:81
+#: src/integrations/woocommerce/tokens/wc-tokens.php:77
 msgid "Shipping method"
 msgstr ""
 
@@ -21187,27 +21505,27 @@ msgid "Price type"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:665
-#: src/integrations/woocommerce/tokens/wc-tokens.php:969
+#: src/integrations/woocommerce/tokens/wc-tokens.php:997
 msgid "Price"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:710
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1014
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1042
 msgid "Subtotal:"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:722
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1026
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1054
 msgid "Tax:"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:734
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1038
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1066
 msgid "Payment method:"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:745
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1049
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1077
 msgid "Total:"
 msgstr ""
 
@@ -21239,11 +21557,6 @@ msgstr ""
 #: src/integrations/wishlist-member/actions/wm-adduser-a.php:113
 msgctxt "WishList Member"
 msgid "No levels found."
-msgstr ""
-
-#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:64
-#: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:101
-msgid "Membership level"
 msgstr ""
 
 #: src/integrations/wishlist-member/helpers/wishlist-member-helpers.php:76
@@ -21347,59 +21660,79 @@ msgctxt "WooCommerce"
 msgid "lands on a thank you page for"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:38
+#: src/integrations/woocommerce/tokens/wc-tokens.php:32
 msgid "Billing country (full name)"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:43
+#: src/integrations/woocommerce/tokens/wc-tokens.php:37
 msgid "Billing state (full name)"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:51
+#: src/integrations/woocommerce/tokens/wc-tokens.php:45
 msgid "Shipping country (full name)"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:56
+#: src/integrations/woocommerce/tokens/wc-tokens.php:50
 msgid "Shipping state (full name)"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:59
+#: src/integrations/woocommerce/tokens/wc-tokens.php:53
 msgid "Order time"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:60
+#: src/integrations/woocommerce/tokens/wc-tokens.php:54
 msgid "Order date and time"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:79
+#: src/integrations/woocommerce/tokens/wc-tokens.php:72
+msgid "Order fee"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:73
+msgid "Order fee (unformatted)"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:74
 msgid "Shipping fee"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:82
+#: src/integrations/woocommerce/tokens/wc-tokens.php:75
+msgid "Shipping fee (unformatted)"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:78
 msgid "Payment URL"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:83
+#: src/integrations/woocommerce/tokens/wc-tokens.php:79
 msgid "Direct checkout URL"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:87
+#: src/integrations/woocommerce/tokens/wc-tokens.php:83
 msgid "Stripe fee"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:88
+#: src/integrations/woocommerce/tokens/wc-tokens.php:84
+msgid "Stripe fee (unformatted)"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:85
 msgid "Stripe payout"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:915
+#: src/integrations/woocommerce/tokens/wc-tokens.php:86
+msgid "Stripe payout (unformatted)"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/wc-tokens.php:943
 msgid "Shipping tracking number"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:921
+#: src/integrations/woocommerce/tokens/wc-tokens.php:949
 msgid "Shipping carrier"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:927
+#: src/integrations/woocommerce/tokens/wc-tokens.php:955
 msgid "Ship date"
 msgstr ""
 
@@ -22078,21 +22411,51 @@ msgstr ""
 msgid "Slug"
 msgstr ""
 
+#: src/integrations/wp/actions/wp-createpost.php:184
+msgctxt "WordPress"
+msgid "Add custom CSS"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:192
+msgctxt "WordPress"
+msgid "Custom CSS"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:195
+msgctxt "WordPress"
+msgid "Enter your CSS code into the field above. Please make sure that your CSS rules are correct and targeted appropriately."
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:231
+msgctxt "WordPress"
+msgid "Add custom JavaScript"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:239
+msgctxt "WordPress"
+msgid "Custom JavaScript"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-createpost.php:242
+msgctxt "WordPress"
+msgid "Enter your JavaScript code into the field above. Because JavaScript can affect your site's behaviour and security, only use scripts from trusted sources and make sure to validate and sanitize your inputs."
+msgstr ""
+
 #. translators: Post Excerpt field
-#: src/integrations/wp/actions/wp-createpost.php:185
+#: src/integrations/wp/actions/wp-createpost.php:279
 msgid "Excerpt"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:199
+#: src/integrations/wp/actions/wp-createpost.php:293
 msgid "The URL must include a supported image file extension (e.g. .jpg, .png, .svg, etc.). Some sites may block remote image download."
 msgstr ""
 
 #. translators: Allow comment field
-#: src/integrations/wp/actions/wp-createpost.php:206
+#: src/integrations/wp/actions/wp-createpost.php:300
 msgid "Allow people to submit comments"
 msgstr ""
 
-#: src/integrations/wp/actions/wp-createpost.php:216
+#: src/integrations/wp/actions/wp-createpost.php:310
 msgid "Meta"
 msgstr ""
 

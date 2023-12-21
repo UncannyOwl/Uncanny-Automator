@@ -33,6 +33,18 @@ class Brevo_Helpers {
 	public $invalid_key_message = '';
 
 	/**
+	 * The account details.
+	 *
+	 * @var array
+	 */
+	private $account_details = array(
+		'company' => '',
+		'email'   => '',
+		'status'  => '',
+		'error'   => '',
+	);
+
+	/**
 	 * Brevo_Helpers constructor.
 	 */
 	public function __construct() {
@@ -47,6 +59,13 @@ class Brevo_Helpers {
 	 * @var string
 	 */
 	const OPTION_KEY = 'automator_brevo_api_key';
+
+	/**
+	 * The wp_options table key for selecting the integration account details.
+	 *
+	 * @var string
+	 */
+	const ACCOUNT_KEY = 'automator_brevo_account';
 
 	/**
 	 * The public API edge.
@@ -96,6 +115,30 @@ class Brevo_Helpers {
 	}
 
 	/**
+	 * Get Account Details.
+	 *
+	 * @return array
+	 */
+	public function get_saved_account_details() {
+
+		// No API key set return defaults.
+		$api_key = $this->get_api_key();
+		if ( empty( $api_key ) ) {
+			return $this->account_details;
+		}
+
+		// Get account details.
+		$account = automator_get_option( self::ACCOUNT_KEY, false );
+
+		// Legacy check.
+		if ( ! $account ) {
+			$account = $this->get_account();
+		}
+
+		return $account;
+	}
+
+	/**
 	 * Get class const.
 	 *
 	 * @param  string $const
@@ -107,38 +150,13 @@ class Brevo_Helpers {
 	}
 
 	/**
-	 * Check if API Key Invalid.
-	 *
-	 * @return bool
-	 */
-	public function is_api_key_invalid() {
-
-		$api_key = $this->get_api_key();
-		if ( empty( $api_key ) ) {
-			return true;
-		}
-
-		return 0 === strpos( $api_key, $this->invalid_key_message ) ? true : false;
-	}
-
-	/**
 	 * Integration status.
 	 *
 	 * @return string
 	 */
 	public function integration_status() {
-
-		if ( $this->is_api_key_invalid() ) {
-			return '';
-		}
-
-		try {
-			$is_account_connected = $this->get_account();
-		} catch ( \Exception $e ) {
-			$is_account_connected = false;
-		}
-
-		return $is_account_connected ? 'success' : '';
+		$account = $this->get_saved_account_details();
+		return $account['status'];
 	}
 
 	/**
@@ -184,6 +202,7 @@ class Brevo_Helpers {
 	public function remove_credentials() {
 		// Remove the stored options.
 		delete_option( self::OPTION_KEY );
+		delete_option( self::ACCOUNT_KEY );
 		// Remove any stored transients.
 		delete_transient( 'automator_brevo_account' );
 		delete_transient( 'automator_brevo_contacts/lists' );
@@ -222,48 +241,57 @@ class Brevo_Helpers {
 	}
 
 	/**
-	 * Get account - validates the connection and return the account info
+	 * Get account - validates the connection, saves and returns the account info
 	 *
-	 * @return mixed array|false
+	 * @return array
 	 */
 	public function get_account() {
 
-		$transient = 'automator_brevo_account';
-		$account   = get_transient( $transient );
+		// Set defaults.
+		$account = $this->account_details;
 
-		if ( ! empty( $account ) ) {
+		// Validate api key.
+		$api_key = $this->get_api_key();
+		if ( empty( $api_key ) ) {
 			return $account;
 		}
 
-		$response = $this->api_request( 'get_account', null, null, false );
+		// Check for Legacy invalid key.
+		if ( 0 === strpos( $api_key, $this->invalid_key_message ) ) {
+			$account['error'] = $this->invalid_key_message;
+			update_option( self::ACCOUNT_KEY, $account );
+			return $account;
+		}
+
+		// Get account.
+		try {
+			$response = $this->api_request( 'get_account', null, null, false );
+		} catch ( \Exception $e ) {
+			$error            = $e->getMessage();
+			$account['error'] = ! empty( $error ) ? $error : _x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
+			update_option( self::ACCOUNT_KEY, $account );
+
+			return $account;
+		}
 
 		// Success.
 		if ( ! empty( $response['data']['companyName'] ) ) {
-
-			$account = array(
-				'company' => $response['data']['companyName'],
-				'email'   => $response['data']['email'],
-			);
-
-			set_transient( $transient, $account, 60 * 60 * 24 );
-
-			return $account;
+			$account['company'] = $response['data']['companyName'];
+			$account['email']   = $response['data']['email'];
+			$account['status']  = 'success';
 		}
 
 		// Check for invalid key.
 		if ( ! empty( $response['data']['code'] ) ) {
-
 			if ( 'unauthorized' === $response['data']['code'] ) {
-				// Re-save the invalid key with the invalid message.
-				$api_key = $this->get_api_key();
-				$api_key = "{$this->invalid_key_message}{$api_key}";
-				update_option( self::OPTION_KEY, $api_key );
+				$account['status'] = '';
+				$account['error']  = $this->invalid_key_message;
 			}
-
-			return false;
 		}
 
-		return false;
+		update_option( self::ACCOUNT_KEY, $account );
+
+		return $account;
 	}
 
 	/**
@@ -586,7 +614,7 @@ class Brevo_Helpers {
 		);
 
 		// Set transient.
-		set_transient( $transient, $options, HOUR_IN_SECONDS );
+		set_transient( $transient, $options, DAY_IN_SECONDS );
 
 		return $options;
 	}
@@ -654,6 +682,12 @@ class Brevo_Helpers {
 		if ( $response['statusCode'] >= 400 ) {
 			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : _x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
 			throw new \Exception( $message, 400 );
+		}
+
+		if ( isset( $response['data']['code'] ) && ! empty( $response['data']['code'] ) ) {
+			if ( 'unauthorized' === $response['data']['code'] ) {
+				throw new \Exception( $this->invalid_key_message, 400 );
+			}
 		}
 
 	}

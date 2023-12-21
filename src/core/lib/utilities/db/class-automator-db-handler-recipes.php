@@ -285,4 +285,15 @@ class Automator_DB_Handler_Recipes {
 			)
 		);
 	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return void
+	 */
+	public function update_count( $recipe_id ) {
+		global $wpdb;
+
+		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}uap_recipe_count SET runs = runs + 1 WHERE recipe_id = %d", $recipe_id ) );
+	}
 }

@@ -33,10 +33,16 @@ trait Webhooks {
 	 */
 	public function inject_webhooks_response_tokens( $tokens = array(), $action_id = null, $recipe_id = null ) {
 
+		$tokens[] = array(
+			'tokenId'   => 'WEBHOOK_RESPONSE_CODE',
+			'tokenName' => esc_html_x( 'Response - Status code', 'webhook', 'uncanny-automator' ),
+			'tokenType' => 'int',
+		);
+
 		$response_exists = get_post_meta( $action_id, 'webhook_response_tokens', true );
 
 		if ( empty( $response_exists ) ) {
-			return array();
+			return $tokens;
 		}
 
 		// Make sure data is array. The func json_decode can return boolean or null.
@@ -79,6 +85,10 @@ trait Webhooks {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
+		if ( true === AUTOMATOR_DISABLE_APP_INTEGRATION_REQUESTS ) {
+			$action_data['complete_with_errors'] = true;
+			return Automator()->complete->action( $user_id, $action_data, $recipe_id, 'Webhooks have been disabled in wp-config.php.' );
+		}
 		// Start the timer.
 		$start_time = microtime( true );
 

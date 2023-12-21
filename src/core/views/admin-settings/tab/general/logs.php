@@ -19,7 +19,7 @@ namespace Uncanny_Automator;
 	<div class="uap-settings-panel-top">
 
 		<div class="uap-settings-panel-title">
-			<?php esc_html_e( 'Logs', 'uncanny-automator' ); ?>
+			<?php esc_html_e( 'Data management', 'uncanny-automator' ); ?>
 		</div>
 
 		<div class="uap-settings-panel-content">

@@ -299,7 +299,7 @@ class Automator_Utilities {
 
 		// check if the nonce is verifiable.
 		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wp_rest' )
-			&& ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) ) {
+			 && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) ) {
 
 			$return['status'] = 'auth-failed';
 			$return['error']  = esc_html__( 'nonce validation failed.', 'uncanny-automator' );
@@ -791,5 +791,37 @@ class Automator_Utilities {
 
 		return (array) $results;
 
+	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return int
+	 */
+	public function get_recipe_total_runs( $recipe_id ) {
+		global $wpdb;
+
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT `runs` as record_count
+				FROM {$wpdb->prefix}uap_recipe_count
+					WHERE recipe_id = %d",
+				$recipe_id
+			)
+		);
+
+		if ( empty( $count ) || 0 === $count ) {
+
+			$count = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT count(*) as record_count
+				FROM {$wpdb->prefix}uap_recipe_log
+					WHERE automator_recipe_id = %d",
+					$recipe_id
+				)
+			);
+		}
+
+		return absint( $count );
 	}
 }

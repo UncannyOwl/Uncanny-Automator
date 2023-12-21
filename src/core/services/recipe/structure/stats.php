@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Services\Recipe\Structure;
 
 use Uncanny_Automator\Services\Recipe\Common;
@@ -6,8 +7,8 @@ use Uncanny_Automator\Services\Recipe\Common;
 /**
  * Represents the stats in the recipe object
  *
- * @package Uncanny_Automator\Services\Recipe\Structure
  * @since 5.0
+ * @package Uncanny_Automator\Services\Recipe\Structure
  */
 final class Stats implements \JsonSerializable {
 
@@ -33,18 +34,6 @@ final class Stats implements \JsonSerializable {
 	 */
 	private function get_recipe_total_runs() {
 
-		global $wpdb;
-
-		$count = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT count(*) as record_count 
-				FROM {$wpdb->prefix}uap_recipe_log
-					WHERE automator_recipe_id = %d",
-				self::$recipe->get_recipe_id()
-			)
-		);
-
-		return absint( $count );
-
+		return Automator()->utilities->get_recipe_total_runs( self::$recipe->get_recipe_id() );
 	}
 }

@@ -79,10 +79,13 @@ class BDB_ADDTOGROUP {
 	 */
 	public function add_to_bb_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		$add_to_bp_group = $action_data['meta'][ $this->action_meta ];
+		$group_id = $action_data['meta'][ $this->action_meta ];
+		if ( 'automator_custom_value' === $group_id ) {
+			$group_id = Automator()->parse->text( $action_data['meta'][ $this->action_meta . '_custom' ], $recipe_id, $user_id, $args );
+		}
 
 		if ( function_exists( 'groups_join_group' ) ) {
-			groups_join_group( $add_to_bp_group, $user_id );
+			groups_join_group( $group_id, $user_id );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} else {

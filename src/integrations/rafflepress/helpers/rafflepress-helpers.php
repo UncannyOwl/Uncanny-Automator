@@ -149,10 +149,22 @@ class Rafflepress_Helpers {
 			return $tokens;
 		}
 
+		return $this->contestant_token( $contestant, $tokens );
+	}
+
+	/**
+	 * @param $contestant
+	 * @param $tokens
+	 *
+	 * @return mixed
+	 */
+	public function contestant_token( $contestant, $tokens ) {
+
 		$tokens['CONTESTANT_NAME']           = $contestant['fname'] . ' ' . $contestant['lname'];
 		$tokens['CONTESTANT_EMAIL']          = $contestant['email'];
 		$tokens['CONTESTANT_EMAIL_VERIFIED'] = ( 'confirmed' === $contestant['status'] ) ? 'Yes' : 'No';
 
 		return $tokens;
+
 	}
 }

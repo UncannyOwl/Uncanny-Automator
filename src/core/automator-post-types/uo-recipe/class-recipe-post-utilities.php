@@ -896,8 +896,10 @@ class Recipe_Post_Utilities {
 				<?php
 				break;
 			case 'runs':
-				$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $post_id, 1 ) );
-				$url   = add_query_arg(
+				//$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $post_id, 1 ) );
+				$count = Automator()->utilities->get_recipe_total_runs( $post_id );
+
+				$url = add_query_arg(
 					array(
 						'post_type' => 'uo-recipe',
 						'page'      => 'uncanny-automator-admin-logs',

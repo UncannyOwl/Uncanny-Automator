@@ -96,7 +96,7 @@ class Action_Logs_Resources {
 	protected function has_api_log( $action_log_id = 0 ) {
 
 		$key = 'automator_action_log_resources_has_api_log_' . $action_log_id;
-		$log = wp_cache_get( $key );
+		$log = wp_cache_get( $key, 'automator_logs' );
 
 		if ( false !== $log ) {
 			return ! is_null( $log );
@@ -104,7 +104,7 @@ class Action_Logs_Resources {
 
 		$log = $this->automator_factory->db_api()->get_by_log_id( 'action', $action_log_id );
 
-		wp_cache_set( $key, true );
+		wp_cache_set( $key, true, 'automator_logs' );
 
 		return ! is_null( $log );
 
@@ -117,12 +117,12 @@ class Action_Logs_Resources {
 	 */
 	protected function get_recipe_actions_logs_raw( $params ) {
 		$key           = 'get_recipe_action_logs_raw_' . maybe_serialize( $params );
-		$cached_result = wp_cache_get( $key );
+		$cached_result = wp_cache_get( $key, 'automator_log' );
 		if ( false !== $cached_result ) {
 			return (array) $cached_result;
 		}
 		$result = $this->action_logs_queries->get_recipe_actions_logs_raw( $params );
-		wp_cache_set( $key, $result );
+		wp_cache_set( $key, $result, 'automator_log' );
 		return $result;
 	}
 

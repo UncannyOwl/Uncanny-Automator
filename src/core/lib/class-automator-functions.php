@@ -2093,13 +2093,16 @@ WHERE pm.post_id
 	 * @param string $format Could be OBJECT, ARRAY_A, 'JSON'
 	 *
 	 * @return mixed Returns the data in specified format. Otherwise, if not format is set, it will return the JSON string.
+	 * @since 5.0 - _recipe object not returning actions when added. Need to fully flush cache
+	 *
+	 * @since 5.4 - Replace wp_cache_flush with automator_cache_delete_group
 	 */
 	public function get_recipe_object( $recipe_id, $format = 'JSON' ) {
 
 		/**
 		 * @since 5.0 - _recipe object not returning actions when added. Need to fully flush cache
 		 */
-		wp_cache_flush();
+		automator_cache_delete_group( 'automator_recipe' );
 
 		$recipe_object = new Services\Recipe\Structure( absint( $recipe_id ) );
 

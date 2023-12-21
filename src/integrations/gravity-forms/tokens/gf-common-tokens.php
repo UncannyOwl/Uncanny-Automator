@@ -24,6 +24,7 @@ class GF_COMMON_TOKENS {
 			'automator_gf_common_tokens_form_tokens',
 			array(
 				'ANON_GF_FORM_ENTRY_UPDATED',
+				'ANON_GF_FORM_FIELD_MATCHABLE',
 			),
 			$this
 		);

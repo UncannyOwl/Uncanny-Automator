@@ -81,9 +81,12 @@ class BP_ADDTOGROUP {
 	 */
 	public function add_to_bp_group( $user_id, $action_data, $recipe_id, $args ) {
 
-		$group_id = absint( $action_data['meta'][ $this->action_meta ] );
+		$group_id = $action_data['meta'][ $this->action_meta ];
+		if ( 'automator_custom_value' === $group_id ) {
+			$group_id = Automator()->parse->text( $action_data['meta'][ $this->action_meta . '_custom' ], $recipe_id, $user_id, $args );
+		}
 
-		$has_joined_groups = groups_join_group( $group_id, $user_id );
+		$has_joined_groups = groups_join_group( absint( $group_id ), $user_id );
 
 		if ( true !== $has_joined_groups ) {
 

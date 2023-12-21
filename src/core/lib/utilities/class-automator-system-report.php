@@ -330,6 +330,7 @@ class Automator_System_Report {
 					'api'               => 'uap_api_log',
 					'api_response_logs' => 'uap_api_log_response',
 					'tokens_logs'       => 'uap_tokens_log',
+					'recipe_count'      => 'uap_recipe_count',
 				)
 			);
 

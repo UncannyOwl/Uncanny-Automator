@@ -42,7 +42,7 @@ namespace Uncanny_Automator;
 </div>
 
 <p>
-	<uo-icon id="lock"></uo-icon>  
+	<uo-icon id="lock"></uo-icon>
 	<?php
 
 	printf(
