@@ -403,7 +403,9 @@ class Automator_Cache_Handler {
 	 *
 	 */
 	public function remove_all() {
-		wp_cache_flush();
+		if ( function_exists( 'wp_cache_flush_group' ) ) {
+			wp_cache_flush_group( 'automator' );
+		}
 		$this->remove( 'automator_integration_directories_loaded' );
 		$this->remove( 'automator_get_all_integrations' );
 		$this->remove( 'automator_actionified_triggers' );
@@ -602,10 +604,10 @@ class Automator_Cache_Handler {
 		<div class="uap-field uap-spacing-top--small">
 
 			<uo-switch
-					id="<?php echo esc_attr( self::OPTION_NAME ); ?>"
+				id="<?php echo esc_attr( self::OPTION_NAME ); ?>"
 				<?php echo true === $cache_enabled ? 'checked' : ''; ?>
-					status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"
-					class="uap-spacing-top"
+				status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"
+				class="uap-spacing-top"
 			></uo-switch>
 
 			<div class="uap-field-description">

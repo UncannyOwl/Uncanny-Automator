@@ -156,9 +156,9 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		$email           = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
 		$double_optin    = $this->get_parsed_meta_value( 'DOUBLE_OPT_IN', false );
-		$double_optin    = is_bool( $double_optin ) ? $double_optin : filter_var( $double_optin, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
+		$double_optin    = filter_var( strtolower( $double_optin ), FILTER_VALIDATE_BOOLEAN );
 		$update_existing = $this->get_parsed_meta_value( 'UPDATE_EXISTING_CONTACT', false );
-		$update_existing = is_bool( $update_existing ) ? $update_existing : filter_var( $update_existing, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
+		$update_existing = filter_var( strtolower( $update_existing ), FILTER_VALIDATE_BOOLEAN );
 
 		// Generate attributes.
 		$attributes = array();

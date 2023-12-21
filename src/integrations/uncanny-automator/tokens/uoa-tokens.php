@@ -191,7 +191,7 @@ class Uoa_Tokens {
 		/**
 		 * Specific Number of times token
 		 */
-		if ( in_array( 'RECIPENUMTIMES', $pieces, true ) ) {
+		if ( in_array( 'NUMTIMES', $pieces, true ) ) {
 			if ( empty( $trigger_data ) ) {
 				return $value;
 			}

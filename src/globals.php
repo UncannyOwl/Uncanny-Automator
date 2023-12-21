@@ -6,7 +6,7 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VERSION', '4.15' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '5.4' );
 }
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VIEWS_VERSION' ) ) {
@@ -114,4 +114,12 @@ if ( ! defined( 'AUTOMATOR_SITE_KEY' ) ) {
 
 	define( 'AUTOMATOR_SITE_KEY', Utilities::get_key() );
 
+}
+
+if ( ! defined( 'AUTOMATOR_DISABLE_APP_INTEGRATION_REQUESTS' ) ) {
+	define( 'AUTOMATOR_DISABLE_APP_INTEGRATION_REQUESTS', false );
+}
+
+if ( ! defined( 'AUTOMATOR_DISABLE_SENDEMAIL_ACTION' ) ) {
+	define( 'AUTOMATOR_DISABLE_SENDEMAIL_ACTION', false );
 }

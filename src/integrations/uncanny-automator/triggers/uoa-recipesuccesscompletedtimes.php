@@ -24,7 +24,7 @@ class UOA_RECIPESUCCESSCOMPLETEDTIMES {
 	public function __construct() {
 		$this->trigger_code = 'UOARECIPESUCCESSRUNS';
 		$this->trigger_meta = 'UOARECIPE';
-		$this->num_times    = 'RECIPENUMTIMES';
+		$this->num_times    = 'NUMTIMES';
 		$this->define_trigger();
 	}
 

@@ -35,10 +35,6 @@ function trigger_fields_logger( $hook_args = array() ) {
 		)
 	);
 
-	// Include the required classes.
-	require_once __DIR__ . '/resolver/fields-resolver.php';
-	require_once __DIR__ . '/logger/trigger-fields-logger.php';
-
 	// Initialize run number with value of 1. Run number can be null but it can't be 0.
 	$run_number = 1;
 
@@ -192,7 +188,6 @@ function recipe_triggers_logger( $hook_args = array() ) {
 	);
 
 	// Instantiate the Recipe Objects Logger.
-	require_once __DIR__ . '/logger/recipe-objects-logger.php';
 	$recipe_objects_logger = new Recipe_Objects_Logger();
 
 	// Set the key for the logger.
@@ -215,10 +210,6 @@ function recipe_triggers_logger( $hook_args = array() ) {
  * @return void
  */
 function recipe_actions_flow_logger( $hook_args = array() ) {
-
-	// Load necessary files
-	require_once __DIR__ . '/resolver/recipe-actions-resolver.php';
-	require_once __DIR__ . '/logger/recipe-objects-logger.php';
 
 	// Prepare arguments for logging
 	$args = array(
@@ -250,9 +241,6 @@ function recipe_actions_flow_logger( $hook_args = array() ) {
  */
 function closure_logger( $hook_args ) {
 
-	// Load necessary files
-	require_once __DIR__ . '/logger/recipe-objects-logger.php';
-
 	// Prepare arguments for logging
 	$args = array(
 		'user_id'       => absint( $hook_args['user_id'] ),
@@ -281,7 +269,6 @@ function closure_logger( $hook_args ) {
 	if ( ! empty( $result ) ) {
 		$recorded = $logger->get_meta( $args, 'closures' );
 		if ( empty( $recorded ) ) {
-			require_once __DIR__ . '/rest/endpoint/log-endpoint/utils/formatters-utils.php';
 			$closure_meta = Formatters_Utils::flatten_post_meta( (array) get_post_meta( $result['ID'] ) );
 			$logger->add_meta(
 				$args,
@@ -330,9 +317,6 @@ function recipe_actions_conditions_logger( $action = array(), $code = '', $messa
 	}
 
 	// Load necessary files
-	require_once __DIR__ . '/resolver/conditions/errors-registry.php';
-	require_once __DIR__ . '/resolver/conditions/errors-mapping.php';
-
 	if ( ! isset( $action['action_data']['args'] ) ) {
 		return;
 	}
@@ -377,9 +361,6 @@ function recipe_actions_conditions_logger( $action = array(), $code = '', $messa
  * @return void
  */
 function conditions_errors_logger( $recipe_id = 0, $user_id = 0, $recipe_log_id = 0 ) {
-
-	// Include the errors registry to retrieve any errors that occurred.
-	require_once __DIR__ . '/resolver/conditions/errors-registry.php';
 
 	// Bail if there are no errors.
 	$error_registry = Errors_Registry::get_instance();
@@ -431,9 +412,6 @@ function tokens_logger( $hook_args = array() ) {
 	// If tokens exist, log them using the Tokens_Logger class.
 	if ( is_array( $tokens_record ) && ! empty( $tokens_record ) ) {
 
-		// Require the Tokens_Logger class file.
-		require_once __DIR__ . '/logger/token-logger.php';
-
 		// Create a new instance of Tokens_Logger and log the tokens.
 		$logger = new Tokens_Logger();
 
@@ -467,7 +445,6 @@ function log_async_actions( $recipe_id = 0, $user_id = 0, $recipe_log_id = 0, $a
 		return;
 	}
 
-	require_once __DIR__ . '/logger/recipe-objects-logger.php';
 	$recipe_objects_logger = new Recipe_Objects_Logger();
 
 	// Prepare the arguments for the logger.
@@ -542,8 +519,6 @@ function collect_async_actions( $action = array() ) {
  * @return void
  */
 function recipe_triggers_logic_logger( $args ) {
-
-	require_once __DIR__ . '/logger/recipe-objects-logger.php';
 
 	$recipe_objects_logger = new Recipe_Objects_Logger();
 

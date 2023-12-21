@@ -13,12 +13,6 @@ use WC_Order_Item_Product;
 class Wc_Tokens {
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'WC';
-	/**
 	 * @var array
 	 */
 	public $possible_order_fields = array();
@@ -75,8 +69,10 @@ class Wc_Tokens {
 			'order_qty'             => esc_attr__( 'Order quantity', 'uncanny-automator' ),
 			'order_products_links'  => esc_attr__( 'Order products links', 'uncanny-automator' ),
 			'order_summary'         => esc_attr__( 'Order summary', 'uncanny-automator' ),
-			'order_fees'            => esc_attr__( 'Order fees', 'uncanny-automator' ),
+			'order_fees'            => esc_attr__( 'Order fee', 'uncanny-automator' ),
+			'order_fees_raw'        => esc_attr__( 'Order fee (unformatted)', 'uncanny-automator' ),
 			'order_shipping'        => esc_attr__( 'Shipping fee', 'uncanny-automator' ),
+			'order_shipping_raw'    => esc_attr__( 'Shipping fee (unformatted)', 'uncanny-automator' ),
 			'payment_method'        => esc_attr__( 'Payment method', 'uncanny-automator' ),
 			'shipping_method'       => esc_attr__( 'Shipping method', 'uncanny-automator' ),
 			'payment_url'           => esc_attr__( 'Payment URL', 'uncanny-automator' ),
@@ -84,9 +80,12 @@ class Wc_Tokens {
 		);
 
 		if ( function_exists( 'stripe_wc' ) || class_exists( '\WC_Stripe_Helper' ) || function_exists( 'woocommerce_gateway_stripe' ) ) {
-			$this->possible_order_fields['stripe_fee']    = esc_attr__( 'Stripe fee', 'uncanny-automator' );
-			$this->possible_order_fields['stripe_payout'] = esc_attr__( 'Stripe payout', 'uncanny-automator' );
+			$this->possible_order_fields['stripe_fee']        = esc_attr__( 'Stripe fee', 'uncanny-automator' );
+			$this->possible_order_fields['stripe_fee_raw']    = esc_attr__( 'Stripe fee (unformatted)', 'uncanny-automator' );
+			$this->possible_order_fields['stripe_payout']     = esc_attr__( 'Stripe payout', 'uncanny-automator' );
+			$this->possible_order_fields['stripe_payout_raw'] = esc_attr__( 'Stripe payout (unformatted)', 'uncanny-automator' );
 		}
+
 		add_action(
 			'uap_wc_trigger_save_meta',
 			array(
@@ -211,8 +210,8 @@ class Wc_Tokens {
 	}
 
 	/**
-	 * @param array  $tokens
-	 * @param array  $args
+	 * @param array $tokens
+	 * @param array $args
 	 * @param string $type
 	 *
 	 * @return array
@@ -264,28 +263,6 @@ class Wc_Tokens {
 		}
 
 		return $this->wc_possible_tokens( $tokens, $args, 'product' );
-	}
-
-	/**
-	 * Only load this integration and its triggers and actions if the related
-	 * plugin is active
-	 *
-	 * @param $status
-	 * @param $plugin
-	 *
-	 * @return bool
-	 */
-	public function plugin_active( $status, $plugin ) {
-
-		if ( self::$integration === $plugin ) {
-			if ( class_exists( 'WooCommerce' ) ) {
-				$status = true;
-			} else {
-				$status = false;
-			}
-		}
-
-		return $status;
 	}
 
 	/**
@@ -597,8 +574,14 @@ class Wc_Tokens {
 					case 'order_fees':
 						$value = wc_price( $order->get_total_fees() );
 						break;
+					case 'order_fees_raw':
+						$value = $order->get_total_fees();
+						break;
 					case 'order_shipping':
 						$value = wc_price( $order->get_shipping_total() );
+						break;
+					case 'order_shipping_raw':
+						$value = $order->get_shipping_total();
 						break;
 					case 'order_tax_raw':
 						$value = $order->get_total_tax();
@@ -684,6 +667,20 @@ class Wc_Tokens {
 
 						break;
 
+					case 'stripe_fee_raw':
+						$value = 0;
+						if ( function_exists( 'stripe_wc' ) ) {
+							$value = \WC_Stripe_Utils::display_fee( $order );
+						}
+						if ( ( function_exists( 'woocommerce_gateway_stripe' ) || class_exists( '\WC_Stripe_Helper' ) ) && 0 === $value ) {
+							$value = \WC_Stripe_Helper::get_stripe_fee( $order );
+						}
+
+						if ( ! empty( $value ) ) {
+							$value = $this->clean_wc_price( $value );
+						}
+						break;
+
 					case 'stripe_payout':
 						$value = 0;
 						if ( function_exists( 'stripe_wc' ) ) {
@@ -691,6 +688,19 @@ class Wc_Tokens {
 						}
 						if ( class_exists( '\WC_Stripe_Helper' ) && 0 === $value ) {
 							$value = \WC_Stripe_Helper::get_stripe_net( $order );
+						}
+						break;
+
+					case 'stripe_payout_raw':
+						$value = 0;
+						if ( function_exists( 'stripe_wc' ) ) {
+							$value = \WC_Stripe_Utils::display_net( $order );
+						}
+						if ( class_exists( '\WC_Stripe_Helper' ) && 0 === $value ) {
+							$value = \WC_Stripe_Helper::get_stripe_net( $order );
+						}
+						if ( ! empty( $value ) ) {
+							$value = $this->clean_wc_price( $value );
 						}
 						break;
 
@@ -766,6 +776,24 @@ class Wc_Tokens {
 	}
 
 	/**
+	 * @param $price
+	 *
+	 * @return float|mixed
+	 */
+	public function clean_wc_price( $price ) {
+		// Regular expression to match the numeric/float value after the currency symbol
+		$pattern = '/<span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">.*?<\/span>([0-9,]+(?:\.[0-9]+)?)<\/bdi><\/span>/';
+
+		// Extract the value
+		if ( preg_match( $pattern, $price, $matches ) ) {
+			// Convert the captured value to a float
+			return floatval( str_replace( ',', '', $matches[1] ) );
+		}
+
+		return $price;
+	}
+
+	/**
 	 * @param WC_Order $order
 	 * @param          $value_to_match
 	 *
@@ -810,8 +838,8 @@ class Wc_Tokens {
 	/**
 	 * @param \WC_Order $order
 	 * @param           $value_to_match
-	 * @param bool      $unformatted
-	 * @param bool      $sale
+	 * @param bool $unformatted
+	 * @param bool $sale
 	 *
 	 * @return string
 	 */

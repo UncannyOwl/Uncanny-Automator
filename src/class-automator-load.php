@@ -91,8 +91,7 @@ class Automator_Load {
 		// Add the pro links utm_r attributes.
 		add_action( 'admin_footer', array( $this, 'global_utm_r_links' ) );
 
-		// Disabling for WP Hive test
-		//add_action( 'activated_plugin', array( $this, 'automator_activated' ) );
+		add_action( 'activated_plugin', array( $this, 'automator_activated' ) );
 
 		// Show 'Upgrade to Pro' on plugins page.
 		add_filter(
@@ -123,6 +122,10 @@ class Automator_Load {
 			);
 			$this->load_deactivation_survey();
 		}
+
+		$this->load_logs_autoremoval();
+		// Auto-delete user logs.
+		add_action( 'deleted_user', array( $this, 'auto_prune_user_logs_handler' ), 10, 3 );
 	}
 
 	/**
@@ -166,6 +169,15 @@ class Automator_Load {
 			100
 		);
 
+	}
+
+	/**
+	 * Loads logs auto removal class to register the hooks.
+	 *
+	 * @return void
+	 */
+	public function load_logs_autoremoval() {
+		( new \Uncanny_Automator\Services\Logger_Auto_Removal() )->register_hooks();
 	}
 
 	/**
@@ -722,7 +734,7 @@ class Automator_Load {
 	 */
 	public function any_active_recipe() {
 		// Check if cache exists
-		$results = wp_cache_get( 'automator_any_recipes_active' );
+		$results = wp_cache_get( 'automator_any_recipes_active', 'automator' );
 
 		if ( ! empty( $results ) && 'yes' === $results ) {
 			return true;
@@ -743,7 +755,7 @@ class Automator_Load {
 			}
 
 			// Instead of transient, lets use cache
-			wp_cache_set( 'automator_any_recipes_active', $val, '', 2 * MINUTE_IN_SECONDS );
+			wp_cache_set( 'automator_any_recipes_active', $val, 'automator', 2 * MINUTE_IN_SECONDS );
 		}
 
 		return $results;
@@ -918,5 +930,34 @@ class Automator_Load {
 		if ( ! wp_next_scheduled( 'automator_daily_healthcheck' ) ) {
 			wp_schedule_event( time(), 'daily', 'automator_daily_healthcheck' );
 		}
+	}
+
+	/**
+	 * Callback method to `deleted_user` action hook.
+	 *
+	 * @param int $id
+	 * @param int|null $reassign
+	 * @param \WP_User $user
+	 *
+	 * @return bool True if the purge_logs method has been invoked. Otherwise, false.
+	 */
+	public function auto_prune_user_logs_handler( $id, $reassign, $user ) {
+
+		$should_delete_user_records = get_option( 'automator_delete_user_records_on_user_delete', false );
+
+		// Bail on settings disabled. '0' is considered empty.
+		if ( empty( $should_delete_user_records ) ) {
+			return false;
+		}
+
+		$prune_logs = new Prune_Logs( false );
+		$user_logs  = $prune_logs->get_user_logs( $id );
+
+		foreach ( $user_logs as $user_log ) {
+			$prune_logs->purge_logs( $user_log['automator_recipe_id'], $user_log['ID'], $user_log['run_number'] );
+		}
+
+		return true;
+
 	}
 }

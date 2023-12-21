@@ -670,7 +670,6 @@ function automator_get_option( $option, $default_value = false ) {
  * @param string $message The formatted message text to display to the user (will be shown inside styled <div> and <p> tags).
  * @param string $type MMessage type, controls HTML class. Possible values include 'error', 'success', 'warning', 'info'. Default 'error'.
  *
- * @return mixed
  */
 function automator_add_settings_error( $setting = '', $code = '', $message = '', $type = '' ) {
 
@@ -678,6 +677,30 @@ function automator_add_settings_error( $setting = '', $code = '', $message = '',
 		return;
 	}
 
-	return add_settings_error( $setting, $code, $message, $type );
+	add_settings_error( $setting, $code, $message, $type );
+}
 
+/**
+ * Deletes all cache that are member of a specific cache group.
+ *
+ * @param string $group
+ *
+ * @return void
+ */
+function automator_cache_delete_group( $group = 'automator' ) {
+	if ( function_exists( 'wp_cache_flush_group' ) ) {
+		wp_cache_flush_group( $group );
+
+		return;
+	}
+
+	/** @type WP_Object_Cache $wp_object_cache */
+	global $wp_object_cache;
+
+	$cache = $wp_object_cache->cache;
+
+	if ( isset( $cache[ $group ] ) ) {
+		unset( $cache[ $group ] );
+		$wp_object_cache->cache = $cache;
+	}
 }

@@ -29,7 +29,7 @@ class Admin_Settings_General_Logs {
 			function( $tabs ) {
 				// General
 				$tabs['logs'] = (object) array(
-					'name'     => esc_html__( 'Logs', 'uncanny-automator' ),
+					'name'     => esc_html__( 'Data management', 'uncanny-automator' ),
 					'function' => array( $this, 'tab_output' ),
 					'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 					'icon'     => 'th-list',

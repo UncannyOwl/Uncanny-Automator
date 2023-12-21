@@ -9,45 +9,54 @@ namespace Uncanny_Automator;
 class Automator_Status {
 
 	/**
-	 *
+	 * @var int
 	 */
-	const NOT_COMPLETED         = 0;
+	const NOT_COMPLETED = 0;
+
 	/**
-	 *
+	 * @var int
 	 */
-	const COMPLETED             = 1;
+	const COMPLETED = 1;
+
 	/**
-	 *
+	 * @var int
 	 */
 	const COMPLETED_WITH_ERRORS = 2;
+
 	/**
-	 *
+	 * @var int
 	 */
-	const IN_PROGRESS           = 5;
+	const IN_PROGRESS = 5;
+
 	/**
-	 *
+	 * @var int
 	 */
-	const CANCELLED             = 7;
+	const CANCELLED = 7;
+
 	/**
-	 *
+	 * @var int
 	 */
-	const SKIPPED               = 8;
+	const SKIPPED = 8;
+
 	/**
-	 *
+	 * @var int
 	 */
-	const DID_NOTHING           = 9;
+	const DID_NOTHING = 9;
+
 	/**
-	 *
+	 * @var int
 	 */
-	const COMPLETED_AWAITING    = 10;
+	const COMPLETED_AWAITING = 10;
+
 	/**
-	 *
+	 * @var int
 	 */
 	const COMPLETED_WITH_NOTICE = 11;
+
 	/**
-	 *
+	 * @var int
 	 */
-	const QUEUED                = 12;
+	const QUEUED = 12;
 
 	/**
 	 * Action status name
@@ -78,7 +87,7 @@ class Automator_Status {
 	}
 
 	/**
-	 * @return mixed|null
+	 * @return int[]
 	 */
 	public static function get_finished_statuses() {
 
@@ -92,6 +101,23 @@ class Automator_Status {
 		);
 
 		return apply_filters( 'automator_status_finished', $finished_statuses );
+
+	}
+
+	/**
+	 * @return int[]
+	 */
+	public static function get_removable_statuses() {
+
+		$removable_statuses = array(
+			self::COMPLETED,
+			self::CANCELLED,
+			self::SKIPPED,
+			self::DID_NOTHING,
+			self::COMPLETED_WITH_NOTICE,
+		);
+
+		return apply_filters( 'automator_status_removable', $removable_statuses );
 
 	}
 

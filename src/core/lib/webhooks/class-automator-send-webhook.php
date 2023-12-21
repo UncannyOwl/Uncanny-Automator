@@ -905,6 +905,7 @@ class Automator_Send_Webhook {
 
 		// Hydrate the "WEBHOOK_RESPONSE_BODY" action token.
 		$hydration_data['WEBHOOK_RESPONSE_BODY'] = (string) wp_remote_retrieve_body( $response );
+		$hydration_data['WEBHOOK_RESPONSE_CODE'] = wp_remote_retrieve_response_code( $response );
 
 		return $hydration_data;
 

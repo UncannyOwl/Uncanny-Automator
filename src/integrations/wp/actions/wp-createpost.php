@@ -180,6 +180,100 @@ class WP_CREATEPOST {
 						),
 
 						array(
+							'option_code' => 'WPCPOSTCONTENTCUSTOMCSSCHECKBOX',
+							'label'       => _x( 'Add custom CSS', 'WordPress', 'uncanny-automator' ),
+							'input_type'  => 'checkbox',
+							'is_toggle'   => true,
+							'required'    => false,
+						),
+
+						array(
+							'option_code'        => 'WPCPOSTCONTENTCUSTOMCSS',
+							'label'              => _x( 'Custom CSS', 'WordPress', 'uncanny-automator' ),
+							'input_type'         => 'textarea',
+							'required'           => false,
+							'description'        => _x( 'Enter your CSS code into the field above. Please make sure that your CSS rules are correct and targeted appropriately.', 'WordPress', 'uncanny-automator' ),
+
+							'dynamic_visibility' => array(
+								// 'default_state' specifies the initial visibility state of the element
+								'default_state'    => 'hidden', // Possible values: 'hidden', 'visible'
+
+								// 'visibility_rules' is an array of rules that define conditions for changing the visibility state
+								'visibility_rules' => array(
+									// Each array within 'visibility_rules' represents a single rule
+									array(
+										// 'operator' specifies how to evaluate the conditions within the rule.
+										// 'AND' means all conditions must be true, 'OR' means any condition can be true
+										'operator'        => 'AND', // Possible values: 'AND', 'OR'
+
+										// 'rule_conditions' is an array of condition objects
+										'rule_conditions' => array(
+											// Each condition object within 'rule_conditions' specifies a single condition to evaluate
+											array(
+												'option_code' => 'WPCPOSTCONTENTCUSTOMCSSCHECKBOX', // The unique identifier for the option/element being evaluated
+												'compare' => '==', // The operator used for comparison (e.g., '==', '!=', etc.)
+												'value'   => true,  // The value to compare against
+											),
+											// Additional conditions can be added here if needed
+										),
+
+										// 'resulting_visibility' specifies what the visibility should be if the rule conditions are met
+										'resulting_visibility' => 'show', // Possible values: 'show', 'hide'
+									),
+									// Additional rules can be added here if needed
+								),
+							),
+
+						),
+
+						array(
+							'option_code' => 'WPCPOSTCONTENTCUSTOMJSCHECKBOX',
+							'label'       => _x( 'Add custom JavaScript', 'WordPress', 'uncanny-automator' ),
+							'input_type'  => 'checkbox',
+							'is_toggle'   => true,
+							'required'    => false,
+						),
+
+						array(
+							'option_code'        => 'WPCPOSTCONTENTCUSTOMJS',
+							'label'              => _x( 'Custom JavaScript', 'WordPress', 'uncanny-automator' ),
+							'input_type'         => 'textarea',
+							'required'           => false,
+							'description'        => _x( "Enter your JavaScript code into the field above. Because JavaScript can affect your site's behaviour and security, only use scripts from trusted sources and make sure to validate and sanitize your inputs.", 'WordPress', 'uncanny-automator' ),
+
+							'dynamic_visibility' => array(
+								// 'default_state' specifies the initial visibility state of the element
+								'default_state'    => 'hidden', // Possible values: 'hidden', 'visible'
+
+								// 'visibility_rules' is an array of rules that define conditions for changing the visibility state
+								'visibility_rules' => array(
+									// Each array within 'visibility_rules' represents a single rule
+									array(
+										// 'operator' specifies how to evaluate the conditions within the rule.
+										// 'AND' means all conditions must be true, 'OR' means any condition can be true
+										'operator'        => 'AND', // Possible values: 'AND', 'OR'
+
+										// 'rule_conditions' is an array of condition objects
+										'rule_conditions' => array(
+											// Each condition object within 'rule_conditions' specifies a single condition to evaluate
+											array(
+												'option_code' => 'WPCPOSTCONTENTCUSTOMJSCHECKBOX', // The unique identifier for the option/element being evaluated
+												'compare' => '==', // The operator used for comparison (e.g., '==', '!=', '>', '<', etc.)
+												'value'   => true,  // The value to compare against
+											),
+											// Additional conditions can be added here if needed
+										),
+
+										// 'resulting_visibility' specifies what the visibility should be if the rule conditions are met
+										'resulting_visibility' => 'show', // Possible values: 'show', 'hide'
+									),
+									// Additional rules can be added here if needed
+								),
+							),
+
+						),
+
+						array(
 							'option_code' => 'WPCPOSTEXCERPT',
 							/* translators: Post Excerpt field */
 							'label'       => esc_attr__( 'Excerpt', 'uncanny-automator' ),
@@ -252,10 +346,32 @@ class WP_CREATEPOST {
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 
-		$post_title         = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
-		$post_terms         = Automator()->parse->text( $action_data['meta']['TERM'], $recipe_id, $user_id, $args );
-		$post_slug          = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
-		$post_content       = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+		$post_title   = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
+		$post_terms   = Automator()->parse->text( $action_data['meta']['TERM'], $recipe_id, $user_id, $args );
+		$post_slug    = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
+		$content      = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+		$post_content = '';
+
+		// Add custom CSS
+		if ( isset( $action_data['meta']['WPCPOSTCONTENTCUSTOMCSSCHECKBOX'] ) &&
+			'true' === $action_data['meta']['WPCPOSTCONTENTCUSTOMCSSCHECKBOX']
+		) {
+			$custom_css = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENTCUSTOMCSS'], $recipe_id, $user_id, $args );
+
+			$post_content .= '<!-- wp:html --><style>' . $custom_css . '</style><!-- /wp:html -->';
+		}
+
+		// Add custom JS
+		if ( isset( $action_data['meta']['WPCPOSTCONTENTCUSTOMJSCHECKBOX'] ) &&
+			'true' === $action_data['meta']['WPCPOSTCONTENTCUSTOMJSCHECKBOX']
+		) {
+			$custom_js = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENTCUSTOMJS'], $recipe_id, $user_id, $args );
+
+			$post_content .= '<!-- wp:html --><script>' . $custom_js . '</script><!-- /wp:html -->';
+		}
+
+		$post_content = $post_content . $content;
+
 		$post_excerpt       = Automator()->parse->text( $action_data['meta']['WPCPOSTEXCERPT'], $recipe_id, $user_id, $args );
 		$post_author        = Automator()->parse->text( $action_data['meta']['WPCPOSTAUTHOR'], $recipe_id, $user_id, $args );
 		$post_status        = Automator()->parse->text( $action_data['meta']['WPCPOSTSTATUS'], $recipe_id, $user_id, $args );

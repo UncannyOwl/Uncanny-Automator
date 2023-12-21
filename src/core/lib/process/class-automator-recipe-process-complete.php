@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 /**
@@ -115,6 +116,9 @@ class Automator_Recipe_Process_Complete {
 
 		// If all triggers for the recipe are completed.
 		if ( $maybe_continue_recipe_process && $this->triggers_completed( $recipe_id, $user_id, $recipe_log_id, $args ) ) {
+
+			// Store the historical count of a recipe
+			$this->add_recipe_count( $recipe_id );
 
 			// All triggers are completed. Now fix the $args. See function.
 			$args = $this->maybe_get_triggers_of_a_recipe( $args );
@@ -252,12 +256,30 @@ class Automator_Recipe_Process_Complete {
 
 		$actions = (array) Automator()->get_recipe_data( 'uo-action', $recipe_id );
 
-		// Complete with error if there are no actions.
+		// No recipe actions found.
 		if ( empty( $actions ) ) {
-			Automator()->db->recipe->mark_complete( $recipe_log_id, Automator_Status::COMPLETED_WITH_ERRORS );
-			return false;
+
+			// Check for closures.
+			$has_closure = (array) Automator()->get_recipe_data( 'uo-closure', $recipe_id );
+
+			// No actions and no closures - complete the recipe with errors.
+			if ( empty( $has_closure ) ) {
+				Automator()->db->recipe->mark_complete( $recipe_log_id, Automator_Status::COMPLETED_WITH_ERRORS );
+
+				return false;
+			}
+
+			// Have closures, complete the recipe.
+			Automator()->db->recipe->mark_complete( $recipe_log_id, Automator_Status::COMPLETED );
+			// This action hook is fired just before the closures are run.
+			do_action( 'automator_recipe_process_complete_complete_actions_before_closures', $recipe_id, $user_id, $recipe_log_id, $args );
+
+			$this->closures( $recipe_id, $user_id, $recipe_log_id, $args );
+
+			return true;
 		}
 
+		// Recipe actions found - complete them.
 		$recipe_actions_data = apply_filters(
 			'automator_process_complete_actions',
 			$actions,
@@ -287,6 +309,9 @@ class Automator_Recipe_Process_Complete {
 
 		// This action hook is fired just before the closures are run.
 		do_action( 'automator_recipe_process_complete_complete_actions_before_closures', $recipe_id, $user_id, $recipe_log_id, $args );
+
+		// Update the count of the recipe
+		Automator()->db->recipe->update_count( $recipe_id );
 
 		$this->closures( $recipe_id, $user_id, $recipe_log_id, $args );
 
@@ -364,6 +389,7 @@ class Automator_Recipe_Process_Complete {
 				if ( false === $action['process_further'] ) {
 					$action = apply_filters( 'automator_action_complete_action_skipped', $action, $args );
 					Automator()->wp_error->add_error( 'complete_action', 'Action was skipped by uap_before_action_executed filter' );
+
 					return false;
 				}
 
@@ -995,5 +1021,36 @@ class Automator_Recipe_Process_Complete {
 		}
 
 		return $args;
+	}
+
+	/**
+	 * @param $recipe_id
+	 *
+	 * @return void
+	 */
+	public function add_recipe_count( $recipe_id ) {
+
+		global $wpdb;
+
+		if ( ! empty( $wpdb->get_row( $wpdb->prepare( "SELECT recipe_id FROM {$wpdb->prefix}uap_recipe_count WHERE recipe_id = %d", $recipe_id ) ) ) ) {
+			return;
+		}
+
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT count(*) as record_count
+				FROM {$wpdb->prefix}uap_recipe_log
+					WHERE automator_recipe_id = %d",
+				$recipe_id
+			)
+		);
+
+		$wpdb->insert(
+			$wpdb->prefix . 'uap_recipe_count',
+			array(
+				'recipe_id' => $recipe_id,
+				'runs'      => $count,
+			)
+		);
 	}
 }

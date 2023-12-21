@@ -33,7 +33,7 @@ class UOA_RECIPEERRORSTIMES {
 	public function __construct() {
 		$this->trigger_code = 'UOARECIPEERRORS';
 		$this->trigger_meta = 'UOARECIPE';
-		$this->num_times    = 'RECIPENUMTIMES';
+		$this->num_times    = 'NUMTIMES';
 		$this->define_trigger();
 	}
 

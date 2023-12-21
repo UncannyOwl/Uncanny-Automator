@@ -14,6 +14,7 @@ class Add_Uoa_Integration {
 	 * Add_Integration constructor.
 	 */
 	public function __construct() {
+		$this->maybe_migrate_numtimes();
 		$this->setup();
 	}
 
@@ -34,5 +35,19 @@ class Add_Uoa_Integration {
 	 */
 	public function plugin_active() {
 		return true;
+	}
+
+	/**
+	 * @return void
+	 */
+	private function maybe_migrate_numtimes() {
+		if ( 'yes' === get_option( 'uoa_recipenumtimes_changed_to_numtimes', 'no' ) ) {
+			return;
+		}
+		global $wpdb;
+
+		$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = %s", 'NUMTIMES', 'RECIPENUMTIMES' ) );
+
+		update_option( 'uoa_recipenumtimes_changed_to_numtimes', 'yes' );
 	}
 }

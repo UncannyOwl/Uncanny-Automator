@@ -106,7 +106,7 @@ class Recipe_Objects_Logger {
 
 		$key = 'automator_recipe_objects_logger_' . maybe_serialize( $args ) . '_' . $meta_key . '_' . maybe_serialize( $meta_value );
 
-		$has_record_cached = wp_cache_get( $key );
+		$has_record_cached = wp_cache_get( $key, 'automator_recipe' );
 
 		if ( false !== $has_record_cached ) {
 			return 'yes' === $has_record_cached ? true : false;
@@ -115,7 +115,7 @@ class Recipe_Objects_Logger {
 		global $wpdb;
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->prefix}uap_recipe_log_meta 
+				"SELECT ID FROM {$wpdb->prefix}uap_recipe_log_meta
 				WHERE user_id = %d
 				AND recipe_id = %d
 				AND recipe_log_id = %d
@@ -134,7 +134,7 @@ class Recipe_Objects_Logger {
 			$has_record = 'yes';
 		}
 
-		wp_cache_set( $key, $has_record );
+		wp_cache_set( $key, $has_record, 'automator_recipe' );
 
 		return 'yes' === $has_record ? true : false;
 	}
@@ -211,7 +211,7 @@ class Recipe_Objects_Logger {
 				$hashed = md5( $serialized );
 			}
 
-			if ( isset( $hashed ) && false !== wp_cache_get( $hashed ) ) {
+			if ( isset( $hashed ) && false !== wp_cache_get( $hashed, 'automator_recipe' ) ) {
 				return false;
 			}
 
@@ -222,7 +222,7 @@ class Recipe_Objects_Logger {
 			);
 
 			if ( isset( $hashed ) ) {
-				wp_cache_set( $hashed, true );
+				wp_cache_set( $hashed, true, 'automator_recipe' );
 			}
 
 			return $inserted;
@@ -241,7 +241,7 @@ class Recipe_Objects_Logger {
 	 */
 	public function get_meta( $args, $meta_key ) {
 
-		$group = 'automator_recipe_objects_logger_get_meta';
+		$group = 'automator_recipe';
 
 		$key = sprintf(
 			'%s_%d_%d_%d_%s',
@@ -252,7 +252,7 @@ class Recipe_Objects_Logger {
 			$meta_key
 		);
 
-		$meta_val_cached = wp_cache_get( $key, $group, false );
+		$meta_val_cached = wp_cache_get( $key, $group );
 
 		if ( false !== $meta_val_cached ) {
 			return is_string( $meta_val_cached ) ? $meta_val_cached : '';
@@ -262,8 +262,8 @@ class Recipe_Objects_Logger {
 
 		$meta_val = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT meta_value 
-					FROM {$wpdb->prefix}uap_recipe_log_meta 
+				"SELECT meta_value
+					FROM {$wpdb->prefix}uap_recipe_log_meta
 						WHERE recipe_id = %d
 							AND recipe_log_id = %d
 							AND user_id = %d

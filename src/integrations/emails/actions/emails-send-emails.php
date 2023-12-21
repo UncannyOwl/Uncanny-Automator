@@ -204,6 +204,12 @@ class EMAILS_SEND_EMAILS {
 
 		// Clear the error messages.
 		$this->clear_error_message();
+
+		if ( true === AUTOMATOR_DISABLE_SENDEMAIL_ACTION ) {
+			$action_data['complete_with_errors'] = true;
+			return Automator()->complete->action( $user_id, $action_data, $recipe_id, 'Email actions have been disabled in wp-config.php.' );
+		}
+
 		// Reset the errors.
 		Automator_WP_Error::get_instance()->reset_errors();
 

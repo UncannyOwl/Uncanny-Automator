@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
+class ComposerStaticInit92c9a1baceff25234b6ce31f50f4d754
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -527,6 +527,10 @@ class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date-timestamp.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-time.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-timestamp.php',
+        'Uncanny_Automator\\Integrations\\EDD_SL\\Edd_Software_Licensing_Integration' => __DIR__ . '/../..' . '/src/integrations/edd-sl/class-edd-software-licensing-integration.php',
+        'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_LICENSE_CREATED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-license-created-for-download.php',
+        'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_LICENSE_EXPIRED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-license-expired-for-download.php',
+        'Uncanny_Automator\\Integrations\\Edd_SL\\Edd_Sl_Helpers' => __DIR__ . '/../..' . '/src/integrations/edd-sl/helpers/edd-sl-helpers.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\CONTACT_GROUP_ADD_TO' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/contact-group-add-to.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\CONTACT_GROUP_CREATE' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/contact-group-create.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\CREATE' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/create.php',
@@ -540,6 +544,12 @@ class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM_GROUPS' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform-groups.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Integration' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/class-gf-integration.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\Gravity_Forms_Tokens' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/tokens/gf-new-tokens.php',
+        'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\HT_KB_ANON_GIVES_NEGATIVE_RATING' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-negative-rating.php',
+        'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\HT_KB_ANON_GIVES_POSITIVE_RATING' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-positive-rating.php',
+        'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\HT_KB_USER_GIVES_NEGATIVE_RATING' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-negative-rating.php',
+        'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\HT_KB_USER_GIVES_POSITIVE_RATING' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-positive-rating.php',
+        'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\Ht_Knowledge_Base_Helpers' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php',
+        'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\Ht_Knowledge_Base_Integration' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/class-ht-knowledge-base-integration.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_HELPERS' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/helpers/m4is-helpers.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_Integration' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/m4is-integration.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_UPDATE_CONTACT_FIELD' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/actions/m4is-update-contact-field.php',
@@ -567,6 +577,8 @@ class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
         'Uncanny_Automator\\Integrations\\RafflePress\\RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY' => __DIR__ . '/../..' . '/src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php',
         'Uncanny_Automator\\Integrations\\RafflePress\\RafflePress_Integration' => __DIR__ . '/../..' . '/src/integrations/rafflepress/class-rafflepress-integration.php',
         'Uncanny_Automator\\Integrations\\RafflePress\\Rafflepress_Helpers' => __DIR__ . '/../..' . '/src/integrations/rafflepress/helpers/rafflepress-helpers.php',
+        'Uncanny_Automator\\Integrations\\Seedprod\\OPTIN_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/seedprod/triggers/optin-form-submitted.php',
+        'Uncanny_Automator\\Integrations\\Seedprod\\Seedprod_Integration' => __DIR__ . '/../..' . '/src/integrations/seedprod/seedprod-integration.php',
         'Uncanny_Automator\\Integrations\\Sendy\\SENDY_ADD_UPDATE_LIST_CONTACT' => __DIR__ . '/../..' . '/src/integrations/sendy/actions/sendy-add-update-list-contact.php',
         'Uncanny_Automator\\Integrations\\Sendy\\SENDY_DELETE_LIST_CONTACT' => __DIR__ . '/../..' . '/src/integrations/sendy/actions/sendy-delete-list-contact.php',
         'Uncanny_Automator\\Integrations\\Sendy\\SENDY_UNSUBSCRIBE_LIST_CONTACT' => __DIR__ . '/../..' . '/src/integrations/sendy/actions/sendy-unsubscribe-list-contact.php',
@@ -577,6 +589,10 @@ class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/helpers/thrive-architect-helpers.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/thrive-architect-integration.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\USER_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/triggers/user-form-submitted.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\THRIVE_ULTIMATUM_EVERGREEN_CAMPAIGN_TRIGGERED' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-evergreen-campaign-triggered.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\THRIVE_ULTIMATUM_USER_TRIGGERS_EVERGREEN_CAMPAIGN' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-user-triggers-evergreen-campaign.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\Thrive_Ultimatum_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php',
+        'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\Thrive_Ultimatum_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/class-thrive-ultimatum-integration.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\WC_BOOKINGS_ANON_BOOKING_CREATED' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/triggers/wc-bookings-anon-booking-created.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Wc_Bookings_Helpers' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Woocommerce_Bookings_Integration' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/woocommerce-bookings-integration.php',
@@ -635,6 +651,7 @@ class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
         'Uncanny_Automator\\LinkedIn_Settings' => __DIR__ . '/../..' . '/src/integrations/linkedin/settings/settings-linkedin.php',
         'Uncanny_Automator\\Linkedin_Helpers' => __DIR__ . '/../..' . '/src/integrations/linkedin/helpers/linkedin-helpers.php',
         'Uncanny_Automator\\Logger\\Action_Fields_Logger' => __DIR__ . '/../..' . '/src/core/services/logger/action-fields-logger.php',
+        'Uncanny_Automator\\Logger\\Db\\Data_Access' => __DIR__ . '/../..' . '/src/core/services/logger/db/data-access.php',
         'Uncanny_Automator\\Logger\\Recipe_Objects_Logger' => __DIR__ . '/../..' . '/src/core/services/logger/recipe-objects-logger.php',
         'Uncanny_Automator\\Logger\\Singleton\\Async_Actions_Logger_Singleton' => __DIR__ . '/../..' . '/src/core/services/logger/singleton/async-action-logger-singleton.php',
         'Uncanny_Automator\\Logger\\Tokens_Logger' => __DIR__ . '/../..' . '/src/core/services/logger/token-logger.php',
@@ -784,8 +801,10 @@ class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
         'Uncanny_Automator\\STUDIOCART_USERPURCHASESPRODUCT' => __DIR__ . '/../..' . '/src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php',
         'Uncanny_Automator\\SURECART_ORDER_CONFIRMED' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-order-confirmed.php',
         'Uncanny_Automator\\SURECART_PURCHASE_PRODUCT' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-purchase-product.php',
+        'Uncanny_Automator\\Seedprod_Helpers' => __DIR__ . '/../..' . '/src/integrations/seedprod/helpers/seedprod-helpers.php',
         'Uncanny_Automator\\Services\\Integrations\\Fields' => __DIR__ . '/../..' . '/src/core/services/integrations/fields.php',
         'Uncanny_Automator\\Services\\Integrations\\Structure' => __DIR__ . '/../..' . '/src/core/services/integrations/structure.php',
+        'Uncanny_Automator\\Services\\Logger_Auto_Removal' => __DIR__ . '/../..' . '/src/core/services/logger-auto-remove.php',
         'Uncanny_Automator\\Services\\Properties' => __DIR__ . '/../..' . '/src/core/services/properties.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_JSON_Serializer' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-json-serializer.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_Setter_Getter' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-setter-getter.php',
@@ -1073,10 +1092,10 @@ class ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitcc79d889722d9aa4e665e8c801c6e06d::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit92c9a1baceff25234b6ce31f50f4d754::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit92c9a1baceff25234b6ce31f50f4d754::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit92c9a1baceff25234b6ce31f50f4d754::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit92c9a1baceff25234b6ce31f50f4d754::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -395,7 +395,6 @@ class Recipe_Post_Rest_Api {
 		if ( 'add-new-closure' === (string) $post_action ) {
 			$post_type = 'uo-closure';
 			$action    = 'create_closure';
-
 		}
 
 		if ( ! $post_type ) {
@@ -441,12 +440,20 @@ class Recipe_Post_Rest_Api {
 
 		if ( 'create_trigger' === $action ) {
 			update_post_meta( $post_id, 'code', $item_code );
+
 			$trigger_integration = Automator()->get->trigger_integration_from_trigger_code( $item_code );
+
 			update_post_meta( $post_id, 'integration', $trigger_integration );
 			update_post_meta( $post_id, 'uap_trigger_version', Utilities::automator_get_version() );
 			update_post_meta( $post_id, 'sentence_human_readable', $sentence );
+
 			$add_action_hook = Automator()->get->trigger_actions_from_trigger_code( $item_code );
+
 			update_post_meta( $post_id, 'add_action', $add_action_hook );
+
+			// Added NUMTIMES as a default to fix missing meta
+			update_post_meta( $post_id, 'NUMTIMES', 1 );
+
 			/**
 			 * @param int $post_id Trigger ID
 			 * @param string $item_code Trigger item code
