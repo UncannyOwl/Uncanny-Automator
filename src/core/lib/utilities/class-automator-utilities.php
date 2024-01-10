@@ -747,7 +747,7 @@ class Automator_Utilities {
 
 		if ( false === $include_non_public_posts ) {
 			$__object = get_post_type_object( $post->post_type );
-			if ( false === $__object->public ) {
+			if ( isset( $__object->public ) && false === $__object->public ) {
 				return false;
 			}
 		}

@@ -11,6 +11,13 @@ namespace Uncanny_Automator\Recipe;
 trait Trigger_Recipe_Filters {
 
 	/**
+	 * The log message in case you need it.
+	 *
+	 * @var string
+	 */
+	public $push_log = '';
+
+	/**
 	 * The recipes object to iterate.
 	 *
 	 * @var array $recipes

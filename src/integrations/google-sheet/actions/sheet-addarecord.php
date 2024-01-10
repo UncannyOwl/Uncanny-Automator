@@ -415,7 +415,6 @@ class SHEET_ADDARECORD {
 		if ( $check_all_empty ) {
 			// log error no heading found.
 			$error_msg                           = __( 'Trying to add an empty row.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 
@@ -431,7 +430,6 @@ class SHEET_ADDARECORD {
 
 		} catch ( \Exception $e ) {
 			$error_msg                           = $e->getMessage();
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 

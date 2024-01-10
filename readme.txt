@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, wpfor
 Requires at least: 5.4
 Tested up to: 6.4.2
 Requires PHP: 7.0
-Stable tag: 5.4
+Stable tag: 5.4.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -341,6 +341,19 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.4.0.1 [2024-01-10] =
+
+**Fixed:**
+
+* Google Sheets - Actions will show "Completed with errors" if the entry failed due to an issue with the Google API #4298
+* OpenAI - Changed deprecated models to use `gpt-3.5-turbo-instruct` #4314
+* Recipe UI - Newly added actions now showing when on LiteSpeed server/cache #4287
+* WPCode - Free actions don't show up when the Premium plugin is active #4307
+
+**Under the hood:**
+
+* PHP Notices #4262
 
 = 5.4 [2023-12-21] =
 

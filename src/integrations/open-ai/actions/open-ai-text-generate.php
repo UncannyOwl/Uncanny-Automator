@@ -161,7 +161,7 @@ class OPEN_AI_TEXT_GENERATE {
 				'prompt'      => $prompt,
 				'temperature' => floatval( $temperature ),
 				'max_tokens'  => intval( $max_tokens ),
-				'model'       => $model,
+				'model'       => 'gpt-3.5-turbo-instruct',
 			);
 
 			$body = apply_filters( 'automator_open_ai_text_generate', $body );

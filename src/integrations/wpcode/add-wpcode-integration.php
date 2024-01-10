@@ -34,7 +34,7 @@ class Add_Wpcode_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return class_exists( 'WPCode' );
+		return class_exists( 'WPCode' ) || class_exists( 'WPCode_Premium' );
 	}
 
 }
