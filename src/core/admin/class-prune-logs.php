@@ -65,6 +65,16 @@ class Prune_Logs {
 			10
 		);
 
+		// Add Delete on uninstall
+		add_action(
+			'automator_settings_general_logs_content',
+			array(
+				$this,
+				'automator_delete_data_on_uninstall',
+			),
+			PHP_INT_MAX
+		);
+
 		// Add setting to automatically prone logs (just for promotion)
 		add_action( 'automator_settings_general_logs_content', array( $this, 'add_pro_auto_prune_settings' ), 15 );
 
@@ -74,6 +84,8 @@ class Prune_Logs {
 		add_action( 'admin_init', array( $this, 'maybe_update_user_deleted_setting' ) );
 
 		add_action( 'admin_init', array( $this, 'maybe_update_delete_recipe_on_completion_setting' ) );
+
+		add_action( 'admin_init', array( $this, 'maybe_update_automator_delete_data_on_uninstall' ) );
 
 		// Register settings
 		$this->register_settings();
@@ -92,6 +104,7 @@ class Prune_Logs {
 				register_setting( 'uncanny_automator_manual_prune', 'automator_manual_purge_days' );
 				register_setting( 'uncanny_automator_delete_user_records_on_user_delete', 'automator_delete_user_records_on_user_delete' );
 				register_setting( 'uncanny_automator_delete_recipe_records_on_completion', 'automator_delete_recipe_records_on_completion' );
+				register_setting( 'uncanny_automator_delete_data_on_uninstall', 'automator_delete_data_on_uninstall' );
 			}
 		);
 	}
@@ -139,6 +152,17 @@ class Prune_Logs {
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/general/logs/remove-recipe-log-on-completion.php' );
+	}
+
+	/**
+	 * @return void
+	 */
+	public function automator_delete_data_on_uninstall() {
+		// Check if the setting is enabled
+		$is_enabled = get_option( 'automator_delete_data_on_uninstall', false );
+
+		// Load the view
+		include Utilities::automator_get_view( 'admin-settings/tab/general/logs/remove-delete-data-on-uninstall.php' );
 	}
 
 	/**
@@ -398,6 +422,27 @@ class Prune_Logs {
 		$is_enabled = automator_filter_input( 'automator_delete_user_records_on_user_delete', INPUT_POST );
 
 		update_option( 'automator_delete_user_records_on_user_delete', $is_enabled );
+
+		return;
+	}
+
+	public function maybe_update_automator_delete_data_on_uninstall() {
+
+		if ( ! automator_filter_has_var( '_wpnonce', INPUT_POST ) ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( automator_filter_input( '_wpnonce', INPUT_POST ), 'uncanny_automator' ) ) {
+			return;
+		}
+
+		if ( ! automator_filter_has_var( 'automator_delete_data_on_uninstall', INPUT_POST ) ) {
+			return;
+		}
+
+		$is_enabled = automator_filter_input( 'automator_delete_data_on_uninstall', INPUT_POST );
+
+		update_option( 'automator_delete_data_on_uninstall', $is_enabled );
 
 		return;
 	}

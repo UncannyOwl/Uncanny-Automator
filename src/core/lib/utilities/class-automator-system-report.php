@@ -202,6 +202,7 @@ class Automator_System_Report {
 			'remote_get_response'     => is_wp_error( $get_response_code ) ? $get_response_code->get_error_message() : $get_response_code,
 			'automator_cache'         => Automator()->cache->is_cache_enabled(),
 			'automator_bg_processing' => '1' === get_option( Background_Actions::OPTION_NAME, '1' ) ? true : false,
+			'permalink_structure'     => get_option( 'permalink_structure' ),
 		);
 	}
 

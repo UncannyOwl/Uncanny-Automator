@@ -385,6 +385,15 @@ $automator_stats    = $report['automator_stats'];
 			<?php endif; ?>
 		</td>
 	</tr>
+	<tr>
+		<td data-export-label="Permalink structure"><?php esc_html_e( 'Permalink structure', 'uncanny-automator' ); ?>
+			:
+		</td>
+		<td class="help"></td>
+		<td>
+			<?php echo $environment['permalink_structure']; ?>
+		</td>
+	</tr>
 	</tbody>
 </table>
 <table class="automator_status_table widefat" cellspacing="0">

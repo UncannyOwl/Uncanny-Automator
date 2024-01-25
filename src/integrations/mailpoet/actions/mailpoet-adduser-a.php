@@ -105,8 +105,6 @@ class MAILPOET_ADDUSER_A {
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
 			$recipe_log_id                       = $action_data['recipe_log_id'];
-			$args['do-nothing']                  = true;
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		}

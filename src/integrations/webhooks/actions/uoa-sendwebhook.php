@@ -31,11 +31,8 @@ class UOA_SENDWEBHOOK {
 	protected function setup_action() {
 
 		$this->set_integration( 'WEBHOOKS' );
-
 		$this->set_action_code( 'WPSENDWEBHOOK' );
-
 		$this->set_action_meta( 'WPWEBHOOK' );
-
 		$this->set_author( 'Uncanny Automator' );
 
 		$this->set_support_link(

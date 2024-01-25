@@ -85,6 +85,9 @@ class Automator_Load {
 		// Load Custom Post Types only files.
 		add_filter( 'automator_core_files', array( $this, 'custom_post_types_classes' ) );
 
+		// Load Gutenberg Block files.
+		add_filter( 'automator_core_files', array( $this, 'gutenberg_block_classes' ) );
+
 		// Load non-admin files.
 		add_filter( 'automator_core_files', array( $this, 'front_only_classes' ) );
 
@@ -625,6 +628,22 @@ class Automator_Load {
 	 *
 	 * @return array|mixed
 	 */
+	public function gutenberg_block_classes( $classes = array() ) {
+
+		do_action( 'automator_before_blocks_init' );
+
+		$classes['Blocks'] = UA_ABSPATH . 'src/core/blocks/class-blocks.php';
+
+		do_action( 'automator_after_blocks_init' );
+
+		return $classes;
+	}
+
+	/**
+	 * @param array $classes
+	 *
+	 * @return array|mixed
+	 */
 	public function activity_stream_classes( $classes = array() ) {
 
 		do_action( 'automator_before_activity_stream_init' );
@@ -691,14 +710,16 @@ class Automator_Load {
 		if ( isset( $_ENV['DOING_AUTOMATOR_TEST'] ) ) {
 			$unit_tests = true;
 		}
+
 		// check if it's REST endpoint call or running unit tests
 		if ( ! Automator()->helpers->recipe->is_automator_ajax() && ! $unit_tests ) {
+
+			$classes['Usage_Reports'] = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
+
 			// If there are no active recipes && is not an admin page -- bail
 			if ( ! self::$is_admin_sect && ! self::$any_recipes_active ) {
 				return $classes;
 			}
-
-			$classes['Usage_Reports'] = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 
 			global $pagenow;
 

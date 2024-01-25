@@ -81,7 +81,7 @@ class LD_MARKCOURSEDONE {
 		$course_id = $action_data['meta'][ $this->action_meta ];
 		$this->mark_steps_done( $user_id, $course_id );
 		//all steps done.. mark course complete
-		learndash_process_mark_complete( $user_id, $course_id );
+		Learndash_Helpers::process_mark_complete( $user_id, $course_id, false, 0 );
 
 		// Hydrate tokens.
 		$tokens = Automator()->helpers->recipe->learndash->options->hydrate_ld_course_action_tokens( $course_id, $user_id, $this->action_meta );
@@ -107,7 +107,7 @@ class LD_MARKCOURSEDONE {
 				}
 			}
 
-			learndash_process_mark_complete( $user_id, $lesson->ID, false, $course_id );
+			Learndash_Helpers::process_mark_complete( $user_id, $lesson->ID, false, $course_id );
 		}
 
 		$this->mark_quiz_complete( $user_id, $course_id );
@@ -122,7 +122,7 @@ class LD_MARKCOURSEDONE {
 		$topic_list = learndash_get_topic_list( $lesson_id, $course_id );
 		if ( $topic_list ) {
 			foreach ( $topic_list as $topic ) {
-				learndash_process_mark_complete( $user_id, $topic->ID, false, $course_id );
+				Learndash_Helpers::process_mark_complete( $user_id, $topic->ID, false, $course_id, true );
 				$topic_quiz_list = learndash_get_lesson_quiz_list( $topic->ID, $user_id, $course_id );
 				if ( $topic_quiz_list ) {
 					foreach ( $topic_quiz_list as $ql ) {

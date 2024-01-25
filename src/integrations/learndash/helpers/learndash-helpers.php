@@ -1164,4 +1164,23 @@ class Learndash_Helpers {
 		// Update option flag.
 		update_option( $option_key, 'yes' );
 	}
+
+	/**
+	 *
+	 * @param int|null $user_id       Optional. User ID. Default null.
+	 * @param int|null $postid        Optional. The ID of the resource like course, lesson, topic, etc. Default null.
+	 * @param bool     $onlycalculate Optional. Whether to mark the resource as complete. Default false.
+	 * @param int      $course_id     Optional. Course ID. Default 0.
+	 * @param bool     $force         Optional. Whether to force the completion when should not be completed.
+	 *                                Default false.
+	 * @return bool Returns true if the meta is updated successfully, otherwise false.
+	 */
+	public static function process_mark_complete( $user_id = null, $postid = null, $onlycalculate = false, $course_id = 0, $force = true ) {
+		if ( version_compare( LEARNDASH_VERSION, '4.10.2', '<=' ) ) {
+			// If LD version is or less than 4.10.2, use old params
+			return learndash_process_mark_complete( $user_id, $postid, $onlycalculate, $course_id );
+		} else {
+			return learndash_process_mark_complete( $user_id, $postid, $onlycalculate, $course_id, $force );
+		}
+	}
 }

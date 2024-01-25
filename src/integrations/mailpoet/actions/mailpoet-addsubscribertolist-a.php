@@ -212,7 +212,6 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 		}
@@ -253,7 +252,6 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
-			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 		}

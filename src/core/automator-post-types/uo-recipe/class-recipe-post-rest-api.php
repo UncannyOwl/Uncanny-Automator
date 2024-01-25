@@ -633,7 +633,11 @@ class Recipe_Post_Rest_Api {
 			$item = get_post( $item_id );
 
 			if ( $item ) {
+
 				if ( is_array( $meta_value ) ) {
+					// Allow integrations to hook into the filter.
+					$meta_value = apply_filters( 'automator_field_values_before_save', $meta_value, $item );
+
 					foreach ( $meta_value as $meta_key => $meta_val ) {
 						$meta_val = Automator()->utilities->maybe_slash_json_value( $meta_val, true );
 						update_post_meta( $item_id, $meta_key, $meta_val );

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3
+class ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -331,6 +331,7 @@ class ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3
         'Uncanny_Automator\\Bbpress_Helpers' => __DIR__ . '/../..' . '/src/integrations/bbpress/helpers/bbpress-helpers.php',
         'Uncanny_Automator\\Bbpress_Tokens' => __DIR__ . '/../..' . '/src/integrations/bbpress/tokens/bbpress-tokens.php',
         'Uncanny_Automator\\Bdb_Tokens' => __DIR__ . '/../..' . '/src/integrations/buddyboss/tokens/bdb-tokens.php',
+        'Uncanny_Automator\\Blocks' => __DIR__ . '/../..' . '/src/core/blocks/class-blocks.php',
         'Uncanny_Automator\\Bp_Tokens' => __DIR__ . '/../..' . '/src/integrations/buddypress/tokens/bp-tokens.php',
         'Uncanny_Automator\\Buddyboss_Helpers' => __DIR__ . '/../..' . '/src/integrations/buddyboss/helpers/buddyboss-helpers.php',
         'Uncanny_Automator\\Buddypress_Helpers' => __DIR__ . '/../..' . '/src/integrations/buddypress/helpers/buddypress-helpers.php',
@@ -802,6 +803,7 @@ class ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3
         'Uncanny_Automator\\SURECART_ORDER_CONFIRMED' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-order-confirmed.php',
         'Uncanny_Automator\\SURECART_PURCHASE_PRODUCT' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-purchase-product.php',
         'Uncanny_Automator\\Seedprod_Helpers' => __DIR__ . '/../..' . '/src/integrations/seedprod/helpers/seedprod-helpers.php',
+        'Uncanny_Automator\\Services\\Email_Tester\\Email_Sender' => __DIR__ . '/../..' . '/src/core/services/email-tester/email-tester.php',
         'Uncanny_Automator\\Services\\Integrations\\Fields' => __DIR__ . '/../..' . '/src/core/services/integrations/fields.php',
         'Uncanny_Automator\\Services\\Integrations\\Structure' => __DIR__ . '/../..' . '/src/core/services/integrations/structure.php',
         'Uncanny_Automator\\Services\\Logger_Auto_Removal' => __DIR__ . '/../..' . '/src/core/services/logger-auto-remove.php',
@@ -1092,10 +1094,10 @@ class ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit7e311deebda5d7319078f2a2cdc255a3::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$classMap;
 
         }, null, ClassLoader::class);
     }

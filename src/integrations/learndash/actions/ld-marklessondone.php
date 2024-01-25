@@ -150,7 +150,7 @@ class LD_MARKLESSONDONE {
 
 				$this->mark_quiz_complete( $user_id, $course_id );
 
-				learndash_process_mark_complete( $user_id, $topic->ID, false, $course_id );
+				Learndash_Helpers::process_mark_complete( $user_id, $topic->ID, false, $course_id );
 			}
 		}
 
@@ -165,7 +165,7 @@ class LD_MARKLESSONDONE {
 		$this->mark_quiz_complete( $user_id, $course_id );
 
 		//Mark complete a lesson
-		learndash_process_mark_complete( $user_id, $lesson_id, false, $course_id );
+		Learndash_Helpers::process_mark_complete( $user_id, $lesson_id, false, $course_id );
 	}
 
 	/**

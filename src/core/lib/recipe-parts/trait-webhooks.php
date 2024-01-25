@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator\Recipe;
 
+use Exception;
 use Uncanny_Automator\Automator_Send_Webhook;
 use Uncanny_Automator\Webhooks\Response_Validator;
 
@@ -87,6 +88,7 @@ trait Webhooks {
 
 		if ( true === AUTOMATOR_DISABLE_APP_INTEGRATION_REQUESTS ) {
 			$action_data['complete_with_errors'] = true;
+
 			return Automator()->complete->action( $user_id, $action_data, $recipe_id, 'Webhooks have been disabled in wp-config.php.' );
 		}
 		// Start the timer.
@@ -102,11 +104,12 @@ trait Webhooks {
 
 		$data         = $action_data['meta'];
 		$data_type    = Automator()->send_webhook->get_data_type( $data );
-		$headers      = Automator()->send_webhook->get_headers( $data, $parsing_args );
 		$webhook_url  = Automator()->send_webhook->get_url( $data, $legacy, $parsing_args );
 		$fields       = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, $parsing_args );
 		$request_type = Automator()->send_webhook->request_type( $data );
+		$headers      = Automator()->send_webhook->get_headers( $data, $parsing_args );
 		$headers      = Automator()->send_webhook->get_content_type( $data_type, $headers );
+		$headers      = Automator()->send_webhook->get_authorization( $action_data['ID'], $headers );
 
 		if ( empty( $webhook_url ) ) {
 

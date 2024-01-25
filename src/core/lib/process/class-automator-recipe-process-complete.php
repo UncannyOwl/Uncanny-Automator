@@ -2,12 +2,17 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Log_Properties;
+
 /**
  * Class Automator_Recipe_Process_Complete
  *
  * @package Uncanny_Automator
  */
 class Automator_Recipe_Process_Complete {
+
+	use Log_Properties;
+
 	/**
 	 * @var
 	 */
@@ -401,11 +406,33 @@ class Automator_Recipe_Process_Complete {
 
 		} catch ( \Error $e ) {
 			$error_message = $e->getMessage();
+			$this->create_error_property( $e->getTraceAsString() );
 			$this->complete_with_error( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		} catch ( \Exception $e ) {
 			$error_message = $e->getMessage();
+			$this->create_error_property( $e->getTraceAsString() );
 			$this->complete_with_error( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 		}
+	}
+
+	/**
+	 * Creates error property for stack trace.
+	 *
+	 * @param string $stack_trace
+	 *
+	 * @return void
+	 */
+	protected function create_error_property( $stack_trace ) {
+		$this->set_log_properties(
+			array(
+				'type'       => 'code',
+				'label'      => _x( 'Stacktrace', 'Uncanny Automator', 'uncanny-automator' ),
+				'value'      => $stack_trace,
+				'attributes' => array(
+					'code_language' => 'json',
+				),
+			)
+		);
 	}
 
 	/**
@@ -1036,12 +1063,17 @@ class Automator_Recipe_Process_Complete {
 			return;
 		}
 
+		// Added NOT_COMPLETED status to avoid first in progress run.
+		// Automator()->db->recipe->update_count( $recipe_id );
+		// will automatically increase count
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT count(*) as record_count
 				FROM {$wpdb->prefix}uap_recipe_log
-					WHERE automator_recipe_id = %d",
-				$recipe_id
+					WHERE automator_recipe_id = %d
+					  AND completed != %d",
+				$recipe_id,
+				Automator_Status::NOT_COMPLETED
 			)
 		);
 

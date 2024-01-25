@@ -77,6 +77,8 @@ class Wc_Tokens {
 			'shipping_method'       => esc_attr__( 'Shipping method', 'uncanny-automator' ),
 			'payment_url'           => esc_attr__( 'Payment URL', 'uncanny-automator' ),
 			'payment_url_checkout'  => esc_attr__( 'Direct checkout URL', 'uncanny-automator' ),
+			'user_total_spend'      => esc_attr__( "User's total spend", 'uncanny-automator' ),
+			'user_total_spend_raw'  => esc_attr__( "User's total spend (unformatted)", 'uncanny-automator' ),
 		);
 
 		if ( function_exists( 'stripe_wc' ) || class_exists( '\WC_Stripe_Helper' ) || function_exists( 'woocommerce_gateway_stripe' ) ) {
@@ -210,8 +212,8 @@ class Wc_Tokens {
 	}
 
 	/**
-	 * @param array $tokens
-	 * @param array $args
+	 * @param array  $tokens
+	 * @param array  $args
 	 * @param string $type
 	 *
 	 * @return array
@@ -592,6 +594,14 @@ class Wc_Tokens {
 					case 'order_discounts_raw':
 						$value = ( $order->get_discount_total() * - 1 );
 						break;
+					case 'user_total_spend_raw':
+						$customer_id = $order->get_user_id();
+						$value       = wc_get_customer_total_spent( $customer_id );
+						break;
+					case 'user_total_spend':
+						$customer_id = $order->get_user_id();
+						$value       = wc_price( wc_get_customer_total_spent( $customer_id ) );
+						break;
 					case 'order_coupons':
 						$coupons = $order->get_coupon_codes();
 						$value   = join( ', ', $coupons );
@@ -838,8 +848,8 @@ class Wc_Tokens {
 	/**
 	 * @param \WC_Order $order
 	 * @param           $value_to_match
-	 * @param bool $unformatted
-	 * @param bool $sale
+	 * @param bool      $unformatted
+	 * @param bool      $sale
 	 *
 	 * @return string
 	 */

@@ -318,6 +318,7 @@ class Brevo_Helpers {
 	 * @param  string $email
 	 * @param  array $attributes
 	 * @param  bool $update_enabled
+	 * @param  array $action_data
 	 *
 	 * @return array
 	 */
@@ -325,7 +326,7 @@ class Brevo_Helpers {
 
 		$contact = array(
 			'attributes'    => $attributes,
-			'updateEnabled' => $update_enabled,
+			'updateEnabled' => $update_enabled ? true : false,
 			'email'         => $email,
 		);
 
@@ -357,7 +358,7 @@ class Brevo_Helpers {
 				throw new \Exception( _x( 'Contact with that email already exists', 'Brevo', 'uncanny-automator' ) );
 			}
 			// TODO REVIEW - could compare attributes and update only if needed.
-			return $this->create_contact( $email, $attributes, $update_existing );
+			return $this->create_contact( $email, $attributes, $update_existing, $action_data );
 		}
 
 		// Create contact DOI.

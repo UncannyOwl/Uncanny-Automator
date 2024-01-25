@@ -5,7 +5,7 @@
 **Requires at least:** 5.4 \
 **Tested up to:** 6.4.2 \
 **Requires PHP:** 7.0 \
-**Stable tag:** 5.4.0.1 \
+**Stable tag:** 5.5 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -366,6 +366,46 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.5 [2024-01-24]
+
+**Added:**
+
+* Emails - Send a test email from inside the email action #4058
+* Data management - New setting "Delete all data" to delete plugin data on deletion #4326
+* Outgoing Webhook - Separate Authorization header field with data masking #4242
+
+**New Tokens:**
+
+* Fluent CRM - Primary Company Name #4305
+* Woo - User's total spend & User's total spend (unformatted) #4278
+* WordPress - Post content (formatted) #4356
+
+**Updated:**
+
+* ActiveCampaign - Tag actions - Added support to pass Tag names #4285
+* LearnDash - Mark complete actions - Support for future `learndash_process_mark_complete` function updates #4343
+* MailPoet - Actions will now complete with errors if an issue occurrs #4251
+* OpenAI - Deprecated models replaced in Recipe UI #4333
+* Recipe logs - Integration icons are now listed once per log entry if multiple triggers or actions of the same integration are part of recipe #4296
+* WordPress - "Post content" token renamed to "Post content (raw)" #4357
+
+**Fixed:**
+
+* EDD Recurring Payments - Cancel the user's subscription to a download - List variable pricing recurring downloads #4366
+* JetPack CRM - Dynamic contact status options in dropdown #4297
+* LearnDash - Mark complete action - Autocomplete not working on Actions for complete lessons and complete topics #4343
+* Recipe Logs - The initial run of the new recipe counts as twice runs #4294
+* WordPress - A user updates a type of post - Running twice when Yet Another Related Posts Plugin (YARPP) is active #4309
+
+**Under the hood:**
+
+* Added Gutenberg Automator Block category #4354
+* Brevo - Create or update a contact - Passed missing `$action_data` to the function #4371
+* `$is_login_required` attribute in the new integration framework #4342
+* Recipe logs - Added `stacktrace` property to show in logs if PHP Exception or Error occurs #4260
+* System status - Permalink status added #4346
+* A core file not loading as expected #4368
 
 ### 5.4.0.1 [2024-01-10]
 
@@ -814,285 +854,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe logs - Improved logging of triggers and actions when sentences are changed, updated or removed from the recipe #3529
 * Recipe logs - Ability to show custom properties in logs #3750
 * Recipe logs - `add_log_error` not clearing previous action errors #3837
-
-### 4.16.0.2 [2023-07-18]
-
-**Fixed:**
-
-* Facebook Pages - App is not connecting in a certain situation #3742
-* Text changes - "third-party integrations" renamed to "app integrations" #3738
-
-### 4.16.0.1 [2023-07-14]
-
-**Fixed:**
-
-* RafflePress - RafflePress Pro support added #3730
-* Telegram - Knowledge base link added on the settings page #3728
-
-### 4.16 [2023-07-13]
-
-**New Integrations:**
-
-* [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3024
-* [RafflePress](https://automatorplugin.com/integration/rafflepress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3331
-* [Telegram](https://automatorplugin.com/integration/telegram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3139
-* [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3701
-
-**New Triggers:**
-
-* ARMember - A user cancels a membership plan #3026
-* RafflePress - Someone registers for a giveaway #3332
-* Telegram - A text message is received #3146
-* UserFeedback - A user submits a survey #3703
-* UserFeedback - A visitor submits a survey #3702
-
-**New Actions:**
-
-* ARMember - Cancel the user's membership plan #3344
-* Telegram - Send a text message #3147
-
-**Updated:**
-
-* Facebook Pages - Increase timeout to 30 from 10 seconds #3684
-* LinkedIn - Remove temporary transients when disconnected #3690
-
-**Fixed:**
-
-* Emails - Send an email - Erroneously showing errors from the previous action #3722
-* MailPoet - Add a subscriber to a list not completing the action resulting in logs not showing the fields #3698
-* MemberPress - A user purchases a recurring subscription product - Not running if the recipe contains a MemberPress condition #3689
-* WS Form - Triggers are not returning all the available tokens of the form #3657
-
-**Under the hood:**
-
-* App integrations - Timeouts increased to 30 seconds #3515
-* Automator license - Improved license validation #2781
-* Add `add_option` with default value to avoid unnecessary App integration calls on the frontend #3497
-* Automator DB - Changed datetime to timestamp for MYSQL backwards compatibility #3717
-* Automator Core - New framework erroneously loading triggers and actions of an integration that is not active #3696
-* Recipe UI - Stop Gravity Forms integration from showing up when the plugin is not active #3621
-* Improved integrations loading process #3724
-* Internal function - action_is_finished  #3708
-* Rename "Integrations" to "All integrations"  #3355
-* Added "App integrations" menu #3355
-* All integrations - Search threshold updated #3234
-
-### 4.15.1.1 [2023-06-28]
-
-**Updated:**
-
-* Uncanny Groups - A group is created - Support purchased group licenses #3654
-* WordPress - Create a post - Optionally allow HTML in fields by using a WordPress filter #3664
-
-**Fixed:**
-
-* OpenAI - Use a prompt to generate an image - No longer requires GPT-4 access #3607
-* Outgoing Webhook - A warning is thrown when get_post_meta is invalid #3616
-* Outgoing Webhook - URLs are incorrectly escaped causing ampersand to be encoded incorrectly. #3596
-* WPForms - Dynamic field values not accessible via tokens #3121
-* WPForms - File Upload Tokens now return correct values #3634
-* Wishlist Member - Add the user to a membership level - Replaced deprecated functions #3630
-* WordPress - A user publishes a type of post - Scheduled posts are not triggering for logged in user #3617
-
-**Under the hood:**
-
-* Recipe Logs - Prevent conditions that have a status of 'succeeded' from outputting the previous error message when the same conditions are used (For Automator Pro) #3593
-* Recipe Logs - Send an email - Missing parser arguments for the default values #3663
-* Recipe Logs - Some token values causing invalid JSON format #3633
-* Recipe Logs - Missing fallback query when the recipe log view is missing #3602
-* Recipe Logs - Delayed/scheduled actions don't show the status "Delayed"/"Scheduled", and show incorrect date #3580
-* Scheduled actions - Action Scheduler - `json_decode` error in a specific situation #3666
-* Zoho Campaigns - Typo on settings page #3540
-
-### 4.15.1 [2023-05-29]
-
-**New Token:**
-
-* WordPress - Add a reply to a comment - Comment ID #3524
-
-**Fixed:**
-
-* WordPress - Create a post - Post parent is no longer a required field #3575
-* Recipe UI & Setup Wizard - Fix missing parameter #3582
-
-**Internal:**
-
-* Core - Performance updates to reduce the number of queries per page load #3583
-* Core - Added missing legacy param to support user selector in Pro for newer recipes #3586
-* Recipe logs - Delayed/scheduled actions - Incorrect status & date #3580
-
-### 4.15.0.1 [2023-05-25]
-
-**Fixed:**
-
-* WordPress - A user publishes a type of post - Not firing in some situations #3568
-* Recipe logs - Icon missing due to cached asset #3571
-
-### 4.15 [2023-05-24]
-
-**New Integrations:**
-
-* [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3371
-* [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2757
-
-**New Triggers:**
-
-* Charitable - A donation is made #3372
-* Charitable - A user makes a donation #3373
-* MemberPress - A user renews a recurring subscription product #3249
-
-**New Actions:**
-
-* Groundhogg - Create or update a contact #3149
-* OpenAI - Analyze sentiment with GPT-4 #3547
-* OpenAI - Correct spelling and grammar with GPT-4 #3542
-* OpenAI - Create a list of links that might help resolve a customer request with GPT-4 #3545
-* OpenAI - Generate a meta description with GPT-4 #3546
-* OpenAI - Generate an SEO title with GPT-4 #3541
-* OpenAI - Generate an excerpt suitable for Instagram with GPT-4 #3543
-* OpenAI - Generate an excerpt suitable for Twitter with GPT-4 #3550
-* OpenAI - Generate an excerpt with GPT-4 #3544
-* OpenAI - Translate text with GPT-4 #3549
-* Microsoft Teams - Create a channel in a team #2814
-* Microsoft Teams - Create a team #2887
-* Microsoft Teams - Send a direct message to a team member #2815
-* Microsoft Teams - Send a message to a channel #2886
-
-**New Tokens:**
-
-* LearnDash quiz triggers #3101
-	* Quiz time spent
-	* Quiz score
-	* Quiz points scored
-	* Quiz number of correct answers
-	* Quiz category scores
-	* Quiz questions and answers
-	* Quiz question & answers (unformatted)
-	* Quiz question & answers (individual question & answer tokens when a specific quiz is selected)
-* Uncanny Toolkit & LearnDash - Simple Course Timer #3519
-	* Course Cumulative Time 
-	* Course Time at Completion
-* WooCommerce #3483
-	* Payment URL 
-	* Direct checkout URL
-
-**Added:**
-
-* All-new recipe logs #3254
-	* Improved UI/UX
-	* Ability to view incomplete triggers and actions for in-progress recipe runs
-	* Ability to view token values in actions
-	* Ability to view filters / conditions and schedules
-	* Ability to view incoming and outgoing data
-* WhatsApp - Added internal logs and new filters to extend valid intervals and to disable timestamp validation #3521
-* WordPress - Create a post - "Post parent" field added #3480
-
-**Updated:**
-
-* MemberPress - A user purchases a recurring subscription product now fires on initial purchase only #47849 #3248
-* OpenAI - Allow HTML in "Prompt" field #3530
-* OpenAI - GPT actions updated #3504
-* Twitter - Improved error messaging in Logs #3563
-* WS Form LITE - Renamed to WS Form #3502
-* Zoom Webinar - Webinar field - Token selector added #3562
-
-**Fixed:**
-
-* ActiveCampaign - PHP Error when adding a contact in a certain situation #3526
-* BuddyBoss - Social media fields tokens now parse reliably #3477
-* Emails - Subject - Not decoding HTML entities #3536
-* LearnPress - A user completes a lesson now triggers reliably #3474
-* MemberPress - A user purchases a recurring subscription product doesn't run when the user purchases the product with a coupon #3401
-* OpenAI - Prompt incorrectly stripping line-breaks #3527
-* Outgoing Webhook - PHP error with an invalid header #3552
-* Slack - Markdown anchor links not working #3517
-* Slack - Slack actions do not pass any errors to the logs #3388
-* WooCommerce - "Product categories" tokens not parsing in filter fields #3496
-* WordPress - Post published triggers - Erroneously firing when post updates are made to a published post #3485
-* WordPress - A user publishes a post is triggering two times #3532
-* Zoho Campaign - Support link returns 404 #3494
-
-**Under the hood:**
-
-* Automator Core - Additional actions and filters #3490
-* Recipe UI - Fix integration order inside a recipe #3256
-* Gravity Forms - Framework updated #3364
-* Microsoft Teams - Settings page #2843
-* Framework fixes #3493
-* Recipe UI - Show "View logs" link regardless of the completed runs in publish box #3481
-* Review banner - Text updates #3391
-* Setup Wizard - Remove pop-up and redirect the user instead #2859
-* Setup Wizard - Tightened security #2855
-* Recipe UI - Save `title_html` of conditions #3440
-
-### 4.14.0.1 [2023-04-24]
-
-**Fixed:**
-
-* OpenAI - Handled empty `temperature` and `max_tokens` params #3447
-* Paid Memberships Pro - "A user cancels a membership" - Tokens not returning membership details #3450
-
-### 4.14 [2023-04-20]
-
-**New Feature:**
-
-* Outgoing Webhooks - Response Tokens #3438
-
-**New Integrations:**
-
-* [Thrive Quiz Builder](https://automatorplugin.com/integration/thrive-quiz-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3112
-* [Zoho Campaigns](https://automatorplugin.com/integration/zoho-campaigns/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3045
-
-**New Triggers:**
-
-* Thrive Quiz Builder - A quiz is completed #3116
-* WordPress - A post is updated #3409
-* WordPress - A post in a taxonomy is updated #3411
-* WordPress - A post in a taxonomy is published #3407
-* WordPress - A user publishes a post #3412
-* WordPress - A user updates a post type #3406
-
-**New Actions:**
-
-* Zoho Campaigns - Create a list #3080
-* Zoho Campaigns - Move a contact to Do-Not-Mail #3079
-* Zoho Campaigns - Subscribe a contact to a list #3077
-* Zoho Campaigns - Unsubscribe a contact from a list #3078
-
-**New Tokens:**
-
-* WhatsApp - Sender's profile name #3428
-* WordPress Download Manager - "A specific file is downloaded" #3395
-	* User ID
-	* Username
-	* First name
-	* Last name
-	* Email
-
-**Updated:**
-
-* OpenAI - Now directly communicates with OpenAI to reduce requests timing out #3424
-* Outgoing Webhooks - Data formats are now reliably parsed for payload #3437
-* WordPress - A type of post is published - Update sentence - A post is published #3408
-* WordPress - A user publishes a type of post with a taxonomy term in a taxonomy - Sentence changed to "A user publishes a post in a taxonomy" #3405
-* WordPress - Create a post - "Allow comments" toggle added #3400
-
-**Fixed:**
-
-* Emails - Send an email - Token adds p tag before and after token value when an action token is used in the To field #3393
-* Facebook Groups - "Verify app installation" button bypasses internal check #3416
-* WooCommerce - A user completes, pays for, lands on a thank you page for an order with a product - the Product title now returns all the product titles #3396
-* WordPress - Create a post - Action now reliably completes if used with in wp-admin #3444
-* Twitter - Reroute user app tweets to use the new endpoint #3430
-
-**Under the hood:**
-
-* Add survey on plugin deactivation #3390
-* Automator dashboard - Functional guest icon. #3013
-* Duplicate "Create a user" action found in both free and pro #3403
-* Framework updates #3212 #3213 #3166
-* Token parser - The passed variable always wraps the values in `<p>` tags #3394
-* Recipe UI - Save `title_html` of conditions #3440
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

@@ -99,7 +99,13 @@ class Wpai_Tokens {
 				),
 				array(
 					'tokenId'         => 'POSTCONTENT',
-					'tokenName'       => __( 'Post content', 'uncanny_automator' ),
+					'tokenName'       => __( 'Post content (raw)', 'uncanny_automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				),
+				array(
+					'tokenId'         => 'POSTCONTENT_BEAUTIFIED',
+					'tokenName'       => __( 'Post content (formatted)', 'uncanny_automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -298,6 +304,12 @@ class Wpai_Tokens {
 				break;
 			case 'POSTCONTENT':
 				$value = $post->post_content;
+				break;
+			case 'POSTCONTENT_BEAUTIFIED':
+				$content = get_the_content( $post->ID );
+				$content = apply_filters( 'the_content', $content );
+				$content = str_replace( ']]>', ']]&gt;', $content ); //phpcs:ignore Generic.PHP.Syntax.PHPSyntax
+				$value   = $content;
 				break;
 			case 'POSTIMAGEID':
 				$value = get_post_thumbnail_id( $post->ID );

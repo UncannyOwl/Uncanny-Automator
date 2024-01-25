@@ -1249,8 +1249,13 @@ class Active_Campaign_Helpers {
 			throw new \Exception( __( 'The contact has no tags.', 'uncanny-automator' ), $response['statusCode'] );
 		}
 
+		// Check if $tag_id is not numeric.
+		if ( ! is_numeric( $tag_id ) ) {
+			$tag_id = $this->get_tag_id_by_name( $tag_id );
+		}
+
 		foreach ( $response['data']['contactTags'] as $contact_tag ) {
-			if ( $tag_id === $contact_tag['tag'] ) {
+			if ( (string) $tag_id === (string) $contact_tag['tag'] ) {
 				$contact_tag_id = $contact_tag['id'];
 				break;
 			}
@@ -1261,6 +1266,31 @@ class Active_Campaign_Helpers {
 		}
 
 		return $contact_tag_id;
+	}
+
+	/**
+	 * Get Tag ID by Name
+	 *
+	 * @param string $tag_name
+	 *
+	 * @return string
+	 */
+	public function get_tag_id_by_name( $tag_name ) {
+		$tag_name = (string) trim( $tag_name );
+		$lists    = get_transient( 'ua_ac_tag_list' );
+		if ( false === $lists ) {
+			$lists = $this->sync_tags( false );
+		}
+
+		if ( ! empty( $lists ) && is_array( $lists ) ) {
+			foreach ( $lists as $list ) {
+				if ( (string) $list['text'] === $tag_name ) {
+					return $list['value'];
+				}
+			}
+		}
+
+		return $tag_name;
 	}
 
 	/**

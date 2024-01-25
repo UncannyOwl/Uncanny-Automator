@@ -444,7 +444,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$recipe_status = '
 				<div class="uap-logs-recipe-status ' . sanitize_html_class( $recipe_status_class ) . '">' .
-							 esc_html( $this->get_status_name( (int) $recipe->recipe_completed ) ) . '
+					esc_html( $this->get_status_name( (int) $recipe->recipe_completed ) ) . '
 				</div>';
 
 			// Recipe complation date
@@ -455,7 +455,8 @@ class Logs_List_Table extends WP_List_Table {
 					Automator_Status::COMPLETED_WITH_ERRORS,
 					Automator_Status::DID_NOTHING,
 					Automator_Status::COMPLETED_WITH_NOTICE,
-				)
+				),
+				true
 			) ?
 				$recipe->recipe_date_time :
 				'';
@@ -465,9 +466,9 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $recipe_datetime_completed ) {
 				$recipe_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-recipe-complation-date">'
-										 . esc_html( $recipe_datetime_completed['date'] ) . '
+							. esc_html( $recipe_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ '
-										 . esc_html( $recipe_datetime_completed['time'] ) . '
+							. esc_html( $recipe_datetime_completed['time'] ) . '
 						</span>
 					</div>';
 			}
@@ -504,7 +505,7 @@ class Logs_List_Table extends WP_List_Table {
 					$run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">' .
-								  esc_html( $run_number ) . '
+								esc_html( $run_number ) . '
 							</div>
 						</div>';
 				}
@@ -611,10 +612,10 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $trigger_datetime_completed ) {
 				$trigger_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-										  esc_html( $trigger_datetime_completed['date'] ) . '
+							esc_html( $trigger_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ ' .
-										  esc_html( $trigger_datetime_completed['time'] ) .
-										  '</span>
+							esc_html( $trigger_datetime_completed['time'] ) .
+						'</span>
 					</div>';
 			}
 
@@ -636,7 +637,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$recipe_status = '
 				<div class="uap-logs-recipe-status uap-logs-recipe-status--' . sanitize_html_class( $this->get_status_class_name( $trigger->recipe_completed ) ) . '">' .
-							 esc_html( $this->get_status_name( $trigger->recipe_completed ) ) . '
+					esc_html( $this->get_status_name( $trigger->recipe_completed ) ) . '
 				</div>';
 
 			$recipe_date_completed = ( 1 === absint( $trigger->recipe_completed ) || 2 === absint( $trigger->recipe_completed ) || 9 === absint( $trigger->recipe_completed ) ) ? $trigger->recipe_date_time : '';
@@ -702,7 +703,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">' .
-										 esc_html( $recipe_run_number ) . '
+								esc_html( $recipe_run_number ) . '
 							</div>
 						</div>';
 				} else {
@@ -827,12 +828,12 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $action->recipe_run_number ) ? 1 : $action->recipe_run_number : $action->recipe_run_number;
 
-			$action_column = $actions = '<uap-log-dialog-button log-id="' . esc_attr( $action->recipe_log_id ) . '" recipe-id="' . esc_attr( $action->automator_recipe_id ) . '" run-number="' . esc_attr( $run_number_log ) . '"></uap-log-dialog-button>';
+			$action_column = '<uap-log-dialog-button log-id="' . esc_attr( $action->recipe_log_id ) . '" recipe-id="' . esc_attr( $action->automator_recipe_id ) . '" run-number="' . esc_attr( $run_number_log ) . '"></uap-log-dialog-button>';
 
 			// Action status
 			$action_status_html = '
 				<div class="uap-logs-action-status uap-logs-action-status--' . sanitize_html_class( $this->get_status_class_name( $action->action_completed ) ) . '">' .
-								  esc_html( $this->get_status_name( $action->action_completed ) ) . '
+					esc_html( $this->get_status_name( $action->action_completed ) ) . '
 				</div>';
 
 			$action_code = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
@@ -860,7 +861,7 @@ class Logs_List_Table extends WP_List_Table {
 				$action_name = '
 					<div class="uap-logs-table-action">
 						<div class="uap-logs-table__item-main-sentence uap-logs-table__action-name">' .
-							   $this->format_human_readable_sentence( $action_sentence ) . '
+								$this->format_human_readable_sentence( $action_sentence ) . '
 						</div>
 					</div>';
 
@@ -873,9 +874,9 @@ class Logs_List_Table extends WP_List_Table {
 			if ( false !== $action_datetime_completed ) {
 				$action_date_completed = '
 					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-										 esc_html( $action_datetime_completed['date'] ) . '
+							esc_html( $action_datetime_completed['date'] ) . '
 						<span class="uap-logs-complation-date__time">@ ' .
-										 esc_html( $action_datetime_completed['time'] ) . '
+							esc_html( $action_datetime_completed['time'] ) . '
 						</span>
 					</div>';
 			}
@@ -900,7 +901,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			$recipe_status = '
 				<div class="uap-logs-action-status uap-logs-action-status--' . sanitize_html_class( $this->get_status_class_name( $action->recipe_completed ) ) . '">' .
-							 esc_html( $this->get_status_name( $action->recipe_completed ) ) . '
+					esc_html( $this->get_status_name( $action->recipe_completed ) ) . '
 				</div>';
 
 			$recipe_date_completed = ( 1 === absint( $action->recipe_completed ) || 2 === absint( $action->recipe_completed ) || 9 === absint( $action->recipe_completed ) ) ? $action->recipe_date_time : '';
@@ -924,7 +925,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">' .
-										 esc_html( $recipe_run_number ) . '
+								esc_html( $recipe_run_number ) . '
 							</div>
 						</div>';
 
@@ -1129,8 +1130,8 @@ class Logs_List_Table extends WP_List_Table {
 				</div>
 			<div class="uap-logs-user__info">
 			    <div class="uap-logs-user__display-name--deleted-user">' . esc_html__( 'Deleted user', 'uncanny-automator' ) . '</div>'
-				   /* translators: Recipe log user ID column row value. */
-				   . '<div class="uap-logs-user__id">' . sprintf( esc_html__( 'User ID #%1$s', 'uncanny-automator' ), $user_id ) . '</div>
+					/* translators: Recipe log user ID column row value. */
+					. '<div class="uap-logs-user__id">' . sprintf( esc_html__( 'User ID #%1$s', 'uncanny-automator' ), $user_id ) . '</div>
 			</div>';
 		}
 
@@ -1141,7 +1142,7 @@ class Logs_List_Table extends WP_List_Table {
 		return '
         <div class="uap-logs-user">
 			<div class="uap-logs-user__avatar-container">'
-			   . get_avatar( $user_id, 80, '', '', array( 'class' => 'uap-logs-user__avatar' ) ) . '
+				. get_avatar( $user_id, 80, '', '', array( 'class' => 'uap-logs-user__avatar' ) ) . '
 			</div>
 		    <div class="uap-logs-user__info">
 			    <a href="' . esc_url( $user_link ) . '" class="uap-logs-user__display-name">' . esc_html( $object->display_name ) . '</a>
@@ -1267,26 +1268,37 @@ class Logs_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	private function build_recipe_title_with_icons( $recipe_id, $recipe_link, $recipe_name, $css_class, $recipe ) {
+
+		$integration_icons = array_merge(
+			$this->get_integration_triggers( $recipe_id ),
+			$this->get_integration_actions( $recipe_id )
+		);
+
+		$unique_integrations = array_unique( $integration_icons );
+
+		$icons = '';
+
+		foreach ( $unique_integrations as $unique_integration ) {
+			$icons .= '<uo-icon integration="' . esc_attr( $unique_integration ) . '" hide-missing show-tooltip></uo-icon>';
+		}
+
 		$recipe_name = sprintf(
 			'<div class="uap-log-table-recipe-container">
-						<a href="%s" class="%s">%s</a>
-						<div class="uap-log-table__recipe-integrations">
-							<div class="uap-log-table-recipe-integration-triggers">
-								%s
-							</div>
-							<div class="uap-log-table-recipe-integration-actions">
-								%s
-							</div>
-						</div>
-					</div>',
+				<a href="%s" class="%s">%s</a>
+				<div class="uap-log-table__recipe-integrations">
+					<div class="uap-log-table-recipe-integration-triggers">
+						%s
+					</div>
+				</div>
+			</div>',
 			esc_url( $recipe_link ),
 			$css_class,
 			esc_html( $recipe_name ),
-			$this->trigger_icons( $recipe_id ),
-			$this->action_icons( $recipe_id )
+			$icons
 		);
 
 		return $recipe_name;
+
 	}
 
 	/**
@@ -1331,38 +1343,52 @@ AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', //phpcs:ignore WordPre
 	}
 
 	/**
+	 * Get all integrations from triggers.
+	 *
 	 * @param $recipe_id
 	 *
-	 * @return string
+	 * @return string[]
 	 */
-	private function trigger_icons( $recipe_id ) {
-		$triggers = isset( $this->trigger_action_integrations['triggers'][ $recipe_id ] ) ? $this->trigger_action_integrations['triggers'][ $recipe_id ] : array();
+	private function get_integration_triggers( $recipe_id ) {
+
+		$triggers = isset( $this->trigger_action_integrations['triggers'][ $recipe_id ] )
+			? $this->trigger_action_integrations['triggers'][ $recipe_id ] :
+			array();
+
 		if ( empty( $triggers ) ) {
-			return '';
-		}
-		$t_icons = array();
-		foreach ( $triggers as $integration ) {
-			$t_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-tooltip></uo-icon>';
+			return array();
 		}
 
-		return join( PHP_EOL, $t_icons );
+		$integration_triggers = array();
+
+		foreach ( $triggers as $integration ) {
+			$integration_triggers[] = $integration;
+		}
+
+		return $integration_triggers;
 	}
 
 	/**
 	 * @param $recipe_id
 	 *
-	 * @return string
+	 * @return string[]
 	 */
-	private function action_icons( $recipe_id ) {
-		$actions = isset( $this->trigger_action_integrations['actions'][ $recipe_id ] ) ? $this->trigger_action_integrations['actions'][ $recipe_id ] : array();
+	private function get_integration_actions( $recipe_id ) {
+
+		$actions = isset( $this->trigger_action_integrations['actions'][ $recipe_id ] )
+			? $this->trigger_action_integrations['actions'][ $recipe_id ] :
+			array();
+
 		if ( empty( $actions ) ) {
-			return '';
-		}
-		$a_icons = array();
-		foreach ( $actions as $integration ) {
-			$a_icons[] = '<uo-icon integration="' . $integration . '" hide-missing show-tooltip></uo-icon>';
+			return array();
 		}
 
-		return join( PHP_EOL, $a_icons );
+		$integration_actions = array();
+
+		foreach ( $actions as $integration ) {
+			$integration_actions[] = $integration;
+		}
+
+		return $integration_actions;
 	}
 }

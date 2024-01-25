@@ -343,4 +343,51 @@ class Open_AI_Helpers {
 
 	}
 
+	/**
+	 * Migrate text models.
+	 *
+	 * @param mixed $recipe_id
+	 * @return void
+	 */
+	public function migrate_text_models( $recipe_id ) {
+
+		// Bail if openai recipe is already updated.
+		if ( 'yes' === get_post_meta( $recipe_id, 'uap_openai_model_updated', true ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		// Retrieve OpenAI actions.
+		$actions = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID FROM $wpdb->posts WHERE post_type = 'uo-action' AND post_parent = %d",
+				$recipe_id
+			),
+			ARRAY_A
+		);
+
+		// Migrate the models.
+		foreach ( $actions as $action ) {
+			$model = get_post_meta( absint( $action['ID'] ), 'MODEL', true );
+			// Curie -> davinci-002
+			if ( 'text-curie-001' === $model ) {
+				update_post_meta( $action['ID'], 'MODEL', 'davinci-002' );
+				update_post_meta( $action['ID'], 'MODEL_readable', 'davinci-002' );
+			}
+			// Ada -> babbage-002
+			if ( 'text-ada-001' === $model ) {
+				update_post_meta( $action['ID'], 'MODEL', 'babbage-002' );
+				update_post_meta( $action['ID'], 'MODEL_readable', 'babbage-002' );
+			}
+			// Babbage -> babbage-002
+			if ( 'text-babbage-001' === $model ) {
+				update_post_meta( $action['ID'], 'MODEL', 'babbage-002' );
+				update_post_meta( $action['ID'], 'MODEL_readable', 'babbage-002' );
+			}
+		}
+
+		update_post_meta( $recipe_id, 'uap_openai_model_updated', 'yes' );
+	}
+
 }

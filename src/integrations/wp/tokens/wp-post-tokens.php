@@ -149,7 +149,13 @@ class Wp_Post_Tokens {
 			),
 			array(
 				'tokenId'         => 'POSTCONTENT',
-				'tokenName'       => __( 'Post content', 'uncanny_automator' ),
+				'tokenName'       => __( 'Post content (raw)', 'uncanny_automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'POSTCONTENT_BEAUTIFIED',
+				'tokenName'       => __( 'Post content (formatted)', 'uncanny_automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -254,7 +260,13 @@ class Wp_Post_Tokens {
 			),
 			array(
 				'tokenId'         => 'POSTCONTENT',
-				'tokenName'       => __( 'Post content', 'uncanny_automator' ),
+				'tokenName'       => __( 'Post content (raw)', 'uncanny_automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'POSTCONTENT_BEAUTIFIED',
+				'tokenName'       => __( 'Post content (formatted)', 'uncanny_automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -418,7 +430,13 @@ class Wp_Post_Tokens {
 				$value = get_the_excerpt( $comment->comment_post_ID );
 				break;
 			case 'POSTCONTENT':
-				$value = get_the_content( $comment->comment_post_ID );
+				$value = get_post( $comment->comment_post_ID )->post_content;
+				break;
+			case 'POSTCONTENT_BEAUTIFIED':
+				$content = get_the_content( $comment->comment_post_ID );
+				$content = apply_filters( 'the_content', $content );
+				$content = str_replace( ']]>', ']]&gt;', $content ); //phpcs:ignore Generic.PHP.Syntax.PHPSyntax
+				$value   = $content;
 				break;
 			case 'POSTIMAGEID':
 			case 'WPPOSTCOMMENTS_THUMB_ID':
@@ -577,6 +595,15 @@ class Wp_Post_Tokens {
 			case 'WPPAGE_CONTENT':
 			case 'WPPOSTTYPES_CONTENT':
 				$value = $post->post_content;
+				break;
+			case 'POSTCONTENT_BEAUTIFIED':
+			case 'WPPOST_CONTENT_BEAUTIFIED':
+			case 'WPPAGE_CONTENT_BEAUTIFIED':
+			case 'WPPOSTTYPES_CONTENT_BEAUTIFIED':
+				$content = get_the_content( null, false, $post->ID );
+				$content = apply_filters( 'the_content', $content );
+				$content = str_replace( ']]>', ']]&gt;', $content ); //phpcs:ignore Generic.PHP.Syntax.PHPSyntax
+				$value   = $content;
 				break;
 			case 'WPPOSTTYPES_THUMB_ID':
 			case 'WPPOST_THUMB_ID':

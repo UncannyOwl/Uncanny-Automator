@@ -18,18 +18,27 @@ class Jet_Crm_Helpers {
 	 */
 	public function contact_statuses( $option_code, $is_any = false, $tokens = array() ) {
 
-		$statuses = array(
-			'Lead'                         => __( 'Lead', 'uncanny-automator' ),
-			'Customer'                     => __( 'Customer', 'uncanny-automator' ),
-			'Blacklisted'                  => __( 'Blacklisted', 'uncanny-automator' ),
-			'Cancelled by Customer'        => __( 'Cancelled by Customer', 'uncanny-automator' ),
-			'Cancelled by Us (Post-Quote)' => __( 'Cancelled by Us (Post-Quote)', 'uncanny-automator' ),
-			'Cancelled by Us (Pre-Quote)'  => __( 'Cancelled by Us (Pre-Quote)', 'uncanny-automator' ),
-			'Refused'                      => __( 'Refused', 'uncanny-automator' ),
-		);
+		global $zbsCustomerFields;
+		$customer_fields = is_array( $zbsCustomerFields ) && isset( $zbsCustomerFields['status'] ) ? $zbsCustomerFields['status'] : array();
+		$statuses        = is_array( $customer_fields ) && isset( $customer_fields[3] ) ? $customer_fields[3] : array();
+		$options         = ! empty( $statuses ) ? array_combine( $statuses, $statuses ) : array();
 
+		// Load defaults if empty.
+		if ( empty( $options ) ) {
+			$options = array(
+				'Lead'                         => __( 'Lead', 'uncanny-automator' ),
+				'Customer'                     => __( 'Customer', 'uncanny-automator' ),
+				'Blacklisted'                  => __( 'Blacklisted', 'uncanny-automator' ),
+				'Cancelled by Customer'        => __( 'Cancelled by Customer', 'uncanny-automator' ),
+				'Cancelled by Us (Post-Quote)' => __( 'Cancelled by Us (Post-Quote)', 'uncanny-automator' ),
+				'Cancelled by Us (Pre-Quote)'  => __( 'Cancelled by Us (Pre-Quote)', 'uncanny-automator' ),
+				'Refused'                      => __( 'Refused', 'uncanny-automator' ),
+			);
+		}
+
+		// Add Any Option.
 		if ( true === $is_any ) {
-			$statuses = array( '-1' => __( 'Any status', 'uncanny-automator' ) ) + $statuses;
+			$options = array( '-1' => __( 'Any status', 'uncanny-automator' ) ) + $options;
 		}
 
 		$option = array(
@@ -39,7 +48,7 @@ class Jet_Crm_Helpers {
 			'required'        => true,
 			'options_show_id' => false,
 			'relevant_tokens' => $tokens,
-			'options'         => $statuses,
+			'options'         => $options,
 		);
 
 		return apply_filters( 'uap_option_contact_statuses', $option );

@@ -98,11 +98,7 @@ class OPEN_AI_TEXT_GENERATE {
 							'label'           => esc_attr__( 'Model', 'uncanny-automator' ),
 							'input_type'      => 'select',
 							'required'        => true,
-							'options'         => array(
-								'text-curie-001'   => 'Curie',
-								'text-babbage-001' => 'Babbage',
-								'text-ada-001'     => 'Ada',
-							),
+							'options'         => $this->load_models(),
 							'options_show_id' => false,
 						),
 						array(
@@ -136,7 +132,6 @@ class OPEN_AI_TEXT_GENERATE {
 		);
 	}
 
-
 	/**
 	 * Processes action.
 	 *
@@ -150,7 +145,9 @@ class OPEN_AI_TEXT_GENERATE {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$model       = isset( $parsed['MODEL'] ) ? sanitize_text_field( $parsed['MODEL'] ) : 'curie';
+		$this->get_helpers()->migrate_text_models( $recipe_id );
+
+		$model       = get_post_meta( $action_data['ID'], 'MODEL', true );
 		$temperature = ! empty( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : 0.7;
 		$max_tokens  = ! empty( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : 256;
 		$prompt      = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
@@ -161,7 +158,7 @@ class OPEN_AI_TEXT_GENERATE {
 				'prompt'      => $prompt,
 				'temperature' => floatval( $temperature ),
 				'max_tokens'  => intval( $max_tokens ),
-				'model'       => 'gpt-3.5-turbo-instruct',
+				'model'       => $model,
 			);
 
 			$body = apply_filters( 'automator_open_ai_text_generate', $body );
@@ -221,6 +218,19 @@ class OPEN_AI_TEXT_GENERATE {
 
 		return $this;
 
+	}
+
+	private function load_models() {
+
+		$recipe_id = automator_filter_input( 'post' );
+
+		$this->get_helpers()->migrate_text_models( $recipe_id );
+
+		return array(
+			'babbage-002'            => 'babbage-002',
+			'davinci-002'            => 'davinci-002',
+			'gpt-3.5-turbo-instruct' => 'gpt-3.5-turbo-instruct',
+		);
 	}
 
 }

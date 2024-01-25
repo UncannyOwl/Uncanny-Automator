@@ -162,7 +162,7 @@ class LD_MARKTOPICDONE {
 
 		$this->mark_quiz_complete( $user_id, $course_id );
 
-		learndash_process_mark_complete( $user_id, $topic_id, false, $course_id );
+		Learndash_Helpers::process_mark_complete( $user_id, $topic_id, false, $course_id );
 
 		// Hydrate Lesson & Course Action Tokens.
 		$topic_tokens  = Automator()->helpers->recipe->learndash->options->hydrate_ld_topic_action_tokens( $topic_id, $user_id, $this->action_meta );

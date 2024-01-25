@@ -71,7 +71,7 @@ class Edd_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Product', 'uncanny-automator' );
+			$label = esc_attr__( 'Download', 'uncanny-automator' );
 		}
 
 		$args = array(
@@ -82,17 +82,51 @@ class Edd_Helpers {
 			'post_status'    => 'publish',
 		);
 
-		if ( true === $is_recurring ) {
-			$args['meta_query'] = array(
-				array(
-					'key'     => 'edd_recurring',
-					'value'   => 'yes',
-					'compare' => '=',
-				),
-			);
+		$downloads = get_posts( $args );
+
+		$all_downloads = array();
+
+		if ( $downloads ) {
+			foreach ( $downloads as $download ) {
+
+				$download_id = $download->ID;
+
+				// Just list everything
+				if ( ! $is_recurring ) {
+					$all_downloads[ $download_id ] = $download->post_title;
+					continue;
+				}
+
+				// Check if the product has a recurring option
+				if ( edd_recurring()->is_recurring( $download_id ) ) {
+					$all_downloads[ $download_id ] = $download->post_title;
+					continue;
+				}
+
+				if ( ! edd_has_variable_prices( $download_id ) ) {
+					continue;
+				}
+
+				$variable_prices = edd_get_variable_prices( $download_id );
+
+				if ( $variable_prices ) {
+					foreach ( $variable_prices as $price ) {
+						if ( ! isset( $price['recurring'] ) || 'yes' !== $price['recurring'] ) {
+							continue;
+						}
+						$all_downloads[ $download_id ] = $download->post_title;
+					}
+				}
+			}
 		}
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any download', 'uncanny-automator' ) );
+		$any = array();
+
+		if ( $any_option ) {
+			$any = array( '-1' => esc_attr__( 'Any download', 'uncanny-automator' ) );
+		}
+
+		$options = $any + $all_downloads;
 
 		$relevant_tokens = array(
 			$option_code . '_DISCOUNT_CODES'  => esc_attr__( 'Discount codes used', 'uncanny-automator' ),

@@ -28,7 +28,7 @@ class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 	/**
 	 * Define the Action's options
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function options() {
 

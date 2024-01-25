@@ -56,6 +56,66 @@ class Automator_Send_Webhook {
 		$this->field_separator = apply_filters( 'automator_send_webhook_field_separator', '/' );
 		require_once __DIR__ . '/class-automator-send-webhook-fields.php';
 		$this->fields = Automator_Send_Webhook_Fields::get_instance();
+
+		// Register hooks.
+		add_filter( 'automator_field_values_before_save', array( $this, 'encrypt_authorization_values' ), 10, 2 );
+	}
+
+	/**
+	 * Encrypt authorization vallues.
+	 *
+	 * @param mixed $meta_value
+	 * @param mixed $item
+	 *
+	 * @return string
+	 */
+	public function encrypt_authorization_values( $meta_value, $item ) {
+
+		if ( ! isset( $meta_value['WEBHOOK_AUTHORIZATIONS'] ) ) {
+			return $meta_value;
+		}
+
+		$authorization = $meta_value['WEBHOOK_AUTHORIZATIONS'];
+
+		if ( empty( $authorization ) ) {
+			return $meta_value;
+		}
+
+		$item_id = $_POST['itemId'] ?? null; //phpcs:ignore
+
+		// Trim all * and see if a new string is entered
+		$authorization = trim( $authorization, '*' );
+
+		if ( strlen( $authorization ) > 3 ) { // check if trimmed string is over 3 chars
+			update_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', $authorization );
+
+			$meta_value['WEBHOOK_AUTHORIZATIONS'] = $this->hide_string( $authorization );
+		}
+
+		return $meta_value;
+	}
+
+	/**
+	 * Hides a portion of string.
+	 *
+	 * @param mixed $string
+	 *
+	 * @return mixed
+	 */
+	protected function hide_string( $string ) {
+
+		$length = strlen( $string );
+
+		// If the string is shorter than or equal to 3 characters, return the original string
+		if ( $length <= 3 ) {
+			return $string;
+		}
+
+		// Replace characters except the last 3 with asterisks
+		$hidden_part  = str_repeat( '*', $length - 3 );
+		$visible_part = substr( $string, - 3 );
+
+		return $hidden_part . $visible_part;
 	}
 
 	/**
@@ -416,7 +476,23 @@ class Automator_Send_Webhook {
 		$prepared_data = $this->create_tree( $prepared_data, $data_type );
 
 		return $this->format_outgoing_data( $prepared_data, $data_type, $is_check_sample );
+	}
 
+	/**
+	 * @param $action_id
+	 * @param $headers
+	 *
+	 * @return array
+	 */
+	public function get_authorization( $action_id, $headers ) {
+
+		$authorization = get_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', true );
+
+		if ( ! empty( $authorization ) && is_scalar( $authorization ) ) {
+			$headers['Authorization'] = apply_filters( 'automator_outgoing_webhook_authorization_string', $authorization, $action_id, $headers, $this );
+		}
+
+		return $headers;
 	}
 
 	/**
@@ -942,7 +1018,7 @@ class Automator_Send_Webhook {
 	 * Escaping for HTML blocks.
 	 *
 	 * @param mixed $value The value to parse.
-	 * @param bool  $is_html Whether the value has HTML contents or not.
+	 * @param bool $is_html Whether the value has HTML contents or not.
 	 *
 	 * @return string
 	 */

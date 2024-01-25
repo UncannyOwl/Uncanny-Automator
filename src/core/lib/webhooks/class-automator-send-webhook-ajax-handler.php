@@ -77,6 +77,7 @@ class Automator_Send_Webhook_Ajax_Handler {
 		$fields       = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, array() );
 		$request_type = Automator()->send_webhook->request_type( $data );
 		$headers      = Automator()->send_webhook->get_content_type( $data_type, $headers );
+		$headers      = Automator()->send_webhook->get_authorization( $action_id, $headers );
 
 		if ( empty( $webhook_url ) ) {
 			wp_send_json(
@@ -134,7 +135,7 @@ class Automator_Send_Webhook_Ajax_Handler {
 
 		// Format the response in a nice format.
 		$response = sprintf(
-			/* translators: Webhook response format */
+		/* translators: Webhook response format */
 			esc_attr__( '%1$sHeaders%2$s %3$s %5$s %1$sBody%2$s %4$s', 'uncanny-automator' ),
 			'<br/><strong>',
 			'</strong><br/>',

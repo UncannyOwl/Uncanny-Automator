@@ -70,6 +70,16 @@ class Fcrm_Tokens {
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
+
+			// Add 'Company Name' token.
+			if ( 'company_id' === $key ) {
+				$tokens[] = array(
+					'tokenId'         => 'company_name',
+					'tokenName'       => esc_html__( 'Primary Company Name', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_meta,
+				);
+			}
 		}
 
 		// All custom subscriber fields
@@ -146,7 +156,7 @@ class Fcrm_Tokens {
 						// String. The trigger meta.
 						$trigger_log_id,
 						// Integer. The trigger log id.
-							$trigger_id
+						$trigger_id
 						// Integer. The trigger id.
 					)
 				);
@@ -239,6 +249,12 @@ class Fcrm_Tokens {
 				if ( absint( $entry ) ) {
 					$subscriber    = Subscriber::where( 'id', absint( $entry ) )->first();
 					$contact_field = $pieces['2'];
+
+					// Handle Primary Company Name token
+					if ( 'company_name' === $contact_field ) {
+						return $this->get_primary_company_name( $subscriber );
+					}
+
 					if ( isset( $subscriber->$contact_field ) ) {
 						// its a standard field
 						return $subscriber->$contact_field;
@@ -259,6 +275,41 @@ class Fcrm_Tokens {
 		}//end if
 
 		return $value;
+	}
+
+	/**
+	 * Get Primary Company Name
+	 *
+	 * @param \Subscriber $subscriber
+	 *
+	 * @return string
+	 */
+	public function get_primary_company_name( $subscriber ) {
+
+		if ( ! $subscriber instanceof Subscriber ) {
+			return '-';
+		}
+
+		// Ensure that the subscriber has a company ID.
+		if ( ! isset( $subscriber->company_id ) || empty( $subscriber->company_id ) ) {
+			return '-';
+		}
+
+		// Get the company.
+		if ( ! class_exists( '\FluentCrm\App\Models\Company' ) ) {
+			return '-';
+		}
+		$company = \FluentCrm\App\Models\Company::find( $subscriber->company_id );
+		if ( ! $company instanceof \FluentCrm\App\Models\Company ) {
+			return '-';
+		}
+
+		// Get the company name.
+		if ( isset( $company->name ) && ! empty( $company->name ) ) {
+			return $company->name;
+		}
+
+		return '-';
 	}
 
 	/**

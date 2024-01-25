@@ -133,7 +133,7 @@ abstract class Trigger {
 	 *
 	 * @var mixed
 	 */
-	protected $is_login_required;
+	protected $is_login_required = true;
 
 	/**
 	 * __construct
@@ -319,7 +319,7 @@ abstract class Trigger {
 		/**
 		 * Check if user is logged in.
 		 */
-		if ( 'user' === $this->get_trigger_type() && ! is_user_logged_in() ) {
+		if ( 'user' === $this->get_trigger_type() && $this->is_login_required && ! is_user_logged_in() ) {
 			return false;
 		}
 

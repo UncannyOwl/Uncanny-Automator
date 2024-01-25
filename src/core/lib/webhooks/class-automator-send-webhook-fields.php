@@ -135,6 +135,15 @@ class Automator_Send_Webhook_Fields {
 			$fields[]     = $data_formats;
 		}
 
+		// Authorizations.
+		$fields[] = array(
+			'input_type'  => 'text',
+			'option_code' => 'WEBHOOK_AUTHORIZATIONS',
+			'label'       => esc_attr__( 'Authorization', 'uncanny-automator' ),
+			'description' => esc_attr__( 'The authorization string will be automatically incorporated into the header. Once saved, the value will be masked.', 'uncanny-automator' ),
+			'required'    => false,
+		);
+
 		// Header
 		$fields[] = array(
 			'input_type'        => 'repeater',
@@ -171,7 +180,7 @@ class Automator_Send_Webhook_Fields {
 			'remove_row_button' => esc_attr__( 'Remove header', 'uncanny-automator' ),
 		);
 
-		// Fields
+		// Fields.
 		$fields[] = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'WEBHOOK_FIELDS',

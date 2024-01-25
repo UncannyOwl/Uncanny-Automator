@@ -204,6 +204,7 @@ class Recipe_Post_Utilities {
 				'uap-codemirror-mode-javascript',
 				'uap-codemirror-mode-htmlmixed',
 				'uap-tinymce-plugin-fullpage',
+				'wp-api-fetch',
 			),
 			Utilities::automator_get_version(),
 			true

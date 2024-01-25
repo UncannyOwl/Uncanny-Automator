@@ -6,6 +6,7 @@
  */
 namespace Uncanny_Automator\Rest\Log_Endpoint;
 
+use Exception;
 use WP_REST_Server;
 use WP_REST_Request;
 use Uncanny_Automator\Automator_Functions;
@@ -25,7 +26,9 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Recipe_Logs_Resources
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Trigger_Logs_Resources;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 use Uncanny_Automator\Rest\Endpoint\User_Endpoint;
+use Uncanny_Automator\Services\Email_Tester\Email_Sender;
 use WP_HTTP_Response;
+use WP_REST_Response;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	return;
@@ -43,11 +46,50 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 	// Overwride with a function that returns true to disable nonce check. This is done during development mode.
 	$authentication = apply_filters(
 		'automator_rest_authentication_service',
-		array( \Uncanny_Automator\Rest\Auth\Auth::class, 'verify_nonce' )
+		array( \Uncanny_Automator\Rest\Auth\Auth::class, 'verify_permission' )
 	);
 
 	/**
-	 * Orchestrates the user endpoint.
+	 * Registers the email endpoint for testing.
+	 *
+	 * #[Uncanny_Automator_Route('wp-json/automator/v1/user/:user_id')]
+	 */
+	register_rest_route(
+		'automator/v1',
+		'/email/test',
+		array(
+			'methods'             => 'POST',
+			'permission_callback' => $authentication,
+			'callback'            => function( WP_REST_Request $request ) {
+				try {
+
+					$email_sender = new Email_Sender( Email_Sender::generate_args( $request ) );
+
+					if ( false === $email_sender->send() ) {
+						throw new Exception( 'The system encountered an error while attempting to send the email. Ensure that your email server settings, such as SMTP configuration, are accurate.', 400 );
+					}
+				} catch ( Exception $e ) {
+					return new WP_REST_Response(
+						array(
+							'success' => false,
+							'error'   => $e->getMessage(),
+						),
+						400
+					);
+				}
+				return new WP_REST_Response(
+					array(
+						'success' => true,
+						'error'   => '',
+					),
+					200
+				);
+			},
+		)
+	);
+
+	/**
+	 * Registers the user endpoint.
 	 *
 	 * #[Uncanny_Automator_Route('wp-json/automator/v1/user/:user_id')]
 	 */
@@ -59,8 +101,6 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 			'methods'             => 'GET',
 			'permission_callback' => $authentication,
 			'callback'            => function( WP_REST_Request $request ) {
-				// Only include the file when needed.
-				require_once UA_ABSPATH . 'src/core/services/rest/endpoint/user-endpoint.php';
 				// And instantiate when needed.
 				return apply_filters(
 					'automator_rest_routes_user_response',
@@ -71,7 +111,7 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 	);
 
 	/**
-	 * Orchestrates the log endpoint.
+	 * Registers the log endpoint.
 	 *
 	 * #[Uncanny_Automator_Route('/wp-json/automator/v1/log')]
 	 */
@@ -90,8 +130,6 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				}
 
 				global $wpdb;
-				require_once __DIR__ . '/rest/autoload.php';
-
 				// @todo Use DIC to simplify and autowire the following class compositions/dependencies.
 				$utils = new Formatters_Utils();
 
@@ -114,7 +152,6 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				$action_logs_resources  = new Action_Logs_Resources( $action_logs_queries, $utils, $automator_factory, $loops_logs_resources );
 
 				// Require the class because its not part of the autoloaded directory.
-				require_once __DIR__ . '/resolver/fields-conditions-resolver.php';
 				$fcr = new Fields_Conditions_Resolver();
 				$action_logs_resources->set_field_conditions_resolver( $fcr );
 
