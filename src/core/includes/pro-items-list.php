@@ -649,6 +649,11 @@ function automator_pro_items_list() {
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Subscribe the user to {{a forum}}", 'uncanny-automator' ),
 				),
+				array(
+					/* translators: Action - BuddyBoss */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Unsubscribe the user from {{a forum}}", 'uncanny-automator' ),
+				),
 			),
 		),
 		'BP'                => array(
@@ -835,6 +840,11 @@ function automator_pro_items_list() {
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Send a private message to a specific user", 'uncanny-automator' ),
 				),
+				array(
+					/* translators: Action - BuddyPress */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Unsubscribe the user from {{a forum}}", 'uncanny-automator' ),
+				),
 			),
 		),
 		'CF'                => array(
@@ -972,6 +982,12 @@ function automator_pro_items_list() {
 					'type' => 'logged-in',
 				),
 				array(
+					/* translators: Anonymous trigger - Easy Digital Downloads */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A file}} is downloaded", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
 					/* translators: Logged-in trigger - EDD – Recurring Payments */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "A user cancels a subscription to {{a download}}", 'uncanny-automator' ),
@@ -986,9 +1002,14 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(
 				array(
-					/* translators: Action - EDD – Recurring Payments */
+					/* translators: Action - Easy Digital Downloads */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "Delete a customer", 'uncanny-automator' ),
+					'name' => __( "Delete a customer by {{email}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Easy Digital Downloads */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Delete a customer by {{ID}}", 'uncanny-automator' ),
 				),
 				array(
 					/* translators: Action - EDD – Recurring Payments */
@@ -1896,6 +1917,11 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Action - LearnDash */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Extend the user's access to {{a course}} by {{a number of}} days", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Mark {{a lesson}} not complete for the user", 'uncanny-automator' ),
 				),
 				array(
@@ -2209,24 +2235,6 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Logged-in trigger - MemberPress */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "A user's membership to {{a specific product}} expires", 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					/* translators: Logged-in trigger - MemberPress */
-					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "A user's membership to {{a specific product}} is cancelled", 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					/* translators: Logged-in trigger - MemberPress */
-					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "A user's membership to {{a specific product}} is paused", 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					/* translators: Logged-in trigger - MemberPress */
-					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "{{A coupon code}} is redeemed", 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -2274,16 +2282,6 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'  => array(
-				array(
-					/* translators: Action - MemberPress */
-					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "Add the user to {{a membership}}", 'uncanny-automator' ),
-				),
-				array(
-					/* translators: Action - MemberPress */
-					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
-					'name' => __( "Remove the user from {{a membership}}", 'uncanny-automator' ),
-				),
 				array(
 					/* translators: Action - MemberPress */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
@@ -3281,6 +3279,11 @@ function automator_pro_items_list() {
 				array(
 					/* translators: Action - WooCommerce */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add {{a note}} to an order", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - WooCommerce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Add {{a product}} to {{an order}}", 'uncanny-automator' ),
 				),
 				array(
@@ -3342,6 +3345,11 @@ function automator_pro_items_list() {
 					/* translators: Action - WooCommerce Subscriptions */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Extend a user's subscription to {{a specific product variation}} of {{a specific product}} by {{a number of days}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - WooCommerce Subscriptions */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Extend the user’s next subscription renewal date to {{a specific product}} by {{a number of days}}", 'uncanny-automator' ),
 				),
 				array(
 					/* translators: Action - WooCommerce Subscriptions */

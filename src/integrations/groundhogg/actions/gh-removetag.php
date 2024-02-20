@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use Groundhogg\DB\Tags;
 use Groundhogg\Plugin;
 
 /**
@@ -64,22 +63,16 @@ class GH_REMOVETAG {
 	 * @return array
 	 */
 	public function options_callback() {
-		$tags = new Tags();
-
-		$tag_options = array();
-		foreach ( $tags->get_tags() as $tag ) {
-			$tag_options[ $tag->tag_id ] = $tag->tag_name;
-		}
 
 		$options = array(
 			'option_code' => $this->action_meta,
 			'label'       => esc_attr__( 'Tags', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
-			'options'     => $tag_options,
+			'options'     => Groundhogg_Helpers::get_tag_options(),
 		);
 
-		return Automator()->utilities->keep_order_of_options( array( 'options' => array( $options ) ) );
+		return array( 'options' => array( $options ) );
 	}
 
 	/**

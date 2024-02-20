@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18
+class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -453,6 +453,7 @@ class ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18
         'Uncanny_Automator\\Gototraining_Helpers' => __DIR__ . '/../..' . '/src/integrations/gototraining/helpers/gototraining-helpers.php',
         'Uncanny_Automator\\Gotowebinar_Helpers' => __DIR__ . '/../..' . '/src/integrations/gotowebinar/helpers/gotowebinar-helpers.php',
         'Uncanny_Automator\\Gravity_Forms_Helpers' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/helpers/gravity-forms-helpers.php',
+        'Uncanny_Automator\\Groundhogg_Helpers' => __DIR__ . '/../..' . '/src/integrations/groundhogg/helpers/groundhogg-helpers.php',
         'Uncanny_Automator\\H5p_Helpers' => __DIR__ . '/../..' . '/src/integrations/h5p/helpers/h5p-helpers.php',
         'Uncanny_Automator\\HELPSCOUT_CONVERSATION_CREATE' => __DIR__ . '/../..' . '/src/integrations/helpscout/actions/helpscout-conversation-create.php',
         'Uncanny_Automator\\HELPSCOUT_CONVERSATION_TAG_ADD' => __DIR__ . '/../..' . '/src/integrations/helpscout/actions/helpscout-conversation-tag-add.php',
@@ -1094,10 +1095,10 @@ class ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitfad4595ed0ada6e5132c0341412a4a18::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$classMap;
 
         }, null, ClassLoader::class);
     }

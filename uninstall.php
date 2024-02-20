@@ -2,13 +2,13 @@
 
 // If uninstall is not called from WordPress, exit
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	exit();
+	exit;
 }
 
 // Check if the 'automator_delete_data_on_uninstall' setting is enabled
 if ( false === get_option( 'automator_delete_data_on_uninstall', false ) ) {
 	// The setting is not enabled, so bail out
-	exit();
+	return;
 }
 
 /**

@@ -688,25 +688,30 @@ function automator_add_settings_error( $setting = '', $code = '', $message = '',
  * @return void
  */
 function automator_cache_delete_group( $group = 'automator' ) {
-	if ( function_exists( 'wp_cache_flush_group' ) ) {
-		wp_cache_flush_group( $group );
-	}
+
+	$purge_group = true;
 
 	// LiteSpeed Cache
 	if ( class_exists( '\LiteSpeed\Purge' ) && method_exists( '\LiteSpeed\Purge', 'purge_all' ) ) {
 		// Purge all LS Cache & Object cache
 		\LiteSpeed\Purge::purge_all( 'Called by Automator' );
+		$purge_group = false; // Since all cache is already cleared
 	}
 
 	// W3 Total Cache
 	if ( function_exists( 'w3tc_flush_all' ) ) {
 		w3tc_flush_all();
+		$purge_group = false; // Since all cache is already cleared
+	}
+
+	if ( function_exists( 'wp_cache_flush_group' ) && $purge_group ) {
+		wp_cache_flush_group( $group );
 	}
 
 	/** @type WP_Object_Cache $wp_object_cache */
 	global $wp_object_cache;
 
-	$cache = $wp_object_cache->cache;
+	$cache = $wp_object_cache->cache ?? array();
 
 	if ( isset( $cache[ $group ] ) ) {
 		unset( $cache[ $group ] );

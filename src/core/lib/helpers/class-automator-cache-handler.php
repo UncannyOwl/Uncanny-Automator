@@ -403,14 +403,15 @@ class Automator_Cache_Handler {
 	 *
 	 */
 	public function remove_all() {
-		if ( function_exists( 'wp_cache_flush_group' ) ) {
-			wp_cache_flush_group( 'automator' );
-		}
+
 		$this->remove( 'automator_integration_directories_loaded' );
 		$this->remove( 'automator_get_all_integrations' );
 		$this->remove( 'automator_actionified_triggers' );
 		$this->remove( $this->recipes_data );
 		$this->remove( 'get_recipe_type' );
+
+		automator_cache_delete_group( 'automator' );
+
 		do_action( 'automator_cache_remove_all' );
 	}
 

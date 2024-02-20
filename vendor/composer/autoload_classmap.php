@@ -428,6 +428,7 @@ return array(
     'Uncanny_Automator\\Gototraining_Helpers' => $baseDir . '/src/integrations/gototraining/helpers/gototraining-helpers.php',
     'Uncanny_Automator\\Gotowebinar_Helpers' => $baseDir . '/src/integrations/gotowebinar/helpers/gotowebinar-helpers.php',
     'Uncanny_Automator\\Gravity_Forms_Helpers' => $baseDir . '/src/integrations/gravity-forms/helpers/gravity-forms-helpers.php',
+    'Uncanny_Automator\\Groundhogg_Helpers' => $baseDir . '/src/integrations/groundhogg/helpers/groundhogg-helpers.php',
     'Uncanny_Automator\\H5p_Helpers' => $baseDir . '/src/integrations/h5p/helpers/h5p-helpers.php',
     'Uncanny_Automator\\HELPSCOUT_CONVERSATION_CREATE' => $baseDir . '/src/integrations/helpscout/actions/helpscout-conversation-create.php',
     'Uncanny_Automator\\HELPSCOUT_CONVERSATION_TAG_ADD' => $baseDir . '/src/integrations/helpscout/actions/helpscout-conversation-tag-add.php',

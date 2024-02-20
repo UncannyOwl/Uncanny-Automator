@@ -1,10 +1,10 @@
-=== Uncanny Automator – Automate everything with the #1 no-code automation and integration plugin ===
+=== Uncanny Automator – Automate everything with the #1 automation, integration & webhooks plugin ===
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, wpforms, twitter, facebook, whatsapp, buddyboss, tutor lms
 Requires at least: 5.4
-Tested up to: 6.4.2
+Tested up to: 6.4.3
 Requires PHP: 7.0
-Stable tag: 5.5
+Stable tag: 5.5.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -342,7 +342,15 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 5.5 [2024-01-24] =
+= 5.5.0.1 [2024-02-20] =
+
+**Fixed:**
+
+* Groundhogg - Get tags functionality not working as expected #4398
+* PHP Notice - Function `wp_cache_flush_group` was called incorrectly #4383
+* Plugin cannot be deleted on some sites #4414
+
+= 5.5 [2024-01-25] =
 
 **Added:**
 
@@ -360,7 +368,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * ActiveCampaign - Tag actions - Added support to pass Tag names #4285
 * LearnDash - Mark complete actions - Support for future `learndash_process_mark_complete` function updates #4343
-* MailPoet - Actions will now complete with errors if an issue occurrs #4251
+* MailPoet - Actions will now complete with errors if an issue occurs #4251
 * OpenAI - Deprecated models replaced in Recipe UI #4333
 * Recipe logs - Integration icons are now listed once per log entry if multiple triggers or actions of the same integration are part of recipe #4296
 * WordPress - "Post content" token renamed to "Post content (raw)" #4357
