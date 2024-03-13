@@ -169,7 +169,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Run code](https://automatorplugin.com/integration/run-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [Run Code](https://automatorplugin.com/integration/run-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
