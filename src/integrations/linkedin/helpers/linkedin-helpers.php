@@ -1,16 +1,34 @@
 <?php
 namespace Uncanny_Automator;
 
+/**
+ *
+ */
 class Linkedin_Helpers {
 
+	/**
+	 *
+	 */
 	const API_ENDPOINT = 'v2/linkedin';
 
+	/**
+	 *
+	 */
 	const LINKEDIN_CLIENT = 'automator_linkedin_client';
 
+	/**
+	 *
+	 */
 	const LINKEDIN_CONNECTED_USER = 'automator_linkedin_connected_user';
 
+	/**
+	 *
+	 */
 	const N_DAYS_REFRESH_TOKEN_EXPIRE_NOTICE = 30;
 
+	/**
+	 * @param $hooks_loaded
+	 */
 	public function __construct( $hooks_loaded = true ) {
 
 		if ( $hooks_loaded ) {
@@ -47,6 +65,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	private function capture_tokens() {
 
 		$nonce = automator_filter_input( 'nonce' );
@@ -88,12 +109,18 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return false|mixed
+	 */
 	public function get_client() {
 
 		return automator_get_option( self::LINKEDIN_CLIENT );
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function get_pages() {
 
 		Automator()->utilities->ajax_auth_check();
@@ -161,6 +188,11 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @param $client
+	 *
+	 * @return void
+	 */
 	public function set_connected_user( $client ) {
 
 		try {
@@ -193,6 +225,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_connected_user() {
 
 		$in_record = automator_get_option( self::LINKEDIN_CONNECTED_USER, array() );
@@ -208,6 +243,12 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @param $redirect_url
+	 * @param $args
+	 *
+	 * @return void
+	 */
 	public function redirect( $redirect_url = '', $args = array() ) {
 
 		wp_safe_redirect( add_query_arg( $args, $redirect_url ) );
@@ -216,6 +257,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_settings_url() {
 
 		return add_query_arg(
@@ -230,6 +274,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_authentication_url() {
 
 		$nonce = wp_create_nonce( 'automator_linkedin_auth_nonce' );
@@ -245,6 +292,11 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @param $nonce
+	 *
+	 * @return void
+	 */
 	public function verify_access( $nonce = '' ) {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -269,6 +321,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function disconnect() {
 
 		$this->verify_access( automator_filter_input( 'nonce' ) );
@@ -289,6 +344,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_disconnect_url() {
 
 		return add_query_arg(
@@ -328,6 +386,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function refresh_access_tokens() {
 
 		$n_days = $this->get_access_token_remaining_days();
@@ -338,6 +399,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return false|float|void
+	 */
 	public function get_access_token_remaining_days() {
 
 		$client = automator_get_option( self::LINKEDIN_CLIENT, false );
@@ -354,6 +418,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function fetch_access_tokens() {
 
 		$body = array(
@@ -394,6 +461,12 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @param $response
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
 	public function maybe_throw_exception( $response ) {
 
 		// Okay status. Return.
@@ -422,6 +495,9 @@ class Linkedin_Helpers {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function check_refresh_token_expiration() {
 
 		if ( empty( $this->get_client() ) ) {
@@ -433,18 +509,24 @@ class Linkedin_Helpers {
 		// Also check if there is a live action.
 		if ( $this->is_refresh_token_expiring() && $has_linkedin_live_actions ) {
 
-			add_action( 'admin_notices', array( $this, 'admin_notice_show_reminder' ) );
+			add_action( 'automator_show_internal_admin_notice', array( $this, 'admin_notice_show_reminder' ) );
 
 		}
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_refresh_token_expiring() {
 
 		return $this->get_refresh_token_remaining_days() <= self::N_DAYS_REFRESH_TOKEN_EXPIRE_NOTICE;
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function admin_notice_show_reminder() {
 
 		$days = $this->get_refresh_token_remaining_days();

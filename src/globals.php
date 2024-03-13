@@ -85,6 +85,11 @@ if ( ! defined( 'AUTOMATOR_FREE_STORE_URL' ) ) {
 	define( 'AUTOMATOR_FREE_STORE_URL', 'https://automatorplugin.com/' );
 }
 
+if ( ! defined( 'AUTOMATOR_FREE_LICENSING_URL' ) ) {
+	// URL of store powering the plugin
+	define( 'AUTOMATOR_FREE_LICENSING_URL', 'https://licensing.uncannyowl.com/' );
+}
+
 if ( ! defined( 'AUTOMATOR_API_URL' ) ) {
 	define( 'AUTOMATOR_API_URL', apply_filters( 'automator_api_url', 'https://api.automatorplugin.com/' ) );
 }
@@ -92,6 +97,11 @@ if ( ! defined( 'AUTOMATOR_API_URL' ) ) {
 if ( ! defined( 'AUTOMATOR_FREE_ITEM_NAME' ) ) {
 	// Store download name/title
 	define( 'AUTOMATOR_FREE_ITEM_NAME', 'Uncanny Automator Free Account' );
+}
+
+if ( ! defined( 'AUTOMATOR_FREE_ITEM_ID' ) ) {
+	// Store download name/title
+	define( 'AUTOMATOR_FREE_ITEM_ID', 23718 );
 }
 
 if ( ! defined( 'AUTOMATOR_FREE_STORE_CONNECT_URL' ) ) {

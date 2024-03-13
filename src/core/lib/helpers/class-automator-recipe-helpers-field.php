@@ -21,44 +21,47 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	 * @return mixed|void
 	 */
 	public function create_field( $args = array() ) {
-		$defaults        = array(
-			'option_code'     => 'INT',
-			'label'           => esc_attr__( 'Number', 'uncanny-automator' ),
-			'description'     => '',
-			'placeholder'     => esc_attr__( 'Example: 1', 'uncanny-automator' ),
-			'required'        => true,
-			'input_type'      => 'int',
-			'default'         => '',
-			'token_name'      => '',
-			'min_number'      => null,
-			'max_number'      => null,
-			'supports_tokens' => true,
+		$defaults              = array(
+			'option_code'           => 'INT',
+			'label'                 => esc_attr__( 'Number', 'uncanny-automator' ),
+			'description'           => '',
+			'placeholder'           => esc_attr__( 'Example: 1', 'uncanny-automator' ),
+			'required'              => true,
+			'input_type'            => 'int',
+			'default'               => '',
+			'token_name'            => '',
+			'min_number'            => null,
+			'max_number'            => null,
+			'supports_tokens'       => true,
+			'exclude_default_token' => false,
 		);
-		$args            = wp_parse_args( $args, $defaults );
-		$option_code     = $args['option_code'];
-		$label           = $args['label'];
-		$description     = $args['description'];
-		$placeholder     = $args['placeholder'];
-		$required        = $args['required'];
-		$default         = $args['default'];
-		$token_name      = $args['token_name'];
-		$supports_tokens = $args['supports_tokens'];
-		$input_type      = $args['input_type'];
-		$min_number      = $args['min_number'];
-		$max_number      = $args['max_number'];
+		$args                  = wp_parse_args( $args, $defaults );
+		$option_code           = $args['option_code'];
+		$label                 = $args['label'];
+		$description           = $args['description'];
+		$placeholder           = $args['placeholder'];
+		$required              = $args['required'];
+		$default               = $args['default'];
+		$token_name            = $args['token_name'];
+		$supports_tokens       = $args['supports_tokens'];
+		$input_type            = $args['input_type'];
+		$min_number            = $args['min_number'];
+		$max_number            = $args['max_number'];
+		$exclude_default_token = $args['exclude_default_token'];
 
 		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'description'     => $description,
-			'placeholder'     => $placeholder,
-			'input_type'      => $input_type,
-			'required'        => $required,
-			'default_value'   => $default,
-			'token_name'      => $token_name,
-			'supports_tokens' => $supports_tokens,
-			'min_number'      => $min_number,
-			'max_number'      => $max_number,
+			'option_code'           => $option_code,
+			'label'                 => $label,
+			'description'           => $description,
+			'placeholder'           => $placeholder,
+			'input_type'            => $input_type,
+			'required'              => $required,
+			'default_value'         => $default,
+			'token_name'            => $token_name,
+			'supports_tokens'       => $supports_tokens,
+			'min_number'            => $min_number,
+			'max_number'            => $max_number,
+			'exclude_default_token' => $exclude_default_token,
 		);
 
 		return apply_filters( 'automator_option_' . strtolower( $option_code ) . '_field', $option, $args );
@@ -73,17 +76,18 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	public function int( $args = array() ) {
 
 		$defaults = array(
-			'option_code'     => 'INT',
-			'label'           => esc_attr__( 'Number', 'uncanny-automator' ),
-			'description'     => '',
-			'placeholder'     => esc_attr__( 'Example: 1', 'uncanny-automator' ),
-			'required'        => true,
-			'input_type'      => 'int',
-			'default'         => '',
-			'token_name'      => '',
-			'min_number'      => null,
-			'max_number'      => null,
-			'supports_tokens' => true,
+			'option_code'           => 'INT',
+			'label'                 => esc_attr__( 'Number', 'uncanny-automator' ),
+			'description'           => '',
+			'placeholder'           => esc_attr__( 'Example: 1', 'uncanny-automator' ),
+			'required'              => true,
+			'input_type'            => 'int',
+			'default'               => '',
+			'token_name'            => '',
+			'min_number'            => null,
+			'max_number'            => null,
+			'supports_tokens'       => true,
+			'exclude_default_token' => false,
 		);
 		$args     = wp_parse_args( $args, $defaults );
 
@@ -125,17 +129,18 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	 */
 	public function float( $args = array() ) {
 		$defaults = array(
-			'option_code'     => 'FLOAT',
-			'label'           => esc_attr__( 'Number', 'uncanny-automator' ),
-			'description'     => '',
-			'placeholder'     => esc_attr__( 'Example: 1.1', 'uncanny-automator' ),
-			'required'        => true,
-			'input_type'      => 'float',
-			'default'         => '',
-			'token_name'      => '',
-			'min_number'      => null,
-			'max_number'      => null,
-			'supports_tokens' => true,
+			'option_code'           => 'FLOAT',
+			'label'                 => esc_attr__( 'Number', 'uncanny-automator' ),
+			'description'           => '',
+			'placeholder'           => esc_attr__( 'Example: 1.1', 'uncanny-automator' ),
+			'required'              => true,
+			'input_type'            => 'float',
+			'default'               => '',
+			'token_name'            => '',
+			'min_number'            => null,
+			'max_number'            => null,
+			'supports_tokens'       => true,
+			'exclude_default_token' => false,
 		);
 		$args     = wp_parse_args( $args, $defaults );
 
@@ -176,6 +181,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	 * @return mixed|void
 	 */
 	public function text( $args = array() ) {
+
 		$defaults = array(
 			'option_code'               => 'TEXT',
 			'input_type'                => 'text',
@@ -194,6 +200,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'token_name'                => '',
 			'read_only'                 => false,
 			'is_hidden'                 => false,
+			'exclude_default_token'     => false,
 		);
 
 		$args                      = wp_parse_args( $args, $defaults );
@@ -214,6 +221,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$max_number                = $args['max_number'];
 		$read_only                 = $args['read_only'];
 		$is_hidden                 = $args['is_hidden'];
+		$exclude_default_token     = $args['exclude_default_token'];
 
 		$option = array(
 			'option_code'               => $option_code,
@@ -233,6 +241,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'show_label_in_sentence'    => $show_label_in_sentence,
 			'read_only'                 => $read_only,
 			'is_hidden'                 => $is_hidden,
+			'exclude_default_token'     => $exclude_default_token,
 		);
 
 		// Enable TinyMCE by default for all textarea fields unless other specified
@@ -421,6 +430,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'endpoint'                 => null,
 			'token_name'               => '',
 			'options_show_id'          => apply_filters( 'automator_options_show_id', true, $this ),
+			'exclude_default_token'    => false,
 		);
 		$args                     = wp_parse_args( $args, $defaults );
 		$option_code              = $args['option_code'];
@@ -435,6 +445,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$relevant_tokens          = $args['relevant_tokens'];
 		$token_name               = $args['token_name'];
 		$options_show_id          = $args['options_show_id'];
+		$exclude_default_token    = $args['exclude_default_token'];
 
 		$option = array(
 			'option_code'              => $option_code,
@@ -449,6 +460,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'relevant_tokens'          => $relevant_tokens,
 			'token_name'               => $token_name,
 			'options_show_id'          => $options_show_id,
+			'exclude_default_token'    => $exclude_default_token,
 		);
 
 		// TODO:: add keys optionally

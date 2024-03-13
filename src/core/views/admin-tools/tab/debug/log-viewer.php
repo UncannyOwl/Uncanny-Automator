@@ -33,7 +33,13 @@
 	<div class="uap-settings-panel-top">
 
 		<div class="uap-settings-panel-title uap-spacing-bottom">
-			<?php echo esc_html( automator_filter_input( 'debug' ) ); ?>
+			<?php
+			$file_path          = UA_DEBUG_LOGS_DIR . automator_filter_input( 'debug' ); // Adjust the path as necessary
+			$file_size_in_bytes = filesize( $file_path );
+			$file_size_in_mb    = round( $file_size_in_bytes / 1024 / 1024, 2 ); // Convert to MB and round to 2 decimal places
+
+			echo esc_html( automator_filter_input( 'debug' ) ) . " ({$file_size_in_mb} MB)";
+			?>
 		</div>
 
 		<?php if ( empty( $this->get_requested_log() ) ) { ?>
@@ -64,8 +70,8 @@
 			?>
 
 		<div class="uap-settings-panel-bottom-left">
-		
-			<uo-button 
+
+			<uo-button
 				color="danger"
 				href="<?php echo esc_url_raw( $url ); ?>"
 				needs-confirmation

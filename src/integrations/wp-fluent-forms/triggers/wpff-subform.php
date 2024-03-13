@@ -58,6 +58,7 @@ class WPFF_SUBFORM {
 		Automator()->register->trigger( $trigger );
 	}
 
+
 	/**
 	 * @return array[]
 	 */
@@ -101,52 +102,56 @@ class WPFF_SUBFORM {
 		$entry_data = json_decode( $insert_data['response'], true );
 
 		if ( ! empty( $matches ) ) {
-			foreach ( $matches as $recipe_id => $match ) {
-				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					$args = array(
-						'code'            => $this->trigger_code,
-						'meta'            => $this->trigger_meta,
-						'meta_key'        => $this->trigger_meta,
-						'recipe_to_match' => $recipe_id,
-						'ignore_post_id'  => true,
-						'user_id'         => $user_id,
-					);
+			foreach ( $matches as $trigger_id => $recipe_id ) {
 
-					$result = Automator()->maybe_add_trigger_entry( $args, false );
+				if ( Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
+					continue;
+				}
 
-					if ( $result ) {
-						foreach ( $result as $r ) {
-							if ( true === $r['result'] ) {
-								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-									//Saving form values in trigger log meta for token parsing!
-									$wp_ff_args = array(
-										'trigger_id'     => (int) $r['args']['trigger_id'],
-										'user_id'        => $user_id,
-										'trigger_log_id' => $r['args']['get_trigger_id'],
-										'run_number'     => $r['args']['run_number'],
-									);
+				$args = array(
+					'code'             => $this->trigger_code,
+					'meta'             => $this->trigger_meta,
+					'meta_key'         => $this->trigger_meta,
+					'recipe_to_match'  => $recipe_id,
+					'trigger_to_match' => $trigger_id,
+					'ignore_post_id'   => true,
+					'user_id'          => $user_id,
+				);
 
-									$wp_ff_args['meta_key'] = $this->trigger_meta;
-									Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
+				$result = Automator()->maybe_add_trigger_entry( $args, false );
 
-									$wp_ff_args['meta_key']   = 'WPFFENTRYID';
-									$wp_ff_args['meta_value'] = $insert_data['serial_number'];
-									Automator()->insert_trigger_meta( $wp_ff_args );
+				if ( $result ) {
+					foreach ( $result as $r ) {
+						if ( true === $r['result'] ) {
+							if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
+								//Saving form values in trigger log meta for token parsing!
+								$wp_ff_args = array(
+									'trigger_id'     => (int) $r['args']['trigger_id'],
+									'user_id'        => $user_id,
+									'trigger_log_id' => $r['args']['get_trigger_id'],
+									'run_number'     => $r['args']['run_number'],
+								);
 
-									$wp_ff_args['meta_key']   = 'WPFFENTRYIP';
-									$wp_ff_args['meta_value'] = $insert_data['ip'];
-									Automator()->insert_trigger_meta( $wp_ff_args );
+								$wp_ff_args['meta_key'] = $this->trigger_meta;
+								Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
 
-									$wp_ff_args['meta_key']   = 'WPFFENTRYSOURCEURL';
-									$wp_ff_args['meta_value'] = $insert_data['source_url'];
-									Automator()->insert_trigger_meta( $wp_ff_args );
+								$wp_ff_args['meta_key']   = 'WPFFENTRYID';
+								$wp_ff_args['meta_value'] = $insert_data['serial_number'];
+								Automator()->insert_trigger_meta( $wp_ff_args );
 
-									$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
-									$wp_ff_args['meta_value'] = maybe_serialize( date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
-									Automator()->insert_trigger_meta( $wp_ff_args );
+								$wp_ff_args['meta_key']   = 'WPFFENTRYIP';
+								$wp_ff_args['meta_value'] = $insert_data['ip'];
+								Automator()->insert_trigger_meta( $wp_ff_args );
 
-									Automator()->maybe_add_trigger_entry( $args );
-								}
+								$wp_ff_args['meta_key']   = 'WPFFENTRYSOURCEURL';
+								$wp_ff_args['meta_value'] = $insert_data['source_url'];
+								Automator()->insert_trigger_meta( $wp_ff_args );
+
+								$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
+								$wp_ff_args['meta_value'] = maybe_serialize( date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
+								Automator()->insert_trigger_meta( $wp_ff_args );
+
+								Automator()->maybe_trigger_complete( $r['args'] );
 							}
 						}
 					}
@@ -181,9 +186,7 @@ class WPFF_SUBFORM {
 					&& isset( $trigger['meta']['WPFFFORMS'] ) && ! empty( $trigger['meta']['WPFFFORMS'] )
 					&& ( (int) $form_data->id === (int) $trigger['meta']['WPFFFORMS'] || '-1' === $trigger['meta']['WPFFFORMS'] )
 				) {
-					$matches[ $recipe['ID'] ] = array(
-						'recipe_id' => $recipe['ID'],
-					);
+					$matches[ $trigger['ID'] ] = $recipe['ID'];
 				}
 			}
 		}

@@ -34,6 +34,9 @@ class Automator_Notifications {
 	 */
 	public $option_name = 'automator_notifications';
 
+	/**
+	 *
+	 */
 	public function __construct() {
 
 		if ( defined( 'AUTOMATOR_NOTIFICATIONS_SOURCE_URL' ) ) {
@@ -90,7 +93,7 @@ class Automator_Notifications {
 						);
 						// Enqueue uap-admin.
 						wp_enqueue_script( 'uap-admin' );
-						add_action( 'admin_notices', array( $this, 'show_notifications' ) );
+						add_action( 'automator_show_internal_admin_notice', array( $this, 'show_notifications' ) );
 					}
 				},
 				10
@@ -597,6 +600,9 @@ class Automator_Notifications {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function show_notifications() {
 
 		$notifications = $this->get_active_notifications();
@@ -616,6 +622,9 @@ class Automator_Notifications {
 
 	}
 
+	/**
+	 * @return false|string
+	 */
 	public function get_license_type() {
 
 		return Api_Server::get_license_type();

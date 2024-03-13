@@ -45,7 +45,7 @@ class Activity_Log {
 		// Clear recipe run / activity logs
 		add_action( 'admin_init', array( $this, 'remove_specific_run' ), 999 );
 		add_action( 'admin_init', array( $this, 'remove_specific_recipe_runs' ), 999 );
-		add_action( 'admin_notices', array( $this, 'recipe_run_cleared' ) );
+		add_action( 'automator_show_internal_admin_notice', array( $this, 'recipe_run_cleared' ) );
 		add_filter( 'post_row_actions', array( $this, 'add_delete_recipe_run_row' ), 10, 2 );
 	}
 

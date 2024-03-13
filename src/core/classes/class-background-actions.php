@@ -45,7 +45,7 @@ class Background_Actions {
 		add_action( 'rest_api_init', array( $this, 'register_rest_endpoint' ) );
 
 		//The priority is important here. We need to make sure we run this filter after scheduling the actions
-		add_filter( 'automator_before_action_executed', array( $this, 'maybe_send_to_background' ), 200 );
+		add_filter( 'automator_before_action_executed', array( $this, 'maybe_send_to_background' ), 200, 2 );
 
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action( 'automator_settings_advanced_tab_view', array( $this, 'settings_output' ) );
@@ -140,7 +140,7 @@ class Background_Actions {
 	 *
 	 * @return array
 	 */
-	public function maybe_send_to_background( $action ) {
+	public function maybe_send_to_background( $action, $args = array() ) {
 
 		$this->action      = $action;
 		$this->action_code = $this->get_action_code( $action );

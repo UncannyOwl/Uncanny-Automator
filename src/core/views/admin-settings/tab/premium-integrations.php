@@ -23,26 +23,8 @@ namespace Uncanny_Automator;
 
 ?>
 
-<style>
-
-/**
- * Highlight "App integrations" menu instead of "Settings" menu
- * when users visit uncanny-automator-app-integrations page
- */
-#adminmenu .menu-icon-uo-recipe + .wp-submenu li.current a {
-	color: rgba(240, 246, 252, 0.7);
-	font-weight: 400;
-
-}
-#adminmenu .menu-icon-uo-recipe + .wp-submenu a[href$="page=uncanny-automator-app-integrations"] {
-	color: #fff !important;
-	font-weight: 600 !important;
-}
-
-</style>
-
-<uo-tabs 
-	direction="column" 
+<uo-tabs
+	direction="column"
 	parameter="integration"
 	order="title"
 >

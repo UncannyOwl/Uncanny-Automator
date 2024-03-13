@@ -438,14 +438,12 @@ class Google_Sheet_Helpers {
 
 		// Bailout if no message from api.
 		if ( empty( $api_message ) ) {
-
 			return;
-
 		}
 
 		$error_google_sheet_url = 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=' . $this->setting_tab . '&integration=google-sheet';
 
-		$secret = get_transient( 'automator_api_google_authorize_nonce' );
+		$secret = automator_filter_input( 'nonce' );
 
 		$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, $secret );
 
@@ -1317,17 +1315,17 @@ class Google_Sheet_Helpers {
 	 * Method api_update_row
 	 *
 	 * @param  mixed $spreadsheet_id
-	 * @param  mixed $range
+	 * @param  mixed $ranges
 	 * @param  mixed $row_values
 	 * @return void
 	 */
-	public function api_update_row( $spreadsheet_id, $range, $row_values, $action = null ) {
+	public function api_update_row( $spreadsheet_id, $ranges, $row_values, $action = null ) {
 
 		$values = wp_json_encode( array( $row_values ) );
 
 		$body = array(
-			'action'         => 'update_row',
-			'range'          => $range,
+			'action'         => 'update_row_multiple',
+			'range'          => $ranges,
 			'spreadsheet_id' => $spreadsheet_id,
 			'values'         => $values,
 		);

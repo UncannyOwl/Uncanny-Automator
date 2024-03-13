@@ -1050,7 +1050,7 @@ class Active_Campaign_Helpers {
 
 				if ( ! empty( $custom_field['options'] ) ) {
 					foreach ( $custom_field['options'] as $option ) {
-						$options[ $option->label ] = $option->label;
+						$options[ $option['label'] ] = $option['value'];
 					}
 				}
 
@@ -1119,8 +1119,10 @@ class Active_Campaign_Helpers {
 				}
 			}
 
+			$is_delete = '[delete]' === trim( $value );
+
 			// Format datetime to ISO.
-			if ( 'datetime' === $type ) {
+			if ( 'datetime' === $type && ! empty( $value ) && ! $is_delete ) {
 
 				// Set the timezone to user's timezone in WordPress.
 				$date_tz = new \DateTime( $value, new \DateTimeZone( Automator()->get_timezone_string() ) );
@@ -1135,7 +1137,7 @@ class Active_Campaign_Helpers {
 			// For list.
 			if ( 'listbox' === $type || 'checkbox' === $type ) {
 				$decoded_json = json_decode( $value );
-				if ( ! empty( $decoded_json ) ) {
+				if ( ! empty( $decoded_json ) && ! $is_delete ) {
 					$value = '||' . implode( '||', $decoded_json ) . '||';
 				}
 			}
@@ -1149,6 +1151,38 @@ class Active_Campaign_Helpers {
 
 		return $custom_fields;
 
+	}
+
+	/**
+	 * Filter Add Contact API Body.
+	 *
+	 * @param array $body
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function filter_add_contact_api_body( $body, $args ) {
+
+		$body = apply_filters( 'automator_active_campaign_add_contact_api_body', $body, $args );
+
+		// Clear out [delete] property values.
+		foreach ( $body as $key => $value ) {
+			if ( 'fields' === $key ) {
+				foreach ( $value as $i => $field ) {
+					$body[ $key ][ $i ] = $field;
+					if ( '[delete]' === trim( $field['value'] ) ) {
+						$body[ $key ][ $i ]['value'] = '';
+					}
+				}
+				$body[ $key ] = wp_json_encode( $body[ $key ] );
+				continue;
+			}
+			if ( '[delete]' === trim( $value ) ) {
+				$body[ $key ] = '';
+			}
+		}
+
+		return $body;
 	}
 
 	/**

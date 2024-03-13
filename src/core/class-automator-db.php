@@ -679,6 +679,23 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	}
 
 	/**
+	 * Purges a specific table.
+	 *
+	 * @param string $table_name
+	 *
+	 * @return void
+	 */
+	public static function empty_table( $table_name = '' ) {
+
+		global $wpdb;
+
+		$prefixed_tb_name = $wpdb->prefix . $table_name;
+
+		return $wpdb->query( "TRUNCATE `$prefixed_tb_name`" );
+
+	}
+
+	/**
 	 * Drops the selected view.
 	 *
 	 * @param string $view_name The name of the view.

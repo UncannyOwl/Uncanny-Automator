@@ -556,7 +556,7 @@ class Api_Server {
 			'endpoint'      => $params['endpoint'],
 			'params'        => maybe_serialize( $params ),
 			'request'       => maybe_serialize( $request ),
-			'response'      => maybe_serialize( $response ),
+			'response'      => maybe_serialize( apply_filters( 'automator_log_api_responses', false, $response ) ),
 			'balance'       => isset( $credits['balance'] ) ? $credits['balance'] : null,
 			'price'         => isset( $credits['price'] ) ? $credits['price'] : null,
 			'status'        => $this->get_response_code( $response ),
@@ -691,6 +691,7 @@ class Api_Server {
 		$license_key = self::get_license_key();
 
 		if ( false === $license_key ) {
+			self::set_connection_error_message( 'Unable to fetch the license key.' );
 			return false;
 		}
 
@@ -698,9 +699,24 @@ class Api_Server {
 			return self::get_license();
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
+			self::set_connection_error_message( 'API error exception: ' . $e->getCode() . ' ' . $e->getMessage() );
+			return false;
 		}
 
+		self::set_connection_error_message( 'An error has occured while connecting. Please try again later.' );
 		return false;
+	}
+
+	/**
+	 * Sets an error message for one minute that can be shown in the front-end.
+	 *
+	 * @param string $error_message
+	 * @return void
+	 */
+	public static function set_connection_error_message( $error_message ) {
+
+		set_transient( 'automator_setup_wizard_error', $error_message, MINUTE_IN_SECONDS );
+
 	}
 }
 

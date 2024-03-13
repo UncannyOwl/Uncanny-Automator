@@ -166,6 +166,11 @@ class SHEET_UPDATERECORD {
 						'hide_actions'      => true,
 						'can_sort_rows'     => false,
 					),
+					array(
+						'option_code' => 'UPDATE_MULTIPLE_ROWS',
+						'input_type'  => 'checkbox',
+						'label'       => __( 'If multiple matches are found, update all matching rows instead of the first matching row only.', 'uncanny-automator' ),
+					),
 				),
 			),
 		);
@@ -555,12 +560,13 @@ class SHEET_UPDATERECORD {
 	 */
 	public function update_row_google_sheet( $user_id, $action_data, $recipe_id, $args ) {
 
-		$gs_spreadsheet     = $action_data['meta']['GSSPREADSHEET'];
-		$gs_worksheet       = $action_data['meta']['GSWORKSHEET'];
-		$lookup_field       = $action_data['meta']['GSWORKSHEETCOLUMN'];
-		$lookup_field_value = Automator()->parse->text( $action_data['meta']['GSWORKSHEET_SOURCE_VALUE'], $recipe_id, $user_id, $args );
-		$worksheet_field    = $action_data['meta']['WORKSHEET_FIELDS'];
-		$fields             = json_decode( $worksheet_field, true );
+		$gs_spreadsheet       = $action_data['meta']['GSSPREADSHEET'];
+		$gs_worksheet         = $action_data['meta']['GSWORKSHEET'];
+		$lookup_field         = $action_data['meta']['GSWORKSHEETCOLUMN'];
+		$update_multiple_rows = $action_data['meta']['UPDATE_MULTIPLE_ROWS'];
+		$lookup_field_value   = Automator()->parse->text( $action_data['meta']['GSWORKSHEET_SOURCE_VALUE'], $recipe_id, $user_id, $args );
+		$worksheet_field      = $action_data['meta']['WORKSHEET_FIELDS'];
+		$fields               = json_decode( $worksheet_field, true );
 
 		$key_values      = array();
 		$check_all_empty = true;
@@ -601,7 +607,7 @@ class SHEET_UPDATERECORD {
 				$existing_rows[ $range_values['data']['range'] ] = $range_values['data']['values'];
 			}
 
-			$matched_range = $this->match_range( $existing_rows, $sheet, $selected_column_range, $lookup_field_value );
+			$matched_ranges = $this->match_ranges( $existing_rows, $sheet, $selected_column_range, $lookup_field_value, $update_multiple_rows );
 
 			$row_values = array();
 
@@ -618,7 +624,7 @@ class SHEET_UPDATERECORD {
 
 			}
 
-			$response = $helper->api_update_row( $gs_spreadsheet, $matched_range, $row_values, $action_data );
+			$response = $helper->api_update_row( $gs_spreadsheet, $matched_ranges, $row_values, $action_data );
 
 			// Complete the action if there are no issues.
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
@@ -640,23 +646,26 @@ class SHEET_UPDATERECORD {
 	 * @param  mixed $sheet
 	 * @param  mixed $selected_column_range
 	 * @param  mixed $lookup_field_value
+	 * @param  string $update_multiple_rows
 	 * @return void
 	 */
-	public function match_range( $existing_rows, $sheet, $selected_column_range, $lookup_field_value ) {
+	public function match_ranges( $existing_rows, $sheet, $selected_column_range, $lookup_field_value, $update_multiple_rows ) {
 
-		$done_lookup   = false;
-		$matched_range = false;
-		$i             = 0;
+		$done_lookup    = false;
+		$matched_ranges = array();
+		$i              = 0;
 
 		foreach ( $existing_rows as $range => $sheet_rows ) {
 			$j = 1;
 			foreach ( $sheet_rows as $existing_row_value ) {
 				$value = array_shift( $existing_row_value );
 				// The field value that we are matching against.
-
 				if ( $lookup_field_value === $value ) {
-					$done_lookup = true;
-					break;
+					$matched_ranges[] = $sheet . '!A' . ( $j + 1 );
+					if ( 'false' === $update_multiple_rows && $lookup_field_value === $value ) {
+						$done_lookup = true;
+						break;
+					}
 				}
 				$j ++;
 			}
@@ -668,7 +677,7 @@ class SHEET_UPDATERECORD {
 			}
 		}
 
-		if ( empty( $matched_range ) ) {
+		if ( empty( $matched_ranges ) ) {
 			// Complete with error if no cell value matches the lookup value.
 			$error_message = sprintf(
 				esc_html__( "Notice: No cell values matches with '%1\$s' under '%2\$s' column in Sheet: '%3\$s'.", 'uncanny-automator' ),
@@ -680,7 +689,7 @@ class SHEET_UPDATERECORD {
 			throw new \Exception( $error_message );
 		}
 
-		return $matched_range;
+		return $matched_ranges;
 	}
 
 	/**
@@ -690,7 +699,6 @@ class SHEET_UPDATERECORD {
 	 */
 	protected function complete_with_errors( $user_id, $action_data, $recipe_id, $error_message ) {
 
-		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );

@@ -86,14 +86,25 @@ class Thrive_Leads_Helpers {
 	 * @return int[]|\WP_Post[]
 	 */
 	public function get_thrive_leads( $form_id = null ) {
-		return get_posts(
-			array(
-				'post_type'      => '_tcb_form_settings',
-				'fields'         => 'id=>parent',
-				'posts_per_page' => 99999,
-				'post_status'    => 'any',
-				'post_parent'    => $form_id,
-			)
+		$lead_args = array(
+			'post_type'      => '_tcb_form_settings',
+			'posts_per_page' => 99999, //phpcs:ignore
+			'post_status'    => 'any',
 		);
+
+		if ( is_numeric( $form_id ) ) {
+			$lead_args['post_parent'] = $form_id;
+		}
+
+		$leads  = get_posts( $lead_args );
+		$return = array();
+
+		if ( $leads ) {
+			foreach ( $leads as $l ) {
+				$return[ $l->ID ] = $l->post_parent;
+			}
+		}
+
+		return $return;
 	}
 }

@@ -18,11 +18,6 @@ class Google_Contacts_Helpers {
 	const AUTH_NONCE_KEY = 'automator_api_google_contacts_authorize';
 
 	/**
-	 * @var string AUTH_TRANSIENT_KEY
-	 */
-	const AUTH_TRANSIENT_KEY = 'automator_api_google_contacts_authorize_nonce';
-
-	/**
 	 * @var string RESOURCE_OWNER_KEY
 	 */
 	const RESOURCE_OWNER_KEY = 'automator_api_google_contacts_resource_owner_transient';
@@ -55,7 +50,6 @@ class Google_Contacts_Helpers {
 
 		delete_option( self::OPTION_KEY );
 		delete_transient( self::RESOURCE_OWNER_KEY );
-		delete_transient( self::AUTH_TRANSIENT_KEY );
 
 		return true;
 
@@ -79,7 +73,7 @@ class Google_Contacts_Helpers {
 		// Persist connection if okay.
 		$is_connected = $this->auth_persist_connection(
 			automator_filter_input( 'automator_api_message' ),
-			get_transient( self::AUTH_TRANSIENT_KEY )
+			automator_filter_input( 'nonce' ),
 		);
 
 		if ( $is_connected ) {

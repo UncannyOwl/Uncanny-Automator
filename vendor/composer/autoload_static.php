@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
+class ComposerStaticInitaefaab42ca013da6d1e9e8158c1118b3
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -306,6 +306,7 @@ class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
         'Uncanny_Automator\\BDB_ACTIVITYSTRM' => __DIR__ . '/../..' . '/src/integrations/buddyboss/triggers/bdb-activitystrm.php',
         'Uncanny_Automator\\BDB_ADDTOGROUP' => __DIR__ . '/../..' . '/src/integrations/buddyboss/actions/bdb-addtogroup.php',
         'Uncanny_Automator\\BDB_NEWTOPIC' => __DIR__ . '/../..' . '/src/integrations/buddyboss/triggers/bdb-newtopic.php',
+        'Uncanny_Automator\\BDB_Register_Universal_Tokens' => __DIR__ . '/../..' . '/src/integrations/buddyboss/tokens/bdb-register-universal-tokens.php',
         'Uncanny_Automator\\BDB_SETUSERSTATUS' => __DIR__ . '/../..' . '/src/integrations/buddyboss/actions/bdb-setuserstatus.php',
         'Uncanny_Automator\\BDB_USERACCEPTFRIENDREQUEST' => __DIR__ . '/../..' . '/src/integrations/buddyboss/triggers/bdb-useracceptfriendrequest.php',
         'Uncanny_Automator\\BDB_USERNEWFOLLOWER' => __DIR__ . '/../..' . '/src/integrations/buddyboss/triggers/bdb-usernewfollower.php',
@@ -314,16 +315,19 @@ class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
         'Uncanny_Automator\\BDB_USERSENTINVITE' => __DIR__ . '/../..' . '/src/integrations/buddyboss/triggers/bdb-usersentinvite.php',
         'Uncanny_Automator\\BDB_USERUPDATEAVATAR' => __DIR__ . '/../..' . '/src/integrations/buddyboss/triggers/bdb-userupdateavatar.php',
         'Uncanny_Automator\\BDB_USERUPDATEPROFILE' => __DIR__ . '/../..' . '/src/integrations/buddyboss/triggers/bdb-userupdateprofile.php',
+        'Uncanny_Automator\\BDB_Universal_Token' => __DIR__ . '/../..' . '/src/integrations/buddyboss/tokens/bdb-universal-token.php',
         'Uncanny_Automator\\BO_AWARDACHIEVEMENT_A' => __DIR__ . '/../..' . '/src/integrations/badgeos/actions/bo-awardachievement-a.php',
         'Uncanny_Automator\\BO_AWARDPOINTS_A' => __DIR__ . '/../..' . '/src/integrations/badgeos/actions/bo-awardpoints-a.php',
         'Uncanny_Automator\\BO_AWARDRANK_A' => __DIR__ . '/../..' . '/src/integrations/badgeos/actions/bo-awardrank-a.php',
         'Uncanny_Automator\\BP_ACCACTIVATE' => __DIR__ . '/../..' . '/src/integrations/buddypress/triggers/bp-accactivate.php',
         'Uncanny_Automator\\BP_ACTIVITYSTRM' => __DIR__ . '/../..' . '/src/integrations/buddypress/triggers/bp-activitystrm.php',
         'Uncanny_Automator\\BP_ADDTOGROUP' => __DIR__ . '/../..' . '/src/integrations/buddypress/actions/bp-addtogroup.php',
+        'Uncanny_Automator\\BP_Register_Universal_Tokens' => __DIR__ . '/../..' . '/src/integrations/buddypress/tokens/bp-register-universal-tokens.php',
         'Uncanny_Automator\\BP_USERACCEPTFRIENDREQUEST' => __DIR__ . '/../..' . '/src/integrations/buddypress/triggers/bp-useracceptfriendrequest.php',
         'Uncanny_Automator\\BP_USERSENDSFRIENDREQUEST' => __DIR__ . '/../..' . '/src/integrations/buddypress/triggers/bp-usersendsfriendrequest.php',
         'Uncanny_Automator\\BP_USERUPDATEAVATAR' => __DIR__ . '/../..' . '/src/integrations/buddypress/triggers/bp-userupdateavatar.php',
         'Uncanny_Automator\\BP_USERUPDATEPROFILE' => __DIR__ . '/../..' . '/src/integrations/buddypress/triggers/bp-userupdateprofile.php',
+        'Uncanny_Automator\\BP_Universal_Token' => __DIR__ . '/../..' . '/src/integrations/buddypress/tokens/bp-universal-token.php',
         'Uncanny_Automator\\Background_Actions' => __DIR__ . '/../..' . '/src/core/classes/class-background-actions.php',
         'Uncanny_Automator\\Badgeos_Helpers' => __DIR__ . '/../..' . '/src/integrations/badgeos/helpers/badgeos-helpers.php',
         'Uncanny_Automator\\Badgeos_Tokens' => __DIR__ . '/../..' . '/src/integrations/badgeos/tokens/badgeos-tokens.php',
@@ -598,6 +602,11 @@ class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\WC_BOOKINGS_ANON_BOOKING_CREATED' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/triggers/wc-bookings-anon-booking-created.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Wc_Bookings_Helpers' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Woocommerce_Bookings_Integration' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/woocommerce-bookings-integration.php',
+        'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_ADD_REPLY_TO_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php',
+        'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_USER_POST_RECEIVES_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/triggers/wp-discuz-user-post-receives-comment.php',
+        'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_USER_SUBMITS_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/triggers/wp-discuz-user-submits-comment.php',
+        'Uncanny_Automator\\Integrations\\Wp_Discuz\\Wp_Discuz_Helpers' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/helpers/wp-discuz-helpers.php',
+        'Uncanny_Automator\\Integrations\\Wp_Discuz\\Wp_Discuz_Integration' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/wp-discuz-integration.php',
         'Uncanny_Automator\\Integromat_Helpers' => __DIR__ . '/../..' . '/src/integrations/integromat/helpers/integromat-helpers.php',
         'Uncanny_Automator\\JETCRM_COMPANY_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-company-created.php',
         'Uncanny_Automator\\JETCRM_CONTACT_CREATED' => __DIR__ . '/../..' . '/src/integrations/jet-crm/triggers/jetcrm-contact-created.php',
@@ -802,6 +811,7 @@ class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
         'Uncanny_Automator\\STUDIOCART_USERORDERREFUNDED' => __DIR__ . '/../..' . '/src/integrations/studiocart/triggers/studiocart-userorderrefunded.php',
         'Uncanny_Automator\\STUDIOCART_USERPURCHASESPRODUCT' => __DIR__ . '/../..' . '/src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php',
         'Uncanny_Automator\\SURECART_ORDER_CONFIRMED' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-order-confirmed.php',
+        'Uncanny_Automator\\SURECART_ORDER_SHIPPED' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-order-shipped.php',
         'Uncanny_Automator\\SURECART_PURCHASE_PRODUCT' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-purchase-product.php',
         'Uncanny_Automator\\Seedprod_Helpers' => __DIR__ . '/../..' . '/src/integrations/seedprod/helpers/seedprod-helpers.php',
         'Uncanny_Automator\\Services\\Email_Tester\\Email_Sender' => __DIR__ . '/../..' . '/src/core/services/email-tester/email-tester.php',
@@ -846,6 +856,7 @@ class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
         'Uncanny_Automator\\Studiocart_Tokens' => __DIR__ . '/../..' . '/src/integrations/studiocart/tokens/studiocart-tokens.php',
         'Uncanny_Automator\\SureCart_Helpers' => __DIR__ . '/../..' . '/src/integrations/surecart/helpers/surecart-helpers.php',
         'Uncanny_Automator\\SureCart_Tokens' => __DIR__ . '/../..' . '/src/integrations/surecart/tokens/surecart-tokens.php',
+        'Uncanny_Automator\\SureCart_Tokens_New_Framework' => __DIR__ . '/../..' . '/src/integrations/surecart/tokens/surecart-tokens-new-framework.php',
         'Uncanny_Automator\\TELEGRAM_MESSAGE_RECEIVED' => __DIR__ . '/../..' . '/src/integrations/telegram/triggers/telegram-message-received.php',
         'Uncanny_Automator\\TELEGRAM_SEND_MESSAGE' => __DIR__ . '/../..' . '/src/integrations/telegram/actions/telegram-send-message.php',
         'Uncanny_Automator\\THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED' => __DIR__ . '/../..' . '/src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php',
@@ -1003,6 +1014,7 @@ class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
         'Uncanny_Automator\\WP_ADDROLE' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-addrole.php',
         'Uncanny_Automator\\WP_ADD_REPLY_TO_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-add-reply-to-comment.php',
         'Uncanny_Automator\\WP_ANON_UPDATES_POST' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-anon-updates-post.php',
+        'Uncanny_Automator\\WP_CHANGE_POST_TYPE' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-change-post-type.php',
         'Uncanny_Automator\\WP_CREATEPOST' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-createpost.php',
         'Uncanny_Automator\\WP_ERASE_PERSONAL_USER_DATA' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-erase-personal-user-data.php',
         'Uncanny_Automator\\WP_LOGIN' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-login.php',
@@ -1095,10 +1107,10 @@ class ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit6d2c0b9f16ee4b61a784e005e48a4465::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitaefaab42ca013da6d1e9e8158c1118b3::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitaefaab42ca013da6d1e9e8158c1118b3::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitaefaab42ca013da6d1e9e8158c1118b3::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitaefaab42ca013da6d1e9e8158c1118b3::$classMap;
 
         }, null, ClassLoader::class);
     }

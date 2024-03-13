@@ -57,6 +57,8 @@ class Pmp_Tokens {
 		$billing_amount  = $membership_level_details->billing_amount;
 		$billing_start   = $membership_level_details->startdate;
 		$billing_end     = $membership_level_details->enddate;
+		$initial_amount  = $membership_level_details->initial_payment;
+
 		global $wpdb;
 		$code = $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM $wpdb->pmpro_discount_codes WHERE id = %d", $code_id ) );
 
@@ -66,6 +68,7 @@ class Pmp_Tokens {
 			$meta . '_USER_ID'             => $user_id,
 			$meta . '_DISCOUNT_CODE'       => $code,
 			$meta . '_DISCOUNT_CODE_ID'    => $code_id,
+			$meta . '_INITIAL_AMOUNT'      => $initial_amount,
 			$meta . '_SUBSCRIPTION_ID'     => $subscription_id,
 			$meta . '_SUBSCRIPTION_AMOUNT' => $billing_amount,
 			$meta . '_SUBSCRIPTION_PERIOD' => $billing_period,

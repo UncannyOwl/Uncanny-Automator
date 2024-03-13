@@ -92,7 +92,18 @@ class AC_ANNON_ADD {
 			'lastName'       => $lastname,
 			'phone'          => $phone,
 			'updateIfExists' => $is_update, // String.,
-			'fields'         => wp_json_encode( $custom_fields ),
+			'fields'         => $custom_fields,
+		);
+
+		$body = $ac_helper->filter_add_contact_api_body(
+			$body,
+			array(
+				'user_id'     => $user_id,
+				'action_data' => $action_data,
+				'parsed'      => $parsed,
+				'args'        => $args,
+				'recipe_id'   => $recipe_id,
+			)
 		);
 
 		try {
@@ -153,6 +164,7 @@ class AC_ANNON_ADD {
 			'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
 			'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
+			'description' => __( 'To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
 		);
 
 		return $fields;

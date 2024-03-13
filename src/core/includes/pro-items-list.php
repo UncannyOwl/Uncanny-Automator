@@ -4,7 +4,7 @@
  */
 function automator_pro_items_list() {
 	return array(
-		'ADVADS'            => array(
+		'ADVADS'              => array(
 			'name'     => 'Advanced Ads',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -17,7 +17,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'ACFWC'             => array(
+		'ACFWC'               => array(
 			'name'     => 'Advanced Coupons',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -47,7 +47,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'ACF'               => array(
+		'ACF'                 => array(
 			'name'     => 'Advanced Custom Fields',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -72,7 +72,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'AFFWP'             => array(
+		'AFFWP'               => array(
 			'name'     => 'AffiliateWP',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -136,7 +136,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'AMELIABOOKING'     => array(
+		'AMELIABOOKING'       => array(
 			'name'     => 'Amelia',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -191,7 +191,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'ARMEMBER'          => array(
+		'ARMEMBER'            => array(
 			'name'     => 'ARMember',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -208,7 +208,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'UOA'               => array(
+		'UOA'                 => array(
 			'name'     => 'Automator Core',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -260,7 +260,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'BO'                => array(
+		'BO'                  => array(
 			'name'     => 'BadgeOS',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -294,7 +294,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'BB'                => array(
+		'BB'                  => array(
 			'name'     => 'bbPress',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -329,7 +329,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WP_BITLY'          => array(
+		'WP_BITLY'            => array(
 			'name'     => 'Bitly',
 			'pro_only' => 'yes',
 			'triggers' => array(),
@@ -341,7 +341,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'BDB'               => array(
+		'BDB'                 => array(
 			'name'     => 'BuddyBoss',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -656,7 +656,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'BP'                => array(
+		'BP'                  => array(
 			'name'     => 'BuddyPress',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -847,7 +847,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'CF'                => array(
+		'CF'                  => array(
 			'name'     => 'Caldera Forms',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -872,7 +872,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'CHARITABLE'        => array(
+		'CHARITABLE'          => array(
 			'name'     => 'Charitable',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -903,7 +903,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'CF7'               => array(
+		'CF7'                 => array(
 			'name'     => 'Contact Form 7',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -928,7 +928,29 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'DIVI'              => array(
+		'DATETIME'            => array(
+			'name'     => 'Date and Time',
+			'pro_only' => 'yes',
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - Date and Time */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Generate a {{date}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Date and Time */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Generate a {{date and time}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Date and Time */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Generate a date and time based on a {{date}}", 'uncanny-automator' ),
+				),
+			),
+		),
+		'DIVI'                => array(
 			'name'     => 'Divi',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -947,7 +969,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'ESAF'              => array(
+		'ESAF'                => array(
 			'name'     => 'Easy Affiliate',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -971,7 +993,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'EDD'               => array(
+		'EDD'                 => array(
 			'name'     => 'EDD – Recurring Payments',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1016,9 +1038,14 @@ function automator_pro_items_list() {
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Set {{a subscription download}} to expire on {{a specific date}} for the user", 'uncanny-automator' ),
 				),
+				array(
+					/* translators: Action - EDD – Recurring Payments */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Cancel the user's subscription matching a subscription ID", 'uncanny-automator' ),
+				),
 			),
 		),
-		'ELEM'              => array(
+		'ELEM'                => array(
 			'name'     => 'Elementor Pro',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1043,7 +1070,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'EVENTSMANAGER'     => array(
+		'EVENTSMANAGER'       => array(
 			'name'     => 'Events Manager',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1074,7 +1101,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WPFF'              => array(
+		'WPFF'                => array(
 			'name'     => 'Fluent Forms',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1099,7 +1126,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'FLSUPPORT'         => array(
+		'FLSUPPORT'           => array(
 			'name'     => 'Fluent Support',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1160,7 +1187,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'FCRM'              => array(
+		'FCRM'                => array(
 			'name'     => 'FluentCRM',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1212,7 +1239,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'FORMATTER'         => array(
+		'FORMATTER'           => array(
 			'name'     => 'Formatter',
 			'pro_only' => 'yes',
 			'triggers' => array(),
@@ -1244,7 +1271,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'FI'                => array(
+		'FI'                  => array(
 			'name'     => 'Formidable Forms',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1275,7 +1302,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'FR'                => array(
+		'FR'                  => array(
 			'name'     => 'Forminator',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1294,7 +1321,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'AUTONAMI'          => array(
+		'AUTONAMI'            => array(
 			'name'     => 'FunnelKit Automations',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1356,7 +1383,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'GP'                => array(
+		'GP'                  => array(
 			'name'     => 'GamiPress',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1414,7 +1441,34 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'GIVEWP'            => array(
+		'AUTOMATOR_GENERATOR' => array(
+			'name'     => 'Generator',
+			'pro_only' => 'yes',
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - Generator */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Generate a {{hash}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Generator */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Generate a {{nonce}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Generator */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Generate a random {{email}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Generator */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Generate a random {{string}}", 'uncanny-automator' ),
+				),
+			),
+		),
+		'GIVEWP'              => array(
 			'name'     => 'GiveWP',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1468,7 +1522,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'GF'                => array(
+		'GF'                  => array(
 			'name'     => 'Gravity Forms',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1514,6 +1568,12 @@ function automator_pro_items_list() {
 					'name' => __( "{{A specific field}} in an entry for {{a form}} is updated to {{a specific value}}", 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
+				array(
+					/* translators: Anonymous trigger - Gravity Forms */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A list row is submitted in a form", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
 			),
 			'actions'  => array(
 				array(
@@ -1533,7 +1593,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'GK'                => array(
+		'GK'                  => array(
 			'name'     => 'GravityKit',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1552,7 +1612,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'GH'                => array(
+		'GH'                  => array(
 			'name'     => 'Groundhogg',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1589,7 +1649,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'H5P'               => array(
+		'H5P'                 => array(
 			'name'     => 'H5P',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -1614,7 +1674,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'HF'                => array(
+		'HF'                  => array(
 			'name'     => 'HappyForms',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1639,7 +1699,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'IFTTT'             => array(
+		'IFTTT'               => array(
 			'name'     => 'IFTTT',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1658,7 +1718,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'INTEGRATELY'       => array(
+		'INTEGRATELY'         => array(
 			'name'     => 'Integrately',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1677,7 +1737,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'INTEGROMAT'        => array(
+		'INTEGROMAT'          => array(
 			'name'     => 'Integromat',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1690,7 +1750,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'JETENGINE'         => array(
+		'JETENGINE'           => array(
 			'name'     => 'JetEngine',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -1709,7 +1769,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'JET_FORM_BUILDER'  => array(
+		'JET_FORM_BUILDER'    => array(
 			'name'     => 'JetFormBuilder',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1728,7 +1788,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'JETCRM'            => array(
+		'JETCRM'              => array(
 			'name'     => 'Jetpack CRM',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1795,7 +1855,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'KONNECTZ_IT'       => array(
+		'KONNECTZ_IT'         => array(
 			'name'     => 'KonnectzIT',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -1808,7 +1868,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'LD'                => array(
+		'LD'                  => array(
 			'name'     => 'LearnDash',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2021,7 +2081,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'LP'                => array(
+		'LP'                  => array(
 			'name'     => 'LearnPress',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -2043,7 +2103,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'LF'                => array(
+		'LF'                  => array(
 			'name'     => 'LifterLMS',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2105,7 +2165,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'MAILERLITE'        => array(
+		'MAILERLITE'          => array(
 			'name'     => 'MailerLite',
 			'pro_only' => 'yes',
 			'triggers' => array(),
@@ -2132,7 +2192,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'MAILPOET'          => array(
+		'MAILPOET'            => array(
 			'name'     => 'MailPoet',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -2149,7 +2209,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'MAKE'              => array(
+		'MAKE'                => array(
 			'name'     => 'Make',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2162,7 +2222,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'MSLMS'             => array(
+		'MSLMS'               => array(
 			'name'     => 'MasterStudy LMS',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2196,7 +2256,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'M4IS'              => array(
+		'M4IS'                => array(
 			'name'     => 'Memberium for Keap',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -2228,7 +2288,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'MP'                => array(
+		'MP'                  => array(
 			'name'     => 'MemberPress',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2294,7 +2354,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'MPC'               => array(
+		'MPC'                 => array(
 			'name'     => 'MemberPress Courses',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2319,7 +2379,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'METABOX'           => array(
+		'METABOX'             => array(
 			'name'     => 'Meta Box',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -2344,7 +2404,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'MEC'               => array(
+		'MEC'                 => array(
 			'name'     => 'Modern Events Calendar',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2375,7 +2435,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'MYCRED'            => array(
+		'MYCRED'              => array(
 			'name'     => 'myCred',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2426,7 +2486,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'NEWSLETTER'        => array(
+		'NEWSLETTER'          => array(
 			'name'     => 'Newsletter',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -2450,7 +2510,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'NF'                => array(
+		'NF'                  => array(
 			'name'     => 'Ninja Forms',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2475,7 +2535,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'OPEN_AI'           => array(
+		'OPEN_AI'             => array(
 			'name'     => 'OpenAI',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -2487,7 +2547,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'OPTINMONSTER'      => array(
+		'OPTINMONSTER'        => array(
 			'name'     => 'OptinMonster',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -2506,7 +2566,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'PMP'               => array(
+		'PMP'                 => array(
 			'name'     => 'Paid Memberships Pro',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2536,7 +2596,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'PP'                => array(
+		'PP'                  => array(
 			'name'     => 'PeepSo',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2584,7 +2644,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'PRESTO'            => array(
+		'PRESTO'              => array(
 			'name'     => 'Presto Player',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2597,7 +2657,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'RAFFLE_PRESS'      => array(
+		'RAFFLE_PRESS'        => array(
 			'name'     => 'RafflePress',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2610,7 +2670,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'RC'                => array(
+		'RC'                  => array(
 			'name'     => 'Restrict Content Pro',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2635,7 +2695,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'Run_Now'           => array(
+		'Run_Now'             => array(
 			'name'     => 'Run now',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -2648,7 +2708,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'STUDIOCART'        => array(
+		'STUDIOCART'          => array(
 			'name'     => 'Studiocart',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2667,7 +2727,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'SURECART'          => array(
+		'SURECART'            => array(
 			'name'     => 'SureCart',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2677,10 +2737,28 @@ function automator_pro_items_list() {
 					'name' => __( "A guest purchases {{a product}}", 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
+				array(
+					/* translators: Logged-in trigger - SureCart */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user renews a subscription to a product", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - SureCart */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( " A user's subscription to a product is cancelled", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Anonymous trigger - SureCart */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A refund for a product is issued to a customer", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
 			),
 			'actions'  => array(),
 		),
-		'EC'                => array(
+		'EC'                  => array(
 			'name'     => 'The Events Calendar',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2711,7 +2789,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'THRIVE_APPRENTICE' => array(
+		'THRIVE_APPRENTICE'   => array(
 			'name'     => 'Thrive Apprentice',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2765,7 +2843,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'THRIVECART'        => array(
+		'THRIVECART'          => array(
 			'name'     => 'ThriveCart',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -2778,7 +2856,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'TUTORLMS'          => array(
+		'TUTORLMS'            => array(
 			'name'     => 'Tutor LMS',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2829,7 +2907,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'TYPEFORM'          => array(
+		'TYPEFORM'            => array(
 			'name'     => 'Typeform',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -2842,7 +2920,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'UM'                => array(
+		'UM'                  => array(
 			'name'     => 'Ultimate Member',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2866,7 +2944,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'UPSELL'            => array(
+		'UPSELL'              => array(
 			'name'     => 'Upsell Plugin',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2879,7 +2957,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WEBHOOKS'          => array(
+		'WEBHOOKS'            => array(
 			'name'     => 'Webhooks',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2892,7 +2970,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WHOLESALESUITE'    => array(
+		'WHOLESALESUITE'      => array(
 			'name'     => 'Wholesale Suite',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -2933,7 +3011,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WISHLISTMEMBER'    => array(
+		'WISHLISTMEMBER'      => array(
 			'name'     => 'Wishlist Member',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3000,7 +3078,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WC'                => array(
+		'WC'                  => array(
 			'name'     => 'WooCommerce Subscriptions',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -3312,6 +3390,11 @@ function automator_pro_items_list() {
 					'name' => __( "Set {{a specific order}} to {{a specific status}}", 'uncanny-automator' ),
 				),
 				array(
+					/* translators: Action - WooCommerce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Get order details by an order ID", 'uncanny-automator' ),
+				),
+				array(
 					/* translators: Action - WooCommerce Memberships */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Remove the user from {{a membership plan}}", 'uncanny-automator' ),
@@ -3368,7 +3451,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WC_BOOKINGS'       => array(
+		'WC_BOOKINGS'         => array(
 			'name'     => 'WooCommerce Bookings',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3398,7 +3481,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WP'                => array(
+		'WP'                  => array(
 			'name'     => 'WordPress Core',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3674,7 +3757,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WPDM'              => array(
+		'WPDM'                => array(
 			'name'     => 'WordPress Download Manager',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3687,7 +3770,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WPMU'              => array(
+		'WPMU'                => array(
 			'name'     => 'WordPress Multisite',
 			'pro_only' => 'yes',
 			'triggers' => array(
@@ -3711,7 +3794,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WPAI'              => array(
+		'WPAI'                => array(
 			'name'     => 'WP All Import',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3724,7 +3807,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WPCW'              => array(
+		'WPCW'                => array(
 			'name'     => 'WP Courseware',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -3741,7 +3824,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WF'                => array(
+		'WF'                  => array(
 			'name'     => 'WP Fusion Lite',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3783,7 +3866,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WPJM'              => array(
+		'WPJM'                => array(
 			'name'     => 'WP Job Manager',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3838,7 +3921,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WPLMS'             => array(
+		'WPLMS'               => array(
 			'name'     => 'WP LMS',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -3850,7 +3933,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WPMAILSMTPPRO'     => array(
+		'WPMAILSMTPPRO'       => array(
 			'name'     => 'WP Mail SMTP Pro',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3869,7 +3952,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WPSIMPLEPAY'       => array(
+		'WPSIMPLEPAY'         => array(
 			'name'     => 'WP Simple Pay',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3882,7 +3965,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WPUSERMANAGER'     => array(
+		'WPUSERMANAGER'       => array(
 			'name'     => 'WP User Manager',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3943,7 +4026,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WPPOLLS'           => array(
+		'WPPOLLS'             => array(
 			'name'     => 'WP-Polls',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -3956,7 +4039,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'WPCODE_IHAF'       => array(
+		'WPCODE_IHAF'         => array(
 			'name'     => 'WPCode',
 			'pro_only' => 'no',
 			'triggers' => array(),
@@ -3968,7 +4051,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WPF'               => array(
+		'WPF'                 => array(
 			'name'     => 'WPForms',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -4017,7 +4100,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WPFORO'            => array(
+		'WPFORO'              => array(
 			'name'     => 'wpForo',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -4036,7 +4119,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'WSFORMLITE'        => array(
+		'WSFORMLITE'          => array(
 			'name'     => 'WS Form',
 			'pro_only' => 'no',
 			'triggers' => array(
@@ -4055,7 +4138,7 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
-		'ZAPIER'            => array(
+		'ZAPIER'              => array(
 			'name'     => 'Zapier',
 			'pro_only' => 'no',
 			'triggers' => array(

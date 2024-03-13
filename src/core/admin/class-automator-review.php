@@ -66,7 +66,9 @@ class Automator_Review {
 	 */
 	protected function register_hooks() {
 
-		add_action( 'admin_init', array( $this, 'maybe_ask_review' ) );
+		add_action( 'automator_show_internal_admin_notice', array( $this, 'maybe_ask_review' ) );
+
+		add_action( 'admin_head', array( $this, 'hide_all_admin_notices_on_automator_pages' ) );
 
 		add_action( 'admin_init', array( $this, 'maybe_ask_tracking' ) );
 
@@ -184,21 +186,6 @@ class Automator_Review {
 	 */
 	public function uo_register_api_for_reviews() {
 
-		$check_closure = Automator()->db->closure->get_all();
-		if ( ! empty( $check_closure ) ) {
-			register_rest_route(
-				AUTOMATOR_REST_API_END_POINT,
-				'/uoa_redirect/',
-				array(
-					'methods'             => 'POST',
-					'callback'            => array( $this, 'send_feedback' ),
-					'permission_callback' => function () {
-						return true;
-					},
-				)
-			);
-		}
-
 		register_rest_route(
 			AUTOMATOR_REST_API_END_POINT,
 			'/get-credits/',
@@ -246,35 +233,6 @@ class Automator_Review {
 				},
 			)
 		);
-	}
-
-	/**
-	 * Rest api callbacks for redirects.
-	 *
-	 * @since 2.1.0
-	 */
-	public function send_feedback( $request ) {
-
-		$data = $request->get_params();
-
-		if ( isset( $data['user_id'] ) && isset( $data['client_secret'] ) && md5( 'l6fsX3vAAiJbSXticLBd' . $data['user_id'] ) === (string) $data['client_secret'] ) {
-
-			$user_id = $data['user_id'];
-
-			$redirect_url = get_option( 'UO_REDIRECTURL_' . $user_id, '' );
-
-			// Send a simple message at random intervals.
-			if ( ! empty( $redirect_url ) ) {
-
-				delete_option( 'UO_REDIRECTURL_' . $user_id );
-
-				return new WP_REST_Response( array( 'redirect_url' => $redirect_url ), 201 );
-
-			}
-		}
-
-		return new WP_REST_Response( array( 'redirect_url' => '' ), 201 );
-
 	}
 
 	/**
@@ -467,20 +425,33 @@ class Automator_Review {
 	}
 
 	/**
-	 * Callback method to `admin_init`.
+	 * Callback method to `automator_show_internal_admin_notice`.
 	 *
 	 * Registers the admin notice depending on the condition.
 	 *
 	 * @return void
 	 */
 	public function maybe_ask_review() {
-
 		// Credits notifications.
 		add_action( 'admin_notices', array( $this, 'load_credits_notif_required_assets' ) );
-
 		// Review banner notices.
 		add_action( 'admin_notices', array( $this, 'view_review_banner' ) );
+	}
 
+	/**
+	 * @return void
+	 */
+	public function hide_all_admin_notices_on_automator_pages() {
+
+		if ( ! self::can_display_credits_notif() ) {
+			return;
+		}
+
+		// Remove all admin notices
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
+
+		do_action( 'automator_show_internal_admin_notice' );
 	}
 
 	/**
@@ -496,6 +467,13 @@ class Automator_Review {
 			return;
 		}
 
+		self::load_banner_assets();
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function load_banner_assets() {
 		wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ), array(), Utilities::automator_get_version() );
 
 		// Register main JS in case it wasnt registered.
@@ -518,7 +496,6 @@ class Automator_Review {
 
 		// Enqueue uap-admin.
 		wp_enqueue_script( 'uap-admin' );
-
 	}
 
 	/**

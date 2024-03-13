@@ -136,7 +136,7 @@ class Facebook_Groups_Helpers {
 		$token_notice_n_days = apply_filters( 'automator_facebook_group_token_notice_n_days', 14 );
 
 		if ( $n_days <= $token_notice_n_days && $this->has_live_integration() ) {
-			add_action( 'admin_notices', array( $this, 'admin_notice_template' ) );
+			add_action( 'automator_show_internal_admin_notice', array( $this, 'admin_notice_template' ) );
 		}
 
 	}

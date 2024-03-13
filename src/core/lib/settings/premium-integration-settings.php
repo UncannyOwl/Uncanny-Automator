@@ -316,6 +316,12 @@ abstract class Premium_Integration_Settings {
 		return $this->options;
 	}
 
+	final public function output_wrapper() {
+		do_action( 'automator_settings_premium_integration_before_output', $this );
+		$this->output();
+		do_action( 'automator_settings_premium_integration_after_output', $this );
+	}
+
 	/**
 	 * Outputs the content of the settings page of this integration
 	 */
@@ -513,7 +519,7 @@ abstract class Premium_Integration_Settings {
 			'icon'     => $this->get_icon(),
 			'status'   => $this->get_status(),
 			'preload'  => $this->get_preload(),
-			'function' => array( $this, 'output' ),
+			'function' => array( $this, 'output_wrapper' ),
 		);
 
 		return $tabs;

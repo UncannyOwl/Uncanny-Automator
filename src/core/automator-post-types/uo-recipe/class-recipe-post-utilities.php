@@ -478,6 +478,10 @@ class Recipe_Post_Utilities {
 		// Integrations object (new).
 		try {
 			$core_integrations = new Services\Integrations\Structure( $post_id );
+			$integrations      = '';
+			if ( ! is_null( $core_integrations ) ) {
+				$integrations = json_decode( $core_integrations->toJSON(), true );
+			}
 		} catch ( \Error $e ) {
 			automator_log( $e->getMessage(), $post_id, AUTOMATOR_DEBUG_MODE, '$core_integrations' );
 		} catch ( \Exception $e ) {
@@ -584,7 +588,7 @@ class Recipe_Post_Utilities {
 			),
 
 			// UncannyAutomator._integrations
-			'_integrations'  => json_decode( $core_integrations->toJSON(), true ),
+			'_integrations'  => $integrations,
 
 			// UncannyAutomator._core
 			'_core'          => array(

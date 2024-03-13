@@ -134,8 +134,15 @@ class Fr_Tokens {
 			);
 			$value          = Automator()->db->trigger->get_token_meta( $match, $parse_tokens );
 			$value          = maybe_unserialize( $value );
+
 			if ( is_array( $value ) ) {
-				$value = join( ' ', $value );
+				// Check for file uploads
+				if ( key_exists( 'file', $value ) ) {
+					$url   = key_exists( 'file_url', $value['file'] ) ? $value['file']['file_url'] : '';
+					$value = is_array( $url ) ? join( ', ', $url ) : $url;
+				} else {
+					$value = join( ' ', $value );
+				}
 			}
 		}
 

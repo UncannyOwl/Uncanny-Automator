@@ -385,7 +385,7 @@ class Automator_Recipe_Process_Complete {
 				'args'        => $action_args,
 			);
 
-			$action = apply_filters( 'automator_before_action_executed', $action );
+			$action = apply_filters( 'automator_before_action_executed', $action, $args );
 
 			if ( isset( $action['process_further'] ) ) {
 

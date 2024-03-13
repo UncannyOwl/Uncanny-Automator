@@ -376,9 +376,12 @@ class Copy_Recipe_Parts {
 			if ( is_array( $prev_id ) || is_array( $new_id ) ) {
 				continue;
 			}
+
+			$pattern = '/(\{\{|\[\[)' . preg_quote( $prev_id, '/' ) . '(:|;)/';
+
 			// check if content contains a replaceable token by previous ID
-			if ( preg_match( '/{{' . $prev_id . '\:\w.+?}}/', $content ) ) {
-				$content = preg_replace( '/{{' . $prev_id . ':/', '{{' . $new_id . ':', $content );
+			if ( preg_match_all( $pattern, $content ) ) {
+				$content = preg_replace( $pattern, '${1}' . $new_id . '${2}', $content );
 			}
 		}
 
