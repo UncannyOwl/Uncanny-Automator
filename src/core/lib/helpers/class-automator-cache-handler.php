@@ -427,7 +427,7 @@ class Automator_Cache_Handler {
 		}
 		$this->remove_all();
 		add_action(
-			'admin_notices',
+			'automator_show_internal_admin_notice',
 			function () {
 				?>
 

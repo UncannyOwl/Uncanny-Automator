@@ -89,7 +89,7 @@
 			</a>
 			<span>
 				<uap-setup-wizard-step-1-skip
-					url-next-step="<?php echo esc_url( $this->get_dashboard_uri( 2 ) ); ?>"
+					url-next-step="<?php echo esc_url( $this->get_dashboard_uri( 2 ) ); ?>&skip=true"
 					url-connect-account="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
 				></uap-setup-wizard-step-1-skip>
 			</span>

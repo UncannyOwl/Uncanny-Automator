@@ -33,14 +33,23 @@ trait Action_Tokens {
 	 */
 	private $meta_key = 'action_tokens';
 
+	/**
+	 * @var string
+	 */
 	protected $hydrated_tokens_replace_pairs = '';
 
+	/**
+	 * @return void
+	 */
 	public function clear_hydrated_tokens_replace_pairs() {
 
 		$this->hydrated_tokens_replace_pairs = '';
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_hydrated_tokens_replace_pairs() {
 
 		return $this->hydrated_tokens_replace_pairs;
@@ -82,6 +91,12 @@ trait Action_Tokens {
 		return $this;
 	}
 
+	/**
+	 * @param $tokens
+	 * @param $action_code
+	 *
+	 * @return array
+	 */
 	private function format_tokens( $tokens = array(), $action_code = '' ) {
 
 		$formatted_tokens = array();

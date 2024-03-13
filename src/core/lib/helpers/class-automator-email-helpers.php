@@ -53,12 +53,14 @@ class Automator_Email_Helpers {
 		}
 
 		// Add CC in headers.
+		$cc = array_filter( $cc );
 		if ( ! empty( $cc ) ) {
 			$cced      = join( ', ', $cc );
 			$headers[] = "Cc: $cced";
 		}
 
 		// Add BCC in headers.
+		$bcc = array_filter( $bcc );
 		if ( ! empty( $bcc ) ) {
 			$bcced     = join( ', ', $bcc );
 			$headers[] = "Bcc: $bcced";

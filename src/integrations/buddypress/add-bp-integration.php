@@ -34,4 +34,5 @@ class Add_Bp_Integration {
 	public function plugin_active() {
 		return class_exists( 'BuddyPress' );
 	}
+
 }

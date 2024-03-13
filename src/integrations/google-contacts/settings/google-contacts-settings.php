@@ -76,8 +76,6 @@ class Google_Contacts_Settings extends Premium_Integration_Settings {
 			admin_url( 'admin-ajax.php' )
 		);
 
-		set_transient( Google_Contacts_Helpers::AUTH_TRANSIENT_KEY, $nonce, 3600 );
-
 		// Construct the OAuth URL.
 		return add_query_arg(
 			array(

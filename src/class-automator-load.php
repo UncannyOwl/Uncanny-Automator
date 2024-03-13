@@ -389,8 +389,6 @@ class Automator_Load {
 			// Load same script for free and pro
 			add_action( 'admin_enqueue_scripts', array( $this, 'automator_license_style' ) );
 		}
-		// Load script front-end
-		add_action( 'wp_enqueue_scripts', array( $this, 'automator_closure_scripts' ) );
 	}
 
 	/**
@@ -503,44 +501,6 @@ class Automator_Load {
 		if ( strpos( $hook, 'uncanny-automator-license-activation' ) ) {
 			wp_enqueue_style( 'uap-admin-license', Utilities::automator_get_asset( 'legacy/css/admin/license.css' ), array(), Utilities::automator_get_version() );
 		}
-	}
-
-	/**
-	 * Enqueue script
-	 */
-	public function automator_closure_scripts() {
-
-		if ( ! self::$any_recipes_active ) {
-			return;
-		}
-
-		if ( ! is_user_logged_in() ) {
-			return;
-		}
-		// check if there is a recipe and closure with publish status
-		$check_closure = Automator()->db->closure->get_all();
-		if ( empty( $check_closure ) ) {
-			return;
-		}
-		$user_id = wp_get_current_user()->ID;
-
-		// Filter to optionally bail out
-		global $post;
-		$is_uoa_redirect = (bool) apply_filters( 'automator_run_closure_uoa_redirect', true, $post, $user_id );
-
-		if ( true !== $is_uoa_redirect ) {
-			return;
-		}
-
-		$api_setup = array(
-			'root'              => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT . '/uoa_redirect/' ),
-			'nonce'             => wp_create_nonce( 'wp_rest' ),
-			'user_id'           => $user_id,
-			'client_secret_key' => md5( 'l6fsX3vAAiJbSXticLBd' . $user_id ),
-		);
-		wp_register_script( 'uoapp-client', Utilities::automator_get_asset( 'legacy/js/uo-sseclient.js' ), array(), AUTOMATOR_PLUGIN_VERSION ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
-		wp_localize_script( 'uoapp-client', 'uoAppRestApiSetup', $api_setup );
-		wp_enqueue_script( 'uoapp-client' );
 	}
 
 	/**

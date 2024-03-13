@@ -1,5 +1,6 @@
 <?php
 use Uncanny_Automator\Automator_DB;
+use Uncanny_Automator\Automator_System_Report;
 
 global $wpdb;
 
@@ -115,34 +116,73 @@ $missing_tables = Automator_DB::verify_base_tables();
 							<td>
 								<?php if ( ! empty( $table_data ) ) { ?>
 									<?php
-									$delete_view_url = add_query_arg(
-										array(
-											'nonce'  => wp_create_nonce( 'automator_db_tools' ),
-											'action' => 'automator_db_tools',
-											'view'   => str_replace( $wpdb->prefix, '', $table ),
-											'type'   => 'drop_view',
-										),
-										admin_url( 'admin-ajax.php' )
-									);
+										// The delete view url.
+										$delete_view_url = add_query_arg(
+											array(
+												'nonce'  => wp_create_nonce( 'automator_db_tools' ),
+												'action' => 'automator_db_tools',
+												'view'   => str_replace( $wpdb->prefix, '', $table ),
+												'type'   => 'drop_view',
+											),
+											admin_url( 'admin-ajax.php' )
+										);
 									?>
 
-									<?php // Show delete button for view ?>
+									<?php
+										// The delete api logs url.
+										$purge_table_url = add_query_arg(
+											array(
+												'nonce'  => wp_create_nonce( 'automator_db_tools' ),
+												'action' => 'automator_db_tools_empty_api_logs',
+											),
+											admin_url( 'admin-ajax.php' )
+										);
+									?>
 
-									<?php if ( false !== strpos( $table, '_view' ) ) { ?>
+									<?php // Determines whether the table is a view or not. ?>
+									<?php $is_view = false !== strpos( $table, '_view' ); ?>
 
-									<uo-button
-											color="danger"
-											size="small"
-											href="<?php echo esc_url( $delete_view_url ); ?>"
-											needs-confirmation
-											confirmation-heading="<?php esc_attr_e( 'This action is irreversible', 'uncanny-automator' ); ?>"
-											confirmation-content="<?php echo sprintf( esc_attr__( 'This will drop the existing view (%s) from the database.', 'uncanny-automator' ), esc_attr( $table ) ); ?>"
-											confirmation-button-label="<?php esc_attr_e( 'Proceed', 'uncanny-automator' ); ?>"
-										>
-										<uo-icon id="trash"></uo-icon>
-									</uo-button>
+									<?php // Determines wether the table is api logs or not. ?>
+									<?php $is_api_logs = false !== str_ends_with( $table, '_api_log' ); ?>
 
-								<?php } ?>
+									<?php if ( $is_api_logs && ! $is_view ) { ?>
+										<uo-tooltip>
+											<span class="tooltip-nowrap"><?php esc_html_e( 'Empty API logs tables', 'uncanny-automator' ); ?></span>
+												<uo-button
+														slot="target"
+														color="info"
+														size="small"
+														href="<?php echo esc_url( $purge_table_url ); ?>"
+														needs-confirmation
+														confirmation-heading="<?php esc_attr_e( 'This action is irreversible', 'uncanny-automator' ); ?>"
+														confirmation-content="<?php echo sprintf( esc_attr__( 'Click "Proceed" to remove data related to the Resend feature in app integration logs. It will not be possible to resend data related to previous recipe runs.', 'uncanny-automator' ), esc_attr( $table ) ); ?>"
+														confirmation-button-label="<?php esc_attr_e( 'Proceed', 'uncanny-automator' ); ?>"
+													>
+													<uo-icon id="broom"></uo-icon>
+												</uo-button>
+											</span>
+										</uo-tooltip>
+									<?php } ?>
+
+									<?php if ( $is_view ) { ?>
+										<uo-tooltip>
+											<span class="tooltip-nowrap"><?php esc_html_e( 'Drop view', 'uncanny-automator' ); ?></span>
+												<uo-button
+														slot="target"
+														color="danger"
+														size="small"
+														href="<?php echo esc_url( $delete_view_url ); ?>"
+														needs-confirmation
+														confirmation-heading="<?php esc_attr_e( 'This action is irreversible', 'uncanny-automator' ); ?>"
+														confirmation-content="<?php echo sprintf( esc_attr__( 'This will drop the existing view (%s) from the database.', 'uncanny-automator' ), esc_attr( $table ) ); ?>"
+														confirmation-button-label="<?php esc_attr_e( 'Proceed', 'uncanny-automator' ); ?>"
+													>
+													<uo-icon id="trash"></uo-icon>
+												</uo-button>
+											</span>
+										</uo-tooltip>
+
+									<?php } ?>
 
 								<?php } ?>
 
@@ -211,7 +251,20 @@ $missing_tables = Automator_DB::verify_base_tables();
 
 			</uo-button>
 
+		</div>
 
+		<div class="uap-settings-panel-bottom-right">
+			<p>
+				<?php
+				$size = get_option( 'automator_db_size', 0 );
+				if ( $size > 0 ) {
+					echo sprintf(
+						esc_html_x( 'Total tables size: %.2f MB', 'Database tables', 'uncanny-automator' ),
+						$size
+					);
+				}
+				?>
+			</p>
 		</div>
 
 	</div>

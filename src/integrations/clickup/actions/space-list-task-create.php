@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Action_Tokens;
+
 /**
  * Class Space_List_Task_Create
  *
@@ -8,6 +10,7 @@ namespace Uncanny_Automator;
  */
 class Space_List_Task_Create {
 
+	use Action_Tokens;
 	use Recipe\Actions;
 
 	/**
@@ -55,6 +58,16 @@ class Space_List_Task_Create {
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
 		$this->set_background_processing( true );
+
+		$this->set_action_tokens(
+			array(
+				'TASK_ID' => array(
+					'name' => esc_attr_x( 'Task ID', 'ClickUp', 'uncanny-automator' ),
+					'type' => 'int',
+				),
+			),
+			$this->get_action_code()
+		);
 
 		$this->register_action();
 
@@ -120,6 +133,11 @@ class Space_List_Task_Create {
 				$action_data
 			);
 
+			$this->hydrate_tokens(
+				array(
+					'TASK_ID' => $response['data']['id'] ?? null,
+				)
+			);
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 		} catch ( \Exception $e ) {

@@ -2,10 +2,14 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Log_Properties;
+
 /**
  *
  */
 class WP_USERCREATESPOST {
+
+	use Log_Properties;
 
 	/**
 	 * Integration code
@@ -71,7 +75,18 @@ class WP_USERCREATESPOST {
 	 */
 	private $matched_recipes = array();
 
+	/**
+	 *  Property child_term_log_properties
+	 *
+	 * @var array
+	 */
+	private $child_term_log_properties = array();
 
+	/**
+	 * WP_USERCREATESPOST constructor.
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 		$this->trigger_code = 'USERSPOST';
 		$this->trigger_meta = 'WPPOSTTYPES';
@@ -104,7 +119,7 @@ class WP_USERCREATESPOST {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'sentence'            => sprintf(
-			/* translators: Logged-in trigger - WordPress */
+				/* translators: Logged-in trigger - WordPress */
 				__( 'A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}', 'uncanny-automator' ),
 				$this->trigger_meta,
 				'WPTAXONOMYTERM:' . $this->trigger_meta,
@@ -164,6 +179,7 @@ class WP_USERCREATESPOST {
 							)
 						),
 						Automator()->helpers->recipe->field->select_field( 'WPTAXONOMYTERM', esc_attr__( 'Term', 'uncanny-automator' ) ),
+						Automator()->helpers->recipe->wp->options->conditional_child_taxonomy_checkbox(),
 					),
 				),
 			)
@@ -214,13 +230,15 @@ class WP_USERCREATESPOST {
 	 * @param $post_id
 	 */
 	public function post_published( $post_id ) {
-		$post                   = get_post( $post_id );
-		$this->post             = $post;
-		$user_id                = absint( isset( $post->post_author ) ? $post->post_author : 0 );
-		$recipes                = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-		$required_post_type     = Automator()->get->meta_from_recipes( $recipes, 'WPPOSTTYPES' );
-		$required_post_taxonomy = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMIES' );
-		$required_post_term     = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMYTERM' );
+		$post                      = get_post( $post_id );
+		$this->post                = $post;
+		$user_id                   = absint( isset( $post->post_author ) ? $post->post_author : 0 );
+		$recipes                   = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$required_post_type        = Automator()->get->meta_from_recipes( $recipes, 'WPPOSTTYPES' );
+		$required_post_taxonomy    = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMIES' );
+		$required_post_term        = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMYTERM' );
+		$include_taxonomy_children = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMIES_CHILDREN' );
+		$include_taxonomy_children = ! empty( $include_taxonomy_children ) ? $include_taxonomy_children : array();
 
 		// no recipes found, bail
 		if ( empty( $recipes ) ) {
@@ -265,7 +283,7 @@ class WP_USERCREATESPOST {
 		}
 
 		// Match terms with current $post
-		$terms_recipe = $this->get_recipes_term_matches( $required_post_term, $required_post_taxonomy, $post );
+		$terms_recipe = $this->get_recipes_term_matches( $required_post_term, $required_post_taxonomy, $post, $include_taxonomy_children );
 
 		// No terms found, bail
 		if ( empty( $terms_recipe ) ) {
@@ -322,6 +340,13 @@ class WP_USERCREATESPOST {
 					if ( false === $result['result'] ) {
 						continue;
 					}
+
+					if ( isset( $this->child_term_log_properties[ $recipe_id ] ) ) {
+						if ( isset( $this->child_term_log_properties[ $recipe_id ][ $trigger_id ] ) ) {
+							$this->set_trigger_log_properties( $this->child_term_log_properties[ $recipe_id ][ $trigger_id ] );
+						}
+					}
+
 					$this->store_tokens( $result, $user_id, $post, $recipe_id, $trigger_id );
 					Automator()->maybe_trigger_complete( $result['args'] );
 				}
@@ -446,10 +471,11 @@ class WP_USERCREATESPOST {
 	 * @param $required_post_term
 	 * @param $required_post_taxonomy
 	 * @param $post
+	 * @param $include_term_children
 	 *
 	 * @return array
 	 */
-	private function get_recipes_term_matches( $required_post_term, $required_post_taxonomy, $post ) {
+	private function get_recipes_term_matches( $required_post_term, $required_post_taxonomy, $post, $include_term_children ) {
 		$matched = array();
 		$post_id = $post->ID;
 
@@ -473,16 +499,38 @@ class WP_USERCREATESPOST {
 				if ( ! isset( $required_post_taxonomy[ $recipe_id ][ $trigger_id ] ) ) {
 					continue;
 				}
+
+				// Check if we should be including Children of the selected term.
+				$include_children = isset( $include_term_children[ $recipe_id ] ) ? $include_term_children[ $recipe_id ] : array();
+				$include_children = isset( $include_children[ $trigger_id ] ) ? $include_children[ $trigger_id ] : false;
+				$include_children = filter_var( strtolower( $include_children ), FILTER_VALIDATE_BOOLEAN );
+
 				// if the term is specific then tax and post type are also specified
 				$post_terms = $this->get_taxonomy( $post_id, $required_post_taxonomy[ $recipe_id ][ $trigger_id ] );
 
 				if ( empty( $post_terms ) ) {
 					continue;
 				}
+
 				// check if the post has the required term
 				$post_term_ids = array_map( 'absint', array_column( $post_terms, 'term_id' ) );
 				if ( ! in_array( absint( $required_post_term[ $recipe_id ][ $trigger_id ] ), $post_term_ids, true ) ) {
-					continue;
+					$child_term = false;
+					if ( $include_children ) {
+						$child_term = Automator()->helpers->recipe->wp->options->get_term_child_of(
+							$post_terms,
+							$required_post_term[ $recipe_id ][ $trigger_id ],
+							$required_post_taxonomy[ $recipe_id ][ $trigger_id ],
+							$post_id
+						);
+					}
+
+					// Term or Child Term not found.
+					if ( empty( $child_term ) ) {
+						continue;
+					} else {
+						$this->set_child_matched_log_properties( $recipe_id, $trigger_id, $child_term );
+					}
 				}
 				$matched[] = $recipe_id;
 
@@ -579,5 +627,26 @@ class WP_USERCREATESPOST {
 		$this->trigger_meta_log['meta_value'] = maybe_serialize( get_post_thumbnail_id( $this->post->ID ) );
 		Automator()->insert_trigger_meta( $this->trigger_meta_log );
 
+	}
+
+	/**
+	 * Set matched child term info to log properties.
+	 *
+	 * @param $recipe_id
+	 * @param $trigger_id
+	 * @param $child_term
+	 *
+	 * @return void
+	 */
+	private function set_child_matched_log_properties( $recipe_id, $trigger_id, $child_term ) {
+		if ( ! isset( $this->child_term_log_properties[ $recipe_id ] ) ) {
+			$this->child_term_log_properties[ $recipe_id ] = array();
+		}
+		$this->child_term_log_properties[ $recipe_id ][ $trigger_id ] = array(
+			'type'       => 'string',
+			'label'      => _x( 'Matched Child Term', 'WordPress', 'uncanny-automator' ),
+			'value'      => $child_term->term_id . '( ' . $child_term->name . ' )',
+			'attributes' => array(),
+		);
 	}
 }

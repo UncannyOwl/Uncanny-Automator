@@ -64,7 +64,7 @@ class OPTINMONSTER_SHOW_CAMPAIGN {
 
 		$script_uri = plugin_dir_url( __FILE__ ) . '../scripts/show-campaign.js';
 
-		wp_enqueue_script( 'automator-optinmonster', $script_uri, array( 'jquery' ), InitializePlugin::PLUGIN_VERSION, true );
+		wp_enqueue_script( 'automator-optinmonster', $script_uri, array( 'jquery' ), AUTOMATOR_PLUGIN_VERSION, true );
 
 	}
 

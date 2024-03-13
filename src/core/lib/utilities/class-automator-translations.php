@@ -107,6 +107,8 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.action.asyncActions.schedule
 					'delay'                  => esc_attr__( 'Delay', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.action.asyncActions.delay
+					'custom'                 => esc_attr__( 'Use a token/custom value', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.action.asyncActions.custom
 					'remove'                 => esc_attr__( 'Remove', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.action.asyncActions.remove
 					'new'                    => esc_attr__( 'New', 'uncanny-automator' ),
@@ -124,54 +126,65 @@ class Automator_Translations {
 					'pleaseSave'             => esc_attr__( 'Please save the action first', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.action.asyncActions.pleaseSave
 					'modal'                  => array(
-						'title'           => esc_attr__( 'Delay or schedule this action', 'uncanny-automator' ),
+						'title'                      => esc_attr__( 'Delay or schedule this action', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.title
-						'delayDesc'       => esc_attr__( 'Delay the execution of this action for', 'uncanny-automator' ),
+						'delayDesc'                  => esc_attr__( 'Delay the execution of this action for', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.delayDesc
-						'second'          => esc_attr__( 'second', 'uncanny-automator' ),
+						'second'                     => esc_attr__( 'second', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.second
-						'seconds'         => esc_attr__( 'Seconds', 'uncanny-automator' ),
+						'seconds'                    => esc_attr__( 'Seconds', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.seconds
-						'minute'          => esc_attr__( 'minute', 'uncanny-automator' ),
+						'minute'                     => esc_attr__( 'minute', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.minute
-						'minutes'         => esc_attr__( 'Minutes', 'uncanny-automator' ),
+						'minutes'                    => esc_attr__( 'Minutes', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.minutes
-						'hour'            => esc_attr__( 'hour', 'uncanny-automator' ),
+						'hour'                       => esc_attr__( 'hour', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.hour
-						'hours'           => esc_attr__( 'Hours', 'uncanny-automator' ),
+						'hours'                      => esc_attr__( 'Hours', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.hours
-						'day'             => esc_attr__( 'day', 'uncanny-automator' ),
+						'day'                        => esc_attr__( 'day', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.day
-						'days'            => esc_attr__( 'Days', 'uncanny-automator' ),
+						'days'                       => esc_attr__( 'Days', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.days
-						'year'            => esc_attr__( 'year', 'uncanny-automator' ),
+						'year'                       => esc_attr__( 'year', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.year
-						'years'           => esc_attr__( 'Years', 'uncanny-automator' ),
+						'years'                      => esc_attr__( 'Years', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.years
-						'after'           => esc_html__( 'after completion of the triggers', 'uncanny-automator' ),
+						'after'                      => esc_html__( 'after completion of the triggers', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.after
-						'scheduleDesc'    => esc_attr__( 'Run this action at a specific date and time', 'uncanny-automator' ),
+						'scheduleDesc'               => esc_attr__( 'Run this action at a specific date and time', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.scheduleDesc
-						'scheduleNotice1' => esc_html__( 'Note: If the action is triggered after the specified date, this action will run immediately.', 'uncanny-automator' ),
+						'scheduleNotice1'            => esc_html__( 'Note: If the action is triggered after the specified date, this action will run immediately.', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.scheduleNotice1
-						'scheduleNotice2' => esc_attr__( 'Note: Changes will not affect previously delayed or scheduled actions.', 'uncanny-automator' ),
+						'scheduleNotice2'            => esc_attr__( 'Note: Changes will not affect previously delayed or scheduled actions.', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.scheduleNotice2
-						'timezone'        => esc_attr__( 'Timezone', 'uncanny-automator' ),
+						'timezone'                   => esc_attr__( 'Timezone', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.timezone
-						'timezoneString'  => Automator()->get_timezone_string(),
+						'timezoneString'             => Automator()->get_timezone_string(),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.timezoneString
-						'timezoneLink'    => admin_url( 'options-general.php#timezone_string' ),
+
+						'customDescription'          => esc_attr__( 'Run the action after a custom delay or at a custom date and time', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.action.asyncActions.modal.customDescription
+
+						'customFieldDescription'     => esc_attr__( 'Use tokens and/or text to enter any supported format. Examples: "Friday at 1pm", "November 9", "2 hours", Unix timestamps %1$s.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.action.asyncActions.modal.customFieldDescription
+
+						/* translators: Link to article. Check .customFieldDescription for full string */
+						'customFieldDescriptionLink' => esc_attr__( 'and more', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.action.asyncActions.modal.customFieldDescriptionLink
+
+						'timezoneLink'               => admin_url( 'options-general.php#timezone_string' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.timezoneLink
-						'dateFormat'      => get_option( 'date_format' ),
+						'dateFormat'                 => get_option( 'date_format' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.dateFormat
-						'today'           => date( get_option( 'date_format' ) ),
+						'today'                      => date( get_option( 'date_format' ) ),
 						//phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.today
-						'timeFormat'      => get_option( 'time_format' ),
+						'timeFormat'                 => get_option( 'time_format' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.timeFormat
-						'confirm'         => esc_attr__( 'Set delay', 'uncanny-automator' ),
+						'confirm'                    => esc_attr__( 'Set delay', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.confirm
-						'validation'      => array(
+						'validation'                 => array(
 							'unsupported'    => esc_attr__( 'Unsupported value.', 'uncanny-automator' ),
 							// UncannyAutomator._core.i18n.action.asyncActions.modal.validation.positiveNumber
 							'positiveNumber' => esc_attr__( 'Please use a positive number.', 'uncanny-automator' ),

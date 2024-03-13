@@ -1131,7 +1131,7 @@ class Recipe_Post_Rest_Api {
 
 			update_post_meta( $post_id, 'async_mode', $request->get_param( 'asyncMode' ) );
 
-			if ( $request->has_param( 'delayNumber' ) && $request->has_param( 'delayUnit' ) ) {
+			if ( $request->has_param( 'delayNumber' ) && ! empty( $request->get_param( 'delayNumber' ) ) && $request->has_param( 'delayUnit' ) ) {
 
 				update_post_meta( $post_id, 'async_delay_number', $request->get_param( 'delayNumber' ) );
 				update_post_meta( $post_id, 'async_delay_unit', $request->get_param( 'delayUnit' ) );
@@ -1151,6 +1151,14 @@ class Recipe_Post_Rest_Api {
 
 			if ( $request->has_param( 'scheduleSentence' ) ) {
 				update_post_meta( $post_id, 'async_sentence', $request->get_param( 'scheduleSentence' ) );
+			}
+
+			if ( $request->has_param( 'customValue' ) ) {
+
+				update_post_meta( $post_id, 'async_custom', $request->get_param( 'customValue' ) );
+
+				$return['success'] = true;
+
 			}
 
 			if ( $return['success'] ) {
@@ -1195,6 +1203,7 @@ class Recipe_Post_Rest_Api {
 			delete_post_meta( $post_id, 'async_schedule_time' );
 			delete_post_meta( $post_id, 'async_schedule_date' );
 			delete_post_meta( $post_id, 'async_sentence' );
+			delete_post_meta( $post_id, 'async_custom' );
 
 			$return['success']        = true;
 			$return['post_ID']        = $post_id;

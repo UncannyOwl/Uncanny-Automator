@@ -31,6 +31,7 @@ class PMP_MEMBERSHIPEXPIRES {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+		$this->maybe_update_action_meta();
 		$this->trigger_code = 'PMPMEMBERSHIPEXPIRES';
 		$this->trigger_meta = 'PMPMEMBERSHIP';
 		$this->define_trigger();
@@ -50,7 +51,7 @@ class PMP_MEMBERSHIPEXPIRES {
 			'sentence'            => sprintf( esc_attr__( "A user's subscription to {{a membership:%1\$s}} expires", 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Paid Memberships Pro */
 			'select_option_name'  => esc_attr__( "A user's subscription to {{a membership}} expires", 'uncanny-automator' ),
-			'action'              => 'pmpro_membership_post_membership_expiry',
+			'action'              => 'pmpro_membership_pre_membership_expiry',
 			'priority'            => 100,
 			'accepted_args'       => 2,
 			'validation_function' => array(
@@ -157,6 +158,31 @@ class PMP_MEMBERSHIPEXPIRES {
 		}
 
 		return;
+	}
+
+	/**
+	 * Maybe update action meta
+	 *
+	 * @return void
+	 */
+	private function maybe_update_action_meta() {
+		// Check updated flag.
+		$check_updated = get_option( 'automator_pmpmembershipexpires_updated', false );
+		if ( empty( $check_updated ) ) {
+			global $wpdb;
+			// Run query to update add_action post meta
+			$wpdb->query(
+				$wpdb->prepare(
+					"UPDATE {$wpdb->postmeta} SET meta_value = %s WHERE meta_key = %s AND meta_value = %s",
+					'pmpro_membership_pre_membership_expiry',
+					'add_action',
+					'pmpro_membership_post_membership_expiry'
+				)
+			);
+
+			// Update flag to true.
+			update_option( 'automator_pmpmembershipexpires_updated', true );
+		}
 	}
 
 }

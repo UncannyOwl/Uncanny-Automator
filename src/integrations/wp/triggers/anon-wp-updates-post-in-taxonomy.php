@@ -2,12 +2,16 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Recipe\Log_Properties;
+
 /**
  * Class ANON_WP_UPDATES_POST_IN_TAXONOMY
  *
  * @package Uncanny_Automator
  */
 class ANON_WP_UPDATES_POST_IN_TAXONOMY {
+
+	use Log_Properties;
 
 	/**
 	 * Integration code
@@ -134,6 +138,7 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 							)
 						),
 						Automator()->helpers->recipe->field->select_field( 'WPTAXONOMYTERM', esc_attr_x( 'Term', 'WordPress', 'uncanny-automator' ) ),
+						Automator()->helpers->recipe->wp->options->conditional_child_taxonomy_checkbox(),
 					),
 				),
 			)
@@ -179,6 +184,19 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 	 * @param $post_before
 	 */
 	public function wp_post_updated( $post_ID, $post_after, $post_before ) {
+
+		// Bail on autosave.
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			if ( apply_filters( 'automator_wp_post_updates_prevent_trigger_on_rest_requests', true, $post_ID ) ) {
+				return;
+			}
+		}
+
+		// Maybe bail non public posts.
 		$include_non_public_posts = apply_filters( 'automator_wp_post_updates_include_non_public_posts', false, $post_ID );
 		if ( false === $include_non_public_posts ) {
 			$__object = get_post_type_object( $post_after->post_type );
@@ -186,6 +204,7 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 				return;
 			}
 		}
+
 		$user_id = 0 !== $post_after->post_author ? $post_after->post_author : get_current_user_id();
 
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
@@ -198,13 +217,18 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 
 		$required_term = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMYTERM' );
 
+		$include_taxonomy_children = Automator()->get->meta_from_recipes( $recipes, 'WPTAXONOMIES_CHILDREN' );
+		$include_taxonomy_children = ! empty( $include_taxonomy_children ) ? $include_taxonomy_children : array();
+
 		$term_ids = array();
 
-		$matched_recipe_ids = array();
+		$matched_recipe_ids  = array();
+		$matched_child_terms = array();
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
+
 				// is post type
 				if (
 					intval( '-1' ) === intval( $required_post_type[ $recipe_id ][ $trigger_id ] ) // any post type
@@ -256,6 +280,32 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 									'trigger_id' => $trigger_id,
 									'post_id'    => $post_ID,
 								);
+							} else {
+
+								// Not found, so check if we should include children
+								$include_children = isset( $include_taxonomy_children[ $recipe_id ] ) ? $include_taxonomy_children[ $recipe_id ] : array();
+								$include_children = isset( $include_children[ $trigger_id ] ) ? $include_children[ $trigger_id ] : false;
+								$include_children = filter_var( strtolower( $include_children ), FILTER_VALIDATE_BOOLEAN );
+
+								if ( $include_children ) {
+									$child_term = Automator()->helpers->recipe->wp->options->get_term_child_of(
+										$post_terms,
+										$required_term[ $recipe_id ][ $trigger_id ],
+										$required_taxonomy[ $recipe_id ][ $trigger_id ],
+										$post_ID
+									);
+
+									if ( ! empty( $child_term ) ) {
+										$matched_recipe_ids[] = array(
+											'recipe_id'  => $recipe_id,
+											'trigger_id' => $trigger_id,
+											'post_id'    => $post_ID,
+										);
+										// Update log properties.
+										$matched_child_terms[ $recipe_id ]                = isset( $matched_child_terms[ $recipe_id ] ) ? $matched_child_terms[ $recipe_id ] : array();
+										$matched_child_terms[ $recipe_id ][ $trigger_id ] = $child_term->term_id . '( ' . $child_term->name . ' )';
+									}
+								}
 							}
 						}
 					}
@@ -301,6 +351,18 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 							if ( isset( $this->taxonomy_list[ $__recipe_id ][ $__trigger_id ] ) ) {
 								$taxonomies = implode( ', ', $this->taxonomy_list[ $__recipe_id ][ $__trigger_id ] );
 								Automator()->db->token->save( 'WPTAXONOMIES', $taxonomies, $trigger_meta );
+							}
+
+							// Update Log Properties for child term matches.
+							if ( isset( $matched_child_terms[ $__recipe_id ] ) && isset( $matched_child_terms[ $__recipe_id ][ $__trigger_id ] ) ) {
+								$this->set_trigger_log_properties(
+									array(
+										'type'       => 'string',
+										'label'      => _x( 'Matched Child Term', 'WordPress', 'uncanny-automator' ),
+										'value'      => $matched_child_terms[ $__recipe_id ][ $__trigger_id ],
+										'attributes' => array(),
+									)
+								);
 							}
 
 							Automator()->maybe_trigger_complete( $result['args'] );

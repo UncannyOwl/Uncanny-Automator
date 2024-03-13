@@ -85,6 +85,8 @@ class Usage_Reports {
 
 		add_action( 'rest_api_init', array( $this, 'register_rest_endpoints' ) );
 
+		add_action( 'automator_settings_premium_integration_before_output', array( $this, 'count_premium_integration_view' ) );
+
 	}
 
 	/**
@@ -756,6 +758,10 @@ WHERE p.post_type LIKE %s
 
 				$this->report['recipes']['scheduled_actions_count'] ++;
 
+			} elseif ( 'custom' === $data['meta']['async_mode'] ) {
+
+				$this->report['recipes']['custom_actions_count'] ++;
+
 			}
 		}
 
@@ -820,7 +826,14 @@ WHERE p.post_type LIKE %s
 	 * @return void
 	 */
 	public function get_views() {
-		$this->report['stats'] = automator_get_option( self::STATS_OPTION_NAME, array() );
+
+		$stats = automator_get_option( self::STATS_OPTION_NAME, array() );
+
+		if ( ! empty( $stats['page_views'] ) ) {
+			$stats['page_views'] = array_values( $stats['page_views'] );
+		}
+
+		$this->report['stats'] = $stats;
 	}
 
 	/**
@@ -870,13 +883,15 @@ WHERE p.post_type LIKE %s
 		$s = DIRECTORY_SEPARATOR;
 
 		$views_to_count = array(
-			'admin-integrations' . $s . 'archive.php' => 'All integrations',
+			'admin-integrations' . $s . 'archive.php'      => 'All integrations',
 			'admin-settings' . $s . 'tab' . $s . 'general' . $s . 'improve-automator.php' => 'Improve Automator',
 			'admin-settings' . $s . 'tab' . $s . 'general' . $s . 'logs.php' => 'Logs settings',
 			'admin-settings' . $s . 'tab' . $s . 'general.php' => 'General settings',
-			'admin-settings' . $s . 'tab' . $s . 'premium-integrations.php' => 'Premium integrations settings',
 			'admin-settings' . $s . 'tab' . $s . 'advanced' . $s . 'background-actions.php' => 'Background actions settings',
 			'admin-settings' . $s . 'tab' . $s . 'advanced' . $s . 'automator-cache.php' => 'Automator cache settings',
+			'admin-tools' . $s . 'tab' . $s . 'status.php' => 'Status',
+			'admin-tools' . $s . 'tab' . $s . 'tools.php'  => 'Satus > Tools',
+			'admin-tools' . $s . 'tab' . $s . 'debug.php'  => 'Status > Debug',
 		);
 
 		if ( isset( $views_to_count[ $file_name ] ) ) {
@@ -899,6 +914,7 @@ WHERE p.post_type LIKE %s
 		$usage_report_stats = automator_get_option( self::STATS_OPTION_NAME, array( 'page_views' => array() ) );
 
 		$page_views = array(
+			'name'     => $page,
 			'total'    => 0,
 			'per_user' => array( $user_id => 0 ),
 			'average'  => 0,
@@ -923,6 +939,10 @@ WHERE p.post_type LIKE %s
 		$usage_report_stats['page_views'][ $page ] = $page_views;
 
 		update_option( self::STATS_OPTION_NAME, $usage_report_stats );
+	}
+
+	public function count_premium_integration_view( $Settings_Page ) {
+		$this->increment_view( $Settings_Page->get_name() . ' Settings' );
 	}
 
 	/**

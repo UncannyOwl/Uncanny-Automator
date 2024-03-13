@@ -29,6 +29,7 @@ class Wpjm_Tokens {
 			2
 		);
 		add_filter( 'automator_maybe_parse_token', array( $this, 'wpjm_token' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'wpjm_token_form_fields' ), 20, 6 );
 	}
 
 	/**
@@ -184,6 +185,7 @@ class Wpjm_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
+		// Default Standard tokens.
 		$fields = array(
 			array(
 				'tokenId'         => 'WPJMAPPLICATIONNAME',
@@ -239,24 +241,12 @@ class Wpjm_Tokens {
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
-			//          array(
-			//              'tokenId'         => 'WPJMJOBTITLE',
-			//              'tokenName'       => __( 'Job title', 'uncanny-automator' ),
-			//              'tokenType'       => 'text',
-			//              'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			//          ),
-			//          array(
-			//              'tokenId'         => 'WPJMJOBID',
-			//              'tokenName'       => __( 'Job ID', 'uncanny-automator' ),
-			//              'tokenType'       => 'text',
-			//              'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-			//          ),
-				array(
-					'tokenId'         => 'WPJMJOBLOCATION',
-					'tokenName'       => __( 'Location', 'uncanny-automator' ),
-					'tokenType'       => 'text',
-					'tokenIdentifier' => 'WPJMJOBAPPLICATION',
-				),
+			array(
+				'tokenId'         => 'WPJMJOBLOCATION',
+				'tokenName'       => __( 'Location', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
+			),
 			array(
 				'tokenId'         => 'WPJMJOBDESCRIPTION',
 				'tokenName'       => __( 'Job description', 'uncanny-automator' ),
@@ -306,6 +296,18 @@ class Wpjm_Tokens {
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 		);
+
+		$form_fields = $this->get_job_application_form_fields();
+		if ( ! empty( $form_fields ) ) {
+			foreach ( $form_fields as $key => $field ) {
+				$fields[] = array(
+					'tokenId'         => 'WPJMAPPLICATIONFIELD_' . $key,
+					'tokenName'       => $field['label'],
+					'tokenType'       => 'text',
+					'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
+				);
+			}
+		}
 
 		$tokens = array_merge( $tokens, $fields );
 
@@ -416,26 +418,8 @@ class Wpjm_Tokens {
 
 		if ( $pieces ) {
 			if ( in_array( $piece, $pieces ) || in_array( 'WPJMJOBAPPLICATION', $pieces ) ) {
-				global $wpdb;
-				$trigger_id     = $pieces[0];
-				$trigger_meta   = $pieces[1];
-				$field          = $pieces[2];
-				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT meta_value
-FROM {$wpdb->prefix}uap_trigger_log_meta
-WHERE meta_key = %s
-  AND automator_trigger_log_id = %d
-  AND automator_trigger_id = %d
-LIMIT 0,1",
-						$trigger_meta,
-						$trigger_log_id,
-						$trigger_id
-					)
-				);
 
-				$entry = maybe_unserialize( $entry );
+				$entry = $this->get_entry_id( $pieces, $replace_args );
 
 				if ( $pieces[2] === 'WPJMJOBTYPE' ) {
 					$job_terms   = wpjm_get_the_job_types( $entry );
@@ -517,27 +501,7 @@ LIMIT 0,1",
 		if ( $pieces ) {
 
 			if ( in_array( $piece_resume, $pieces ) || in_array( 'WPJMJOBAPPLICATIONID', $pieces ) ) {
-				global $wpdb;
-				$trigger_id     = $pieces[0];
-				$trigger_meta   = $pieces[1];
-				$field          = $pieces[2];
-				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT meta_value
-FROM {$wpdb->prefix}uap_trigger_log_meta
-WHERE meta_key = %s
-  AND automator_trigger_log_id = %d
-  AND automator_trigger_id = %d
-LIMIT 0,1",
-						$trigger_meta,
-						$trigger_log_id,
-						$trigger_id
-					)
-				);
-
-				$entry = maybe_unserialize( $entry );
-
+				$entry = $this->get_entry_id( $pieces, $replace_args );
 				if ( 'WPJMRESUMENAME' === $pieces[2] || 'WPJMAPPLICATIONNAME' === $pieces[2] ) {
 					$resume = get_post( $entry );
 					$value  = $resume->post_title;
@@ -694,5 +658,125 @@ LIMIT 0,1",
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Maybe Parse form fields
+	 *
+	 * @param $value
+	 * @param $pieces
+	 * @param $recipe_id
+	 * @param $trigger_data
+	 * @param $user_id
+	 * @param $replace_args
+	 *
+	 * @return string
+	 */
+	public function wpjm_token_form_fields( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+
+		// Bail early if the pieces are empty or not an array or the WPJMJOBAPPLICATIONID is not in the pieces array
+		if ( empty( $pieces ) || ! is_array( $pieces ) || ! in_array( 'WPJMJOBAPPLICATIONID', $pieces ) ) {
+			return $value;
+		}
+
+		$token_key = $pieces[2];
+		// Bail if token key does not start with WPJMAPPLICATIONFIELD_
+		if ( strpos( $token_key, 'WPJMAPPLICATIONFIELD_' ) === false ) {
+			return $value;
+		}
+
+		$index       = str_replace( 'WPJMAPPLICATIONFIELD_', '', $token_key );
+		$form_fields = $this->get_job_application_form_fields();
+		if ( empty( $form_fields ) || ! key_exists( $index, $form_fields ) ) {
+			return $value;
+		}
+
+		// Field Configuration.
+		$field = $form_fields[ $index ];
+
+		// Entry ID.
+		$entry_id = $this->get_entry_id( $pieces, $replace_args );
+		if ( empty( $entry_id ) ) {
+			return $value;
+		}
+
+		if ( $_resume_id = get_post_meta( $entry_id, '_resume_id', true ) ) {
+			$entry_id = $_resume_id;
+		}
+
+		$raw   = get_post_meta( $entry_id, $field['label'], true );
+		$value = is_array( $raw ) ? implode( ', ', $raw ) : $raw;
+
+		return apply_filters( 'automator_wp_job_manager_application_parse_field_token_' . $index, $value, $field, $entry_id );
+	}
+
+	/**
+	 * Get the entry ID
+	 *
+	 * @param $pieces
+	 * @param $replace_args
+	 *
+	 * @return int
+	 */
+	public function get_entry_id( $pieces, $replace_args ) {
+
+		$trigger_id     = $pieces[0];
+		$trigger_meta   = $pieces[1];
+		$field          = $pieces[2];
+		$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
+
+		global $wpdb;
+		$entry = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value
+				FROM {$wpdb->prefix}uap_trigger_log_meta
+				WHERE meta_key = %s
+				AND automator_trigger_log_id = %d
+				AND automator_trigger_id = %d
+				LIMIT 0,1",
+				$trigger_meta,
+				$trigger_log_id,
+				$trigger_id
+			)
+		);
+
+		return maybe_unserialize( $entry );
+	}
+
+	/**
+	 * Get all the job application form fields
+	 *
+	 * @return array
+	 */
+	public function get_job_application_form_fields() {
+
+		$fields = array();
+
+		if ( function_exists( 'get_job_application_form_fields' ) ) {
+			$all_fields = get_job_application_form_fields();
+			// REVIEW - this will be problematic as the field keys are not consistent
+			$defaults = apply_filters(
+				'automator_wp_job_manager_application_fields_defaults',
+				array(
+					'full-name', // WPJMAPPLICATIONNAME
+					'email-address', // WPJMAPPLICATIONEMAIL
+					'message', // WPJMAPPLICATIONMESSAGE
+					'online-resume',
+					'upload-cv',  //WPJMAPPLICATIONCV
+				)
+			);
+			foreach ( $all_fields as $key => $field ) {
+				// Don't add the default fields or file fields
+				if ( in_array( $key, $defaults, true ) || 'file' === $field['type'] ) {
+					continue;
+				}
+
+				if ( apply_filters( 'automator_wp_job_manager_application_add_field_token_' . $key, true, $field ) ) {
+					$fields[ $key ] = $field;
+				}
+			}
+		}
+
+		return $fields;
 	}
 }

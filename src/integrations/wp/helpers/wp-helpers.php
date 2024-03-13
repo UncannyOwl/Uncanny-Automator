@@ -762,4 +762,90 @@ class Wp_Helpers {
 		return apply_filters( 'automator_wp_get_disabled_post_types', $post_types );
 
 	}
+
+	/**
+	 * Conditional child taxonomy checkbox
+	 *
+	 * @param string $label
+	 * @param string $option_code
+	 * @param string $comparision_code
+	 *
+	 * @return array
+	 */
+	public function conditional_child_taxonomy_checkbox( $label = null, $option_code = 'WPTAXONOMIES_CHILDREN', $comparision_code = 'WPTAXONOMIES' ) {
+
+		if ( empty( $label ) ) {
+			$label = esc_attr__( 'Also include child categories', 'uncanny-automator' );
+		}
+
+		$args = array(
+			'option_code'           => $option_code,
+			'label'                 => $label,
+			'input_type'            => 'checkbox',
+			'required'              => false,
+			'exclude_default_token' => true,
+			/*
+			'dynamic_visibility' => array(
+				'default_state'    => 'hidden',
+				'visibility_rules' => array(
+					array(
+						'operator'             => 'AND',
+						'rule_conditions'      => array(
+							array(
+								'option_code' => $comparision_code,
+								'compare'     => '==',
+								'value'       => 'category',
+							),
+						),
+						'resulting_visibility' => 'show',
+					),
+				),
+			),
+			*/
+		);
+
+		return Automator()->helpers->recipe->field->text( $args );
+	}
+
+	/**
+	 * Get term child of a parent term from provided post terms.
+	 *
+	 * @param array $post_terms
+	 * @param int $parent_term_id
+	 * @param string $taxonomy
+	 * @param int $post_id
+	 *
+	 * @return mixed WP_Term|false
+	 */
+	public function get_term_child_of( $post_terms, $parent_term_id, $taxonomy, $post_id ) {
+
+		if ( empty( $post_terms ) || ! is_array( $post_terms ) ) {
+			return false;
+		}
+
+		// Check Post Type for the post
+		$allowed_post_types = apply_filters( 'automator_allowed_category_taxonomy_children_post_types', array( 'post' ) );
+		if ( ! in_array( get_post_type( $post_id ), $allowed_post_types, true ) ) {
+			return false;
+		}
+
+		$allowed_taxonomies = apply_filters( 'automator_allowed_category_taxonomy_children_taxonomies', array( 'category' ) );
+		if ( ! is_array( $allowed_taxonomies ) || ! in_array( $taxonomy, $allowed_taxonomies, true ) ) {
+			return false;
+		}
+
+		// Get all child terms of the parent term
+		$child_terms = get_term_children( $parent_term_id, $taxonomy );
+		if ( empty( $child_terms ) || is_wp_error( $child_terms ) ) {
+			return false;
+		}
+
+		foreach ( $post_terms as $post_term ) {
+			if ( in_array( $post_term->term_id, $child_terms, true ) && $post_term->taxonomy === $taxonomy ) {
+				return $post_term;
+			}
+		}
+
+		return false;
+	}
 }

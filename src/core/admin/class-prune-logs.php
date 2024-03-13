@@ -14,6 +14,13 @@ use Exception;
 class Prune_Logs {
 
 	/**
+	 * Key for the cron schedule that calculates the table sizes.
+	 *
+	 * @var string
+	 */
+	public static $cron_schedule = 'automator_calculate_tables_size';
+
+	/**
 	 * Sane default for the minimum input.
 	 *
 	 * @var float
@@ -35,11 +42,16 @@ class Prune_Logs {
 	 * @return void
 	 */
 	public function __construct( $should_register_hooks = true ) {
+
 		if ( $should_register_hooks ) {
 			$this->register_hooks();
 		}
 
 		$this->minimum_input = apply_filters( 'automator_prune_logs_minimum_input', $this->minimum_input );
+
+		// This hook needs to be registered unconditionally.
+		add_action( self::$cron_schedule, array( $this, 'calculate_and_save_table_size' ) );
+
 	}
 
 	/**
@@ -87,9 +99,117 @@ class Prune_Logs {
 
 		add_action( 'admin_init', array( $this, 'maybe_update_automator_delete_data_on_uninstall' ) );
 
-		// Register settings
+		// Db size to prune notification.
+		add_action( 'automator_show_internal_admin_notice', array( $this, 'display_log_size_notification' ) );
+
+		// Log size notification.
+		add_action( 'wp_ajax_automator_dismiss_log_notification', array( $this, 'dismiss_log_notification' ) );
+
+		$this->schedule_table_size_calculation();
+
+		// Register settings.
 		$this->register_settings();
 
+	}
+
+	/**
+	 * Dismisses the log's notification.
+	 *
+	 * @return void
+	 */
+	public function dismiss_log_notification() {
+
+		if ( ! current_user_can( 'manage_options' ) || wp_verify_nonce( 'dismiss_log_notification', 'dismiss_log_notification' ) ) {
+			wp_die( 'Unauthorized.' );
+		}
+
+		update_option( 'automator_dismiss_log_last_dismissed', time() );
+
+		wp_safe_redirect( wp_get_referer() );
+
+		die;
+
+	}
+
+	/**
+	 * Display log notification.
+	 *
+	 * @return void
+	 */
+	public function display_log_size_notification() {
+
+		// Only display on areas where credits are also displayed.
+		if ( ! Automator_Review::can_display_credits_notif() ) {
+			return;
+		}
+
+		$table_size = get_option( 'automator_db_size', 0 );
+
+		if ( 0 === (int) $table_size ) {
+			$table_size = $this->calculate_and_save_table_size();
+		}
+
+		$threshold_size = apply_filters( 'automator_display_log_size_notification_threshold_size_in_mb', 1024 );
+		$threshold_days = apply_filters( 'automator_display_log_size_notification_threshold_days', 30 );
+
+		$min_db_size = $table_size >= $threshold_size;
+
+		$days_last_dismissed = intval( get_option( 'automator_dismiss_log_last_dismissed', 0 ) );
+
+		// Calculate the difference in seconds
+		$diff_in_seconds = time() - $days_last_dismissed;
+
+		// Convert seconds to days
+		$days_difference = ceil( $diff_in_seconds / ( 60 * 60 * 24 ) );
+
+		if ( $min_db_size && $days_difference >= $threshold_days ) {
+			// Load assets
+			Automator_Review::load_banner_assets();
+
+			include_once Utilities::automator_get_view( 'table-size-exceeds.php' );
+		}
+	}
+
+	/**
+	 * @param $number
+	 *
+	 * @return string
+	 */
+	public static function format_number_in_kb_mb_gb( $number ) {
+
+		if ( $number < 1024 ) {
+			return sprintf( __( '%d MB', 'uncanny-automator' ), $number );
+		}
+
+		return sprintf( __( '%d GB', 'uncanny-automator' ), $number );
+	}
+
+	/**
+	 * Calculate and save table size total.
+	 *
+	 * @return float
+	 */
+	public function calculate_and_save_table_size() {
+
+		$total_size = Automator_System_Report::get_tables_total_size();
+
+		update_option( 'automator_db_size', $total_size, 'no' );
+
+		return $total_size;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function schedule_table_size_calculation() {
+		$table_size = get_option( 'automator_db_size', 0 );
+		if ( 0 === absint( $table_size ) ) {
+			$this->calculate_and_save_table_size();
+		}
+
+		if ( ! wp_next_scheduled( self::$cron_schedule ) ) {
+			wp_schedule_event( strtotime( 'midnight' ), 'daily', self::$cron_schedule );
+		}
 	}
 
 	/**
@@ -426,6 +546,9 @@ class Prune_Logs {
 		return;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function maybe_update_automator_delete_data_on_uninstall() {
 
 		if ( ! automator_filter_has_var( '_wpnonce', INPUT_POST ) ) {

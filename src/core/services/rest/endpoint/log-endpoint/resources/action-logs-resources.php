@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources;
 
 use Uncanny_Automator\Resolver\Fields_Conditions_Resolver;
@@ -8,6 +9,9 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Helpers\Conditions_Helper;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 
+/**
+ *
+ */
 class Action_Logs_Resources {
 
 	/**
@@ -53,7 +57,7 @@ class Action_Logs_Resources {
 		Formatters_Utils $utils,
 		Automator_Factory $automator_factory,
 		Loop_Logs_Resources $loop_log_resources
-		) {
+	) {
 
 		$this->utils               = $utils;
 		$this->action_logs_queries = $action_logs_queries;
@@ -62,6 +66,9 @@ class Action_Logs_Resources {
 
 	}
 
+	/**
+	 * @return \Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils|null
+	 */
 	public function get_utils() {
 		return $this->utils;
 	}
@@ -73,6 +80,7 @@ class Action_Logs_Resources {
 	 */
 	public function set_field_conditions_resolver( Fields_Conditions_Resolver $field_conditions_resolver ) {
 		$this->field_conditions_resolver = $field_conditions_resolver;
+
 		return $this;
 	}
 
@@ -83,6 +91,7 @@ class Action_Logs_Resources {
 	 */
 	public function set_conditions( Conditions_Helper $conditions ) {
 		$this->conditions = $conditions;
+
 		return $this;
 	}
 
@@ -123,6 +132,7 @@ class Action_Logs_Resources {
 		}
 		$result = $this->action_logs_queries->get_recipe_actions_logs_raw( $params );
 		wp_cache_set( $key, $result, 'automator_log' );
+
 		return $result;
 	}
 
@@ -222,7 +232,8 @@ class Action_Logs_Resources {
 			} else {
 				// Otherwise, proceed as normal.
 				// Ignore the following errors in phpstan, as we have to inject the array values into keys. No need for 'key' checking.
-				$fields[ $key ]['value']['parsed'] = $replaced_values; /** @phpstan-ignore-line */
+				$fields[ $key ]['value']['parsed'] = $replaced_values;
+				/** @phpstan-ignore-line */
 			}
 		}
 
@@ -402,11 +413,12 @@ class Action_Logs_Resources {
 		);
 
 		$end_date = isset( $action_runs[ count( $action_runs ) - 1 ]['date'] ) /** @phpstan-ignore-line False positive. */
-					? $action_runs[ count( $action_runs ) - 1 ]['date'] /** @phpstan-ignore-line False positive. */
-					: null;
+			? $action_runs[ count( $action_runs ) - 1 ]['date'] /** @phpstan-ignore-line False positive. */
+			: null;
 
-		$start_date = isset( $action_runs[0]['date'] ) ? $action_runs[0]['date'] : null; /** @phpstan-ignore-line False positive. */
-		$_ts        = isset( $action_runs[0]['_timestamp'] ) ? $action_runs[0]['_timestamp'] : null;
+		$start_date = isset( $action_runs[0]['date'] ) ? $action_runs[0]['date'] : null;
+		/** @phpstan-ignore-line False positive. */
+		$_ts = isset( $action_runs[0]['_timestamp'] ) ? $action_runs[0]['_timestamp'] : null;
 
 		$action_sentence_html = Automator()->db->action->get_meta( $action_log['action_log_id'], 'sentence_human_readable_html' );
 
@@ -464,7 +476,6 @@ class Action_Logs_Resources {
 	 * @return mixed[]|false
 	 */
 	protected function fabricate_item_with_delay_not_started( $action_meta = array() ) {
-
 		$utils = $this->get_utils();
 
 		if ( 'delay' === $action_meta['async_mode'] ) {
@@ -489,6 +500,17 @@ class Action_Logs_Resources {
 				'status_id'  => 'not-completed',
 				'start_date' => $action_meta['async_sentence'],
 				'_timestamp' => strtotime( $action_meta['async_sentence'] ),
+				'end_date'   => null,
+			);
+
+		}
+
+		if ( 'custom' === $action_meta['async_mode'] ) {
+
+			return array(
+				'status_id'  => 'not-completed',
+				'start_date' => $action_meta['async_sentence'],
+				'_timestamp' => strtotime( $action_meta['async_sentence'], wp_timezone() ),
 				'end_date'   => null,
 			);
 
@@ -523,9 +545,9 @@ class Action_Logs_Resources {
 		$status = $this->automator_factory->status();
 
 		$item_is_in_progressed = isset( $action_runs[0]['status_id'] ) /** @phpstan-ignore-line False positive. */
-			&& $action_runs[0]['status_id'] === $this->automator_factory->status()->get_class_name( /** @phpstan-ignore-line False positive. */
-				$status::IN_PROGRESS
-			);
+								&& $action_runs[0]['status_id'] === $this->automator_factory->status()->get_class_name( /** @phpstan-ignore-line False positive. */
+									$status::IN_PROGRESS
+								);
 
 		$trigger_is_not_yet_completed = empty( $this->get_recipe_actions_logs_raw( $params ) );
 
@@ -543,21 +565,17 @@ class Action_Logs_Resources {
 				$status_id = 'scheduled';
 			}
 
-			$item['status_id'] = $status_id;
+			$date = new \DateTime( '@' . $delay_props['time'] );
+			//if ( isset( $action_meta['async_mode'] ) && 'custom' !== $action_meta['async_mode'] ) {
+			$date->setTimezone( wp_timezone() ); // Set the timezone
+			//}
 
-			$time_string = null;
-			$date_time   = new \DateTime( 'now', new \DateTimeZone( Automator()->get_timezone_string() ) );
-
-			if ( false !== $date_time ) {
-				$date_time->setTimestamp( $delay_props['time'] );
-				$time_string = $date_time->format( 'Y-m-d H:i:s' );
-				$time_ts     = $date_time->format( 'U' );
-			}
+			$date->format( 'Y-m-d H:i:s' ); // Return formatted timestamp
 
 			return array(
 				'status_id'  => $status_id,
-				'start_date' => $this->utils->date_time_format( $time_string ),
-				'_timestamp' => intval( $time_ts ),
+				'start_date' => $this->utils->date_time_format( $date->format( 'Y-m-d H:i:s' ) ),
+				'_timestamp' => $date->getTimestamp(),
 				'end_date'   => null,
 			);
 
@@ -613,12 +631,15 @@ class Action_Logs_Resources {
 		);
 
 		$timestamp = null;
-		if ( isset( $runs[0]['_timestamp'] ) ) { /** @phpstan-ignore-line False positive. */
-			$timestamp = $runs[0]['_timestamp']; /** @phpstan-ignore-line False positive. */
+		if ( isset( $runs[0]['_timestamp'] ) ) {
+			/** @phpstan-ignore-line False positive. */
+			$timestamp = $runs[0]['_timestamp'];
+			/** @phpstan-ignore-line False positive. */
 		}
 
 		$result_message = '';
-		if ( isset( $runs[ count( $runs ) - 1 ]['result_message'] ) ) { /** @phpstan-ignore-line False positive from dynamic array. */
+		if ( isset( $runs[ count( $runs ) - 1 ]['result_message'] ) ) {
+			/** @phpstan-ignore-line False positive from dynamic array. */
 			$result_message = $runs[ count( $runs ) - 1 ]['result_message'];
 		}
 
@@ -824,7 +845,7 @@ class Action_Logs_Resources {
 	 * @param array{recipe_id:int, recipe_log_id: int, run_number:int} $params
 	 *
 	 * @return mixed[]
-	*/
+	 */
 	public function get_log( $params ) {
 
 		$actions_flow    = $this->action_logs_queries->get_recipe_actions_flow( $params );
@@ -891,7 +912,8 @@ class Action_Logs_Resources {
 				$results_formatted[] = array(
 					'type'                  => 'filter',
 					'id'                    => $action_flow_key,
-					'logic'                 => $hashed_conditions[ $action_flow_key ]['mode'], // @phpstan-ignore-line Any or All.
+					'logic'                 => $hashed_conditions[ $action_flow_key ]['mode'],
+					// @phpstan-ignore-line Any or All.
 					'conditions'            => $conditions,
 					'conditions_fullfilled' => $passed,
 					'items'                 => $action_items,
@@ -900,7 +922,7 @@ class Action_Logs_Resources {
 			} else {
 				$results_formatted[] = $this->resolve_action_item( $params, $actions_flattened, $action_flow_key );
 			}
-			$item_index++;
+			$item_index ++;
 		}
 
 		// Handle legacy.

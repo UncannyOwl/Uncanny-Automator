@@ -298,15 +298,16 @@ class Automator_System_Report {
 		// It is not possible to get the database name from some classes that replace wpdb (e.g., HyperDB)
 		// and that is why this if condition is needed.
 		if ( defined( 'DB_NAME' ) ) {
+
 			$database_table_information = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT
-					    table_name AS 'name',
-						engine AS 'engine',
+					    TABLE_NAME AS 'name',
+						ENGINE AS 'engine',
 					    round( ( data_length / 1024 / 1024 ), 2 ) 'data',
 					    round( ( index_length / 1024 / 1024 ), 2 ) 'index'
 					FROM information_schema.TABLES
-					WHERE table_schema = %s
+					WHERE TABLE_SCHEMA = %s
 					ORDER BY name ASC;",
 					DB_NAME
 				)
@@ -370,8 +371,9 @@ class Automator_System_Report {
 
 				// Only include tables matching the prefix of the current site, this is to prevent displaying all tables on a MS install not relating to the current.
 				if ( is_multisite() && 0 !== strpos( $table_name, $site_tables_prefix ) && ! in_array( $table_name, $global_tables, true ) ) {
-					continue;
+					continue; // skip
 				}
+
 				$table_type = in_array( $table_name, $core_tables, true ) ? 'automator' : 'other';
 
 				$tables[ $table_type ][ $table_name ] = array(
@@ -396,6 +398,7 @@ class Automator_System_Report {
 			'database_tables'                           => $tables,
 			'database_size'                             => $database_size,
 		);
+
 	}
 
 	/**
@@ -424,6 +427,38 @@ class Automator_System_Report {
 		}
 
 		return $active_plugins_data;
+	}
+
+	/**
+	 * Get the total sizes of the table.
+	 *
+	 * @return float
+	 */
+	public static function get_tables_total_size() {
+
+		global $wpdb;
+
+		$sum = 0;
+
+		$tables = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT TABLE_NAME AS `table_name`, ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024, 2) AS `size_mb`
+					FROM information_schema.TABLES
+				WHERE TABLE_SCHEMA = %s
+				AND TABLE_NAME like '%uap%' AND TABLE_NAME NOT LIKE '%_view'
+				ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC;
+				",
+				DB_NAME
+			),
+			ARRAY_A
+		);
+
+		foreach ( $tables as $table ) {
+			$sum += floatval( $table['size_mb'] );
+		}
+
+		return round( $sum, 2 );
+
 	}
 
 	/**

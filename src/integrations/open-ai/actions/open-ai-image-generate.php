@@ -296,7 +296,9 @@ class OPEN_AI_IMAGE_GENERATE {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
-		$attachment_id = media_sideload_image( $image_url, null, $prompt, 'id' );
+		$description = apply_filters( 'automator_openai_image_generate_description', $prompt );
+
+		$attachment_id = media_sideload_image( $image_url, null, $description, 'id' );
 
 		if ( is_wp_error( $attachment_id ) ) {
 			automator_log( $attachment_id->get_error_message(), 'OpenAI insert_to_media error', true, 'openai' );

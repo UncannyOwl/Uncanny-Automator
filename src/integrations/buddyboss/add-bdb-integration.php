@@ -35,4 +35,5 @@ class Add_Bdb_Integration {
 	public function plugin_active() {
 		return function_exists( 'buddypress' ) && isset( buddypress()->buddyboss ) && buddypress()->buddyboss;
 	}
+
 }

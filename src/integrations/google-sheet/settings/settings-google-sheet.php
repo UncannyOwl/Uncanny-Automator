@@ -72,13 +72,11 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 				'page'        => 'uncanny-automator-config',
 				'tab'         => 'premium-integrations',
 				'integration' => 'google-sheet',
+				'nonce'       => $nonce,
 			),
 			admin_url( 'edit.php' )
 		);
 
-		set_transient( 'automator_api_google_authorize_nonce', $nonce, 3600 );
-
-		// Construct the OAuth uri.
 		$auth_uri = add_query_arg(
 			array(
 				'action'       => 'authorization_request',

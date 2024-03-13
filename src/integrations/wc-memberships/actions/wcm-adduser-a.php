@@ -69,7 +69,10 @@ class WCM_ADDUSER_A {
 				'options' => array(
 					Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
 						null,
-						$this->action_meta
+						$this->action_meta,
+						array(
+							'token' => true,
+						)
 					),
 				),
 			)

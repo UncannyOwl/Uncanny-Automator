@@ -11,6 +11,12 @@ use SureCart\Models\Product;
  */
 class SureCart_Helpers {
 
+	/**
+	 * get_products_dropdown
+	 *
+	 * @param  mixed $add_any
+	 * @return array
+	 */
 	public function get_products_dropdown( $add_any = true ) {
 
 		$options = array();

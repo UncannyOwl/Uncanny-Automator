@@ -3,23 +3,23 @@
 <div id="uap-review-banner" class="uap notice">
 
 	<uo-alert
-		heading="<?php printf( esc_attr_x( 'You\'ve been busy. Uncanny Automator has already {{sent %1$s emails}}!', 'Reviews banner', 'uncanny-automator' ), absint( $vars['emails_sent'] ) ); ?>"
+		heading="<?php printf( esc_attr_x( "You've been busy. Uncanny Automator has already {{sent %1\$s emails}}!", 'Reviews banner', 'uncanny-automator' ), absint( $vars['emails_sent'] ) ); ?>"
 		type="white"
 		custom-icon
 	>
-		<uo-button 
+		<uo-button
 			href="<?php echo esc_url( $vars['url_close_button'] ); ?>"
 
 			data-action="hide-banner-on-click"
 
-			slot="top-right-icon" 
-			color="transparent" 
+			slot="top-right-icon"
+			color="transparent"
 			size="small"
 		>
 			<uo-icon id="times"></uo-icon>
 		</uo-button>
 
-		<img 
+		<img
 			slot="icon"
 			src="<?php echo esc_url( Utilities::automator_get_asset( 'backend/dist/img/robot-feedback.svg' ) ); ?>"
 			width="90px"

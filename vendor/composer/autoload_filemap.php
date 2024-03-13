@@ -5,6 +5,7 @@ return array(
 $baseDir .     '/src/integrations/rafflepress/load.php',
 $baseDir .     '/src/integrations/microsoft-teams/load.php',
 $baseDir .     '/src/integrations/thrive-architect/load.php',
+$baseDir .     '/src/integrations/wp-discuz/load.php',
 $baseDir .     '/src/integrations/datetime/load.php',
 $baseDir .     '/src/integrations/mautic/load.php',
 $baseDir .     '/src/integrations/pretty-links/load.php',

@@ -130,6 +130,7 @@ final class Action implements \JsonSerializable {
 				'async_schedule_time' => null,
 				'async_schedule_date' => null,
 				'async_sentence'      => null,
+				'async_custom'        => null,
 			)
 		);
 
@@ -148,6 +149,9 @@ final class Action implements \JsonSerializable {
 			),
 			'SCHEDULE_DATE' => array(
 				'value' => $args['async_schedule_date'],
+			),
+			'CUSTOM_VALUE'  => array(
+				'value' => $args['async_custom'],
 			),
 		);
 	}

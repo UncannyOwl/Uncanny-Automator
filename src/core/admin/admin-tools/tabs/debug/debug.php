@@ -59,7 +59,7 @@ class Admin_Tools_Debug_Debug {
 					'automator_admin_tools_debug_tabs',
 					function ( $tabs ) use ( $file ) {
 
-						$tab_id = strtolower( sanitize_file_name( $file ) );
+						$tab_id = sanitize_file_name( $file );
 
 						$ext = pathinfo( $tab_id, PATHINFO_EXTENSION );
 
