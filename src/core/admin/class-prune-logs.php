@@ -181,6 +181,9 @@ class Prune_Logs {
 			return sprintf( __( '%d MB', 'uncanny-automator' ), $number );
 		}
 
+		// Convert in to GB
+		$number = round( ( $number / 1024 ), 0 );
+
 		return sprintf( __( '%d GB', 'uncanny-automator' ), $number );
 	}
 

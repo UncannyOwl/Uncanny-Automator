@@ -443,13 +443,26 @@ class Automator_Review {
 	 */
 	public function hide_all_admin_notices_on_automator_pages() {
 
-		if ( ! self::can_display_credits_notif() ) {
+		$current_screen = get_current_screen();
+
+		// Do not show if we cannot identify which screen it is.
+		if ( ! $current_screen instanceof \WP_Screen ) {
 			return;
 		}
 
-		// Remove all admin notices
-		remove_all_actions( 'admin_notices' );
-		remove_all_actions( 'all_admin_notices' );
+		// Safe check in case WP_Screen changed its structure.
+		if ( ! isset( $current_screen->id ) ) {
+			return;
+		}
+
+		$allowed_pages = self::get_allowed_page_for_credits_notif( true );
+
+		// Only remove admin_notices if its on Automator pages
+		if ( in_array( $current_screen->id, $allowed_pages, true ) ) {
+			// Remove all admin notices
+			remove_all_actions( 'admin_notices' );
+			remove_all_actions( 'all_admin_notices' );
+		}
 
 		do_action( 'automator_show_internal_admin_notice' );
 	}
@@ -584,11 +597,16 @@ class Automator_Review {
 	 *
 	 * @return string[]
 	 */
-	public static function get_allowed_page_for_credits_notif() {
+	public static function get_allowed_page_for_credits_notif( $remove_notices_action = false ) {
 
-		$allowed_pages = array(
+		$wp_pages = array(
 			'dashboard',
 			'plugins',
+			'edit-page', // The 'edit-page' refers to wp-admin/edit.php?post-type=page not the edit screen.
+			'edit-post', // The 'edit-post' refers to wp-admin/edit.php not the edit screen.
+		);
+
+		$automator_pages = array(
 			'edit-recipe_category',
 			'edit-recipe_tag',
 			'uo-recipe_page_uncanny-automator-dashboard',
@@ -600,12 +618,15 @@ class Automator_Review {
 			'uo-recipe_page_uncanny-automator-pro-upgrade',
 			'uo-recipe',
 			'edit-uo-recipe',
-			'edit-page', // The 'edit-page' refers to wp-admin/edit.php?post-type=page not the edit screen.
-			'edit-post', // The 'edit-post' refers to wp-admin/edit.php not the edit screen.
 		);
 
-		return $allowed_pages;
+		$allowed_pages = $automator_pages;
 
+		if ( false === $remove_notices_action ) {
+			$allowed_pages = array_merge( $allowed_pages, $wp_pages );
+		}
+
+		return $allowed_pages;
 	}
 
 	/**

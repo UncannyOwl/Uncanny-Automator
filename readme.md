@@ -5,7 +5,7 @@
 **Requires at least:** 5.4 \
 **Tested up to:** 6.4.3 \
 **Requires PHP:** 7.0 \
-**Stable tag:** 5.6 \
+**Stable tag:** 5.6.0.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -372,6 +372,16 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.6.0.1 [2024-03-14]
+
+**Fix:**
+
+* Automator - Erroneously hiding some admin notices on some pages #4496
+
+**Under the hood:**
+
+* Status Check - Updated the GET and POST endpoints #4498
 
 ### 5.6 [2024-03-13]
 

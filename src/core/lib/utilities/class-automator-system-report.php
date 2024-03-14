@@ -132,13 +132,15 @@ class Automator_System_Report {
 
 			if ( false === $post_response_code || is_wp_error( $post_response_code ) ) {
 				$response = wp_safe_remote_post(
-					'https://automatorplugin.com/',
+					'https://licensing.uncannyowl.com/automator-check',
 					array(
-						'timeout'     => 10,
-						'user-agent'  => 'Automator/' . AUTOMATOR_PLUGIN_VERSION,
-						'httpversion' => '1.1',
-						'body'        => array(
+						'timeout'    => 5,
+						'user-agent' => 'Automator/' . AUTOMATOR_PLUGIN_VERSION,
+						'body'       => array(
 							'cmd' => '_notify-validate',
+						),
+						'headers'    => array(
+							'X-UO-Destination' => 'ap',
 						),
 					)
 				);
@@ -158,7 +160,7 @@ class Automator_System_Report {
 			$get_response_code = get_transient( 'automator_test_remote_get' );
 
 			if ( false === $get_response_code || is_wp_error( $get_response_code ) ) {
-				$response = wp_safe_remote_get( 'https://automatorplugin.com/' );
+				$response = wp_safe_remote_get( 'https://licensing.uncannyowl.com/automator-check' );
 				if ( ! is_wp_error( $response ) ) {
 					$get_response_code = $response['response']['code'];
 				}

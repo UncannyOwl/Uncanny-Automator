@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 5.6\n"
+"Project-Id-Version: Uncanny Automator 5.6.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-03-13T16:27:45+00:00\n"
+"POT-Creation-Date: 2024-03-14T16:15:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: uncanny-automator\n"
@@ -1233,21 +1233,21 @@ msgstr ""
 msgid "%d MB"
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:184
+#: src/core/admin/class-prune-logs.php:187
 msgid "%d GB"
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:326
+#: src/core/admin/class-prune-logs.php:329
 msgctxt "Prune logs"
 msgid "Invalid nonce."
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:488
+#: src/core/admin/class-prune-logs.php:491
 msgctxt "Prune logs"
 msgid "Invalid input. Please ensure that the \"Days\" field contains a valid numeric value, is not empty, and is not equal to zero."
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:496
+#: src/core/admin/class-prune-logs.php:499
 msgctxt "Prune logs"
 msgid "The field \"Days\" must be greater than or equals to "
 msgstr ""
@@ -1774,7 +1774,7 @@ msgid "Count me in!"
 msgstr ""
 
 #: src/core/admin/setup-wizard/src/views/step-2.php:67
-#: src/core/lib/utilities/class-automator-system-report.php:657
+#: src/core/lib/utilities/class-automator-system-report.php:659
 #: src/core/lib/utilities/class-automator-translations.php:716
 msgid "Not connected"
 msgstr ""
@@ -4735,17 +4735,17 @@ msgid "cURL installed but unable to retrieve version."
 msgstr ""
 
 #. translators: Comma seperated list of missing tables.
-#: src/core/lib/utilities/class-automator-system-report.php:279
+#: src/core/lib/utilities/class-automator-system-report.php:281
 msgid "Missing base tables: %s. Some Automator functionality may not work as expected."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-system-report.php:615
+#: src/core/lib/utilities/class-automator-system-report.php:617
 #: src/core/views/html-admin-status.php:766
 msgid "Visit plugin homepage"
 msgstr ""
 
 #. translators: %s: plugin author
-#: src/core/lib/utilities/class-automator-system-report.php:627
+#: src/core/lib/utilities/class-automator-system-report.php:629
 #: src/core/views/html-admin-status.php:780
 msgid "by %s"
 msgstr ""
