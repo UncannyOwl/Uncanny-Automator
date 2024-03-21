@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks, woocommerce, wpfor
 Requires at least: 5.4
 Tested up to: 6.4.3
 Requires PHP: 7.0
-Stable tag: 5.6.0.1
+Stable tag: 5.6.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -241,7 +241,7 @@ All WP plugin triggers and actions included in Uncanny Automator come with a for
 
 = Take automation to the next level =
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations integrations like Google Sheets and Twitter. It also triples the number of available triggers and actions.
+[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations like Google Sheets and Twitter. It also triples the number of available triggers and actions.
 
 Pro also adds features like [Run Now](https://automatorplugin.com/knowledge-base/run-now/?utm_source=wp_repo_automator&utm_medium=readme) and [Loops](https://automatorplugin.com/knowledge-base/user-loops/?utm_source=wp_repo_automator&utm_medium=readme), which allow you to do things like send emails to all users matching certain criteria, tagging users based on site activity, or even generating instant reports in Google Sheets of all users that completed a specific course, purchased a certain product, or anything else you can imagine. 
 
@@ -250,7 +250,7 @@ Here are some of the other really cool automations you can create with [Automato
 - When a user makes a purchase using WooCommerce on one site, create a user on another WP site, send the user a link to set a new password, enroll the user in a course and add a membership level.
 - When a user submits a form, add the user to a mailing list if their email address matches a certain domain, add them to a social group and schedule their trial access to expire in 7 days if they don't make a purchase.
 - When a new course is published, send an email campaign, post to X/Twitter and Facebook with GPT-generated content, post to the BuddyBoss sitewide activity stream and notify instructors in a Slack channel.
-- Whenever you want, generate a list all users in a group that haven't yet completed a course.
+- Whenever you want, generate a list of all users in a group that haven't yet completed a course.
 
 And here are some of the key features in the Pro version that allow incredibly flexible and powerful automations for WP:
 
@@ -347,6 +347,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.6.0.2 [2024-03-21] =
+
+**Under the hood:**
+
+* Recipe UI - Filters block not rendering on screen when custom delay option is used in Automator Pro #4509
 
 = 5.6.0.1 [2024-03-14] =
 

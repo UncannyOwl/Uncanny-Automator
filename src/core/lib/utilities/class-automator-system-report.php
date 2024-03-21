@@ -123,7 +123,7 @@ class Automator_System_Report {
 		if ( function_exists( 'memory_get_usage' ) ) {
 			$wp_memory_limit = max( $wp_memory_limit, $this->automator_string_to_num( @ini_get( 'memory_limit' ) ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		}
-
+		$automator_check_url = 'https://licensing.uncannyowl.com/automator-check?version=' . AUTOMATOR_PLUGIN_VERSION;
 		// Test POST requests.
 		$post_response_successful = null;
 		$post_response_code       = null;
@@ -132,7 +132,7 @@ class Automator_System_Report {
 
 			if ( false === $post_response_code || is_wp_error( $post_response_code ) ) {
 				$response = wp_safe_remote_post(
-					'https://licensing.uncannyowl.com/automator-check',
+					$automator_check_url,
 					array(
 						'timeout'    => 5,
 						'user-agent' => 'Automator/' . AUTOMATOR_PLUGIN_VERSION,
@@ -160,7 +160,7 @@ class Automator_System_Report {
 			$get_response_code = get_transient( 'automator_test_remote_get' );
 
 			if ( false === $get_response_code || is_wp_error( $get_response_code ) ) {
-				$response = wp_safe_remote_get( 'https://licensing.uncannyowl.com/automator-check' );
+				$response = wp_safe_remote_get( $automator_check_url );
 				if ( ! is_wp_error( $response ) ) {
 					$get_response_code = $response['response']['code'];
 				}

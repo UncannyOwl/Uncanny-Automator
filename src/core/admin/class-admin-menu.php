@@ -1704,9 +1704,18 @@ class Admin_Menu {
 		// Convert array to JSON and then encode it with Base64
 		$encoded_data = base64_encode( wp_json_encode( $data ) ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 
+		$item_name    = AUTOMATOR_FREE_ITEM_NAME;
+		$item_version = AUTOMATOR_PLUGIN_VERSION;
+		if ( defined( 'AUTOMATOR_PRO_ITEM_ID' ) && (int) AUTOMATOR_PRO_ITEM_ID === (int) $item_id ) {
+			$item_name    = AUTOMATOR_PRO_ITEM_NAME;
+			$item_version = AUTOMATOR_PRO_PLUGIN_VERSION;
+		}
+
 		// Call the custom API.
+		$url = $store_url . $endpoint . '?plugin=' . rawurlencode( $item_name ) . '&version=' . $item_version;
+
 		$response = wp_remote_post(
-			$store_url . $endpoint,
+			$url,
 			array(
 				'timeout'   => 10,
 				'body'      => '',
