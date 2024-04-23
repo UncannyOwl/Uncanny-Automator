@@ -102,11 +102,13 @@ class Automator_Send_Webhook_Fields {
 			'required'      => true,
 			'default_value' => 'POST',
 			'options'       => array(
-				'GET'    => 'GET',
-				'PUT'    => 'PUT',
-				'POST'   => 'POST',
-				'DELETE' => 'DELETE',
-				'HEAD'   => 'HEAD',
+				'GET'     => 'GET',
+				'PUT'     => 'PUT',
+				'POST'    => 'POST',
+				'PATCH'   => 'PATCH',
+				'DELETE'  => 'DELETE',
+				'HEAD'    => 'HEAD',
+				'OPTIONS' => 'OPTIONS',
 			),
 		);
 
@@ -131,6 +133,22 @@ class Automator_Send_Webhook_Fields {
 				'supports_custom_value' => false,
 				'default_value'         => $default,
 				'options'               => $options,
+				'dynamic_visibility'    => array(
+					'default_state'    => 'visible',
+					'visibility_rules' => array(
+						array(
+							'operator'             => 'AND',
+							'rule_conditions'      => array(
+								array(
+									'option_code' => 'ACTION_EVENT',
+									'compare'     => '==',
+									'value'       => 'GET',
+								),
+							),
+							'resulting_visibility' => 'hide',
+						),
+					),
+				),
 			);
 			$fields[]     = $data_formats;
 		}

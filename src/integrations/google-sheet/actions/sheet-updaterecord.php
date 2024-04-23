@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Exception;
+
 /**
  * Class SHEET_UPDATERECORD
  *
@@ -548,7 +550,31 @@ class SHEET_UPDATERECORD {
 	}
 
 
+	/**
+	 *
+	 * @param mixed $worksheet_fields
+	 * @param mixed $recipe_id
+	 * @param mixed $user_id
+	 * @param mixed $args
+	 * @return string|false
+	 */
+	public static function parse_field_values( $worksheet_fields, $recipe_id, $user_id, $args ) {
 
+		$key_values = array();
+
+		$fields = (array) json_decode( $worksheet_fields, true );
+
+		$fields_count = count( $fields );
+
+		for ( $i = 0; $i < $fields_count; $i ++ ) {
+			$key                = $fields[ $i ]['GS_COLUMN_NAME'];
+			$value              = Automator()->parse->text( $fields[ $i ]['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
+			$key_values[ $key ] = $value;
+		}
+
+		return wp_json_encode( $key_values );
+
+	}
 
 	/**
 	 * Validation function when the action is hit
@@ -560,136 +586,85 @@ class SHEET_UPDATERECORD {
 	 */
 	public function update_row_google_sheet( $user_id, $action_data, $recipe_id, $args ) {
 
-		$gs_spreadsheet       = $action_data['meta']['GSSPREADSHEET'];
+		$spreadsheet_id       = $action_data['meta']['GSSPREADSHEET'];
 		$gs_worksheet         = $action_data['meta']['GSWORKSHEET'];
 		$lookup_field         = $action_data['meta']['GSWORKSHEETCOLUMN'];
 		$update_multiple_rows = $action_data['meta']['UPDATE_MULTIPLE_ROWS'];
 		$lookup_field_value   = Automator()->parse->text( $action_data['meta']['GSWORKSHEET_SOURCE_VALUE'], $recipe_id, $user_id, $args );
-		$worksheet_field      = $action_data['meta']['WORKSHEET_FIELDS'];
-		$fields               = json_decode( $worksheet_field, true );
 
-		$key_values      = array();
-		$check_all_empty = true;
-		$hashed          = sha1( Google_Sheet_Helpers::$hash_string );
-		$sheet_id        = substr( $hashed, 0, 9 );
+		// Fields repeater.
+		$row_repeater = $action_data['meta']['WORKSHEET_FIELDS'];
+		$fields       = json_decode( $row_repeater, true );
+
+		$hashed   = sha1( Google_Sheet_Helpers::$hash_string );
+		$sheet_id = substr( $hashed, 0, 9 );
 
 		if ( (string) $gs_worksheet === (string) $sheet_id || intval( '-1' ) === intval( $gs_worksheet ) ) {
 			$gs_worksheet = 0;
 		}
 
-		$fields_count = count( $fields );
-
-		for ( $i = 0; $i < $fields_count; $i ++ ) {
-			$key                = $fields[ $i ]['GS_COLUMN_NAME'];
-			$value              = Automator()->parse->text( $fields[ $i ]['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
-			$key_values[ $key ] = $value;
-			if ( ! empty( $value ) ) {
-				$check_all_empty = false;
-			}
-		}
-
 		// Process the update.
-		$sheet = $action_data['meta']['GSWORKSHEET_readable'];
+		$spreadsheet_name = $action_data['meta']['GSWORKSHEET_readable'];
 
-		$lookup_field_parts = explode( '-', $lookup_field );
+		// Construct the look up column search.
+		$lookup_field_parts    = explode( '-', $lookup_field );
+		$selected_column_range = $spreadsheet_name . '!' . $lookup_field_parts[1];
 
-		$selected_column_range = $sheet . '!' . $lookup_field_parts[1];
-
-		$helper = Automator()->helpers->recipe->google_sheet->options;
+		$helper = Automator()->helpers->recipe->google_sheet;
 
 		try {
 
-			$range_values = $helper->api_get_range_values( $gs_spreadsheet, $selected_column_range );
+			$row_values = self::get_activated_row_values( $fields, $recipe_id, $user_id, $args );
 
-			$existing_rows = array();
+			$body = array(
+				'action'                      => 'match_and_update',
+				'range'                       => $selected_column_range,
+				'spreadsheet_id'              => $spreadsheet_id,
+				'spreadsheet_name'            => $spreadsheet_name,
+				'should_update_multiple_rows' => $update_multiple_rows,
+				'lookup_value'                => $lookup_field_value,
+				'values'                      => $row_values,
+			);
 
-			if ( isset( $range_values['data']['values'] ) && isset( $range_values['data']['range'] ) ) {
-				$existing_rows[ $range_values['data']['range'] ] = $range_values['data']['values'];
-			}
+			$helper->api_call( $body, null );
 
-			$matched_ranges = $this->match_ranges( $existing_rows, $sheet, $selected_column_range, $lookup_field_value, $update_multiple_rows );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
-			$row_values = array();
+		} catch ( Exception $e ) {
 
-			foreach ( $fields as $field ) {
+			$action_data['complete_with_errors'] = true;
 
-				$cell_value = null; // Pass null to avoid overwriting the cell value.
-
-				if ( true === $field['COLUMN_UPDATE'] ) {
-					$cell_value = Automator()->parse->text( $field['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
-				}
-
-				// Add the value to our request body.
-				$row_values[] = $cell_value;
-
-			}
-
-			$response = $helper->api_update_row( $gs_spreadsheet, $matched_ranges, $row_values, $action_data );
-
-			// Complete the action if there are no issues.
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-			return;
-
-		} catch ( \Exception $e ) {
-			return $this->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
+
+		return;
 
 	}
 
 	/**
-	 * match_range
+	 * Get all the rows ranges that needs to be updated.
 	 *
-	 * Look for the range that matches the value.
-	 *
-	 * @param  mixed $existing_rows
-	 * @param  mixed $sheet
-	 * @param  mixed $selected_column_range
-	 * @param  mixed $lookup_field_value
-	 * @param  string $update_multiple_rows
-	 * @return void
+	 * @param mixed $fields
+	 * @return string|false
 	 */
-	public function match_ranges( $existing_rows, $sheet, $selected_column_range, $lookup_field_value, $update_multiple_rows ) {
+	public static function get_activated_row_values( $row_repeater, $recipe_id, $user_id, $args ) {
 
-		$done_lookup    = false;
-		$matched_ranges = array();
-		$i              = 0;
+		$row_values = array();
 
-		foreach ( $existing_rows as $range => $sheet_rows ) {
-			$j = 1;
-			foreach ( $sheet_rows as $existing_row_value ) {
-				$value = array_shift( $existing_row_value );
-				// The field value that we are matching against.
-				if ( $lookup_field_value === $value ) {
-					$matched_ranges[] = $sheet . '!A' . ( $j + 1 );
-					if ( 'false' === $update_multiple_rows && $lookup_field_value === $value ) {
-						$done_lookup = true;
-						break;
-					}
-				}
-				$j ++;
+		foreach ( (array) $row_repeater as $field ) {
+
+			$cell_value = null; // Pass null to avoid overwriting the cell value.
+
+			if ( true === $field['COLUMN_UPDATE'] ) {
+				$cell_value = Automator()->parse->text( $field['GS_COLUMN_VALUE'], $recipe_id, $user_id, $args );
 			}
-			$i ++;
-			if ( $done_lookup ) {
-				// Range starts at "A".
-				$matched_range = $sheet . '!A' . ( $j + 1 );
-				break;
-			}
+
+			// Add the value to our request body.
+			$row_values[] = $cell_value;
+
 		}
 
-		if ( empty( $matched_ranges ) ) {
-			// Complete with error if no cell value matches the lookup value.
-			$error_message = sprintf(
-				esc_html__( "Notice: No cell values matches with '%1\$s' under '%2\$s' column in Sheet: '%3\$s'.", 'uncanny-automator' ),
-				$lookup_field_value,
-				$selected_column_range,
-				$sheet
-			);
-
-			throw new \Exception( $error_message );
-		}
-
-		return $matched_ranges;
+		return wp_json_encode( array( $row_values ) );  // Wrapping as array for API Backwards compatibility.
 	}
 
 	/**

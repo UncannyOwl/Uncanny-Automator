@@ -98,7 +98,7 @@ class FACEBOOK_GROUP_PUBLISH_PHOTO {
 					/* translators: Email field */
 					'label'       => esc_attr__( 'Image URL', 'uncanny-automator' ),
 					'placeholder' => esc_attr__( 'https://examplewebsite.com/path/to/image.jpg', 'uncanny-automator' ),
-					'input_type'  => 'url',
+					'input_type'  => 'text',
 					'required'    => true,
 					'description' => esc_attr__( 'Enter the URL of the image you wish to share. The URL must be publicly accessible.', 'uncanny-automator' ),
 				),
@@ -127,14 +127,14 @@ class FACEBOOK_GROUP_PUBLISH_PHOTO {
 		// The caption.
 		$caption = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_MESSAGE'] ) ? sanitize_textarea_field( $parsed['FACEBOOK_GROUPS_PUBLISH_MESSAGE'] ) : '';
 		// The image url.
-		$image_url = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_GROUPS_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
+		$media = isset( $parsed['FACEBOOK_GROUPS_PUBLISH_PHOTO_IMAGE_URL'] ) ? sanitize_text_field( $parsed['FACEBOOK_GROUPS_PUBLISH_PHOTO_IMAGE_URL'] ) : '';
 
 		$body = array(
 			'action'       => 'send_photo',
 			'access_token' => $helper->get_user_access_token(),
 			'caption'      => $caption,
 			'group_id'     => $group_id,
-			'url'          => $image_url,
+			'url'          => $this->resolve_image_url( $media ),
 		);
 
 		try {
@@ -157,6 +157,16 @@ class FACEBOOK_GROUP_PUBLISH_PHOTO {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 		}
 
+	}
+
+	/**
+	 * Returns the image url of the media if numeric is provided. Otherwise, the url.
+	 *
+	 * @param string $media
+	 * @return string|false
+	 */
+	private function resolve_image_url( $media = '' ) {
+		return is_numeric( $media ) ? wp_get_attachment_url( $media ) : $media;
 	}
 
 }

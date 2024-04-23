@@ -428,6 +428,13 @@ class EMAILS_SEND_EMAILS {
 
 		update_option( 'automator_sent_email_completed', $sent_email_completed + 1 );
 
+		if ( ! empty( $this->get_error_message() ) ) {
+			$error_message                       = $this->get_error_message();
+			$action_data['complete_with_notice'] = true;
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+			return;
+		}
+
 		Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 	}

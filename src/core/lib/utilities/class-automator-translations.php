@@ -1366,6 +1366,8 @@ class Automator_Translations {
 			// UncannyAutomator._core.i18n.debuggingTools
 			'itemMissing'         => esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.itemMissing
+			'itemPermalink'       => esc_attr__( 'This item was disabled because your Permalinks are not set correctly.', 'uncanny-automator' ),
+			// UncannyAutomator._core.i18n.itemPermalink
 			'noLabel'             => esc_attr__( '(no label)', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.noLabel
 			/* translators: Non-personal infinitive verb */

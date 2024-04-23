@@ -2,12 +2,14 @@
 
 namespace Uncanny_Automator\Integrations\EDD_SL;
 
+use Uncanny_Automator\Integration;
+
 /**
  * Class Edd_Software_Licensing_Integration;
  *
  * @package Uncanny_Automator
  */
-class Edd_Software_Licensing_Integration extends \Uncanny_Automator\Integration {
+class Edd_Software_Licensing_Integration extends Integration {
 
 	/**
 	 * Setup Automator integration.
@@ -30,6 +32,9 @@ class Edd_Software_Licensing_Integration extends \Uncanny_Automator\Integration 
 		// Load triggers.
 		new EDD_SL_LICENSE_CREATED_FOR_DOWNLOAD( $this->helpers );
 		new EDD_SL_LICENSE_EXPIRED_FOR_DOWNLOAD( $this->helpers );
+
+		new EDD_SL_USERS_LICENSE_CREATED_FOR_DOWNLOAD( $this->helpers );
+		new EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD( $this->helpers );
 	}
 
 	/**

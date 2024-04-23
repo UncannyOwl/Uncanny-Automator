@@ -16,6 +16,9 @@ class Pro_Upsell {
 	 */
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'pro_upsell_menu' ) );
+		add_action( 'admin_head', array( $this, 'adjust_pro_menu_item' ) );
+		add_action( 'admin_head', array( $this, 'admin_menu_styles' ) );
+
 		add_filter(
 			'admin_body_class',
 			function ( $classes ) {
@@ -36,6 +39,7 @@ class Pro_Upsell {
 		if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
 			return;
 		}
+
 		add_submenu_page(
 			'edit.php?post_type=uo-recipe',
 			esc_attr__( 'Upgrade to Automator Pro', 'uncanny-automator' ),
@@ -48,6 +52,7 @@ class Pro_Upsell {
 			),
 			PHP_INT_MAX
 		);
+
 		self::$feature = apply_filters(
 			'automator_pro_upsell_features',
 			array(
@@ -324,6 +329,52 @@ class Pro_Upsell {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Make changes to the PRO menu item.
+	 */
+	public function adjust_pro_menu_item() {
+
+		global $submenu;
+
+		// Bail if plugin menu is not registered.
+		if ( ! isset( $submenu['edit.php?post_type=uo-recipe'] ) ) {
+			return;
+		}
+
+		$upgrade_link_position = key(
+			array_filter(
+				$submenu['edit.php?post_type=uo-recipe'],
+				function( $item ) {
+					return strpos( $item[2], 'uncanny-automator-pro-upgrade' ) !== false;
+				}
+			)
+		);
+
+		// Bail if "Upgrade to Pro" menu item is not registered.
+		if ( $upgrade_link_position === null ) {
+			return;
+		}
+
+		// Add the PRO badge to the menu item.
+		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
+		if ( isset( $submenu['edit.php?post_type=uo-recipe'][ $upgrade_link_position ][4] ) ) {
+			$submenu['edit.php?post_type=uo-recipe'][ $upgrade_link_position ][4] .= ' uap-sidebar-upgrade-pro';
+		} else {
+			$submenu['edit.php?post_type=uo-recipe'][ $upgrade_link_position ][] = 'uap-sidebar-upgrade-pro';
+		}
+		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
+	}
+
+	/**
+	 * Output inline styles for the admin menu.
+	 */
+	public function admin_menu_styles() {
+		$styles = 'a.uap-sidebar-upgrade-pro { background-color: #00a32a !important; color: #fff !important; font-weight: 600 !important; }';
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		printf( '<style>%s</style>', $styles );
 	}
 
 	/**

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb
+class ComposerStaticInit203193c4fab1a5a9d458a20c266d5184
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -490,6 +490,10 @@ class ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb
         'Uncanny_Automator\\Instagram_Helpers' => __DIR__ . '/../..' . '/src/integrations/instagram/helpers/instagram-helpers.php',
         'Uncanny_Automator\\Instagram_Settings' => __DIR__ . '/../..' . '/src/integrations/instagram/settings/settings-instagram.php',
         'Uncanny_Automator\\Integration' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/abstract-integration.php',
+        'Uncanny_Automator\\Integrations\\Bitly\\BITLY_SHORTEN_URL' => __DIR__ . '/../..' . '/src/integrations/bitly/actions/bitly-shorten-url.php',
+        'Uncanny_Automator\\Integrations\\Bitly\\Bitly_Helpers' => __DIR__ . '/../..' . '/src/integrations/bitly/helpers/bitly-helpers.php',
+        'Uncanny_Automator\\Integrations\\Bitly\\Bitly_Integration' => __DIR__ . '/../..' . '/src/integrations/bitly/bitly-integration.php',
+        'Uncanny_Automator\\Integrations\\Bitly\\Bitly_Settings' => __DIR__ . '/../..' . '/src/integrations/bitly/settings/settings-bitly.php',
         'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_CONTACT_TO_LIST' => __DIR__ . '/../..' . '/src/integrations/brevo/actions/brevo-add-contact-to-list.php',
         'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_UPDATE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/brevo/actions/brevo-add-update-contact.php',
         'Uncanny_Automator\\Integrations\\Brevo\\BREVO_DELETE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/brevo/actions/brevo-delete-contact.php',
@@ -536,7 +540,14 @@ class ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb
         'Uncanny_Automator\\Integrations\\EDD_SL\\Edd_Software_Licensing_Integration' => __DIR__ . '/../..' . '/src/integrations/edd-sl/class-edd-software-licensing-integration.php',
         'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_LICENSE_CREATED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-license-created-for-download.php',
         'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_LICENSE_EXPIRED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-license-expired-for-download.php',
+        'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_USERS_LICENSE_CREATED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-users-license-created-for-download.php',
+        'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-users-license-expired-for-download.php',
         'Uncanny_Automator\\Integrations\\Edd_SL\\Edd_Sl_Helpers' => __DIR__ . '/../..' . '/src/integrations/edd-sl/helpers/edd-sl-helpers.php',
+        'Uncanny_Automator\\Integrations\\Get_Response\\GET_RESPONSE_ADD_UPDATE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/get-response/actions/gr-add-update-contact.php',
+        'Uncanny_Automator\\Integrations\\Get_Response\\GET_RESPONSE_DELETE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/get-response/actions/gr-delete-contact.php',
+        'Uncanny_Automator\\Integrations\\Get_Response\\Get_Response_Helpers' => __DIR__ . '/../..' . '/src/integrations/get-response/helpers/get-response-helpers.php',
+        'Uncanny_Automator\\Integrations\\Get_Response\\Get_Response_Integration' => __DIR__ . '/../..' . '/src/integrations/get-response/get-response-integration.php',
+        'Uncanny_Automator\\Integrations\\Get_Response\\Get_Response_Settings' => __DIR__ . '/../..' . '/src/integrations/get-response/settings/get-response-settings.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\CONTACT_GROUP_ADD_TO' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/contact-group-add-to.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\CONTACT_GROUP_CREATE' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/contact-group-create.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\CREATE' => __DIR__ . '/../..' . '/src/integrations/google-contacts/actions/create.php',
@@ -591,6 +602,12 @@ class ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb
         'Uncanny_Automator\\Integrations\\Sendy\\Sendy_Helpers' => __DIR__ . '/../..' . '/src/integrations/sendy/helpers/sendy-helpers.php',
         'Uncanny_Automator\\Integrations\\Sendy\\Sendy_Integration' => __DIR__ . '/../..' . '/src/integrations/sendy/sendy-integration.php',
         'Uncanny_Automator\\Integrations\\Sendy\\Sendy_Settings' => __DIR__ . '/../..' . '/src/integrations/sendy/settings/sendy-settings.php',
+        'Uncanny_Automator\\Integrations\\SliceWP\\SLICEWP_AFFILAITE_AWAITING_APPROVAL' => __DIR__ . '/../..' . '/src/integrations/slicewp/triggers/slicewp-affilaite-awaiting-approval.php',
+        'Uncanny_Automator\\Integrations\\SliceWP\\SLICEWP_AFFILIATE_IS_APPROVED' => __DIR__ . '/../..' . '/src/integrations/slicewp/triggers/slicewp-affiliate-is-approved.php',
+        'Uncanny_Automator\\Integrations\\SliceWP\\SLICEWP_BECOMES_AFFILIATE' => __DIR__ . '/../..' . '/src/integrations/slicewp/triggers/slicewp-becomes-affiliate.php',
+        'Uncanny_Automator\\Integrations\\SliceWP\\SLICEWP_CREATE_AFFILIATE' => __DIR__ . '/../..' . '/src/integrations/slicewp/actions/slicewp-create-affiliate.php',
+        'Uncanny_Automator\\Integrations\\SliceWP\\Slicewp_Helpers' => __DIR__ . '/../..' . '/src/integrations/slicewp/helpers/slicewp-helpers.php',
+        'Uncanny_Automator\\Integrations\\SliceWP\\Slicewp_Integration' => __DIR__ . '/../..' . '/src/integrations/slicewp/slicewp-integration.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/triggers/form-submitted.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/helpers/thrive-architect-helpers.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/thrive-architect-integration.php',
@@ -1107,10 +1124,10 @@ class ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit63467fba3e05fa3cdaee9f14f71fafdb::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit203193c4fab1a5a9d458a20c266d5184::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit203193c4fab1a5a9d458a20c266d5184::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit203193c4fab1a5a9d458a20c266d5184::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit203193c4fab1a5a9d458a20c266d5184::$classMap;
 
         }, null, ClassLoader::class);
     }

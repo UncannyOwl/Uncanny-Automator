@@ -495,7 +495,7 @@ class Recipe_Post_Utilities {
 			// UncannyAutomator._site
 			'_site'          => array(
 				// UncannyAutomator._site.rest
-				'rest'              => array(
+				'rest'                => array(
 					// UncannyAutomator._site.rest.url
 					'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
 					// UncannyAutomator._site.rest.nonce
@@ -503,22 +503,22 @@ class Recipe_Post_Utilities {
 				),
 
 				// UncannyAutomator._site.has_debug_enabled
-				'has_debug_enabled' => (bool) AUTOMATOR_DEBUG_MODE,
+				'has_debug_enabled'   => (bool) AUTOMATOR_DEBUG_MODE,
 
 				// UncannyAutomator._site.is_multisite
-				'is_multisite'      => is_multisite(),
+				'is_multisite'        => is_multisite(),
 
 				// UncannyAutomator._site.is_rtl
-				'is_rtl'            => is_rtl(),
+				'is_rtl'              => is_rtl(),
 
 				// UncannyAutomator._site.date_format
-				'date_format'       => get_option( 'date_format' ),
+				'date_format'         => get_option( 'date_format' ),
 
 				// UncannyAutomator._site.time_format
-				'time_format'       => get_option( 'time_format' ),
+				'time_format'         => get_option( 'time_format' ),
 
 				// UncannyAutomator._site.automator
-				'automator'         => array(
+				'automator'           => array(
 					// UncannyAutomator._site.automator.version
 					'version'               => AUTOMATOR_PLUGIN_VERSION,
 
@@ -578,13 +578,16 @@ class Recipe_Post_Utilities {
 				),
 
 				// UncannyAutomator._site.links
-				'links'             => array(
+				'links'               => array(
 					// UncannyAutomator._site.links.wp_admin
 					'wp_admin'      => admin_url( 'admin.php' ),
 
 					// UncannyAutomator._site.links.wp_permalinks
 					'wp_permalinks' => esc_url( admin_url( 'options-permalink.php' ) ),
 				),
+
+				// UncannyAutomator._site.permalink_structure
+				'permalink_structure' => get_option( 'permalink_structure' ),
 			),
 
 			// UncannyAutomator._integrations

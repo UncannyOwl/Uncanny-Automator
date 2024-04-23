@@ -148,7 +148,7 @@ $setup_wizard_link = add_query_arg(
 							esc_attr__( 'The free version of Uncanny Automator includes %1$s to use with our %2$s like %3$s, and more. See the list of %4$s.', 'uncanny-automator' ),
 							array(
 								/* translators: 1. Number of credits */
-								'<mark>' . sprintf( esc_attr__( '%1$s free app credits', 'uncanny-automator' ), number_format( $dashboard->miscellaneous->free_credits ) ) . '</mark>',
+								'<mark>' . sprintf( esc_attr__( '%1$s app credits', 'uncanny-automator' ), number_format( $dashboard->miscellaneous->free_credits ) ) . '</mark>',
 								'<strong>' . esc_attr__( 'app integrations', 'uncanny-automator' ) . '</strong>',
 								implode(
 									', ',
@@ -598,7 +598,7 @@ $setup_wizard_link = add_query_arg(
 						   target="_blank" class="uap-dashboard-video">
 							<div class="uap-dashboard-video__thumbnail">
 								<img
-									src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-triggers-landscape@2x.png' ) ); ?>">
+									src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-triggers-landscape-2@2x.png' ) ); ?>">
 							</div>
 							<div class="uap-dashboard-video__title">
 								<?php esc_attr_e( 'Create an Uncanny Automator recipe with multiple triggers', 'uncanny-automator' ); ?>
@@ -614,7 +614,7 @@ $setup_wizard_link = add_query_arg(
 						   target="_blank" class="uap-dashboard-video">
 							<div class="uap-dashboard-video__thumbnail">
 								<img
-									src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-actions-landscape@2x.png' ) ); ?>">
+									src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-actions-landscape-2@2x.png' ) ); ?>">
 							</div>
 							<div class="uap-dashboard-video__title">
 								<?php esc_attr_e( 'Create an Uncanny Automator recipe with multiple actions', 'uncanny-automator' ); ?>
@@ -630,7 +630,7 @@ $setup_wizard_link = add_query_arg(
 						   target="_blank" class="uap-dashboard-video">
 							<div class="uap-dashboard-video__thumbnail">
 								<img
-									src="<?php echo esc_url_raw( Utilities::automator_get_media( 'delay-or-schedule-actions-landscape@2x.png' ) ); ?>">
+									src="<?php echo esc_url_raw( Utilities::automator_get_media( 'delay-or-schedule-actions-landscape-2@2x.png' ) ); ?>">
 							</div>
 							<div class="uap-dashboard-video__title">
 								<?php esc_attr_e( 'Delay and schedule actions for your WordPress automations', 'uncanny-automator' ); ?>

@@ -410,39 +410,40 @@ class Automator_Utilities {
 	}
 
 	/**
-	 * @param $data
+	 * Sanitizes the input base on the data type.
+	 *
+	 * @param mixed $data The input, can be array.
 	 * @param string $type
 	 * @param string $meta_key
-	 * @param array $options
+	 * @param mixed[] $options
 	 *
-	 * @return mixed|string
+	 * @return string
 	 */
 	public function automator_sanitize( $data, $type = 'text', $meta_key = '', $options = array() ) {
 
-		// If it's an array, handle it early and return data
+		// If it's an array, handle it early and return data.
 		if ( is_array( $data ) ) {
 			return $this->automator_sanitize_array( $data, $meta_key, $options );
 		}
-		// $type_before = $type;
-		// Maybe identify field type
+
 		if ( empty( $type ) || 'mixed' === $type ) {
 			$type = $this->maybe_get_field_type( $meta_key, $options );
 		}
 
 		switch ( $type ) {
+			case 'html':
+			case 'repeater':
+			case 'markdown':
+				// Do nothing for these types.
+				break;
 			case 'textarea':
 				$data = sanitize_textarea_field( $data );
-				break;
-			case 'html':
-			case 'markdown':
-				// Do nothing for HTML types.
 				break;
 			case 'url':
 				// Only escape the data if there are no tokens.
 				preg_match_all( '/{{\s*(.*?)\s*}}/', $data, $tokens );
 				if ( ! isset( $tokens[0] ) || empty( $tokens[0] ) ) {
-					// Use esc_url_raw so ampersand won't be encoded.
-					$data = esc_url_raw( $data );
+					$data = esc_url_raw( $data ); // Use esc_url_raw so ampersand won't be encoded.
 				}
 				break;
 			case 'text':
@@ -454,6 +455,7 @@ class Automator_Utilities {
 				if ( wp_strip_all_tags( $data ) === $data ) {
 					$data = sanitize_text_field( $data );
 				}
+
 				break;
 		}
 

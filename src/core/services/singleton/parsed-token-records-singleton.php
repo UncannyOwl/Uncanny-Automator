@@ -62,6 +62,12 @@ class Parsed_Token_Records_Singleton {
 	 * @return string
 	 */
 	public static function interpolate( $field_text, $interpolated ) {
+		if ( is_array( $field_text ) ) {
+			foreach ( $field_text as $key => $value ) {
+				$field_text[ $key ] = self::interpolate( $value, $interpolated );
+			}
+			return $field_text;
+		}
 		return strtr( $field_text, $interpolated );
 	}
 

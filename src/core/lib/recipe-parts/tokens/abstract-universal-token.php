@@ -60,6 +60,10 @@ abstract class Universal_Token extends Token {
 			return $return;
 		}
 
+		if ( $this->get_id() !== $pieces[2] ) {
+			return $return;
+		}
+
 		return $this->parse_integration_token( $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 	}
 

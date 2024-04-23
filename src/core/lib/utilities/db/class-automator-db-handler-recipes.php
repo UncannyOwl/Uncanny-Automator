@@ -284,6 +284,15 @@ class Automator_DB_Handler_Recipes {
 				'automator_recipe_id' => $recipe_id,
 			)
 		);
+
+		// delete from uap_recipe_log
+		$wpdb->delete(
+			"{$wpdb->prefix}uap_recipe_count",
+			array(
+				'recipe_id' => $recipe_id,
+			)
+		);
+
 	}
 
 	/**
@@ -295,5 +304,26 @@ class Automator_DB_Handler_Recipes {
 		global $wpdb;
 
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}uap_recipe_count SET runs = runs + 1 WHERE recipe_id = %d", $recipe_id ) );
+	}
+
+	/**
+	 * Fetches all recipes with zero status.
+	 *
+	 * @return mixed[]
+	 */
+	public function retrieve_failed_recipes() {
+
+		global $wpdb;
+
+		$results = (array) $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID, completed FROM {$wpdb->prefix}uap_recipe_log WHERE completed = %d",
+				Automator_Status::NOT_COMPLETED
+			),
+			ARRAY_A
+		);
+
+		return $results;
+
 	}
 }

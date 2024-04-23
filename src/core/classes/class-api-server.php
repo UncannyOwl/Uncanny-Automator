@@ -21,12 +21,24 @@ class Api_Server {
 	 */
 	private static $transient_api_license_expires = 60; // 1 minute by default.
 
+	/**
+	 * @var mixed|null
+	 */
 	public static $url;
 
+	/**
+	 * @var null
+	 */
 	public static $mock_response = null;
 
+	/**
+	 * @var null
+	 */
 	private static $instance = null;
 
+	/**
+	 * @var null
+	 */
 	private static $license = null;
 
 	/**
@@ -51,6 +63,11 @@ class Api_Server {
 
 	}
 
+	/**
+	 * @param $instance
+	 *
+	 * @return void
+	 */
 	public static function set_instance( $instance ) {
 		self::$instance = $instance;
 	}
@@ -101,7 +118,8 @@ class Api_Server {
 	/**
 	 * is_api_url
 	 *
-	 * @param  mixed $url
+	 * @param mixed $url
+	 *
 	 * @return bool
 	 */
 	public function is_api_url( $url ) {
@@ -111,8 +129,9 @@ class Api_Server {
 	/**
 	 * default_api_timeout
 	 *
-	 * @param  mixed $timeout
-	 * @param  mixed $request_url
+	 * @param mixed $timeout
+	 * @param mixed $request_url
+	 *
 	 * @return int
 	 */
 	public function default_api_timeout( $timeout, $request_url ) {
@@ -257,7 +276,7 @@ class Api_Server {
 
 		$params['method']             = 'POST';
 		$params['url']                = self::$url . $params['endpoint'];
-		$params['body']['plugin_ver'] = InitializePlugin::PLUGIN_VERSION;
+		$params['body']['plugin_ver'] = AUTOMATOR_PLUGIN_VERSION;
 
 		$params = $api->filter_params( $params );
 
@@ -360,13 +379,12 @@ class Api_Server {
 		return $response;
 	}
 
+
 	/**
-	 * maybe_add_optional_params
+	 * @param $request
+	 * @param $params
 	 *
-	 * @param mixed $request
-	 * @param mixed $params
-	 *
-	 * @return void
+	 * @return mixed
 	 */
 	public function maybe_add_optional_params( $request, $params ) {
 
@@ -566,10 +584,20 @@ class Api_Server {
 		return $this->add_log( $log );
 	}
 
+	/**
+	 * @param $log
+	 *
+	 * @return bool|int
+	 */
 	public function add_log( $log ) {
 		return Automator()->db->api->add( $log );
 	}
 
+	/**
+	 * @param $response
+	 *
+	 * @return mixed|null
+	 */
 	public function get_response_credits( $response ) {
 
 		if ( is_wp_error( $response ) ) {
@@ -586,6 +614,11 @@ class Api_Server {
 
 	}
 
+	/**
+	 * @param $response
+	 *
+	 * @return int|mixed|string
+	 */
 	public function get_response_code( $response ) {
 		if ( is_wp_error( $response ) ) {
 			return $response->get_error_code();
@@ -614,6 +647,13 @@ class Api_Server {
 		return $response_body;
 	}
 
+	/**
+	 * @param $process_further
+	 * @param $args
+	 * @param $trigger
+	 *
+	 * @return false|mixed
+	 */
 	public function maybe_log_trigger( $process_further, $args, $trigger ) {
 
 		if ( ! $trigger->get_uses_api() ) {
@@ -692,6 +732,7 @@ class Api_Server {
 
 		if ( false === $license_key ) {
 			self::set_connection_error_message( 'Unable to fetch the license key.' );
+
 			return false;
 		}
 
@@ -700,10 +741,12 @@ class Api_Server {
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
 			self::set_connection_error_message( 'API error exception: ' . $e->getCode() . ' ' . $e->getMessage() );
+
 			return false;
 		}
 
 		self::set_connection_error_message( 'An error has occured while connecting. Please try again later.' );
+
 		return false;
 	}
 
@@ -711,6 +754,7 @@ class Api_Server {
 	 * Sets an error message for one minute that can be shown in the front-end.
 	 *
 	 * @param string $error_message
+	 *
 	 * @return void
 	 */
 	public static function set_connection_error_message( $error_message ) {

@@ -87,9 +87,13 @@ class Automator_Send_Webhook {
 		$authorization = trim( $authorization, '*' );
 
 		if ( strlen( $authorization ) > 3 ) { // check if trimmed string is over 3 chars
+
+			$authorization = addslashes( $authorization );
+
 			update_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', $authorization );
 
 			$meta_value['WEBHOOK_AUTHORIZATIONS'] = $this->hide_string( $authorization );
+
 		}
 
 		return $meta_value;
@@ -299,11 +303,17 @@ class Automator_Send_Webhook {
 			case 'PUT':
 				$request_type = apply_filters( 'automator_outgoing_webhook_request_type', 'PUT', $data );
 				break;
+			case 'PATCH':
+				$request_type = apply_filters( 'automator_outgoing_webhook_request_type', 'PATCH', $data );
+				break;
 			case 'DELETE':
 				$request_type = apply_filters( 'automator_outgoing_webhook_request_type', 'DELETE', $data );
 				break;
 			case 'HEAD':
 				$request_type = apply_filters( 'automator_outgoing_webhook_request_type', 'HEAD', $data );
+				break;
+			case 'OPTIONS':
+				$request_type = apply_filters( 'automator_outgoing_webhook_request_type', 'OPTIONS', $data );
 				break;
 			case 'automator_custom_value':
 				if ( isset( $data['ACTION_EVENT_custom'] ) ) {
@@ -315,6 +325,10 @@ class Automator_Send_Webhook {
 			case 'POST':
 			case 'CUSTOM':
 			default:
+				if ( 'POST' !== $data['ACTION_EVENT'] && isset( $data['ACTION_EVENT_custom'] ) ) {
+					$request_type = apply_filters( 'automator_outgoing_webhook_request_type', $data['ACTION_EVENT_custom'], $data );
+					break;
+				}
 				$request_type = apply_filters( 'automator_outgoing_webhook_request_type', 'POST', $data );
 				break;
 		}
@@ -811,17 +825,26 @@ class Automator_Send_Webhook {
 	 * @return array|mixed|void|\WP_Error
 	 */
 	public static function call_webhook( $webhook_url, $args, $request_type = 'POST' ) {
-		switch ( sanitize_text_field( wp_unslash( $request_type ) ) ) {
-			case 'PUT':
+
+		$request_type = sanitize_text_field( wp_unslash( $request_type ) );
+
+		switch ( $request_type ) {
 			case 'POST':
-			case 'DELETE':
 				$response = wp_remote_post( $webhook_url, $args );
 				break;
 			case 'GET':
-				$response = wp_remote_get( $webhook_url, $args );
+				$url      = add_query_arg( $args['body'], $webhook_url );
+				$response = wp_remote_get( $url, $args );
 				break;
 			case 'HEAD':
 				$response = wp_remote_head( $webhook_url, $args );
+				break;
+			case 'PUT':
+			case 'PATCH':
+			case 'DELETE':
+			case 'OPTIONS':
+				$args['method'] = $request_type;
+				$response       = wp_remote_request( $webhook_url, $args );
 				break;
 			default:
 				$response = apply_filters( 'automator_send_webhook_default_response', wp_remote_post( $webhook_url, $args ), $webhook_url, $args );

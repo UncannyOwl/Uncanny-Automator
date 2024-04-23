@@ -2,12 +2,14 @@
 
 namespace Uncanny_Automator\Integrations\WooCommerce_Bookings;
 
+use Uncanny_Automator\Integration;
+
 /**
  * Class Woocommerce_Bookings_Integration
  *
  * @package Uncanny_Automator
  */
-class Woocommerce_Bookings_Integration extends \Uncanny_Automator\Integration {
+class Woocommerce_Bookings_Integration extends Integration {
 
 	/**
 	 * Setup Automator integration.
@@ -17,7 +19,7 @@ class Woocommerce_Bookings_Integration extends \Uncanny_Automator\Integration {
 	protected function setup() {
 		$this->helpers = new Wc_Bookings_Helpers();
 		$this->set_integration( 'WC_BOOKINGS' );
-		$this->set_name( 'WooCommerce Bookings' );
+		$this->set_name( 'Woo Bookings' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/woocommerce-bookings-icon.svg' );
 	}
 

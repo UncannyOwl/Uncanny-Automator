@@ -219,26 +219,42 @@ class Automator_Recipe_Process_User {
 	 *
 	 */
 	public function maybe_create_recipe_log_entry( $recipe_id, $user_id, $create_recipe = true, $args = array(), $maybe_simulate = false, $maybe_add_log_id = null ) {
+
 		global $wpdb;
 
-		$recipe_log_id = $this->wpdb_get_var(
-			$wpdb->prepare(
-				"SELECT ID
-				FROM {$wpdb->prefix}uap_recipe_log
-				WHERE completed NOT IN (1,2,5,9,10,11)
-				AND automator_recipe_id = %d
-				AND user_id = %d",
-				$recipe_id,
-				$user_id
-			)
+		$statuses = array(
+			Automator_Status::COMPLETED,
+			Automator_Status::COMPLETED_WITH_ERRORS,
+			Automator_Status::IN_PROGRESS,
+			Automator_Status::DID_NOTHING,
+			Automator_Status::COMPLETED_AWAITING,
+			Automator_Status::COMPLETED_WITH_NOTICE,
+			Automator_Status::FAILED,
 		);
+
+		$stmt = $wpdb->prepare(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			"SELECT ID FROM {$wpdb->prefix}uap_recipe_log WHERE completed NOT IN (" . join( ',', $statuses ) . ') AND automator_recipe_id = %d AND user_id = %d', // Ok to proceed as $statuses hold a constant internal values.
+			$recipe_id,
+			$user_id
+		);
+
+		// Retrieve the recipe log from recipes.
+		$recipe_log_id = $this->wpdb_get_var( $stmt );
+
+		// If a recipe log ID was created and there is a user that has ran the recipe.
 		if ( $recipe_log_id && 0 !== absint( $user_id ) ) {
+
+			// Return existing user as true with the recipe log id.
 			return array(
 				'existing'      => true,
 				'recipe_log_id' => $recipe_log_id,
 			);
+
 		} elseif ( true === $maybe_simulate ) {
 			/*
+			 * Otherwise, simulate the recipe completion by inserting a recipe log if `$maybe_simulate` is true.
+			 *
 			 * @since 2.0
 			 * @author Saad S.
 			 */
@@ -598,7 +614,7 @@ class Automator_Recipe_Process_User {
 					'result' => false,
 					'error'  => esc_html__( 'Trigger not matched.', 'uncanny-automator' ),
 				);
-			} elseif ( (string) $trigger_post_id != (string) $post_id ) {
+			} elseif ( (string) $trigger_post_id !== (string) $post_id ) {
 				return array(
 					'result' => false,
 					'error'  => esc_html__( 'Trigger not matched.', 'uncanny-automator' ),
@@ -658,7 +674,7 @@ class Automator_Recipe_Process_User {
 		} else {
 
 			$user_num_times ++;
-			$run_number         = $run_number + 1;
+			$run_number         = $run_number + 1; //phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 			$args['run_number'] = $run_number;
 			$args['meta_value'] = 1;
 		}

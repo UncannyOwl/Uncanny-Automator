@@ -20,6 +20,7 @@ class Wcm_Tokens {
 	 * Wcm_Tokens constructor.
 	 */
 	public function __construct() {
+
 		add_filter(
 			'automator_maybe_trigger_wcmemberships_wcmmembershipplan_tokens',
 			array(
@@ -29,6 +30,7 @@ class Wcm_Tokens {
 			20,
 			2
 		);
+
 		add_filter( 'automator_maybe_parse_token', array( $this, 'wcm_parse_tokens' ), 20, 6 );
 	}
 
@@ -165,24 +167,16 @@ class Wcm_Tokens {
 				if ( key_exists( $trigger_meta, $trigger['meta'] ) || ( isset( $trigger['meta']['code'] ) && $trigger_meta === $trigger['meta']['code'] ) ) {
 					$trigger_id     = $trigger['ID'];
 					$trigger_log_id = $replace_args['trigger_log_id'];
-					if ( 'WCMMEMBERSHIPPLAN' === $parse ) {
-						$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-						$entry          = $wpdb->get_var(
-							$wpdb->prepare(
-								"SELECT meta_value
-FROM {$wpdb->prefix}uap_trigger_log_meta
-WHERE meta_key = %s
-  AND automator_trigger_log_id = %d
-  AND automator_trigger_id = %d
-LIMIT 0,1",
-								'WCMMEMBERSHIPPLAN',
-								$trigger_log_id,
-								$trigger_id
-							)
-						);
-
-						if ( ! empty( $entry ) ) {
-							$value = get_the_title( $entry );
+					$plan_tokens    = array( 'WCMMEMBERSHIPPLANPOSTID', 'WCMMEMBERSHIPPLAN' );
+					if ( in_array( $parse, $plan_tokens, true ) ) {
+						$plan_id = Automator()->db->token->get( 'WCMMEMBERSHIPPLANPOSTID', $replace_args );
+						if ( ! empty( $plan_id ) ) {
+							$value = 'WCMMEMBERSHIPPLAN' === $parse ? get_the_title( $plan_id ) : $plan_id;
+						}
+					} elseif ( 'WCMMEMBERSHIPPOSTID' === $parse ) {
+						$user_membership_post_id = Automator()->db->token->get( 'WCMMEMBERSHIPPOSTID', $replace_args );
+						if ( ! empty( $user_membership_post_id ) ) {
+							$value = $user_membership_post_id;
 						}
 					} else {
 						$order_id = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WCMPLANORDERID', $trigger_id, $trigger_log_id, $user_id );

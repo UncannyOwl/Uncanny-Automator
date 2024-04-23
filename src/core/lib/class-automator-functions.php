@@ -899,7 +899,10 @@ class Automator_Functions {
 				}
 
 				// If the callback is found, execute it
-				$extra_options[ $integration ][ $item_code ] = call_user_func( $callback );
+				$callback_response = call_user_func( $callback );
+
+				// If the callback is found, execute it
+				$extra_options[ $integration ][ $item_code ] = apply_filters( 'automator_options_callback_response', $callback_response, $callback, $item, $recipe, $type );
 			}
 		}
 
