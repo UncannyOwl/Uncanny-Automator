@@ -24,35 +24,35 @@ class Google_Sheet_Helpers {
 	/**
 	 * The scope for fetching users spreadsheets.
 	 *
-	 * @var SCOPE_SPREADSHEETS The scope for spreadsheets.
+	 * @var string The scope for spreadsheets.
 	 */
 	const SCOPE_SPREADSHEETS = 'https://www.googleapis.com/auth/spreadsheets';
 
 	/**
 	 * The scope for fetching profile info.
 	 *
-	 * @var SCOPE_USERINFO The scope for user info.
+	 * @var string The scope for user info.
 	 */
 	const SCOPE_USERINFO = 'https://www.googleapis.com/auth/userinfo.profile';
 
 	/**
 	 * The scope for fetching user email.
 	 *
-	 * @var SCOPE_USER_EMAIL The scope for email.
+	 * @var string The scope for email.
 	 */
 	const SCOPE_USER_EMAIL = 'https://www.googleapis.com/auth/userinfo.email';
 
 	/**
 	 * The API endpoint address.
 	 *
-	 * @var API_ENDPOINT The endpoint adress.
+	 * @var string The endpoint adress.
 	 */
 	const API_ENDPOINT = 'v2/google';
 
 	/**
 	 * Google Sheet Options.
 	 *
-	 * @var Google_Sheet_Pro_Helpers
+	 * @var Google_Sheet_Helpers
 	 */
 	public $options;
 
@@ -151,15 +151,6 @@ class Google_Sheet_Helpers {
 	 */
 	public function setOptions( Google_Sheet_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
-	}
-
-	/**
-	 * Set pro.
-	 *
-	 * @param Google_Sheet_Helpers $pro
-	 */
-	public function setPro( Google_Sheet_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->pro = $pro;
 	}
 
 	/**

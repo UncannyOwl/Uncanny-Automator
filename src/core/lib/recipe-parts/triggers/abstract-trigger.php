@@ -220,7 +220,7 @@ abstract class Trigger {
 	 *
 	 * Override this method to display a default option group
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function options() {
 		return array();

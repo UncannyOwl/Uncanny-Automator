@@ -75,8 +75,42 @@ class WP_ANON_UPDATES_POST {
 	 * @return bool
 	 */
 	protected function validate_trigger( ...$args ) {
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return false;
+		}
+
 		list( $post_id, $wp_post_after, $wp_post_before ) = $args[0];
-		$include_non_public_posts                         = apply_filters( 'automator_wp_post_updates_include_non_public_posts', false, $post_id );
+
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			if ( apply_filters( 'automator_wp_post_updates_prevent_trigger_on_rest_requests', true, $post_id ) ) {
+				return;
+			}
+		}
+
+		// Prevent if publishing a post.
+		if ( 'publish' === $wp_post_after->post_status && 'publish' !== $wp_post_before->post_status ) {
+			return false;
+		}
+
+		$ignore_statuses = apply_filters(
+			'automator_wp_post_updates_ignore_statuses',
+			array(
+				'trash',
+				'draft',
+				'future',
+			),
+			$post_id,
+			$wp_post_after,
+			$wp_post_before
+		);
+
+		// Prevent if the status is excluded
+		if ( in_array( $wp_post_after->post_status, $ignore_statuses, true ) ) {
+			return false;
+		}
+
+		$include_non_public_posts = apply_filters( 'automator_wp_post_updates_include_non_public_posts', false, $post_id );
 		if ( false === $include_non_public_posts ) {
 			$__object = get_post_type_object( $wp_post_after->post_type );
 			if ( false === $__object->public ) {
@@ -84,7 +118,11 @@ class WP_ANON_UPDATES_POST {
 			}
 		}
 
-		return ! empty( $post_id );
+		if ( empty( $post_id ) ) {
+			return false;
+		}
+
+		return apply_filters( 'automator_wp_post_updates_post_updated', true, $post_id, $wp_post_after, $wp_post_before );
 	}
 
 	/**

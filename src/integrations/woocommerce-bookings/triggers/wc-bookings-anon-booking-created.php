@@ -2,12 +2,14 @@
 
 namespace Uncanny_Automator\Integrations\WooCommerce_Bookings;
 
+use Uncanny_Automator\Recipe\Trigger;
+
 /**
  * Class WC_BOOKINGS_ANON_BOOKING_CREATED
  *
  * @package Uncanny_Automator
  */
-class WC_BOOKINGS_ANON_BOOKING_CREATED extends \Uncanny_Automator\Recipe\Trigger {
+class WC_BOOKINGS_ANON_BOOKING_CREATED extends Trigger {
 
 	protected $helpers;
 
@@ -16,13 +18,28 @@ class WC_BOOKINGS_ANON_BOOKING_CREATED extends \Uncanny_Automator\Recipe\Trigger
 	 */
 	protected function setup_trigger() {
 		$this->helpers = array_shift( $this->dependencies );
+
+		add_action(
+			'admin_init',
+			function () {
+				if ( 'yes' === get_option( 'woo_booking_created_migrated', 'no' ) ) {
+					return;
+				}
+				$searialize = array( 'woocommerce_booking_confirmed', 'woocommerce_booking_unpaid_to_paid' );
+				global $wpdb;
+				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE meta_value = %s AND meta_key LIKE %s", $searialize, 'woocommerce_booking_unpaid_to_paid', 'add_action' ) );
+				update_option( 'woo_booking_created_migrated', 'yes' );
+			},
+			99
+		);
+
 		$this->set_integration( 'WC_BOOKINGS' );
 		$this->set_trigger_code( 'WC_BOOKINGS_NEW_BOOKING' );
 		$this->set_trigger_meta( 'WC_BOOKING_CREATED' );
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_sentence( esc_attr_x( 'A booking is created', 'WooCommerce Bookings', 'uncanny-automator' ) );
 		$this->set_readable_sentence( esc_attr_x( 'A booking is created', 'WooCommerce Bookings', 'uncanny-automator' ) );
-		$this->add_action( 'woocommerce_booking_unpaid_to_paid', 10, 2 );
+		$this->add_action( array( 'woocommerce_booking_confirmed', 'woocommerce_booking_unpaid_to_paid' ), 10, 2 );
 	}
 
 	/**

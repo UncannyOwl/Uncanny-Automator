@@ -65,7 +65,10 @@ class WCM_ADDUSER {
 					Automator()->helpers->recipe->wc_memberships->options->wcm_get_all_membership_plans(
 						null,
 						$this->trigger_meta,
-						array( 'is_any' => true )
+						array(
+							'is_any'                  => true,
+							'include_relevant_tokens' => true,
+						)
 					),
 				),
 			)
@@ -130,15 +133,24 @@ class WCM_ADDUSER {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
 
-							if ( 'purchase' === $membership_plan_type ) {
-								$order_id     = get_post_meta( $data['user_membership_id'], '_order_id', true );
-								$trigger_meta = array(
-									'user_id'        => $data['user_id'],
-									'trigger_id'     => $result['args']['trigger_id'],
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								);
+							// Add Plan Post ID meta.
+							$trigger_meta = array(
+								'user_id'        => $data['user_id'],
+								'trigger_id'     => $result['args']['trigger_id'],
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+								'meta_key'       => 'WCMMEMBERSHIPPLANPOSTID',
+								'meta_value'     => $membership_plan->id,
+							);
+							Automator()->insert_trigger_meta( $trigger_meta );
 
+							// Add user membership Post ID meta.
+							$trigger_meta['meta_key']   = 'WCMMEMBERSHIPPOSTID';
+							$trigger_meta['meta_value'] = $user_membership->id;
+							Automator()->insert_trigger_meta( $trigger_meta );
+
+							if ( 'purchase' === $membership_plan_type ) {
+								$order_id                   = get_post_meta( $data['user_membership_id'], '_order_id', true );
 								$trigger_meta['meta_key']   = 'WCMPLANORDERID';
 								$trigger_meta['meta_value'] = maybe_serialize( $order_id );
 								Automator()->insert_trigger_meta( $trigger_meta );

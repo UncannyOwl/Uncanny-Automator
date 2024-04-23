@@ -159,7 +159,9 @@ trait Action_Parser {
 
 			$parsed = apply_filters( 'automator_pre_token_parsed', $parsed, $meta_key, $token_args );
 
-			if ( $this->is_do_shortcode() ) {
+			$should_process_shortcode = apply_filters( 'automator_trait_action_parser_maybe_parse_tokens_should_process_shortcode', true, $token_args );
+
+			if ( true === $should_process_shortcode && $this->is_do_shortcode() ) {
 				$parsed = do_shortcode( $parsed );
 			}
 

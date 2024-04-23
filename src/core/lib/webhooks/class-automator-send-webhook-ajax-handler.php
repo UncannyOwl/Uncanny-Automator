@@ -139,8 +139,8 @@ class Automator_Send_Webhook_Ajax_Handler {
 			esc_attr__( '%1$sHeaders%2$s %3$s %5$s %1$sBody%2$s %4$s', 'uncanny-automator' ),
 			'<br/><strong>',
 			'</strong><br/>',
-			wp_strip_all_tags( wp_json_encode( (array) $response_headers_data ) ),
-			$response_body,
+			esc_html( wp_json_encode( (array) $response_headers_data ) ),
+			esc_html( $response_body ),
 			'<br />'
 		);
 

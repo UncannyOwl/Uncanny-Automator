@@ -178,8 +178,8 @@ class OPEN_AI_CHAT_GENERATE {
 		$model          = isset( $parsed['MODEL'] ) ? sanitize_text_field( $parsed['MODEL'] ) : null;
 		$temperature    = ! empty( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : 1;
 		$max_tokens     = ! empty( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : null;
-		$system_content = isset( $parsed['SYSTEM_CONTENT'] ) ? sanitize_textarea_field( $parsed['SYSTEM_CONTENT'] ) : '';
-		$prompt         = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
+		$system_content = isset( $parsed['SYSTEM_CONTENT'] ) ? $this->sanitize_textarea_field( $parsed['SYSTEM_CONTENT'] ) : '';
+		$prompt         = isset( $parsed[ $this->get_action_meta() ] ) ? $this->sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
 
 		$body = array(
 			'model'    => $model,
@@ -222,6 +222,24 @@ class OPEN_AI_CHAT_GENERATE {
 		}
 
 		return Automator()->complete->action( $user_id, $action_data, $recipe_id );
+
+	}
+
+	/**
+	 * Sanitize the textarea field. Added a filter to enable/disable sanitization.
+	 *
+	 * @param mixed $text
+	 * @return mixed
+	 */
+	public function sanitize_textarea_field( $text ) {
+
+		$should_sanitize = apply_filters( 'automator_openai_chat_generate_should_sanitize_fields', true );
+
+		if ( true === $should_sanitize ) {
+			return sanitize_text_field( $text );
+		}
+
+		return $text;
 
 	}
 

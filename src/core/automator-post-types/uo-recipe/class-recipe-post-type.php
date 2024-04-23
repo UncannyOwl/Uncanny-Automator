@@ -19,6 +19,44 @@ class Recipe_Post_Type {
 		add_filter( 'default_title', array( $this, 'default_recipe_title' ), 20, 2 );
 
 		add_action( 'admin_head', array( $this, 'all_recipes_colours' ) );
+
+		add_action( 'admin_init', array( $this, 'uo_recipe_check_conditions_for_notice' ) );
+	}
+
+	/**
+	 * @return void
+	 */
+	public function uo_recipe_check_conditions_for_notice() {
+		// Check if we're on the uo-recipe edit screen and if permalink structure is "Plain"
+		if ( Automator()->helpers->recipe->is_edit_page() && empty( get_option( 'permalink_structure' ) ) ) {
+			add_action(
+				'automator_show_internal_admin_notice',
+				array(
+					$this,
+					'uo_recipe_plain_permalink_notice',
+				)
+			);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function uo_recipe_plain_permalink_notice() {
+		?>
+		<div class="uap notice notice-error" style="padding:0">
+			<uo-alert type="error" no-radius>
+				<strong>
+					<?php
+					echo sprintf(
+						esc_html__( "Your site's Permalinks structure is set to Plain. Please change the setting from \"Plain\" to something else by clicking %s.", 'uncanny-automator' ),
+						'<a target="_blank" href="' . admin_url( 'options-permalink.php' ) . '">' . _x( 'here', 'Admin notice when Permalinks are not set', 'uncanny-automator' ) . '</a>'
+					)
+					?>
+				</strong>
+			</uo-alert>
+		</div>
+		<?php
 	}
 
 	/**

@@ -49,8 +49,11 @@ class Prune_Logs {
 
 		$this->minimum_input = apply_filters( 'automator_prune_logs_minimum_input', $this->minimum_input );
 
-		// This hook needs to be registered unconditionally.
+		// Calculate table size. This hook needs to be registered unconditionally.
 		add_action( self::$cron_schedule, array( $this, 'calculate_and_save_table_size' ) );
+
+		// Update failed recipes. This hook also needs to be registered unconditionally.
+		add_action( 'automator_daily_healthcheck', array( $this, 'update_failed_recipes' ) );
 
 	}
 
@@ -188,6 +191,20 @@ class Prune_Logs {
 	}
 
 	/**
+	 * Update recipes that are stucked in progress.
+	 *
+	 * @return void
+	 */
+	public function update_failed_recipes() {
+
+		$failed_recipes = Automator()->db->recipe->retrieve_failed_recipes();
+
+		foreach ( $failed_recipes as $failed_recipe ) {
+			Automator()->db->recipe->mark_complete( $failed_recipe['ID'], Automator_Status::FAILED );
+		}
+
+	}
+	/**
 	 * Calculate and save table size total.
 	 *
 	 * @return float
@@ -205,7 +222,9 @@ class Prune_Logs {
 	 * @return void
 	 */
 	public function schedule_table_size_calculation() {
+
 		$table_size = get_option( 'automator_db_size', 0 );
+
 		if ( 0 === absint( $table_size ) ) {
 			$this->calculate_and_save_table_size();
 		}

@@ -270,7 +270,7 @@ class Automator_Load {
 
 			$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=plugins_page&utm_content=update_to_pro';
 
-			$settings_link = sprintf( '<a href="%s" target="_blank" style="font-weight: bold;">%s</a>', $link, __( 'Upgrade to Pro', 'uncanny-learndash-toolkit' ) );
+			$settings_link = sprintf( '<a href="%s" target="_blank" style="color: rgb(0, 163, 42); font-weight: 700;">%s</a>', $link, __( 'Upgrade to Pro', 'uncanny-automator' ) );
 
 			array_unshift( $links, $settings_link );
 

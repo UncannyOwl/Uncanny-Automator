@@ -46,6 +46,6 @@ class Wp_Discuz_Integration extends \Uncanny_Automator\Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return class_exists( 'WpdiscuzCore' ) && class_exists( 'Uncanny_Automator\Wp_Helpers' );
+		return class_exists( 'WpdiscuzCore' );
 	}
 }

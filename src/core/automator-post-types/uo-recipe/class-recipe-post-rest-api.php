@@ -321,8 +321,14 @@ class Recipe_Post_Rest_Api {
 		$return['action']         = 'create';
 		$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
 
-		return new WP_REST_Response( $return, 200 );
+		/**
+		 * Fires when a recipe is created.
+		 *
+		 * @since 5.7
+		 */
+		do_action( 'automator_recipe_created', $post_id, $return );
 
+		return new WP_REST_Response( $return, 200 );
 	}
 
 	/**
@@ -578,6 +584,13 @@ class Recipe_Post_Rest_Api {
 				$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 				$return['_recipe']        = Automator()->get_recipe_object( absint( $request->get_param( 'recipe_id' ) ) );
 
+				/**
+				 * Fires when a recipe item is deleted.
+				 *
+				 * @since 5.7
+				 */
+				do_action( 'automator_recipe_item_deleted', $request->get_param( 'ID' ), $recipe_id, $return );
+
 				return new WP_REST_Response( $return, 200 );
 			}
 		}
@@ -629,10 +642,19 @@ class Recipe_Post_Rest_Api {
 				update_post_meta( $item_id, 'sentence_human_readable_html', $human_readable );
 			}
 
+			// Update trigger 'add_action' meta.
+			if ( $request->has_param( 'trigger_item_code' ) ) {
+				$trigger_item_code = sanitize_text_field( $request->get_param( 'trigger_item_code' ) );
+				$add_action_hook   = Automator()->get->trigger_actions_from_trigger_code( $trigger_item_code );
+				update_post_meta( $item_id, 'add_action', $add_action_hook );
+			}
+
 			// Make sure the parent post exists
 			$item = get_post( $item_id );
 
 			if ( $item ) {
+
+				$before_update_value = get_post_meta( $item_id, $meta_key, true );
 
 				if ( is_array( $meta_value ) ) {
 					// Allow integrations to hook into the filter.
@@ -672,6 +694,13 @@ class Recipe_Post_Rest_Api {
 				$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
 				$return = apply_filters( 'automator_option_updated', $return, $item, $meta_key, $meta_value );
+
+				/**
+				 * Fires when a recipe option is updated.
+				 *
+				 * @since 5.7
+				 */
+				do_action( 'automator_recipe_option_updated', $item, $meta_key, $meta_value, $before_update_value, $recipe_id, $return );
 
 				return new WP_REST_Response( $return, 200 );
 			}
@@ -831,6 +860,13 @@ class Recipe_Post_Rest_Api {
 
 					$return['_recipe'] = $recipe_object;
 
+					/**
+					 * Fires when a recipe status is changed. Added for Scheduled and Delayed actions.
+					 *
+					 * @since 5.7
+					 */
+					do_action( 'automator_recipe_status_updated', $post_id, $recipe_id, $post_status, $return );
+
 					return new WP_REST_Response( $return, 200 );
 				}
 			}
@@ -869,6 +905,13 @@ class Recipe_Post_Rest_Api {
 					$return['action']         = 'updated_post';
 					$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
 					$return['_recipe']        = Automator()->get_recipe_object( $post_id );
+
+					/**
+					 * Fires when a recipe type is updated.
+					 *
+					 * @since 5.7
+					 */
+					do_action( 'automator_recipe_type_updated', $post_id, $recipe_type, $return );
 
 					return new WP_REST_Response( $return, 200 );
 				}
@@ -911,6 +954,13 @@ class Recipe_Post_Rest_Api {
 					$return['action']         = 'updated_post';
 					$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
 					$return['_recipe']        = Automator()->get_recipe_object( $post_id, 'JSON' );
+
+					/**
+					 * Fires when a recipe title is updated.
+					 *
+					 * @since 5.7
+					 */
+					do_action( 'automator_recipe_title_updated', $post_id, $post_title, $return );
 
 					return new WP_REST_Response( $return, 200 );
 				}
@@ -956,6 +1006,13 @@ class Recipe_Post_Rest_Api {
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
 			$return['_recipe']        = Automator()->get_recipe_object( $post_id );
 
+			/**
+			 * Fires when a recipe completions allowed is updated.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_completions_allowed_updated', $post_id, $recipe_completions_allowed, $return );
+
 			return new WP_REST_Response( $return, 200 );
 		}
 
@@ -997,6 +1054,13 @@ class Recipe_Post_Rest_Api {
 
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $post_id );
 			$return['_recipe']        = Automator()->get_recipe_object( $post_id );
+
+			/**
+			 * Fires when a recipe max completions allowed is updated.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_max_completions_allowed_updated', $post_id, $recipe_completions_allowed, $return );
 
 			return new WP_REST_Response( $return, 200 );
 		}
@@ -1054,6 +1118,13 @@ class Recipe_Post_Rest_Api {
 			$return['success'] = true;
 			$return['action']  = 'set_recipe_terms';
 
+			/**
+			 * Fires when a recipe terms are updated.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_terms_updated', $recipe_id, $taxonomy, $term_ids, $return );
+
 			return new WP_REST_Response( $return, 200 );
 		}
 
@@ -1087,6 +1158,13 @@ class Recipe_Post_Rest_Api {
 			$return['action']         = 'user_selector';
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
+
+			/**
+			 * Fires when a recipe user selector is updated.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_user_selector_updated', $recipe_id, $source, $fields, $return );
 
 			return new WP_REST_Response( $return, 200 );
 		}
@@ -1169,6 +1247,13 @@ class Recipe_Post_Rest_Api {
 				$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 				$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
+				/**
+				 * Fires when a recipe schedule action is scheduled.
+				 *
+				 * @since 5.7
+				 */
+				do_action( 'automator_recipe_schedule_action_scheduled', $post_id, $recipe_id, $return );
+
 				return new WP_REST_Response( $return, 200 );
 			}
 		}
@@ -1211,6 +1296,13 @@ class Recipe_Post_Rest_Api {
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
+			/**
+			 * Fires when a recipe schedule action is removed.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_schedule_remove_from_action', $post_id, $recipe_id, $return );
+
 			return new WP_REST_Response( $return, 200 );
 
 		}
@@ -1249,6 +1341,13 @@ class Recipe_Post_Rest_Api {
 
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
+
+			/**
+			 * Fires when a recipe requires user is updated.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_requires_user_updated', $recipe_id, $requires_user, $return );
 
 			return new WP_REST_Response( $return, 200 );
 
@@ -1292,8 +1391,14 @@ class Recipe_Post_Rest_Api {
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 			$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
-			return new WP_REST_Response( $return, 200 );
+			/**
+			 * Fires when a recipe actions order is updated.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_actions_order_updated', $recipe_id, $actions_order, $return );
 
+			return new WP_REST_Response( $return, 200 );
 		}
 
 		$return['message'] = 'Failed to update';
@@ -1326,8 +1431,14 @@ class Recipe_Post_Rest_Api {
 
 			$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 
-			return new WP_REST_Response( $return, 200 );
+			/**
+			 * Fires when a recipe all or any trigger option is updated.
+			 *
+			 * @since 5.7
+			 */
+			do_action( 'automator_recipe_all_or_any_trigger_option_updated', $recipe_id, $all_or_any, $return );
 
+			return new WP_REST_Response( $return, 200 );
 		}
 
 		$return['message'] = 'Failed to update';
@@ -1387,6 +1498,13 @@ class Recipe_Post_Rest_Api {
 		$return['action']         = 'add-new-action';
 		$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 		$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
+
+		/**
+		 * Fires when a recipe action is duplicated.
+		 *
+		 * @since 5.7
+		 */
+		do_action( 'automator_recipe_action_duplicated', $recipe_id, $return );
 
 		return new WP_REST_Response( $return, 200 );
 	}
@@ -1454,6 +1572,12 @@ class Recipe_Post_Rest_Api {
 			);
 		}
 
+		/**
+		 * Fires after a successful API request.
+		 * @since 5.7
+		 */
+		do_action( 'automator_recipe_app_request_resent', $item_log_id, $return );
+
 		return new WP_REST_Response( $return, 200 );
 	}
 
@@ -1515,6 +1639,13 @@ class Recipe_Post_Rest_Api {
 			Automator_Status::get_class_name( Automator_Status::COMPLETED ),
 			$message
 		);
+
+		/**
+		 * Fires when a webhook request is replayed.
+		 *
+		 * @since 5.7
+		 */
+		do_action( 'automator_recipe_webhook_request_replayed', $api_request->item_log_id, $response );
 
 		return new WP_REST_Response( $response, 200 );
 	}

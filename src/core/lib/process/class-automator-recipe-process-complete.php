@@ -820,7 +820,9 @@ class Automator_Recipe_Process_Complete {
 
 		$run_number = Automator()->get->next_run_number( $recipe_id, $user_id, true );
 
-		if ( $recipe_log_id && Automator()->db->recipe->get_scheduled_actions_count( $recipe_log_id, $args ) > 0 ) {
+		$scheduled_actions_count = Automator()->db->recipe->get_scheduled_actions_count( $recipe_log_id, $args );
+
+		if ( $recipe_log_id && $scheduled_actions_count > 0 ) {
 			$completed = Automator_Status::IN_PROGRESS;
 		} elseif ( ( is_array( $args ) && key_exists( 'do-nothing', $args ) ) ) {
 			$completed  = Automator_Status::DID_NOTHING;
@@ -895,6 +897,11 @@ class Automator_Recipe_Process_Complete {
 				if ( Automator_Status::COMPLETED_WITH_ERRORS === absint( $comp ) ) {
 					do_action( 'automator_recipe_completed_with_errors', $recipe_id, $user_id, $recipe_log_id, $args );
 				}
+			}
+
+			// At this point the action has completed with error. Determine if there are any scheduled actions and mark it as 'In progress with error'.
+			if ( $scheduled_actions_count > 0 ) {
+				Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, Automator_Status::IN_PROGRESS_WITH_ERROR );
 			}
 		}
 
