@@ -626,7 +626,7 @@ class SHEET_UPDATERECORD {
 				'values'                      => $row_values,
 			);
 
-			$helper->api_call( $body, null );
+			$helper->api_call( $body, $action_data );
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 

@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.4
 Tested up to: 6.5.2
 Requires PHP: 7.0
-Stable tag: 5.7
+Stable tag: 5.7.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -352,6 +352,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.7.0.1 [2024-04-26] =
+
+**Update:**
+
+* Google Sheets & Recipe Logs - Update a row in a {{Google Sheet}} - Resend button not appearing on some sites #4643
 
 = 5.7 [2024-04-23] =
 
