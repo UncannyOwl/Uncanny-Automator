@@ -15,7 +15,13 @@ final class Triggers implements \JsonSerializable {
 	use Common\Trait_JSON_Serializer;
 	use Common\Trait_Setter_Getter;
 
+	/**
+	 * @var string
+	 */
 	protected $logic = 'all';
+	/**
+	 * @var array
+	 */
 	protected $items = array();
 
 	/**
@@ -23,6 +29,9 @@ final class Triggers implements \JsonSerializable {
 	 */
 	private static $recipe = null;
 
+	/**
+	 * @param \Uncanny_Automator\Services\Recipe\Structure $recipe
+	 */
 	public function __construct( \Uncanny_Automator\Services\Recipe\Structure $recipe ) {
 
 		self::$recipe = $recipe;

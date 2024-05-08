@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb83c9fee9ccd3f410c3b1a9c92297802
+class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -835,6 +835,7 @@ class ComposerStaticInitb83c9fee9ccd3f410c3b1a9c92297802
         'Uncanny_Automator\\Services\\Integrations\\Fields' => __DIR__ . '/../..' . '/src/core/services/integrations/fields.php',
         'Uncanny_Automator\\Services\\Integrations\\Structure' => __DIR__ . '/../..' . '/src/core/services/integrations/structure.php',
         'Uncanny_Automator\\Services\\Logger_Auto_Removal' => __DIR__ . '/../..' . '/src/core/services/logger-auto-remove.php',
+        'Uncanny_Automator\\Services\\Multiple_Triggers_Restore_Failed_Logs' => __DIR__ . '/../..' . '/src/core/services/logger-multiple-triggers-restore-failed-logs.php',
         'Uncanny_Automator\\Services\\Properties' => __DIR__ . '/../..' . '/src/core/services/properties.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_JSON_Serializer' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-json-serializer.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_Setter_Getter' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-setter-getter.php',
@@ -1124,10 +1125,10 @@ class ComposerStaticInitb83c9fee9ccd3f410c3b1a9c92297802
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb83c9fee9ccd3f410c3b1a9c92297802::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb83c9fee9ccd3f410c3b1a9c92297802::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitb83c9fee9ccd3f410c3b1a9c92297802::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitb83c9fee9ccd3f410c3b1a9c92297802::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$classMap;
 
         }, null, ClassLoader::class);
     }

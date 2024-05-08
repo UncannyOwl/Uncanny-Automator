@@ -317,7 +317,7 @@ class Automator_DB_Handler_Recipes {
 
 		$results = (array) $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT ID, completed FROM {$wpdb->prefix}uap_recipe_log WHERE completed = %d",
+				"SELECT ID, completed, automator_recipe_id FROM {$wpdb->prefix}uap_recipe_log WHERE completed = %d",
 				Automator_Status::NOT_COMPLETED
 			),
 			ARRAY_A
@@ -325,5 +325,31 @@ class Automator_DB_Handler_Recipes {
 
 		return $results;
 
+	}
+
+	/**
+	 * Retrieve recipe current triggers via recipe log ID.
+	 *
+	 * @param int $recipe_log_id
+	 *
+	 * @return false|int[] Returns false if there are no records, or if JSON from database is invalid. Otherwise, returns a set of integers representing the Trigger IDs.
+	 */
+	public function retrieve_recipe_current_triggers( $recipe_log_id ) {
+
+		global $wpdb;
+
+		$result = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT automator_trigger_id
+					FROM {$wpdb->prefix}uap_trigger_log
+					WHERE
+						completed = %d AND
+						automator_recipe_log_id = %d", // Make sure to fetch the latest current recipes.
+				1,
+				$recipe_log_id
+			)
+		);
+
+		return $result;
 	}
 }

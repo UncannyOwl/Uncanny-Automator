@@ -3,9 +3,9 @@
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, openai, learndash, webhooks \
 **Requires at least:** 5.4 \
-**Tested up to:** 6.5.2 \
+**Tested up to:** 6.5.3 \
 **Requires PHP:** 7.0 \
-**Stable tag:** 5.7.0.1 \
+**Stable tag:** 5.7.0.2 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -378,11 +378,21 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
+### 5.7.0.2 [2024-05-08]
+
+**Fix:**
+
+* Recipe logs - Incorrectly flagged some "In Progress" recipe runs as "Failed" in recipes with multiple triggers and an "All" operator #4664
+
+**Under the hood:**
+
+* Recipe Logs - Change "Failed" recipes back to "In Progress" for updated Failed logic #4661
+
 ### 5.7.0.1 [2024-04-26]
 
 **Update:**
 
-* Google Sheets & Recipe Logs - Update a row in a {{Google Sheet}} - Resend button not appearing on some sites #4643
+* Google Sheets & Recipe Logs - Update a row in a Google Sheet - Resend button not appearing on some sites #4643
 
 ### 5.7 [2024-04-23]
 

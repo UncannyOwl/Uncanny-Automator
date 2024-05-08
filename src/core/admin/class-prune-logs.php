@@ -200,10 +200,44 @@ class Prune_Logs {
 		$failed_recipes = Automator()->db->recipe->retrieve_failed_recipes();
 
 		foreach ( $failed_recipes as $failed_recipe ) {
-			Automator()->db->recipe->mark_complete( $failed_recipe['ID'], Automator_Status::FAILED );
+
+			$recipe_log_id = absint( $failed_recipe['ID'] );
+			$recipe_id     = absint( $failed_recipe['automator_recipe_id'] );
+
+			// Get the triggers logic.
+			try {
+				$recipe_object  = Automator()->get_recipe_object( $recipe_id, ARRAY_A );
+				$triggers_logic = strtolower( $recipe_object['triggers']['logic'] );
+			} catch ( Exception $e ) {
+				continue; // Skip. The recipe does not exists.
+			}
+
+			// Retrieve the current triggers.
+			$current_triggers = (array) Automator()->db->recipe->retrieve_recipe_current_triggers( $recipe_log_id );
+
+			if ( 'any' === $triggers_logic && count( $current_triggers ) >= 1 ) {
+				$this->mark_recipe_log_as_failed( $recipe_log_id );
+				continue;
+			}
+
+			// Theoretically, the recipe should only fail if the number of triggers in the recipe matches with the completed triggers in the trigger log table, with the exception of any triggers. That only need to be any 1
+			if ( count( $current_triggers ) === count( $recipe_object['triggers']['items'] ) ) {
+				$this->mark_recipe_log_as_failed( $recipe_log_id );
+				continue;
+			}
 		}
 
 	}
+
+	/**
+	 * @param $recipe_log_id
+	 *
+	 * @return void
+	 */
+	public function mark_recipe_log_as_failed( $recipe_log_id = null ) {
+		Automator()->db->recipe->mark_complete( $recipe_log_id, Automator_Status::FAILED );
+	}
+
 	/**
 	 * Calculate and save table size total.
 	 *

@@ -127,6 +127,8 @@ class Automator_Load {
 		}
 
 		$this->load_logs_autoremoval();
+		$this->load_logs_multiple_trigger_status_restore();
+
 		// Auto-delete user logs.
 		add_action( 'deleted_user', array( $this, 'auto_prune_user_logs_handler' ), 10, 3 );
 	}
@@ -181,6 +183,15 @@ class Automator_Load {
 	 */
 	public function load_logs_autoremoval() {
 		( new \Uncanny_Automator\Services\Logger_Auto_Removal() )->register_hooks();
+	}
+
+	/**
+	 * Lods log multiple trigger status retoration.
+	 *
+	 * @return void
+	 */
+	public function load_logs_multiple_trigger_status_restore() {
+		( new \Uncanny_Automator\Services\Multiple_Triggers_Restore_Failed_Logs() )->restore_once();
 	}
 
 	/**

@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 5.7.0.1\n"
+"Project-Id-Version: Uncanny Automator 5.7.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-26T13:49:37+00:00\n"
+"POT-Creation-Date: 2024-05-08T16:25:59+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: uncanny-automator\n"
@@ -35,12 +35,12 @@ msgstr ""
 msgid "Uncanny Automator, Uncanny Owl"
 msgstr ""
 
-#: src/class-automator-load.php:146
+#: src/class-automator-load.php:148
 msgctxt "Uncanny Automator"
 msgid "Uncanny Automator cannot currently run in WP Playground environments because Playground cannot support custom tables, cURL or SSL PHP functions. Please consider trying the free Uncanny Automator plugin in your own environment instead."
 msgstr ""
 
-#: src/class-automator-load.php:273
+#: src/class-automator-load.php:284
 #: src/core/admin/pro-upgrade/class-pro-upsell.php:46
 #: src/core/admin/pro-upgrade/view-pro-upsell.php:20
 #: src/core/admin/pro-upgrade/view-pro-upsell.php:96
@@ -49,7 +49,7 @@ msgstr ""
 msgid "Upgrade to Pro"
 msgstr ""
 
-#: src/class-automator-load.php:487
+#: src/class-automator-load.php:498
 msgid "Heads up!"
 msgstr ""
 
@@ -1257,17 +1257,17 @@ msgstr ""
 msgid "%d GB"
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:348
+#: src/core/admin/class-prune-logs.php:382
 msgctxt "Prune logs"
 msgid "Invalid nonce."
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:510
+#: src/core/admin/class-prune-logs.php:544
 msgctxt "Prune logs"
 msgid "Invalid input. Please ensure that the \"Days\" field contains a valid numeric value, is not empty, and is not equal to zero."
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:518
+#: src/core/admin/class-prune-logs.php:552
 msgctxt "Prune logs"
 msgid "The field \"Days\" must be greater than or equals to "
 msgstr ""

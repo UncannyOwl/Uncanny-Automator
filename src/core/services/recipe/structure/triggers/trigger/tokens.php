@@ -41,7 +41,9 @@ final class Tokens implements \JsonSerializable {
 
 		$tokens_collection = array();
 
-		foreach ( self::$trigger['tokens'] as $trigger_token ) {
+		$trigger_tokens = self::$trigger['tokens'] ?? array();
+
+		foreach ( (array) $trigger_tokens as $trigger_token ) {
 
 			$token = new stdClass();
 

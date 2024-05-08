@@ -810,6 +810,7 @@ return array(
     'Uncanny_Automator\\Services\\Integrations\\Fields' => $baseDir . '/src/core/services/integrations/fields.php',
     'Uncanny_Automator\\Services\\Integrations\\Structure' => $baseDir . '/src/core/services/integrations/structure.php',
     'Uncanny_Automator\\Services\\Logger_Auto_Removal' => $baseDir . '/src/core/services/logger-auto-remove.php',
+    'Uncanny_Automator\\Services\\Multiple_Triggers_Restore_Failed_Logs' => $baseDir . '/src/core/services/logger-multiple-triggers-restore-failed-logs.php',
     'Uncanny_Automator\\Services\\Properties' => $baseDir . '/src/core/services/properties.php',
     'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_JSON_Serializer' => $baseDir . '/src/core/services/recipe/common/trait-json-serializer.php',
     'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_Setter_Getter' => $baseDir . '/src/core/services/recipe/common/trait-setter-getter.php',
