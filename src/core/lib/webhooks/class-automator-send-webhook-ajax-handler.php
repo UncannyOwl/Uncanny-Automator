@@ -72,12 +72,10 @@ class Automator_Send_Webhook_Ajax_Handler {
 	private function call_webhook( $data, $legacy = false, $action_id = null ) {
 
 		$data_type    = Automator()->send_webhook->get_data_type( $data );
-		$headers      = Automator()->send_webhook->get_headers( $data );
+		$headers      = Automator()->send_webhook->get_headers( $data, $data_type, $action_id );
 		$webhook_url  = Automator()->send_webhook->get_url( $data, $legacy );
 		$fields       = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, array() );
 		$request_type = Automator()->send_webhook->request_type( $data );
-		$headers      = Automator()->send_webhook->get_content_type( $data_type, $headers );
-		$headers      = Automator()->send_webhook->get_authorization( $action_id, $headers );
 
 		if ( empty( $webhook_url ) ) {
 			wp_send_json(

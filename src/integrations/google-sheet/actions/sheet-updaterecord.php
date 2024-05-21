@@ -55,6 +55,7 @@ class SHEET_UPDATERECORD {
 	public function define_action() {
 
 		$action = array(
+			'is_deprecated'         => true,
 			'author'                => Automator()->get_author_name( $this->action_code ),
 			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/google-sheets/' ),
 			'is_pro'                => false,
@@ -153,7 +154,6 @@ class SHEET_UPDATERECORD {
 								'read_only'   => true,
 								'options'     => array(),
 							),
-
 							array(
 								'option_code' => 'COLUMN_UPDATE',
 								'label'       => __( 'Update?', 'uncanny-automator' ),

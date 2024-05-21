@@ -83,17 +83,23 @@ class Automator_Send_Webhook {
 
 		$item_id = $_POST['itemId'] ?? null; //phpcs:ignore
 
+		// Check if the string contains tokens.
+		if ( preg_match( '/\{\{.*?\}\}/', $authorization ) ) {
+			// Delete the original value if exists.
+			delete_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL' );
+			return $meta_value;
+		}
+
 		// Trim all * and see if a new string is entered
 		$authorization = trim( $authorization, '*' );
 
 		if ( strlen( $authorization ) > 3 ) { // check if trimmed string is over 3 chars
-
 			$authorization = addslashes( $authorization );
-
 			update_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', $authorization );
-
 			$meta_value['WEBHOOK_AUTHORIZATIONS'] = $this->hide_string( $authorization );
-
+		} else {
+			// Delete the original value if exists.
+			delete_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL' );
 		}
 
 		return $meta_value;
@@ -352,42 +358,6 @@ class Automator_Send_Webhook {
 	}
 
 	/**
-	 * Outgoing webhook Content Type
-	 *
-	 * @return string|array
-	 */
-	public function get_content_type( $data_type, $headers ) {
-		$supported_data_types = array(
-			'application/x-www-form-urlencoded' => 'x-www-form-urlencoded',
-			'multipart/form-data'               => 'form-data',
-			'application/json'                  => 'json',
-			'text/plain'                        => 'plain',
-			'application/binary'                => 'binary',
-			'text/html'                         => 'html',
-			'xml'                               => 'xml',
-			'GraphQL'                           => 'GraphQL',
-			'raw'                               => 'raw',
-		);
-		if ( 'none' === $data_type ) {
-			$data_type = 'raw';
-		}
-		if ( in_array( $data_type, $supported_data_types, true ) ) {
-			$type = array_search( $data_type, $supported_data_types, true );
-			if ( 'form-data' === $data_type ) {
-				$this->boundary = sha1( time() );
-				$type           = $type . '; boundary=' . $this->boundary;
-			}
-			$headers['Content-Type'] = $type;
-
-			return $headers;
-		}
-
-		$headers['Content-Type'] = 'application/x-www-form-urlencoded';
-
-		return $headers;
-	}
-
-	/**
 	 * Get outgoing URL
 	 *
 	 * @param $data
@@ -493,23 +463,6 @@ class Automator_Send_Webhook {
 	}
 
 	/**
-	 * @param $action_id
-	 * @param $headers
-	 *
-	 * @return array
-	 */
-	public function get_authorization( $action_id, $headers ) {
-
-		$authorization = get_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', true );
-
-		if ( ! empty( $authorization ) && is_scalar( $authorization ) ) {
-			$headers['Authorization'] = apply_filters( 'automator_outgoing_webhook_authorization_string', $authorization, $action_id, $headers, $this );
-		}
-
-		return $headers;
-	}
-
-	/**
 	 * Legacy data. Used in v1~2.1 of Pro
 	 *
 	 * @param $data
@@ -533,27 +486,95 @@ class Automator_Send_Webhook {
 	 * Get outgoing headers
 	 *
 	 * @param $data
+	 * @param string $data_type
+	 * @param int $action_id
 	 * @param array $parsing_args
 	 *
 	 * @return array
 	 */
-	public function get_headers( $data, $parsing_args = array() ) {
-		$headers     = array();
+	public function get_headers( $data, $data_type, $action_id, $parsing_args = array() ) {
+
+		$headers = array();
+
+		// Get Webhook Headers from repeater field.
 		$header_meta = isset( $data['WEBHOOK_HEADERS'] ) ? ! is_array( $data['WEBHOOK_HEADERS'] ) ? json_decode( $data['WEBHOOK_HEADERS'], true ) : $data['WEBHOOK_HEADERS'] : array();
-		if ( empty( $header_meta ) ) {
+		if ( ! empty( $header_meta ) ) {
+			foreach ( $header_meta as $meta ) {
+				$key = isset( $meta['NAME'] ) ? $this->maybe_parse_tokens( $meta['NAME'], $parsing_args ) : null;
+				// remove colon if user added in NAME
+				$key             = trim( str_replace( ':', '', $key ) );
+				$value           = isset( $meta['VALUE'] ) ? $this->maybe_parse_tokens( $meta['VALUE'], $parsing_args ) : null;
+				$headers[ $key ] = trim( $value );
+			}
+		}
+
+		// Content Type.
+		$headers = $this->get_content_type( $data_type, $headers );
+
+		// Authorization.
+		$headers = $this->get_authorization( $action_id, $headers, $data, $parsing_args );
+
+		return array_unique( $headers );
+	}
+
+	/**
+	 * Outgoing webhook Content Type
+	 *
+	 * @return string|array
+	 */
+	public function get_content_type( $data_type, $headers ) {
+		$supported_data_types = array(
+			'application/x-www-form-urlencoded' => 'x-www-form-urlencoded',
+			'multipart/form-data'               => 'form-data',
+			'application/json'                  => 'json',
+			'text/plain'                        => 'plain',
+			'application/binary'                => 'binary',
+			'text/html'                         => 'html',
+			'xml'                               => 'xml',
+			'GraphQL'                           => 'GraphQL',
+			'raw'                               => 'raw',
+		);
+		if ( 'none' === $data_type ) {
+			$data_type = 'raw';
+		}
+		if ( in_array( $data_type, $supported_data_types, true ) ) {
+			$type = array_search( $data_type, $supported_data_types, true );
+			if ( 'form-data' === $data_type ) {
+				$this->boundary = sha1( time() );
+				$type           = $type . '; boundary=' . $this->boundary;
+			}
+			$headers['Content-Type'] = $type;
+
 			return $headers;
 		}
 
-		//$header_fields = count( $header_meta );
-		foreach ( $header_meta as $meta ) {
-			$key = isset( $meta['NAME'] ) ? $this->maybe_parse_tokens( $meta['NAME'], $parsing_args ) : null;
-			// remove colon if user added in NAME
-			$key             = trim( str_replace( ':', '', $key ) );
-			$value           = isset( $meta['VALUE'] ) ? $this->maybe_parse_tokens( $meta['VALUE'], $parsing_args ) : null;
-			$headers[ $key ] = trim( $value );
+		$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+		return $headers;
+	}
+
+	/**
+	 * @param $action_id
+	 * @param $headers
+	 * @param $data
+	 * @param $parsing_args
+	 *
+	 * @return array
+	 */
+	public function get_authorization( $action_id, $headers, $data, $parsing_args = array() ) {
+
+		$authorization         = isset( $data['WEBHOOK_AUTHORIZATIONS'] ) ? $data['WEBHOOK_AUTHORIZATIONS'] : null;
+		$authorization_originl = get_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', true );
+		$authorization         = ! empty( $authorization_originl ) && is_scalar( $authorization_originl ) ? $authorization_originl : $authorization;
+
+		if ( empty( $authorization ) ) {
+			return $headers;
 		}
 
-		return array_unique( $headers );
+		$authorization            = $this->maybe_parse_tokens( $authorization, $parsing_args );
+		$headers['Authorization'] = apply_filters( 'automator_outgoing_webhook_authorization_string', $authorization, $action_id, $headers, $this );
+
+		return $headers;
 	}
 
 	/**

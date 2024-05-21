@@ -89,6 +89,11 @@ class FCRM_ADD_CONTACT {
 		$custom_fields           = fluentcrm_get_custom_contact_fields();
 		if ( $custom_fields ) {
 			foreach ( $custom_fields as $k => $custom_field ) {
+
+				if ( apply_filters( "automator_fluentcrm_omit_custom_field-{$custom_field['slug']}", false, $custom_field ) ) {
+					continue;
+				}
+
 				switch ( $custom_field['type'] ) {
 					case 'checkbox':
 						$checkbox_val = array();

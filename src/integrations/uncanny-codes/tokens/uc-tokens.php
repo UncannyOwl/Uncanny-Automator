@@ -73,6 +73,18 @@ class Uc_Tokens {
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
+				array(
+					'tokenId'         => 'REMAINING_CODES',
+					'tokenName'       => __( 'Remaining codes', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				),
+				array(
+					'tokenId'         => 'TOTAL_CODES',
+					'tokenName'       => __( 'Total codes', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				),
 			);
 
 			$tokens = array_merge( $tokens, $fields );
@@ -204,17 +216,19 @@ class Uc_Tokens {
 			'UNCANNYCODESEXPIRY_DATE',
 			'UNCANNYCODESLIST_OF_CODES',
 			'CODE_REDEEMED',
+			'REMAINING_CODES',
+			'TOTAL_CODES',
 		);
 
 		if ( $pieces && isset( $pieces[2] ) ) {
 			$meta_field = $pieces[2];
 			if ( ! empty( $meta_field ) && in_array( $meta_field, $tokens ) ) {
 				if ( $trigger_data ) {
+					$batch_id = Automator()->db->token->get( 'CODE_BATCH_ID', $replace_args );
 					foreach ( $trigger_data as $trigger ) {
 						switch ( $meta_field ) {
 							case 'UNCANNYCODESBATCHEXPIRY':
 								global $wpdb;
-								$batch_id         = isset( $trigger['meta']['UNCANNYCODESBATCH'] ) && intval( '-1' ) !== intval( $trigger['meta']['UNCANNYCODESBATCH'] ) ? $trigger['meta']['UNCANNYCODESBATCH'] : absint( Automator()->db->token->get( 'UNCANNYCODESBATCH', $replace_args ) ); // Fix warning in error log.
 								$expiry_date      = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
 								$expiry_timestamp = strtotime( $expiry_date );
 
@@ -230,10 +244,10 @@ class Uc_Tokens {
 								}
 								break;
 							case 'UNCANNYCODESBATCH':
-								$value = $trigger['meta']['UNCANNYCODESBATCH_readable'];
+								$value = $batch_id;
 								break;
 							case 'UNCANNYCODESBATCH_ID':
-								$value = Automator()->db->token->get( 'UNCANNYCODESBATCH_ID', $replace_args );
+								$value = $batch_id;
 								break;
 							case 'UNCANNYCODESTYPE':
 								$value = Automator()->db->token->get( 'UNCANNYCODESTYPE', $replace_args );
@@ -262,8 +276,16 @@ class Uc_Tokens {
 							case 'CODE_REDEEMED':
 								$value = Automator()->db->token->get( 'CODE_REDEEMED', $replace_args );
 								break;
+							case 'REMAINING_CODES':
+								$redeemed_count = absint( \uncanny_learndash_codes\Database::get_group_redeemed_count( $batch_id ) );
+								$issue          = absint( \uncanny_learndash_codes\SharedFunctionality::ulc_get_issue_count( $batch_id ) );
+								$value          = $issue - $redeemed_count;
+								break;
+							case 'TOTAL_CODES':
+								$value = absint( \uncanny_learndash_codes\SharedFunctionality::ulc_get_issue_count( $batch_id ) );
+								break;
 							default:
-								$value = isset( $trigger['meta'][ $meta_field ] ) ? $trigger['meta'][ $meta_field ] : '';
+								$value = $batch_id;
 								break;
 						}
 					}

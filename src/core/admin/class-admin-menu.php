@@ -427,16 +427,11 @@ class Admin_Menu {
 	 * @return object
 	 */
 	public static function get_dashboard_details() {
+
 		$is_connected = Api_Server::is_automator_connected( true );
 
-		//$website      = preg_replace( '(^https?://)', '', get_home_url() );
 		$redirect_url = admin_url( 'admin.php?page=uncanny-automator-dashboard' );
 		$connect_url  = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . rawurlencode( $redirect_url );
-
-		//      $license_data = false;
-		//      if ( $is_connected ) {
-		//          $license_data = automator_get_option( 'uap_automator_free_license_data' );
-		//      }
 
 		$is_pro_active = false;
 
@@ -446,16 +441,22 @@ class Admin_Menu {
 			}
 		}
 
-		$user             = wp_get_current_user();
+		$user = wp_get_current_user();
+
 		$paid_usage_count = isset( $is_connected['paid_usage_count'] ) ? $is_connected['paid_usage_count'] : 0;
 		$usage_limit      = isset( $is_connected['usage_limit'] ) ? $is_connected['usage_limit'] : 250;
+		$first_name       = isset( $is_connected['customer_name'] ) ? $is_connected['customer_name'] : __( 'Guest', 'uncanny-automator' );
+		$avatar           = isset( $is_connected['user_avatar'] ) ? $is_connected['user_avatar'] : esc_url( get_avatar_url( $user->ID ) );
 
-		$first_name      = isset( $is_connected['customer_name'] ) ? $is_connected['customer_name'] : __( 'Guest', 'uncanny-automator' );
-		$avatar          = isset( $is_connected['user_avatar'] ) ? $is_connected['user_avatar'] : esc_url( get_avatar_url( $user->ID ) );
-		$connected_sites = isset( $is_connected['license_id'] ) && isset( $is_connected['payment_id'] ) ? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id'] : '#';
-		$free_credits    = $is_connected ? ( $usage_limit - $paid_usage_count ) : 250;
+		$connected_sites = isset( $is_connected['license_id'] ) && isset( $is_connected['payment_id'] )
+				? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id']
+				: '#';
+
+		$free_credits = $is_connected ? ( $usage_limit - $paid_usage_count ) : 250;
 
 		return (object) array(
+			// The number of credits used by pro.
+			'paid_usage_count'   => absint( $paid_usage_count ),
 			// Check if the user is using Automator Pro
 			'is_pro'             => $is_pro_active,
 			// Is Pro connected
@@ -490,6 +491,7 @@ class Admin_Menu {
 				'free_credits'              => $free_credits,
 				'site_url_without_protocol' => preg_replace( '(^https?://)', '', get_site_url() ),
 			),
+			'upgrade_url'        => 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=pricing',
 		);
 	}
 

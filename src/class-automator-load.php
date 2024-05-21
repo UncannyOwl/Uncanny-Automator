@@ -58,6 +58,8 @@ class Automator_Load {
 	 */
 	public function __construct() {
 
+		add_action( 'upgrader_process_complete', array( $this, 'flag_last_updated' ), 20, 2 );
+
 		// Load text domain
 		add_action(
 			'init',
@@ -134,7 +136,44 @@ class Automator_Load {
 	}
 
 	/**
-	 * Checks runtime environtment.
+	 * Flags the last automator pro update time.
+	 *
+	 * @return void
+	 * @var string[] $options
+	 *
+	 * @var object $upgrader_object
+	 */
+	public function flag_last_updated( $upgrader_object, $options ) {
+		// Bail if the options are not set.
+		if ( ! isset( $options['action'] ) || ! isset( $options['type'] ) ) {
+			return;
+		}
+
+		// Check if it's a plugin update.
+		if ( 'update' !== $options['action'] || 'plugin' !== $options['type'] ) {
+			return;
+		}
+
+		// The plugins being updated are stored in the 'plugins' key of the options array.
+		if ( ! isset( $options['plugins'] ) || ! is_array( $options['plugins'] ) ) {
+			return;
+		}
+
+		// The path to the specific plugin to check for, relative to the wp-content/plugins directory.
+		$specific_plugin_path = plugin_basename( AUTOMATOR_BASE_FILE );
+
+		foreach ( $options['plugins'] as $plugin_path ) {
+			if ( $plugin_path !== $specific_plugin_path ) {
+				continue;
+			}
+			// Update an option with the current time for the specific plugin
+			update_option( 'automator_last_updated', current_time( 'mysql' ) );
+			break; // No need to continue the loop
+		}
+	}
+
+	/**
+	 * Checks runtime environment.
 	 *
 	 * - Displays some message on web assembly.
 	 *
@@ -655,6 +694,8 @@ class Automator_Load {
 		$classes['Background_Actions']                  = UA_ABSPATH . 'src/core/classes/class-background-actions.php';
 		$classes['Calculation_Token']                   = UA_ABSPATH . 'src/core/classes/class-calculation-token.php';
 		$classes['Copy_Recipe_Parts']                   = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
+		$classes['Export_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-export-recipe.php';
+		$classes['Import_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-import-recipe.php';
 
 		require_once UA_ABSPATH . 'src/core/classes/class-api-server.php';
 
@@ -951,5 +992,21 @@ class Automator_Load {
 
 		return true;
 
+	}
+
+	/**
+	 * Get the instance of a core class.
+	 *
+	 * @param string $class_name
+	 *
+	 * @return mixed - The instance of the class if it exists, otherwise null.
+	 */
+	public static function get_core_class_instance( $class_name ) {
+
+		if ( isset( self::$core_class_inits[ $class_name ] ) ) {
+			return self::$core_class_inits[ $class_name ];
+		}
+
+		return null;
 	}
 }

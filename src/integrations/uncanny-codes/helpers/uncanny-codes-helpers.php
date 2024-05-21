@@ -253,4 +253,54 @@ class Uncanny_Codes_Helpers {
 
 	}
 
+
+	/**
+	 * @param $code
+	 *
+	 * @return int code_group
+	 */
+	public function uc_get_code_group_by_code( $code ) {
+		global $wpdb;
+		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
+		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code_group` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return (int) $code;
+
+	}
+
+
+
+	/**
+	 * @param $code
+	 *
+	 * @return int ID (coupon_id)
+	 */
+	public function uc_get_id_by_code( $code ) {
+		global $wpdb;
+		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
+		$id        = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return (int) $id;
+
+	}
+
+
+	/**
+	 * @param $group_id
+	 *
+	 * @return array
+	 */
+	public function uc_get_code_group_row( $group_id ) {
+		global $wpdb;
+		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
+		$group      = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $tbl_groups . ' WHERE ID = %d', $group_id ) );   //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		if ( empty( $group ) ) {
+			return array();
+		}
+
+		return $group;
+
+	}
+
 }

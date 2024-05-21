@@ -23,6 +23,26 @@ class Uncanny_Groups_Tokens {
 				20,
 				2
 			);
+
+			add_filter(
+				'automator_maybe_trigger_uog_registeredwithgroupkey_tokens',
+				array(
+					$this,
+					'groupkey_possible_tokens',
+				),
+				20,
+				2
+			);
+
+			add_filter(
+				'automator_maybe_trigger_uog_redeemsgroupkey_tokens',
+				array(
+					$this,
+					'groupkey_possible_tokens',
+				),
+				20,
+				2
+			);
 		}
 
 	}
@@ -35,17 +55,23 @@ class Uncanny_Groups_Tokens {
 	public function seats_added_tokens() {
 
 		return array(
-			'GROUP_ID'            => array(
+			'GROUP_ID'              => array(
 				'name' => __( 'Group ID', 'uncanny-automator' ),
 			),
-			'GROUP_TITLE'         => array(
+			'GROUP_TITLE'           => array(
 				'name' => __( 'Group title', 'uncanny-automator' ),
 			),
-			'SEATS_ADDED'         => array(
+			'SEATS_ADDED'           => array(
 				'name' => __( 'Seats added', 'uncanny-automator' ),
 			),
-			'GROUP_LEADER_EMAILS' => array(
+			'GROUP_LEADER_EMAILS'   => array(
 				'name' => __( 'Group leader email(s)', 'uncanny-automator' ),
+			),
+			'GROUP_REMAINING_SEATS' => array(
+				'name' => __( 'Remaining seats', 'uncanny-automator' ),
+			),
+			'GROUP_TOTAL_SEATS'     => array(
+				'name' => __( 'Total seats', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -58,17 +84,23 @@ class Uncanny_Groups_Tokens {
 	public function seats_removed_tokens() {
 
 		return array(
-			'GROUP_ID'            => array(
+			'GROUP_ID'              => array(
 				'name' => __( 'Group ID', 'uncanny-automator' ),
 			),
-			'GROUP_TITLE'         => array(
+			'GROUP_TITLE'           => array(
 				'name' => __( 'Group title', 'uncanny-automator' ),
 			),
-			'SEATS_REMOVED'       => array(
+			'SEATS_REMOVED'         => array(
 				'name' => __( 'Seats removed', 'uncanny-automator' ),
 			),
-			'GROUP_LEADER_EMAILS' => array(
+			'GROUP_LEADER_EMAILS'   => array(
 				'name' => __( 'Group leader email(s)', 'uncanny-automator' ),
+			),
+			'GROUP_REMAINING_SEATS' => array(
+				'name' => __( 'Remaining seats', 'uncanny-automator' ),
+			),
+			'GROUP_TOTAL_SEATS'     => array(
+				'name' => __( 'Total seats', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -87,11 +119,13 @@ class Uncanny_Groups_Tokens {
 		list( $count, $ld_group_id ) = $args['trigger_args'];
 
 		return $parsed + array(
-			'NUMBERCOND'          => $this->get_trigger_option_selected_value( $args['trigger_entry']['trigger_to_match'], 'NUMBERCOND' ),
-			'GROUP_ID'            => absint( $ld_group_id ),
-			'GROUP_TITLE'         => get_the_title( absint( $ld_group_id ) ),
-			'SEATS_ADDED'         => absint( $count ),
-			'GROUP_LEADER_EMAILS' => Automator()->helpers->recipe->uncanny_groups->options->get_group_leaders_email_addresses( $ld_group_id ),
+			'NUMBERCOND'            => $this->get_trigger_option_selected_value( $args['trigger_entry']['trigger_to_match'], 'NUMBERCOND' ),
+			'GROUP_ID'              => absint( $ld_group_id ),
+			'GROUP_TITLE'           => get_the_title( absint( $ld_group_id ) ),
+			'SEATS_ADDED'           => absint( $count ),
+			'GROUP_LEADER_EMAILS'   => Automator()->helpers->recipe->uncanny_groups->options->get_group_leaders_email_addresses( $ld_group_id ),
+			'GROUP_REMAINING_SEATS' => ulgm()->group_management->seat->total_seats( $ld_group_id ),
+			'GROUP_TOTAL_SEATS'     => ulgm()->group_management->seat->remaining_seats( $ld_group_id ),
 		);
 
 	}
@@ -139,17 +173,59 @@ class Uncanny_Groups_Tokens {
 		list( $diff, $ld_group_id ) = $args['trigger_args'];
 
 		return $parsed + array(
-			'NUMBERCOND'          => $this->get_trigger_option_selected_value( $args['trigger_entry']['trigger_to_match'], 'NUMBERCOND' ),
-			'GROUP_ID'            => absint( $ld_group_id ),
-			'GROUP_TITLE'         => get_the_title( absint( $ld_group_id ) ),
-			'SEATS_REMOVED'       => absint( $diff ),
-			'GROUP_LEADER_EMAILS' => Automator()->helpers->recipe->uncanny_groups->options->get_group_leaders_email_addresses( $ld_group_id ),
+			'NUMBERCOND'            => $this->get_trigger_option_selected_value( $args['trigger_entry']['trigger_to_match'], 'NUMBERCOND' ),
+			'GROUP_ID'              => absint( $ld_group_id ),
+			'GROUP_TITLE'           => get_the_title( absint( $ld_group_id ) ),
+			'SEATS_REMOVED'         => absint( $diff ),
+			'GROUP_LEADER_EMAILS'   => Automator()->helpers->recipe->uncanny_groups->options->get_group_leaders_email_addresses( $ld_group_id ),
+			'GROUP_REMAINING_SEATS' => ulgm()->group_management->seat->total_seats( $ld_group_id ),
+			'GROUP_TOTAL_SEATS'     => ulgm()->group_management->seat->remaining_seats( $ld_group_id ),
 		);
 
 	}
 
 
 
+	/**
+	 * Uncanny groups possible tokens add
+	 *
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array
+	 */
+	public function groupkey_possible_tokens( $tokens = array(), $args = array() ) {
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
+		$trigger_meta = $args['meta'];
+
+		$additional_tokens = array(
+			'REGISTEREDWITHGROUPKEY',
+			'REDEEMSGROUPKEY',
+		);
+
+		$fields = array();
+		if ( in_array( $trigger_meta, $additional_tokens, true ) ) {
+			$fields[] = array(
+				'tokenId'         => 'UNCANNYGROUPS_REMAINING_SEATS',
+				'tokenName'       => __( 'Remaining seats', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_meta,
+			);
+
+			$fields[] = array(
+				'tokenId'         => 'UNCANNYGROUPS_TOTAL_SEATS',
+				'tokenName'       => __( 'Total seats', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_meta,
+			);
+		}
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
 	/**
 	 * Uncanny groups possible tokens add
 	 *
@@ -270,6 +346,12 @@ class Uncanny_Groups_Tokens {
 					break;
 				case 'UNCANNYGROUPS_KEY_BATCH_ID':
 					$value = $code_details['group_id'];
+					break;
+				case 'UNCANNYGROUPS_REMAINING_SEATS':
+					$value = ulgm()->group_management->seat->remaining_seats( $code_details['ld_group_id'] );
+					break;
+				case 'UNCANNYGROUPS_TOTAL_SEATS':
+					$value = ulgm()->group_management->seat->total_seats( $code_details['ld_group_id'] );
 					break;
 			}
 		}

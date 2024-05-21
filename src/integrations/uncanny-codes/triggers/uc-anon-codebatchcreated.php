@@ -95,6 +95,9 @@ class UC_ANON_CODEBATCHCREATED {
 					);
 
 					// Batch ID
+					Automator()->db->token->save( 'CODE_BATCH_ID', $batch_id, $save_meta );
+
+					// Batch ID
 					Automator()->db->token->save( 'UNCANNYCODESBATCH_ID', $batch_id, $save_meta );
 
 					$batch_content = Automator()->helpers->recipe->uncanny_codes->options->uc_get_batch_info( $batch_id );

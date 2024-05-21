@@ -30,6 +30,8 @@ class FACEBOOK_GROUP_PUBLISH_LINK {
 	 */
 	public function setup_action() {
 
+		$this->set_is_deprecated( true );
+
 		$this->set_action_code( self::CODE );
 
 		$this->set_action_meta( self::META );

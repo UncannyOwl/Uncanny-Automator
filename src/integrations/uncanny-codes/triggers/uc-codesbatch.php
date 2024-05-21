@@ -70,7 +70,7 @@ class UC_CODESBATCH {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch( esc_attr__( 'Batch', 'uncanny-automator' ), $this->trigger_meta ),
+					Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch( esc_attr__( 'Batch', 'uncanny-automator' ), $this->trigger_meta, true ),
 				),
 			)
 		);
@@ -98,7 +98,18 @@ class UC_CODESBATCH {
 		if ( empty( $required_batch ) ) {
 			return;
 		}
-		$batch              = $wpdb->get_var( $wpdb->prepare( "SELECT g.id FROM `{$wpdb->prefix}uncanny_codes_groups` g LEFT JOIN `{$wpdb->prefix}uncanny_codes_codes` c ON g.ID = c.code_group WHERE c.ID = %d", $coupon_id ) );
+
+		$batch = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT g.id
+FROM `{$wpdb->prefix}uncanny_codes_groups` g
+	LEFT JOIN `{$wpdb->prefix}uncanny_codes_codes` c
+		ON g.ID = c.code_group
+WHERE c.ID = %d",
+				$coupon_id
+			)
+		);
+
 		$matched_recipe_ids = array();
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
@@ -117,9 +128,11 @@ class UC_CODESBATCH {
 				}
 			}
 		}
+
 		if ( empty( $matched_recipe_ids ) ) {
 			return;
 		}
+
 		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 			$pass_args = array(
 				'code'             => $this->trigger_code,
@@ -146,9 +159,10 @@ class UC_CODESBATCH {
 
 						$code = Automator()->helpers->recipe->uncanny_codes->options->uc_get_code_redeemed( $coupon_id );
 						Automator()->db->token->save( 'CODE_REDEEMED', $code, $trigger_meta );
+						Automator()->db->token->save( 'CODE_BATCH_ID', $batch, $trigger_meta );
 
 						$trigger_meta['meta_key']   = $result['args']['trigger_id'] . ':' . $this->trigger_code . ':' . $this->trigger_meta;
-						$trigger_meta['meta_value'] = maybe_serialize( $batch );
+						$trigger_meta['meta_value'] = $batch;
 						Automator()->insert_trigger_meta( $trigger_meta );
 
 						Automator()->maybe_trigger_complete( $result['args'] );

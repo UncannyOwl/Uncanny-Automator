@@ -655,18 +655,6 @@ $automator_stats    = $report['automator_stats'];
 			</tr>
 		<?php } ?>
 
-		<?php foreach ( $database['database_tables']['other'] as $table => $table_data ) { ?>
-			<tr>
-				<td><?php echo esc_html( $table ); ?></td>
-				<td class="help">&nbsp;</td>
-				<td>
-					<?php
-					/* Translators: %1$f: Table size, %2$f: Index size, %3$s Engine. */
-					printf( esc_html__( 'Data: %1$.2fMB + Index: %2$.2fMB + Engine %3$s', 'uncanny-automator' ), esc_html( $table_data['data'] ), esc_html( $table_data['index'] ), esc_html( $table_data['engine'] ) );
-					?>
-				</td>
-			</tr>
-		<?php } ?>
 	<?php else : ?>
 		<tr>
 			<td><?php esc_html_e( 'Database information:', 'uncanny-automator' ); ?></td>

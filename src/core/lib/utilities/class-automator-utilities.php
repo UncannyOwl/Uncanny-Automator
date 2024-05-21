@@ -796,6 +796,42 @@ class Automator_Utilities {
 	}
 
 	/**
+	 * Fetches the actions from specified integration.
+	 *
+	 * @param string $integration_code The integration code.
+	 *
+	 * @return array{}|array{array{ID:string,post_status:string}}
+	 */
+	public function fetch_integration_actions( $integration_code = '' ) {
+
+		global $wpdb;
+
+		if ( empty( $integration_code ) || ! is_string( $integration_code ) ) {
+			return array();
+		}
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT post_parent, post_title, ID, post_status FROM $wpdb->posts as post
+					INNER JOIN $wpdb->postmeta as meta
+						ON meta.post_id = post.ID
+					WHERE meta.meta_key = %s
+						AND meta.meta_value = %s
+						AND post.post_type = %s
+				",
+				'integration',
+				$integration_code,
+				'uo-action'
+			),
+			ARRAY_A
+		);
+
+		return (array) $results;
+
+	}
+
+
+	/**
 	 * @param $recipe_id
 	 *
 	 * @return int

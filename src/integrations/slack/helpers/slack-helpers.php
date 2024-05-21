@@ -134,16 +134,17 @@ class Slack_Helpers {
 	 */
 	public function maybe_customize_bot( $message ) {
 
-		$bot_name = get_option( 'uap_automator_slack_api_bot_name' );
+		$settings_bot_name = get_option( 'uap_automator_slack_api_bot_name', '' );
 
-		if ( ! empty( $bot_name ) ) {
-			$message['username'] = $bot_name;
+		if ( empty( $message['username'] ) && ! empty( $settings_bot_name ) ) {
+			$message['username'] = get_option( 'uap_automator_slack_api_bot_name', '' );
 		}
 
-		$bot_icon = get_option( 'uap_automator_alck_api_bot_icon' );
+		$settings_bot_icon = get_option( 'uap_automator_alck_api_bot_icon', '' );
 
-		if ( ! empty( $bot_icon ) ) {
-			$message['icon_url'] = $bot_icon;
+		if ( empty( $message['icon_url'] ) && ! empty( $settings_bot_icon ) ) {
+
+			$message['icon_url'] = get_option( 'uap_automator_alck_api_bot_icon', '' );
 		}
 
 		return apply_filters( 'uap_slack_maybe_customize_bot', $message );
@@ -607,5 +608,40 @@ class Slack_Helpers {
 		}
 
 		throw new \Exception( $error, $response['statusCode'] );
+	}
+
+	/**
+	 * bot_name_field
+	 *
+	 * @return array
+	 */
+	public function bot_name_field() {
+		return Automator()->helpers->recipe->field->text(
+			array(
+				'option_code' => 'BOT_NAME',
+				'input_type'  => 'text',
+				'required'    => false,
+				'label'       => __( 'Bot name', 'uncanny-automator' ),
+				'default'     => get_option( 'uap_automator_slack_api_bot_name', '' ),
+			)
+		);
+	}
+
+	/**
+	 * bot_icon_field
+	 *
+	 * @return array
+	 */
+	public function bot_icon_field() {
+		return Automator()->helpers->recipe->field->text(
+			array(
+				'option_code' => 'BOT_ICON',
+				'input_type'  => 'url',
+				'required'    => false,
+				'label'       => __( 'Bot icon', 'uncanny-automator' ),
+				'default'     => get_option( 'uap_automator_alck_api_bot_icon', '' ),
+				'description' => _x( 'Enter the URL of the image you wish to share. The image must be publicly accessible and at minimum 512x512 pixels and at maximum 1024x1024 pixels.', 'Slack', 'uncanny-automator' ),
+			)
+		);
 	}
 }

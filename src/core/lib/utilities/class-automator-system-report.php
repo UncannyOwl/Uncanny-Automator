@@ -33,15 +33,21 @@ class Automator_System_Report {
 	 * @return array
 	 */
 	public function get() {
-		return array(
-			'automator_stats'    => $this->get_automator_stats(),
-			'environment'        => $this->get_environment_info(),
-			'database'           => $this->get_database_info(),
-			'active_plugins'     => $this->get_active_plugins(),
-			'inactive_plugins'   => $this->get_inactive_plugins(),
-			'dropins_mu_plugins' => $this->get_dropins_mu_plugins(),
-			'theme'              => $this->get_theme_info(),
+
+		$system_status = apply_filters(
+			'automator_system_report_get',
+			array(
+				'automator_stats'    => $this->get_automator_stats(),
+				'environment'        => $this->get_environment_info(),
+				'database'           => $this->get_database_info(),
+				'active_plugins'     => $this->get_active_plugins(),
+				'inactive_plugins'   => $this->get_inactive_plugins(),
+				'dropins_mu_plugins' => $this->get_dropins_mu_plugins(),
+				'theme'              => $this->get_theme_info(),
+			)
 		);
+
+		return $system_status;
 	}
 
 	/**
@@ -171,12 +177,17 @@ class Automator_System_Report {
 		}
 
 		$database_version = $this->get_server_database_version();
+		$last_updated     = get_option( 'automator_last_updated' );
+
+		if ( ! empty( $last_updated ) ) {
+			$last_updated = sprintf( '(Updated: %s)', $last_updated );
+		}
 
 		// Return all environment info. Described by JSON Schema.
 		return array(
 			'home_url'                => get_option( 'home' ),
 			'site_url'                => get_option( 'siteurl' ),
-			'version'                 => AUTOMATOR_PLUGIN_VERSION,
+			'version'                 => sprintf( '%s %s', AUTOMATOR_PLUGIN_VERSION, $last_updated ),
 			'pro_version'             => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : null,
 			'log_directory'           => UA_DEBUG_LOGS_DIR,
 			'log_directory_writable'  => is_writable( dirname( UA_DEBUG_LOGS_DIR . 'test.log' ) ),
