@@ -373,8 +373,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **New Triggers:**
 
-SureMembers - A user is added to an access group #4123
-SureMembers - A user is removed from an access group #4124
+* SureMembers - A user is added to an access group #4123
+* SureMembers - A user is removed from an access group #4124
 
 **New Actions:**
 
