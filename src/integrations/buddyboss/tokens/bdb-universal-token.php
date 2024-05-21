@@ -29,7 +29,7 @@ class BDB_Universal_Token extends Universal_Token {
 		}
 
 		$this->integration   = 'BDB';
-		$this->id            = $id;
+		$this->id            = (string) $id;
 		$this->name          = $name;
 		$this->requires_user = true;
 		$this->cacheable     = false;

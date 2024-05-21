@@ -68,12 +68,15 @@ final class Trigger implements \JsonSerializable {
 
 		$integration = Automator()->get_integration( $trigger['meta']['integration'] );
 
-		$sentence_html = isset( $trigger['meta']['sentence_human_readable_html'] )
-			? htmlentities( $trigger['meta']['sentence_human_readable_html'], ENT_QUOTES )
-			: htmlentities( $trigger['meta']['sentence_human_readable'], ENT_QUOTES );
+		$sentence_human_readable      = $trigger['meta']['sentence_human_readable'] ?? '';
+		$sentence_human_readable_html = $trigger['meta']['sentence_human_readable_html'] ?? '';
+
+		$sentence_html = ! empty( $sentence_human_readable_html )
+			? htmlentities( $sentence_human_readable_html, ENT_QUOTES )
+			: htmlentities( $sentence_human_readable, ENT_QUOTES );
 
 		$backup->integration_name = is_array( $integration ) && isset( $integration['name'] ) ? $integration['name'] : '';
-		$backup->sentence         = htmlentities( $trigger['meta']['sentence_human_readable'], ENT_QUOTES );
+		$backup->sentence         = htmlentities( $sentence_human_readable, ENT_QUOTES );
 		$backup->sentence_html    = $sentence_html;
 
 		return $backup;

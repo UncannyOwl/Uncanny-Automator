@@ -657,7 +657,11 @@ $setup_wizard_link = add_query_arg(
 	<!-- Credits section -->
 	<div id="uap-dashboard-credits" class="uap-dashboard-section uap-dashboard-credits">
 		<div class="uap-dashboard-section__title">
-			<?php esc_attr_e( 'App credits', 'uncanny-automator' ); ?>
+			<?php if ( ! $dashboard->is_pro ) { ?>
+				<?php esc_attr_e( 'App credits left', 'uncanny-automator' ); ?>
+			<?php } else { ?>
+				<?php esc_attr_e( 'App credits used', 'uncanny-automator' ); ?>
+			<?php } ?>
 		</div>
 		<div class="uap-dashboard-section__content">
 
@@ -722,24 +726,29 @@ $setup_wizard_link = add_query_arg(
 						</div>
 						<div class="uap-dashboard-box-content">
 							<div class="uap-dashboard-box-content-number">
-								<?php
-
-								/* translators: Unlimited credits */
-								echo esc_attr_x( 'Unlimited', 'Credits', 'uncanny-automator' );
-
-								?>
+								<?php echo esc_html( number_format( absint( $dashboard->paid_usage_count ) ) ); ?>
 							</div>
 							<div
 								class="uap-dashboard-box-content-label uap-dashboard-box-content-label--reduced-margin">
-								<?php esc_attr_e( 'App credits left', 'uncanny-automator' ); ?>
+								<?php
+								/* translators: Credits used */
+								echo esc_html__( 'App credits used', 'uncanny-automator' );
+								?>
+							</div>
+							
+							<div class="uap-dashboard-box-content-higlight" style="display: block; margin: 15px auto 0 auto; color: var(--uap-font-color-secondary);">
+								<?php echo esc_html_e( 'You have', 'uncanny-automator' ); ?>
+								<span style="color: #6bc45a">
+									<strong><?php esc_html_e( 'unlimited', 'uncanny-automator' ); ?></strong>
+								</span>
 							</div>
 							<div
+								style="margin-top:0;"
 								class="uap-dashboard-box-content-below-label uap-dashboard-box-content-below-label--secondary">
 								<?php
-
 								printf(
 								/* translators: 1. Pro label */
-									esc_attr__( 'with %1$s', 'uncanny-automator' ),
+									esc_attr__( 'App credits with %1$s', 'uncanny-automator' ),
 									'<uo-pro-tag></uo-pro-tag>'
 								);
 
@@ -759,29 +768,19 @@ $setup_wizard_link = add_query_arg(
 					?>
 
 					<div id="uap-dashboard-credits-left" class="uap-dashboard-box">
-						<div class="uap-dashboard-box-header uap-dashboard-box-header--no-padding">
-							<div class="uap-dashboard-box-progress uap-dashboard-box-progress--success">
-								<div id="uap-dashboard-credits-left-progress-bar" class="uap-dashboard-box-progress-bar"
-									 style="width: 100%"></div>
-							</div>
-						</div>
 						<div class="uap-dashboard-box-content">
-							<div id="uap-dashboard-credits-left-quantity" class="uap-dashboard-box-content-number">
-								<span class="uap-placeholder-text" data-placeholder="000"></span>
-							</div>
-							<div class="uap-dashboard-box-content-below-number">
-								<?php
-
-								printf(
-								/* translators: 1. Number of total credits */
-									esc_attr_x( 'of %1$s', 'Credits', 'uncanny-automator' ),
-									'<span id="uap-dashboard-credits-left-total"><span class="uap-placeholder-text" data-placeholder="250"></span></span>'
-								);
-
-								?>
-							</div>
-							<div class="uap-dashboard-box-content-label">
-								<?php esc_attr_e( 'App credits left', 'uncanny-automator' ); ?>
+							<div class="uap-dashboard-box-content">
+								<div class="uap-dashboard-box-content-number">
+									<?php echo esc_html( number_format( absint( $dashboard->miscellaneous->free_credits ) ) ); ?>
+								</div>
+								<div class="uap-dashboard-box-content-label uap-dashboard-box-content-label--reduced-margin">
+									<?php esc_html_e( 'App credits left', 'uncanny-automator' ); ?>
+								</div>
+								<div class="uap-dashboard-box-content-below-label uap-dashboard-box-content-below-label--secondary">
+									<a href="<?php echo esc_url( $dashboard->upgrade_url ); ?>" title="<?php esc_attr_e( 'Get Pro', 'uncanny-automator' ); ?>">
+										<?php esc_html_e( 'Get', 'uncanny-automator' ); ?> <uo-pro-tag></uo-pro-tag>
+									</a>
+								</div>
 							</div>
 						</div>
 						<?php if ( $dashboard->is_pro_installed ) { ?>

@@ -9,6 +9,8 @@ namespace Uncanny_Automator;
  */
 class UOG_ADDSEATSTOGROUP {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -58,6 +60,20 @@ class UOG_ADDSEATSTOGROUP {
 			'options_callback'   => array( $this, 'load_options' ),
 		);
 
+		$this->set_action_tokens(
+			array(
+				$this->action_meta . '_TOTAL_SEATS'     => array(
+					'name' => __( 'Total seats', 'uncanny-automator' ),
+					'type' => 'int',
+				),
+				$this->action_meta . '_REMAINING_SEATS' => array(
+					'name' => __( 'Remaining seats', 'uncanny-automator' ),
+					'type' => 'int',
+				),
+			),
+			$this->action_code
+		);
+
 		Automator()->register->action( $action );
 	}
 
@@ -68,7 +84,7 @@ class UOG_ADDSEATSTOGROUP {
 		$options = array(
 			'options_group' => array(
 				$this->action_meta => array(
-					Automator()->helpers->recipe->uncanny_groups->options->all_ld_groups( '', 'UNCANNYGROUP', false ),
+					Automator()->helpers->recipe->uncanny_groups->options->all_ld_groups( '', $this->action_meta, false ),
 				),
 				'NUMOFSEATS'       => array(
 					array(
@@ -127,6 +143,13 @@ class UOG_ADDSEATSTOGROUP {
 			);
 			ulgm()->group_management->add_additional_codes( $attr, $new_codes );
 			update_post_meta( $uo_group_id, '_ulgm_total_seats', $new_seats );
+
+			$this->hydrate_tokens(
+				array(
+					$this->action_meta . '_TOTAL_SEATS' => ulgm()->group_management->seat->total_seats( $uo_group_id ),
+					$this->action_meta . '_REMAINING_SEATS' => ulgm()->group_management->seat->remaining_seats( $uo_group_id ),
+				)
+			);
 		}
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );

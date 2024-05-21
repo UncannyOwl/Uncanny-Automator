@@ -68,6 +68,8 @@ class SLACK_SENDMESSAGE {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->slack->options->get_slack_channels( esc_attr__( 'Slack Channel', 'uncanny-automator' ), 'SLACKCHANNEL' ),
+					Automator()->helpers->recipe->slack->bot_name_field(),
+					Automator()->helpers->recipe->slack->bot_icon_field(),
 					Automator()->helpers->recipe->slack->textarea_field( 'SLACKMESSAGE', esc_attr__( 'Message', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( '* Markdown is supported', 'uncanny-automator' ), __( 'Enter the message', 'uncanny-automator' ) ),
 				),
 			),
@@ -82,9 +84,11 @@ class SLACK_SENDMESSAGE {
 	 */
 	public function send_message( $user_id, $action_data, $recipe_id, $args ) {
 
-		$message            = array();
-		$message['channel'] = $action_data['meta']['SLACKCHANNEL'];
-		$message['text']    = Automator()->parse->text( $action_data['meta']['SLACKMESSAGE'], $recipe_id, $user_id, $args );
+		$message             = array();
+		$message['channel']  = $action_data['meta']['SLACKCHANNEL'];
+		$message['text']     = Automator()->parse->text( $action_data['meta']['SLACKMESSAGE'], $recipe_id, $user_id, $args );
+		$message['username'] = Automator()->parse->text( $action_data['meta']['BOT_NAME'], $recipe_id, $user_id, $args );
+		$message['icon_url'] = Automator()->parse->text( $action_data['meta']['BOT_ICON'], $recipe_id, $user_id, $args );
 
 		$error_msg = '';
 

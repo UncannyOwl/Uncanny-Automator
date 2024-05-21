@@ -110,7 +110,7 @@ class Add_Google_Sheet_Integration {
 		$client = automator_get_option( '_uncannyowl_google_sheet_settings', array() );
 
 		$scopes = array(
-			'https://www.googleapis.com/auth/drive',
+			'https://www.googleapis.com/auth/drive.file',
 			'https://www.googleapis.com/auth/spreadsheets',
 			'https://www.googleapis.com/auth/userinfo.profile',
 			'https://www.googleapis.com/auth/userinfo.email',
@@ -123,6 +123,11 @@ class Add_Google_Sheet_Integration {
 		$has_missing_scope = false;
 
 		foreach ( $scopes as $scope ) {
+
+			if ( 'https://www.googleapis.com/auth/drive.file' === $scope || 'https://www.googleapis.com/auth/drive' === $scope ) {
+				continue; // Skip drive scope check. If there is drive already then proceed.
+			}
+
 			if ( false === strpos( $client['scope'], $scope ) ) {
 				$has_missing_scope = true;
 			}

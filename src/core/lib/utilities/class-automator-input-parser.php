@@ -760,11 +760,13 @@ class Automator_Input_Parser {
 	 */
 	public function reset_password_url_token( $user_id = 0 ) {
 
+		static $reset_password = null;
+
 		$user = get_user_by( 'ID', $user_id );
 
-		if ( false !== $user && $user instanceof \WP_User ) {
+		if ( null === $reset_password && false !== $user && $user instanceof \WP_User ) {
 
-			return add_query_arg(
+			$reset_password = add_query_arg(
 				array(
 					'action' => 'rp',
 					'key'    => get_password_reset_key( $user ),
@@ -772,6 +774,8 @@ class Automator_Input_Parser {
 				),
 				wp_login_url()
 			);
+
+			return $reset_password;
 
 		}
 

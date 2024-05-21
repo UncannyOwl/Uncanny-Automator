@@ -201,7 +201,7 @@ trait Integrations {
 			array(
 				'name'         => $this->get_name(),
 				'icon_svg'     => $this->get_icon_url(),
-				'connected'    => $this->get_connected(),
+				'connected'    => apply_filters( 'automator_integration_connected', $this->get_connected(), $this->integration, $this ),
 				'settings_url' => $this->get_settings_url(),
 			)
 		);

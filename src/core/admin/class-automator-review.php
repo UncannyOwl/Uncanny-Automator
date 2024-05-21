@@ -570,6 +570,42 @@ class Automator_Review {
 	}
 
 	/**
+	 * Determine whether it's automator page or not.
+	 *
+	 * @return bool
+	 */
+	public static function is_automator_page() {
+
+		$current_screen = get_current_screen();
+
+		$automator_pages = array(
+			'edit-recipe_category',
+			'edit-recipe_tag',
+			'uo-recipe_page_uncanny-automator-dashboard',
+			'uo-recipe_page_uncanny-automator-integrations',
+			'uo-recipe_page_uncanny-automator-config',
+			'uo-recipe_page_uncanny-automator-admin-tools',
+			'uo-recipe_page_uo-recipe-scheduled-actions',
+			'uo-recipe_page_uncanny-automator-pro-upgrade',
+			'uo-recipe',
+			'edit-uo-recipe',
+		);
+
+		// Do not show if we cannot identify which screen it is.
+		if ( ! $current_screen instanceof \WP_Screen ) {
+			return false;
+		}
+
+		// Safe check in case WP_Screen changed its structure.
+		if ( ! isset( $current_screen->id ) ) {
+			return false;
+		}
+
+		return in_array( $current_screen->id, $automator_pages, true );
+
+	}
+
+	/**
 	 * Determines whether the current screen can display the credits notification or not.
 	 *
 	 * @return boolean

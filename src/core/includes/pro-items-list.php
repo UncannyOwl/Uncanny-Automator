@@ -839,6 +839,18 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'CODE_SNIPPETS'       => array(
+			'name'     => 'Code Snippets',
+			'pro_only' => 'no',
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - Code Snippets */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Create {{a snippet}}", 'uncanny-automator' ),
+				),
+			),
+		),
 		'CF7'                 => array(
 			'name'     => 'Contact Form 7',
 			'pro_only' => 'no',
@@ -886,6 +898,23 @@ function automator_pro_items_list() {
 					/* translators: Action - Custom User Fields Addon */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name' => __( "Update the user's {{custom user field}} to {{a value}}", 'uncanny-automator' ),
+				),
+			),
+		),
+		'DB_QUERY'            => array(
+			'name'     => 'Database Query',
+			'pro_only' => 'yes',
+			'triggers' => array(),
+			'actions'  => array(
+				array(
+					/* translators: Action - Database Query */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Run {{a SELECT query}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Database Query */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Run {{an SQL query}}", 'uncanny-automator' ),
 				),
 			),
 		),
@@ -3033,6 +3062,41 @@ function automator_pro_items_list() {
 			),
 			'actions'  => array(),
 		),
+		'UAUSERLISTS'         => array(
+			'name'     => 'User Lists Addon',
+			'pro_only' => 'yes',
+			'triggers' => array(
+				array(
+					/* translators: Logged-in trigger - User Lists Addon */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user is added to {{a list}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					/* translators: Logged-in trigger - User Lists Addon */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "A user is removed from {{a list}}", 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'  => array(
+				array(
+					/* translators: Action - User Lists Addon */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Add the user to {{a list}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - User Lists Addon */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Create {{a list}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - User Lists Addon */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "Remove the user from {{a list}}", 'uncanny-automator' ),
+				),
+			),
+		),
 		'WEBHOOKS'            => array(
 			'name'     => 'Webhooks',
 			'pro_only' => 'no',
@@ -4145,7 +4209,14 @@ function automator_pro_items_list() {
 		'WPCODE_IHAF'         => array(
 			'name'     => 'WPCode',
 			'pro_only' => 'no',
-			'triggers' => array(),
+			'triggers' => array(
+				array(
+					/* translators: Anonymous trigger - WPCode */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name' => __( "{{A snippet}} is deactivated", 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
 			'actions'  => array(
 				array(
 					/* translators: Action - WPCode */

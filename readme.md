@@ -5,7 +5,7 @@
 **Requires at least:** 5.4 \
 **Tested up to:** 6.5.3 \
 **Requires PHP:** 7.0 \
-**Stable tag:** 5.7.0.2 \
+**Stable tag:** 5.8 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -62,6 +62,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 ### Supported apps
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -114,6 +115,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Date and Time](https://automatorplugin.com/integration/date-and-time/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Divi](https://automatorplugin.com/integration/divi/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -177,6 +179,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [SureMembers](https://automatorplugin.com/integration/suremembers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Architect](https://automatorplugin.com/integration/thrive-architect/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -378,6 +381,70 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
+### 5.8 [2024-05-21]
+
+**New Feature:**
+
+* Ability to Import and Export recipes to any site #4604
+
+**New App Integration:**
+
+* [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4501
+
+**New Plugin Integrations:**
+
+* [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4554
+* [SureMembers](https://automatorplugin.com/integration/suremembers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3986
+
+**New Triggers:**
+
+SureMembers - A user is added to an access group #4123
+SureMembers - A user is removed from an access group #4124
+
+**New Actions:**
+
+* AWeber - Add a tag to a subscriber #4272
+* AWeber - Add a subscriber #4270
+* AWeber - Update a Subscriber #4273
+* Code Snippets - Activate a snippet #4582
+* Code Snippets - Deactivate a snippet #4583
+* SureMembers - Add the user to a specific access group #4121
+* SureMembers - Remove the user from an access group #4125
+
+**New Tokens:**
+
+* Common token - User registration date #4656
+* Uncanny Codes - Remaining codes, Total codes #4028
+* Uncanny Groups - Remaining seats, Total seats #4027
+
+**Added:**
+
+* FluentCRM - Add/Update a contact - WP Filter `automator_fluentcrm_omit_custom_field-$slug` to omit custom fields #4669
+* OpenAI - Use a prompt to generate text with the GPT model - GPT-4o model support #4674
+* Slack - "Bot name" and "Bot icon" optional fields to customize each action #4523
+
+**Updated:**
+
+* Dashboard - App Credits Widget Display Enhancement for Pro #4376
+* Google Sheets - Implement FilePicker changes #4481
+
+**Fixed:**
+
+* BuddyBoss/BuddyPress - Global tokens not parsing on some sites #4654
+* FluentCRM - A contact is added to List - Not firing when the contact is added through FluentForms integration #4683
+* Outgoing Webhook - PHP notices and warnings #4668
+* Password reset token - User reset password URL being invalidated when the token is used multiple times in an email #4634
+* Recipe logs - PHP notice when human readable sentence is null #4647
+* Webhook Outgoing - Authorization field - Parse tokens #4638
+
+**Under the hood:**
+
+* Facebook Groups - App integration deprecated #4671
+* Google Sheets - Migration script to migrate to FilePicker method #4682
+* New settings page - AWeber #4269
+* System Status - Add `(Updated: <DATE>)` in front of Automator Version #4527
+* System Status - Only show Automator DB Tables and Views #4526
+
 ### 5.7.0.2 [2024-05-08]
 
 **Fix:**
@@ -398,12 +465,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **New App Integrations:**
 
-* Bitly #4539
-* GetResponse #4336
+* [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4539
+* [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4336
 
 **New Plugin Integration:**
 
-* SliceWP #4422
+* [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4422
 
 **New Triggers:**
 
@@ -815,83 +882,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe logs - Fields not showing for the API integrations when background actions are enabled #3764
 * Several core framework improvements to reduce memory usage #4079 #4089
 * Twitter - Renamed to X/Twitter #4051
-
-### 5.1.0.3 [2023-10-16]
-
-**Fixed:**
-
-* Status page - PHP error related to 'mysql_get_server_info' in a specific situation #4032
-* Debug logs - Improved security when debugging is enabled #4033
-* Recipe UI - Show built-in or active Pro integrations only #4038
-
-### 5.1.0.2 [2023-10-05]
-
-**New Token:**
-
-* Ninja Forms - Submission ID #3996
-
-**Fixed:**
-
-* MasterStudy LMS - Lesson and Quiz By Course ID Changes #3959
-* Reset password link and Reset password URL token not working with Paid Memberships Pro #4000
-* WPForms - Support legacy Smart Tags #4005
-
-**Updated:**
-
-* Easy Digital Downloads - "A user purchases a product" renamed to "A user purchases a download" #4017
-* Uncanny Groups - Add / Remove seats actions now available for both logged-in and Everyone recipes #3994
-
-**Under the hood:**
-
-* Review Banner - Credits left warning banner can't be dismissed on the dashboard #4003
-* Recipe Logs - Properties Framework - Added Trigger properties to support Incoming Webhooks in Pro #4001
-* WordPress Playground updates to fix some notices #4020
-
-### 5.1.0.1 [2023-09-28]
-
-**Under the hood:**
-
-* Action tokens do not work when the source action has a delay or schedule #3988
-* All Integrations - Data source switched to a static `.json` file #3356
-* Recipe UI - Show Pro-only integrations preview when Automator Pro is not active #3800
-
-### 5.1 [2023-09-25]
-
-**New Integrations:**
-
-* [Easy Digital Downloads - Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3277
-* [Mautic](https://automatorplugin.com/integration/mautic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog)  #3200
-
-**New Trigger:**
-
-* EDD Recurring Payments - A user subscribes to a download #3446
-
-**New Actions:**
-
-* EDD Recurring Payments - Cancel the user's subscription to a download #3511
-* Mautic - Create or update a contact #3464
-
-**Updated:**
-
-* Brevo - Create or update a contact - Update existing bool variable support for PHP 7.4 #3950
-* Facebook Groups - Disconnect now only disconnect the current site #3262
-* Recipe object - Handle invalid UTF-8 characters #3946
-
-**Fixed:**
-
-* AffiliateWP - An affiliate makes a referral of a specific type - Not working when creating a referral in the back end #3692 #3919
-* Gravity Forms - An entry for a form is updated - Not firing when fields are updated by `GFAPI` #3977
-* User Loops - User tokens not parsing for universal tokens #3964
-* User Loops - Action buttons hidden on Firefox because of invalid selector #3947
-* Zoho Campaigns - Subscribe a contact to a list - Not parsing repeater fields #3970
-
-**Under the hood:**
-
-* Core - Additional WordPress hooks for recipe duplication in Automator Pro #3930
-* Internal debug logs - PHP notice #3623
-* Internal debug logs - Update to put the contents in `file.txt` instead of `file.log` #3623
-* Recipe Logs - Action Repeater Fields - Not displaying the data correctly when multiple repeater fields are in the action #3972
-* Support for Run Now in Automator Pro v5.1+ #3957
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

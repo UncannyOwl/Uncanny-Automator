@@ -104,15 +104,16 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 	/**
 	 * is_correct_form
 	 *
-	 * @param  array $trigger
-	 * @param  array $form
+	 * @param array $trigger
+	 * @param array $form
+	 *
 	 * @return bool
 	 */
 	public function is_correct_form( $trigger, $form ) {
 
 		$selected_form_id = intval( $trigger['meta'][ self::TRIGGER_META ] );
 
-		if ( -1 === $selected_form_id ) {
+		if ( intval( '-1' ) === intval( $selected_form_id ) ) {
 			return true;
 		}
 
@@ -126,16 +127,17 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 	/**
 	 * is_correct_batch
 	 *
-	 * @param  array $trigger
-	 * @param  array $form
-	 * @param  array $entry
+	 * @param array $trigger
+	 * @param array $form
+	 * @param array $entry
+	 *
 	 * @return bool
 	 */
 	public function is_correct_batch( $trigger, $form, $entry ) {
 
 		$selected_code_batch = intval( $trigger['meta'][ self::TRIGGER_META . '_CODES' ] );
 
-		if ( -1 === $selected_code_batch ) {
+		if ( intval( '-1' ) === intval( $selected_code_batch ) ) {
 			return true;
 		}
 
@@ -151,8 +153,9 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 	/**
 	 * get_batch
 	 *
-	 * @param  array $form
-	 * @param  array $entry
+	 * @param array $form
+	 * @param array $entry
+	 *
 	 * @return int
 	 */
 	public function get_batch( $form, $entry ) {
@@ -177,7 +180,8 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 	/**
 	 * get_batch_expiration
 	 *
-	 * @param  int $batch_id
+	 * @param int $batch_id
+	 *
 	 * @return string
 	 */
 	public function get_batch_expiration( $batch_id ) {
@@ -205,8 +209,9 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 	/**
 	 * hydrate_tokens
 	 *
-	 * @param  array $trigger
-	 * @param  array $hook_args
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
 	 * @return array
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
@@ -220,6 +225,7 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 		$tokens = array(
 			'GF_SUBFORM_CODES_METADATA_CODES' => $batch,
 			'UNCANNYCODESBATCHEXPIRY'         => $this->get_batch_expiration( $batch ),
+			'CODE_BATCH_ID'                   => $batch,
 		);
 
 		return $tokens;

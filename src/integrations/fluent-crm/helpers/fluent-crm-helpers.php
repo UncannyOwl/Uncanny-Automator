@@ -523,6 +523,11 @@ class Fluent_Crm_Helpers {
 
 		$fields = array();
 		foreach ( $custom_fields as $k => $custom_field ) {
+
+			if ( apply_filters( "automator_fluentcrm_omit_custom_field-{$custom_field['slug']}", false, $custom_field ) ) {
+				continue;
+			}
+
 			$options                  = null;
 			$supports_multiple_values = false;
 			if ( 'select-multi' === $custom_field['type'] ) {

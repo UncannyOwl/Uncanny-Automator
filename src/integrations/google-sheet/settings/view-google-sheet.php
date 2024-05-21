@@ -95,6 +95,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			</div>
 
+			<?php require trailingslashit( __DIR__ ) . 'file-picker-view.php'; ?>
+			<!-- end --> 
+			
 		</div>
 
 		<div class="uap-settings-panel-bottom" <?php echo $this->client ? '' : 'has-arrow'; ?>>

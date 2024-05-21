@@ -11,6 +11,8 @@ use uncanny_learndash_groups\SharedFunctions;
  */
 class UOG_REMOVESEATSFROMGROUP {
 
+	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -58,6 +60,20 @@ class UOG_REMOVESEATSFROMGROUP {
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'remove_seats_from_a_group' ),
 			'options_callback'   => array( $this, 'load_options' ),
+		);
+
+		$this->set_action_tokens(
+			array(
+				$this->action_meta . '_TOTAL_SEATS'     => array(
+					'name' => __( 'Total seats', 'uncanny-automator' ),
+					'type' => 'int',
+				),
+				$this->action_meta . '_REMAINING_SEATS' => array(
+					'name' => __( 'Remaining seats', 'uncanny-automator' ),
+					'type' => 'int',
+				),
+			),
+			$this->action_code
 		);
 
 		Automator()->register->action( $action );
@@ -133,6 +149,14 @@ class UOG_REMOVESEATSFROMGROUP {
 		if ( $uo_remove_seats < $empty_seats ) {
 			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL LIMIT %d", $code_group_id, $uo_remove_seats ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			update_post_meta( $uo_group_id, '_ulgm_total_seats', $empty_seats );
+
+			$this->hydrate_tokens(
+				array(
+					$this->action_meta . '_TOTAL_SEATS' => ulgm()->group_management->seat->total_seats( $uo_group_id ),
+					$this->action_meta . '_REMAINING_SEATS' => ulgm()->group_management->seat->remaining_seats( $uo_group_id ),
+				)
+			);
+
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 
 			return;
@@ -140,6 +164,13 @@ class UOG_REMOVESEATSFROMGROUP {
 		// if seats to remove are more than empty seats
 		if ( $uo_remove_seats >= $empty_seats ) {
 			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL", $code_group_id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+			$this->hydrate_tokens(
+				array(
+					$this->action_meta . '_TOTAL_SEATS' => ulgm()->group_management->seat->total_seats( $uo_group_id ),
+					$this->action_meta . '_REMAINING_SEATS' => ulgm()->group_management->seat->remaining_seats( $uo_group_id ),
+				)
+			);
 			update_post_meta( $uo_group_id, '_ulgm_total_seats', $existing_seats - $uo_remove_seats );
 		}
 

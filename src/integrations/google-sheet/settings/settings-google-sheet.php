@@ -30,6 +30,11 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 
 	}
 
+	/**
+	 * Determines the status of the app integration in the settings page.
+	 *
+	 * @return string
+	 */
 	public function get_status() {
 
 		$client = false;
@@ -39,6 +44,11 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 			$client = $this->helpers->get_google_client() && ! $this->helpers->has_missing_scope();
 		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing
+		}
+
+		// Show as disconnected if the user has generic drive scope.
+		if ( $this->helpers->has_generic_drive_scope() ) {
+			return '';
 		}
 
 		return false === $client ? '' : 'success';
@@ -115,23 +125,29 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 	 */
 	public function output() {
 
-		$helper = $this->get_helper();
-
-		$auth_url = $this->get_auth_url();
-
+		$helper         = $this->get_helper();
+		$auth_url       = $this->get_auth_url();
 		$disconnect_uri = $this->get_disconnect_uri();
 
+		$connect   = absint( automator_filter_input( 'connect' ) );
 		$user_info = $helper->get_user_info();
 
-		$connect = absint( automator_filter_input( 'connect' ) );
-
-		$this->client = false;
-
 		try {
-			// The connection must have a Google credentials and must not have any missing scope.
-			$this->client = $this->helpers->get_google_client() && ! $this->helpers->has_missing_scope();
-		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// Do nothing
+			$google_client = $this->helpers->get_google_client();
+		} catch ( \Exception $e ) {
+			$google_client = '';
+		}
+
+		$access_token  = $google_client['access_token'] ?? '';
+		$refresh_token = $google_client['refresh_token'] ?? '';
+
+		// The connection must have a Google credentials and must not have any missing scope.
+		$this->client = $google_client && ! $helper->has_missing_scope();
+
+		// If the user has still `drive` scope.
+		if ( $helper->has_generic_drive_scope() ) {
+			// Mock the client as disconnect so it shows disconnected screen if they have old `drive` scope.
+			$this->client = $helper->is_connected( false );
 		}
 
 		include_once 'view-google-sheet.php';

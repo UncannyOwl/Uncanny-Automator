@@ -107,9 +107,7 @@ trait Webhooks {
 		$webhook_url  = Automator()->send_webhook->get_url( $data, $legacy, $parsing_args );
 		$fields       = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, $parsing_args );
 		$request_type = Automator()->send_webhook->request_type( $data );
-		$headers      = Automator()->send_webhook->get_headers( $data, $parsing_args );
-		$headers      = Automator()->send_webhook->get_content_type( $data_type, $headers );
-		$headers      = Automator()->send_webhook->get_authorization( $action_data['ID'], $headers );
+		$headers      = Automator()->send_webhook->get_headers( $data, $data_type, $action_data['ID'], $parsing_args );
 
 		if ( empty( $webhook_url ) ) {
 
@@ -267,9 +265,12 @@ trait Webhooks {
 
 		$log_parameters['elapsed'] = $this->elapsed_time_ms;
 
+		$action_log_id = $action_data['action_log_id'] ?? null;
+		$recipe_log_id = $action_data['recipe_log_id'] ?? null;
+
 		$this->log_request_as_api(
-			$action_data['recipe_log_id'],
-			$action_data['action_log_id'],
+			$recipe_log_id,
+			$action_log_id,
 			$log_parameters
 		);
 

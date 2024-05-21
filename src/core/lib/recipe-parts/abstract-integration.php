@@ -58,7 +58,8 @@ abstract class Integration {
 	/**
 	 * __construct
 	 *
-	 * @param  mixed $helpers
+	 * @param mixed $helpers
+	 *
 	 * @return void
 	 */
 	final public function __construct( $helpers = null ) {
@@ -87,7 +88,8 @@ abstract class Integration {
 	 *
 	 * @return void
 	 */
-	protected function load() {}
+	protected function load() {
+	}
 
 	/**
 	 * @return string
@@ -169,7 +171,7 @@ abstract class Integration {
 		$integrations[ $this->integration ] = array(
 			'name'         => $this->get_name(),
 			'icon_svg'     => $this->get_icon_url(),
-			'connected'    => $this->get_connected(),
+			'connected'    => apply_filters( 'automator_integration_connected', $this->get_connected(), $this->integration, $this ),
 			'settings_url' => $this->get_settings_url(),
 		);
 
@@ -219,8 +221,9 @@ abstract class Integration {
 	 * Previously Automator checked if the integrtiion plugin is active or not,
 	 * now each integration has to perform this check in the plugin_active method.
 	 *
-	 * @param  mixed $active
-	 * @param  mixed $integration
+	 * @param mixed $active
+	 * @param mixed $integration
+	 *
 	 * @return void
 	 */
 	public function override_plugin_status( $active, $integration ) {

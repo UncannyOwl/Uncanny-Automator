@@ -91,6 +91,19 @@ class UC_CODEREDEEMED {
 
 					$code = Automator()->helpers->recipe->uncanny_codes->options->uc_get_code_redeemed( $coupon_id );
 					Automator()->db->token->save( 'CODE_REDEEMED', $code, $save_meta );
+					global $wpdb;
+					$batch = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT g.id
+FROM `{$wpdb->prefix}uncanny_codes_groups` g
+	LEFT JOIN `{$wpdb->prefix}uncanny_codes_codes` c
+		ON g.ID = c.code_group
+WHERE c.ID = %d",
+							$coupon_id
+						)
+					);
+
+					Automator()->db->token->save( 'CODE_BATCH_ID', $batch, $save_meta );
 
 					Automator()->maybe_trigger_complete( $res['args'] );
 				}

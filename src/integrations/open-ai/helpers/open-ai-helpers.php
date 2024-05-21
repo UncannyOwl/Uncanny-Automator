@@ -161,6 +161,7 @@ class Open_AI_Helpers {
 				'gpt-4',
 				'gpt-4-32k',
 				'gpt-4-0125-preview',
+				'gpt-4o',
 			);
 
 			$available_models = array_intersect( $models, $gpt_models );

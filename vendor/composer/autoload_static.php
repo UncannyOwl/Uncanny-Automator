@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
+class ComposerStaticInited7f7178e29a130f3fbf4c270dfa5396
 {
     public static $prefixLengthsPsr4 = array (
         'F' => 
@@ -396,6 +396,7 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
         'Uncanny_Automator\\Esaf_Tokens' => __DIR__ . '/../..' . '/src/integrations/easy-affiliate/tokens/esaf-tokens.php',
         'Uncanny_Automator\\Event_Tickets_Helpers' => __DIR__ . '/../..' . '/src/integrations/event-tickets/helpers/event-tickets-helpers.php',
         'Uncanny_Automator\\Events_Manager_Helpers' => __DIR__ . '/../..' . '/src/integrations/events-manager/helpers/events-manager-helpers.php',
+        'Uncanny_Automator\\Export_Recipe' => __DIR__ . '/../..' . '/src/core/admin/class-export-recipe.php',
         'Uncanny_Automator\\FACEBOOK_GROUP_PUBLISH_LINK' => __DIR__ . '/../..' . '/src/integrations/facebook-groups/actions/facebook-group-publish-link.php',
         'Uncanny_Automator\\FACEBOOK_GROUP_PUBLISH_PHOTO' => __DIR__ . '/../..' . '/src/integrations/facebook-groups/actions/facebook-group-publish-photo.php',
         'Uncanny_Automator\\FACEBOOK_GROUP_PUBLISH_POST' => __DIR__ . '/../..' . '/src/integrations/facebook-groups/actions/facebook-group-publish-post.php',
@@ -490,6 +491,12 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
         'Uncanny_Automator\\Instagram_Helpers' => __DIR__ . '/../..' . '/src/integrations/instagram/helpers/instagram-helpers.php',
         'Uncanny_Automator\\Instagram_Settings' => __DIR__ . '/../..' . '/src/integrations/instagram/settings/settings-instagram.php',
         'Uncanny_Automator\\Integration' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/abstract-integration.php',
+        'Uncanny_Automator\\Integrations\\Aweber\\AWEBER_SUBSCRIBER_ADD' => __DIR__ . '/../..' . '/src/integrations/aweber/actions/aweber-subscriber-add.php',
+        'Uncanny_Automator\\Integrations\\Aweber\\AWEBER_SUBSCRIBER_TAG_ADD' => __DIR__ . '/../..' . '/src/integrations/aweber/actions/aweber-subscriber-tag-add.php',
+        'Uncanny_Automator\\Integrations\\Aweber\\AWEBER_SUBSCRIBER_UPDATE' => __DIR__ . '/../..' . '/src/integrations/aweber/actions/aweber-subscriber-update.php',
+        'Uncanny_Automator\\Integrations\\Aweber\\Aweber_Helpers' => __DIR__ . '/../..' . '/src/integrations/aweber/helpers/aweber-helpers.php',
+        'Uncanny_Automator\\Integrations\\Aweber\\Aweber_Integration' => __DIR__ . '/../..' . '/src/integrations/aweber/aweber-integration.php',
+        'Uncanny_Automator\\Integrations\\Aweber\\Aweber_Settings' => __DIR__ . '/../..' . '/src/integrations/aweber/settings/settings-aweber.php',
         'Uncanny_Automator\\Integrations\\Bitly\\BITLY_SHORTEN_URL' => __DIR__ . '/../..' . '/src/integrations/bitly/actions/bitly-shorten-url.php',
         'Uncanny_Automator\\Integrations\\Bitly\\Bitly_Helpers' => __DIR__ . '/../..' . '/src/integrations/bitly/helpers/bitly-helpers.php',
         'Uncanny_Automator\\Integrations\\Bitly\\Bitly_Integration' => __DIR__ . '/../..' . '/src/integrations/bitly/bitly-integration.php',
@@ -505,6 +512,10 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_HELPERS' => __DIR__ . '/../..' . '/src/integrations/charitable/helpers/charitable-helpers.php',
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
         'Uncanny_Automator\\Integrations\\Charitable\\Charitable_Integration' => __DIR__ . '/../..' . '/src/integrations/charitable/class-charitable-integration.php',
+        'Uncanny_Automator\\Integrations\\Code_Snippets\\CODE_SNIPPETS_ACTIVATE_SNIPPET' => __DIR__ . '/../..' . '/src/integrations/code-snippets/actions/code-snippets-activate-snippet.php',
+        'Uncanny_Automator\\Integrations\\Code_Snippets\\CODE_SNIPPETS_DEACTIVATE_SNIPPET' => __DIR__ . '/../..' . '/src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php',
+        'Uncanny_Automator\\Integrations\\Code_Snippets\\Code_Snippets_Helpers' => __DIR__ . '/../..' . '/src/integrations/code-snippets/helpers/code-snippets-helpers.php',
+        'Uncanny_Automator\\Integrations\\Code_Snippets\\Code_Snippets_Integration' => __DIR__ . '/../..' . '/src/integrations/code-snippets/code-snippets-integration.php',
         'Uncanny_Automator\\Integrations\\Common\\Common_Integration' => __DIR__ . '/../..' . '/src/integrations/common/class-common-integration.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Admin_Email' => __DIR__ . '/../..' . '/src/integrations/common/tokens/admin-email.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\Current_Blog_Id' => __DIR__ . '/../..' . '/src/integrations/common/tokens/current-blog-id.php',
@@ -521,6 +532,7 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Ip_Address' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-ip-address.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Lastname' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-lastname.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Locale' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-locale.php',
+        'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Registration_Date' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-registration-date.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Reset_Pass_Url' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-reset-pass-url.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Role' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-role.php',
         'Uncanny_Automator\\Integrations\\Common\\Tokens\\User_Username' => __DIR__ . '/../..' . '/src/integrations/common/tokens/user-username.php',
@@ -554,6 +566,7 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
         'Uncanny_Automator\\Integrations\\Google_Contacts\\Google_Contacts_Helpers' => __DIR__ . '/../..' . '/src/integrations/google-contacts/helpers/google-contacts-helper.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\Google_Contacts_Integration' => __DIR__ . '/../..' . '/src/integrations/google-contacts/google-contacts-integration.php',
         'Uncanny_Automator\\Integrations\\Google_Contacts\\Google_Contacts_Settings' => __DIR__ . '/../..' . '/src/integrations/google-contacts/settings/google-contacts-settings.php',
+        'Uncanny_Automator\\Integrations\\Google_Sheet\\Migrations\\Migrate_58' => __DIR__ . '/../..' . '/src/integrations/google-sheet/migrations/migrate-58.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_FORM_ENTRY_UPDATED' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\ANON_GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/anon-gf-subform.php',
         'Uncanny_Automator\\Integrations\\Gravity_Forms\\GF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/gravity-forms/triggers/gf-subform.php',
@@ -608,6 +621,12 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
         'Uncanny_Automator\\Integrations\\SliceWP\\SLICEWP_CREATE_AFFILIATE' => __DIR__ . '/../..' . '/src/integrations/slicewp/actions/slicewp-create-affiliate.php',
         'Uncanny_Automator\\Integrations\\SliceWP\\Slicewp_Helpers' => __DIR__ . '/../..' . '/src/integrations/slicewp/helpers/slicewp-helpers.php',
         'Uncanny_Automator\\Integrations\\SliceWP\\Slicewp_Integration' => __DIR__ . '/../..' . '/src/integrations/slicewp/slicewp-integration.php',
+        'Uncanny_Automator\\Integrations\\SureMembers\\Add_User_To_Group' => __DIR__ . '/../..' . '/src/integrations/suremembers/actions/add-user-to-group.php',
+        'Uncanny_Automator\\Integrations\\SureMembers\\Remove_User_From_Group' => __DIR__ . '/../..' . '/src/integrations/suremembers/actions/remove-user-from-group.php',
+        'Uncanny_Automator\\Integrations\\SureMembers\\SureMembers_Helpers' => __DIR__ . '/../..' . '/src/integrations/suremembers/helpers/suremembers-helpers.php',
+        'Uncanny_Automator\\Integrations\\SureMembers\\SureMembers_Integration' => __DIR__ . '/../..' . '/src/integrations/suremembers/suremembers-integration.php',
+        'Uncanny_Automator\\Integrations\\SureMembers\\User_Added_To_Group' => __DIR__ . '/../..' . '/src/integrations/suremembers/triggers/user-added-to-group.php',
+        'Uncanny_Automator\\Integrations\\SureMembers\\User_Removed_From_Group' => __DIR__ . '/../..' . '/src/integrations/suremembers/triggers/user-removed-from-group.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/triggers/form-submitted.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/helpers/thrive-architect-helpers.php',
         'Uncanny_Automator\\Integrations\\Thrive_Architect\\Thrive_Architect_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-architect/thrive-architect-integration.php',
@@ -820,7 +839,9 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
         'Uncanny_Automator\\Restrict_Content_Helpers' => __DIR__ . '/../..' . '/src/integrations/restrict-content/helpers/restrict-content-helpers.php',
         'Uncanny_Automator\\Restrict_Content_Tokens' => __DIR__ . '/../..' . '/src/integrations/restrict-content/tokens/restrict-content-tokens.php',
         'Uncanny_Automator\\SHEET_ADDARECORD' => __DIR__ . '/../..' . '/src/integrations/google-sheet/actions/sheet-addarecord.php',
+        'Uncanny_Automator\\SHEET_ADD_ROW_V2' => __DIR__ . '/../..' . '/src/integrations/google-sheet/actions/sheet-add-row-v2.php',
         'Uncanny_Automator\\SHEET_UPDATERECORD' => __DIR__ . '/../..' . '/src/integrations/google-sheet/actions/sheet-updaterecord.php',
+        'Uncanny_Automator\\SHEET_UPDATERECORD_V2' => __DIR__ . '/../..' . '/src/integrations/google-sheet/actions/sheet-updaterecord-v2.php',
         'Uncanny_Automator\\SLACK_CREATECHANNEL' => __DIR__ . '/../..' . '/src/integrations/slack/actions/slack-createchannel.php',
         'Uncanny_Automator\\SLACK_SENDDIRECTMESSAGE' => __DIR__ . '/../..' . '/src/integrations/slack/actions/slack-senddirectmessage.php',
         'Uncanny_Automator\\SLACK_SENDMESSAGE' => __DIR__ . '/../..' . '/src/integrations/slack/actions/slack-sendmessage.php',
@@ -1125,10 +1146,10 @@ class ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit586c8d92e70556fc1bb743f0767a23a2::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInited7f7178e29a130f3fbf4c270dfa5396::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInited7f7178e29a130f3fbf4c270dfa5396::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInited7f7178e29a130f3fbf4c270dfa5396::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInited7f7178e29a130f3fbf4c270dfa5396::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -80,7 +80,7 @@ class Recipe_Post_Type {
 				/* translators: Non-personal infinitive verb */
 				'add_new_item'          => esc_attr__( 'Add new recipe', 'uncanny-automator' ),
 				/* translators: Non-personal infinitive verb */
-				'add_new'               => esc_attr_x( 'Add new', 'Recipe', 'uncanny-automator' ),
+				'add_new'               => esc_attr_x( 'Add New', 'Recipe', 'uncanny-automator' ),
 				'new_item'              => esc_attr__( 'New recipe', 'uncanny-automator' ),
 				/* translators: Non-personal infinitive verb */
 				'edit_item'             => esc_attr__( 'Edit recipe', 'uncanny-automator' ),

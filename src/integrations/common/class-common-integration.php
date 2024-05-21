@@ -2,12 +2,14 @@
 
 namespace Uncanny_Automator\Integrations\Common;
 
+use Uncanny_Automator\Integration;
+
 /**
  * Class Common_Integration
  *
  * @package Uncanny_Automator
  */
-class Common_Integration extends \Uncanny_Automator\Integration {
+class Common_Integration extends Integration {
 
 	public $tokens;
 
@@ -44,5 +46,6 @@ class Common_Integration extends \Uncanny_Automator\Integration {
 		new Tokens\User_Reset_Pass_Url();
 		new Tokens\User_Role();
 		new Tokens\User_Username();
+		new Tokens\User_Registration_Date();
 	}
 }
