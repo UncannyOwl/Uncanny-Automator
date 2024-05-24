@@ -152,12 +152,18 @@ class Google_Sheet_Helpers {
 		add_action( 'wp_ajax_select_gsworksheet_from_gsspreadsheet_columns', array( $this, 'select_gsworksheet_from_gsspreadsheet_columns' ) );
 		add_action( 'wp_ajax_get_worksheet_ROWS_GOOGLESHEETS', array( $this, 'get_worksheet_rows_gsspreadsheet' ) );
 		add_action( 'wp_ajax_uo_google_disconnect_user', array( $this, 'disconnect_user' ) );
-		add_filter( 'automator_google_api_call', array( $this, 'resend_with_current_credentials' ) );
+
+		// Fix the OAuth credentials.
+		add_filter( 'automator_google_api_call', array( $this, 'resend_with_current_credentials' ), 10, 1 );
+
+		// Fix the Worksheet IDs.
+		add_filter( 'automator_google_api_call', array( $this, 'resend_with_correct_worksheet_id' ), 20, 1 );
 
 		// New wp_ajax endpoints for changes related to file picker.
 		add_action( 'wp_ajax_automator_fetch_googlesheets_spreadsheets', array( $this, 'fetch_spreadsheets' ) );
 		add_action( 'wp_ajax_automator_fetch_googlesheets_worksheets', array( $this, 'fetch_worksheets' ) );
 		add_action( 'wp_ajax_automator_fetch_googlesheets_worksheets_columns', array( $this, 'fetch_worksheets_columns' ) );
+
 		// Update action colum search field options.
 		add_action( 'wp_ajax_automator_fetch_googlesheets_worksheets_columns_search', array( $this, 'fetch_worksheets_columns_search' ) );
 		add_action( 'wp_ajax_automator_handle_file_picker', array( $this, 'handle_file_picker' ) );
@@ -381,6 +387,9 @@ class Google_Sheet_Helpers {
 		}
 
 		$worksheet_id = sanitize_text_field( $values['GSWORKSHEET'] );
+
+		// Backwards compatibility.
+		$worksheet_id = self::calculate_hash( $worksheet_id );
 
 		$response = $this->api_get_rows( $gs_spreadsheet_id, $worksheet_id );
 
@@ -921,6 +930,10 @@ class Google_Sheet_Helpers {
 			return $options;
 		}
 
+		$req_action_id = automator_filter_input( 'item_id', INPUT_POST );
+
+		$current_worksheet_id = get_post_meta( $req_action_id, 'GSWORKSHEET', true );
+
 		try {
 
 			$body = array(
@@ -944,8 +957,15 @@ class Google_Sheet_Helpers {
 						continue;
 					}
 
+					$worksheet_id = $this->maybe_generate_sheet_id( $properties['sheetId'] );
+
+					// Backwards compatibility for users who migrated already and re-built the action with zero worksheet id.
+					if ( 0 === self::calculate_hash( $worksheet_id ) && '0' === $current_worksheet_id ) {
+						$worksheet_id = 0;
+					}
+
 					$options[] = array(
-						'value' => $properties['sheetId'],
+						'value' => $worksheet_id,
 						'text'  => $properties['title'],
 					);
 				}
@@ -964,7 +984,6 @@ class Google_Sheet_Helpers {
 	/**
 	 * Method maybe_generate_sheet_id
 	 *
-	 * @deprecated 5.8
 	 * @param int $id
 	 *
 	 * @return string
@@ -1139,7 +1158,7 @@ class Google_Sheet_Helpers {
 		delete_option( '_uncannyowl_google_sheet_settings_expired' );
 		delete_transient( '_uncannyowl_google_sheet_settings' );
 		delete_transient( '_uncannyowl_google_user_info' );
-		delete_option( self::SPREADSHEETS_OPTION_KEY );
+		delete_option( self::SPREADSHEETS_OPTIONS_KEY );
 
 		return true;
 
@@ -1276,6 +1295,11 @@ class Google_Sheet_Helpers {
 
 	}
 
+	/**
+	 * Fetch worksheets columns for searching.
+	 *
+	 * @return void
+	 */
 	public function fetch_worksheets_columns_search() {
 
 		// Nonce and post object validation.
@@ -1286,6 +1310,9 @@ class Google_Sheet_Helpers {
 		$spreadsheet_id = $field_values['GSSPREADSHEET'] ?? '';
 		$worksheet_id   = $field_values['GSWORKSHEET'] ?? '';
 
+		// Backwards compatibility.
+		$worksheet_id = self::calculate_hash( $worksheet_id );
+
 		$fields = $this->get_columns( $spreadsheet_id, $worksheet_id );
 
 		wp_send_json(
@@ -1295,6 +1322,25 @@ class Google_Sheet_Helpers {
 			)
 		);
 
+	}
+
+	/**
+	 * Legacy backwords compatibility.
+	 *
+	 * @param string $worksheet_id
+	 *
+	 * @return string The ID of sheet.
+	 */
+	public static function calculate_hash( $worksheet_id ) {
+
+		$hashed   = sha1( self::$hash_string );
+		$sheet_id = substr( $hashed, 0, 9 );
+
+		if ( (string) $worksheet_id === (string) $sheet_id || intval( '-1' ) === intval( $worksheet_id ) ) {
+			$worksheet_id = 0;
+		}
+
+		return $worksheet_id;
 	}
 
 	/**
@@ -1511,6 +1557,35 @@ class Google_Sheet_Helpers {
 		} catch ( \Exception $e ) {
 			//If Google is not connected, proceed with the recorded credentials
 		}
+
+		return $params;
+	}
+
+	/**
+	 * Resend with the correct worksheet ID.
+	 *
+	 * On version 5.8, existing worksheet ID that has hashed ID is breaking.
+	 *
+	 * @param mixed[] $params
+	 *
+	 * @return mixed[]
+	 */
+	public function resend_with_correct_worksheet_id( $params ) {
+
+		// If it is not a resend, proceed as usual.
+		if ( empty( $params['resend'] ) ) {
+			return $params;
+		}
+
+		// Proceed with no changes if `worksheet_id` is not present.
+		if ( ! isset( $params['body']['worksheet_id'] ) ) {
+			return $params;
+		}
+
+		// Figure out the correct sheet ID.
+		$worksheet_id = $this->calculate_hash( $params['body']['worksheet_id'] );
+
+		$params['body']['worksheet_id'] = $worksheet_id;
 
 		return $params;
 	}

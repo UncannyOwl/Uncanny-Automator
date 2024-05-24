@@ -118,6 +118,7 @@ class SHEET_ADD_ROW_V2 {
 						'input_type'            => 'select',
 						'required'              => true,
 						'options'               => array(),
+						'options_show_id'       => false,
 						'supports_custom_value' => false,
 						'ajax'                  => array(
 							'endpoint'      => 'automator_fetch_googlesheets_worksheets',
@@ -188,7 +189,9 @@ class SHEET_ADD_ROW_V2 {
 		$fields          = json_decode( $worksheet_field, true );
 		$key_values      = array();
 		$check_all_empty = true;
-		$hashed          = sha1( Google_Sheet_Helpers::$hash_string );
+
+		// Backwards compatibility.
+		$gs_worksheet = Google_Sheet_Helpers::calculate_hash( $gs_worksheet );
 
 		// Check if fields is a valid array. PHP 8.0+ throws fatal error for null types when called inside count function.
 		$fields_count = is_array( $fields ) ? count( $fields ) : 0;

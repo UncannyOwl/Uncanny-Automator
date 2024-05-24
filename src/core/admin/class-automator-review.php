@@ -487,6 +487,14 @@ class Automator_Review {
 	 * @return void
 	 */
 	public static function load_banner_assets() {
+
+		$screen = get_current_screen();
+
+		// Bail if there is no screen ID.
+		if ( ! isset( $screen->id ) ) {
+			return;
+		}
+
 		wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ), array(), Utilities::automator_get_version() );
 
 		// Register main JS in case it wasnt registered.
@@ -504,7 +512,7 @@ class Automator_Review {
 		wp_localize_script(
 			'uap-admin',
 			'UncannyAutomatorBackend',
-			$admin_menu_instance->get_js_backend_inline_data( null )
+			$admin_menu_instance->get_js_backend_inline_data( $screen->id )
 		);
 
 		// Enqueue uap-admin.

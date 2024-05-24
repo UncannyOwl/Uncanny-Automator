@@ -121,6 +121,7 @@ class SHEET_UPDATERECORD_V2 {
 						'input_type'            => 'select',
 						'required'              => true,
 						'options'               => array(),
+						'options_show_id'       => false,
 						'supports_custom_value' => false,
 						'ajax'                  => array(
 							'endpoint'      => 'automator_fetch_googlesheets_worksheets',

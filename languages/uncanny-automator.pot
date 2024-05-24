@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 5.8\n"
+"Project-Id-Version: Uncanny Automator 5.8.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-05-21T17:00:10+00:00\n"
+"POT-Creation-Date: 2024-05-24T20:49:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: uncanny-automator\n"
@@ -6173,9 +6173,9 @@ msgstr ""
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:213
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:234
 #: src/integrations/drip/actions/drip-create-subscriber.php:94
-#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:151
+#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:152
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:132
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:179
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:180
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:164
 #: src/integrations/helpscout/actions/helpscout-customer-properties-update.php:103
 #: src/integrations/hubspot/actions/hubspot-adduser.php:91
@@ -7317,9 +7317,9 @@ msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:235
-#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:156
+#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:157
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:134
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:184
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:185
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:166
 #: src/integrations/mailchimp/actions/audience-addauser.php:143
 #: src/integrations/mailchimp/actions/mc-everyone-add-contact.php:142
@@ -7331,9 +7331,9 @@ msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:237
-#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:157
+#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:158
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:135
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:185
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:186
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:167
 #: src/integrations/mailchimp/actions/audience-addauser.php:144
 #: src/integrations/mailchimp/actions/mc-everyone-add-contact.php:143
@@ -12022,7 +12022,7 @@ msgstr ""
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:219
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:240
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:261
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:173
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:174
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:159
 msgid "Update?"
 msgstr ""
@@ -15269,25 +15269,25 @@ msgstr ""
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:105
 #: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:120
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:119
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:600
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:609
 msgid "Worksheet"
 msgstr ""
 
-#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:131
+#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:132
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:114
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:153
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:154
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:144
 msgid "Row"
 msgstr ""
 
-#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:143
+#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:144
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:126
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:165
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:166
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:151
 msgid "Column"
 msgstr ""
 
-#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:216
+#: src/integrations/google-sheet/actions/sheet-add-row-v2.php:219
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:418
 msgid "Trying to add an empty row."
 msgstr ""
@@ -15299,8 +15299,8 @@ msgstr ""
 
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:87
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:101
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:455
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:510
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:464
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:519
 msgid "Drive"
 msgstr ""
 
@@ -15384,72 +15384,72 @@ msgstr ""
 msgid "Update a row in a {{Google Sheet}}"
 msgstr ""
 
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:133
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:134
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:128
 msgid "Column search"
 msgstr ""
 
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:146
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:147
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:138
 msgid "Match value"
 msgstr ""
 
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:197
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:198
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:174
 msgid "If multiple matches are found, update all matching rows instead of the first matching row only."
 msgstr ""
 
 #. translators: The error code, type, and description
-#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:351
+#: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:352
 #: src/integrations/google-sheet/actions/sheet-updaterecord.php:698
 msgid "Error: %1$s | %2$s | %3$s"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:274
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:280
 msgctxt "Google sheets"
 msgid "Invalid nonce"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:303
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:309
 msgctxt "Google Sheets"
 msgid "Unable to find any Sheets. Please go to Automator > App integrations > Google Sheets and select files."
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:367
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:373
 msgctxt "Google Sheets"
 msgid "Error: Unable to read the selected Sheet. Please make sure that you have selected a valid Sheet."
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:378
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:384
 msgctxt "Google Sheets"
 msgid "Error: Unable to find Worksheet ID. Please make sure that you have selected a valid Worksheet."
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:462
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:471
 msgid "Any drive"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:517
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:526
 msgid "Any spreadsheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:607
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:616
 msgid "Any worksheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:837
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:846
 msgid "My google drive"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:886
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:895
 msgid "Select a Speadsheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:1211
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:1230
 msgid "Columns"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:1218
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:1237
 msgid "Any column"
 msgstr ""
 
@@ -15475,12 +15475,12 @@ msgctxt "Google Sheets"
 msgid "Learn more"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:22
+#: src/integrations/google-sheet/settings/file-picker-view.php:24
 msgctxt "Google Sheets"
 msgid "An error occurred while authorizing the request to use File selection feature."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:28
+#: src/integrations/google-sheet/settings/file-picker-view.php:30
 msgctxt "Google Sheets"
 msgid "Select Sheets"
 msgstr ""

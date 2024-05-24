@@ -381,6 +381,18 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
+### 5.8.0.1 [2024-05-24]
+
+**Fixed:**
+
+* Dashboard - Recipes using credits widget is not rendering in v5.8 #4694
+* Google Sheets - PHP error when disconnecting the App #4697
+* Google Sheets - Worksheet not found error on some sites #4702
+
+**Under the hood:**
+
+* Restrict Content Pro Integration icon #4693
+
 ### 5.8 [2024-05-21]
 
 **New Feature:**
@@ -398,8 +410,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **New Triggers:**
 
-SureMembers - A user is added to an access group #4123
-SureMembers - A user is removed from an access group #4124
+* SureMembers - A user is added to an access group #4123
+* SureMembers - A user is removed from an access group #4124
 
 **New Actions:**
 

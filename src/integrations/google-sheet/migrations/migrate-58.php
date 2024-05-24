@@ -162,6 +162,11 @@ class Migrate_58 {
 		$seen_ids     = array();
 
 		foreach ( $input_array as $item ) {
+
+			if ( ! isset( $item[ $key ] ) ) {
+				continue;
+			}
+
 			if ( ! in_array( $item[ $key ], $seen_ids ) ) {
 				$seen_ids[]     = $item[ $key ];
 				$result_array[] = $item;

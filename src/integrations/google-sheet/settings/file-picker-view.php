@@ -12,7 +12,9 @@ if ( $this->client ) { ?>
 	<?php if ( ! empty( $spreadsheets ) ) { ?> 
 		<ul>
 		<?php foreach ( $spreadsheets as $spreadsheet ) { ?>
-			<li><?php echo esc_html( $spreadsheet['name'] ); ?></li>
+			<?php if ( isset( $spreadsheet['name'] ) ) { ?>
+				<li><?php echo esc_html( $spreadsheet['name'] ); ?></li>
+			<?php } ?>
 		<?php } ?>
 	</ul>
 	<?php } ?>
