@@ -514,7 +514,15 @@ class Automator_Send_Webhook {
 		// Authorization.
 		$headers = $this->get_authorization( $action_id, $headers, $data, $parsing_args );
 
-		return array_unique( $headers );
+		// Remove duplicate keys
+		$final_headers = array();
+		foreach ( $headers as $key => $value ) {
+			if ( ! array_key_exists( $key, $final_headers ) ) {
+				$final_headers[ $key ] = $value;
+			}
+		}
+
+		return $final_headers;
 	}
 
 	/**
