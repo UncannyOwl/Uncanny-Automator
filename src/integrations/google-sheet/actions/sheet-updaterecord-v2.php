@@ -92,7 +92,7 @@ class SHEET_UPDATERECORD_V2 {
 						'description'           => wp_kses(
 							sprintf(
 								esc_html_x(
-									"Please select a Spreadsheet from the options above. If you haven't selected any files yet, you can do so by  %1\$svisiting the settings page%2\$s.",
+									"If you don't see your spreadsheet or haven't selected any files yet, please go to the %1\$ssettings page%2\$s to add.",
 									'Google Sheets',
 									'uncanny-automator'
 								),

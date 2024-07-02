@@ -145,7 +145,7 @@ class Memberpress_Helpers {
 				),
 			),
 		);
-		$options    = Automator()->helpers->recipe->wp_query( $query_args );
+		$options    = array_merge( $options, Automator()->helpers->recipe->wp_query( $query_args ) );
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -208,7 +208,7 @@ class Memberpress_Helpers {
 				),
 			),
 		);
-		$options    = Automator()->helpers->recipe->wp_query( $query_args );
+		$options    = array_merge( $options, Automator()->helpers->recipe->wp_query( $query_args ) );
 
 		$option = array(
 			'option_code'     => $option_code,

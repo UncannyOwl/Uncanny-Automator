@@ -771,13 +771,27 @@ class Utilities {
 			return '';
 		}
 
-		$f = fopen( 'php://memory', 'r+' );
+		$temp_file = tempnam( sys_get_temp_dir(), 'csv' );
+		if ( $temp_file === false ) {
+			throw new \RuntimeException( 'Unable to create a temporary file' );
+		}
+
+		$f = fopen( $temp_file, 'w+' );
+		if ( $f === false ) {
+			throw new \RuntimeException( 'Unable to open temporary file for writing' );
+		}
+
 		foreach ( $array as $item ) {
 			fputcsv( $f, $item, $delimiter, $enclosure, $escape_char );
 		}
-		rewind( $f );
 
-		return stream_get_contents( $f );
+		rewind( $f );
+		$csv = stream_get_contents( $f );
+
+		fclose( $f );
+		unlink( $temp_file );
+
+		return $csv;
 	}
 
 	/**

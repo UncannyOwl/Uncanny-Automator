@@ -140,6 +140,10 @@ class Fr_Tokens {
 				if ( key_exists( 'file', $value ) ) {
 					$url   = key_exists( 'file_url', $value['file'] ) ? $value['file']['file_url'] : '';
 					$value = is_array( $url ) ? join( ', ', $url ) : $url;
+					// Check for raw and formatted values.
+				} elseif ( key_exists( 'result', $value ) && key_exists( 'formatting_result', $value ) ) {
+					// Return formatted value.
+					$value = $value['formatting_result'];
 				} else {
 					$value = join( ' ', $value );
 				}

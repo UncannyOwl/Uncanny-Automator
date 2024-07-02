@@ -2,16 +2,19 @@
 $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 return array(
+$baseDir .     '/src/integrations/campaign-monitor/load.php',
 $baseDir .     '/src/integrations/rafflepress/load.php',
 $baseDir .     '/src/integrations/microsoft-teams/load.php',
 $baseDir .     '/src/integrations/thrive-architect/load.php',
 $baseDir .     '/src/integrations/suremembers/load.php',
 $baseDir .     '/src/integrations/slicewp/load.php',
 $baseDir .     '/src/integrations/wp-discuz/load.php',
+$baseDir .     '/src/integrations/kadence/load.php',
 $baseDir .     '/src/integrations/bitly/load.php',
 $baseDir .     '/src/integrations/datetime/load.php',
 $baseDir .     '/src/integrations/mautic/load.php',
 $baseDir .     '/src/integrations/pretty-links/load.php',
+$baseDir .     '/src/integrations/notion/load.php',
 $baseDir .     '/src/integrations/thrive-ultimatum/load.php',
 $baseDir .     '/src/integrations/common/load.php',
 $baseDir .     '/src/integrations/charitable/load.php',

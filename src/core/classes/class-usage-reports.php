@@ -320,6 +320,7 @@ class Usage_Reports {
 		$this->report['active_plugins'] = $this->get_plugins_info( $this->system_report['active_plugins'] );
 		$this->get_automator_info();
 		$this->get_recipes_info();
+		$this->get_user_walkthrough_info();
 		$this->get_date();
 		$this->get_views();
 		$this->get_settings();
@@ -498,7 +499,7 @@ class Usage_Reports {
 	 * @return void
 	 */
 	public function get_automator_info() {
-		$this->report['automator']['version'] = $this->system_report['environment']['version'];
+		$this->report['automator']['version'] = AUTOMATOR_PLUGIN_VERSION;
 
 		if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
 			$this->report['automator']['pro_version'] = AUTOMATOR_PRO_PLUGIN_VERSION;
@@ -540,6 +541,67 @@ class Usage_Reports {
 
 		$this->report['recipes']['total_integrations_used'] = count( $this->report['integrations'] );
 
+	}
+
+	/**
+	 * get_user_walkthrough_info
+	 *
+	 * @return void
+	 */
+	public function get_user_walkthrough_info() {
+
+		// Collect all user walkthroughs meta.
+		global $wpdb;
+		$results = $wpdb->get_results(
+			"SELECT `meta_value` FROM {$wpdb->usermeta} WHERE meta_key = 'automator_walkthrough_progress'"
+		);
+
+		// Bail if no results.
+		if ( empty( $results ) ) {
+			$this->report['walkthroughs'] = array();
+			return;
+		}
+
+		// Filter out valid data and organize.
+		$walkthroughs = array();
+		foreach ( $results as $result ) {
+			$meta = empty( $result ) ? false : maybe_unserialize( $result->meta_value );
+			if ( empty( $meta ) || ! is_array( $meta ) ) {
+				continue;
+			}
+
+			foreach ( $meta as $id => $progress ) {
+				if ( ! is_string( $id ) || ! is_array( $progress ) || empty( $progress['step'] ) ) {
+					continue;
+				}
+
+				// Add walkthrough if not set.
+				if ( ! isset( $walkthroughs[ $id ] ) ) {
+					$walkthroughs[ $id ] = array();
+				}
+
+				// Initialize the step if not already set.
+				if ( ! isset( $walkthroughs[ $id ][ $progress['step'] ] ) ) {
+					$walkthroughs[ $id ][ $progress['step'] ] = array(
+						'name'  => $progress['step'],
+						'value' => 0,
+					);
+				}
+
+				$walkthroughs[ $id ][ $progress['step'] ]['value']++;
+			}
+		}
+
+		// Bail if no valid walkthroughs.
+		if ( empty( $walkthroughs ) ) {
+			$this->report['walkthroughs'] = array();
+			return;
+		}
+
+		// Remove the keys from each walkthrough array.
+		$walkthroughs = array_map( 'array_values', $walkthroughs );
+
+		$this->report['walkthroughs'] = $walkthroughs;
 	}
 
 	/**

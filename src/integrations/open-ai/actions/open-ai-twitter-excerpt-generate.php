@@ -12,7 +12,7 @@ class OPEN_AI_TWITTER_EXCERPT_GENERATE {
 
 	use Recipe\Actions, Recipe\Action_Tokens;
 
-	const PROMPT = "Generate a single marketing tweet, with appropriate hashtags, that’s less than 210 characters, with no more than 1 emoji and no links, as if you are the author of the content below, based on the following content:\n\n{{content}}";
+	const PROMPT = "Generate a single marketing tweet, with appropriate hashtags, that's less than 210 characters, with no more than 1 emoji and no links, as if you are the author of the content below, based on the following content:\n\n{{content}}";
 
 	protected $model = 'gpt-4';
 

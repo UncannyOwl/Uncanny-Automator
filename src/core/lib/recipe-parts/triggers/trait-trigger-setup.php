@@ -46,6 +46,11 @@ trait Trigger_Setup {
 	/**
 	 * @var bool
 	 */
+	protected $is_elite = false;
+
+	/**
+	 * @var bool
+	 */
 	protected $is_anonymous = false;
 	/**
 	 * @var string
@@ -232,6 +237,22 @@ trait Trigger_Setup {
 	 */
 	public function set_is_pro( $is_pro ) {
 		$this->is_pro = $is_pro;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function get_is_elite(): bool {
+		return $this->is_elite;
+	}
+
+	/**
+	 * @param bool $is_elite
+	 *
+	 * @return void
+	 */
+	public function set_is_elite( bool $is_elite ): void {
+		$this->is_elite = $is_elite;
 	}
 
 	/**
@@ -494,6 +515,7 @@ trait Trigger_Setup {
 	public function set_tokens_class( $tokens_class ) {
 		$this->tokens_class = $tokens_class;
 	}
+
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 * @throws Automator_Exception|\Exception
@@ -505,6 +527,7 @@ trait Trigger_Setup {
 			'support_link'        => $this->get_support_link(), // hyperlink to support page.
 			'type'                => $this->get_trigger_type(), // user|anonymous. user by default.
 			'is_pro'              => $this->get_is_pro(), // free or pro trigger.
+			'is_elite'            => $this->get_is_elite(), // elite trigger.
 			'is_deprecated'       => $this->get_is_deprecated(), // whether trigger is deprecated.
 			'integration'         => $this->get_integration(), // trigger the integration belongs to.
 			'code'                => $this->get_code(), // unique trigger code.

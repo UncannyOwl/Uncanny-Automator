@@ -118,6 +118,16 @@ class Wpf_Tokens {
 						'tokenIdentifier' => $trigger_meta,
 					);
 				}
+
+				// Add support for price fields quantity.
+				if ( 0 === strpos( $field['type'], 'payment' ) && isset( $field['enable_quantity'] ) && '1' === (string) $field['enable_quantity'] ) {
+					$fields[] = array(
+						'tokenId'         => $token_id . '|quantity',
+						'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(quantity)', 'uncanny-automator' ) ),
+						'tokenType'       => 'int',
+						'tokenIdentifier' => $trigger_meta,
+					);
+				}
 			}
 
 			$tokens = array_merge( $tokens, $fields );
@@ -145,8 +155,8 @@ class Wpf_Tokens {
 		}
 
 		if ( ! in_array( 'WPFFORMS', $pieces, true )
-			&& ! in_array( 'ANONWPFFORMS', $pieces, true )
-			&& ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
+		&& ! in_array( 'ANONWPFFORMS', $pieces, true )
+		&& ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -158,7 +168,15 @@ class Wpf_Tokens {
 		if ( 'ANONWPFFORMS' === $field || 'ANONWPFFORMS_ID' === $field ) {
 			if ( ! empty( $trigger_data ) ) {
 				foreach ( $trigger_data as $trigger ) {
+					// Validate trigger data structure.
+					if ( is_null( $trigger ) || ! is_array( $trigger ) || ! isset( $trigger['ID'] ) ) {
+						continue;
+					}
 					if ( (int) $trigger['ID'] === (int) $trigger_id ) {
+						// Validate meta structure.
+						if ( ! isset( $trigger['meta'] ) || ! is_array( $trigger['meta'] ) ) {
+							continue;
+						}
 						if ( array_key_exists( 'ANONWPFFORMS', $trigger['meta'] ) ) {
 							$form_id = $trigger['meta']['ANONWPFFORMS'];
 							if ( 'ANONWPFFORMS_ID' === $field ) {
@@ -170,6 +188,8 @@ class Wpf_Tokens {
 					}
 				}
 			}
+			// Return original value.
+			return $value;
 		}
 
 		$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
@@ -325,6 +345,12 @@ class Wpf_Tokens {
 							$data[ $key ] = str_replace( ',', ', ', $data[ $key ] );
 							// Remove any double spaces this may have caused.
 							$data[ $key ] = preg_replace( '/\s+/', ' ', $data[ $key ] );
+						}
+
+						// Maybe include payment quantity.
+						if ( 0 === strpos( $field['type'], 'payment' ) && isset( $field['quantity'] ) && ! empty( $field['quantity'] ) ) {
+							$quantity_key          = "{$meta_key}:{$form_id}|{$field_id}|quantity";
+							$data[ $quantity_key ] = isset( $field['quantity'] ) ? $field['quantity'] : 1;
 						}
 					}
 
@@ -541,7 +567,14 @@ class Wpf_Tokens {
 			// Single choice.
 			$value    = $this->normalize_whitespace( $value );
 			$selected = array_search( $value, $labels, true );
-			$selected = false !== $selected ? $selected : '';
+
+			 // Fallback check: if the value is not found, try the other key. Ticket #64096
+			if ( false === $selected ) {
+				$fallback_key    = 'value' === $label_key ? 'label' : 'value';
+				$fallback_labels = wp_list_pluck( $field['choices'], $fallback_key );
+				$selected        = array_search( $value, $fallback_labels, true );
+				$selected        = false !== $selected ? $selected : '';
+			}
 		}
 
 		return apply_filters( 'automator_wpforms_non_dynamic_choice_value', $selected, $field );

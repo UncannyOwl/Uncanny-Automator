@@ -26,6 +26,26 @@ class Import_Recipe {
 	const IMPORTED_RECIPE_WARNING_META = 'uap_recipe_imported';
 
 	/**
+	 * The post types that should be imported as draft.
+	 *
+	 * @var array
+	 */
+	private $draft_post_types = array(
+		'uo-recipe',
+		'uo-trigger',
+		'uo-action',
+	);
+
+	/**
+	 * The trigger codes that should be published on import.
+	 *
+	 * @var array
+	 */
+	private $published_trigger_codes = array(
+		'RECIPE_MANUAL_TRIGGER_ANON',
+	);
+
+	/**
 	 * Import_Recipe constructor.
 	 *
 	 * @return void
@@ -38,6 +58,7 @@ class Import_Recipe {
 
 		// Notices.
 		add_action( 'automator_show_internal_admin_notice', array( $this, 'maybe_display_import_errors' ) );
+		add_action( 'automator_show_internal_admin_notice', array( $this, 'maybe_display_bulk_import_success' ) );
 		add_action( 'automator_show_internal_admin_notice', array( $this, 'maybe_display_imported_recipe_warning' ) );
 
 		// Clear the warning meta when a recipe is updated.
@@ -59,16 +80,19 @@ class Import_Recipe {
 
 		if ( ! automator_filter_has_var( '_wpnonce_ua_recipe_import', INPUT_POST ) ) {
 			$this->set_import_error( _x( 'Security issue, invalid nonce. Please refresh the page and try again.', 'Import Recipe', 'uncanny-automator' ) );
+
 			return;
 		}
 
 		if ( ! wp_verify_nonce( automator_filter_input( '_wpnonce_ua_recipe_import', INPUT_POST ), 'Aut0Mat0R' ) ) {
 			$this->set_import_error( _x( 'Security issue, invalid nonce. Please refresh the page and try again.', 'Import Recipe', 'uncanny-automator' ) );
+
 			return;
 		}
 
 		if ( ! isset( $_FILES['recipejson'] ) ) {
 			$this->set_import_error( _x( 'No recipe .json file uploaded.', 'Import Recipe', 'uncanny-automator' ) );
+
 			return;
 		}
 
@@ -76,6 +100,7 @@ class Import_Recipe {
 
 		if ( 'application/json' !== $file['type'] ) {
 			$this->set_import_error( _x( 'The uploaded file is not a valid recipe .json file.', 'Import Recipe', 'uncanny-automator' ) );
+
 			return;
 		}
 
@@ -85,22 +110,87 @@ class Import_Recipe {
 
 		if ( ! $recipe_json ) {
 			$this->set_import_error( _x( 'The uploaded file is not a valid recipe .json file.', 'Import Recipe', 'uncanny-automator' ) );
+
 			return;
 		}
+
+		// Run filters.
+		$this->pre_import_filters();
+
+		// Check if the JSON is a bulk import.
+		if ( $this->is_bulk_import( $recipe_json ) ) {
+			$this->handle_bulk_import( $recipe_json );
+			return;
+		}
+
+		// Handle single import.
+		$this->handle_single_import( $recipe_json );
+	}
+
+	/**
+	 * Check if the JSON is a bulk import.
+	 *
+	 * @param object $recipe_json - The JSON object to check.
+	 *
+	 * @return bool - Whether the JSON is a bulk import.
+	 */
+	public function is_bulk_import( $recipe_json ) {
+		return is_array( $recipe_json );
+	}
+
+	/**
+	 * Import a single recipe from JSON.
+	 *
+	 * @param object $recipe_json - The JSON object to import.
+	 *
+	 * @return void
+	 */
+	public function handle_single_import( $recipe_json ) {
 
 		// Import the recipe.
 		$new_recipe_id = $this->import_recipe_json( $recipe_json );
-		do_action( 'automator_recipe_imported', $new_recipe_id );
 
 		if ( is_wp_error( $new_recipe_id ) ) {
 			$this->set_import_error( $new_recipe_id->get_error_message() );
+
 			return;
 		}
+
+		do_action( 'automator_recipe_imported', $new_recipe_id );
 
 		// Success - redirect to newly imported recipe.
 		$redirect_url = get_edit_post_link( $new_recipe_id, 'url' );
 		wp_safe_redirect( $redirect_url );
 		exit;
+	}
+
+	/**
+	 * Handle a bulk import of recipes.
+	 *
+	 * @param array $recipes - The array of recipes to import.
+	 *
+	 * @return void
+	 */
+	public function handle_bulk_import( $recipes ) {
+
+		$imported_recipes = array();
+
+		// Import each recipe.
+		foreach ( $recipes as $recipe_json ) {
+
+			$new_recipe_id = $this->import_recipe_json( $recipe_json );
+
+			if ( is_wp_error( $new_recipe_id ) ) {
+				$this->set_import_error( $new_recipe_id->get_error_message() );
+				return;
+			}
+
+			do_action( 'automator_recipe_imported', $new_recipe_id );
+
+			$imported_recipes[] = $new_recipe_id;
+		}
+
+		$this->set_bulk_import_success_message( $imported_recipes );
 	}
 
 	/**
@@ -120,6 +210,16 @@ class Import_Recipe {
 		}
 
 		include Utilities::automator_get_view( 'recipe-adminlist-import.php' );
+	}
+
+	/**
+	 * Run pre-import filters.
+	 *
+	 * @return void
+	 */
+	private function pre_import_filters() {
+		$this->draft_post_types        = apply_filters( 'automator_recipe_import_draft_post_types', $this->draft_post_types );
+		$this->published_trigger_codes = apply_filters( 'automator_recipe_import_published_trigger_codes', $this->published_trigger_codes );
 	}
 
 	/**
@@ -148,7 +248,7 @@ class Import_Recipe {
 		$recipe_meta                                       = (array) $recipe->meta;
 		$recipe_meta[ self::IMPORTED_RECIPE_WARNING_META ] = array(
 			sprintf(
-				/* translators: %s - Y-m-d date */
+			/* translators: %s - Y-m-d date */
 				_x( 'Recipe imported on %s. Please make sure to set the correct values before you take this recipe live.', 'Import Recipe', 'uncanny-automator' ),
 				date_i18n( 'Y-m-d', time() )
 			),
@@ -158,6 +258,7 @@ class Import_Recipe {
 		$new_recipe_id = $this->copy_recipe_parts->copy( $recipe->post->ID, 0, 'draft', $recipe->post, $recipe_meta );
 		if ( empty( $new_recipe_id ) ) {
 			$this->copy_recipe_parts->is_import = false;
+
 			return new WP_Error( 'error-copying-recipe', _x( 'Unable to create imported recipe.', 'Import Recipe', 'uncanny-automator' ) );
 		}
 
@@ -173,7 +274,7 @@ class Import_Recipe {
 					continue;
 				}
 
-				$status       = $this->maybe_adjust_recipe_part_status( 'draft', $recipe_part );
+				$status       = $this->maybe_adjust_recipe_part_status( $recipe_part );
 				$part_post_id = $this->copy_recipe_parts->copy( $recipe_part->post->ID, $new_recipe_id, $status, $recipe_part->post, (array) $recipe_part->meta );
 
 				// Handle loops.
@@ -192,24 +293,36 @@ class Import_Recipe {
 	}
 
 	/**
-	 * Adjust the status of a recipe part ( Run Now triggers should be published )
+	 * Adjust the status of a recipe part based on its type.
 	 *
-	 * @param string $status - The status to adjust.
 	 * @param object $recipe_part - The recipe part to adjust.
 	 *
-	 * @return string - The adjusted status.
+	 * @return string - The import status.
 	 */
-	private function maybe_adjust_recipe_part_status( $status, $recipe_part ) {
+	private function maybe_adjust_recipe_part_status( $recipe_part ) {
 
-		// Bail if the recipe part is not a trigger.
-		if ( 'uo-trigger' !== $recipe_part->post->post_type ) {
-			return $status;
+		$post_type = isset( $recipe_part->post->post_type ) ? $recipe_part->post->post_type : null;
+
+		// Not a post type.
+		if ( ! $post_type ) {
+			return 'draft';
 		}
 
-		// Check if the trigger is a Run Now trigger.
-		$code = isset( $recipe_part->meta->code ) && isset( $recipe_part->meta->code[0] ) ? $recipe_part->meta->code[0] : null;
-		if ( 'RECIPE_MANUAL_TRIGGER_ANON' === $code ) {
-			$status = 'publish';
+		// Not in the list of post types to adjust.
+		if ( ! in_array( $post_type, $this->draft_post_types, true ) ) {
+			// Return the original post status or 'publish' if it's not set.
+			return isset( $recipe_part->post->post_status ) ? $recipe_part->post->post_status : 'publish';
+		}
+
+		// Return draft status.
+		$status = 'draft';
+
+		// Check if the trigger is a published trigger.
+		if ( 'uo-trigger' === $post_type ) {
+			$code = isset( $recipe_part->meta->code ) && isset( $recipe_part->meta->code[0] ) ? $recipe_part->meta->code[0] : null;
+			if ( in_array( $code, $this->published_trigger_codes, true ) ) {
+				$status = 'publish';
+			}
 		}
 
 		return $status;
@@ -244,8 +357,8 @@ class Import_Recipe {
 				if ( ! isset( $item->post ) || ! isset( $item->post->ID ) || ! isset( $item->meta ) ) {
 					continue;
 				}
-
-				$item_post_id = $this->copy_recipe_parts->copy( $item->post->ID, $new_loop_id, 'draft', $item->post, (array) $item->meta );
+				$status       = $this->maybe_adjust_recipe_part_status( $item );
+				$item_post_id = $this->copy_recipe_parts->copy( $item->post->ID, $new_loop_id, $status, $item->post, (array) $item->meta );
 			}
 		}
 	}
@@ -261,7 +374,7 @@ class Import_Recipe {
 		set_transient(
 			'automator_recipe_import_result_' . get_current_user_id(),
 			sprintf(
-				/* translators: %s - error message */
+			/* translators: %s - error message */
 				_x( 'Recipe Import Error : %s', 'Import Recipe', 'uncanny-automator' ),
 				$message
 			),
@@ -285,6 +398,57 @@ class Import_Recipe {
 
 		// Display the error.
 		echo $this->generate_notice( 'error', $error ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		// Remove transient.
+		delete_transient( $transient_key );
+	}
+
+	/**
+	 * Set the import success message to transient.
+	 *
+	 * @param array $recipe_ids.
+	 *
+	 * @return void
+	 */
+	public function set_bulk_import_success_message( $recipe_ids ) {
+
+		// Get the recipe titles and links and format them to a message.
+		$message = '<ul>';
+		foreach ( $recipe_ids as $recipe_id ) {
+			$recipe_title = get_the_title( $recipe_id );
+			$recipe_link  = get_edit_post_link( $recipe_id, 'url' );
+			$message      .= sprintf( '<li><a href="%s" target="_blank">%s</a></li>', esc_url( $recipe_link ), esc_html( $recipe_title ) );
+		}
+		$message .= '</ul>';
+
+		set_transient(
+			'automator_recipe_import_success_' . get_current_user_id(),
+			sprintf(
+				/* translators: %s - error message */
+				_x( 'Recipes Imported Successfully : %s', 'Import Recipe', 'uncanny-automator' ),
+				$message
+			),
+			30
+		);
+	}
+
+	/**
+	 * Maybe display the bulk import success message.
+	 *
+	 * @return string - HTML for the import results if they exist in transient.
+	 */
+	public function maybe_display_bulk_import_success() {
+
+		// Check if transient is set for current user.
+		$transient_key = 'automator_recipe_import_success_' . get_current_user_id();
+		$success       = get_transient( $transient_key );
+
+		if ( ! $success ) {
+			return;
+		}
+
+		// Display the success message.
+		echo $this->generate_notice( 'success', $success ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// Remove transient.
 		delete_transient( $transient_key );
@@ -327,11 +491,22 @@ class Import_Recipe {
 	 * @return string - HTML for the notice.
 	 */
 	public function generate_notice( $type, $message ) {
+
+		$allowed_html = array(
+			'a'  => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+			'ul' => array(),
+			'li' => array(),
+		);
+
 		$html = '<div class="uap notice notice-' . esc_attr( $type ) . '" style="padding:0">';
 		$html .= '<uo-alert type="' . esc_attr( $type ) . '" no-radius>';
-		$html .= '<strong>' . esc_html( $message ) . '</strong>';
+		$html .= '<strong>' . wp_kses( $message, $allowed_html ) . '</strong>';
 		$html .= '</uo-alert>';
 		$html .= '</div>';
+
 		return $html;
 	}
 

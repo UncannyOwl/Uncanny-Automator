@@ -189,9 +189,12 @@ class Set_Up_Automator {
 		if ( ! self::$auto_loaded_directories ) {
 			return;
 		}
+
 		foreach ( self::$auto_loaded_directories as $directory ) {
+
 			$files    = array();
 			$dir_name = basename( $directory );
+
 			if ( ! isset( self::$all_integrations[ $dir_name ] ) ) {
 				continue;
 			}
@@ -204,23 +207,29 @@ class Set_Up_Automator {
 			if ( ! $files ) {
 				continue;
 			}
+
 			foreach ( $files as $file ) {
 				// bail early if the $file is not a string
 				if ( is_array( $file ) ) {
 					continue;
 				}
+
+				if ( ! file_exists( $file ) ) {
+					continue;
+				}
+
 				$class = apply_filters( 'automator_integrations_class_name', $this->get_class_name( $file, false, $dir_name ), $file );
 				if ( class_exists( $class, false ) ) {
 					continue;
 				}
-				if ( ! is_file( $file ) ) {
-					continue;
-				}
+
 				include_once $file;
+
 				$i                = new $class();
 				$integration_code = method_exists( $i, 'get_integration' ) ? $i->get_integration() : $class::$integration;
 				$active           = method_exists( $i, 'get_integration' ) ? $i->plugin_active() : $i->plugin_active( 0, $integration_code );
 				$active           = apply_filters( 'automator_maybe_integration_active', $active, $integration_code );
+
 				/**
 				 * Store all the integrations, regardless of the status,
 				 * to get integration name and the icon

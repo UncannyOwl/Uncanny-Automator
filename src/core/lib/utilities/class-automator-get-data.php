@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Services\Dashboard\Recipe_Using_Credits_Utils;
+
 /**
  * Class Automator_Get_Data
  *
@@ -1445,6 +1447,15 @@ WHERE t.automator_trigger_id = %d
 				return isset( $system_action['background_processing'] ) && true === $system_action['background_processing'];
 			}
 		}
+	}
+
+	/**
+	 * Retrieves all recipes that has an action that consumes a credit.
+	 *
+	 * @return mixed[]
+	 */
+	public function fetch_recipe_with_apps() {
+		return ( new Recipe_Using_Credits_Utils() )->fetch();
 	}
 
 	/**

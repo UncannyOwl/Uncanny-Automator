@@ -225,6 +225,25 @@ class Zoho_Campaigns_Client_Auth {
 	}
 
 	/**
+	 * Retrieves the user location from the db.
+	 *
+	 * @return string The user location.
+	 */
+	public function get_user_location() {
+
+		$credentials = automator_get_option( 'zoho_campaigns_credentials' );
+
+		$user_location = ! empty( $credentials['location'] ) ? $credentials['location'] : 'us';
+
+		if ( ! is_string( $user_location ) ) {
+			$user_location = 'us';
+		}
+
+		return apply_filters( 'automator_zoho_campaigns_user_location', $user_location, $credentials, $this );
+
+	}
+
+	/**
 	 * Retrieves refresh token from the db.
 	 *
 	 * @return string|bool The access token. Returns false otherwise.

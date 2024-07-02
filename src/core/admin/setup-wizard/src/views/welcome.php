@@ -18,7 +18,7 @@
 
 		<?php endif; ?>
 
-		<?php require $view; ?>
+		<?php require apply_filters( 'automator_setup_wizard_view_path', $view, array( 'step' => $step ) ); ?>
 
 	</div>
 

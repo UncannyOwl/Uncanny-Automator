@@ -65,7 +65,7 @@ class LD_QUIZPERCENT {
 							'option_code' => 'QUIZPERCENT',
 							'label'       => esc_attr__( 'Required percentage', 'uncanny-automator' ),
 							'placeholder' => esc_attr__( 'Example: 80', 'uncanny-automator' ),
-							'default'     => '80',
+							'default'     => '',
 						)
 					),
 					Automator()->helpers->recipe->learndash->options->all_ld_quiz(),

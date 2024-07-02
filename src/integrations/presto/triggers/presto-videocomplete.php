@@ -80,7 +80,8 @@ class PRESTO_VIDEOCOMPLETE {
 	public function video_progress( $video_id, $percent ) {
 		if ( $percent == 100 ) {
 
-			$user_id = get_current_user_id();
+			$user_id  = get_current_user_id();
+			$video_id = Automator()->helpers->recipe->presto->options->get_normalized_video_id( $video_id );
 
 			$args = array(
 				'code'    => $this->trigger_code,

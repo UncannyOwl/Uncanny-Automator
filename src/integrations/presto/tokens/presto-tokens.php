@@ -36,9 +36,13 @@ class Presto_Tokens {
 	public function presto_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		$piece = 'PRESTOVIDEO';
-		if ( $pieces ) {
-			if ( in_array( $piece, $pieces, true ) ) {
+		$keys  = array(
+			'PRESTOVIDEO',
+			'PRESTOVIDEO_POST_TITLE',
+		);
 
+		if ( $pieces ) {
+			if ( ! empty( array_intersect( $keys, $pieces ) ) ) {
 				$recipe_log_id = isset( $replace_args['recipe_log_id'] ) ? (int) $replace_args['recipe_log_id'] : Automator()->maybe_create_recipe_log_entry( $recipe_id, $user_id )['recipe_log_id'];
 				if ( $trigger_data && $recipe_log_id ) {
 					foreach ( $trigger_data as $trigger ) {
@@ -63,9 +67,25 @@ class Presto_Tokens {
 								$video_id = $trigger['meta'][ $piece ];
 							}
 
-							if ( 'PRESTOVIDEO' === $pieces[2] ) {
-								$video = new \PrestoPlayer\Models\Video( $video_id );
-								$value = $video->title;
+							// Validate we have one of the keys we're looking for.
+							$key = $pieces[2];
+							if ( ! in_array( $key, $keys, true ) ) {
+								return $value;
+							}
+
+							// Get normalized video data.
+							$video = Automator()->helpers->recipe->presto->options->normalize_video_data( $video_id );
+							if ( ! $video ) {
+								return $value;
+							}
+
+							switch ( $key ) {
+								case 'PRESTOVIDEO':
+									$value = $video->title;
+									break;
+								case 'PRESTOVIDEO_POST_TITLE':
+									$value = ! empty( $video->hub_id ) ? get_the_title( $video->hub_id ) : '-';
+									break;
 							}
 						}
 					}

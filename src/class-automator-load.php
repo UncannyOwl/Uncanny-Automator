@@ -13,6 +13,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Services\CLI\Logs\Prune_Command;
+
 /**
  * Class Automator_Load
  *
@@ -128,11 +130,32 @@ class Automator_Load {
 			$this->load_deactivation_survey();
 		}
 
+		// Load logs auto prune.
 		$this->load_logs_autoremoval();
+
+		// Load restore trigger status.
 		$this->load_logs_multiple_trigger_status_restore();
+
+		// Loads all cli commands.
+		$this->load_cli_commands();
 
 		// Auto-delete user logs.
 		add_action( 'deleted_user', array( $this, 'auto_prune_user_logs_handler' ), 10, 3 );
+	}
+
+	/**
+	 * Loads all WP-CLI Commands.
+	 *
+	 * @return void
+	 */
+	public function load_cli_commands() {
+
+		// Only loads in WP_CLI.
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			$dependecy      = new Prune_Logs( false );
+			$prune_commands = new Prune_Command( $dependecy );
+			$prune_commands->register_command();
+		}
 	}
 
 	/**
@@ -991,7 +1014,6 @@ class Automator_Load {
 		}
 
 		return true;
-
 	}
 
 	/**

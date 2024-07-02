@@ -127,6 +127,9 @@ class UOTC_MODULEINTERACTION {
 			}
 		}
 
+		// Flush the cache to ensure we have the latest data.
+		automator_cache_delete_group();
+
 		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$module_ids = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$verbs      = Automator()->get->meta_from_recipes( $recipes, 'TCVERB' );
@@ -134,13 +137,15 @@ class UOTC_MODULEINTERACTION {
 		$matched_recipe_ids = array();
 
 		foreach ( $recipes as $recipe_id => $recipe ) {
-
+			if ( ! isset( $module_ids[ $recipe_id ] ) || ! is_array( $module_ids[ $recipe_id ] ) ) {
+				continue;
+			}
 			foreach ( $recipe['triggers'] as $trigger ) {
-
 				$trigger_id = $trigger['ID'];
-
-				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === (int) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && ( strtolower( $verbs[ $recipe_id ][ $trigger_id ] ) === strtolower( $verb ) || '-1' == $verbs[ $recipe_id ][ $trigger_id ] ) ) {
-
+				if ( ! isset( $module_ids[ $recipe_id ][ $trigger_id ] ) || ! isset( $verbs[ $recipe_id ][ $trigger_id ] ) ) {
+					continue;
+				}
+				if ( ( (string) $module_ids[ $recipe_id ][ $trigger_id ] === (string) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && ( strtolower( $verbs[ $recipe_id ][ $trigger_id ] ) === strtolower( $verb ) || '-1' == $verbs[ $recipe_id ][ $trigger_id ] ) ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,

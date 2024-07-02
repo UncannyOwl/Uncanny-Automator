@@ -115,14 +115,6 @@ class ZOOM_REGISTERUSER {
 			$this->helpers->get_meeting_questions_repeater(),
 		);
 
-		//Don't show the user dropdown to old credentials so it's easier to test the update
-		if ( $this->helpers->jwt_mode() ) {
-			$option_fileds = array(
-				$this->helpers->get_meetings_field(),
-				$this->helpers->get_meeting_questions_repeater(),
-			);
-		}
-
 		return array(
 			'options_group' => array(
 				$this->action_meta => $option_fileds,

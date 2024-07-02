@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use Firebase\JWT\JWT;
-
 /**
  * Class Zoom_Helpers
  *
@@ -503,11 +501,11 @@ class Zoom_Helpers {
 	}
 
 	/**
-	 * refresh_s2s_token
+	 * refresh_token
 	 *
 	 * @return void|bool
 	 */
-	public function refresh_s2s_token() {
+	public function refresh_token() {
 
 		$client = array();
 
@@ -549,49 +547,6 @@ class Zoom_Helpers {
 	}
 
 	/**
-	 * refresh_token
-	 *
-	 * @param array $client
-	 *
-	 * @return void
-	 */
-	public function refresh_token() {
-
-		if ( '3' === get_option( 'uap_automator_zoom_api_settings_version', false ) ) {
-			return $this->refresh_s2s_token();
-		}
-
-		$client = array();
-
-		// Get the API key and secret
-		$consumer_key    = trim( get_option( 'uap_automator_zoom_api_consumer_key', '' ) );
-		$consumer_secret = trim( get_option( 'uap_automator_zoom_api_consumer_secret', '' ) );
-
-		if ( empty( $consumer_key ) || empty( $consumer_secret ) ) {
-			throw new \Exception( __( 'Zoom is not connected', 'uncanny-automator' ) );
-		}
-
-		// Set the token expiration to 1 minute as recommended in the docuemntation
-		$client['expires'] = time() + 60;
-
-		$payload = array(
-			'iss' => $consumer_key,
-			'exp' => $client['expires'],
-		);
-
-		// Generate the access token using the JWT library
-		$token = JWT::encode( $payload, $consumer_secret, 'HS256' );
-
-		$client['access_token']  = $token;
-		$client['refresh_token'] = $token;
-
-		// Cache it in settings
-		update_option( '_uncannyowl_zoom_settings', $client );
-
-		return $client;
-	}
-
-	/**
 	 * Disconnect the user from the Zoom API.
 	 *
 	 * @return void.
@@ -599,29 +554,33 @@ class Zoom_Helpers {
 	public function disconnect() {
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), 'uap_automator_zoom_api_disconnect' ) ) {
-
-			delete_option( 'uap_automator_zoom_api_consumer_key' );
-			delete_option( 'uap_automator_zoom_api_consumer_secret' );
-
-			delete_option( '_uncannyowl_zoom_settings_version' );
-			delete_option( '_uncannyowl_zoom_settings' );
-
-			delete_option( 'uap_zoom_api_connected_user' );
-
-			delete_transient( 'uap_automator_zoom_api_user_info' );
-
-			delete_option( 'uap_automator_zoom_api_account_id' );
-			delete_option( 'uap_automator_zoom_api_client_id' );
-			delete_option( 'uap_automator_zoom_api_client_secret' );
-			delete_option( 'uap_automator_zoom_api_settings_version' );
-			delete_option( 'uap_automator_zoom_api_settings_timestamp' );
-
+			$this->delete_options();
 		}
 
 		wp_safe_redirect( $this->tab_url );
 
 		exit;
 
+	}
+
+	/**
+	 * delete_options
+	 *
+	 * @return void
+	 */
+	public function delete_options() {
+		delete_option( 'uap_automator_zoom_api_consumer_key' );
+		delete_option( 'uap_automator_zoom_api_consumer_secret' );
+		delete_option( '_uncannyowl_zoom_settings_version' );
+		delete_option( '_uncannyowl_zoom_settings' );
+		delete_option( 'uap_zoom_api_connected_user' );
+		delete_option( 'uap_automator_zoom_api_account_id' );
+		delete_option( 'uap_automator_zoom_api_client_id' );
+		delete_option( 'uap_automator_zoom_api_client_secret' );
+		delete_option( 'uap_automator_zoom_api_settings_version' );
+		delete_option( 'uap_automator_zoom_api_settings_timestamp' );
+
+		delete_transient( 'uap_automator_zoom_api_user_info' );
 	}
 
 	/**
@@ -702,10 +661,6 @@ class Zoom_Helpers {
 		return $user;
 	}
 
-	public function jwt_mode() {
-		return '3' !== get_option( 'uap_automator_zoom_api_settings_version', false );
-	}
-
 	/**
 	 * ajax_get_meeting_occurrences
 	 *
@@ -756,6 +711,12 @@ class Zoom_Helpers {
 		die();
 	}
 
+	/**
+	 * convert_datetime
+	 *
+	 * @param  string $str
+	 * @return string
+	 */
 	public function convert_datetime( $str ) {
 
 		$timezone    = wp_timezone();
@@ -766,5 +727,28 @@ class Zoom_Helpers {
 		$date->setTimezone( $timezone );
 
 		return $date->format( $time_format . ', ' . $date_format );
+	}
+
+	/**
+	 * legacy_client_connected
+	 *
+	 * @return bool
+	 */
+	public function legacy_client_connected() {
+
+		$user = automator_get_option( 'uap_zoom_api_connected_user', array() );
+
+		// Is Zoom connected?
+		if ( empty( $user['email'] ) ) {
+			return false;
+		}
+
+		// Is it connected with the new credentials?
+		if ( '3' === automator_get_option( 'uap_automator_zoom_api_settings_version', false ) ) {
+			return false;
+		}
+
+		// Looks like Zoom is connected with old credentials
+		return true;
 	}
 }

@@ -54,9 +54,7 @@ class Add_Zoom_Webinar_Integration {
 
 		// If the helper file exists in pro it means, the pro version still contains the old helper file.
 		if ( file_exists( $pro_integration_helpers_path ) && is_automator_pro_active() ) {
-
 			$is_enabled = false;
-
 		}
 
 		return $is_enabled;

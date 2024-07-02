@@ -109,7 +109,7 @@ $user_just_connected_site = automator_filter_input( 'connect' ) === '1';
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Post to X/Twitter directly from your WordPress site – no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers.', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Post to X/Twitter directly from your WordPress site - no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers.', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
@@ -167,7 +167,7 @@ $user_just_connected_site = automator_filter_input( 'connect' ) === '1';
 			</div>
 
 		</div>
-		
+
 		<div class="uap-settings-panel-bottom">
 			<?php if ( $this->is_connected ) { ?>
 
@@ -221,14 +221,14 @@ $user_just_connected_site = automator_filter_input( 'connect' ) === '1';
 					</uo-button>
 				</div>
 
-			<?php } else { ?> 
+			<?php } else { ?>
 
 				<div class="uap-settings-panel-content-connection-custom-app">
 					<uo-button type="submit">
 						<?php esc_html_e( 'Connect X/Twitter account', 'uncanny-automator' ); ?>
 					</uo-button>
 				</div>
-			
+
 				<div class="uap-settings-panel-content-connection-quick-connect">
 					<uo-button href="<?php echo esc_url( $connect_twitter_url ); ?>" >
 						<?php esc_html_e( 'Connect X/Twitter account', 'uncanny-automator' ); ?>

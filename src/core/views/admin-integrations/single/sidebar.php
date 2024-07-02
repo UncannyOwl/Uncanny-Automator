@@ -26,7 +26,7 @@ namespace Uncanny_Automator;
 	<div class="uap-integration-sidebar__title">
 		<?php esc_html_e( 'Requires', 'uncanny-automator' ); ?>
 	</div>
-	<div class="uap-integration-sidebar-requires">				 
+	<div class="uap-integration-sidebar-requires">
 		<div class="uap-integration-sidebar-requires__row">
 
 			<div class="uap-integration-sidebar-requires__icon">
@@ -55,7 +55,7 @@ namespace Uncanny_Automator;
 			<span class="uap-icon uap-icon--external-link-alt"></span>
 		</a>
 		<a href="#" class="uap-integration-sidebar__link">
-			<?php esc_html_e( 'WooCommerce’s developer site', 'uncanny-automator' ); ?>
+			<?php esc_html_e( "WooCommerce's developer site", 'uncanny-automator' ); ?>
 			<span class="uap-icon uap-icon--external-link-alt"></span>
 		</a>
 	</div>

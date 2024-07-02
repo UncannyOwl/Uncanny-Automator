@@ -319,16 +319,17 @@ class Automator_Review {
 	 * @since 3.1
 	 */
 	public function get_recipes_using_credits() {
-		// The rest response object
-		$response = (object) array();
 
-		$response->success = true;
-
-		$response->recipes = Automator()->get->recipes_using_credits();
-
-		$response = new \WP_REST_Response( $response, 200 );
+		$response = new \WP_REST_Response(
+			array(
+				'success' => true,
+				'recipes' => Automator()->get->fetch_recipe_with_apps(),
+			),
+			200
+		);
 
 		return $response;
+
 	}
 
 	/**

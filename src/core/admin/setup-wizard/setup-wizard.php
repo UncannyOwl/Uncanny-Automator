@@ -55,6 +55,9 @@ class Setup_Wizard {
 		die;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function redirect_if_from_recipe_builder() {
 
 		$secret = wp_create_nonce( 'automator_setup_wizard_redirect_nonce' );
@@ -89,9 +92,9 @@ class Setup_Wizard {
 	public function setup_menu_page() {
 
 		$is_setup_wizard_page = 'uncanny-automator-setup-wizard' === automator_filter_input( 'page' );
-
+		$is_pro_connected     = $this->is_pro_connected();
 		// Only add the page if site is not connected OR the user is on the setup wizard page (confirmations etc).
-		if ( $is_setup_wizard_page || ! $this->is_user_connected() ) {
+		if ( $is_setup_wizard_page || ! $this->is_user_connected() || ! $is_pro_connected ) {
 			add_submenu_page(
 				'edit.php?post_type=uo-recipe',
 				esc_attr__( 'Uncanny Automator Setup Wizard', 'uncanny-automator' ),
@@ -261,6 +264,16 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function is_pro_connected() {
+		$is_pro_active   = defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' );
+		$has_pro_license = trim( get_option( 'uap_automator_pro_license_key', '' ) );
+
+		return ! ( $is_pro_active && empty( $has_pro_license ) );
+	}
+
+	/**
 	 * Retrieves the steps.
 	 *
 	 * @return array
@@ -324,12 +337,13 @@ class Setup_Wizard {
 
 			$is_connected         = $this->is_user_connected();
 			$has_tried_connecting = $this->has_tried_connecting();
+			$is_pro_connected     = $this->is_pro_connected();
 
 			if ( $has_tried_connecting && ! $is_connected && 3 === $step ) {
 				return;
 			}
 
-			if ( $is_connected && 3 !== $step ) {
+			if ( $is_connected && 3 !== $step && false !== $is_pro_connected ) {
 				wp_safe_redirect( $this->get_dashboard_uri( 3 ) );
 				exit;
 			}

@@ -3,35 +3,78 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$this->load_css( '/google-sheet/settings/assets/style.css' );
+
 use Uncanny_Automator\Google_Sheet_Helpers;
 
 if ( $this->client ) { ?>
 
+<h5 class="uap-spacing-top">
+	<?php echo esc_html_x( 'Spreadsheets', 'Google Sheets', 'uncanny-automator' ); ?>
+</h5>
+
+<p>
+	<?php echo esc_html_x( 'The following spreadsheets are available for selection in the recipe editor:', 'Google Sheets', 'uncanny-automator' ); ?>
+</p>
 <div id="spreadsheetContainerWrap">
 	<?php $spreadsheets = Google_Sheet_Helpers::get_spreadsheets(); ?>
 	<?php if ( ! empty( $spreadsheets ) ) { ?> 
-		<ul>
-		<?php foreach ( $spreadsheets as $spreadsheet ) { ?>
-			<?php if ( isset( $spreadsheet['name'] ) ) { ?>
-				<li><?php echo esc_html( $spreadsheet['name'] ); ?></li>
-			<?php } ?>
-		<?php } ?>
-	</ul>
+		<table id="spreadSheetTable">
+			<tbody>
+				<?php foreach ( $spreadsheets as $spreadsheet ) { ?>
+					<tr class="item">
+					<?php $nonce = wp_create_nonce( 'automator_google_sheet_remove_spreadsheet' ); ?>
+					<?php $remove_url = admin_url( "admin-ajax.php?nonce={$nonce}&action=automator_google_sheet_remove_spreadsheet&id={$spreadsheet['id']}" ); ?>
+					<?php if ( isset( $spreadsheet['name'] ) ) { ?>
+						<td>
+							<?php echo esc_html( $spreadsheet['name'] ); ?>
+						</td>
+						<td>
+							<uo-button 
+								class="uap-logs-action-button uap-logs-action-button--delete" 
+								size="small" 
+								color="transparent" 
+								href="<?php echo esc_url( $remove_url ); ?>" 
+								uap-tooltip="Remove" 
+								needs-confirmation="" 
+								confirmation-heading="This action is irreversible" 
+								confirmation-content="Are you sure you want to remove this spreadsheet?" 
+								confirmation-button-label="Confirm">
+								<uo-icon id="trash"></uo-icon>
+							</uo-button>
+						</td>
+					<?php } ?>
+					</tr>
+				<?php } ?>
+			</tbody>
+		</table>
+	<?php } else { ?>
+		<uo-alert type="info" heading="<?php echo esc_attr_x( 'There are currently no spreadsheets selected', 'Google Sheets', 'uncanny-automator' ); ?>">
+			<?php echo esc_attr_x( 'Click the button below to select sheets', 'Google Sheets', 'uncanny-automator' ); ?>
+		</uo-alert>
 	<?php } ?>
 </div>
 
 <div id="filePickerErrorContainer" class="uap-spacing-top" style="display: none">
 	<uo-alert heading="<?php echo esc_html_x( 'An error occurred while authorizing the request to use File selection feature.', 'Google Sheets', 'uncanny-automator' ); ?>" type="error">
-	</uap-alert>
+	</uo-alert>
 </div>
 
-<div id="filePickerBtn">
-	<uo-button id="filePickerBtnComponent" onclick="createFilePickerButton();"; class="uap-spacing-top" color="secondary">
-		<?php echo esc_html_x( 'Select Sheets', 'Google Sheets', 'uncanny-automator' ); ?>
+<div class="uap-spacing-top" id="filePickerBtn">
+
+	<uo-button 
+		uap-tooltip="Hold down the Shift key to select multiple sheets, or use Ctrl (Cmd on Mac) to select specific sheets." 
+		id="filePickerBtnComponent" 
+		onclick="createFilePickerButton();"
+		color="secondary">
+		<?php echo esc_html_x( 'Select new sheet(s)', 'Google Sheets', 'uncanny-automator' ); ?>
 	</uo-button>
+	
 </div>
 
 <script>
+
+let deleteUrlPlaceHolder = '<?php echo admin_url( "admin-ajax.php?nonce={$nonce}&action=automator_google_sheet_remove_spreadsheet&id={{__ID__}}" ); ?>';
 
 /**
  * Determines whether the picker is initiated already or not.
@@ -98,7 +141,7 @@ async function sendPostRequest(url, data, callback) {
 
 		const responseData = await response.json();
 
-		callback();
+		callback( responseData );
 
 	} catch (error) {
 
@@ -221,17 +264,38 @@ async function pickerCallback(data) {
 		sendPostRequest(url, {
 			'spreadsheets': documents,
 			'nonce': nonce
-		}, () => {
+		}, ( response ) => {
 
 			let spreadSheetsHtmlItems = '';
+			
+			response.data.forEach( item=>{
+				
+				let itemRemoveUrl = deleteUrlPlaceHolder.replaceAll( '{{__ID__}}', item.id );
 
-			documents.forEach( item=>{
 				spreadSheetsHtmlItems += `
-					<li>${item.name}</li>
-				`;
+						<tr class="item">
+							<td>
+								${item.name}
+							</td>
+							<td>
+								<uo-button 
+									class="uap-logs-action-button uap-logs-action-button--delete" 
+									size="small" 
+									color="transparent" 
+									href="${itemRemoveUrl}" 
+									uap-tooltip="Remove" 
+									needs-confirmation="" 
+									confirmation-heading="This action is irreversible" 
+									confirmation-content="Are you sure you want to remove this spreadsheet?" 
+									confirmation-button-label="Confirm">
+									<uo-icon id="trash"></uo-icon>
+								</uo-button
+							</td>
+						</tr>
+					`;
 			});
 
-			document.getElementById('spreadsheetContainerWrap').innerHTML=`<ul>${spreadSheetsHtmlItems}</ul>`;
+			document.getElementById('spreadsheetContainerWrap').innerHTML=`<table id="spreadSheetTable"><tbody>${spreadSheetsHtmlItems}</tbody></table>`;
 		});
 
 	}

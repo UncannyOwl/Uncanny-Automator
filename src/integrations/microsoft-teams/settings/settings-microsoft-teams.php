@@ -52,7 +52,7 @@ class Microsoft_Teams_Settings extends \Uncanny_Automator\Settings\Premium_Integ
 			</div>
 
 			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-				<?php esc_html_e( 'Connect Uncanny Automator to Microsoft Teams to send messages, create channels and more when people perform WordPress actions like submitting forms, making purchases and joining groups. Turn Microsoft Teams into a communications hub that’s tightly integrated with everything that happens on your WordPress site and beyond.', 'uncanny-automator' ); ?>
+				<?php esc_html_e( "Connect Uncanny Automator to Microsoft Teams to send messages, create channels and more when people perform WordPress actions like submitting forms, making purchases and joining groups. Turn Microsoft Teams into a communications hub that's tightly integrated with everything that happens on your WordPress site and beyond.", 'uncanny-automator' ); ?>
 			</div>
 
 			<p>

@@ -32,6 +32,11 @@ trait Action_Setup {
 	/**
 	 * @var bool
 	 */
+	protected $is_elite = false;
+
+	/**
+	 * @var bool
+	 */
 	protected $is_deprecated = false;
 
 	/**
@@ -160,6 +165,22 @@ trait Action_Setup {
 	 */
 	public function set_is_pro( $is_pro ) {
 		$this->is_pro = $is_pro;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_is_elite() {
+		return $this->is_elite;
+	}
+
+	/**
+	 * @param bool $is_elite
+	 *
+	 * @return void
+	 */
+	public function set_is_elite( bool $is_elite ) {
+		$this->is_elite = $is_elite;
 	}
 
 	/**
@@ -357,6 +378,7 @@ trait Action_Setup {
 			'support_link'                  => $this->get_support_link(),
 			'integration'                   => $this->get_integration(),
 			'is_pro'                        => $this->is_is_pro(),
+			'is_elite'                      => $this->is_is_elite(),
 			'is_deprecated'                 => $this->is_is_deprecated(),
 			'requires_user'                 => $this->get_requires_user(),
 			'code'                          => $this->get_action_code(),

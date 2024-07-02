@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator;
 
 /**
@@ -11,9 +12,9 @@ class Actionify_Triggers {
 	/**
 	 * Property recipes.
 	 *
+	 * @deprecated v4.2
 	 * @var array
 	 *
-	 * @deprecated v4.2
 	 */
 	private $recipes = array();
 
@@ -90,6 +91,8 @@ class Actionify_Triggers {
 
 		}
 
+		// Add our run code wp hook triggers to the actionify triggers
+		self::get_run_code_wp_hook_triggers();
 	}
 
 	/**
@@ -241,7 +244,6 @@ class Actionify_Triggers {
 		}
 
 		return apply_filters( 'actionified_triggers', $actionified_triggers, $this );
-
 	}
 
 	/**
@@ -257,11 +259,11 @@ class Actionify_Triggers {
 			$wpdb->prepare(
 				"SELECT pm.meta_value
 					FROM $wpdb->postmeta pm
-					JOIN $wpdb->posts trigger_details ON trigger_details.ID = pm.post_id 
-						AND trigger_details.post_status = %s 
+					JOIN $wpdb->posts trigger_details ON trigger_details.ID = pm.post_id
+						AND trigger_details.post_status = %s
 						AND trigger_details.post_type = 'uo-trigger'
-					JOIN $wpdb->posts recipe_details ON recipe_details.ID = trigger_details.post_parent 
-						AND recipe_details.post_status = %s 
+					JOIN $wpdb->posts recipe_details ON recipe_details.ID = trigger_details.post_parent
+						AND recipe_details.post_status = %s
 						AND recipe_details.post_type = 'uo-recipe'
 					WHERE pm.meta_key = 'add_action'",
 				'publish',
@@ -290,4 +292,56 @@ class Actionify_Triggers {
 
 	}
 
+	/**
+	 * @return array|void
+	 */
+	public static function get_run_code_wp_hook_triggers() {
+		global $wpdb;
+
+		$r = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT pm.post_id
+					FROM $wpdb->postmeta pm
+					JOIN $wpdb->posts trigger_details ON trigger_details.ID = pm.post_id
+						AND trigger_details.post_status = %s
+						AND trigger_details.post_type = 'uo-trigger'
+					JOIN $wpdb->posts recipe_details ON recipe_details.ID = trigger_details.post_parent
+						AND recipe_details.post_status = %s
+						AND recipe_details.post_type = 'uo-recipe'
+					WHERE pm.meta_key = 'RUN_CODE_WP_HOOK'",
+				'publish',
+				'publish'
+			)
+		);
+
+		if ( empty( $r ) ) {
+			return array();
+		}
+
+		foreach ( $r as $rr ) {
+			$postmeta             = get_post_meta( $rr );
+			$action_hook          = $postmeta['RUN_CODE_WP_HOOK'][0];
+			$action_priority      = $postmeta['RUN_CODE_WP_HOOK_PRIORITY'][0];
+			$action_accepted_args = $postmeta['RUN_CODE_WP_HOOK_ARGS_COUNT'][0];
+
+			add_action(
+				$action_hook,
+				array(
+					__CLASS__,
+					'run_code_wp_hook_trigger',
+				),
+				$action_priority,
+				$action_accepted_args
+			);
+		}
+	}
+
+	/**
+	 * @param ...$args
+	 *
+	 * @return void
+	 */
+	public static function run_code_wp_hook_trigger( ...$args ) {
+		do_action( 'run_code_wp_hook', current_action(), $args );
+	}
 }

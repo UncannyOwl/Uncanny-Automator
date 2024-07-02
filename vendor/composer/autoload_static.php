@@ -4,22 +4,8 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite1991189f5a22348157af7c9942c537d
+class ComposerStaticInit003f53bca1f778d886b5958c362fbf92
 {
-    public static $prefixLengthsPsr4 = array (
-        'F' => 
-        array (
-            'Firebase\\JWT\\' => 13,
-        ),
-    );
-
-    public static $prefixDirsPsr4 = array (
-        'Firebase\\JWT\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
-        ),
-    );
-
     public static $prefixesPsr0 = array (
         'C' => 
         array (
@@ -298,6 +284,7 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\Automator_Taxonomies' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-taxonomies/class-automator-taxonomies.php',
         'Uncanny_Automator\\Automator_Tokens' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/tokens/class-automator-tokens.php',
         'Uncanny_Automator\\Automator_Translations' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-translations.php',
+        'Uncanny_Automator\\Automator_User_Walkthroughs' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-user-walkthroughs.php',
         'Uncanny_Automator\\Automator_Utilities' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-utilities.php',
         'Uncanny_Automator\\Automator_WP_Error' => __DIR__ . '/../..' . '/src/core/lib/utilities/error/class-automator-wp-error.php',
         'Uncanny_Automator\\Autonami_Helpers' => __DIR__ . '/../..' . '/src/integrations/autonami/helpers/autonami-helpers.php',
@@ -508,6 +495,11 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Helpers' => __DIR__ . '/../..' . '/src/integrations/brevo/helpers/brevo-helpers.php',
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Integration' => __DIR__ . '/../..' . '/src/integrations/brevo/brevo-integration.php',
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Settings' => __DIR__ . '/../..' . '/src/integrations/brevo/settings/settings-brevo.php',
+        'Uncanny_Automator\\Integrations\\Campaign_Monitor\\CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/actions/campaign-monitor-add-update-subscriber.php',
+        'Uncanny_Automator\\Integrations\\Campaign_Monitor\\CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/actions/campaign-monitor-remove-subscriber.php',
+        'Uncanny_Automator\\Integrations\\Campaign_Monitor\\Campaign_Monitor_Helpers' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php',
+        'Uncanny_Automator\\Integrations\\Campaign_Monitor\\Campaign_Monitor_Integration' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/campaign-monitor-integration.php',
+        'Uncanny_Automator\\Integrations\\Campaign_Monitor\\Campaign_Monitor_Settings' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/settings/settings-campaign-monitor.php',
         'Uncanny_Automator\\Integrations\\Charitable\\ANON_CHARITABLE_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/anon-charitable-made-donation.php',
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_HELPERS' => __DIR__ . '/../..' . '/src/integrations/charitable/helpers/charitable-helpers.php',
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
@@ -580,6 +572,10 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\HT_KB_USER_GIVES_POSITIVE_RATING' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-positive-rating.php',
         'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\Ht_Knowledge_Base_Helpers' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php',
         'Uncanny_Automator\\Integrations\\Ht_Knowledge_Base\\Ht_Knowledge_Base_Integration' => __DIR__ . '/../..' . '/src/integrations/ht-knowledge-base/class-ht-knowledge-base-integration.php',
+        'Uncanny_Automator\\Integrations\\Kadence\\KADENCE_ANON_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/kadence/triggers/kadence-anon-form-submitted.php',
+        'Uncanny_Automator\\Integrations\\Kadence\\KADENCE_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/kadence/triggers/kadence-form-submitted.php',
+        'Uncanny_Automator\\Integrations\\Kadence\\Kadence_Helpers' => __DIR__ . '/../..' . '/src/integrations/kadence/helpers/kadence-helpers.php',
+        'Uncanny_Automator\\Integrations\\Kadence\\Kadence_Integration' => __DIR__ . '/../..' . '/src/integrations/kadence/kadence-integration.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_HELPERS' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/helpers/m4is-helpers.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_Integration' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/m4is-integration.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_UPDATE_CONTACT_FIELD' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/actions/m4is-update-contact-field.php',
@@ -598,6 +594,13 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Helpers' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Integration' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/microsoft-teams-integration.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\Microsoft_Teams_Settings' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/settings/settings-microsoft-teams.php',
+        'Uncanny_Automator\\Integrations\\Notion\\Actions\\Add_Row' => __DIR__ . '/../..' . '/src/integrations/notion/actions/add-row.php',
+        'Uncanny_Automator\\Integrations\\Notion\\Actions\\Create_Page' => __DIR__ . '/../..' . '/src/integrations/notion/actions/create-page.php',
+        'Uncanny_Automator\\Integrations\\Notion\\Actions\\Update_Row' => __DIR__ . '/../..' . '/src/integrations/notion/actions/update-row.php',
+        'Uncanny_Automator\\Integrations\\Notion\\Fields\\Mapper' => __DIR__ . '/../..' . '/src/integrations/notion/fields/mapper.php',
+        'Uncanny_Automator\\Integrations\\Notion\\Notion_Helpers' => __DIR__ . '/../..' . '/src/integrations/notion/helpers/notion-helpers.php',
+        'Uncanny_Automator\\Integrations\\Notion\\Notion_Integration' => __DIR__ . '/../..' . '/src/integrations/notion/notion-integration.php',
+        'Uncanny_Automator\\Integrations\\Notion\\Settings' => __DIR__ . '/../..' . '/src/integrations/notion/settings/settings.php',
         'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_CREATE_A_LINK' => __DIR__ . '/../..' . '/src/integrations/pretty-links/triggers/prli-anon-create-a-link.php',
         'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_LINK_CLICKED' => __DIR__ . '/../..' . '/src/integrations/pretty-links/triggers/prli-anon-link-clicked.php',
         'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_CREATE_LINK' => __DIR__ . '/../..' . '/src/integrations/pretty-links/actions/prli-create-link.php',
@@ -821,6 +824,7 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\Resolver\\Conditions\\Errors_Registry' => __DIR__ . '/../..' . '/src/core/services/resolver/conditions/errors-registry.php',
         'Uncanny_Automator\\Resolver\\Fields_Conditions_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/fields-conditions-resolver.php',
         'Uncanny_Automator\\Resolver\\Fields_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/fields-resolver.php',
+        'Uncanny_Automator\\Resolver\\Fields_Shared_Callable' => __DIR__ . '/../..' . '/src/core/services/resolver/fields-shared-callable.php',
         'Uncanny_Automator\\Rest\\Auth\\Auth' => __DIR__ . '/../..' . '/src/core/services/rest/auth/auth.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint.php',
         'Uncanny_Automator\\Rest\\Endpoint\\Log_Endpoint\\Factory\\Automator_Factory' => __DIR__ . '/../..' . '/src/core/services/rest/endpoint/log-endpoint/factory/automator-factory.php',
@@ -852,6 +856,9 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\SURECART_ORDER_SHIPPED' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-order-shipped.php',
         'Uncanny_Automator\\SURECART_PURCHASE_PRODUCT' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-purchase-product.php',
         'Uncanny_Automator\\Seedprod_Helpers' => __DIR__ . '/../..' . '/src/integrations/seedprod/helpers/seedprod-helpers.php',
+        'Uncanny_Automator\\Services\\CLI\\Logs\\Prune_Command' => __DIR__ . '/../..' . '/src/core/services/cli/logs/prune-command.php',
+        'Uncanny_Automator\\Services\\Dashboard\\Recent_Articles' => __DIR__ . '/../..' . '/src/core/services/dashboard/recent-articles.php',
+        'Uncanny_Automator\\Services\\Dashboard\\Recipe_Using_Credits_Utils' => __DIR__ . '/../..' . '/src/core/services/dashboard/recipe-using-credits-utils.php',
         'Uncanny_Automator\\Services\\Email_Tester\\Email_Sender' => __DIR__ . '/../..' . '/src/core/services/email-tester/email-tester.php',
         'Uncanny_Automator\\Services\\Integrations\\Fields' => __DIR__ . '/../..' . '/src/core/services/integrations/fields.php',
         'Uncanny_Automator\\Services\\Integrations\\Structure' => __DIR__ . '/../..' . '/src/core/services/integrations/structure.php',
@@ -930,6 +937,7 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\Thrive_Quiz_Builder_Tokens' => __DIR__ . '/../..' . '/src/integrations/thrive-quiz-builder/tokens/thrive-quiz-builder-tokens.php',
         'Uncanny_Automator\\Tokens\\Token' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/tokens/abstract-token.php',
         'Uncanny_Automator\\Tokens\\Universal_Token' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/tokens/abstract-universal-token.php',
+        'Uncanny_Automator\\Traits\\Singleton' => __DIR__ . '/../..' . '/src/core/lib/traits/singleton.php',
         'Uncanny_Automator\\Trello_Api' => __DIR__ . '/../..' . '/src/integrations/trello/functions/trello-api.php',
         'Uncanny_Automator\\Trello_Functions' => __DIR__ . '/../..' . '/src/integrations/trello/functions/trello-functions.php',
         'Uncanny_Automator\\Trello_Helpers' => __DIR__ . '/../..' . '/src/integrations/trello/helpers/trello-helpers.php',
@@ -1061,6 +1069,7 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
         'Uncanny_Automator\\WP_POSTRECEIVESCOMMENT' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-postreceivescomment.php',
         'Uncanny_Automator\\WP_POST_PUBLISHED' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-post-published.php',
         'Uncanny_Automator\\WP_SUBMITCOMMENT' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-submitcomment.php',
+        'Uncanny_Automator\\WP_UPDATE_POST_EXCERPT' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-update-post-excerpt.php',
         'Uncanny_Automator\\WP_USERCREATESPOST' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-usercreatespost.php',
         'Uncanny_Automator\\WP_USERROLE' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-userrole.php',
         'Uncanny_Automator\\WP_USERROLEADDED' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-userroleadded.php',
@@ -1146,10 +1155,8 @@ class ComposerStaticInite1991189f5a22348157af7c9942c537d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite1991189f5a22348157af7c9942c537d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite1991189f5a22348157af7c9942c537d::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInite1991189f5a22348157af7c9942c537d::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInite1991189f5a22348157af7c9942c537d::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit003f53bca1f778d886b5958c362fbf92::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit003f53bca1f778d886b5958c362fbf92::$classMap;
 
         }, null, ClassLoader::class);
     }

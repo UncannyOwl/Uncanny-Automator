@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use WP_Comment;
+use WP_Post;
+
 /**
  * Class Wp_Post_Tokens
  *
@@ -145,6 +148,12 @@ class Wp_Post_Tokens {
 				'tokenId'         => $post_url,
 				'tokenName'       => __( 'Post URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'POSTNAME',
+				'tokenName'       => __( 'Post slug', 'uncanny-automator' ),
+				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
@@ -409,7 +418,7 @@ class Wp_Post_Tokens {
 		$comment_id = Automator()->db->token->get( 'comment_id', $replace_args );
 		$comment    = get_comment( $comment_id );
 
-		if ( ! $comment instanceof \WP_Comment ) {
+		if ( ! $comment instanceof WP_Comment ) {
 			return $value;
 		}
 
@@ -424,6 +433,10 @@ class Wp_Post_Tokens {
 			case 'POSTURL':
 			case 'WPPOSTCOMMENTS_URL':
 				$value = get_permalink( $comment->comment_post_ID );
+				break;
+			case 'POSTNAME':
+			case 'WPPOSTCOMMENTS_POSTNAME':
+				$value = get_post_field( 'post_name', $comment->comment_post_ID );
 				break;
 			case 'POSTEXCERPT':
 			case 'WPPOSTCOMMENTS_EXCERPT':
@@ -556,7 +569,7 @@ class Wp_Post_Tokens {
 		$post_id    = Automator()->db->token->get( 'post_id', $replace_args );
 		$post       = get_post( $post_id );
 
-		if ( ! $post instanceof \WP_Post ) {
+		if ( ! $post instanceof WP_Post ) {
 			return $value;
 		}
 
@@ -579,6 +592,13 @@ class Wp_Post_Tokens {
 			case 'WPPAGE_URL':
 			case 'WPCUSTOMPOST_URL':
 				$value = get_permalink( $post->ID );
+				break;
+			case 'WPPOSTTYPES_POSTNAME':
+			case 'WPPOST_POSTNAME':
+			case 'WPPAGE_POSTNAME':
+			case 'WPCUSTOMPOST_POSTNAME':
+			case 'POSTNAME':
+				$value = $post->post_name;
 				break;
 			case 'POSTEXCERPT':
 			case 'WPPOST_EXCERPT':

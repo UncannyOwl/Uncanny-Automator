@@ -215,10 +215,12 @@ class Structure {
 
 			$support_link = isset( $property['support_link'] ) ? $property['support_link'] : '';
 
-			$is_pro = isset( $property['is_pro'] ) ? $property['is_pro'] : false;
+			$is_pro   = isset( $property['is_pro'] ) ? $property['is_pro'] : false;
+			$is_elite = isset( $property['is_elite'] ) ? $property['is_elite'] : false;
 
 			$structure = array(
 				'is_pro'        => $is_pro,
+				'is_elite'      => $is_elite,
 				'is_deprecated' => isset( $property['is_deprecated'] ) ? $property['is_deprecated'] : false,
 				'sentence'      => array(
 					'short'   => $property['select_option_name'],
@@ -304,8 +306,9 @@ class Structure {
 		$integration_items = isset( $pro_only_items_list[ $integration_code ][ $type ] ) ? $pro_only_items_list[ $integration_code ][ $type ] : array();
 
 		$items = array(
-			'free' => array(),
-			'pro'  => array(),
+			'free'  => array(),
+			'pro'   => array(),
+			'elite' => array(),
 		);
 
 		// Assign the list of Pro items.

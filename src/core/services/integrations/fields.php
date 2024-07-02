@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\Services\Integrations;
 
 use Uncanny_Automator\Automator_Exception;
+use Uncanny_Automator\Resolver\Fields_Shared_Callable;
 
 /**
  * Handles the fields from integrations object.
@@ -48,6 +49,7 @@ class Fields {
 	 * @return mixed[] The fields
 	 * - 'options_group' - When available
 	 * - 'options' - When available
+	 *
 	 * @throws Automator_Exception
 	 * - If the object does not implement 'options_callback'
 	 * - If the the options_callback is not a valid callable.
@@ -94,11 +96,11 @@ class Fields {
 			}
 
 			try {
-				$fields = call_user_func( $callable );
+				$fields = Automator()->get_options_from_callable( $this->config['object_type'], $this->config['code'], $callable );
 			} catch ( \Error $e ) {
-				throw new \Uncanny_Automator\Automator_Error( $e->getMessage() );
+				throw new \Uncanny_Automator\Automator_Error( 'Error Exception: ' . $e->getMessage() );
 			} catch ( \Exception $e ) {
-				throw new \Uncanny_Automator\Automator_Exception( $e->getMessage() );
+				throw new \Uncanny_Automator\Automator_Exception( 'Application Exception: ' . $e->getMessage() );
 			}
 
 			$options       = isset( $fields['options'] ) ? $fields['options'] : array();

@@ -103,10 +103,30 @@ class Recipe_Post_Rest_Api {
 
 		register_rest_route(
 			AUTOMATOR_REST_API_END_POINT,
+			'/set_walkthrough_progress/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'set_walkthrough_progress' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
 			'/change_post_title/',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'change_post_title' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/change_recipe_notes/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'change_recipe_notes' ),
 				'permission_callback' => array( $this, 'save_settings_permissions' ),
 			)
 		);
@@ -930,6 +950,59 @@ class Recipe_Post_Rest_Api {
 	 *
 	 * @return WP_REST_Response
 	 */
+	public function set_walkthrough_progress( WP_REST_Request $request ) {
+
+		if ( $request->has_param( 'id' ) && $request->has_param( 'progress_percentage' ) && $request->has_param( 'step_id' ) && $request->has_param( 'close_requested' ) ) {
+
+			$walkthrough_id  = sanitize_text_field( $request->get_param( 'id' ) );
+			$step            = sanitize_text_field( $request->get_param( 'step_id' ) );
+			$percent         = $request->has_param( 'progress_percentage' ) ? absint( $request->get_param( 'progress_percentage' ) ) : 0;
+			$close_requested = $request->has_param( 'close_requested' ) ? filter_var( $request->get_param( 'close_requested' ), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE ) : false;
+			$show            = ! $close_requested && $percent < 100;
+
+			$updated = Automator()->utilities->set_user_walkthrough_progress(
+				get_current_user_id(),
+				$walkthrough_id,
+				array(
+					'show'      => $show ? 1 : 0,
+					'step'      => $step,
+					'progress'  => $percent,
+					'dismissed' => $close_requested,
+				)
+			);
+
+			if ( false !== $updated ) {
+				$return = array(
+					'message' => 'Updated!',
+					'success' => true,
+					'action'  => 'updated_option',
+				);
+
+				/**
+				 * Fires when a walkthrough mode is updated.
+				 *
+				 * @since 5.8
+				 */
+				do_action( 'automator_user_walkthrough_progress_updated', $updated, $return );
+
+				return new WP_REST_Response( $return, 200 );
+			}
+		}
+
+		$return = array(
+			'message' => 'Failed to update',
+			'success' => false,
+			'action'  => 'show_error',
+		);
+
+		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * @param $request
+	 *
+	 * @return WP_REST_Response
+	 */
 	public function change_post_title( WP_REST_Request $request ) {
 
 		// Make sure we have a post ID and a post status
@@ -970,6 +1043,55 @@ class Recipe_Post_Rest_Api {
 		$return['message'] = 'Failed to update';
 		$return['success'] = false;
 		$return['action']  = 'show_error';
+
+		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * @param $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function change_recipe_notes( WP_REST_Request $request ) {
+
+		// Validate we have a post ID and notes is set.
+		$post_id = $request->has_param( 'post_ID' ) ? absint( $request->get_param( 'post_ID' ) ) : 0;
+		if ( empty( $post_id ) || ! $request->has_param( 'notes' ) ) {
+			return new WP_REST_Response(
+				array(
+					'message' => 'Failed to update',
+					'success' => false,
+					'action'  => 'show_error',
+				),
+				200
+			);
+		}
+
+		// Sanitize the notes.
+		$notes = sanitize_textarea_field( trim( $request->get_param( 'notes' ) ) );
+
+		// If the notes are empty, delete the post meta.
+		if ( empty( $notes ) ) {
+			delete_post_meta( $post_id, 'uap_recipe_notes' );
+		} else {
+			// Update the post meta.
+			update_post_meta( $post_id, 'uap_recipe_notes', $notes );
+		}
+
+		$return = array(
+			'message'        => 'Updated!',
+			'success'        => true,
+			'action'         => 'updated_post',
+			'recipes_object' => Automator()->get_recipes_data( true, $post_id ),
+			'_recipe'        => Automator()->get_recipe_object( $post_id ),
+		);
+
+		/**
+		 * Fires when recipe notes are updated.
+		 *
+		 * @since 5.8
+		*/
+		do_action( 'automator_recipe_notes_updated', $post_id, $notes, $return );
 
 		return new WP_REST_Response( $return, 200 );
 	}
@@ -1574,6 +1696,7 @@ class Recipe_Post_Rest_Api {
 
 		/**
 		 * Fires after a successful API request.
+		 *
 		 * @since 5.7
 		 */
 		do_action( 'automator_recipe_app_request_resent', $item_log_id, $return );

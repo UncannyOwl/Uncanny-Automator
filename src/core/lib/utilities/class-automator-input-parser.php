@@ -245,10 +245,10 @@ class Automator_Input_Parser {
 				// This section is for user meta tokens.
 				if ( preg_match( '/(USERMETA)/', $match ) ) {
 
-					$user_meta_uid = $args['user_id']; // The user meta should be based from the user which owns the action.
+					$user_meta_uid = absint( $args['user_id'] ); // The user meta should be based from the user which owns the action.
 
 					// Attempt user ID recovery from current logged-in user for nulled $user_id.
-					if ( is_null( $user_id ) || 0 === absint( $user_id ) ) {
+					if ( ! is_numeric( $user_id ) && ! is_numeric( $user_meta_uid ) && 0 !== $user_id && 0 !== $user_meta_uid ) {
 						$user_meta_uid = wp_get_current_user()->ID;
 					}
 
@@ -373,7 +373,7 @@ class Automator_Input_Parser {
 				}
 			} elseif ( in_array( $match, $this->defined_tokens, true ) ) {
 				/**
-				 * ☝️☝️☝️ This section of code is for the "Common tokens"
+				 * This section of code is for the "Common tokens"
 				 *
 				 * @todo Refactor this IF condition because the primary IF condition is not related to the "elseif" at all.
 				 *
@@ -484,10 +484,10 @@ class Automator_Input_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false
-				|| strpos( $piece, '_URL' ) !== false
-				|| strpos( $piece, '_EXCERPT' ) !== false
-				|| strpos( $piece, '_THUMB_URL' ) !== false
-				|| strpos( $piece, '_THUMB_ID' ) !== false ) {
+				 || strpos( $piece, '_URL' ) !== false
+				 || strpos( $piece, '_EXCERPT' ) !== false
+				 || strpos( $piece, '_THUMB_URL' ) !== false
+				 || strpos( $piece, '_THUMB_ID' ) !== false ) {
 				$is_relevant_token = true;
 				$sub_piece         = explode( '_', $piece, 2 );
 				$piece             = $sub_piece[0];
@@ -788,9 +788,9 @@ class Automator_Input_Parser {
 	 *
 	 * @param int $user_id
 	 *
+	 * @return string
 	 * @see automator_token_reset_password_link_html
 	 *
-	 * @return string
 	 */
 	public function generate_reset_token( $user_id = 0 ) {
 
@@ -801,7 +801,7 @@ class Automator_Input_Parser {
 		return apply_filters(
 			'automator_token_reset_password_link_html',
 			'<a href="' . esc_url( $reset_pw_url ) . '" title="' . esc_attr( $text ) . '">'
-				. esc_html( $text )
+			. esc_html( $text )
 			. '</a>',
 			$user_id
 		);

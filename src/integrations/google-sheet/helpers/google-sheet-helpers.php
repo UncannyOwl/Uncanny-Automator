@@ -169,7 +169,48 @@ class Google_Sheet_Helpers {
 		add_action( 'wp_ajax_automator_handle_file_picker', array( $this, 'handle_file_picker' ) );
 		add_action( 'wp_ajax_automator_googlesheets_file_picker_auth', array( $this, 'handle_file_picker_auth' ) );
 
+		// Delete spreadsheet handler.
+		add_action( 'wp_ajax_automator_google_sheet_remove_spreadsheet', array( $this, 'remove_spreadsheet' ) );
+
 		new Google_Sheet_Settings( $this );
+
+	}
+
+	/**
+	 * Remove spreadsheets.
+	 *
+	 * @return never
+	 */
+	public function remove_spreadsheet() {
+
+		// Verify permissions and nonce.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Insufficient permission. Only administrators can use file picker.' );
+		}
+
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_google_sheet_remove_spreadsheet' ) ) {
+			wp_die( 'Invalid nonce.' );
+		}
+
+		$spreadsheet_id = automator_filter_input( 'id' );
+
+		// Retrieve the current spreadsheets.
+		$current_spreadsheets = (array) get_option( self::SPREADSHEETS_OPTIONS_KEY, array() );
+
+		// Unset the spreadsheet item that matches the requested spreadsheet id.
+		foreach ( $current_spreadsheets as $key => $spreadsheet ) {
+			if ( isset( $spreadsheet['id'] ) && $spreadsheet_id === $spreadsheet['id'] ) {
+				unset( $current_spreadsheets[ $key ] );
+			}
+		}
+
+		// Update the spreadsheet. There should be no problem when there is no unset,
+		update_option( self::SPREADSHEETS_OPTIONS_KEY, $current_spreadsheets );
+
+		// Redirect back to google sheet settings.
+		wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=google-sheet' ) );
+
+		exit;
 
 	}
 
@@ -285,10 +326,56 @@ class Google_Sheet_Helpers {
 
 		$spreadsheets = $request_data['spreadsheets'] ?? array();
 
-		update_option( self::SPREADSHEETS_OPTIONS_KEY, $spreadsheets, false );
+		$current_spreadsheets = get_option( self::SPREADSHEETS_OPTIONS_KEY );
 
-		wp_send_json_success( 'Data received successfully!' );
+		$new_spreadsheets_collection = $this->merge_spreadsheets_options( $current_spreadsheets, $spreadsheets );
 
+		update_option( self::SPREADSHEETS_OPTIONS_KEY, $new_spreadsheets_collection, false );
+
+		wp_send_json_success(
+			(array) get_option( self::SPREADSHEETS_OPTIONS_KEY, array() )
+		);
+
+	}
+
+	/**
+	 * Remove duplicate spreadsheets by spreadsheet id.
+	 *
+	 * @param string[string[]] $documents
+	 *
+	 * @return array
+	 */
+	public static function remove_duplicate_spreadsheets_by_id( $documents ) {
+
+		$unique_documents = array();
+		$unique_ids       = array();
+
+		foreach ( (array) $documents as $key => $document ) {
+			if ( ! isset( $document['id'] ) ) {
+				continue;
+			}
+			if ( ! in_array( $document['id'], $unique_ids ) ) {
+				$unique_ids[]       = $document['id'];
+				$unique_documents[] = $document;
+			}
+		}
+
+		return $unique_documents;
+	}
+
+	/**
+	 * Merge the spreadsheets options.
+	 *
+	 * @param string[string[]] $current_spreadsheets
+	 * @param string[string[]] $spreadsheets
+	 *
+	 * @return string[string[]]
+	 */
+	public static function merge_spreadsheets_options( $current_spreadsheets, $spreadsheets ) {
+
+		$documents = array_merge( (array) $current_spreadsheets, (array) $spreadsheets );
+
+		return self::remove_duplicate_spreadsheets_by_id( $documents );
 	}
 
 	/**
@@ -315,7 +402,12 @@ class Google_Sheet_Helpers {
 			);
 		}
 
-		$options = array();
+		$options = array(
+			array(
+				'text'  => _x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' ),
+				'value' => '',
+			),
+		);
 
 		foreach ( $spreadsheets as $spreadsheet ) {
 			$options[] = array(
