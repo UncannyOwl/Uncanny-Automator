@@ -57,6 +57,14 @@ if ( isset( $integration->external_permalink ) && ! empty( $integration->externa
 
 				<?php } ?>
 
+				<?php if ( isset( $integration->is_elite ) && $integration->is_elite ) { ?>
+
+				<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-pro">
+					Elite
+				</div>
+
+				<?php } ?>
+
 				<?php if ( $integration->is_built_in ) { ?>
 
 					<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-built-in">

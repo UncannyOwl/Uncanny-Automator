@@ -1,0 +1,22 @@
+table#spreadSheetTable {
+    width: 100%;
+    max-width: 99%;
+}
+
+table#spreadSheetTable tr.item {
+    border: 1px solid var(--uap-border-color-gray);
+    border-radius: var(--uap-border-radius);
+    display: flex;
+    margin-bottom: 15px;
+    padding: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+table#spreadSheetTable tr.item uo-button {
+    opacity: 0;
+}
+
+table#spreadSheetTable tr.item:hover uo-button {
+    opacity: 1;
+}

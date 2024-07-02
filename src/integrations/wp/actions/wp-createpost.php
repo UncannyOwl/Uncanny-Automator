@@ -411,7 +411,16 @@ class WP_CREATEPOST {
 			}
 		}
 
-		$post_id = wp_insert_post( $post_args );
+		$return_wp_error  = apply_filters( 'automator_create_post_return_wp_error', true, $post_args, $recipe_id, $action_data );
+		$fire_after_hooks = apply_filters( 'automator_create_post_fire_after_hooks', true, $post_args, $recipe_id, $action_data );
+		$post_id          = wp_insert_post( $post_args, $return_wp_error, $fire_after_hooks );
+
+		if ( is_wp_error( $post_id ) ) {
+			$action_data['complete_with_errors'] = true;
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $post_id->get_error_message() );
+
+			return;
+		}
 
 		if ( $post_id ) {
 

@@ -74,10 +74,26 @@ class Presto_Helpers {
 		$options = array();
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
+			// Add videos.
 			$videos = ( new \PrestoPlayer\Models\Video() )->all();
 			if ( $videos ) {
 				foreach ( $videos as $video ) {
 					$options[ $video->__get( 'id' ) ] = $video->__get( 'title' );
+				}
+			}
+
+			// Check for hub videos.
+			$hubs = ( new \PrestoPlayer\Models\ReusableVideo() )->all();
+			if ( $hubs ) {
+				foreach ( $hubs as $hub ) {
+					// Get the actual video from hub embed.
+					$video = $this->normalize_video_data( $hub->ID );
+					if ( ! $video ) {
+						continue;
+					}
+					if ( ! isset( $options[ $video->id ] ) ) {
+						$options[ $video->id ] = $video->title;
+					}
 				}
 			}
 		}
@@ -97,12 +113,58 @@ class Presto_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'Video title', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'Video ID', 'uncanny-automator' ),
+				$option_code                 => esc_attr__( 'Video title', 'uncanny-automator' ),
+				$option_code . '_ID'         => esc_attr__( 'Video ID', 'uncanny-automator' ),
+				$option_code . '_POST_TITLE' => esc_attr__( 'Media hub title', 'uncanny-automator' ),
 			),
 		);
 
 		return apply_filters( 'uap_option_list_presto_videos', $option );
+	}
+
+	/**
+	 * Normalize video ID data from hub post IDs.
+	 *
+	 * @param $video_id
+	 *
+	 * @return mixed bool|object
+	 */
+	public function normalize_video_data( $video_id ) {
+
+		$video = new \PrestoPlayer\Models\Video( $video_id );
+
+		// Check if video is a hub video.
+		if ( empty( $video->__get( 'post_id' ) ) ) {
+			$hub          = new \PrestoPlayer\Models\ReusableVideo( $video_id );
+			$attrs        = $hub->getAttributes();
+			$hub_video_id = isset( $attrs['id'] ) ? $attrs['id'] : false;
+			if ( $hub_video_id ) {
+				$video = new \PrestoPlayer\Models\Video( $hub_video_id );
+			}
+		}
+
+		if ( empty( $video->__get( 'post_id' ) ) ) {
+			return false;
+		}
+
+		// Return normalized video data.
+		return (object) array(
+			'id'     => $video->__get( 'id' ),
+			'title'  => $video->__get( 'title' ),
+			'hub_id' => $video->__get( 'post_id' ),
+		);
+	}
+
+	/**
+	 * Get video ID from normalized video data.
+	 *
+	 * @param $video_id
+	 *
+	 * @return bool
+	 */
+	public function get_normalized_video_id( $video_id ) {
+		$video = $this->normalize_video_data( $video_id );
+		return $video ? $video->id : false;
 	}
 
 }

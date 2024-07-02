@@ -410,6 +410,83 @@ class Automator_Utilities {
 	}
 
 	/**
+	 * Get user walkthrough class for a user.
+	 *
+	 * @param int $user_id
+	 *
+	 * @return Automator_User_Walkthroughs
+	 */
+	public function get_user_walkthrough_class( $user_id ) {
+		static $walkthrough_class = array();
+
+		if ( ! isset( $walkthrough_class[ $user_id ] ) ) {
+			// Include file if not already included.
+			if ( ! class_exists( 'Automator_User_Walkthroughs' ) ) {
+				require_once UA_ABSPATH . 'src/core/lib/utilities/class-automator-user-walkthroughs.php';
+			}
+			try {
+				$walkthrough                   = new Automator_User_Walkthroughs( $user_id );
+				$walkthrough_class[ $user_id ] = $walkthrough;
+			} catch ( Exception $e ) {
+				throw new Exception( 'Failed to instantiate Automator_User_Walkthroughs' );
+			}
+		}
+
+		return $walkthrough_class[ $user_id ];
+	}
+	/**
+	 * Get user walkthroughs for a user.
+	 *
+	 * @param int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_walkthroughs( $user_id ) {
+		try {
+			return $this->get_user_walkthrough_class( $user_id )->get_user_walkthroughs();
+		} catch ( Exception $e ) {
+			return array();
+		}
+	}
+
+	/**
+	 * Set user walkthrough progress for a user.
+	 *
+	 * @param int $user_id
+	 * @param string $walkthrough_id
+	 * @param int $progress
+	 *
+	 * @return mixed false on failure, progress on success
+	 */
+	public function set_user_walkthrough_progress( $user_id, $walkthrough_id, $progress ) {
+		try {
+			$walkthrough_obj = $this->get_user_walkthrough_class( $user_id );
+			$walkthrough_obj->set_progress_by_id( $walkthrough_id, $progress );
+			return $walkthrough_obj->get_progress_by_id( $walkthrough_id );
+		} catch ( Exception $e ) {
+			return false;
+		}
+	}
+
+	/**
+	 * Restart a user walkthough.
+	 *
+	 * @param int $user_id
+	 * @param string $walkthrough_id
+	 *
+	 * @return mixed false on failure, progress on success
+	 */
+	public function restart_user_walkthrough( $user_id, $walkthrough_id ) {
+		try {
+			$walkthrough_obj = $this->get_user_walkthrough_class( $user_id );
+			$walkthrough_obj->restart_user_walkthrough( $walkthrough_id );
+			return $walkthrough_obj->get_progress_by_id( $walkthrough_id );
+		} catch ( Exception $e ) {
+			return false;
+		}
+	}
+
+	/**
 	 * Sanitizes the input base on the data type.
 	 *
 	 * @param mixed $data The input, can be array.
@@ -434,6 +511,7 @@ class Automator_Utilities {
 			case 'html':
 			case 'repeater':
 			case 'markdown':
+			case 'select':
 				// Do nothing for these types.
 				break;
 			case 'textarea':

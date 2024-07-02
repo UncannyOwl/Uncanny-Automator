@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.4
-Tested up to: 6.5.3
+Tested up to: 6.5.5
 Requires PHP: 7.0
-Stable tag: 5.8.0.2
+Stable tag: 5.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Campaign Monitor](https://automatorplugin.com/integration/campaign-monitor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -85,6 +86,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Mautic](https://automatorplugin.com/integration/mautic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Notion](https://automatorplugin.com/integration/notion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Sendy](https://automatorplugin.com/integration/sendy/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -145,6 +147,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [JetEngine](https://automatorplugin.com/integration/jetengine/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [JetFormBuilder](https://automatorplugin.com/integration/jetformbuilder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Jetpack CRM](https://automatorplugin.com/integration/jetpack-crm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Kadence](https://automatorplugin.com/integration/kadence/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [KonnectzIT](https://automatorplugin.com/integration/konnectzit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnDash](https://automatorplugin.com/integration/learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnDash Achievements](https://automatorplugin.com/integration/learndash-achievements/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -356,525 +359,88 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 5.8.0.2 [2024-05-27] =
+= 5.9 [2024-07-02] =
 
-**Fix:**
+**New Features:**
 
-* Outgoing Webhooks - Content-Type header missing on some webhooks after Auth changes #4709
-
-= 5.8.0.1 [2024-05-24] =
-
-**Fixed:**
-
-* Dashboard - Recipes using credits widget is not rendering in v5.8 #4694
-* Google Sheets - PHP error when disconnecting the App #4697
-* Google Sheets - Worksheet not found error on some sites #4702
-
-**Under the hood:**
-
-* Restrict Content Pro Integration icon #4693
-
-= 5.8 [2024-05-21] =
-
-**New Feature:**
-
-* Ability to Import and Export recipes to any site #4604
-
-**New App Integration:**
-
-* [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4501
-
-**New Plugin Integrations:**
-
-* [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4554
-* [SureMembers](https://automatorplugin.com/integration/suremembers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3986
-
-**New Triggers:**
-
-* SureMembers - A user is added to an access group #4123
-* SureMembers - A user is removed from an access group #4124
-
-**New Actions:**
-
-* AWeber - Add a tag to a subscriber #4272
-* AWeber - Add a subscriber #4270
-* AWeber - Update a Subscriber #4273
-* Code Snippets - Activate a snippet #4582
-* Code Snippets - Deactivate a snippet #4583
-* SureMembers - Add the user to a specific access group #4121
-* SureMembers - Remove the user from an access group #4125
-
-**New Tokens:**
-
-* Common token - User registration date #4656
-* Uncanny Codes - Remaining codes, Total codes #4028
-* Uncanny Groups - Remaining seats, Total seats #4027
-
-**Added:**
-
-* FluentCRM - Add/Update a contact - WP Filter `automator_fluentcrm_omit_custom_field-$slug` to omit custom fields #4669
-* OpenAI - Use a prompt to generate text with the GPT model - GPT-4o model support #4674
-* Slack - "Bot name" and "Bot icon" optional fields to customize each action #4523
-
-**Updated:**
-
-* Dashboard - App Credits Widget Display Enhancement for Pro #4376
-* Google Sheets - Implement FilePicker changes #4481
-
-**Fixed:**
-
-* BuddyBoss/BuddyPress - Global tokens not parsing on some sites #4654
-* FluentCRM - A contact is added to List - Not firing when the contact is added through FluentForms integration #4683
-* Outgoing Webhook - PHP notices and warnings #4668
-* Password reset token - User reset password URL being invalidated when the token is used multiple times in an email #4634
-* Recipe logs - PHP notice when human readable sentence is null #4647
-* Webhook Outgoing - Authorization field - Parse tokens #4638
-
-**Under the hood:**
-
-* Facebook Groups - App integration deprecated #4671
-* Google Sheets - Migration script to migrate to FilePicker method #4682
-* New settings page - AWeber #4269
-* System Status - Add `(Updated: <DATE>)` in front of Automator Version #4527
-* System Status - Only show Automator DB Tables and Views #4526
-
-= 5.7.0.2 [2024-05-08] =
-
-**Fix:**
-
-* Recipe logs - Incorrectly flagged some "In Progress" recipe runs as "Failed" in recipes with multiple triggers and an "All" operator #4664
-
-**Under the hood:**
-
-* Recipe Logs - Change "Failed" recipes back to "In Progress" for updated Failed logic #4661
-
-= 5.7.0.1 [2024-04-26] =
-
-**Update:**
-
-* Google Sheets & Recipe Logs - Update a row in a Google Sheet - Resend button not appearing on some sites #4643
-
-= 5.7 [2024-04-23] =
+* Data management - `wp automator prune --help` WP-CLI command to prune data #4765
+* Import/Export Recipes - Bulk Export/Import #4735
+* Recipe UI - Recipe notes metabox #4768
+* Walkthrough - Create a recipe #4302
 
 **New App Integrations:**
 
-* [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4539
-* [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4336
+* [Campaign Monitor](https://automatorplugin.com/integration/campaign-monitor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4601
+* [Notion](https://automatorplugin.com/integration/notion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3884
 
 **New Plugin Integration:**
 
-* [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4422
+* [Kadence](https://automatorplugin.com/integration/kadence/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4445
 
 **New Triggers:**
 
-* EDD Software Licensing - A user's license for a download is created #4611
-* EDD Software Licensing -A user's license for a download expires #4612
-* SliceWP - A new affiliate is awaiting approval #4407
-* SliceWP - A user becomes an affiliate #4405
-* SliceWP - An affiliate is approved #4406
+* Kadence - A form is submitted #4447
+* Kadence - A user submits a form #4446
 
 **New Actions:**
 
-* GetResponse - Create or update a contact #4274
-* GetResponse - Remove a contact #4275
-* SliceWP - Add a new affiliate #4403
-
-**New Tokens:**v
-
-* Woo Memberships - Membership post ID and plan post ID #4517
-
-**Added:**
-
-* Outgoing Webhooks - Added `PATCH` and `OPTIONS` as request types #4568
-* Recipe Logs - Automatically update the status of the stuck recipes to Failed #4323
-
-**Updated:**
-
-* Facebook Groups - Support image/media ID #4491
-* Google Sheets - Update a row in a Google Sheet - Remote calls consolidated to one request for better "Resend" support #4561
-* OpenAI - Use a prompt to generate text with the GPT model - WP filter `automator_openai_chat_generate_should_sanitize_fields` to enable/disable fields sanitization #4563
-* Recipe UI - Added clearer messaging when permalinks are set to "Plain" #4487
-* WordPress - A post is updated - Add checks for autosave and status #4543
-
-**Fixed:**
-
-* Closure - Not redirecting to relative URLs #4550
-* Google Calendar & Recipe UI - Time fields does not retain tokens #3628
-* Outgoing Webhook's Authorization field - `update_post_meta` removing valid backslashes #4630
-* Outgoing Webhooks - Repeater field sanitization fixed  #4597
-* Outgoing Webhooks - GET request now sends body values as URL query parameters #4597
-* Outgoing Webhooks - Preview now displays the GET body correctly #4597
-* Recipe UI - Clear completed runs count when "Clear activity log" action is performed #4537
-* Woo Bookings - A booking is created - Products requiring a confirmation from the admin are not running #4524
-* wpDiscuz - Activating the integration causing some AJAX endpoints to fail in WordPress integration #4547
-
-**Under the hood:**
-
-* Activate License Banner - Text updates #4584
-* Automator UI - Change menu link color #4590
-* Dashboard - Update YouTube screenshots #4595
-* Filter fields tokens - Added support to parse token records when array values are passed #4504
-* Field Options - New WP Filter `automator_options_callback_response` #4613
-* Recipe Logs - New recipe status - "In progress with errors" when an action was completed with errors but some actions are scheduled #4456
-* Recipe UI - Pass add_action value of the trigger to /update endpoint #4536
-* Recipe UI - Time field - Allow 1 minute increment #4566
-* Shorten Woo Plugin Names #4512
-* Universal tokens overwriting each other erroneously #4629
-
-= 5.6.0.2 [2024-03-21] =
-
-**Under the hood:**
-
-* Recipe UI - Filters block not rendering on screen when custom delay option is used in Automator Pro #4509
-
-= 5.6.0.1 [2024-03-14] =
-
-**Fix:**
-
-* Automator - Erroneously hiding some admin notices on some pages #4496
-
-**Under the hood:**
-
-* Status Check - Updated the GET and POST endpoints #4498
-
-= 5.6 [2024-03-13] =
-
-**New Feature:**
-
-* BuddyBoss - Universal Xprofile field tokens #4349
-* BuddyPress - Universal Xprofile field tokens #4349
-
-**New Integration:**
-
-* [wpDiscuz](https://automatorplugin.com/integration/wpdiscuz/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4364
-
-**New Triggers:**
-
-* SureCart - An order for a product is shipped #4140
-* wpDiscuz - A user submits a comment on a post #4359
-* wpDiscuz - A user's post receives a comment #4360
-
-**New Actions:**
-
-* WordPress - Change the post type of a post to a post type #4337
-* wpDiscuz - Add a reply to a comment #4361
-
-**Added:**
-
-* DB Tools - Added "Empty" table action for API Logs table #4392
-* OpenAI - gpt-4-0125-preview Added #4381
-* Recipe Logs - Dismissible admin notice that shows the size of database tables #4394
-* WP Job Manager - Dynamic Field token support added #4440
-* Woo Memberships - Add the user to a membership plan - Token support for Membership plan field #4429
-* WordPress - Taxonomy Triggers - "Also include child categories" option #4380
+* Campaign Monitor - Add/Update a subscriber to a list #4578
+* Campaign Monitor - Remove a subscriber from a list #4580
+* Notion - Create a database item #3886
+* Notion - Create a page #3885
+* Notion - Update a database item #3887
 
 **New Tokens:**
 
-* Paid Membership Pro - Initial amount #4402
+* Presto Player - A user completes a video - Video title, Media hub title #4786
+* WP Job Manager - A user submits a resume - Resume Post URL, Resume ID #4799
+* WPForms - Price field - Quantity token #4754
+* WordPress - Post slug to several WP triggers #4800
 
-**New Action Token:**
+**Addition:**
 
-* ClickUp - Create a task - Task ID (newly created task ID) #4464
-
-**Updated:**
-
-* ActiveCampaign - Updated field descriptions to include [delete] details #4473 #4477
-* Closure - Improved framework to support better redirects #2973
-* Google Sheets - Update a row in a Google Sheet - Support updating multiple rows if multiple matches found #3486
-* HubSpot - Add/Update the user in HubSpot & Create/Update a contact in HubSpot - Updated field descriptions to include [delete] details #4417
-* OpenAI - WP filter `automator_openai_image_generate_description` to change the description of the downloaded media #4471
-
-**Fixed:**
-
-* Emails - Send Email - Filter empty header values for CC and BCC to avoid plugin conflicts #4373
-* Fluent Forms - Erroneously triggering multiple recipes with Fluent triggers #4475
-* Forminator - File field token returning as Array and not the file path #4431
-* Paid Memberships Pro - A user's subscription to a membership expires - Not working as expected #4390
-* Recipe structure - PHP Error when External Object Cache is enabled on some servers #4453
-* Setup wizard - Show an error message if there's an issue during site connection #4396
-* Thrive Leads - Tokens show as unavailable after saving action #4436
-
-**Under the hood:**
-
-* Automator menu - App Integrations submenu - Not redirecting to App integrations on some sites #4459
-* Duplicate recipe - PHP Notice when duplicating Advanced tokens #4386
-* Google Apps - Some sites cannot connect to Google Services when external cache is enabled #4424
-* Recipe UI - Added field attribute to exclude field's default token #4466
-* Recipe logs - App logs table - Optionally log app responses by a WP filter #4391
-* Recipe UI - Support for token usage in Delay/Schedule popup in Automator Pro #4303
-* Setup Wizard - Some sites were unable to connect account #4470
-* Status - Debug - Log file content not appearing in browser #4457
-* Automator - Only show Automator admin notices on Automator pages #4489
-
-= 5.5.0.1 [2024-02-20] =
-
-**Fixed:**
-
-* Groundhogg - Get tags functionality not working as expected #4398
-* PHP Notice - Function `wp_cache_flush_group` was called incorrectly #4383
-* Plugin cannot be deleted on some sites #4414
-
-= 5.5 [2024-01-25] =
-
-**Added:**
-
-* Emails - Send a test email from inside the email action #4058
-* Data management - New setting "Delete all data" to delete plugin data on deletion #4326
-* Outgoing Webhook - Separate Authorization header field with data masking #4242
-
-**New Tokens:**
-
-* Fluent CRM - Primary Company Name #4305
-* Woo - User's total spend & User's total spend (unformatted) #4278
-* WordPress - Post content (formatted) #4356
+* Automator Core - `AUTOMATOR_DATABASE_VIEWS_ENABLED` to disable Database Views #4723
 
 **Updated:**
 
-* ActiveCampaign - Tag actions - Added support to pass Tag names #4285
-* LearnDash - Mark complete actions - Support for future `learndash_process_mark_complete` function updates #4343
-* MailPoet - Actions will now complete with errors if an issue occurs #4251
-* OpenAI - Deprecated models replaced in Recipe UI #4333
-* Recipe logs - Integration icons are now listed once per log entry if multiple triggers or actions of the same integration are part of recipe #4296
-* WordPress - "Post content" token renamed to "Post content (raw)" #4357
+* Google Sheets - File Picker now allows selecting additional files without overwriting current files #4788
+* LearnDash - A user achieves a percentage greater than, less than or equal to a value on a quiz - Default value of Percentage field removed #4716
+* MemberPress - A user purchases a recurring subscription product - 'Any' option added #4804
+* Modern Events Calendar - Event's field label #4541
+* OpenAI - Model "gpt-3.5-turbo-0301" deprecated #4784
+* WordPress - Create a post - Show WP error messages in recipe log #4775
+* WordPress - Update the excerpt of a post #4696
+* Zoho Campaigns - Support for non-US zone accounts #4810
 
 **Fixed:**
 
-* EDD Recurring Payments - Cancel the user's subscription to a download - List variable pricing recurring downloads #4366
-* JetPack CRM - Dynamic contact status options in dropdown #4297
-* LearnDash - Mark complete action - Autocomplete not working on Actions for complete lessons and complete topics #4343
-* Recipe Logs - The initial run of the new recipe counts as twice runs #4294
-* WordPress - A user updates a type of post - Running twice when Yet Another Related Posts Plugin (YARPP) is active #4309
+* Forminator - Formatted token values showing both raw and formatted values #4725
+* Post Loops - Action tokens and Webhooks - Action tokens do not parse when used in Webhooks and App Integrations #4691
+* Recipe Logs - A recipe with delay and user selection erroneously showing 'In progress with error' #4729
+* Slack - Send a message to a channel - PHP Notices when Bot name and Icon are not set #4814
+* Tin Canny Reporting - A Tin Can verb is recorded from a Tin Can module - Possible cache issues and variable checking #4766
+* WPForms - Radio field tokens not parsing under a specific condition #4770
+* WPForms - Validate trigger token data before parsing #4713
+* WordPress - Change the post type of a post to a post type - Not handling "All post" selection properly #4798
 
 **Under the hood:**
 
-* Added Gutenberg Automator Block category #4354
-* Brevo - Create or update a contact - Passed missing `$action_data` to the function #4371
-* `$is_login_required` attribute in the new integration framework #4342
-* Recipe logs - Added `stacktrace` property to show in logs if PHP Exception or Error occurs #4260
-* System status - Permalink status added #4346
-* A core file not loading as expected #4368
+* Automator Dashboard refresh #4345
+* Core - Action arg `$parsed` does not work as expected when the repeater field data is sent #4678
+* Core - Actionify Triggers enhancement #4706
+* Core - Additional third-party support to properly purge cache #4822
+* Core - Elite status #4824
+* Core - Removed invalid characters in some sentences #4807
+* Import recipe - Imported recipes with Loops fails to recognize loop as live #4764
+* Popup Maker Integration icon #4748
+* Recipe UI - CSS margin issue when ACF is active #4699
+* Recipe UI - `load_options` calling `call_user_func` twice #4732
+* Recipe fields - Dynamic fields to support Notion #4602
+* Setup Wizard - Setup flow modifications when Automator Pro is active #3600
+* User Loop and Token Parser - Usermeta token not parsing in Scheduled recipe #4762
+* Zoom - JWT dependancy removed #4677
+* Rearrange `file_exist` check. #4779
 
-= 5.4.0.1 [2024-01-10] =
-
-**Fixed:**
-
-* Google Sheets - Actions will show "Completed with errors" if the entry failed due to an issue with the Google API #4298
-* OpenAI - Changed deprecated models to use `gpt-3.5-turbo-instruct` #4314
-* Recipe UI - Newly added actions now showing when on LiteSpeed server/cache #4287
-* WPCode - Free actions don't show up when the Premium plugin is active #4307
-
-**Under the hood:**
-
-* PHP Notices #4262
-
-= 5.4 [2023-12-21] =
-
-**New Integrations:**
-
-* [EDD Software Licensing](https://automatorplugin.com/integration/easy-digital-downloads-software-licensing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4182
-* [Heroic Knowledge Base](https://automatorplugin.com/integration/heroic-knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4179
-* [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3981
-* [Thrive Ultimatum](https://automatorplugin.com/integration/thrive-ultimatum/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4085
-
-**New Triggers:**
-
-* EDD Software Licensing - A license for a download is created #4183
-* EDD Software Licensing - A license for a download expires #4184
-* Heroic KB - A user gives a negative rating to an article #4186
-* Heroic KB - A user gives a positive rating to an article #4185
-* Heroic KB - An article receives a negative rating #4188
-* Heroic KB - An article receives a positive rating #4187
-* SeedProd - An Optin Form is submitted #3984
-* Thrive Ultimatum - A user triggers an evergreen campaign #4216
-* Thrive Ultimatum - An evergreen campaign is triggered #4117
-
-**New Tokens:**
-
-* Outgoing Webhooks - Response - Status code #4231
-* Woo #4209
-	* Order fee (unformatted)
-	* Shipping fee (unformatted)
-	* Stripe fee (unformatted)
-	* Stripe payout (unformatted)
-
-**Added:**
-
-* Data management - Immediately delete log entries when recipes are completed #4215
-* Data management - Delete recipe records when user is deleted #3509
-
-**Updated:**
-
-* Brevo - Account validation process updated #4206
-* Brevo - Create or update a contact - Update existing contact checkbox bool type value fix #4253
-* Data management - Prune recipe logs - Field updated to allow decimal input for even shorter interval #4084
-* WordPress - Create a post - Add fields to set custom CSS and JS in the created post #4214
-
-**Fixed:**
-
-* BuddyPress & BuddyBoss - Add the user to a group - Custom token values not rendering properly #4225
-* Gravity Forms - A specific field in an entry for a form is updated to a specific value - Form tokens are not showing in the list #4248
-* Number of times option not working in some triggers until it is resaved #4239
-* OpenAI - Erroneously reducing App credits on models fetch #4236
-* RafflePress - Someone registers for a giveaway - Not firing when someone registers #4204
-* Recipe - Run closure when there are no actions #4220
-* Recipe UI - Order of scheduled actions ignored the time #4155
-* Recipe UI - Safari compatibility issue for versions below 16.1 due to unsupported regex lookbehind #4212
-* Recipe UI - Handle PHP fatal error when the integration of a used action is missing #4076
-* Redis/Object Caching - Automator's clear cache now only clears its cache instead of flushing everything #4245
-
-**Under the hood:**
-
-* Automator DB - Nightly health-check will automatically fix any missing tables or views #4255
-* Recipe UI - Support setting field visibility conditionally based on value of other fields #4213
-* `AUTOMATOR_DISABLE_APP_INTEGRATION_REQUESTS` constant to disable all outgoing App & Webhook requests #4240
-* `AUTOMATOR_DISABLE_SENDEMAIL_ACTION` constant to disable all outgoing emails #4241
-* Settings - Logs - Renamed to "Data management" #3508
-* Data management - Auto Prune in Automator Pro - Styling updates #4252
-
-= 5.3.0.1 [2023-12-05] =
-
-**Fixed:**
-
-* Gravity Forms with Uncanny Codes or Uncanny Groups - PHP Error when code is redeemed #4175
-* Instagram - Publish a photo to an Instagram account - Caption line spacing issue #4189
-* Recipe builder - "Add ▼" button doesn't work on Safari #4196
-* Wishlist Member - Add the user to a membership level - Replace deprecated functions #4169
-* WordPress - Post is published triggers - Firing when WordPress auto saves a draft #4191
-
-**Under the hood:**
-
-* Fix uncaught exception during the weekly license check #4193
-* Integration transient type warning in a specific situation #4194
-* Review Banner - Link to WP.org to leave a review is not working as expected #4146
-
-= 5.3 [2023-11-20] =
-
-**IMPORTANT: Support for PHP 5.6 has been discontinued. If you are running PHP 5.6, you MUST upgrade PHP before installing Uncanny Automator v5.3. Failure to do that will disable Automator's core functionality.**
-
-**New App Integrations:**
-
-* [Google Contacts](https://automatorplugin.com/integration/google-contacts/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3771
-* [Sendy](https://automatorplugin.com/integration/sendy/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3870
-
-**New Integrations:**
-
-* [Thrive Architect](https://automatorplugin.com/integration/thrive-architect/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4086
-* [WooCommerce Bookings](https://automatorplugin.com/integration/woocommerce-bookings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3893
-
-**New Triggers:**
-
-* Thrive Architect - A form is submitted #4095
-* Thrive Architect - A user submits a form #4097
-* Uncanny CEUs - A user earns a number or more CEUs #4150
-* WooCommerce Bookings - A booking is created #3894
-
-**New Actions:**
-
-* Google Contacts - Add a label to a contact #3775
-* Google Contacts - Create a contact #3772
-* Google Contacts - Create a label #3774
-* Help Scout - Update the properties of a customer #3943
-* Sendy - Add / Update a contact to a list #3876
-* Sendy - Delete a contact from list #4151
-* Sendy - Unsubscribe a contact from a list #3878
-
-**New Tokens:**
-
-* StudioCart - Payment option label #4128
-* WP Simple Pay - Price option & Quantity #4115
-
-**Updated:**
-
-* OpenAI - Add support for DALL-E 3 #4135
-* WordPress - Adding default_value in some triggers causing them to not trigger properly #3638
-
-**Fixed:**
-
-* Brevo - Add Update Contact action not appearing for selection #4126
-* BuddyBoss - Social media fields tokens now parse reliably #4161
-* FluentCRM - Add/Update a contact does not update the status #4113
-* LearnDash Quiz Tokens - Issues with learndash_get_quiz_questions #4148
-* WPForms - A user submits a form - Firing for non-logged-in users #4160
-* WordPress - A user updates a type of post - Firing when a post type is auto saved #4152
-
-**Under the hood:**
-
-* Support for Post loops in Automator Pro #4171
-* Upgrade to Pro - Text updates #4106
-* Usage stats - Updated logging algorithm #3098
-
-= 5.2.0.2 [2023-11-08] =
-
-**Fixed:**
-
-* Duplicate recipes - Unable to duplicate actions in a specific scenario #4130
-
-**Under the hood:**
-
-* Recipe UI - Servers with Memcached enabled causing the Recipe UI to not load properly in a specific situation #4141
-
-= 5.2.0.1 [2023-10-27] =
-
-**Fixed:**
-
-* App Settings - Settings are not saved when no recipes are active on the site #4110
-
-= 5.2 [2023-10-26] =
-
-**New Integrations:**
-
-* [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3879
-* [Memberium for Keap](https://automatorplugin.com/integration/memberium-for-keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #3755
-
-**New Trigger:**
-
-* Fluent Support - A ticket is opened #4035
-
-**New Actions:**
-
-* Constant Contact - Add a contact to a list #3881
-* Constant Contact - Add a tag to a contact #3883
-* Constant Contact - Create or update a contact #3880
-* Constant Contact - Delete a contact #3882
-* Mautic - Add a contact to a segment #3454
-* Mautic - Create a segment #3458
-* Mautic - Remove a contact from a segment #3455
-* Memberium for Keap - Update a contact field #3762
-
-**New Action Tokens:**
-
-* Uncanny Groups - Create an Uncanny group - Group signup URL token when the Group Sign up module is active in Uncanny Toolkit Pro #4012
-* LearnDash - Create a group - Group signup URL token when the Group Sign up module is active in Uncanny Toolkit Pro #4011
-
-**Added:**
-
-* Automator Pro - Ability to remove user selector from recipe #4072
-* Outgoing Webhooks - Manual retries #4056
-* X/Twitter - App settings now let you choose between default and your own Custom App #3533
-
-**Fixed:**
-
-* ActiveCampaign - Custom fields not working due to misassigned object variable #4054
-* Contact Form7 - Tokens like Menu fields and attachment/File upload are not working #4069
-* Divi - Everyone trigger is not firing as expected #4029
-* Facebook Page - Facebook showing disconnected and can't resend from logs #4009
-* WPForms - Intermittent token issue doesn't work for other selection values #4022
-* WPForms - The Dropdown, Checkboxes, and Multiple Choice fields are not showing the values if a user modifies them #4052
-* WSForm - PHP Error in on some sites #4044
-* WordPress - A specific role is added to the user - Firing twice with the latest WordPress version #4099
-
-**Under the hood:**
-
-* Improved PHP 8.2 compatibility #4043
-* Action logs - Large error messages break layout #3982
-* Emails - WP Filter `automator_send_email` to optionally turn off email for a user ID or recipe ID #4050
-* License checks - Move license checks to nightly health calls #3978
-* Uncanny Automator - Social icons in the footer #3980
-* Recipe UI - Delay button not appearing for Pro-only integrations #4093
-* Recipe logs - Delayed action token logging #3764
-* Recipe logs - Fields not showing for the API integrations when background actions are enabled #3764
-* Several core framework improvements to reduce memory usage #4079 #4089
-* Twitter - Renamed to X/Twitter #4051
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

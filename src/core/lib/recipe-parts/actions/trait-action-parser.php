@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator\Recipe;
 
+use WP_Error;
+
 /**
  * Trait Action_Parser
  *
@@ -136,6 +138,27 @@ trait Action_Parser {
 
 		foreach ( $metas as $meta_key => $meta_value ) {
 
+			$is_json_string = Automator()->utilities->is_json_string( $meta_value );
+
+			// Parse the json string.
+			if ( true === $is_json_string ) {
+
+				// @added 5.9
+				$parser_args = array(
+					'recipe_id' => $recipe_id,
+					'user_id'   => $user_id,
+					'args'      => $args,
+				);
+
+				$json_parsed_string = $this->parse_json_string( $meta_value, $parser_args );
+
+				// Only skip if self::parse_json_string is successful.
+				if ( ! is_wp_error( $json_parsed_string ) ) {
+					$this->set_parsed( $meta_key, $json_parsed_string );
+					continue;
+				}
+			}
+
 			// Prevents autop when text only contains a single line.
 			if ( ! Automator()->utilities->has_multiple_lines( $meta_value ) ) {
 				$this->set_parsed( $meta_key, Automator()->parse->text( $meta_value, $recipe_id, $user_id, $args ) );
@@ -170,6 +193,81 @@ trait Action_Parser {
 		}
 
 		return $this->get_parsed();
+	}
+
+	/**
+	 * Parses the JSON string.
+	 *
+	 * Iterates through the JSON data and replace the token with an actual value individually.
+	 *
+	 * @todo Break the function into smaller components. Maybe create a new class.
+	 *
+	 * @param string $json_string
+	 * @param array  $args
+	 *
+	 * @return WP_Error|string Returns WP_Error if there is an issue extracting or encoding the value.
+	 *                         Otherwise, the JSON string containing the token values. Returned string for backwards compatibility.
+	 *
+	 * @since 5.9
+	 */
+	protected function parse_json_string( $json_string = '', $args = array() ) {
+
+		if ( ! is_string( $json_string ) ) {
+			return new WP_Error( 'automator-invalid-json', 'Invalid parameter type: $json_string must be a string.' );
+		}
+
+		if ( ! is_array( $args ) ) {
+			return new WP_Error( 'automator-invalid-parameter-type', 'Invalid parameter type: $args must be an array.' );
+		}
+
+		$params = wp_parse_args(
+			$args,
+			array(
+				'recipe_id' => null,
+				'user_id'   => null,
+				'args'      => array(),
+			)
+		);
+
+		$extracted = (array) json_decode( $json_string, true );
+
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return new WP_Error( 'automator-invalid-json-string', 'Invalid JSON string: ' . json_last_error_msg() );
+		}
+
+		// Bail if there are no extracted key value pairs from JSON.
+		if ( empty( $extracted ) ) {
+			return new WP_Error( 'automator-json-key-value-pairs', 'JSON string does not contain any valid key-value pairs.' );
+		}
+
+		$key_value_pairs = array();
+
+		// Replace each value one by one.
+		foreach ( $extracted as $repeated_key => $repeated_key_values ) {
+			// Only support array of array which is repeater.
+			if ( ! is_array( $repeated_key_values ) ) {
+				continue;
+			}
+			foreach ( $repeated_key_values as $key => $value ) {
+				$key_value_pairs[ $repeated_key ][ $key ] = is_string( $value )
+				? Automator()->parse->text( $value, $params['recipe_id'], $params['user_id'], $params['args'] )
+				: $value;
+			}
+		}
+
+		if ( empty( $key_value_pairs ) ) {
+			return new WP_Error( 'automator-json-unable-to-parse', 'Unable to parse any text from value. Value must be array of array (repeater field).' );
+		}
+
+		// Then encode it.
+		$encoded = wp_json_encode( $key_value_pairs );
+
+		// Bail if there are no extracted key value pairs from JSON.
+		if ( false === $encoded ) {
+			return new WP_Error( 'automator-json-unable-encode-json', 'Unable to encode as JSON string.' );
+		}
+
+		return $encoded;
 	}
 
 	/**

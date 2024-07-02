@@ -90,13 +90,6 @@ class ZOOM_WEBINAR_UNREGISTERUSER {
 			$user_webianrs_field,
 		);
 
-		//Don't show the user dropdown to old credentials so it's easier to test the update
-		if ( $this->helpers->jwt_mode() ) {
-			$option_fileds = array(
-				$this->helpers->get_webinars_field(),
-			);
-		}
-
 		return array(
 			'options_group' => array(
 				$this->action_meta => $option_fileds,

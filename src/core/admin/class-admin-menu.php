@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use WP_Error;
+
 /**
  * Class Admin_Menu
  *
@@ -143,6 +145,17 @@ class Admin_Menu {
 		);
 
 		add_filter( 'admin_body_class', array( $this, 'add_legacy_activity_logs_css_class' ), 1, 1 );
+
+		$this->register_dashboard_recent_articles_endpoint();
+
+	}
+
+	/**
+	 * @return void
+	 */
+	public function register_dashboard_recent_articles_endpoint() {
+		$recent_articles = new \Uncanny_Automator\Services\Dashboard\Recent_Articles();
+		$recent_articles->register_hooks();
 	}
 
 	/**
@@ -335,6 +348,7 @@ class Admin_Menu {
 			'uncanny-automator-recipe-activity-details',
 			$function
 		);
+
 	}
 
 	/**
@@ -433,7 +447,8 @@ class Admin_Menu {
 		$redirect_url = admin_url( 'admin.php?page=uncanny-automator-dashboard' );
 		$connect_url  = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . rawurlencode( $redirect_url );
 
-		$is_pro_active = false;
+		$is_elite_active = defined( 'UAEI_PLUGIN_VERSION' );
+		$is_pro_active   = false;
 
 		if ( isset( $is_connected['item_name'] ) ) {
 			if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) && $is_connected['item_name'] === AUTOMATOR_PRO_ITEM_NAME ) {
@@ -449,8 +464,8 @@ class Admin_Menu {
 		$avatar           = isset( $is_connected['user_avatar'] ) ? $is_connected['user_avatar'] : esc_url( get_avatar_url( $user->ID ) );
 
 		$connected_sites = isset( $is_connected['license_id'] ) && isset( $is_connected['payment_id'] )
-				? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id']
-				: '#';
+			? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id']
+			: '#';
 
 		$free_credits = $is_connected ? ( $usage_limit - $paid_usage_count ) : 250;
 
@@ -459,6 +474,7 @@ class Admin_Menu {
 			'paid_usage_count'   => absint( $paid_usage_count ),
 			// Check if the user is using Automator Pro
 			'is_pro'             => $is_pro_active,
+			'is_elite'           => $is_elite_active,
 			// Is Pro connected
 			'is_pro_installed'   => defined( 'AUTOMATOR_PRO_FILE' ) ? true : false,
 			'pro_activate_link'  => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
@@ -1024,6 +1040,16 @@ class Admin_Menu {
 
 				'copyToClipboard' => esc_html__( 'Copy to clipboard', 'uncanny-automator' ),
 				// UncannyAutomatorBackend.i18n.copyToClipboard
+
+				'setupWizard' => array(
+					'skipThis'            => __( 'Skip this', 'uncanny-automator' ),
+					'areYouSure'          => __( 'Are you sure?', 'uncanny-automator' ),
+					'freeAccountFeatures' => __( 'Your free account gives you access to Slack, Google Sheets, Facebook, exclusive discounts, updates and much more.', 'uncanny-automator' ),
+					'proAccountFeatures'  => __( 'Your pro license gives you access to unlimited app credits, pro updates, premium support and much more.', 'uncanny-automator' ),
+					'skipForNow'          => __( 'Skip for now', 'uncanny-automator' ),
+					'signUpNow'           => __( 'Sign up now!', 'uncanny-automator' ),
+				),
+				// UncannyAutomatorBackend.i18n.setupWizard
 			),
 			'debugging'   => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
@@ -1242,13 +1268,9 @@ class Admin_Menu {
 				),
 			),
 
-			'setupWizard' => array(
-				'i18n' => array(
-					'skipThis'            => __( 'Skip this', 'uncanny-automator' ),
-					'areYouSure'          => __( 'Are you sure?', 'uncanny-automator' ),
-					'freeAccountFeatures' => __( 'Your free account gives you access to Slack, Google Sheets, Facebook, exclusive discounts, updates and much more.', 'uncanny-automator' ),
-					'skipForNow'          => __( 'Skip for now', 'uncanny-automator' ),
-					'signUpNow'           => __( 'Sign up now!', 'uncanny-automator' ),
+			'_site' => array(
+				'automator' => array(
+					'has_pro' => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' )
 				),
 			),
 		);
@@ -1540,6 +1562,7 @@ class Admin_Menu {
 				'permalink'          => $permalink,
 				'external_permalink' => $integration['integration_link'],
 				'is_pro'             => $integration['is_pro_integration'],
+				'is_elite'           => isset( $integration['is_elite_integration'] ) ? $integration['is_elite_integration'] : false,
 				'is_built_in'        => $integration['is_app_integration'],
 				'is_installed'       => $this->is_installed( $integration_id ),
 				'short_description'  => $integration['short_description'],
@@ -1683,7 +1706,7 @@ class Admin_Menu {
 	 *
 	 * @return false|mixed|void|null
 	 */
-	public static function licensing_call( $endpoint = 'check-license', $license_key = '', $item_id = AUTOMATOR_FREE_ITEM_ID, $store_url = AUTOMATOR_FREE_LICENSING_URL ) {
+	public static function licensing_call( $endpoint = 'check-license', $license_key = '', $item_id = AUTOMATOR_FREE_ITEM_ID, $store_url = AUTOMATOR_FREE_LICENSING_URL, $should_redirect = true ) {
 		$valid_endpoints = array(
 			'check-license',
 			'activate-license',
@@ -1739,16 +1762,22 @@ class Admin_Menu {
 				$error = $response->get_error_message();
 			}
 
-			$redirect = add_query_arg(
-				array(
-					'sl_activation' => 'false',
-					'error_message' => urlencode( $error ),
-				),
-				self::get_license_page_url()
+			$query_params = array(
+				'sl_activation' => 'false',
+				'error_message' => urlencode( $error ),
 			);
-			wp_safe_redirect( $redirect );
 
-			exit();
+			if ( $should_redirect ) {
+
+				$redirect = add_query_arg( $query_params, self::get_license_page_url() );
+
+				wp_safe_redirect( $redirect );
+
+				exit();
+			}
+
+			return new WP_Error( 400, 'Invalid license', $query_params );
+
 		}
 
 		return json_decode( wp_remote_retrieve_body( $response ) );

@@ -103,6 +103,7 @@ class WP_SUBMITCOMMENT {
 								$this->trigger_meta    => esc_attr__( 'Post title', 'uncanny-automator' ),
 								$this->trigger_meta . '_ID' => esc_attr__( 'Post ID', 'uncanny-automator' ),
 								$this->trigger_meta . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
+								$this->trigger_meta . '_POSTNAME' => esc_attr__( 'Post slug', 'uncanny-automator' ),
 								'POSTCONTENT'          => esc_attr__( 'Post content', 'uncanny-automator' ),
 								$this->trigger_meta . '_EXCERPT' => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
 								'WPPOSTTYPES'          => esc_attr__( 'Post type', 'uncanny-automator' ),

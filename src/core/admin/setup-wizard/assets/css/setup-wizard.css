@@ -144,3 +144,27 @@ a#ua-connect-account-btn {
 p.footer-actions span a {
     color: #7f7e7e;
 }
+
+/* Uncanny Automator Pro license key form */
+/* Label */
+#license_label {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+#license_key {
+    margin: 15px 0px;
+    width: 80%;
+}
+
+.uap-form-control-bottom {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#feedback {
+    width: 80%;
+    text-align: left;
+    margin-bottom: 15px;
+}

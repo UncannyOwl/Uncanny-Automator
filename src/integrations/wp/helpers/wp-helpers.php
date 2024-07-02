@@ -110,6 +110,9 @@ class Wp_Helpers {
 		}
 
 		$post_type = automator_filter_input( 'value', INPUT_POST );
+		$field_id  = automator_filter_input( 'field_id', INPUT_POST );
+		// REVIEW maybe an array of Field IDs or filter to exclude would be better here?
+		$is_any = 'WP_OLD_POST_TYPE' !== $field_id;
 
 		$args = array(
 			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
@@ -126,10 +129,14 @@ class Wp_Helpers {
 
 		if ( ! empty( $posts_list ) ) {
 			$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
-			$fields[]        = array(
-				'value' => '-1',
-				'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
-			);
+
+			if ( $is_any ) {
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
+				);
+			}
+
 			foreach ( $posts_list as $post_id => $title ) {
 
 				$post_title = ! empty( $title ) ? $title : sprintf(
@@ -150,10 +157,12 @@ class Wp_Helpers {
 				$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
 			}
 
-			$fields[] = array(
-				'value' => '-1',
-				'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
-			);
+			if ( $is_any ) {
+				$fields[] = array(
+					'value' => '-1',
+					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
+				);
+			}
 		}
 
 		echo wp_json_encode( $fields );
@@ -200,6 +209,7 @@ class Wp_Helpers {
 				$option_code                         => esc_attr__( 'Post title', 'uncanny-automator' ),
 				$option_code . '_ID'                 => esc_attr__( 'Post ID', 'uncanny-automator' ),
 				$option_code . '_URL'                => esc_attr__( 'Post URL', 'uncanny-automator' ),
+				$option_code . '_POSTNAME'           => esc_attr__( 'Post slug', 'uncanny-automator' ),
 				$option_code . '_CONTENT'            => esc_attr__( 'Post content (raw)', 'uncanny-automator' ),
 				$option_code . '_CONTENT_BEAUTIFIED' => esc_attr__( 'Post content (formatted)', 'uncanny-automator' ),
 				$option_code . '_EXCERPT'            => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
@@ -254,6 +264,7 @@ class Wp_Helpers {
 				$option_code                         => esc_attr__( 'Page title', 'uncanny-automator' ),
 				$option_code . '_ID'                 => esc_attr__( 'Page ID', 'uncanny-automator' ),
 				$option_code . '_URL'                => esc_attr__( 'Page URL', 'uncanny-automator' ),
+				$option_code . '_POSTNAME'           => esc_attr__( 'Page slug', 'uncanny-automator' ),
 				$option_code . '_EXCERPT'            => esc_attr__( 'Page excerpt', 'uncanny-automator' ),
 				$option_code . '_CONTENT'            => esc_attr__( 'Page content (raw)', 'uncanny-automator' ),
 				$option_code . '_CONTENT_BEAUTIFIED' => esc_attr__( 'Page content (formatted)', 'uncanny-automator' ),
@@ -630,6 +641,7 @@ class Wp_Helpers {
 				$option_code                => __( 'Post title', 'uncanny-automator' ),
 				$option_code . '_ID'        => __( 'Post ID', 'uncanny-automator' ),
 				$option_code . '_URL'       => __( 'Post URL', 'uncanny-automator' ),
+				$option_code . '_POSTNAME'  => __( 'Post slug', 'uncanny-automator' ),
 				$option_code . '_THUMB_ID'  => __( 'Post featured image ID', 'uncanny-automator' ),
 				$option_code . '_THUMB_URL' => __( 'Post featured image URL', 'uncanny-automator' ),
 			);

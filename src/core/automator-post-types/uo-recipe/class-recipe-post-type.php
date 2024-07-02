@@ -18,7 +18,7 @@ class Recipe_Post_Type {
 		// Default title of the New Recipe.
 		add_filter( 'default_title', array( $this, 'default_recipe_title' ), 20, 2 );
 
-		add_action( 'admin_head', array( $this, 'all_recipes_colours' ) );
+		add_action( 'admin_head', array( $this, 'all_recipes_css' ) );
 
 		add_action( 'admin_init', array( $this, 'uo_recipe_check_conditions_for_notice' ) );
 	}
@@ -158,7 +158,7 @@ class Recipe_Post_Type {
 	/**
 	 * @return void
 	 */
-	public function all_recipes_colours() {
+	public function all_recipes_css() {
 		$current_screen = get_current_screen();
 		if ( ! $current_screen instanceof \WP_Screen ) {
 			return;
@@ -176,6 +176,31 @@ class Recipe_Post_Type {
 
 			.post-type-uo-recipe .wp-list-table .recipe-ui-dash.dashicons-yes-alt {
 				color: #008800;
+			}
+			
+			.recipe-ui-list-notes__wrapper {
+				position: relative;
+			}
+			
+			.recipe-ui-list-notes__full {
+				visibility: hidden;
+				position: absolute;
+				top: 0;
+				left:0;
+				right:0;
+				width:100%;
+				z-index: 1;
+				background: white;
+				padding: 10px;
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				opacity: 0;
+				transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+			}
+			
+			.recipe-ui-list-notes__wrapper:hover .recipe-ui-list-notes__full {
+				visibility: visible;
+				opacity: 1;
 			}
 
 		</style>

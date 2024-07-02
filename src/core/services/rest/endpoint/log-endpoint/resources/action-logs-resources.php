@@ -188,7 +188,7 @@ class Action_Logs_Resources {
 				$replace_pairs
 			);
 
-			// Nested tokens alert! 😱
+			// Nested tokens alert!
 			preg_match_all( '/{{\s*(.*?)\s*}}/', $replaced_values, $matches );
 
 			if ( ! empty( $matches[0] ) ) { // The interpolated values still contains tokens.
@@ -214,7 +214,11 @@ class Action_Logs_Resources {
 							$replace_pairs
 						);
 
-						// Fix the JSON!
+						// Multiple selects in dynamic fields handle.
+						if ( is_array( $parsed_value ) ) {
+							$parsed_value = join( ',', $parsed_value );
+						}
+
 						$parsed_value = strtr(
 							htmlentities( $parsed_value, ENT_QUOTES ),
 							array(

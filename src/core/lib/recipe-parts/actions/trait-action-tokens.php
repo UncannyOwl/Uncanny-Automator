@@ -210,18 +210,18 @@ trait Action_Tokens {
 			'value'                => $this->get_hydrated_tokens_replace_pairs(),
 		);
 
+		// Dont allow empty string values. For some reason the persist is being called twice, one contains empty, another contains non-empty.
+		if ( '' === $action_token['value'] ) {
+			return false;
+		}
+
 		$action_token = apply_filters( 'automator_action_tokens_hydrated_tokens', $action_token, $args, $this );
 
-		// Clear the tokens so actions that inherits the Traits properties dont get this value.
+		// Clear the tokens so actions that inherits the Traits properties dont get this value. Make sure to bail the empty validation before this.
 		$this->clear_hydrated_tokens_replace_pairs();
 
 		// Allows custom flows to skip adding entry to action meta.
 		if ( true === $action_token['should_skip_add_meta'] ) {
-			return false;
-		}
-
-		// Dont allow empty string values.
-		if ( '' === $action_token['value'] ) {
 			return false;
 		}
 

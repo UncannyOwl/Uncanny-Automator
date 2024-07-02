@@ -177,7 +177,8 @@ class Zoho_Campaigns_Actions {
 	 */
 	protected function request( $body, $action_data = null ) {
 
-		$body['access_token'] = $this->auth->get_access_token();
+		$body['access_token']  = $this->auth->get_access_token();
+		$body['user_location'] = $this->auth->get_user_location();
 
 		$params = array(
 			'endpoint' => self::API_ENDPOINT,

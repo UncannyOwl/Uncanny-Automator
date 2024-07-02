@@ -669,6 +669,214 @@ class Automator_Translations {
 				'statusWarning' => esc_attr__( 'Setting items to draft in a {{live}} recipe can lead to unexpected behaviors.', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.confirmationModal.statusWarning
 			),
+			'walkthrough'         => array(
+				'_global'       => array(
+					'set_walkthrough_progress' => array(
+						'enabling_walkthrough' => esc_attr__( 'Enabling walkthrough', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough._global.set_walkthrough_progress.enabling_walkthrough
+						'walkthrough_enabled'  => esc_attr__( 'Walkthrough enabled', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough._global.set_walkthrough_progress.walkthrough_enabled
+						'closing_walkthrough'  => esc_attr__( 'Closing walkthrough', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough._global.set_walkthrough_progress.closing_walkthrough
+						'walkthrough_closed'   => esc_attr__( 'Walkthrough closed', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough._global.set_walkthrough_progress.walkthrough_closed
+					),
+				),
+				'create_recipe' => array(
+					'close_walkthrough'                  => array(
+						'confirmation_title'        => esc_attr__( 'Exit the tutorial', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.close_walkthrough.confirmation_title
+						'confirmation_message'      => esc_attr__( 'Are you sure you want to close the walkthrough?', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.close_walkthrough.confirmation_message
+						'confirmation_button_label' => esc_attr__( 'Confirm', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.close_walkthrough.confirmation_button_label
+					),
+					'welcome'                            => array(
+						'title'          => esc_attr__( 'Welcome to Uncanny Automator', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.welcome.title
+						'message'        => esc_attr__( "Let's take 2 minutes to walk through building your first recipe!", 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.welcome.message
+						'next_btn_label' => esc_attr__( 'Next', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.welcome.next_btn_label
+					),
+					'recipe_type'                        => array(
+						'title'      => esc_attr__( 'Recipe type', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_type.title
+						'message'    => esc_attr__( 'The first step is to choose what kind of recipe you are going to use. We will use "Logged in" for this example since the automation we\'re creating is linked to a WordPress user. Click the highlighted box to the right to continue.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_type.message
+						'learn_more' => esc_attr__( 'Learn more about recipe types here', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_type.learn_more
+					),
+					'recipe_type_confirm'                => array(
+						'title'   => esc_attr__( 'Recipe type', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_type_confirm.title
+						'message' => esc_attr__( 'Confirm your recipe type selection.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_type_confirm.message
+					),
+					'set_title'                          => array(
+						'title'             => esc_attr__( 'Set a title', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.set_title.title
+						'message'           => esc_attr__( "Every recipe must have a title. Use something that makes it easy to identify what your recipe does at a glance. For this example, we'll populate the title for you.", 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.set_title.message
+						'next_btn_label'    => esc_attr__( 'Next', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.set_title.next_btn_label
+						'set_title_content' => esc_attr__( 'Send email when a post is published', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.set_title.set_title_content
+					),
+					'triggers_all_integrations'          => array(
+						'title'          => esc_attr__( 'Integrations', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.triggers_all_integrations.title
+						'message'        => esc_attr__( "You can find all of the integrations that Automator supports at this link. We're always adding more!", 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.triggers_all_integrations.message
+						'next_btn_label' => esc_attr__( 'Next', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.triggers_all_integrations.next_btn_label
+					),
+					'trigger_select'                     => array(
+						'title'    => esc_attr__( 'Select an integration', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_select.title
+						'message1' => esc_attr__( "The recipe's triggers specify what will cause the recipe's actions to run.", 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_select.message1
+						'message2' => esc_attr__( 'Our recipe will use a WordPress trigger. Start by clicking the WordPress integration.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_select.message2
+					),
+					'trigger_select_item'                => array(
+						'title'   => esc_attr__( 'Select a trigger', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_select_item.title
+						'message' => esc_attr__( 'Click "A user publishes a post".', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_select_item.message
+					),
+					'trigger_open_select_post_type'      => array(
+						'title'   => esc_attr__( 'Set the post type', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_open_select_post_type.title
+						'message' => esc_attr__( 'This trigger allows you to target any post type in WordPress, including custom post types. Click into the Post type drop-down to select a specific post type.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_open_select_post_type.message
+					),
+					'trigger_change_select_post_type_value' => array(
+						'title'   => esc_attr__( 'Set the post type', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_change_select_post_type_value.title
+						'message' => esc_attr__( 'We want this automation to run whenever a new blog post is published, so choose "Post" as the post type.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_change_select_post_type_value.message
+					),
+					'trigger_save_item'                  => array(
+						'title'   => esc_attr__( 'Save the trigger', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_save_item.title
+						'message' => esc_attr__( 'Click "Save".', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_save_item.message
+					),
+					'trigger_status'                     => array(
+						'title'   => esc_attr__( 'Trigger status', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_status.title
+						'message' => esc_attr__( 'A trigger must be in "Live" status to trigger the recipe.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.trigger_status.message
+					),
+					'action_open_integrations'           => array(
+						'title'    => esc_attr__( 'Add an action', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_open_integrations.title
+						'message1' => esc_attr__( "A recipe's actions execute automatically once the recipe's triggers have been completed.", 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_open_integrations.message1
+						'message2' => esc_attr__( 'Click "Add action" to continue.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_open_integrations.message2
+					),
+					'action_all_integrations'            => array(
+						'title'          => esc_attr__( 'Integrations', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_all_integrations.title
+						'message'        => esc_attr__( 'You can find a list of all supported integrations for recipe actions at this link.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_all_integrations.message
+						'next_btn_label' => esc_attr__( 'Next', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_all_integrations.next_btn_label
+					),
+					'action_select_integration'          => array(
+						'title'   => esc_attr__( 'Select an integration', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_select_integration.title
+						'message' => esc_attr__( 'In this recipe we will send a notification email whenever a new blog post is published, so choose the Emails integration.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_select_integration.message
+					),
+					'action_select_action'               => array(
+						'title'   => esc_attr__( 'Select an action', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_select_action.title
+						'message' => esc_attr__( 'Select the "Send an email" action.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_select_action.message
+					),
+					'action_email_to_field'              => array(
+						'title'          => esc_attr__( 'Set the email recipient', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_field.title
+						'message'        => esc_attr__( "In this field we'll specify who the email should be sent to.", 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_field.message
+						'next_btn_label' => esc_attr__( 'Next', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_field.next_btn_label
+					),
+					'action_email_to_token'              => array(
+						'title'    => esc_attr__( 'Set the email recipient', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_token.title
+						'message1' => esc_attr__( 'Let\'s make sure this email is sent to the administrator of the site. To do this, we\'ll use a "token".', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_token.message1
+						'message2' => esc_attr__( "Tokens allow us to use dynamic data, or variables, in recipe actions. This data might come from information about the trigger, other actions, users, system data, and more. For this example, we want to look up which email address to use dynamically and include it in our recipe, so we'll use the token selector (*) to the right", 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_token.message2
+					),
+					'action_email_to_token_group'        => array(
+						'title'   => esc_attr__( 'Set the email recipient', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_token_group.title
+						'message' => esc_attr__( 'The user email token is found under "Common" tokens. Click "Common".', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_token_group.message
+					),
+					'action_email_to_token_select_token' => array(
+						'title'   => esc_attr__( 'Set the email recipient', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_token_select_token.title
+						'message' => esc_attr__( 'Click "Admin email".', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_to_token_select_token.message
+					),
+					'action_email_set_subject'           => array(
+						'title'           => esc_attr__( 'Set the subject', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_subject.title
+						'message'         => esc_attr__( 'We\'ll populate the email subject for you. For this example, we\'ll use "A new post is published", along with the title of the post that was published, which we use a token from the trigger to populate.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_subject.message
+						'next_btn_label'  => esc_attr__( 'Next', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_subject.next_btn_label
+						/* translators: 1. Is a dynamic token */
+						'subject_content' => esc_attr__( 'A new post was published: %1$s', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_subject.subject_content
+					),
+					'action_email_set_body'              => array(
+						'title'          => esc_attr__( 'Set the body', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_body.title
+						'message'        => esc_attr__( 'We have pre-populated the email body with some suggested text. Feel free to change it after the tutorial to something that works better for your site.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_body.message
+						'next_btn_label' => esc_attr__( 'Next', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_body.next_btn_label
+						/* translators: 1, 2 and 3 are dynamic tokens */
+						'body_content'   => esc_attr__( 'A blog post titled %1$s was published by %2$s to %3$s.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_email_set_body.body_content
+					),
+					'action_save_item'                   => array(
+						'title'   => esc_attr__( 'Save the action.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_save_item.title
+						'message' => esc_attr__( 'Click "Save".', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_save_item.message
+					),
+					'action_status'                      => array(
+						'title'   => esc_attr__( 'Action status', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_status.title
+						'message' => esc_attr__( 'An action must be in "Live" status to run.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.action_status.message
+					),
+					'recipe_status'                      => array(
+						'title'   => esc_attr__( 'Recipe status', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_status.title
+						'message' => esc_attr__( 'The last step is to take your recipe live! Click the "Live/Draft" toggle switch.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_status.message
+					),
+					'recipe_created'                     => array(
+						'title'          => esc_attr__( 'Congratulations!', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_created.title
+						'message1'       => esc_attr__( 'Your recipe is now live. Any time you publish a blog post, an email notification will now be sent to the site administrator. You can check the results of this automation from the Automator > Logs page later.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_created.message1
+						'message2'       => esc_attr__( 'Now that you know the steps required to create a recipe, try building some of your own!', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_created.message2
+						'next_btn_label' => esc_attr__( 'Finish tour', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.walkthrough.create_recipe.recipe_created.next_btn_label
+					),
+				),
+			),
 			'proOnly'             => array(
 				'pro'          => 'Pro',
 				// Don't make this string translatable
@@ -694,6 +902,11 @@ class Automator_Translations {
 				/* translators: 1. Trademarked term */
 				'requiresPro'  => esc_attr__( 'Requires %1$s', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.proOnly.requiresPro
+			),
+			'eliteOnly'           => array(
+				'elite' => 'Elite',
+				// Don't make this string translatable
+				// UncannyAutomator._core.i18n.eliteOnly.elite
 			),
 			'sendFeedback'        => array(
 				/* translators: Non-personal infinitive verb */
@@ -1185,6 +1398,11 @@ class Automator_Translations {
 				'title'        => array(
 					'updating' => esc_html__( 'Updating recipe title', 'uncanny-automator' ),
 					'updated'  => esc_html__( 'Recipe title updated successfully', 'uncanny-automator' ),
+				),
+				// UncannyAutomator._core.i18n.core.notes
+				'notes'        => array(
+					'updating' => esc_html__( 'Updating recipe notes', 'uncanny-automator' ),
+					'updated'  => esc_html__( 'Recipe notes updated successfully', 'uncanny-automator' ),
 				),
 				'recipeType'   => array(
 					'settingRecipeType' => esc_html__( 'Setting recipe type', 'uncanny-automator' ),

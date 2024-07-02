@@ -29,6 +29,9 @@ class Recipe_Post_Metabox {
 		// Adding entry point for JS based triggers and actions UI into Meta Boxes
 		add_action( 'add_meta_boxes', array( $this, 'recipe_add_meta_box_ui' ), 11 );
 
+		// Clear any custom ordering of the sidebar metaboxes.
+		add_filter( 'get_user_option_meta-box-order_uo-recipe', array( $this, 'maybe_clear_user_sidebar_sort' ), PHP_INT_MAX, 1 );
+
 	}
 
 	/**
@@ -217,5 +220,49 @@ class Recipe_Post_Metabox {
 			'side',
 			'high'
 		);
+
+		add_meta_box(
+			'uo-automator-notes',
+			esc_attr__( 'Recipe notes', 'uncanny-automator' ),
+			function ( $post ) {
+				// Get existing notes.
+				$recipe_notes = get_post_meta( $post->ID, 'uap_recipe_notes', true );
+				$recipe_notes = ! empty( $recipe_notes ) ? $recipe_notes : '';
+				// Output the notes metabox.
+				?>
+				<div id="uo-automator-notes-metabox" class="uap">
+					<div id="uap-notes-metabox">
+						<div class="metabox__content">
+							<div class="uap-notes-metabox__textarea__wrap">
+								<textarea id="uap-notes-metabox__textarea"><?php echo esc_textarea( $recipe_notes ); ?></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<?php
+			},
+			'uo-recipe',
+			'side',
+			'high'
+		);
 	}
+
+	/**
+	 * Clear any custom ordering of the sidebar metaboxes.
+	 *
+	 * @param mixed $sorted   The user's meta box ordering
+	 *
+	 * @return mixed
+	 */
+	public function maybe_clear_user_sidebar_sort( $sorted ) {
+
+		if ( empty( $sorted ) || ! is_array( $sorted ) ) {
+			return $sorted;
+		}
+
+		$sorted['side'] = '';
+
+		return $sorted;
+	}
+
 }

@@ -175,11 +175,11 @@ class OPEN_AI_CHAT_GENERATE {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$model          = isset( $parsed['MODEL'] ) ? sanitize_text_field( $parsed['MODEL'] ) : null;
-		$temperature    = ! empty( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : 1;
-		$max_tokens     = ! empty( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : null;
-		$system_content = isset( $parsed['SYSTEM_CONTENT'] ) ? $this->sanitize_textarea_field( $parsed['SYSTEM_CONTENT'] ) : '';
-		$prompt         = isset( $parsed[ $this->get_action_meta() ] ) ? $this->sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
+		$model          = $this->handle_model( sanitize_text_field( $parsed['MODEL'] ?? null ), $action_data );
+		$temperature    = sanitize_text_field( $parsed['TEMPERATURE'] ?? 1 );
+		$max_tokens     = sanitize_text_field( $parsed['MAX_LEN'] ?? null );
+		$system_content = $this->sanitize_textarea_field( $parsed['SYSTEM_CONTENT'] ?? '' );
+		$prompt         = $this->sanitize_textarea_field( $parsed[ $this->get_action_meta() ?? '' ] );
 
 		$body = array(
 			'model'    => $model,
@@ -204,8 +204,6 @@ class OPEN_AI_CHAT_GENERATE {
 		}
 
 		$body = apply_filters( 'automator_openai_chat_generate', $body );
-
-		require_once dirname( __DIR__ ) . '/client/http-client.php';
 
 		$client = new HTTP_Client( Api_Server::get_instance() );
 		$client->set_endpoint( 'v1/chat/completions' );
@@ -270,6 +268,52 @@ class OPEN_AI_CHAT_GENERATE {
 		);
 
 		return $this;
+
+	}
+
+	/**
+	 * Handles the model value before sending to OpenAI.
+	 *
+	 * @param string $model
+	 * @return string
+	 */
+	private function handle_model( $model, $action_data ) {
+
+		$model_new_values = array(
+			'gpt-3.5-turbo-0301' => 'gpt-3.5-turbo', // Move all 3.5 turbo 0301 requests to turbo.
+		);
+
+		// Migrate the model.
+		$this->migrate_model( $model_new_values, $action_data );
+
+		// But run with migrated value.
+		return $model_new_values[ $model ] ?? $model;
+	}
+
+	/**
+	 * Do a little natural field value migration.
+	 *
+	 * @param string[] $model_new_values
+	 * @param mixed[] $action_data
+	 *
+	 * @since 5.9
+	 *
+	 * @return int|bool - The number of rows updated, otherwise, bool.
+	 */
+	private function migrate_model( $model_new_values, $action_data ) {
+
+		$action_id   = $action_data['ID'] ?? 0;
+		$model_saved = $action_data['meta']['MODEL'] ?? null;
+
+		if ( empty( $action_id ) || empty( $model_saved ) ) {
+			return false;
+		}
+
+		if ( isset( $model_new_values[ $model_saved ] ) ) {
+			return update_post_meta( $action_id, 'MODEL', $model_new_values[ $model_saved ] );
+		}
+
+		return false;
 
 	}
 

@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use WP_User;
+
 /**
  * Class Wpjm_Tokens
  *
@@ -336,6 +338,18 @@ class Wpjm_Tokens {
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
+					'tokenId'         => 'WPJM_RESUME_ID',
+					'tokenName'       => __( 'Resume ID', 'uncanny-automator' ),
+					'tokenType'       => 'int',
+					'tokenIdentifier' => 'WPJMSUBMITRESUME',
+				),
+				array(
+					'tokenId'         => 'WPJM_RESUME_URL',
+					'tokenName'       => __( 'Resume URL', 'uncanny-automator' ),
+					'tokenType'       => 'url',
+					'tokenIdentifier' => 'WPJMSUBMITRESUME',
+				),
+				array(
 					'tokenId'         => 'WPJMRESUMENAME',
 					'tokenName'       => __( 'Candidate name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
@@ -433,25 +447,25 @@ class Wpjm_Tokens {
 				} elseif ( $pieces[2] === 'WPJMJOBOWNERNAME' ) {
 					$job    = get_post( $entry );
 					$author = get_user_by( 'ID', $job->post_author );
-					if ( $author instanceof \WP_User ) {
+					if ( $author instanceof WP_User ) {
 						$value = $author->user_login;
 					}
 				} elseif ( $pieces[2] === 'WPJMJOBOWNEREMAIL' ) {
 					$job    = get_post( $entry );
 					$author = get_user_by( 'ID', $job->post_author );
-					if ( $author instanceof \WP_User ) {
+					if ( $author instanceof WP_User ) {
 						$value = $author->user_email;
 					}
 				} elseif ( $pieces[2] === 'WPJMJOBOWNERFIRSTNAME' ) {
 					$job    = get_post( $entry );
 					$author = get_user_by( 'ID', $job->post_author );
-					if ( $author instanceof \WP_User ) {
+					if ( $author instanceof WP_User ) {
 						$value = $author->first_name;
 					}
 				} elseif ( $pieces[2] === 'WPJMJOBOWNERLASTNAME' ) {
 					$job    = get_post( $entry );
 					$author = get_user_by( 'ID', $job->post_author );
-					if ( $author instanceof \WP_User ) {
+					if ( $author instanceof WP_User ) {
 						$value = $author->last_name;
 					}
 				} elseif ( $pieces[2] === 'WPJMJOBTITLE' || 'WPJMJOBAPPLICATION' === $pieces[2] ) {
@@ -510,7 +524,7 @@ class Wpjm_Tokens {
 					$candidate_email = get_post_meta( $resume->ID, '_candidate_email', true );
 					if ( empty( $candidate_email ) ) {
 						$author = get_user_by( 'ID', $job->post_author );
-						if ( $author instanceof \WP_User ) {
+						if ( $author instanceof WP_User ) {
 							$candidate_email = $author->last_name;
 						}
 					}
@@ -549,6 +563,10 @@ class Wpjm_Tokens {
 				} elseif ( 'WPJMAPPLICATIONMESSAGE' === $pieces[2] ) {
 					$resume = get_post( $entry );
 					$value  = $resume->post_content;
+				} elseif ( 'WPJM_RESUME_ID' === $pieces[2] ) {
+					$value = $entry;
+				} elseif ( 'WPJM_RESUME_URL' === $pieces[2] ) {
+					$value = get_permalink( $entry );
 				} elseif ( $pieces[2] === 'WPJMRESUMEURLS' ) {
 					if ( $_resume_id = get_post_meta( $entry, '_resume_id', true ) ) {
 						$entry = $_resume_id;

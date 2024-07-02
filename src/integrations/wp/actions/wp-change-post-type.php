@@ -24,7 +24,7 @@ class WP_CHANGE_POST_TYPE extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function options() {
-		$post_type_options = Automator()->helpers->recipe->wp->options->pro->all_wp_post_types( '', '', array( 'is_any' => false ) );
+		$post_type_options = Automator()->helpers->recipe->wp->options->all_wp_post_types( '', '', array( 'is_any' => false ) );
 		$post_types        = array();
 		foreach ( $post_type_options['options'] as $k => $post_type_option ) {
 			$post_types[] = array(
@@ -39,18 +39,21 @@ class WP_CHANGE_POST_TYPE extends \Uncanny_Automator\Recipe\Action {
 				'input_type'            => 'select',
 				'label'                 => esc_attr_x( 'Current post type', 'WordPress', 'uncanny-automator' ),
 				'options'               => $post_types,
-				'supports_custom_value' => false,
+				'supports_custom_value' => true,
+				'supports_tokens'       => true,
+				'relevant_tokens'       => array(),
 				'is_ajax'               => true,
-				'endpoint'              => 'select_all_post_of_selected_post_type',
+				'endpoint'              => 'select_custom_post_by_type',
 				'fill_values_in'        => 'WP_POSTS',
 				'required'              => true,
 			),
 			array(
-				'option_code'     => 'WP_POSTS',
-				'input_type'      => 'select',
-				'label'           => esc_attr_x( 'Post', 'WordPress', 'uncanny-automator' ),
-				'relevant_tokens' => array(),
-				'required'        => true,
+				'option_code'           => 'WP_POSTS',
+				'input_type'            => 'select',
+				'label'                 => esc_attr_x( 'Post', 'WordPress', 'uncanny-automator' ),
+				'required'              => true,
+				'supports_custom_value' => true,
+				'supports_tokens'       => true,
 			),
 			array(
 				'option_code'           => $this->get_action_meta(),

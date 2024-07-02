@@ -115,14 +115,6 @@ class ZOOM_WEBINAR_REGISTERUSER {
 			$this->helpers->get_webinar_questions_repeater(),
 		);
 
-		//Don't show the user dropdown to old credentials so it's easier to test the update
-		if ( $this->helpers->jwt_mode() ) {
-			$option_fileds = array(
-				Automator()->helpers->recipe->zoom_webinar->get_webinars_field( null, $this->action_meta ),
-				Automator()->helpers->recipe->zoom_webinar->get_webinar_questions_repeater(),
-			);
-		}
-
 		return array(
 			'options_group' => array(
 				$this->action_meta => $option_fileds,

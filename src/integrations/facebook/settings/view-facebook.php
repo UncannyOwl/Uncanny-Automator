@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="uap-settings-panel-title">
 
-				<uo-icon integration="FACEBOOK"></uo-icon> 
+				<uo-icon integration="FACEBOOK"></uo-icon>
 
 				<?php esc_html_e( 'Facebook Pages', 'uncanny-automator' ); ?>
 
@@ -45,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Use Uncanny Automator to automatically share updates, news and blog posts from your WordPress site to your organization’s Facebook Page(s) in the form of posts, images and links.', 'uncanny-automator' ); ?>
+						<?php esc_html_e( "Use Uncanny Automator to automatically share updates, news and blog posts from your WordPress site to your organization's Facebook Page(s) in the form of posts, images and links.", 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
@@ -87,7 +87,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div id="facebook-pages-list"></div>
 
 					<div id="facebook-pages-errors" class="uap-spacing-top"></div>
-					
+
 					<uo-button id="facebook-pages-update-button" class="uap-spacing-top uap-spacing-top--big" href="<?php echo esc_url( $login_dialog_uri ); ?>" color="secondary">
 						<?php esc_html_e( 'Update linked pages', 'uncanny-automator' ); ?>
 					</uo-button>

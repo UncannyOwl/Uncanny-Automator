@@ -7,26 +7,26 @@
 		type="white"
 		custom-icon
 	>
-		<uo-button 
+		<uo-button
 			href="<?php echo esc_url( $vars['url_close_button'] ); ?>"
 
 			data-action="hide-banner-on-click"
 
-			slot="top-right-icon" 
-			color="transparent" 
+			slot="top-right-icon"
+			color="transparent"
 			size="small"
 		>
 			<uo-icon id="times"></uo-icon>
 		</uo-button>
 
-		<img 
+		<img
 			slot="icon"
 			src="<?php echo esc_url( Utilities::automator_get_asset( 'backend/dist/img/robot-feedback.svg' ) ); ?>"
 			width="90px"
 		>
 
 		<p>
-			<?php printf( esc_attr_x( 'You just used your first %1$s free app credits 🙌 with Uncanny Automator. Are you finding Automator useful?', 'Reviews banner', 'uncanny-automator' ), absint( $vars['credits_used'] ) ); ?>
+			<?php printf( esc_attr_x( 'You just used your first %1$s free app credits %2$s with Uncanny Automator. Are you finding Automator useful?', 'Reviews banner', 'uncanny-automator' ), absint( $vars['credits_used'] ), '🙌' ); ?>
 		</p>
 
 		<div class="uap-spacing-top">

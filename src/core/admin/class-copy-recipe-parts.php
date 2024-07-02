@@ -423,9 +423,8 @@ class Copy_Recipe_Parts {
 	 * @return mixed
 	 */
 	public function modify_tokens( $content, $new_post_id = 0 ) {
-
 		//Check if it's a webhook URL
-		if ( 0 !== $new_post_id && ! is_array( $content ) && preg_match( '/\/wp-json\/uap\/v2\/uap-/', $content ) ) {
+		if ( 0 !== $new_post_id && ! is_array( $content ) && ! is_object( $content ) && preg_match( '/\/wp-json\/uap\/v2\/uap-/', $content ) ) {
 			// Only modify webhook URL of the trigger. We are leaving webhook URL of action alone.
 			if ( 'uo-trigger' === get_post_type( $new_post_id ) ) {
 				$new     = sprintf( 'uap/v2/uap-%d-%d', wp_get_post_parent_id( $new_post_id ), $new_post_id );
@@ -470,7 +469,9 @@ class Copy_Recipe_Parts {
 	public function token_exists_in_content( $content ) {
 		// check if content contains a replaceable token
 		if (
-			false === preg_match_all( '/{{(ACTION_(FIELD|META)\:)?\d+:\w.+?}}/', $content )
+			! is_array( $content )
+			&& ! is_object( $content )
+			&& false === preg_match_all( '/{{(ACTION_(FIELD|META)\:)?\d+:\w.+?}}/', $content )
 			&& false === preg_match_all( '/{{TOKEN_EXTENDED:LOOP_TOKEN:\d+:\w+:\w+}}/', $content )
 			&& false === preg_match_all( '/{{id:(WPMAGICBUTTON|WPMAGICLINK)}}/', $content )
 		) {
@@ -496,7 +497,7 @@ class Copy_Recipe_Parts {
 			$pattern = '/(\{\{|\[\[)' . preg_quote( $prev_id, '/' ) . '(:|;)/';
 
 			// check if content contains a replaceable token by previous ID
-			if ( preg_match_all( $pattern, $content ) ) {
+			if ( ! is_object( $content ) && preg_match_all( $pattern, $content ) ) {
 				$content = preg_replace( $pattern, '${1}' . $new_id . '${2}', $content );
 			}
 		}
@@ -517,7 +518,7 @@ class Copy_Recipe_Parts {
 				continue;
 			}
 			// check if content contains a replaceable token by previous ID
-			if ( preg_match( '/{{(ACTION_(FIELD|META)\:)' . $prev_id . '\:\w.+?}}/', $content ) ) {
+			if ( ! is_object( $content ) && preg_match( '/{{(ACTION_(FIELD|META)\:)' . $prev_id . '\:\w.+?}}/', $content ) ) {
 				$content = preg_replace( '/{{ACTION_(FIELD|META)\:' . $prev_id . ':/', '{{ACTION_$1\:' . $new_id . ':', $content );
 			}
 		}
@@ -539,7 +540,7 @@ class Copy_Recipe_Parts {
 			}
 
 			// check if content contains a replaceable token by previous ID
-			if ( preg_match( '/{{TOKEN_EXTENDED:LOOP_TOKEN:' . $prev_id . ':/', $content ) ) {
+			if ( ! is_object( $content ) && preg_match( '/{{TOKEN_EXTENDED:LOOP_TOKEN:' . $prev_id . ':/', $content ) ) {
 				$content = preg_replace( '/{{TOKEN_EXTENDED:LOOP_TOKEN:' . $prev_id . ':/', '{{TOKEN_EXTENDED:LOOP_TOKEN:' . $new_id . ':', $content );
 			}
 		}

@@ -704,6 +704,30 @@ function automator_cache_delete_group( $group = 'automator' ) {
 		$purge_group = false; // Since all cache is already cleared
 	}
 
+	// WP Super Cache
+	if ( function_exists( 'wp_cache_clear_cache' ) ) {
+		wp_cache_clear_cache();
+		$purge_group = false; // Since all cache is already cleared
+	}
+
+	// WP Rocket
+	if ( function_exists( 'rocket_clean_domain' ) ) {
+		rocket_clean_domain();
+		$purge_group = false; // Since all cache is already cleared
+	}
+
+	// Nginx Cache (if applicable)
+	if ( function_exists( 'nginx_cache_purge' ) ) {
+		nginx_cache_purge();
+		$purge_group = false; // Since all cache is already cleared
+	}
+
+	// Redis Cache
+	if ( class_exists( 'RedisObjectCache' ) && method_exists( 'RedisObjectCache', 'flush' ) ) {
+		RedisObjectCache::flush();
+		$purge_group = false; // Since all cache is already cleared
+	}
+
 	if ( function_exists( 'wp_cache_flush_group' ) && $purge_group ) {
 		wp_cache_flush_group( $group );
 	}
@@ -717,4 +741,85 @@ function automator_cache_delete_group( $group = 'automator' ) {
 		unset( $cache[ $group ] );
 		$wp_object_cache->cache = $cache;
 	}
+
+	// Clear Cloudflare Cache
+	clear_cloudflare_cache();
+
+	// Clear Fastly Cache
+	clear_fastly_cache();
+}
+
+/**
+ * @return bool
+ */
+function clear_cloudflare_cache() {
+
+	// Check if the Cloudflare plugin is active and the purge_cache method exists
+	if ( defined( 'CLOUDFLARE_PLUGIN_DIR' ) && class_exists( 'CF\WordPress\Hooks' ) ) {
+		( new \CF\WordPress\Hooks() )->purgeCacheEverything();
+
+		return true;
+	}
+
+	$email   = AUTOMATOR_CLOUDFLARE_EMAIL;
+	$api_key = AUTOMATOR_CLOUDFLARE_API_KEY;
+	$zone_id = AUTOMATOR_CLOUDFLARE_ZONE_ID;
+
+	if ( empty( $email ) || empty( $api_key ) || empty( $zone_id ) ) {
+		return false;
+	}
+
+	$url = 'https://api.cloudflare.com/client/v4/zones/' . $zone_id . '/purge_cache';
+
+	$body = json_encode( array( 'purge_everything' => true ) );
+
+	$response = wp_remote_post(
+		$url,
+		array(
+			'method'  => 'POST',
+			'headers' => array(
+				'Content-Type' => 'application/json',
+				'X-Auth-Email' => $email,
+				'X-Auth-Key'   => $api_key,
+			),
+			'body'    => $body,
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * @return bool
+ */
+function clear_fastly_cache() {
+	$api_key    = AUTOMATOR_FASTLY_API_KEY;
+	$service_id = AUTOMATOR_FASTLY_SERVICE_ID;
+
+	if ( empty( $api_key ) || empty( $service_id ) ) {
+		return false;
+	}
+
+	$url = 'https://api.fastly.com/service/' . $service_id . '/purge_all';
+
+	$response = wp_remote_post(
+		$url,
+		array(
+			'method'  => 'POST',
+			'headers' => array(
+				'Fastly-Key' => $api_key,
+				'Accept'     => 'application/json',
+			),
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return false;
+	}
+
+	return true;
 }

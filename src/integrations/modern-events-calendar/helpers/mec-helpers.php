@@ -1,6 +1,10 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 namespace Uncanny_Automator;
 
+use DateTime;
+use MEC_feature_books;
+use MEC_main;
+
 /**
  * Class MEC_HELPERS
  *
@@ -179,7 +183,7 @@ class MEC_HELPERS {
 			'option_code'              => 'MEC_SELECTED_EVENT_ID',
 			'options'                  => $this->get_events(),
 			'required'                 => true,
-			'label'                    => esc_html__( 'List of available events', 'uncanny-automator' ),
+			'label'                    => esc_html__( 'Event', 'uncanny-automator' ),
 			'description'              => esc_html__( 'Select from the list of available events. The selected event must have a ticket.', 'uncanny-automator' ),
 			'is_ajax'                  => true,
 			'endpoint'                 => 'ua_mec_select_event_ticket',
@@ -302,8 +306,8 @@ class MEC_HELPERS {
 			return '';
 		}
 
-		$mec_book = new \MEC_feature_books();
-		$mec_main = new \MEC_main();
+		$mec_book = new MEC_feature_books();
+		$mec_main = new MEC_main();
 
 		$book = $mec_book->getBook();
 
@@ -385,7 +389,7 @@ class MEC_HELPERS {
 		);
 
 		// Create new DateTime object from formatted start time.
-		$date_start_obj = new \DateTime( $date_start );
+		$date_start_obj = new DateTime( $date_start );
 
 		// Format the date start time using DateTime format method.
 		return $date_start_obj->format( $format );

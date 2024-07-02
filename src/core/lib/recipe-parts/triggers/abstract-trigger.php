@@ -7,8 +7,8 @@
  * @class   Triggers
  * @since   4.14
  * @version 4.14
- * @package Uncanny_Automator
  * @author  Ajay V.
+ * @package Uncanny_Automator
  */
 
 
@@ -138,7 +138,8 @@ abstract class Trigger {
 	/**
 	 * __construct
 	 *
-	 * @param  mixed $dependencies
+	 * @param mixed $dependencies
+	 *
 	 * @return void
 	 */
 	final public function __construct( ...$dependencies ) {
@@ -166,7 +167,8 @@ abstract class Trigger {
 	/**
 	 * register_trigger
 	 *
-	 * @param  mixed $triggers
+	 * @param mixed $triggers
+	 *
 	 * @return array
 	 */
 	public function register_trigger( $triggers ) {
@@ -180,6 +182,7 @@ abstract class Trigger {
 			'support_link'        => $this->get_support_link(), // hyperlink to support page.
 			'type'                => $this->get_trigger_type(), // user|anonymous. user by default.
 			'is_pro'              => $this->get_is_pro(), // free or pro trigger.
+			'is_elite'            => $this->get_is_elite(), // elite trigger.
 			'is_deprecated'       => $this->get_is_deprecated(), // whether trigger is deprecated.
 			'integration'         => $this->get_integration(), // trigger the integration belongs to.
 			'code'                => $this->get_code(), // unique trigger code.
@@ -197,6 +200,7 @@ abstract class Trigger {
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );
 
 		$triggers[ $this->get_code() ] = $trigger;
+
 		return $triggers;
 	}
 
@@ -229,7 +233,8 @@ abstract class Trigger {
 	/**
 	 * set_user_id
 	 *
-	 * @param  mixed $user_id
+	 * @param mixed $user_id
+	 *
 	 * @return void
 	 */
 	public function set_user_id( $user_id ) {
@@ -265,8 +270,9 @@ abstract class Trigger {
 	 *
 	 * Override this method if you want to add recipe-specific tokens such as form fields etc.
 	 *
-	 * @param  mixed $tokens
-	 * @param  mixed $args
+	 * @param mixed $tokens
+	 * @param mixed $args
+	 *
 	 * @return array
 	 */
 	public function register_tokens( $tokens, $trigger ) {
@@ -295,8 +301,9 @@ abstract class Trigger {
 	 *
 	 * Override this method if you want to add recipe-specific tokens such as form fields etc.
 	 *
-	 * @param  mixed $tokens
-	 * @param  mixed $args
+	 * @param mixed $tokens
+	 * @param mixed $args
+	 *
 	 * @return array
 	 */
 	public function define_tokens( $trigger, $tokens ) {
@@ -350,9 +357,10 @@ abstract class Trigger {
 	/**
 	 * validate_recipe
 	 *
-	 * @param  mixed $recipe_id
-	 * @param  mixed $recipe
-	 * @param  mixed $hook_args
+	 * @param mixed $recipe_id
+	 * @param mixed $recipe
+	 * @param mixed $hook_args
+	 *
 	 * @return void
 	 */
 	public function validate_recipe( $recipe_id, $recipe, $hook_args ) {
@@ -371,9 +379,10 @@ abstract class Trigger {
 	/**
 	 * validate_trigger
 	 *
-	 * @param  mixed $recipe_id
-	 * @param  mixed $trigger
-	 * @param  mixed $hook_args
+	 * @param mixed $recipe_id
+	 * @param mixed $trigger
+	 * @param mixed $hook_args
+	 *
 	 * @return void
 	 */
 	public function validate_trigger( $recipe_id, $trigger, $hook_args ) {
@@ -395,8 +404,9 @@ abstract class Trigger {
 	/**
 	 * validate
 	 *
-	 * @param  mixed $trigger
-	 * @param  mixed $hook_args
+	 * @param mixed $trigger
+	 * @param mixed $hook_args
+	 *
 	 * @return bool
 	 */
 	public function validate( $trigger, $hook_args ) {
@@ -406,9 +416,10 @@ abstract class Trigger {
 	/**
 	 * process
 	 *
-	 * @param  mixed $recipe_id
-	 * @param  mixed $trigger
-	 * @param  mixed $hook_args
+	 * @param mixed $recipe_id
+	 * @param mixed $trigger
+	 * @param mixed $hook_args
+	 *
 	 * @return void
 	 */
 	protected function process( $recipe_id, $trigger, $hook_args ) {
@@ -453,7 +464,8 @@ abstract class Trigger {
 	/**
 	 * maybe_create_recipe_log_entry
 	 *
-	 * @param  mixed $recipe_id
+	 * @param mixed $recipe_id
+	 *
 	 * @return int
 	 */
 	private function maybe_create_recipe_log_entry( $recipe_id ) {
@@ -474,9 +486,10 @@ abstract class Trigger {
 	/**
 	 * maybe_create_trigger_log_entry
 	 *
-	 * @param  mixed $recipe_id
-	 * @param  mixed $recipe_log_id
-	 * @param  mixed $trigger
+	 * @param mixed $recipe_id
+	 * @param mixed $recipe_log_id
+	 * @param mixed $trigger
+	 *
 	 * @return int
 	 */
 	private function maybe_create_trigger_log_entry( $recipe_id, $recipe_log_id, $trigger ) {
@@ -513,8 +526,9 @@ abstract class Trigger {
 	/**
 	 * hydrate_tokens
 	 *
-	 * @param  mixed $completed_trigger
-	 * @param  mixed $hook_args
+	 * @param mixed $completed_trigger
+	 * @param mixed $hook_args
+	 *
 	 * @return array
 	 */
 	public function hydrate_tokens( $completed_trigger, $hook_args ) {
@@ -524,9 +538,10 @@ abstract class Trigger {
 	/**
 	 * save_tokens
 	 *
-	 * @param  mixed $trigger
-	 * @param  mixed $trigger_records
-	 * @param  mixed $token_values
+	 * @param mixed $trigger
+	 * @param mixed $trigger_records
+	 * @param mixed $token_values
+	 *
 	 * @return void
 	 */
 	public function save_tokens( $trigger, $trigger_records, $token_values ) {

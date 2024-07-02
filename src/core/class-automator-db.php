@@ -362,6 +362,12 @@ KEY recipe_id (`recipe_id`)
 	 * @since 3.0
 	 */
 	public static function create_views() {
+
+		// Return empty if VIEWS are disabled
+		if ( ! AUTOMATOR_DATABASE_VIEWS_ENABLED ) {
+			return;
+		}
+
 		global $wpdb;
 
 		$recipe_view       = "{$wpdb->prefix}uap_recipe_logs_view";
@@ -600,6 +606,11 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	 * @return bool
 	 */
 	public static function is_view_exists( $type = 'recipe' ) {
+
+		if ( ! AUTOMATOR_DATABASE_VIEWS_ENABLED ) {
+			return false;
+		}
+
 		global $wpdb;
 		$recipe_view = '';
 		if ( 'recipe' === $type ) {
@@ -635,6 +646,12 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	 * @version 3.0
 	 */
 	public static function all_views( $return_missing = false ) {
+
+		// Return empty if VIEWS are disabled
+		if ( ! AUTOMATOR_DATABASE_VIEWS_ENABLED ) {
+			return array();
+		}
+
 		global $wpdb;
 		$db      = DB_NAME;
 		$results = $wpdb->get_results( "SHOW FULL TABLES IN `$db` WHERE TABLE_TYPE LIKE '%VIEW%'" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

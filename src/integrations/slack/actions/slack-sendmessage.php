@@ -84,11 +84,17 @@ class SLACK_SENDMESSAGE {
 	 */
 	public function send_message( $user_id, $action_data, $recipe_id, $args ) {
 
-		$message             = array();
-		$message['channel']  = $action_data['meta']['SLACKCHANNEL'];
-		$message['text']     = Automator()->parse->text( $action_data['meta']['SLACKMESSAGE'], $recipe_id, $user_id, $args );
-		$message['username'] = Automator()->parse->text( $action_data['meta']['BOT_NAME'], $recipe_id, $user_id, $args );
-		$message['icon_url'] = Automator()->parse->text( $action_data['meta']['BOT_ICON'], $recipe_id, $user_id, $args );
+		$message            = array();
+		$message['channel'] = $action_data['meta']['SLACKCHANNEL'];
+		$message['text']    = Automator()->parse->text( $action_data['meta']['SLACKMESSAGE'], $recipe_id, $user_id, $args );
+
+		if ( ! empty( $action_data['meta']['BOT_NAME'] ) ) {
+			$message['username'] = Automator()->parse->text( $action_data['meta']['BOT_NAME'], $recipe_id, $user_id, $args );
+		}
+
+		if ( ! empty( $action_data['meta']['BOT_ICON'] ) ) {
+			$message['icon_url'] = Automator()->parse->text( $action_data['meta']['BOT_ICON'], $recipe_id, $user_id, $args );
+		}
 
 		$error_msg = '';
 

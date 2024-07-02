@@ -411,11 +411,25 @@ class Prune_Logs {
 	 *
 	 * @param float $prune_value
 	 *
-	 * @return void
+	 * @return bool
 	 * @throws Exception
 	 */
 	public function prune_logs( $prune_value ) {
 
+		$previous_dt_string = $this->get_datetime_string( $prune_value );
+
+		self::delete_logs_from( $previous_dt_string );
+
+		return true;
+	}
+
+	/**
+	 * @param $prune_value
+	 *
+	 * @return string
+	 * @throws \Exception
+	 */
+	public function get_datetime_string( $prune_value ) {
 		// Validates the input. Throws an Exception if there is an error.
 		$this->validate_input( $prune_value );
 
@@ -426,12 +440,7 @@ class Prune_Logs {
 		$dt->setTimestamp( time() - $days_in_sec );
 		$dt->setTimezone( new DateTimeZone( Automator()->get_timezone_string() ) );
 
-		$previous_dt_string = $dt->format( $this->mysql_timestamp_format );
-
-		self::delete_logs_from( $previous_dt_string );
-
-		return true;
-
+		return $dt->format( $this->mysql_timestamp_format );
 	}
 
 	/**

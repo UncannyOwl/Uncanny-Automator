@@ -7,8 +7,8 @@
  * @class   Actions
  * @since   4.14
  * @version 4.14
- * @package Uncanny_Automator
  * @author  Ajay V.
+ * @package Uncanny_Automator
  */
 
 
@@ -102,9 +102,15 @@ abstract class Action {
 	protected $dependencies;
 
 	/**
+	 * @var bool
+	 */
+	protected $complete_with_notice = false;
+
+	/**
 	 * __construct
 	 *
-	 * @param  mixed $args
+	 * @param mixed $args
+	 *
 	 * @return void
 	 */
 	final public function __construct( ...$args ) {
@@ -132,6 +138,7 @@ abstract class Action {
 			'support_link'          => $this->get_support_link(),
 			'integration'           => $this->get_integration(),
 			'is_pro'                => $this->is_is_pro(),
+			'is_elite'              => $this->is_is_elite(),
 			'is_deprecated'         => $this->is_is_deprecated(),
 			'requires_user'         => $this->get_requires_user(),
 			'code'                  => $this->get_action_code(),
@@ -153,6 +160,9 @@ abstract class Action {
 		return $actions;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function define_tokens() {
 		return array();
 	}
@@ -162,7 +172,8 @@ abstract class Action {
 	 *
 	 * Any errors added using this method will display in the error log if the action failed.
 	 *
-	 * @param  string $error
+	 * @param string $error
+	 *
 	 * @return void
 	 */
 	public function add_log_error( $error ) {
@@ -179,11 +190,28 @@ abstract class Action {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function is_complete_with_notice() {
+		return $this->complete_with_notice;
+	}
+
+	/**
+	 * @param $complete_with_notice
+	 *
+	 * @return void
+	 */
+	public function set_complete_with_notice( $complete_with_notice ) {
+		$this->complete_with_notice = $complete_with_notice;
+	}
+
+
+	/**
 	 * load_options
 	 *
 	 * Override this method to display multi-page options or have more granular control over the sentence/fields
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function load_options() {
 		return array(
@@ -244,9 +272,14 @@ abstract class Action {
 			$error                                     = $this->get_log_errors();
 		}
 
-		if ( null === $result ) {
+		if ( null === $result && ! $this->is_complete_with_notice() ) {
 			$action_data['do_nothing']                 = true;
 			$this->action_data['complete_with_errors'] = true;
+			$error                                     = $this->get_log_errors();
+		}
+
+		if ( null === $result && $this->is_complete_with_notice() ) {
+			$this->action_data['complete_with_notice'] = true;
 			$error                                     = $this->get_log_errors();
 		}
 
@@ -258,8 +291,9 @@ abstract class Action {
 	/**
 	 * get_parsed_meta_value
 	 *
-	 * @param  string $meta
-	 * @param  mixed $default
+	 * @param string $meta
+	 * @param mixed $default
+	 *
 	 * @return mixed
 	 */
 	public function get_parsed_meta_value( $meta, $default = '' ) {

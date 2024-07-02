@@ -411,6 +411,9 @@ class Recipe_Post_Utilities {
 
 			// JW Player 6 for WordPress
 			'jquerySelect2Style',
+
+			// Advanced Custom Fields Pro
+			'acf-input',
 		);
 
 		$conflictive_assets = array(
@@ -488,6 +491,9 @@ class Recipe_Post_Utilities {
 			automator_log( $e->getMessage(), $post_id, AUTOMATOR_DEBUG_MODE, '$core_integrations' );
 		}
 
+		// Add the Create first recipe walkthrough.
+		add_filter( 'automator_get_user_walkthroughs', array( $this, 'should_show_create_recipe_walkthrough' ), 10, 3 );
+
 		$api_setup = array(
 			// UncannyAutomator._recipe
 			'_recipe'        => Automator()->get_recipe_object( $post_id, ARRAY_A ),
@@ -501,6 +507,12 @@ class Recipe_Post_Utilities {
 					// UncannyAutomator._site.rest.nonce
 					'nonce' => \wp_create_nonce( 'wp_rest' ),
 				),
+
+				// UncannyAutomator._site.in_walkthrough_mode
+				// 'in_walkthrough_mode' => $this->should_show_walkthrough(),
+
+				// UncannyAutomator._site.walkthroughs
+				'walkthroughs'        => Automator()->utilities->get_user_walkthroughs( get_current_user_id() ),
 
 				// UncannyAutomator._site.has_debug_enabled
 				'has_debug_enabled'   => (bool) AUTOMATOR_DEBUG_MODE,
@@ -667,6 +679,52 @@ class Recipe_Post_Utilities {
 	private function get_pro_items() {
 
 		return Utilities::get_pro_items_list();
+	}
+
+	/**
+	 * Check user progress for Create first recipe walkthrough.
+	 *
+	 * @param array $walkthroughs
+	 * @param int   $user_id
+	 * @param Automator_User_Walkthroughs $walkthroughs_object
+	 *
+	 * @return array
+	 */
+	public function should_show_create_recipe_walkthrough( $walkthroughs, $user_id, $walkthroughs_object ) {
+
+		$id = 'create-recipe';
+
+		// Check if progress has been set.
+		$create_progress = $walkthroughs_object->get_progress_by_id( $id, false );
+		if ( ! empty( $create_progress ) ) {
+			// If progress has already been set, return it with defaults parsed.
+			$walkthroughs[ $id ] = $walkthroughs_object->get_progress_by_id( $id );
+			return $walkthroughs;
+		}
+
+		// Check if current user has any published recipes.
+		$user_recipes = get_posts(
+			array(
+				'post_type' => 'uo-recipe',
+				'author'    => $user_id,
+				'status'    => 'publish',
+				'fields'    => 'ids',
+			)
+		);
+
+		// Set our progress to enabled.
+		$progress = array(
+			'show' => count( $user_recipes ) > 0 ? 0 : 1,
+			'step' => '',
+		);
+
+		// Save the progress so we don't run the checks every time.
+		$walkthroughs_object->set_progress_by_id( $id, $progress );
+
+		// Return walkthrough with enabled status.
+		$walkthroughs[ $id ] = $walkthroughs_object->get_progress_by_id( $id );
+
+		return $walkthroughs;
 	}
 
 	/**
@@ -924,7 +982,37 @@ class Recipe_Post_Utilities {
 			case 'recipe_status':
 				$post_status = get_post_status( $post_id );
 				echo 'publish' === $post_status ? '<span class="dashicons dashicons-yes-alt recipe-ui-dash" title="Live"></span>' . esc_html__( 'Live', 'uncanny-automator' ) : '<span class="dashicons dashicons-warning recipe-ui-dash" title="Draft"></span>' . esc_html__( 'Draft', 'uncanny-automator' );
+				break;
+			case 'recipe_notes':
+				$note_meta = get_post_meta( $post_id, 'uap_recipe_notes', true );
+				$notes     = '';
+				if ( ! empty( $note_meta ) ) {
+					// Limit the text 10 words.
+					$limited_text = wp_trim_words( $note_meta, 10, '...' );
+					$show_full    = strlen( $note_meta ) > strlen( $limited_text );
+					$limited_aria = $show_full ? 'false' : 'true';
 
+					// Create a wrapper.
+					$notes = '<div class="recipe-ui-list-notes__wrapper">';
+
+					// Add a span with the limited text.
+					$notes .= sprintf(
+						'<span class="recipe-ui-list-notes__limited" aria-hidden="%s">%s</span>',
+						esc_attr( $limited_aria ),
+						esc_html( $limited_text )
+					);
+
+					// Add another span with the full text (hidden by default).
+					if ( $show_full ) {
+						$notes .= sprintf(
+							'<span class="recipe-ui-list-notes__full" aria-hidden="false">%s</span>',
+							nl2br( esc_textarea( $note_meta ) )
+						);
+					}
+
+					$notes .= '</div>';
+				}
+				echo $notes;
 				break;
 		}
 	}
@@ -950,6 +1038,7 @@ class Recipe_Post_Utilities {
 				/* translators: The number of times a recipe was completed */
 				$new_columns['runs']          = esc_attr__( 'Completed runs', 'uncanny-automator' );
 				$new_columns['recipe_status'] = esc_attr__( 'Recipe status', 'uncanny-automator' );
+				$new_columns['recipe_notes']  = esc_attr__( 'Notes', 'uncanny-automator' );
 				$new_columns[ $key ]          = $column;
 
 			} else {

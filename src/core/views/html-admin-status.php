@@ -645,7 +645,15 @@ $automator_stats    = $report['automator_stats'];
 				<td>
 					<?php
 					if ( ! $table_data ) {
-						echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Table does not exist', 'uncanny-automator' ) . '</mark>';
+
+						$view_or_table_missing_message =
+							strpos( $table, '_view' )
+								? ( AUTOMATOR_DATABASE_VIEWS_ENABLED
+								? __( 'View does not exist', 'uncanny-automator' )
+								: __( 'DB view is disabled by site administrator', 'uncanny-automator' ) )
+								: __( 'Table does not exist', 'uncanny-automator' );
+
+						echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . $view_or_table_missing_message . '</mark>';
 					} else {
 						/* Translators: %1$f: Table size, %2$f: Index size, %3$s Engine. */
 						printf( esc_html__( 'Data: %1$.2fMB + Index: %2$.2fMB + Engine %3$s', 'uncanny-automator' ), esc_html( $table_data['data'] ), esc_html( $table_data['index'] ), esc_html( $table_data['engine'] ) );

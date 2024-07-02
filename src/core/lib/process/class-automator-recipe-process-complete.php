@@ -869,13 +869,21 @@ class Automator_Recipe_Process_Complete {
 		$maybe_error = Automator()->db->action->get_error_message( $recipe_log_id );
 
 		if ( ! empty( $maybe_error ) ) {
+
 			$skip     = false;
 			$message  = $maybe_error->error_message;
 			$complete = $maybe_error->completed;
 
-			if ( strpos( $message, 'Existing user found matching' ) || strpos( $message, 'User not found matching' ) || strpos( $message, 'User found matching' ) ) {
+			// Determine whether the error message is coming from the user selector.
+			$is_user_selector_matching_message = self::is_user_selector_matching_message( $message );
+
+			// Determine whether the user selector has created or has failed creating a new user.
+			$is_user_selector_user_creation_message = self::is_user_selector_user_creation_message( $message );
+
+			// @^todo: The following if-then-else logic could be wrapped in a method with a filter, and the user-selector logic could be moved to pro that applies the filter to invoke its logic.
+			if ( $is_user_selector_matching_message ) {
 				$skip = true;
-			} elseif ( strpos( $message, 'New user created' ) || strpos( $message, 'Create new user failed' ) ) {
+			} elseif ( $is_user_selector_user_creation_message ) {
 				$skip = true;
 			} elseif ( Automator_Status::DID_NOTHING === (int) $complete ) {
 				$skip = true;
@@ -899,8 +907,19 @@ class Automator_Recipe_Process_Complete {
 				}
 			}
 
-			// At this point the action has completed with error. Determine if there are any scheduled actions and mark it as 'In progress with error'.
-			if ( $scheduled_actions_count > 0 ) {
+			// Determine whether there are any user selector notices.
+			$contains_user_selector_notice = $is_user_selector_matching_message || $is_user_selector_user_creation_message;
+
+			/**
+			 * If there are any actions that has completed with errors already
+			 * and the recipe contains atleast one action that is in-progress,
+			 * Complete the recipe with 'In progress with errors'.
+			 *
+			 * @^todo - Conflicting logic with user-selector: See task for reference #https://app.clickup.com/t/8688p3bxk
+			 *
+			 * @since 5.8.0.3 - Added condition to handle user selector notice.
+			 */
+			if ( $scheduled_actions_count > 0 && ! $contains_user_selector_notice ) {
 				Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, Automator_Status::IN_PROGRESS_WITH_ERROR );
 			}
 		}
@@ -921,6 +940,65 @@ class Automator_Recipe_Process_Complete {
 
 		return true;
 	}
+
+	/**
+	 * Determines whether the error message is from user selector's user creation.
+	 *
+	 * @param string $error_message
+	 *
+	 * @todo - Maybe move from free to pro.
+	 *
+	 * @return boolean
+	 */
+	public static function is_user_selector_user_creation_message( $error_message ) {
+
+		$error_message = strtolower( $error_message );
+		$substrings    = array( 'new user created', 'creating a new user failed' );
+
+		return self::substring_exists( $substrings, $error_message );
+	}
+
+	/**
+	 * Determine whether the error message is coming from user selector's user matching.
+	 *
+	 * @param string $error_message
+	 *
+	 * @todo - Maybe move from free to pro.
+	 *
+	 * @return boolean
+	 */
+	public static function is_user_selector_matching_message( $error_message ) {
+
+		$error_message = strtolower( $error_message );
+		$substrings    = array( 'existing user was found', 'user was not found', 'user found matching' );
+
+		return self::substring_exists( $substrings, $error_message );
+
+	}
+
+	/**
+	 * Determine whether any of the strings existing in a specific string.
+	 *
+	 * @param string[] $substrings
+	 * @param string $string
+	 *
+	 * @todo - Maybe move in utility.
+	 *
+	 * @return bool
+	 */
+	private static function substring_exists( $substrings, $string ) {
+
+		foreach ( $substrings as $substring ) {
+			// Check if the substring is found within the larger string.
+			if ( strpos( $string, $substring ) !== false ) {
+				return true; // If any substring is found, return true.
+			}
+		}
+
+		// If we reach here, none of the substrings were found.
+		return false;
+	}
+
 
 	/**
 	 * Complete all closures in recipe
@@ -962,7 +1040,7 @@ class Automator_Recipe_Process_Complete {
 
 			if ( 1 === Automator()->plugin_status->get( $closure_integration ) && 'publish' === $closure_status ) {
 
-				// Log the entry before doing a redirect. 👾
+				// Log the entry before doing a redirect.
 				$log_id = Automator()->db->closure->add_entry( $log_args );
 
 				// The plugin for this action is active .. execute

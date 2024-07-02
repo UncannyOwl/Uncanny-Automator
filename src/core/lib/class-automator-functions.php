@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+use Exception;
+use Uncanny_Automator\Resolver\Fields_Shared_Callable;
+use WP_Error;
+
 /**
  * Class Automator_Functions
  *
@@ -722,8 +726,8 @@ class Automator_Functions {
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$t_id                                                     = absint( $t_id );
-						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$t_id   = absint( $t_id );
+						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
@@ -731,7 +735,7 @@ class Automator_Functions {
 				// Add action tokens to recipe_objects.
 				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
 					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
-						$recipe_action_id                                                    = absint( $recipe_action_id );
+						$recipe_action_id = absint( $recipe_action_id );
 						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'], $recipe_action_id, $recipe_id );
 					}
 				}
@@ -899,7 +903,7 @@ class Automator_Functions {
 				}
 
 				// If the callback is found, execute it
-				$callback_response = call_user_func( $callback );
+				$callback_response = $this->get_options_from_callable( $type, $item_code, $callback );
 
 				// If the callback is found, execute it
 				$extra_options[ $integration ][ $item_code ] = apply_filters( 'automator_options_callback_response', $callback_response, $callback, $item, $recipe, $type );
@@ -910,6 +914,47 @@ class Automator_Functions {
 		update_post_meta( $recipe['ID'], 'extra_options', $extra_options );
 
 		return $extra_options;
+	}
+
+	/**
+	 * Retrieve the callable return data from the shared callable fields class.
+	 *
+	 * This function initializes an instance of Fields_Shared_Callable, sets it up using the provided
+	 * type and item code, and then executes the provided callback to retrieve the fields options.
+	 *
+	 * @param string   $type      The type of the fields to retrieve. Required.
+	 * @param string   $item_code The item code associated with the fields. Required.
+	 * @param callable $callback  A callable function to process and retrieve the fields options. Required.
+	 * @param Fields_Shared_Callable|null $fields Instance of Fields_Shared_Callable for easier mocking. Optional.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @return mixed[] The fields options array, as returned by the callback.
+	 *                 If the callback is not callable, it triggers a doing_it_wrong notice and returns an empty array.
+	 */
+	public function get_options_from_callable( $type, $item_code, $callback, $fields = null ) {
+
+		// Validate that the provided callback is indeed callable.
+		if ( ! is_callable( $callback ) ) {
+			doing_it_wrong( __FUNCTION__, 'The $callback parameter must be a valid callable.', '5.9.0' );
+			return array();
+		}
+
+		// Create a new Fields_Shared_Callable object.
+		if ( $fields === null ) {
+			$fields = Fields_Shared_Callable::get_instance();
+		}
+
+		// Set up the instance with the provided type and item code, then execute the callback to get the options.
+		try {
+			$options = $fields->with_parameters( $type, $item_code )->get_callable( $callback );
+		} catch ( Exception $e ) {
+			// Trigger a notice and return an empty array.
+			doing_it_wrong( __FUNCTION__, 'Exception: ' . $e->getMessage(), '5.9.0' );
+			return array();
+		}
+
+		return $options;
 	}
 
 	/**
@@ -999,6 +1044,9 @@ WHERE pm.post_id
 					} else {
 						//Attempt to return Trigger ID for magic button
 						foreach ( $array['meta'] as $mk => $mv ) {
+							if ( null === $mv ) {
+								continue;
+							}
 							if ( 'code' === (string) trim( $mk ) && 'WPMAGICBUTTON' === (string) trim( $mv ) ) {
 								$triggers[ $trigger_id ]['meta']['WPMAGICBUTTON'] = $trigger_id;
 							}
@@ -1341,7 +1389,7 @@ WHERE pm.post_id
 	 * @param int $recipe_id The recipe ID.
 	 * @param bool $show_draft Whether to show the draft actions or not.
 	 *
-	 * @return array|object|null — Database query results.
+	 * @return array|object|null
 	 */
 	public function get_recipe_actions( $recipe_id = 0, $show_draft = false ) {
 

@@ -69,7 +69,7 @@ $this->disconnect_url = $this->functions->get_disconnect_url();
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Post to X/Twitter directly from your WordPress site – no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers.', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Post to X/Twitter directly from your WordPress site - no third-party software or per-transaction fees required. Automatically tweet new articles, sales and other milestones based on any combination of triggers.', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
