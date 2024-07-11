@@ -209,11 +209,17 @@ class SureCart_Tokens {
 	public function billing_tokens() {
 
 		$tokens = array(
-			'BILLING_NAME'  => array(
+			'BILLING_NAME'       => array(
 				'name' => __( 'Billing name', 'uncanny-automator' ),
 			),
-			'BILLING_EMAIL' => array(
+			'BILLING_EMAIL'      => array(
 				'name' => __( 'Billing email', 'uncanny-automator' ),
+			),
+			'BILLING_FIRST_NAME' => array(
+				'name' => __( 'Billing first name', 'uncanny-automator' ),
+			),
+			'BILLING_LAST_NAME'  => array(
+				'name' => __( 'Billing last name', 'uncanny-automator' ),
 			),
 		);
 
@@ -413,8 +419,10 @@ class SureCart_Tokens {
 		}
 
 		$parsed = $parsed + array(
-			'BILLING_NAME'  => empty( $checkout->name ) ? '' : $checkout->name,
-			'BILLING_EMAIL' => empty( $checkout->email ) ? '' : $checkout->email,
+			'BILLING_NAME'       => empty( $checkout->name ) ? '' : $checkout->name,
+			'BILLING_FIRST_NAME' => empty( $checkout->first_name ) ? '' : $checkout->first_name,
+			'BILLING_LAST_NAME'  => empty( $checkout->last_name ) ? '' : $checkout->last_name,
+			'BILLING_EMAIL'      => empty( $checkout->email ) ? '' : $checkout->email,
 		);
 
 		return apply_filters( 'automator_surecart_hydrate_billing_tokens', $parsed, $data );

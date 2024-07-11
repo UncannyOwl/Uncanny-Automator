@@ -424,10 +424,17 @@ class MC_EVERYONE_ADD_CONTACT {
 				$status = 'pending';
 			}
 
+			$merge_fields = array_filter(
+				$key_values,
+				function( $value ) {
+					return ! empty( trim( $value ) );
+				}
+			);
+
 			$user_data = array(
 				'email_address' => $email,
 				'status'        => $status,
-				'merge_fields'  => $key_values,
+				'merge_fields'  => $merge_fields,
 				'language'      => $lang_code,
 				'interests'     => $user_interests,
 			);

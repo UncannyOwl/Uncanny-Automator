@@ -9,6 +9,8 @@ use Uncanny_Automator\Google_Sheet_Helpers;
 
 if ( $this->client ) { ?>
 
+	<?php $nonce = wp_create_nonce( 'automator_google_sheet_remove_spreadsheet' ); ?>
+
 <h5 class="uap-spacing-top">
 	<?php echo esc_html_x( 'Spreadsheets', 'Google Sheets', 'uncanny-automator' ); ?>
 </h5>
@@ -23,7 +25,6 @@ if ( $this->client ) { ?>
 			<tbody>
 				<?php foreach ( $spreadsheets as $spreadsheet ) { ?>
 					<tr class="item">
-					<?php $nonce = wp_create_nonce( 'automator_google_sheet_remove_spreadsheet' ); ?>
 					<?php $remove_url = admin_url( "admin-ajax.php?nonce={$nonce}&action=automator_google_sheet_remove_spreadsheet&id={$spreadsheet['id']}" ); ?>
 					<?php if ( isset( $spreadsheet['name'] ) ) { ?>
 						<td>
@@ -73,7 +74,9 @@ if ( $this->client ) { ?>
 </div>
 
 <script>
-
+/**
+ * The delete placeholder.
+ */
 let deleteUrlPlaceHolder = '<?php echo admin_url( "admin-ajax.php?nonce={$nonce}&action=automator_google_sheet_remove_spreadsheet&id={{__ID__}}" ); ?>';
 
 /**

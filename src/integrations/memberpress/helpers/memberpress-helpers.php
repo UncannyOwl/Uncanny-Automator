@@ -78,10 +78,15 @@ class Memberpress_Helpers {
 		$options = array();
 
 		if ( $args['uo_include_any'] ) {
-			$options[- 1] = $args['uo_any_label'];
+			$options['-1'] = $args['uo_any_label'];
 		}
 
-		$options = Automator()->helpers->recipe->options->wp_query( array( 'post_type' => 'memberpressproduct' ) );
+		$results = Automator()->helpers->recipe->options->wp_query( array( 'post_type' => 'memberpressproduct' ) );
+		if ( ! empty( $results ) ) {
+			foreach ( $results as $k => $v ) {
+				$options[ $k ] = $v;
+			}
+		}
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -129,7 +134,7 @@ class Memberpress_Helpers {
 		$options = array();
 
 		if ( $args['uo_include_any'] ) {
-			$options[- 1] = $args['uo_any_label'];
+			$options['-1'] = $args['uo_any_label'];
 		}
 
 		//$posts   = get_posts( );
@@ -145,7 +150,14 @@ class Memberpress_Helpers {
 				),
 			),
 		);
-		$options    = array_merge( $options, Automator()->helpers->recipe->wp_query( $query_args ) );
+
+		$results = Automator()->helpers->recipe->wp_query( $query_args );
+
+		if ( ! empty( $results ) ) {
+			foreach ( $results as $k => $v ) {
+				$options[ $k ] = $v;
+			}
+		}
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -193,7 +205,7 @@ class Memberpress_Helpers {
 		$options = array();
 
 		if ( $args['uo_include_any'] ) {
-			$options[- 1] = $args['uo_any_label'];
+			$options['-1'] = $args['uo_any_label'];
 		}
 
 		$query_args = array(
@@ -208,7 +220,13 @@ class Memberpress_Helpers {
 				),
 			),
 		);
-		$options    = array_merge( $options, Automator()->helpers->recipe->wp_query( $query_args ) );
+
+		$results = Automator()->helpers->recipe->wp_query( $query_args );
+		if ( ! empty( $results ) ) {
+			foreach ( $results as $k => $v ) {
+				$options[ $k ] = $v;
+			}
+		}
 
 		$option = array(
 			'option_code'     => $option_code,

@@ -99,10 +99,25 @@ class Log_Endpoint {
 			$memory_usage_initial = memory_get_usage();
 		}
 
+		$response = $this->build_response( $params );
+
+		if ( empty( $response ) ) {
+			return array(
+				'success' => false,
+				'error'   => array(
+					'code'    => 'LOG_NOT_FOUND',
+					'message' => __( 'The recipe log you are looking for was not found', 'uncanny-automator' ),
+					'details' => array(
+						'build_response_output' => $response,
+					),
+				),
+			);
+		}
+
 		// Return the response.
 		$data = array(
 			'success' => true,
-			'data'    => $this->build_response( $params ),
+			'data'    => $response,
 		);
 
 		if ( 1 === $params['enable_profiling'] ) {
@@ -270,8 +285,6 @@ class Log_Endpoint {
 
 			$dt = new \DateTime( $date );
 			$dt->setTimezone( new \DateTimeZone( Automator()->get_timezone_string() ) );
-
-			require_once __DIR__ . '/log-endpoint/utils/formatters-utils.php';
 
 			return Formatters_Utils::date_time_format( $dt->format( 'Y-m-d H:i:s' ) );
 

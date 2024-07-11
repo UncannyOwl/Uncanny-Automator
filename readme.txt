@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.4
 Tested up to: 6.5.5
 Requires PHP: 7.0
-Stable tag: 5.9
+Stable tag: 5.9.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -28,7 +28,7 @@ If you've used Zapier, setting things up will be intuitive. And if not, that's o
 
 = E-commerce Automation =
 
-Improve customer engagement by having your purchases trigger marketing automation campaigns, award store credit, promote 5-star reviews, schedule time-limited bonus offers and offer profile-driven discounts. Or for advanced reporting and customer service, create WooCommerce automations that send purchase details to Google Sheets, Slack and ActiveCampaign. It all happens automatically!
+Improve customer engagement by having your purchases trigger marketing automation campaigns, award store credit, promote 5-star reviews, schedule time-limited bonus offers and offer profile-driven discounts. Or for advanced reporting and customer service, create WooCommerce automations that send purchase details to Google Sheets, Slack and ActiveCampaign with our native integrations. It all happens automatically!
 
 = Google Sheets Automation =
 
@@ -56,7 +56,7 @@ Integrate your favourite CRM with your WordPress plugins for full marketing auto
 
 = Free doesn't mean limited =
 
-The free version of Automator is incredibly powerful and comes with built-in automation support for all of these popular apps and WordPress plugins:
+The free version of Automator is incredibly powerful and comes with built-in automation and integration support for all of these popular apps and WordPress plugins:
 
 = Supported apps =
 
@@ -274,7 +274,7 @@ And here are some of the key features in the Pro version that allow incredibly f
 - [Run any WordPress hook](https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/) or [call custom functions](https://automatorplugin.com/knowledge-base/call-a-custom-function-method/) in your recipes.
 - Automatic [log pruning](https://automatorplugin.com/knowledge-base/using-automator-logs/#cleaning-up-the-logs) to keep log size down.
 
-Business licenses and higher get access to our [Custom User Fields Addon](https://automatorplugin.com/custom-user-fields-addon/?utm_source=wp_repo_automator&utm_medium=readme) addon, which makes it really easy to create and manage user profile fields in WordPress. Automatically add new fields to user edit pages and connect fields to your recipes and plugins like Advanced Custom Fields.
+Plus licenses and higher get access to our [Custom User Fields](https://automatorplugin.com/custom-user-fields-addon/?utm_source=wp_repo_automator&utm_medium=readme), [Restrict Content](https://automatorplugin.com/restrict-content-addon/?utm_source=wp_repo_automator&utm_medium=readme), and [User Lists](https://automatorplugin.com/user-lists-addon/?utm_source=wp_repo_automator&utm_medium=readme) addons which makes it really easy to create and manage user profile fields in WordPress. Automatically add new fields to user edit pages and connect fields to your recipes and plugins like Advanced Custom Fields.
 
 An [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_support) license also includes access to our world-class premium support. 
 
@@ -296,7 +296,7 @@ You can learn more about Uncanny Automator on our website at [https://automatorp
 
 = How do I get started with my first automation? =
 
-Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=how_to_create_first_automation). Don't forget to watch the video there. Hopefully it will be the first recipe of many!
+Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=how_to_create_first_automation). There's also an onboarding wizard inside the plugin to help you build your first recipe. Hopefully it will be the first of many!
 
 = Will Uncanny Automator slow down my website? =
 
@@ -358,6 +358,22 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.9.1 [2024-07-11] =
+
+**New Token:**
+
+* SureCart - Billing first name and Billing last name #4868
+
+**Fixed:**
+
+* Fluent Support - A user receives a reply from an agent - Typo in return statement #4866
+* Forminator - Date field tokens not rendering consistently depending on field settings #4831
+* Google Sheets - Settings page - Undefined `$nonce` variable issue #4864
+* MailChimp - Add a contact to an audience - Leaving fields blank removes the existing value #4845
+* MailChimp - Add the user to an audience - Leaving fields blank removes the existing value #4859
+* MemberPress - A user purchases a recurring subscription product - The 'Any' option is not showing correctly in dropdown #4842
+* Recipe Logs - Sending fetch requests in a loop when viewing a deleted trigger #4815
 
 = 5.9 [2024-07-02] =
 
@@ -440,7 +456,6 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * User Loop and Token Parser - Usermeta token not parsing in Scheduled recipe #4762
 * Zoom - JWT dependancy removed #4677
 * Rearrange `file_exist` check. #4779
-
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

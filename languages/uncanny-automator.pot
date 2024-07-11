@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 5.9\n"
+"Project-Id-Version: Uncanny Automator 5.9.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-02T17:13:58+00:00\n"
+"POT-Creation-Date: 2024-07-11T15:00:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: uncanny-automator\n"
@@ -5175,7 +5175,7 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:145
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:683
-#: src/integrations/surecart/tokens/surecart-tokens.php:592
+#: src/integrations/surecart/tokens/surecart-tokens.php:600
 msgid "day"
 msgid_plural "days"
 msgstr[0] ""
@@ -5188,7 +5188,7 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:149
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:689
-#: src/integrations/surecart/tokens/surecart-tokens.php:598
+#: src/integrations/surecart/tokens/surecart-tokens.php:606
 msgid "year"
 msgid_plural "years"
 msgstr[0] ""
@@ -7712,6 +7712,10 @@ msgstr ""
 
 #: src/core/services/email-tester/email-tester.php:184
 msgid "Uncanny Automator Test"
+msgstr ""
+
+#: src/core/services/rest/endpoint/log-endpoint.php:109
+msgid "The recipe log you are looking for was not found"
 msgstr ""
 
 #. translators: Units of time (seconds)
@@ -13951,7 +13955,7 @@ msgstr ""
 #: src/integrations/edd/helpers/edd-helpers.php:74
 #: src/integrations/edd/triggers/edd-anon-product-purchase.php:51
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:666
-#: src/integrations/surecart/tokens/surecart-tokens.php:575
+#: src/integrations/surecart/tokens/surecart-tokens.php:583
 msgid "Download"
 msgstr ""
 
@@ -14130,8 +14134,8 @@ msgstr ""
 
 #: src/integrations/edd/triggers/edd-productpurchase.php:61
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:67
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:118
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:182
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:123
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:194
 #: src/integrations/studiocart/helpers/studiocart-helpers.php:60
 #: src/integrations/surecart/helpers/surecart-helpers.php:45
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:65
@@ -16326,32 +16330,32 @@ msgctxt "Google Sheets"
 msgid "Learn more"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:13
+#: src/integrations/google-sheet/settings/file-picker-view.php:15
 msgctxt "Google Sheets"
 msgid "Spreadsheets"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:17
+#: src/integrations/google-sheet/settings/file-picker-view.php:19
 msgctxt "Google Sheets"
 msgid "The following spreadsheets are available for selection in the recipe editor:"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:52
+#: src/integrations/google-sheet/settings/file-picker-view.php:53
 msgctxt "Google Sheets"
 msgid "There are currently no spreadsheets selected"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:53
+#: src/integrations/google-sheet/settings/file-picker-view.php:54
 msgctxt "Google Sheets"
 msgid "Click the button below to select sheets"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:59
+#: src/integrations/google-sheet/settings/file-picker-view.php:60
 msgctxt "Google Sheets"
 msgid "An error occurred while authorizing the request to use File selection feature."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:70
+#: src/integrations/google-sheet/settings/file-picker-view.php:71
 msgctxt "Google Sheets"
 msgid "Select new sheet(s)"
 msgstr ""
@@ -19516,9 +19520,9 @@ msgctxt "Memberpress"
 msgid "Course ID"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:93
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:157
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:220
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:98
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:169
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:238
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:37
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:85
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:89
@@ -19527,9 +19531,9 @@ msgstr ""
 msgid "Product title"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:94
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:158
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:221
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:99
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:170
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:239
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:44
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:45
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:167
@@ -19542,9 +19546,9 @@ msgstr ""
 msgid "Product ID"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:95
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:159
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:222
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:100
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:171
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:240
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:51
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:87
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:88
@@ -19553,8 +19557,8 @@ msgstr ""
 msgid "Product URL"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:96
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:160
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:101
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:172
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:88
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:90
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:62
@@ -19562,8 +19566,8 @@ msgstr ""
 msgid "Product featured image ID"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:97
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:161
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:102
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:173
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:89
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:91
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:63
@@ -19571,19 +19575,19 @@ msgstr ""
 msgid "Product featured image URL"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:125
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:130
 msgid "Any one-time subscription product"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:189
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:201
 msgid "Any recurring subscription product"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:223
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:241
 msgid "Product featureed image ID"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:224
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:242
 msgid "Product featureed image URL"
 msgstr ""
 
@@ -21861,34 +21865,34 @@ msgstr ""
 
 #. translators: 1. recurring count 2. recurring interval.
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:565
-#: src/integrations/surecart/tokens/surecart-tokens.php:474
+#: src/integrations/surecart/tokens/surecart-tokens.php:482
 msgid " every %1$d %2$s"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:585
-#: src/integrations/surecart/tokens/surecart-tokens.php:494
+#: src/integrations/surecart/tokens/surecart-tokens.php:502
 msgid "One Time"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:588
-#: src/integrations/surecart/tokens/surecart-tokens.php:497
+#: src/integrations/surecart/tokens/surecart-tokens.php:505
 msgid "Plan"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:592
-#: src/integrations/surecart/tokens/surecart-tokens.php:501
+#: src/integrations/surecart/tokens/surecart-tokens.php:509
 msgid "Subscription"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:685
-#: src/integrations/surecart/tokens/surecart-tokens.php:594
+#: src/integrations/surecart/tokens/surecart-tokens.php:602
 msgid "week"
 msgid_plural "weeks"
 msgstr[0] ""
 msgstr[1] ""
 
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:687
-#: src/integrations/surecart/tokens/surecart-tokens.php:596
+#: src/integrations/surecart/tokens/surecart-tokens.php:604
 msgid "month"
 msgid_plural "months"
 msgstr[0] ""
@@ -21913,6 +21917,20 @@ msgstr ""
 #: src/integrations/woocommerce/tokens/wc-tokens.php:40
 #: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:71
 msgid "Billing email"
+msgstr ""
+
+#: src/integrations/surecart/tokens/surecart-tokens.php:219
+#: src/integrations/wc-memberships/tokens/wcm-tokens.php:72
+#: src/integrations/wholesale-suite/tokens/wss-tokens.php:96
+#: src/integrations/woocommerce/tokens/wc-tokens.php:28
+msgid "Billing first name"
+msgstr ""
+
+#: src/integrations/surecart/tokens/surecart-tokens.php:222
+#: src/integrations/wc-memberships/tokens/wcm-tokens.php:73
+#: src/integrations/wholesale-suite/tokens/wss-tokens.php:97
+#: src/integrations/woocommerce/tokens/wc-tokens.php:29
+msgid "Billing last name"
 msgstr ""
 
 #. translators: SureMembers access group name
@@ -23626,18 +23644,6 @@ msgstr ""
 
 #: src/integrations/wc-memberships/helpers/wc-memberships-helpers.php:78
 msgid "Membership post ID"
-msgstr ""
-
-#: src/integrations/wc-memberships/tokens/wcm-tokens.php:72
-#: src/integrations/wholesale-suite/tokens/wss-tokens.php:96
-#: src/integrations/woocommerce/tokens/wc-tokens.php:28
-msgid "Billing first name"
-msgstr ""
-
-#: src/integrations/wc-memberships/tokens/wcm-tokens.php:73
-#: src/integrations/wholesale-suite/tokens/wss-tokens.php:97
-#: src/integrations/woocommerce/tokens/wc-tokens.php:29
-msgid "Billing last name"
 msgstr ""
 
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:74

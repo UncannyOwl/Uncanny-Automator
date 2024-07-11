@@ -84,7 +84,7 @@ class FLSUPPORT_TICKETREPLIEDAGENT {
 		}
 
 		if ( 0 === intval( $customer->user_id ) ) {
-			returm;
+			return;
 		}
 
 		$trigger_user_id = $customer->user_id;
