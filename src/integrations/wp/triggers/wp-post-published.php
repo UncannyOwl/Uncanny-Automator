@@ -2,25 +2,29 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable\Post_Categories;
+
 /**
+ * WP_POST_PUBLISHED
  *
+ * @package Uncanny_Automator
  */
 class WP_POST_PUBLISHED {
 
 	use Recipe\Triggers;
 
 	/**
-	 *
+	 * @var string
 	 */
 	const INTEGRATION = 'WP';
 
 	/**
-	 *
+	 * @var string
 	 */
 	const TRIGGER_CODE = 'WP_POST_PUBLISHED';
 
 	/**
-	 *
+	 * @var string
 	 */
 	const TRIGGER_META = 'WPPOSTTYPES';
 
@@ -56,7 +60,7 @@ class WP_POST_PUBLISHED {
 		$this->set_support_link( Automator()->get_author_support_link( self::TRIGGER_CODE, 'integration/wordpress-core/' ) );
 
 		$this->set_sentence(
-		/* Translators: Trigger sentence */
+			/* Translators: Trigger sentence */
 			sprintf( esc_html__( 'A {{type of post:%1$s}} is published', 'uncanny-automator' ), $this->get_trigger_meta() )
 		);
 
@@ -68,7 +72,7 @@ class WP_POST_PUBLISHED {
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
-		//$this->set_trigger_autocomplete( false );
+		$this->set_loopable_tokens( Wp_Helpers::common_trigger_loopable_tokens() );
 
 		$this->register_trigger();
 
@@ -85,7 +89,6 @@ class WP_POST_PUBLISHED {
 			array(
 				'token'               => false,
 				'use_zero_as_default' => true,
-			//              'default_value'       => 'post',
 			)
 		);
 

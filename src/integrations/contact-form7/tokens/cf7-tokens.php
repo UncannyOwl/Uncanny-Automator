@@ -60,7 +60,8 @@ class Cf7_Tokens {
 						$meta_key_prefix = 'ANONCF7FORMS_';
 						$form_id         = (int) $trigger['meta']['ANONCF7FORMS'];
 					}
-					$data           = $this->get_data_from_contact_form( $contact_form );
+					$data = $this->get_data_from_contact_form( $contact_form );
+
 					$user_id        = (int) $trigger_result['args']['user_id'];
 					$trigger_log_id = (int) $trigger_result['args']['get_trigger_id'];
 					$run_number     = (int) $trigger_result['args']['run_number'];
@@ -106,8 +107,15 @@ class Cf7_Tokens {
 					$request_tag_name = '';
 					$file             = isset( $_FILES[ $tag->name ] ) && isset( $_FILES[ $tag->name ]['name'] ) ? filter_var( wp_unslash( $_FILES[ $tag->name ]['name'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS ) : null;
 					$request_tag_name = $file ? basename( $file ) : '';
+
+				} elseif ( 'textarea' === $tag->type ) {
+					// Use textarea sanitization for textarea field.
+					$request_tag_name = sanitize_textarea_field( filter_input( INPUT_POST, $tag->name, FILTER_DEFAULT ) );
+
 				} else {
+
 					$request_tag_name = automator_filter_input( $tag->name, INPUT_POST );
+
 					// Try and catch array data.
 					if ( empty( $request_tag_name ) ) {
 						$request_tag_name = automator_filter_input_array( $tag->name, INPUT_POST );
@@ -115,7 +123,7 @@ class Cf7_Tokens {
 				}
 
 				$pipes = $tag->pipes;
-				$value = ! empty( $request_tag_name ) ? Automator()->utilities->automator_sanitize( $request_tag_name, 'mixed' ) : '';
+				$value = ! empty( $request_tag_name ) ? $request_tag_name : '';
 
 				if ( WPCF7_USE_PIPE && $pipes instanceof WPCF7_Pipes && ! $pipes->zero() ) {
 					if ( is_array( $value ) ) {

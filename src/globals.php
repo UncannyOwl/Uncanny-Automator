@@ -87,18 +87,18 @@ if ( ! defined( 'UA_DEBUG_LOGS_DIR' ) ) {
 	define( 'UA_DEBUG_LOGS_DIR', trailingslashit( UA_ABSPATH ) . 'logs' . DIRECTORY_SEPARATOR );
 }
 
-if ( ! defined( 'AUTOMATOR_FREE_STORE_URL' ) ) {
+if ( ! defined( 'AUTOMATOR_STORE_URL' ) ) {
 	/**
 	 * URL of store powering the plugin
 	 */
-	define( 'AUTOMATOR_FREE_STORE_URL', 'https://automatorplugin.com/' );
+	define( 'AUTOMATOR_STORE_URL', 'https://automatorplugin.com/' );
 }
 
-if ( ! defined( 'AUTOMATOR_FREE_LICENSING_URL' ) ) {
+if ( ! defined( 'AUTOMATOR_LICENSING_URL' ) ) {
 	/**
 	 * URL of store powering the plugin
 	 */
-	define( 'AUTOMATOR_FREE_LICENSING_URL', 'https://licensing.uncannyowl.com/' );
+	define( 'AUTOMATOR_LICENSING_URL', 'https://licensing.uncannyowl.com/' );
 }
 
 if ( ! defined( 'AUTOMATOR_API_URL' ) ) {

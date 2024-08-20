@@ -80,9 +80,6 @@ class Facebook_Groups_Helpers {
 		// Add an ajax endpoint for validating groups.
 		add_action( 'wp_ajax_automator_facebook_groups_verify_app_install', array( $this, 'verify_install' ) );
 
-		// Check if token is still valid or not.
-		add_action( 'admin_init', array( $this, 'maybe_add_admin_notice' ) );
-
 		// Defer loading of settings page to current_screen so we can check if its recipe page.
 		add_action(
 			'current_screen',
@@ -120,6 +117,8 @@ class Facebook_Groups_Helpers {
 
 	/**
 	 * Shows  admin notice depending on number of days
+	 *
+	 * @deprecated 5.10
 	 *
 	 * Return void.
 	 */

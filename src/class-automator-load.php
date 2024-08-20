@@ -790,7 +790,7 @@ class Automator_Load {
 	 */
 	public function any_active_recipe() {
 		// Check if cache exists
-		$results = wp_cache_get( 'automator_any_recipes_active', 'automator' );
+		$results = Automator()->cache->get( 'automator_any_recipes_active', 'automator' );
 
 		if ( ! empty( $results ) && 'yes' === $results ) {
 			return true;
@@ -811,7 +811,7 @@ class Automator_Load {
 			}
 
 			// Instead of transient, lets use cache
-			wp_cache_set( 'automator_any_recipes_active', $val, 'automator', 2 * MINUTE_IN_SECONDS );
+			Automator()->cache->set( 'automator_any_recipes_active', $val, 'automator', 2 * MINUTE_IN_SECONDS );
 		}
 
 		return $results;

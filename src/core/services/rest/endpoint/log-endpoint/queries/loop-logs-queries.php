@@ -31,12 +31,17 @@ class Loop_Logs_Queries {
 		$this->db = $wpdb;
 	}
 
+	/**
+	 * @param $params
+	 *
+	 * @return array
+	 */
 	public function get_recipe_loops_logs( $params ) {
 		$results = $this->db->get_results(
 			$this->db->prepare(
 				"SELECT * FROM {$this->db->prefix}uap_loop_entries
-					WHERE recipe_id = %d 
-					AND recipe_log_id = %d 
+					WHERE recipe_id = %d
+					AND recipe_log_id = %d
 					AND run_number = %d
 				",
 				$params['recipe_id'],
@@ -49,11 +54,17 @@ class Loop_Logs_Queries {
 		return (array) $results;
 	}
 
+	/**
+	 * @param $action_id
+	 * @param $params
+	 *
+	 * @return array
+	 */
 	public function get_distinct_statuses( $action_id, $params ) {
 
 		$results = $this->db->get_results(
 			$this->db->prepare(
-				"SELECT DISTINCT(status) 
+				"SELECT DISTINCT(status)
 				FROM {$this->db->prefix}uap_loop_entries_items
 				WHERE action_id = %d
 				AND recipe_id = %d
@@ -80,8 +91,8 @@ class Loop_Logs_Queries {
 		$status_result_count = $this->db->get_var(
 			$this->db->prepare(
 				"SELECT COUNT(*) as `count`
-				FROM {$this->db->prefix}uap_loop_entries_items 
-				WHERE `status` = %s 
+				FROM {$this->db->prefix}uap_loop_entries_items
+				WHERE `status` = %s
 				AND action_id = %d
 				AND recipe_id = %d
 				AND recipe_log_id = %d
@@ -97,13 +108,20 @@ class Loop_Logs_Queries {
 		return absint( $status_result_count );
 	}
 
+	/**
+	 * @param $action_id
+	 * @param $status
+	 * @param $params
+	 *
+	 * @return array
+	 */
 	public function get_entry_items( $action_id, $status, $params ) {
 
 		$results = $this->db->get_results(
 			$this->db->prepare(
 				"SELECT *
-				FROM {$this->db->prefix}uap_loop_entries_items 
-				WHERE `status` = %s 
+				FROM {$this->db->prefix}uap_loop_entries_items
+				WHERE `status` = %s
 				AND action_id = %d
 				AND recipe_id = %d
 				AND recipe_log_id = %d

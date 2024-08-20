@@ -141,6 +141,7 @@ class SHEET_UPDATERECORD {
 					array(
 						'option_code'       => 'WORKSHEET_FIELDS',
 						'input_type'        => 'repeater',
+						'relevant_tokens'   => array(),
 						'label'             => __( 'Row', 'uncanny-automator' ),
 						/* translators: 1. Button */
 						'description'       => '',

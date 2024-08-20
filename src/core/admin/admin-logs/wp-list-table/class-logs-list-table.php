@@ -478,19 +478,19 @@ class Logs_List_Table extends WP_List_Table {
 			$run_number = '&mdash;';
 
 			// Only show run numbers for non errors non in progress, or status with zero.
-			if ( ! in_array(
-				absint( $recipe->recipe_completed ),
-				array(
-					0,
-					Automator_Status::COMPLETED_WITH_ERRORS,
-					Automator_Status::IN_PROGRESS,
-				),
-				true
-			) ) {
+			$status_list = array(
+				Automator_Status::NOT_COMPLETED,
+				Automator_Status::COMPLETED_WITH_ERRORS,
+			);
 
-				// Run #
+			$recipe_status_not_in_list = ! in_array( absint( $recipe->recipe_completed ), $status_list, true );
+
+			if ( $recipe_status_not_in_list ) {
+
+				// Run #.
 				$run_number = 'anonymous' === $current_type ? '&mdash;' : $recipe->run_number;
-				// Run # when it is a anonymous recipe
+
+				// Run # when it is a anonymous recipe.
 				if ( 'anonymous' === $current_type ) {
 					$run_number = '
 						<div class="uap-logs-run-number">

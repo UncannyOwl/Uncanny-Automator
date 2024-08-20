@@ -124,6 +124,7 @@ class MC_EVERYONE_ADD_CONTACT {
 					array(
 						'option_code'       => 'MERGE_FIELDS',
 						'input_type'        => 'repeater',
+						'relevant_tokens'   => array(),
 						'label'             => __( 'Merge fields', 'uncanny-automator' ),
 						/* translators: 1. Button */
 						'description'       => '',
@@ -424,12 +425,7 @@ class MC_EVERYONE_ADD_CONTACT {
 				$status = 'pending';
 			}
 
-			$merge_fields = array_filter(
-				$key_values,
-				function( $value ) {
-					return ! empty( trim( $value ) );
-				}
-			);
+			$merge_fields = automator_array_filter_recursive( $key_values );
 
 			$user_data = array(
 				'email_address' => $email,

@@ -3,6 +3,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable\Post_Categories;
+use Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable\Post_Tags;
 use Uncanny_Automator_Pro\Wp_Pro_Helpers;
 use WP_Error;
 
@@ -17,67 +19,30 @@ class Wp_Helpers {
 	 * @var Wp_Helpers
 	 */
 	public $options;
+
 	/**
 	 * @var Wp_Pro_Helpers
 	 */
 	public $pro;
 
+	/**
+	 * @var true
+	 */
 	public $load_options;
 
 	/**
-	 * Wp_Helpers constructor.
+	 * __construct.
 	 */
 	public function __construct() {
 
 		$this->load_options = true;
 
-		add_action(
-			'wp_ajax_select_custom_post_by_type',
-			array(
-				$this,
-				'select_custom_post_func',
-			)
-		);
-
-		add_action(
-			'wp_ajax_select_post_type_taxonomies',
-			array(
-				$this,
-				'select_post_type_taxonomies',
-			)
-		);
-
-		add_action(
-			'wp_ajax_select_specific_post_type_taxonomies',
-			array(
-				$this,
-				'select_specific_post_type_taxonomies',
-			)
-		);
-
-		add_action(
-			'wp_ajax_select_specific_taxonomy_terms',
-			array(
-				$this,
-				'select_specific_taxonomy_terms',
-			)
-		);
-
-		add_action(
-			'wp_ajax_select_terms_for_selected_taxonomy',
-			array(
-				$this,
-				'select_terms_for_selected_taxonomy',
-			)
-		);
-
-		add_action(
-			'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE',
-			array(
-				$this,
-				'select_posts_by_post_type',
-			)
-		);
+		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
+		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
+		add_action( 'wp_ajax_select_specific_post_type_taxonomies', array( $this, 'select_specific_post_type_taxonomies' ) );
+		add_action( 'wp_ajax_select_specific_taxonomy_terms', array( $this, 'select_specific_taxonomy_terms' ) );
+		add_action( 'wp_ajax_select_terms_for_selected_taxonomy', array( $this, 'select_terms_for_selected_taxonomy' ) );
+		add_action( 'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE', array( $this, 'select_posts_by_post_type' ) );
 
 	}
 
@@ -860,4 +825,19 @@ class Wp_Helpers {
 
 		return false;
 	}
+
+	/**
+	 * Returns the common trigger loopable tokens.
+	 *
+	 * @return array{WP_POST_CATEGORIES: class-string<\Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable\Post_Categories>}
+	 */
+	public static function common_trigger_loopable_tokens() {
+
+		return array(
+			'WP_POST_CATEGORIES' => Post_Categories::class,
+			'WP_POST_TAGS'       => Post_Tags::class,
+		);
+
+	}
+
 }

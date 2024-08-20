@@ -3,6 +3,7 @@
 
 namespace Uncanny_Automator;
 
+use DateTime;
 use Uncanny_Automator_Pro\Woocommerce_Pro_Helpers;
 
 /**
@@ -195,4 +196,146 @@ class Woocommerce_Helpers {
 			)
 		);
 	}
+
+	/**
+	 * Retrieves orders for a specific user in WooCommerce within a specified date range.
+	 *
+	 * @param int|null $user_id The ID of the user whose orders are being retrieved. Pass null to fetch site orders.
+	 * @param mixed $date_filter DateTime object or string ('24_hours', 'weekly', 'monthly', 'yearly').
+	 * @return array|false An array of orders with details or false on failure.
+	 */
+	public static function get_user_orders( $user_id = null, $date_filter = null ) {
+
+		// Ensure WooCommerce functions are available.
+		if ( ! class_exists( '\WC_Order_Query' ) ) {
+			return false; // WooCommerce is not active or not available.
+		}
+
+		// Determine the date range for fetching orders.
+		$date_after = null;
+
+		if ( $date_filter instanceof \DateTime ) {
+
+			$date_after = $date_filter->getTimestamp(); // Use timestamp.
+
+		} elseif ( is_string( $date_filter ) ) {
+
+			switch ( $date_filter ) {
+				case '24_hours':
+					$date_after = ( new \DateTime( '-24 hours' ) )->getTimestamp();
+					break;
+				case 'weekly':
+					$date_after = ( new \DateTime( '-7 days' ) )->getTimestamp();
+					break;
+				case 'monthly':
+					$date_after = ( new \DateTime( '-30 days' ) )->getTimestamp();
+					break;
+				case 'yearly':
+					$date_after = ( new \DateTime( '-365 days' ) )->getTimestamp();
+					break;
+				default:
+					return false; // Invalid date filter string provided.
+			}
+		}
+
+		// Set up query arguments.
+		$args = array(
+			'limit'   => 99999, // Retrieve all orders.
+			'orderby' => 'date',
+			'order'   => 'DESC',
+		);
+
+		if ( ! empty( $user_id ) ) {
+			$args['customer_id'] = $user_id;
+		}
+
+		if ( $date_after ) {
+			$args['date_created'] = '>' . $date_after;
+		}
+
+		// Fetch orders using WC_Order_Query.
+		$order_query = new \WC_Order_Query( $args );
+		$orders      = $order_query->get_orders();
+
+		// Check if any orders were found.
+		if ( empty( $orders ) ) {
+			return false; // No orders found for this user.
+		}
+
+		$orders_data = array();
+
+		// Loop through each order and gather relevant details.
+		foreach ( $orders as $order ) {
+			// Ensure $order is a valid \WC_Order object.
+			if ( ! is_object( $order ) || ! ( $order instanceof \WC_Order ) ) {
+				continue; // Skip if the object is not a valid order.
+			}
+
+			$order_items = array();
+
+			// Get the items associated with the order.
+			foreach ( $order->get_items() as $item_id => $item ) {
+				$product = $item->get_product();
+
+				if ( ! $product ) {
+					continue; // Skip if the product is not found or no longer exists.
+				}
+
+				// Format item details as a comma-separated string.
+				$order_items[] = sprintf(
+					'%s (ID: %d, Quantity: %d, Total: %s)',
+					$product->get_name(),
+					$product->get_id(),
+					$item->get_quantity(),
+					wc_price( $item->get_total() )
+				);
+			}
+
+			// Join the order items into a single string, separated by commas.
+			$order_items_string = implode( ', ', $order_items );
+
+			$orders_data[] = array(
+				'order_id'     => $order->get_id(),
+				'date_created' => $order->get_date_created()->date( 'Y-m-d H:i:s' ),
+				'total'        => $order->get_total(),
+				'status'       => $order->get_status(),
+				'items'        => wp_strip_all_tags( $order_items_string ),
+			);
+		}
+
+		// Return the orders data or false if no valid orders were processed.
+		return ! empty( $orders_data ) ? $orders_data : false;
+	}
+
+	/**
+	 * Returns all timed orders loopable tokens.
+	 *
+	 * @return string[][]
+	 */
+	public static function get_timed_orders_loopable_tokens() {
+
+		return array(
+			'ORDER_ID'     => array(
+				'name'       => _x( 'Order ID', 'Woo', 'uncanny-automator' ),
+				'token_type' => 'integer',
+			),
+			'DATE_CREATED' => array(
+				'name'       => _x( 'Date created', 'Woo', 'uncanny-automator' ),
+				'token_type' => 'date',
+			),
+			'TOTAL'        => array(
+				'name'       => _x( 'Total', 'Woo', 'uncanny-automator' ),
+				'token_type' => 'float',
+			),
+			'STATUS'       => array(
+				'name'       => _x( 'Status', 'Woo', 'uncanny-automator' ),
+				'token_type' => 'float',
+			),
+			'ITEMS'        => array(
+				'name' => _x( 'Items', 'Woo', 'uncanny-automator' ),
+			),
+		);
+
+	}
+
 }

@@ -45,18 +45,19 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$fields = array(
-			'option_code'   => 'FIELDS',
-			'input_type'    => 'repeater',
-			'label'         => _x( 'Field', 'Mautic', 'uncanny-automator' ),
-			'description'   => '',
-			'required'      => true,
-			'default_value' => array(
+			'option_code'     => 'FIELDS',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => _x( 'Field', 'Mautic', 'uncanny-automator' ),
+			'description'     => '',
+			'required'        => true,
+			'default_value'   => array(
 				array(
 					'ALIAS' => _x( 'Loading fields...', 'Mautic', 'uncanny-automator' ),
 					'VALUE' => _x( 'Loading values...', 'Mautic', 'uncanny-automator' ),
 				),
 			),
-			'fields'        => array(
+			'fields'          => array(
 				array(
 					'option_code' => 'ALIAS',
 					'label'       => _x( 'Field', 'Mautic', 'uncanny-automator' ),
@@ -69,12 +70,12 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 					'input_type'  => 'text',
 				),
 			),
-			'ajax'          => array(
+			'ajax'            => array(
 				'event'          => 'on_load',
 				'endpoint'       => 'automator_mautic_render_contact_fields',
 				'mapping_column' => 'ALIAS',
 			),
-			'hide_actions'  => true,
+			'hide_actions'    => true,
 		);
 
 		return array(

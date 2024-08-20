@@ -36,6 +36,7 @@ class WP_USERS_POST_PUBLISHED {
 		$this->set_action_hook( 'wp_after_insert_post' );
 		$this->set_action_args_count( 4 );
 		$this->set_options_callback( array( $this, 'load_options' ) );
+		$this->set_loopable_tokens( Wp_Helpers::common_trigger_loopable_tokens() );
 		$this->register_trigger();
 
 	}

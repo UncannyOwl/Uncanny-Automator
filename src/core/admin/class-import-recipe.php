@@ -46,6 +46,27 @@ class Import_Recipe {
 	);
 
 	/**
+	 * The import URL.
+	 *
+	 * @var string
+	 */
+	private $import_url = '';
+
+	/**
+	 * Current site URL.
+	 *
+	 * @var string
+	 */
+	private $site_url = '';
+
+	/**
+	 * Whether to modify URLs.
+	 *
+	 * @var bool
+	 */
+	private $modify_urls = false;
+
+	/**
 	 * Import_Recipe constructor.
 	 *
 	 * @return void
@@ -220,6 +241,9 @@ class Import_Recipe {
 	private function pre_import_filters() {
 		$this->draft_post_types        = apply_filters( 'automator_recipe_import_draft_post_types', $this->draft_post_types );
 		$this->published_trigger_codes = apply_filters( 'automator_recipe_import_published_trigger_codes', $this->published_trigger_codes );
+
+		// Maybe adjust hardcoded meta URLs.
+		add_filter( 'automator_recipe_part_meta_value', array( $this, 'maybe_adjust_hardcoded_meta_urls' ), 10, 4 );
 	}
 
 	/**
@@ -243,12 +267,15 @@ class Import_Recipe {
 		}
 
 		$this->copy_recipe_parts->is_import = true;
+		$this->import_url                   = $this->get_import_url_from_recipe_post( $recipe->post );
+		$this->site_url                     = get_site_url();
+		$this->modify_urls                  = ! empty( $this->import_url ) && $this->import_url !== $this->site_url;
 
 		// Set imported meta message.
 		$recipe_meta                                       = (array) $recipe->meta;
 		$recipe_meta[ self::IMPORTED_RECIPE_WARNING_META ] = array(
 			sprintf(
-			/* translators: %s - Y-m-d date */
+				/* translators: %s - Y-m-d date */
 				_x( 'Recipe imported on %s. Please make sure to set the correct values before you take this recipe live.', 'Import Recipe', 'uncanny-automator' ),
 				date_i18n( 'Y-m-d', time() )
 			),
@@ -361,6 +388,108 @@ class Import_Recipe {
 				$item_post_id = $this->copy_recipe_parts->copy( $item->post->ID, $new_loop_id, $status, $item->post, (array) $item->meta );
 			}
 		}
+	}
+
+	/**
+	 * Get the import URL from a recipe post.
+	 *
+	 * @param object $recipe_post - The recipe post object.
+	 *
+	 * @return string - The import URL.
+	 */
+	private function get_import_url_from_recipe_post( $recipe_post ) {
+		// Extract the GUID url from the recipe post.
+		$guid = isset( $recipe_post->guid ) ? $recipe_post->guid : null;
+
+		if ( ! $guid ) {
+			return '';
+		}
+
+		// Parse the URL from the GUID.
+		$parts = wp_parse_url( $guid );
+
+		if ( ! isset( $parts['scheme'] ) || ! isset( $parts['host'] ) ) {
+			return '';
+		}
+
+		// Return the base URL.
+		return $parts['scheme'] . '://' . $parts['host'];
+	}
+
+	/**
+	 * Maybe adjust hardcoded meta URLs.
+	 *
+	 * @param string $value - The meta value.
+	 * @param int $old_post_id - The old post ID.
+	 * @param int $new_post_id - The new post ID.
+	 * @param string $meta_key - The meta key.
+	 *
+	 * @return string - The adjusted meta value.
+	 */
+	public function maybe_adjust_hardcoded_meta_urls( $value, $old_post_id, $new_post_id, $meta_key ) {
+
+		// Bail if urls should not be modified.
+		if ( ! $this->modify_urls ) {
+			return $value;
+		}
+
+		// Bail if the meta key is in the do not modify list.
+		if ( in_array( $meta_key, $this->copy_recipe_parts->do_not_modify_meta_keys, true ) ) {
+			return $value;
+		}
+
+		// Handle string values.
+		if ( is_string( $value ) ) {
+			return $this->maybe_replace_url_in_string( $value, $meta_key );
+		}
+
+		// Handle arrays.
+		if ( is_array( $value ) ) {
+			// Loop through the array and adjust the URLs.
+			foreach ( $value as $key => $val ) {
+				$value[ $key ] = $this->maybe_replace_url_in_string( $val, $meta_key );
+			}
+			return $value;
+		}
+
+		// Handle objects.
+		if ( is_object( $value ) ) {
+			// Loop through the object and adjust the URLs.
+			foreach ( $value as $key => $val ) {
+				$value->$key = $this->maybe_replace_url_in_string( $val, $meta_key );
+			}
+			return $value;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Maybe replace the import URL in a string.
+	 *
+	 * @param string $value - The value to check.
+	 *
+	 * @return string - The adjusted value.
+	 */
+	private function maybe_replace_url_in_string( $value, $meta_key ) {
+
+		// Bail if the value is empty or an integrer.
+		if ( empty( $value ) || is_int( $value ) ) {
+			return $value;
+		}
+
+		// Send back to the main function to handle arrays and objects recursively.
+		if ( is_object( $value ) || is_array( $value ) ) {
+			return $this->maybe_adjust_hardcoded_meta_urls( $value, 0, 0, $meta_key );
+		}
+
+		// Check if the value contains the import URL.
+		if ( false === strpos( $value, $this->import_url ) ) {
+			return $value;
+		}
+
+		// Replace the import URL with the site URL.
+		return str_replace( $this->import_url, $this->site_url, $value );
 	}
 
 	/**

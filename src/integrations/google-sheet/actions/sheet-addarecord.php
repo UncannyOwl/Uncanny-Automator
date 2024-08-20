@@ -111,6 +111,7 @@ class SHEET_ADDARECORD {
 					array(
 						'option_code'       => 'WORKSHEET_FIELDS',
 						'input_type'        => 'repeater',
+						'relevant_tokens'   => array(),
 						'label'             => __( 'Row', 'uncanny-automator' ),
 						'description'       => '',
 						'required'          => true,

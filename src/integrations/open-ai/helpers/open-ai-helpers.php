@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use Exception;
 use Uncanny_Automator\Api_Server;
 use Uncanny_Automator\OpenAI\HTTP_Client;
 
@@ -32,6 +33,7 @@ class Open_AI_Helpers {
 			add_action( 'wp_ajax_automator_openai_disconnect', array( $this, 'disconnect' ) );
 			add_action( 'wp_ajax_automator_openai_recheck_gpt4_access', array( $this, 'recheck_gpt4_access' ) );
 			add_action( 'wp_ajax_automator_openai_get_models', array( $this, 'get_models' ) );
+			add_action( 'wp_ajax_automator_openai_get_gpt_models', array( $this, 'get_gpt_models' ) );
 		}
 
 		if ( is_admin() ) {
@@ -42,8 +44,6 @@ class Open_AI_Helpers {
 
 	public function load_settings() {
 		// Load the settings page.
-		require_once __DIR__ . '/../settings/settings-open-ai.php';
-
 		new Open_AI_Settings( $this );
 	}
 
@@ -61,6 +61,49 @@ class Open_AI_Helpers {
 		wp_safe_redirect( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=open-ai' );
 
 		exit;
+
+	}
+
+	/**
+	 * Fetches models from Automator API. Not from OpenAI.
+	 *
+	 * @return void
+	 */
+	public function get_gpt_models() {
+
+		Automator()->utilities->verify_nonce();
+
+		$body = array(
+			'action' => 'get_gpt_models',
+		);
+
+		$items = array();
+
+		try {
+			$response = $this->api_request( $body );
+			if ( isset( $response['data'] ) && is_array( $response['data'] ) ) {
+				foreach ( $response['data'] as $model ) {
+					$items[] = array(
+						'text'  => $model,
+						'value' => $model,
+					);
+				}
+			}
+		} catch ( Exception $e ) {
+			wp_send_json(
+				array(
+					'success' => false,
+					'error'   => $e->getMessage(),
+				)
+			);
+		}
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $items,
+			)
+		);
 
 	}
 
@@ -141,8 +184,6 @@ class Open_AI_Helpers {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( 'Insufficient privilege', 403 );
 		}
-
-		require_once trailingslashit( ( dirname( __DIR__ ) ) ) . '/client/http-client.php';
 
 		$client = new HTTP_Client( Api_Server::get_instance() );
 

@@ -125,7 +125,7 @@ class Export_Recipe {
 
 		// Set the filename for the exported recipes.
 		$filename = $this->generate_bulk_export_filename( $post_ids );
-		$this->handle_download( wp_json_encode( $recipes ), $filename );
+		$this->handle_download( wp_json_encode( $recipes, JSON_UNESCAPED_UNICODE ), $filename );
 	}
 
 	/**
@@ -253,7 +253,7 @@ class Export_Recipe {
 		);
 
 		$recipe = apply_filters( 'automator_recipe_export_object', $recipe );
-		return wp_json_encode( $recipe );
+		return wp_json_encode( $recipe, JSON_UNESCAPED_UNICODE );
 	}
 
 	/**

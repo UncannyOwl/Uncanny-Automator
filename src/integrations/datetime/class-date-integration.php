@@ -31,5 +31,9 @@ class DateTime_Integration extends \Uncanny_Automator\Integration {
 		new Tokens\Current_Date();
 		new Tokens\Current_Time();
 		new Tokens\Current_Timestamp();
+		new Tokens\Current_Month();
+		new Tokens\Current_Month_Numeric();
+		new Tokens\Current_Day_Of_Month();
+		new Tokens\Current_Day();
 	}
 }

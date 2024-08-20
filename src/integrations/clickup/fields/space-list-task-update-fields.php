@@ -140,12 +140,13 @@ return array(
 		'options_show_id'       => false,
 	),
 	array(
-		'option_code'  => 'NAME_REPEATER',
-		'label'        => esc_attr__( 'Name', 'uncanny-automator' ),
-		'hide_actions' => true,
-		'input_type'   => 'repeater',
-		'required'     => true,
-		'fields'       => array(
+		'option_code'     => 'NAME_REPEATER',
+		'label'           => esc_attr__( 'Name', 'uncanny-automator' ),
+		'hide_actions'    => true,
+		'input_type'      => 'repeater',
+		'relevant_tokens' => array(),
+		'required'        => true,
+		'fields'          => array(
 			array(
 				'option_code' => 'NAME',
 				'label'       => esc_attr__( 'Value', 'uncanny-automator' ),
@@ -160,12 +161,13 @@ return array(
 		),
 	),
 	array(
-		'option_code'  => 'DESCRIPTION_REPEATER',
-		'label'        => esc_attr__( 'Description', 'uncanny-automator' ),
-		'hide_actions' => true,
-		'input_type'   => 'repeater',
-		'required'     => true,
-		'fields'       => array(
+		'option_code'     => 'DESCRIPTION_REPEATER',
+		'label'           => esc_attr__( 'Description', 'uncanny-automator' ),
+		'hide_actions'    => true,
+		'input_type'      => 'repeater',
+		'relevant_tokens' => array(),
+		'required'        => true,
+		'fields'          => array(
 			array(
 				'option_code'   => 'DESCRIPTION',
 				'label'         => esc_attr__( 'Value', 'uncanny-automator' ),
@@ -181,12 +183,13 @@ return array(
 		),
 	),
 	array(
-		'option_code'  => 'START_DATE_REPEATER',
-		'label'        => esc_attr__( 'Start date', 'uncanny-automator' ),
-		'hide_actions' => true,
-		'input_type'   => 'repeater',
-		'required'     => true,
-		'fields'       => array(
+		'option_code'     => 'START_DATE_REPEATER',
+		'label'           => esc_attr__( 'Start date', 'uncanny-automator' ),
+		'hide_actions'    => true,
+		'input_type'      => 'repeater',
+		'relevant_tokens' => array(),
+		'required'        => true,
+		'fields'          => array(
 			array(
 				'option_code'   => 'START_DATE',
 				'label'         => esc_attr__( 'Value', 'uncanny-automator' ),
@@ -202,12 +205,13 @@ return array(
 		),
 	),
 	array(
-		'option_code'  => 'START_TIME_REPEATER',
-		'label'        => esc_attr__( 'Start time', 'uncanny-automator' ),
-		'hide_actions' => true,
-		'input_type'   => 'repeater',
-		'required'     => true,
-		'fields'       => array(
+		'option_code'     => 'START_TIME_REPEATER',
+		'label'           => esc_attr__( 'Start time', 'uncanny-automator' ),
+		'hide_actions'    => true,
+		'input_type'      => 'repeater',
+		'relevant_tokens' => array(),
+		'required'        => true,
+		'fields'          => array(
 			array(
 				'option_code'   => 'START_TIME',
 				'label'         => esc_attr__( 'Value', 'uncanny-automator' ),
@@ -223,12 +227,13 @@ return array(
 		),
 	),
 	array(
-		'option_code'  => 'DUE_DATE_REPEATER',
-		'label'        => esc_attr__( 'Due date', 'uncanny-automator' ),
-		'hide_actions' => true,
-		'input_type'   => 'repeater',
-		'required'     => true,
-		'fields'       => array(
+		'option_code'     => 'DUE_DATE_REPEATER',
+		'label'           => esc_attr__( 'Due date', 'uncanny-automator' ),
+		'hide_actions'    => true,
+		'input_type'      => 'repeater',
+		'relevant_tokens' => array(),
+		'required'        => true,
+		'fields'          => array(
 			array(
 				'option_code'   => 'DUE_DATE',
 				'label'         => esc_attr__( 'Value', 'uncanny-automator' ),
@@ -244,12 +249,13 @@ return array(
 		),
 	),
 	array(
-		'option_code'  => 'DUE_TIME_REPEATER',
-		'label'        => esc_attr__( 'Due date time', 'uncanny-automator' ),
-		'hide_actions' => true,
-		'input_type'   => 'repeater',
-		'required'     => true,
-		'fields'       => array(
+		'option_code'     => 'DUE_TIME_REPEATER',
+		'label'           => esc_attr__( 'Due date time', 'uncanny-automator' ),
+		'hide_actions'    => true,
+		'input_type'      => 'repeater',
+		'relevant_tokens' => array(),
+		'required'        => true,
+		'fields'          => array(
 			array(
 				'option_code'   => 'DUE_TIME',
 				'label'         => esc_attr__( 'Start time', 'uncanny-automator' ),

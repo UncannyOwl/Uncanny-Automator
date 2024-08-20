@@ -176,12 +176,12 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 
 		try {
 			// try to find if user is already a subscriber
-			$existing_subscriber = \MailPoet\Models\Subscriber::findOne( $subscriber['email'] );
+			$existing_subscriber = $mailpoet->getSubscriber( $subscriber['email'] );
 			if ( ! $existing_subscriber ) {
 				$new_subscriber = $mailpoet->addSubscriber( $subscriber );
 				$subscriber_id  = $new_subscriber['id'];
 			} else {
-				$subscriber_id = $existing_subscriber->id;
+				$subscriber_id = $existing_subscriber['id'];
 			}
 			if ( false === $disable_confirmation_email ) {
 				$this->update_status_manually( $subscriber['status'], $subscriber_id );

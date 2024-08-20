@@ -67,8 +67,9 @@ class Trigger_Logs_Resources {
 	 */
 	public function get_trigger_runs( $params ) {
 
-		$trigger_runs = array();
-		$results      = (array) $this->trigger_logs_queries->trigger_runs_query( $params );
+		$trigger_runs     = array();
+		$results          = (array) $this->trigger_logs_queries->trigger_runs_query( $params );
+		$properties_items = array();
 
 		$utils = $this->get_utils();
 
@@ -82,13 +83,22 @@ class Trigger_Logs_Resources {
 			// Format the trigger run sentence.
 			$has_api_log = null !== $this->automator_factory->db_api()->get_by_log_id( 'trigger', $params['recipe_log_id'] );
 
-			$properties = Automator()->db->trigger->get_meta( 'properties', $params['trigger_id'], $params['trigger_log_id'], $result['user_id'] );
+			$properties = Automator()->db->trigger->get_meta_multiple(
+				'properties',
+				absint( $params['trigger_id'] ),
+				absint( $params['trigger_log_id'] ),
+				$result['user_id']
+			);
+
+			if ( ! empty( $properties ) && is_array( $properties ) ) {
+				$properties_items = call_user_func_array( 'array_merge', $properties );
+			}
 
 			$trigger_runs[] = array(
 				'date'        => $utils::date_time_format( $result['trigger_run_time'] ),
 				'used_credit' => $has_api_log,
 				'status_id'   => $status_id,
-				'properties'  => (array) $properties,
+				'properties'  => (array) $properties_items,
 			);
 
 		}

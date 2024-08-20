@@ -62,7 +62,7 @@ final class Closure implements \JsonSerializable {
 		$redirect_url     = get_post_meta( $closure->ID, 'REDIRECTURL', true );
 
 		$this->is_item_on       = 'published' === $closure->post_status;
-		$this->id               = $closure->ID;
+		$this->id               = (int) $closure->ID;
 		$this->integration_code = $integration;
 		$this->code             = $code;
 		$this->backup           = array(

@@ -43,6 +43,7 @@ class WP_ANON_UPDATES_POST {
 		$this->set_action_hook( 'post_updated' );
 		$this->set_action_args_count( 3 );
 		$this->set_options_callback( array( $this, 'load_options' ) );
+		$this->set_loopable_tokens( Wp_Helpers::common_trigger_loopable_tokens() );
 		$this->register_trigger();
 
 	}

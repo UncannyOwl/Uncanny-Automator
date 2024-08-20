@@ -70,6 +70,7 @@ class SENDY_ADD_UPDATE_LIST_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$fields[] = array(
 			'option_code'       => 'CUSTOM_FIELDS',
 			'input_type'        => 'repeater',
+			'relevant_tokens'   => array(),
 			'label'             => _x( 'Custom fields', 'Sendy', 'uncanny-automator' ),
 			'description'       => $description,
 			'required'          => false,

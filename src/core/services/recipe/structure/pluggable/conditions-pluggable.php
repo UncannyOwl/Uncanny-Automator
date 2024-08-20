@@ -184,6 +184,7 @@ final class Conditions_Pluggable {
 			// End of fields restructuring.
 
 			$conditions_restructured[] = array(
+				'type'             => 'filter-condition',
 				'id'               => $condition['id'],
 				'integration_code' => $condition['integration'],
 				'code'             => $condition['condition'],

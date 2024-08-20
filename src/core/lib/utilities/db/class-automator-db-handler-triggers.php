@@ -296,6 +296,54 @@ class Automator_DB_Handler_Triggers {
 	}
 
 	/**
+	 * Get trigger meta, but allow multiple values.
+	 *
+	 * @param string $meta_key
+	 * @param int $trigger_id
+	 * @param int $trigger_log_id
+	 * @param int|null $user_id
+	 *
+	 * @return array{}|string[]
+	 */
+	public function get_meta_multiple( string $meta_key, int $trigger_id, string $trigger_log_id, $user_id = null ) {
+
+		if ( empty( $meta_key ) || empty( $trigger_id ) || empty( $trigger_log_id ) ) {
+			return '';
+		}
+
+		global $wpdb;
+
+		$items = array();
+
+		$tbl = Automator()->db->tables->trigger_meta;
+
+		$query_string_prepared = $wpdb->prepare(
+			"SELECT meta_value FROM {$wpdb->prefix}$tbl WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d",
+			$user_id,
+			$meta_key,
+			$trigger_id,
+			$trigger_log_id
+		);
+
+		$results = (array) $wpdb->get_results(
+			$query_string_prepared,
+			ARRAY_A
+		);
+
+		foreach ( $results as $result ) {
+			if ( isset( $result['meta_value'] ) && is_string( $result['meta_value'] ) ) {
+				$property = maybe_unserialize( $result['meta_value'] );
+				if ( is_array( $property ) ) {
+					$items[] = maybe_unserialize( $result['meta_value'] );
+				}
+			}
+		}
+
+		return $items;
+
+	}
+
+	/**
 	 * @param $meta_key
 	 * @param $args
 	 *

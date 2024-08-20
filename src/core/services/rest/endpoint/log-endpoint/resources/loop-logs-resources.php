@@ -1,14 +1,30 @@
 <?php
 namespace Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources;
 
+use Uncanny_Automator\Automator_Status;
+use Uncanny_Automator\Resolver\Fields_Resolver;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 
+/**
+ *
+ */
 class Loop_Logs_Resources {
 
+	/**
+	 * @var Formatters_Utils
+	 */
 	protected $utils;
+
+	/**
+	 * @var Loop_Logs_Queries
+	 */
 	protected $loop_logs_queries;
+
+	/**
+	 * @var Automator_Factory
+	 */
 	protected $automator_factory;
 
 	/**
@@ -20,7 +36,7 @@ class Loop_Logs_Resources {
 		Loop_Logs_Queries $loop_logs_queries,
 		Formatters_Utils $utils,
 		Automator_Factory $automator_factory
-		) {
+	) {
 
 		$this->utils             = $utils;
 		$this->loop_logs_queries = $loop_logs_queries;
@@ -109,6 +125,11 @@ class Loop_Logs_Resources {
 		return $loop_filters;
 	}
 
+	/**
+	 * @param $params
+	 *
+	 * @return array
+	 */
 	public function get_log( $params ) {
 
 		$utils = $this->utils;
@@ -158,7 +179,9 @@ class Loop_Logs_Resources {
 				$flow
 			);
 
-			$type = isset( $loop['iterable_expression']['type'] ) ? $loop['iterable_expression']['type'] : null;
+			$loopable_expression_type = $loop['iterable_expression']['type'] ?? null;
+			$loopable_fields          = $loop['iterable_expression']['fields'] ?? null;
+			$loopable_backup          = $loop['iterable_expression']['backup'] ?? null;
 
 			$structure = array(
 				'type'                => 'loop',
@@ -171,13 +194,13 @@ class Loop_Logs_Resources {
 				'date_elapsed'        => $utils::get_date_elapsed( $datetime_started, $datetime_ended ),
 				'_timestamp'          => $utils::strtotime( $datetime_ended ),
 				'iterable_expression' => array(
-					'type'       => $type,
-					'value'      => '',
-					'value_html' => '',
+					'type'   => $loopable_expression_type,
+					'fields' => $loopable_fields,
+					'backup' => $loopable_backup,
 				),
 				'run_on'              => null,
 				'loops_filters'       => $this->get_loop_filters( $loop ),
-				'items'               => $this->get_items( $loop, $params ),
+				'items'               => $this->get_items( $loop, $params, $log ),
 			);
 
 			$loops[] = $structure;
@@ -187,6 +210,11 @@ class Loop_Logs_Resources {
 		return $loops;
 	}
 
+	/**
+	 * @param $process_id
+	 *
+	 * @return array|false
+	 */
 	private function get_next_process( $process_id ) {
 
 		$health_check = (array) wp_get_scheduled_event( 'uap_loops_' . $process_id . '_cron' );
@@ -220,13 +248,13 @@ class Loop_Logs_Resources {
 	 *
 	 * @return mixed[]
 	 */
-	public function get_items( $loop, $params ) {
+	public function get_items( $loop, $params, $log ) {
 
 		$flow_items = array();
 
 		foreach ( (array) $loop['items'] as $item ) {
 
-			// Normal actions
+			// Normal actions inside the loop.
 			if ( 'action' === $item['type'] ) {
 
 				$structure = array(
@@ -238,7 +266,7 @@ class Loop_Logs_Resources {
 					'title_html'       => $item['backup']['sentence_html'],
 					'fields'           => $this->restructure_fields( $params, $item['fields'], false ),
 					'status'           => $this->get_statuses( $params, $item['id'] ),
-					'runs'             => $this->get_runs( $loop, $item, $params, $item['id'] ),
+					'runs'             => $this->get_runs( $loop, $item, $params, $item['id'], $log ),
 				);
 			}
 
@@ -260,7 +288,7 @@ class Loop_Logs_Resources {
 						'title_html'       => $filter_item['backup']['sentence_html'],
 						'fields'           => $this->restructure_fields( $params, $filter_item['fields'], false ),
 						'status'           => $this->get_statuses( $params, $filter_item['id'] ),
-						'runs'             => $this->get_runs( $loop, $item, $params, $filter_item['id'] ),
+						'runs'             => $this->get_runs( $loop, $item, $params, $filter_item['id'], $log ),
 					);
 
 					$filter_items[] = $filter_item_structure;
@@ -285,6 +313,12 @@ class Loop_Logs_Resources {
 
 	}
 
+	/**
+	 * @param $params
+	 * @param $action_id
+	 *
+	 * @return array
+	 */
 	private function get_statuses( $params, $action_id ) {
 
 		$distinct_statuses = $this->loop_logs_queries->get_distinct_statuses( $action_id, $params );
@@ -316,7 +350,7 @@ class Loop_Logs_Resources {
 	 *
 	 * @return mixed[]
 	 */
-	public function get_runs( $loop, $item, $params, $action_id ) {
+	public function get_runs( $loop, $item, $params, $action_id, $log ) {
 
 		// Ability to disable to loop runs.
 		if ( true === apply_filters( 'automator_rest_endpoint_loops_logs_resources_disable_run', false ) ) {
@@ -330,6 +364,9 @@ class Loop_Logs_Resources {
 
 		$statuses = array();
 
+		$log_identifier = self::get_log_identifier( $loop );
+		$entities       = json_decode( $log['entity_ids'], true );
+
 		foreach ( $distinct_statuses as $status ) {
 
 			$runs_items = array();
@@ -341,16 +378,34 @@ class Loop_Logs_Resources {
 
 				$entity_id = $entry['entity_id'];
 
+				$identifier = '#' . $entity_id;
+
 				if ( 'posts' === $type ) {
 					$identifier = sprintf( '#%d %s', $entity_id, get_the_title( $entity_id ) );
-				} else {
+				}
+
+				if ( 'users' === $type ) {
 					$identifier = sprintf( '#%d %s', $entity_id, get_userdata( $entity_id )->display_name );
+				}
+
+				$properties = self::build_loop_properties_from_entry( $entry );
+
+				if ( 'token' === $type ) {
+
+					$identifier = $this->replace_placeholders( $log_identifier, $entities[ $entity_id ] );
+
+					if ( empty( $identifier ) ) {
+						$identifier = '#' . $entity_id;
+					}
+
+					$properties = self::build_token_loop_properties_from_entry( $entities, $entity_id );
 				}
 
 				$structure = array(
 					'run_identifier' => $identifier,
 					'date'           => Formatters_Utils::date_time_format( $entry['date_added'] ),
 					'result_message' => $entry['error_message'],
+					'properties'     => $properties,
 				);
 
 				$runs_items[] = $structure;
@@ -367,6 +422,158 @@ class Loop_Logs_Resources {
 
 	}
 
+	/**
+	 * @param $entry
+	 *
+	 * @return array
+	 */
+	public static function get_loop_action_fields_by_entry( $entry ) {
+
+		$resolver = new Fields_Resolver();
+		$resolver->set_object_type( 'action' );
+		$resolver->set_object_id( $entry['action_id'] );
+		$resolver->set_recipe_id( $entry['recipe_id'] );
+
+		return $resolver->resolve_object_fields();
+	}
+
+	/**
+	 * @param $entry
+	 *
+	 * @return array
+	 */
+	public static function build_loop_properties_from_entry( $entry ) {
+		$action_data = maybe_unserialize( $entry['action_data'] );
+
+		$action_status = $action_data['action_data']['completed'] ?? Automator_Status::SKIPPED;
+
+		// Do not add properties for skipped actions.
+		if ( Automator_Status::SKIPPED === absint( $action_status ) ) {
+			return array();
+		}
+
+		$fields = self::get_loop_action_fields_by_entry( $entry );
+
+		$parsed_data = isset( $action_data['action_data']['maybe_parsed'] ) ? $action_data['action_data']['maybe_parsed'] : array();
+
+		$properties = array();
+		if ( ! empty( $fields['options'] ) ) {
+			foreach ( $fields['options'] as $field ) {
+				$value          = isset( $parsed_data[ $field['field_code'] ] ) ? $parsed_data[ $field['field_code'] ] : '';
+				$field['value'] = $value;
+				$properties[]   = $field;
+			}
+		}
+		if ( ! empty( $fields['options_group'] ) ) {
+			foreach ( $fields['options_group'] as $field ) {
+				$value          = isset( $parsed_data[ $field['field_code'] ] ) ? $parsed_data[ $field['field_code'] ] : '';
+				$field['value'] = $value;
+				$properties[]   = $field;
+			}
+		}
+
+		if ( ! empty( $entry['action_tokens'] ) ) {
+			$action_tokens = json_decode( $entry['action_tokens'], true );
+			foreach ( $action_tokens as $key => $value ) {
+				$properties[] = array(
+					'field_code' => $key,
+					'type'       => 'text',
+					'label'      => ucfirst( strtolower( str_replace( '_', ' ', $key ) ) ),
+					'value'      => $value,
+				);
+			}
+		}
+
+		return $properties;
+	}
+
+	/**
+	 * @param $entities
+	 * @param $entity_id
+	 *
+	 * @return array
+	 */
+	public static function build_token_loop_properties_from_entry( $entities, $entity_id ) {
+		$properties = array();
+
+		$values = isset( $entities[ $entity_id ] ) ? $entities[ $entity_id ] : array();
+
+		if ( empty( $values ) ) {
+			return $properties;
+		}
+
+		foreach ( $values as $key => $value ) {
+			$label = ucfirst( strtolower( str_replace( '_', ' ', $key ) ) );
+			$label = str_replace( ' id', ' ID', $label );
+
+			$properties[] = array(
+				'type'  => 'text',
+				'label' => $label,
+				'value' => $value,
+			);
+		}
+
+		return $properties;
+	}
+
+	/**
+	 * Get the log identifier.
+	 *
+	 * @param mixed $loop
+	 *
+	 * @return string
+	 */
+	public static function get_log_identifier( $loop ) {
+
+		$fields = $loop['iterable_expression']['fields'] ?? '';
+
+		$loopable_field       = json_decode( $fields, true );
+		$loopable_field_value = explode( ':', $loopable_field['TOKEN']['value'] ?? '' );
+
+		$code              = $loopable_field_value[3] ?? '';
+		$loopable_token_id = preg_replace( '/[^A-Za-z0-9_]/', '', $loopable_field_value[4] ?? '' );
+
+		$object         = Automator()->get_trigger( $code );
+		$loopable_class = $object['loopable_tokens'][ $loopable_token_id ] ?? null;
+
+		if ( isset( $loopable_field_value[2] ) && 'UNIVERSAL' === $loopable_field_value[2] ) {
+			$object = Automator()->get_integration( $code );
+			if ( isset( $object['loopable_tokens'][ $loopable_token_id ] ) ) {
+				$class_name     = $object['loopable_tokens'][ $loopable_token_id ];
+				$loopable_class = new $class_name( $code );
+			}
+		}
+
+		if ( ! empty( $loopable_class ) && is_subclass_of( $loopable_class, '\Uncanny_Automator\Services\Loopable\Loopable_Token', true ) ) {
+			return $loopable_class->get_log_identifier();
+		}
+
+		return '';
+
+	}
+
+	/**
+	 * Replaces placeholders.
+	 *
+	 * @param string $template
+	 * @param mixed[] $data
+	 *
+	 * @return mixed[]
+	 */
+	private function replace_placeholders( $template, $data ) {
+		foreach ( $data as $key => $value ) {
+			$template = str_replace( '{{' . $key . '}}', $value, $template );
+		}
+		return $template;
+	}
+
+	/**
+	 * @param $params
+	 * @param $fields
+	 * @param $show_parsed
+	 *
+	 * @return array
+	 */
 	private function restructure_fields( $params, $fields, $show_parsed = false ) {
 
 		$fields_item = array();
@@ -397,7 +604,13 @@ class Loop_Logs_Resources {
 
 	}
 
-
+	/**
+	 * Restructures the conditions.
+	 *
+	 * @param mixed[] $recipe_main_object_filter_conditions
+	 *
+	 * @return array{array{mixed}}
+	 */
 	private function restructure_conditions( $recipe_main_object_filter_conditions ) {
 
 		$conditions_restructured = array();

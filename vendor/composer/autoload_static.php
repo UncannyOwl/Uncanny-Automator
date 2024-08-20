@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
+class ComposerStaticInit38387cf43e1a04fef8780604c32bd8bd
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -495,6 +495,8 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Helpers' => __DIR__ . '/../..' . '/src/integrations/brevo/helpers/brevo-helpers.php',
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Integration' => __DIR__ . '/../..' . '/src/integrations/brevo/brevo-integration.php',
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Settings' => __DIR__ . '/../..' . '/src/integrations/brevo/settings/settings-brevo.php',
+        'Uncanny_Automator\\Integrations\\Buddyboss\\Tokens\\Loopable\\Universal\\User_Groups' => __DIR__ . '/../..' . '/src/integrations/buddyboss/tokens/loopable/universal/user-groups.php',
+        'Uncanny_Automator\\Integrations\\Buddypress\\Tokens\\Loopable\\Universal\\User_Groups' => __DIR__ . '/../..' . '/src/integrations/buddypress/tokens/universal/user-groups.php',
         'Uncanny_Automator\\Integrations\\Campaign_Monitor\\CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/actions/campaign-monitor-add-update-subscriber.php',
         'Uncanny_Automator\\Integrations\\Campaign_Monitor\\CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/actions/campaign-monitor-remove-subscriber.php',
         'Uncanny_Automator\\Integrations\\Campaign_Monitor\\Campaign_Monitor_Helpers' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php',
@@ -539,6 +541,10 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date-time.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Date_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-date-timestamp.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Day' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-day.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Day_Of_Month' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-day-of-month.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-month.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month_Numeric' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-month-in-number.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-time.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-timestamp.php',
         'Uncanny_Automator\\Integrations\\EDD_SL\\Edd_Software_Licensing_Integration' => __DIR__ . '/../..' . '/src/integrations/edd-sl/class-edd-software-licensing-integration.php',
@@ -547,6 +553,13 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_USERS_LICENSE_CREATED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-users-license-created-for-download.php',
         'Uncanny_Automator\\Integrations\\Edd_SL\\EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD' => __DIR__ . '/../..' . '/src/integrations/edd-sl/triggers/edd-sl-users-license-expired-for-download.php',
         'Uncanny_Automator\\Integrations\\Edd_SL\\Edd_Sl_Helpers' => __DIR__ . '/../..' . '/src/integrations/edd-sl/helpers/edd-sl-helpers.php',
+        'Uncanny_Automator\\Integrations\\Fluent_Booking\\FLUENT_BOOKING_GROUP_MEETING_CANCELLED' => __DIR__ . '/../..' . '/src/integrations/fluent-booking/triggers/fluent-booking-group-meeting-cancelled.php',
+        'Uncanny_Automator\\Integrations\\Fluent_Booking\\FLUENT_BOOKING_GROUP_MEETING_SCHEDULED' => __DIR__ . '/../..' . '/src/integrations/fluent-booking/triggers/fluent-booking-group-meeting-scheduled.php',
+        'Uncanny_Automator\\Integrations\\Fluent_Booking\\FLUENT_BOOKING_NEW_BOOKING' => __DIR__ . '/../..' . '/src/integrations/fluent-booking/actions/fluent-booking-new-booking.php',
+        'Uncanny_Automator\\Integrations\\Fluent_Booking\\FLUENT_BOOKING_ONE_TO_ONE_MEETING_CANCELLED' => __DIR__ . '/../..' . '/src/integrations/fluent-booking/triggers/fluent-booking-one-to-one-meeting-cancelled.php',
+        'Uncanny_Automator\\Integrations\\Fluent_Booking\\FLUENT_BOOKING_ONE_TO_ONE_MEETING_SCHEDULED' => __DIR__ . '/../..' . '/src/integrations/fluent-booking/triggers/fluent-booking-one-to-one-meeting-scheduled.php',
+        'Uncanny_Automator\\Integrations\\Fluent_Booking\\Fluent_Booking_Helpers' => __DIR__ . '/../..' . '/src/integrations/fluent-booking/helpers/fluent-booking-helpers.php',
+        'Uncanny_Automator\\Integrations\\Fluent_Booking\\Fluent_Booking_Integration' => __DIR__ . '/../..' . '/src/integrations/fluent-booking/fluent-booking-integration.php',
         'Uncanny_Automator\\Integrations\\Get_Response\\GET_RESPONSE_ADD_UPDATE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/get-response/actions/gr-add-update-contact.php',
         'Uncanny_Automator\\Integrations\\Get_Response\\GET_RESPONSE_DELETE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/get-response/actions/gr-delete-contact.php',
         'Uncanny_Automator\\Integrations\\Get_Response\\Get_Response_Helpers' => __DIR__ . '/../..' . '/src/integrations/get-response/helpers/get-response-helpers.php',
@@ -576,6 +589,20 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Integrations\\Kadence\\KADENCE_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/kadence/triggers/kadence-form-submitted.php',
         'Uncanny_Automator\\Integrations\\Kadence\\Kadence_Helpers' => __DIR__ . '/../..' . '/src/integrations/kadence/helpers/kadence-helpers.php',
         'Uncanny_Automator\\Integrations\\Kadence\\Kadence_Integration' => __DIR__ . '/../..' . '/src/integrations/kadence/kadence-integration.php',
+        'Uncanny_Automator\\Integrations\\Keap\\KEAP_ADD_NOTE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/keap/actions/keap-add-note-contact.php',
+        'Uncanny_Automator\\Integrations\\Keap\\KEAP_ADD_TAGS_CONTACT' => __DIR__ . '/../..' . '/src/integrations/keap/actions/keap-add-tags-contact.php',
+        'Uncanny_Automator\\Integrations\\Keap\\KEAP_ADD_UPDATE_COMPANY' => __DIR__ . '/../..' . '/src/integrations/keap/actions/keap-add-update-company.php',
+        'Uncanny_Automator\\Integrations\\Keap\\KEAP_ADD_UPDATE_CONTACT' => __DIR__ . '/../..' . '/src/integrations/keap/actions/keap-add-update-contact.php',
+        'Uncanny_Automator\\Integrations\\Keap\\KEAP_REMOVE_TAGS_CONTACT' => __DIR__ . '/../..' . '/src/integrations/keap/actions/keap-remove-tags-contact.php',
+        'Uncanny_Automator\\Integrations\\Keap\\Keap_Helpers' => __DIR__ . '/../..' . '/src/integrations/keap/helpers/keap-helpers.php',
+        'Uncanny_Automator\\Integrations\\Keap\\Keap_Integration' => __DIR__ . '/../..' . '/src/integrations/keap/keap-integration.php',
+        'Uncanny_Automator\\Integrations\\Keap\\Keap_Settings' => __DIR__ . '/../..' . '/src/integrations/keap/settings/settings-keap.php',
+        'Uncanny_Automator\\Integrations\\LearnDash\\Tokens\\Loopable\\Universal\\User_Completed_Courses' => __DIR__ . '/../..' . '/src/integrations/learndash/tokens/loopable/universal/user-completed-courses.php',
+        'Uncanny_Automator\\Integrations\\LearnDash\\Tokens\\Loopable\\Universal\\User_Enrolled_Courses' => __DIR__ . '/../..' . '/src/integrations/learndash/tokens/loopable/universal/user-enrolled-courses-tokens.php',
+        'Uncanny_Automator\\Integrations\\LearnDash\\Tokens\\Loopable\\Universal\\User_Enrolled_Groups' => __DIR__ . '/../..' . '/src/integrations/learndash/tokens/loopable/universal/user-enrolled-groups.php',
+        'Uncanny_Automator\\Integrations\\Logging\\Logging_Helpers' => __DIR__ . '/../..' . '/src/integrations/logging/helpers/logging-helpers.php',
+        'Uncanny_Automator\\Integrations\\Logging\\Logging_Integration' => __DIR__ . '/../..' . '/src/integrations/logging/logging-integration.php',
+        'Uncanny_Automator\\Integrations\\Logging\\WRITE_DATA_TO_LOG' => __DIR__ . '/../..' . '/src/integrations/logging/actions/write-data-to-log.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_HELPERS' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/helpers/m4is-helpers.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_Integration' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/m4is-integration.php',
         'Uncanny_Automator\\Integrations\\M4IS\\M4IS_UPDATE_CONTACT_FIELD' => __DIR__ . '/../..' . '/src/integrations/memberium-keap/actions/m4is-update-contact-field.php',
@@ -601,6 +628,13 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Integrations\\Notion\\Notion_Helpers' => __DIR__ . '/../..' . '/src/integrations/notion/helpers/notion-helpers.php',
         'Uncanny_Automator\\Integrations\\Notion\\Notion_Integration' => __DIR__ . '/../..' . '/src/integrations/notion/notion-integration.php',
         'Uncanny_Automator\\Integrations\\Notion\\Settings' => __DIR__ . '/../..' . '/src/integrations/notion/settings/settings.php',
+        'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Add_Contact_Tag' => __DIR__ . '/../..' . '/src/integrations/ontraport/actions/ontraport-add-contact-tag.php',
+        'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Create_Tag' => __DIR__ . '/../..' . '/src/integrations/ontraport/actions/ontraport-create-tag.php',
+        'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Delete_Contact' => __DIR__ . '/../..' . '/src/integrations/ontraport/actions/ontraport-delete-contact.php',
+        'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Helpers' => __DIR__ . '/../..' . '/src/integrations/ontraport/helpers/ontraport-helpers.php',
+        'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Integration' => __DIR__ . '/../..' . '/src/integrations/ontraport/ontraport-integration.php',
+        'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Settings' => __DIR__ . '/../..' . '/src/integrations/ontraport/settings/ontraport-settings.php',
+        'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Upsert_Contact' => __DIR__ . '/../..' . '/src/integrations/ontraport/actions/ontraport-upsert-contact.php',
         'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_CREATE_A_LINK' => __DIR__ . '/../..' . '/src/integrations/pretty-links/triggers/prli-anon-create-a-link.php',
         'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_LINK_CLICKED' => __DIR__ . '/../..' . '/src/integrations/pretty-links/triggers/prli-anon-link-clicked.php',
         'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_CREATE_LINK' => __DIR__ . '/../..' . '/src/integrations/pretty-links/actions/prli-create-link.php',
@@ -638,9 +672,27 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\THRIVE_ULTIMATUM_USER_TRIGGERS_EVERGREEN_CAMPAIGN' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-user-triggers-evergreen-campaign.php',
         'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\Thrive_Ultimatum_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php',
         'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\Thrive_Ultimatum_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/class-thrive-ultimatum-integration.php',
+        'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Categories' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/post-categories.php',
+        'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Tags' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/post-tags.php',
+        'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Utils\\Taxonomy_Fetcher' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/utils/terms.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\WC_BOOKINGS_ANON_BOOKING_CREATED' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/triggers/wc-bookings-anon-booking-created.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Wc_Bookings_Helpers' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php',
         'Uncanny_Automator\\Integrations\\WooCommerce_Bookings\\Woocommerce_Bookings_Integration' => __DIR__ . '/../..' . '/src/integrations/woocommerce-bookings/woocommerce-bookings-integration.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Product_Categories' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/trigger/product-categories.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Product_Tags' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/trigger/product-tags.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\All_Orders_24_Hours' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/all-order-24-hours.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\All_Orders_Monthly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/all-orders-monthly.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\All_Orders_Weekly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/all-orders-weekly.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\All_Orders_Yearly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/all-orders-yearly.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\Product_Categories' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/product-categories.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Order_24_Hours' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-order-24-hours.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Orders_Monthly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-orders-monthly.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Orders_Weekly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-orders-weekly.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Orders_Yearly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-orders-yearly.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Purchase_Products' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-purchased-products.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Trigger\\Loopable\\Order_Items' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/trigger/order-items.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Trigger\\Loopable\\Post_Categories' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/trigger/post-categories.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Trigger\\Loopable\\Post_tags' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/trigger/post-tags.php',
         'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_ADD_REPLY_TO_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php',
         'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_USER_POST_RECEIVES_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/triggers/wp-discuz-user-post-receives-comment.php',
         'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_USER_SUBMITS_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/triggers/wp-discuz-user-submits-comment.php',
@@ -863,6 +915,10 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Services\\Integrations\\Fields' => __DIR__ . '/../..' . '/src/core/services/integrations/fields.php',
         'Uncanny_Automator\\Services\\Integrations\\Structure' => __DIR__ . '/../..' . '/src/core/services/integrations/structure.php',
         'Uncanny_Automator\\Services\\Logger_Auto_Removal' => __DIR__ . '/../..' . '/src/core/services/logger-auto-remove.php',
+        'Uncanny_Automator\\Services\\Loopable\\Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/loopable-token.php',
+        'Uncanny_Automator\\Services\\Loopable\\Loopable_Token_Collection' => __DIR__ . '/../..' . '/src/core/services/loopable/loopable-token-collection.php',
+        'Uncanny_Automator\\Services\\Loopable\\Trigger_Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/trigger-loopable-token.php',
+        'Uncanny_Automator\\Services\\Loopable\\Universal_Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/universal-loopable-token.php',
         'Uncanny_Automator\\Services\\Multiple_Triggers_Restore_Failed_Logs' => __DIR__ . '/../..' . '/src/core/services/logger-multiple-triggers-restore-failed-logs.php',
         'Uncanny_Automator\\Services\\Properties' => __DIR__ . '/../..' . '/src/core/services/properties.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_JSON_Serializer' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-json-serializer.php',
@@ -950,6 +1006,7 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
         'Uncanny_Automator\\Twitter_Helpers' => __DIR__ . '/../..' . '/src/integrations/twitter/helpers/twitter-helpers.php',
         'Uncanny_Automator\\Twitter_Settings' => __DIR__ . '/../..' . '/src/integrations/twitter/settings/settings-twitter.php',
         'Uncanny_Automator\\UC_ANON_CODEBATCHCREATED' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-anon-codebatchcreated.php',
+        'Uncanny_Automator\\UC_CANCEL_CODE' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/actions/uc-cancel-code.php',
         'Uncanny_Automator\\UC_CODEREDEEMED' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-coderedeemed.php',
         'Uncanny_Automator\\UC_CODESBATCH' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-codesbatch.php',
         'Uncanny_Automator\\UC_CODESPREFIX' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-codesprefix.php',
@@ -1155,8 +1212,8 @@ class ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitd5eebae107fbb20c29333b9a0fe03304::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit38387cf43e1a04fef8780604c32bd8bd::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit38387cf43e1a04fef8780604c32bd8bd::$classMap;
 
         }, null, ClassLoader::class);
     }

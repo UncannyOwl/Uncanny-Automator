@@ -19,6 +19,7 @@ class Twitter_Settings extends Settings\Premium_Integration_Settings {
 
 	protected $client;
 	protected $is_connected;
+	protected $disconnect_url;
 
 	/**
 	 * The default connection method.

@@ -28,7 +28,7 @@ class Setup_Wizard {
 	 */
 	public function __construct() {
 
-		$this->connect_url = AUTOMATOR_FREE_STORE_URL;
+		$this->connect_url = AUTOMATOR_STORE_URL;
 
 		$this->connect_page = AUTOMATOR_FREE_STORE_CONNECT_URL;
 

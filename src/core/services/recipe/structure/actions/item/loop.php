@@ -2,6 +2,7 @@
 namespace Uncanny_Automator\Services\Recipe\Structure\Actions\Item;
 
 use Uncanny_Automator\Services\Recipe\Common;
+use Uncanny_Automator\Services\Recipe\Structure;
 use Uncanny_Automator\Services\Recipe\Structure\Actions\Item\Action;
 use Uncanny_Automator\Services\Structure\Actions\Item\Loop\Loop_Db;
 
@@ -16,25 +17,70 @@ final class Loop implements \JsonSerializable {
 	use Common\Trait_JSON_Serializer;
 	use Common\Trait_Setter_Getter;
 
+	/**
+	 * @var string The type of item, always 'loop'.
+	 */
 	protected $type = 'loop';
-	protected $id   = null;
+
+	 /**
+	 * @var int|null The unique ID of the loop.
+	 */
+	protected $id = null;
 
 	/**
-	 * The order of items based on its type.
-	 * 0 = normal actions; 1 = closures; 2 = loop.
-	 * @var int
+	 * @var int UI order of loop items.
+	 *
+	 * 0 = normal actions; 1 = closures; 2 = loop; 5 = Delays
 	 */
-	protected $_ui_order           = 2; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
-	protected $iterable_expression = array();
-	protected $run_on              = null;
-	protected $filters             = array();
-	protected $items               = array();
-	protected $tokens              = array();
+	protected $_ui_order = 2; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
+	/**
+	 * @var array The loopable expression for the loop.
+	 */
+	protected $iterable_expression = array();
+
+	/**
+	 * @var mixed|null The 'run on' condition for the loop.
+	 */
+	protected $run_on = null;
+
+	/**
+	 * @var array Filters applied to the loop.
+	 */
+	protected $filters = array();
+
+	/**
+	 * @var Action[] The actions within the loop.
+	 */
+	protected $items = array();
+
+	/**
+	 * @var array Tokens used in the loop.
+	 */
+	protected $tokens = array();
+
+	/**
+	 * @var int Static loop ID.
+	 */
 	protected static $loop_id;
+
+	/**
+	 * @var \Uncanny_Automator\Services\Recipe\Structure Static recipe object.
+	 */
 	protected static $recipe;
+
+	/**
+	 * @var \Uncanny_Automator\Services\Recipe\Structure\Actions\Actions Static actions collection.
+	 */
 	protected static $actions;
 
+	/**
+	 * Initializes the Loop object.
+	 *
+	 * @param \Uncanny_Automator\Services\Recipe\Structure $recipe The recipe object.
+	 * @param \Uncanny_Automator\Services\Recipe\Structure\Actions\Actions $actions The actions collection.
+	 * @param int $loop_id The ID of the loop.
+	 */
 	public function __construct( $recipe, $actions, $loop_id ) {
 
 		self::$loop_id = $loop_id;
@@ -42,11 +88,18 @@ final class Loop implements \JsonSerializable {
 		self::$actions = $actions;
 
 		$this->id = absint( $loop_id );
-		$this->hydrate_iterable_expression();
+		$this->hydrate_loopable_expression();
 		$this->hydrate_tokens();
 		$this->hydrate_filters();
 		$this->hydrate_items( $recipe );
 
+	}
+
+	/**
+	 * @return Structure
+	 */
+	public function get_recipe() {
+		return self::$recipe;
 	}
 
 	/**
@@ -78,6 +131,7 @@ final class Loop implements \JsonSerializable {
 			$backup    = (string) get_post_meta( $filter_id, 'backup', true );
 
 			$loop_filters[] = array(
+				'type'             => 'loop-filter',
 				'id'               => absint( $filter_id ),
 				'code'             => strtoupper( (string) get_post_meta( $filter_id, 'code', true ) ),
 				'integration_code' => strtoupper( (string) get_post_meta( $filter_id, 'integration_code', true ) ),
@@ -126,16 +180,14 @@ final class Loop implements \JsonSerializable {
 	/**
 	 * @return void
 	 */
-	private function hydrate_iterable_expression() {
+	private function hydrate_loopable_expression() {
 
-		$iterable_expression = (array) get_post_meta( absint( self::$loop_id ), 'iterable_expression', true );
+		$loopable_expression = (array) get_post_meta( absint( self::$loop_id ), 'iterable_expression', true );
 
 		$this->iterable_expression = wp_parse_args(
-			$iterable_expression,
+			$loopable_expression,
 			array(
-				'type'       => 'users',
-				'value'      => '',
-				'value_html' => '',
+				'type' => 'users',
 			)
 		);
 

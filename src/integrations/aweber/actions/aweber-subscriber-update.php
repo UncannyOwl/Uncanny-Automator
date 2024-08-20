@@ -87,11 +87,12 @@ class AWEBER_SUBSCRIBER_UPDATE extends \Uncanny_Automator\Recipe\Action {
 				'required'    => true,
 			),
 			array(
-				'option_code'  => 'CUSTOM_FIELDS',
-				'input_type'   => 'repeater',
-				'label'        => __( 'Custom fields', 'uncanny-automator' ),
-				'required'     => false,
-				'fields'       => array(
+				'option_code'     => 'CUSTOM_FIELDS',
+				'input_type'      => 'repeater',
+				'relevant_tokens' => array(),
+				'label'           => __( 'Custom fields', 'uncanny-automator' ),
+				'required'        => false,
+				'fields'          => array(
 					array(
 						'input_type'  => 'text',
 						'option_code' => 'FIELD_ID',
@@ -112,9 +113,8 @@ class AWEBER_SUBSCRIBER_UPDATE extends \Uncanny_Automator\Recipe\Action {
 					),
 
 				),
-				'hide_actions' => true,
-
-				'ajax'         => array(
+				'hide_actions'    => true,
+				'ajax'            => array(
 					'event'          => 'parent_fields_change',
 					'listen_fields'  => array( 'LIST' ),
 					'endpoint'       => 'automator_aweber_custom_fields_fetch',

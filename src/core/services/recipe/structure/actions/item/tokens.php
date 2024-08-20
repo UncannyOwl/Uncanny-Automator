@@ -75,6 +75,21 @@ final class Tokens implements \JsonSerializable {
 
 			foreach ( $options as $option ) {
 
+				$relevant_tokens = $this->get_relevant_tokens( $option );
+
+				if ( is_array( $relevant_tokens ) ) {
+					$relevant_tokens = $this->generate_relevant_tokens( $relevant_tokens, $option );
+					// Empty relevant tokens continue.
+					if ( empty( $relevant_tokens ) ) {
+						continue;
+					}
+
+					// Merge the relevant tokens with the tokens collection.
+					$tokens_collection = array_merge( $tokens_collection, $relevant_tokens );
+					continue;
+				}
+
+				// Generate token for field.
 				$token = new stdClass();
 
 				$token->id = sprintf(
@@ -94,6 +109,56 @@ final class Tokens implements \JsonSerializable {
 		}
 
 		return $tokens_collection;
+	}
+
+	/**
+	 * Get the relevant tokens config.
+	 *
+	 * @param mixed[] $option
+	 *
+	 * @return mixed[] - array || null
+	 */
+	private function get_relevant_tokens( $option ) {
+
+		if ( ! is_array( $option ) ) {
+			return null;
+		}
+
+		$relevant_tokens = $option['relevant_tokens'] ?? null;
+
+		return is_array( $relevant_tokens ) ? $relevant_tokens : null;
+	}
+
+	/**
+	 * Generate relevant tokens.
+	 *
+	 * @param array $relevant_tokens
+	 * @param array $option
+	 *
+	 * @return array
+	 */
+	private function generate_relevant_tokens( $relevant_tokens, $option ) {
+
+		if ( empty( $relevant_tokens ) ) {
+			return array();
+		}
+
+		$tokens = array();
+
+		// Generate tokens for each relevant token.
+		foreach ( $relevant_tokens as $token_code => $token_label ) {
+
+			$token             = new stdClass();
+			$token->id         = sprintf( '%d:%s:%s', self::$action_id, $option['field_code'], $token_code );
+			$token->token_type = 'relevant_tokens';
+			$token->data_type  = 'text'; // @todo: Determine datatype.
+			$token->name       = $token_label;
+
+			// Add the token to the tokens collection.
+			$tokens[] = $token;
+		}
+
+		return $tokens;
 	}
 
 	/**

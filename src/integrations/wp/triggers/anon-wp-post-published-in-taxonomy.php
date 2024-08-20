@@ -130,6 +130,7 @@ class ANON_WP_POST_PUBLISHED_IN_TAXONOMY {
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'schedule_a_post' ),
 			'options_callback'    => array( $this, 'load_options' ),
+			'loopable_tokens'     => Wp_Helpers::common_trigger_loopable_tokens(),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -349,6 +350,9 @@ class ANON_WP_POST_PUBLISHED_IN_TAXONOMY {
 					}
 
 					$this->store_tokens( $result, $user_id, $post, $recipe_id, $trigger_id );
+
+					do_action( 'automator_loopable_token_hydrate', $result['args'], func_get_args() );
+
 					Automator()->maybe_trigger_complete( $result['args'] );
 				}
 			}

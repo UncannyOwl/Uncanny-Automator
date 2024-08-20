@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Integrations\Buddypress\Tokens\Loopable\Universal\User_Groups;
+
 /**
  * Class Add_Bp_Integration
  *
@@ -26,6 +28,7 @@ class Add_Bp_Integration {
 		$this->set_icon( 'buddypress-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'buddypress/bp-loader.php' );
+		$this->set_loopable_tokens( $this->create_loopable_tokens() );
 	}
 
 	/**
@@ -33,6 +36,17 @@ class Add_Bp_Integration {
 	 */
 	public function plugin_active() {
 		return class_exists( 'BuddyPress' );
+	}
+
+	/**
+	 * Create loopable tokens.
+	 *
+	 * @return array
+	 */
+	public function create_loopable_tokens() {
+		return array(
+			'USER_GROUPS' => User_Groups::class,
+		);
 	}
 
 }

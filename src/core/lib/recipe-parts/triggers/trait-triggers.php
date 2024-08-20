@@ -202,6 +202,7 @@ trait Triggers {
 	 * @param $args
 	 */
 	protected function process_trigger( $args ) {
+
 		// Enqueuing do_actions
 		$this->enqueue_token_action_and_filter();
 		/**
@@ -253,6 +254,10 @@ trait Triggers {
 				$process_further = apply_filters( 'automator_trigger_should_complete', true, $do_action, $this );
 
 				if ( $process_further ) {
+
+					// @since 5.10 - Added a way for a trigger loopable tokens to be processed at this point.
+					do_action( 'automator_loopable_token_hydrate', $result_args, func_get_args() );
+
 					Automator()->process->user->maybe_trigger_complete( $result_args );
 				}
 

@@ -307,6 +307,7 @@ class WP_CREATEPOST {
 						array(
 							'input_type'        => 'repeater',
 							'option_code'       => 'CPMETA_PAIRS',
+							'relevant_tokens'   => array(),
 							'label'             => esc_attr__( 'Meta', 'uncanny-automator' ),
 							'required'          => false,
 							'fields'            => array(

@@ -22,7 +22,7 @@ class BDB_Universal_Token extends Universal_Token {
 	 * @param $id
 	 * @param $name
 	 */
-	public function __construct( $id, $name ) {
+	public function __construct( $id = null, $name = null ) {
 
 		if ( null === $id || null === $name ) {
 			return;

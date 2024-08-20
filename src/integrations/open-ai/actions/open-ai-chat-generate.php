@@ -120,7 +120,7 @@ class OPEN_AI_CHAT_GENERATE {
 							'options'         => array(),
 							'options_show_id' => false,
 							'ajax'            => array(
-								'endpoint' => 'automator_openai_get_models',
+								'endpoint' => 'automator_openai_get_gpt_models',
 								'event'    => 'on_load',
 							),
 						),

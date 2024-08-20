@@ -1336,5 +1336,4 @@ class Mailchimp_Helpers {
 		);
 
 	}
-
 }

@@ -39,7 +39,7 @@ class Admin_Menu {
 	 *
 	 * @var
 	 */
-	public static $automator_connect_url = AUTOMATOR_FREE_STORE_URL;
+	public static $automator_connect_url = AUTOMATOR_STORE_URL;
 
 	/**
 	 * Setting Connect URLs
@@ -955,16 +955,16 @@ class Admin_Menu {
 	public function get_js_backend_inline_data( $hook ) {
 		// Set default data
 		$automator_backend_js = array(
-			'ajax'        => array(
+			'ajax'       => array(
 				'url'   => admin_url( 'admin-ajax.php' ),
 				'nonce' => \wp_create_nonce( 'uncanny_automator' ),
 			),
-			'rest'        => array(
+			'rest'       => array(
 				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ), // Automator URL endpoint
 				'base'  => esc_url_raw( rest_url() ), // Actual URL of the /wp-json/
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			),
-			'i18n'        => array(
+			'i18n'       => array(
 				'error'           => array(
 					'request' => array(
 						'badRequest'   => array(
@@ -1041,7 +1041,7 @@ class Admin_Menu {
 				'copyToClipboard' => esc_html__( 'Copy to clipboard', 'uncanny-automator' ),
 				// UncannyAutomatorBackend.i18n.copyToClipboard
 
-				'setupWizard' => array(
+				'setupWizard'     => array(
 					'skipThis'            => __( 'Skip this', 'uncanny-automator' ),
 					'areYouSure'          => __( 'Are you sure?', 'uncanny-automator' ),
 					'freeAccountFeatures' => __( 'Your free account gives you access to Slack, Google Sheets, Facebook, exclusive discounts, updates and much more.', 'uncanny-automator' ),
@@ -1051,10 +1051,10 @@ class Admin_Menu {
 				),
 				// UncannyAutomatorBackend.i18n.setupWizard
 			),
-			'debugging'   => array(
+			'debugging'  => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
 			),
-			'components'  => array(
+			'components' => array(
 				'icon'     => array(
 					'integrations' => $this->get_integrations_for_components(),
 				),
@@ -1066,9 +1066,30 @@ class Admin_Menu {
 						'idRequired'   => __( "Error: User ID can't be empty", 'uncanny-automator' ),
 					),
 				),
+				'field'    => array(
+					'file' => array(
+						'i18n' => array(
+							'selectFile'       => __( 'Select file', 'uncanny-automator' ),
+							'selectFiles'      => __( 'Select files', 'uncanny-automator' ),
+							'changeFile'       => __( 'Change file', 'uncanny-automator' ),
+							'changeFiles'      => __( 'Change files', 'uncanny-automator' ),
+							/* translators: 1. The number of rows */
+							'csvRows'          => __( '%1$s rows', 'uncanny-automator' ),
+							/* translators: 1. The list of headers */
+							'csvHeaders'       => __( 'Headers: %1$s', 'uncanny-automator' ),
+							/* translators: 1. The number of items */
+							'jsonItems'        => __( '%1$s items', 'uncanny-automator' ),
+							/* translators: 1. The list of keys */
+							'jsonKeys'         => __( 'Keys: %1$s', 'uncanny-automator' ),
+							/* translators: 1. Child elements */
+							'xmlChildElements' => __( '%1$s elements', 'uncanny-automator' ),
+							/* translators: 1. The name of the root element */
+							'xmlRootElement'   => __( 'Root element: %1$s', 'uncanny-automator' ),
+						),
+					),
+				),
 			),
-
-			'logs'        => array(
+			'logs'       => array(
 				'components' => array(
 					'log'                => array(
 						'i18n' => array(
@@ -1234,6 +1255,7 @@ class Admin_Menu {
 							/* translators: 1. Number of lines */
 							'expandLines'  => __( 'Expand %1$s lines', 'uncanny-automator' ),
 							'collapse'     => __( 'Collapse', 'uncanny-automator' ),
+							'viewFile'     => __( 'View file', 'uncanny-automator' ),
 						),
 					),
 					// UncannyAutomatorBackend.logs.components.logLoop.i18n
@@ -1268,9 +1290,9 @@ class Admin_Menu {
 				),
 			),
 
-			'_site' => array(
+			'_site'      => array(
 				'automator' => array(
-					'has_pro' => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' )
+					'has_pro' => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
 				),
 			),
 		);
@@ -1706,7 +1728,7 @@ class Admin_Menu {
 	 *
 	 * @return false|mixed|void|null
 	 */
-	public static function licensing_call( $endpoint = 'check-license', $license_key = '', $item_id = AUTOMATOR_FREE_ITEM_ID, $store_url = AUTOMATOR_FREE_LICENSING_URL, $should_redirect = true ) {
+	public static function licensing_call( $endpoint = 'check-license', $license_key = '', $item_id = AUTOMATOR_FREE_ITEM_ID, $store_url = AUTOMATOR_LICENSING_URL, $should_redirect = true ) {
 		$valid_endpoints = array(
 			'check-license',
 			'activate-license',
@@ -1744,7 +1766,7 @@ class Admin_Menu {
 		$response = wp_remote_post(
 			$url,
 			array(
-				'timeout'   => 10,
+				'timeout'   => apply_filters( 'automator_licensing_timeout', 20 ),
 				'body'      => '',
 				'headers'   => array(
 					'X-UO-Licensing'   => $encoded_data,

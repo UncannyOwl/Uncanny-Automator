@@ -35,6 +35,13 @@ class Automator_Functions {
 	 */
 	public $recipe_types = array( 'user', 'anonymous' );
 	/**
+	 * Collection of valid recipe part post types.
+	 *
+	 * @since    4.2.0
+	 * @access   public
+	 */
+	public $recipe_part_post_types = array( 'uo-trigger', 'uo-action', 'uo-closure', 'uo-loop', 'uo-loop-filter' );
+	/**
 	 * Collection of all recipe items
 	 *
 	 * @since    4.2.0
@@ -76,6 +83,13 @@ class Automator_Functions {
 	 * @access   public
 	 */
 	public $closures = array();
+	/**
+	 * Collection of all loop filters
+	 *
+	 * @since    4.2.0
+	 * @access   public
+	 */
+	public $loop_filters = array();
 	/**
 	 * Triggers and actions for each recipe with data
 	 *
@@ -340,26 +354,24 @@ class Automator_Functions {
 	 * @return Singleton\Parsed_Token_Records_Singleton
 	 */
 	public function parsed_token_records() {
-		require_once UA_ABSPATH . 'src/core/services/singleton/parsed-token-records-singleton.php';
 
 		return Singleton\Parsed_Token_Records_Singleton::get_instance();
+
 	}
 
 	/**
 	 * @return Logger\Singleton\Async_Actions_Logger_Singleton
 	 */
 	public function async_action_logger() {
-		require_once UA_ABSPATH . 'src/core/services/logger/singleton/async-action-logger-singleton.php';
 
 		return Logger\Singleton\Async_Actions_Logger_Singleton::get_instance();
+
 	}
 
 	/**
 	 * @returnLogger\Singleton\Main_Aggregate_Logger_Singleton
 	 */
 	public function main_aggregate_logger() {
-		require_once UA_ABSPATH . 'src/core/services/logger/singleton/main-aggregate-logger-singleton.php';
-
 		return Logger\Singleton\Main_Aggregate_Logger_Singleton::get_instance();
 	}
 
@@ -367,9 +379,9 @@ class Automator_Functions {
 	 * @return Services\Structure\Actions\Item\Loop\Filters_Db
 	 */
 	public function loop_filters_db() {
-		require_once UA_ABSPATH . 'src/core/services/recipe/structure/actions/item/loop/filters-db.php';
 
 		return new Services\Structure\Actions\Item\Loop\Filters_Db();
+
 	}
 
 	/**
@@ -385,11 +397,26 @@ class Automator_Functions {
 	 * @param $integration
 	 */
 	public function set_all_integrations( $integration_code, $integration ) {
+
 		// Only register the integration if it has icon_svg.
 		if ( ! isset( $integration['icon_svg'] ) && array_key_exists( $integration_code, $this->all_integrations ) ) {
 			return;
 		}
+
 		$this->all_integrations[ $integration_code ] = $integration;
+	}
+
+	/**
+	 * @param string $integration_code
+	 *
+	 * @return string
+	 */
+	public function get_integration_name_by_code( $integration_code ) {
+		if ( isset( $this->all_integrations[ $integration_code ] ) ) {
+			return $this->all_integrations[ $integration_code ]['name'];
+		}
+
+		return '';
 	}
 
 	/**
@@ -500,11 +527,77 @@ class Automator_Functions {
 	}
 
 	/**
+	 * @param string $code
+	 * @param string $integration
+	 *
+	 * @return mixed false|array
+	 */
+	public function get_closure( $code, $integration ) {
+		$closures = $this->get_closures();
+		if ( ! empty( $closures ) ) {
+			foreach ( $closures as $closure ) {
+				if ( $closure['code'] === $code && $closure['integration'] === $integration ) {
+					return $closure;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * @param $closure
 	 */
 	public function set_closures( $closure ) {
 		if ( $this->add_unique_recipe_item( $closure, 'closures' ) ) {
 			$this->closures[] = $closure;
+		}
+	}
+
+	/**
+	 * Get all loop filters
+	 *
+	 * @since 5.9.1
+	 *
+	 * @return array
+	 */
+	public function get_loop_filters() {
+		if ( empty( $this->loop_filters ) ) {
+			$this->set_loop_filters();
+		}
+
+		return $this->loop_filters;
+	}
+
+	/**
+	 * Get loop filter
+	 *
+	 * @since 5.9.1
+	 *
+	 * @param string $filter
+	 * @param string $integration
+	 *
+	 * @return bool
+	 */
+	public function get_loop_filter( $filter, $integration ) {
+		$filters = $this->get_loop_filters();
+		if ( isset( $filters[ $integration ] ) && isset( $filters[ $integration ][ $filter ] ) ) {
+			return $filters[ $integration ][ $filter ];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Set loop filters
+	 *
+	 * @since 5.9.1
+	 *
+	 * @return void
+	 */
+	public function set_loop_filters() {
+		if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) {
+			$this->loop_filters = automator_pro_loop_filters()->get_filters();
 		}
 	}
 
@@ -726,8 +819,8 @@ class Automator_Functions {
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$t_id   = absint( $t_id );
-						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$t_id                                                     = absint( $t_id );
+						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
@@ -735,7 +828,7 @@ class Automator_Functions {
 				// Add action tokens to recipe_objects.
 				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
 					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
-						$recipe_action_id = absint( $recipe_action_id );
+						$recipe_action_id                                                    = absint( $recipe_action_id );
 						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'], $recipe_action_id, $recipe_id );
 					}
 				}
@@ -1620,7 +1713,6 @@ WHERE pm.post_id
 	 *
 	 * @return bool
 	 * @deprecated 3.0
-	 *
 	 */
 	public function complete_closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array() ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
@@ -2228,6 +2320,160 @@ WHERE pm.post_id
 
 		return $properties;
 
+	}
+
+	/**
+	 * Sets the recipe part meta.
+	 *
+	 * @param int $post_id
+	 * @param string $item_code
+	 * @param string $integration_code
+	 * @param string $post_type
+	 * @param array $defaults
+	 *
+	 * @return void
+	 */
+	public function set_recipe_part_meta( $post_id, $item_code, $integration_code = '', $post_type = '', $defaults = array() ) {
+
+		if ( empty( $post_id ) || empty( $item_code ) ) {
+			return;
+		}
+
+		// Validate post type
+		$post_type = empty( $post_type ) ? get_post_type( $post_id ) : $post_type;
+		if ( ! in_array( $post_type, $this->recipe_part_post_types, true ) ) {
+			return;
+		}
+
+		// Set defaults as array if not set.
+		$defaults = is_array( $defaults ) ? $defaults : array();
+
+		// Update the code meta.
+		update_post_meta( $post_id, 'code', $item_code );
+
+		// Get the integration code if not set.
+		if ( empty( $integration_code ) ) {
+			switch ( $post_type ) {
+				case 'uo-trigger':
+					$integration_code = Automator()->get->trigger_integration_from_trigger_code( $item_code );
+					break;
+				case 'uo-action':
+					$integration_code = Automator()->get->action_integration_from_action_code( $item_code );
+					break;
+				case 'uo-closure':
+					$integration_code = Automator()->get->closure_integration_from_closure_code( $item_code );
+					break;
+				case 'uo-loop':
+					// TODO : REVIEW
+					$integration_code = in_array( $item_code, array( 'LOOP_POSTS', 'LOOP_USERS', 'LOOP_TOKEN' ), true ) ? 'WP' : 'UNKNOWN';
+					break;
+				case 'uo-loop-filter':
+					$integration_code = Automator()->get->loop_filter_integration_from_loop_filter_code( $item_code );
+					break;
+			}
+		}
+
+		if ( empty( $integration_code ) ) {
+			return;
+		}
+
+		// Set type version key by removing uo- prefix.
+		$version_key = 'uap_' . str_replace( 'uo-', '', $post_type ) . '_version';
+		update_post_meta( $post_id, $version_key, Utilities::automator_get_version() );
+
+		// Update the integration code.
+		update_post_meta( $post_id, 'integration', $integration_code );
+
+		// Update the integration name.
+		if ( ! key_exists( 'integration_name', $defaults ) || empty( $defaults['integration_name'] ) ) {
+			$name = $this->get_integration_name_by_code( $integration_code );
+			update_post_meta( $post_id, 'integration_name', $name );
+		}
+
+		// Get the config for the recipe part.
+		$config = $this->get_recipe_part_config( $post_type, $item_code, $integration_code );
+		if ( empty( $config ) ) {
+			return;
+		}
+
+		// Set the type meta ( pro | elite | free )
+		if ( ! key_exists( 'type', $defaults ) || empty( $defaults['type'] ) ) {
+			$is_pro   = isset( $config['is_pro'] ) ? (bool) $config['is_pro'] : false;
+			$is_elite = isset( $config['is_elite'] ) ? (bool) $config['is_elite'] : false;
+			$type     = $is_pro ? 'pro' : ( $is_elite ? 'elite' : 'free' );
+			$type     = apply_filters( 'automator_recipe_part_type', $type, $post_type, $item_code, $integration_code );
+			update_post_meta( $post_id, 'type', $type );
+		}
+
+		// Set the user type meta.
+		if ( ! key_exists( 'user_type', $defaults ) || empty( $defaults['user_type'] ) ) {
+
+			$requires_user = isset( $config['requires_user'] ) ? (bool) $config['requires_user'] : false;
+			$type          = $requires_user ? 'user' : 'anonymous';
+			if ( 'uo-trigger' === $post_type ) {
+				$type = isset( $config['type'] ) ? $config['type'] : $type;
+			}
+			if ( 'uo-loop' === $post_type ) {
+				$expression = get_post_meta( $post_id, 'iterable_expression', true );
+				if ( isset( $expression['type'] ) && 'users' === $expression['type'] ) {
+					$type = $expression['type'];
+				}
+			}
+
+			$type = apply_filters( 'automator_recipe_part_user_type', $type, $post_type, $item_code, $integration_code );
+			update_post_meta( $post_id, 'user_type', $type );
+		}
+
+	}
+
+	/**
+	 * Retrieves the recipe part config.
+	 *
+	 * @param string $part_post_type
+	 * @param string $item_code
+	 * @param string $integration_code
+	 *
+	 * @return mixed - array | null
+	 */
+	public function get_recipe_part_config( $part_post_type, $item_code, $integration_code ) {
+
+		if ( empty( $part_post_type ) || empty( $item_code ) || empty( $integration_code ) ) {
+			return null;
+		}
+
+		$config = null;
+		switch ( $part_post_type ) {
+			case 'uo-trigger':
+				$config = $this->get_trigger( $item_code );
+				break;
+			case 'uo-action':
+				$config = $this->get_action( $item_code );
+				break;
+			case 'uo-closure':
+				$config = $this->get_closure( $item_code, $integration_code );
+				break;
+			case 'uo-loop':
+				// TODO : REVIEW Elite loop settings?
+				$config = array(
+					'requires_user' => false,
+					'is_pro'        => true,
+					'is_elite'      => false,
+				);
+				break;
+			case 'uo-loop-filter':
+				$config    = $this->get_loop_filter( $item_code, $integration_code );
+				$config    = ! empty( $config ) ? $config : array();
+				$loop_type = isset( $config['loop_type'] ) ? $config['loop_type'] : 'posts';
+				if ( 'users' === $loop_type ) {
+					$config['requires_user'] = true;
+				}
+				$config['requires_user'] = isset( $config['requires_user'] ) ? $config['requires_user'] : false;
+				$config['is_pro']        = isset( $config['is_pro'] ) ? $config['is_pro'] : true;
+				$config['is_elite']      = isset( $config['is_elite'] ) ? $config['is_elite'] : false;
+				break;
+		}
+
+		return $config;
 	}
 
 }

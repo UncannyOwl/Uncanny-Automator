@@ -145,7 +145,7 @@ class LD_LESSONDONE {
 		 * @ticket 2126631606/46933 - 860pm6a12
 		 * @since 4.10
 		 */
-		if ( false !== wp_cache_get( $cache_key, $cache_group ) ) {
+		if ( false !== Automator()->cache->get( $cache_key, $cache_group ) ) {
 			return;
 		}
 
@@ -209,7 +209,7 @@ class LD_LESSONDONE {
 			}
 		}
 
-		wp_cache_set( $cache_key, true, 'automator-ld-lesson-completed' );
+		Automator()->cache->set( $cache_key, true, 'automator-ld-lesson-completed' );
 
 	}
 

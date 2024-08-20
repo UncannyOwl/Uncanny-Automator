@@ -160,6 +160,8 @@ class ANON_WP_VIEWPOSTTYPE {
 							// post_id Token
 							Automator()->db->token->save( 'post_id', $post->ID, $trigger_meta );
 
+							do_action( 'automator_loopable_token_hydrate', $result['args'], array( $post->ID ) );
+
 							Automator()->process->user->maybe_trigger_complete( $result['args'] );
 						}
 					}

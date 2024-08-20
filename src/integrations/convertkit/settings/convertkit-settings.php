@@ -65,14 +65,14 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 		$cache_key = $option_name . '_validated_api_key';
 
 		// Ensures run once per run-time.
-		if ( wp_cache_get( $cache_key, 'convertkit' ) ) {
+		if ( Automator()->cache->get( $cache_key, 'convertkit' ) ) {
 
 			return $sanitized_input;
 
 		}
 
 		// Set the run-time cache before a request is run.
-		wp_cache_set( $cache_key, true, 'convertkit' );
+		Automator()->cache->set( $cache_key, true, 'convertkit' );
 
 		try {
 
@@ -89,7 +89,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 		}
 
 		// Set the run-time cache.
-		wp_cache_set( $cache_key, true, 'convertkit' );
+		Automator()->cache->set( $cache_key, true, 'convertkit' );
 
 	}
 
@@ -103,7 +103,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 		$cache_key = $option_name . '_validated_api_secret';
 
 		// Ensures run once per run-time.
-		if ( wp_cache_get( $cache_key, 'convertkit' ) ) {
+		if ( Automator()->cache->get( $cache_key, 'convertkit' ) ) {
 
 			return $sanitized_input;
 
@@ -113,7 +113,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 		if ( ! empty( get_settings_errors( 'automator_convertkit_connection_alerts' ) ) ) {
 
 			// Set the run-time cache on failure.
-			wp_cache_set( $cache_key, true, 'convertkit' );
+			Automator()->cache->set( $cache_key, true, 'convertkit' );
 
 			return $sanitized_input;
 
@@ -144,7 +144,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 		}
 
 		// Set the run-time cache.
-		wp_cache_set( $cache_key, true, 'convertkit' );
+		Automator()->cache->set( $cache_key, true, 'convertkit' );
 
 	}
 

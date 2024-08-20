@@ -84,7 +84,7 @@ class Open_AI_Settings {
 		$cache_key = $option_name . '_validated';
 
 		// Prevents duplicate process.
-		if ( wp_cache_get( $cache_key, self::CACHE_GROUP_VALIDATION ) ) {
+		if ( Automator()->cache->get( $cache_key, self::CACHE_GROUP_VALIDATION ) ) {
 			return $sanitized_input;
 		}
 
@@ -102,13 +102,13 @@ class Open_AI_Settings {
 
 			automator_add_settings_error( self::SETTINGS_ERROR, $heading, '', 'success' );
 
-			wp_cache_set( $cache_key, true, self::CACHE_GROUP_VALIDATION );
+			Automator()->cache->set( $cache_key, true, self::CACHE_GROUP_VALIDATION );
 
 			return $sanitized_input;
 
 		} catch ( \Exception $e ) {
 
-			wp_cache_set( $cache_key, true, self::CACHE_GROUP_VALIDATION );
+			Automator()->cache->set( $cache_key, true, self::CACHE_GROUP_VALIDATION );
 
 			automator_add_settings_error( self::SETTINGS_ERROR, __( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
 

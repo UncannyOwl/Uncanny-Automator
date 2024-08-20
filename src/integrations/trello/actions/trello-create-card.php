@@ -203,19 +203,20 @@ class TRELLO_CREATE_CARD {
 		);
 
 		$custom_fields = array(
-			'option_code'   => 'CUSTOMFIELDS',
-			'input_type'    => 'repeater',
-			'label'         => __( 'Custom fields', 'uncanny-automator' ),
-			'description'   => '',
-			'required'      => false,
-			'default_value' => array(
+			'option_code'     => 'CUSTOMFIELDS',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => __( 'Custom fields', 'uncanny-automator' ),
+			'description'     => '',
+			'required'        => false,
+			'default_value'   => array(
 				array(
 					'FIELD_NAME'  => '',
 					'FIELD_OBJ'   => '',
 					'FIELD_VALUE' => '',
 				),
 			),
-			'fields'        => array(
+			'fields'          => array(
 				array(
 					'option_code' => 'FIELD_NAME',
 					'label'       => __( 'Field name', 'uncanny-automator' ),
@@ -239,7 +240,7 @@ class TRELLO_CREATE_CARD {
 					'required'    => false,
 				),
 			),
-			'hide_actions'  => true,
+			'hide_actions'    => true,
 		);
 
 		return array(

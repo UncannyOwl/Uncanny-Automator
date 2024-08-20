@@ -120,12 +120,13 @@ class Zoho_Campaigns_Contact_List_Sub {
 							'options_show_id'          => false,
 						),
 						array(
-							'option_code'  => 'CONTACT_FIELDS',
-							'input_type'   => 'repeater',
+							'option_code'     => 'CONTACT_FIELDS',
+							'input_type'      => 'repeater',
+							'relevant_tokens' => array(),
 							/* translators: Action field */
-							'label'        => _x( 'Fields', 'ZohoCampaigns', 'uncanny-automator' ),
-							'required'     => false,
-							'fields'       => array(
+							'label'           => _x( 'Fields', 'ZohoCampaigns', 'uncanny-automator' ),
+							'required'        => false,
+							'fields'          => array(
 								array(
 									'label'       => _x( 'Field name', 'ZohoCampaigns', 'uncanny-automator' ),
 									'option_code' => 'FIELD_NAME',
@@ -138,12 +139,12 @@ class Zoho_Campaigns_Contact_List_Sub {
 									'input_type'  => 'text',
 								),
 							),
-							'ajax'         => array(
+							'ajax'            => array(
 								'event'          => 'on_load',
 								'endpoint'       => 'automator-zoho-campaigns-fetch-fields',
 								'mapping_column' => 'FIELD_NAME',
 							),
-							'hide_actions' => true,
+							'hide_actions'    => true,
 						),
 					),
 

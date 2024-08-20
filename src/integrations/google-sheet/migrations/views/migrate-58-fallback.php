@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="notice notice-warning">
 	<p>
 		<strong><?php esc_html_e( 'Important Notice from Uncanny Automator', 'uncanny-automator' ); ?></strong><br/>
-		<?php esc_html_e( 'Google has changed permission requirements for Google Drive apps. You must reconnect your Google account before August 10, 2024 or your Google Sheets actions will stop working.', 'uncanny-automator' ); ?>
+		<?php esc_html_e( 'Google has changed permission requirements for Google Drive apps. You must reconnect your Google account now or your Google Sheets actions will not work as expected.', 'uncanny-automator' ); ?>
 	</p>
 	<p>
 		<a

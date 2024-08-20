@@ -129,6 +129,7 @@ class SHEET_ADD_ROW_V2 {
 					array(
 						'option_code'       => 'WORKSHEET_FIELDS',
 						'input_type'        => 'repeater',
+						'relevant_tokens'   => array(),
 						'label'             => __( 'Row', 'uncanny-automator' ),
 						'description'       => '',
 						'required'          => true,

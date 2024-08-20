@@ -415,6 +415,10 @@ class Automator_Translations {
 						'invalid' => esc_attr__( 'Please enter a valid time.', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.validation.field.date.invalid
 					),
+					'file'        => array(
+						'empty' => esc_attr__( 'Please select a file.', 'uncanny-automator' ),
+						// UncannyAutomator._core.i18n.validation.field.file.empty
+					),
 					'invalidType' => esc_attr__( 'Invalid field type.', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.validation.field.invalidType
 				),
@@ -1261,6 +1265,14 @@ class Automator_Translations {
 				'itemStatusLive'      => 'Live',
 				'itemStatusDraft'     => 'Draft',
 				'jsConsole'           => 'JS console',
+				'token'               => array(
+					'columnName'  => esc_html__( 'Name', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.debugging.token.columnName
+					'columnID'    => esc_html__( 'ID', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.debugging.token.columnID
+					'columnValue' => esc_html__( 'Value', 'uncanny-automator' ),
+					// UncannyAutomator._core.i18n.debugging.token.columnValue
+				),
 			),
 			'format'              => array(
 				'date' => array(
@@ -1372,11 +1384,13 @@ class Automator_Translations {
 					'matchCriteria'          => __( 'that match the following criteria', 'uncanny-automator' ),
 					'filterUsersButtonLabel' => __( 'Filter users', 'uncanny-automator' ),
 					'filterPostsButtonLabel' => __( 'Filter posts', 'uncanny-automator' ),
+					'filterTokenButtonLabel' => __( 'Filter data', 'uncanny-automator' ),
 					'editLoopFilter'         => __( 'Edit filter', 'uncanny-automator' ),
 					'deleteLoopFilter'       => __( 'Delete filter', 'uncanny-automator' ),
 					'configureTheFilter'     => __( 'Configure the loop filter', 'uncanny-automator' ),
 					'filterUsers'            => __( 'Filter users', 'uncanny-automator' ),
 					'filterPosts'            => __( 'Filter posts', 'uncanny-automator' ),
+					'filterData'             => __( 'Filter data', 'uncanny-automator' ),
 					'cancel'                 => __( 'Cancel', 'uncanny-automator' ),
 					'confirm'                => __( 'Confirm', 'uncanny-automator' ),
 					'searchLoopFilters'      => __( 'Search loop filters', 'uncanny-automator' ),
@@ -1385,31 +1399,33 @@ class Automator_Translations {
 					'instructionsContent'    => __( 'Loop filters decide which users will be included in the loop. Action filters within the block, on the other hand, choose what actions are performed for each individual user.', 'uncanny-automator' ),
 					'userLoop'               => __( 'User loop', 'uncanny-automator' ),
 					'postLoop'               => __( 'Post loop', 'uncanny-automator' ),
+					'tokenLoop'              => __( 'Token loop', 'uncanny-automator' ),
+					'setDataDialogHeading'   => __( 'Set data', 'uncanny-automator' ),
 				),
 			),
 			'core'                => array(
 				// UncannyAutomator._core.i18n.core.runNow
-				'runNow'       => array(
+				'runNow'        => array(
 					'starting' => esc_html__( 'Starting recipe', 'uncanny-automator' ),
 					'started'  => esc_html__( 'Recipe started successfully', 'uncanny-automator' ),
 				),
 
 				// UncannyAutomator._core.i18n.core.title
-				'title'        => array(
+				'title'         => array(
 					'updating' => esc_html__( 'Updating recipe title', 'uncanny-automator' ),
 					'updated'  => esc_html__( 'Recipe title updated successfully', 'uncanny-automator' ),
 				),
 				// UncannyAutomator._core.i18n.core.notes
-				'notes'        => array(
+				'notes'         => array(
 					'updating' => esc_html__( 'Updating recipe notes', 'uncanny-automator' ),
 					'updated'  => esc_html__( 'Recipe notes updated successfully', 'uncanny-automator' ),
 				),
-				'recipeType'   => array(
+				'recipeType'    => array(
 					'settingRecipeType' => esc_html__( 'Setting recipe type', 'uncanny-automator' ),
 					'recipeTypeSet'     => esc_html__( 'Recipe type set successfully', 'uncanny-automator' ),
 				),
 				// UncannyAutomator._core.i18n.core.item
-				'item'         => array(
+				'item'          => array(
 					// UncannyAutomator._core.i18n.core.item.deleteItem
 					'deleteItem'           => array(
 						'warningMessage'  => esc_attr__( 'Deleting items in a live recipe can lead to unexpected behaviors.', 'uncanny-automator' ),
@@ -1453,10 +1469,14 @@ class Automator_Translations {
 						'triggerLogicUpdated'  => esc_html__( 'Trigger logic updated successfully', 'uncanny-automator' ),
 					),
 				),
-				'itemLoop'     => array(
+				'itemLoop'      => array(
 					'createNew'           => array(
 						'creatingLoop' => esc_html__( 'Adding new loop', 'uncanny-automator' ),
 						'loopCreated'  => esc_html__( 'Loop added successfully', 'uncanny-automator' ),
+					),
+					'updateLoop'          => array(
+						'updatingLoop' => esc_html__( 'Updating loop', 'uncanny-automator' ),
+						'loopUpdated'  => esc_html__( 'Loop updated successfully', 'uncanny-automator' ),
 					),
 					'deleteLoop'          => array(
 						'deleteLoop'         => esc_html__( 'Delete loop', 'uncanny-automator' ),
@@ -1480,18 +1500,33 @@ class Automator_Translations {
 						'loopFilterUpdated'  => esc_html__( 'Loop filter updated successfully', 'uncanny-automator' ),
 					),
 				),
-				'itemFilter'   => array(
+				'itemFilter'    => array(
 					'updateFilters' => array(
 						'updatingFilters' => esc_html__( 'Updating filters', 'uncanny-automator' ),
 						'filtersUpdated'  => esc_html__( 'Filters updated successfully', 'uncanny-automator' ),
 					),
 				),
 				// UncannyAutomator._core.i18n.core.userSelector
-				'userSelector' => array(
+				'userSelector'  => array(
 					'setRequiresUserSelector' => array(
 						'updatingFlag'   => esc_html__( 'Removing user selector', 'uncanny-automator' ),
 						'flagUpdated'    => esc_html__( 'User selector removed successfully', 'uncanny-automator' ),
 						'warningMessage' => esc_html__( 'Removing the user selector may result in unexpected behavior if any actions or tokens require user data.', 'uncanny-automator' ),
+					),
+				),
+				'directoryLoop' => array(
+					'token' => array(
+						'name'         => esc_html__( 'Token loop', 'uncanny-automator' ),
+						'fields'       => array(
+							'token' => array(
+								'label' => __( 'Token', 'uncanny-automator' ),
+							),
+						),
+						'sentence'     => sprintf( __( '{{Token:%1$s}}', 'uncanny-automator' ), 'TOKEN' ),
+						'dialogHelper' => array(
+							'loopTokens'          => __( 'Loop through tokens that contain multiple items, such as Woo products, LearnDash courses, BuddyBoss memberships, and more.', 'uncanny-automator' ),
+							'loopTokensLearnMore' => __( 'Learn more', 'uncanny-automator' ),
+						),
 					),
 				),
 			),
