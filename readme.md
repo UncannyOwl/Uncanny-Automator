@@ -389,18 +389,24 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
-### 5.10 [2024-08-19]
+### 5.10 [2024-08-20]
 
 **New Feature:**
 
 * Loopable Tokens #4898
 
-**New Integrations:**
+**New App Integrations:**
 
-* FluentBooking #4728
-* Keap #4559
-* Logging #5010
-* Ontraport #4556
+* [Keap](https://automatorplugin.com/integration/keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4559
+* [Ontraport](https://automatorplugin.com/integration/ontraport/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4556
+
+**New Plugin Integration:**
+
+* [FluentBooking](https://automatorplugin.com/integration/fluentbooking/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4728
+
+**New Built-in Integration:**
+
+* [Logging](https://automatorplugin.com/integration/logging/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5010
 
 **New Triggers:**
 
