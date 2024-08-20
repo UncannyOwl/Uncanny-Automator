@@ -26,14 +26,13 @@ class Ninja_Forms_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Ninja_Forms_Helpers constructor.
 	 */
 	public function __construct() {
 
-		$this->load_options = true;
 	}
 
 	/**

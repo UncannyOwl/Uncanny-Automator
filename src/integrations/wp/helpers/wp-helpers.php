@@ -28,14 +28,12 @@ class Wp_Helpers {
 	/**
 	 * @var true
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * __construct.
 	 */
 	public function __construct() {
-
-		$this->load_options = true;
 
 		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
 		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );

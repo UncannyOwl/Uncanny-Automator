@@ -21,7 +21,7 @@ class Wp_User_Manager_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 
 	/**
@@ -57,7 +57,6 @@ class Wp_User_Manager_Helpers {
 	public function get_all_forms( $label = null, $option_code = 'WPUMFORMS', $args = array() ) {
 		if ( ! $this->load_options ) {
 
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -84,7 +83,7 @@ class Wp_User_Manager_Helpers {
 			}
 		}
 
-		$option = [
+		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
@@ -94,7 +93,7 @@ class Wp_User_Manager_Helpers {
 			'fill_values_in'  => $target_field,
 			'endpoint'        => $end_point,
 			'options'         => $options,
-		];
+		);
 
 		return apply_filters( 'uap_option_get_all_forms', $option );
 	}

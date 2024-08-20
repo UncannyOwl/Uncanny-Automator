@@ -26,14 +26,12 @@ class Memberpress_Courses_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Memberpress_Courses_Helpers constructor.
 	 */
 	public function __construct() {
-
-		$this->load_options = true;
 
 		add_action(
 			'wp_ajax_select_lesson_from_course_LESSONDONE',

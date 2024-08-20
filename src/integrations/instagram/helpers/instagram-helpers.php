@@ -35,7 +35,7 @@ class Instagram_Helpers {
 	 *
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	const FB_OPTIONS_KEY = '_uncannyowl_facebook_pages_settings';
 

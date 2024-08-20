@@ -30,11 +30,9 @@ class Edd_Helpers {
 	 *
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	public function __construct() {
-
-		$this->load_options = true;
 
 	}
 

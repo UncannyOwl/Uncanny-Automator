@@ -23,14 +23,13 @@ class Ultimate_Member_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Ultimate_Member_Helpers constructor.
 	 */
 	public function __construct() {
 
-		$this->load_options = true;
 	}
 
 	/**

@@ -5,7 +5,7 @@
 **Requires at least:** 5.4 \
 **Tested up to:** 6.6.1 \
 **Requires PHP:** 7.0 \
-**Stable tag:** 5.10 \
+**Stable tag:** 5.10.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -388,6 +388,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.10.1 [2024-08-20]
+
+**Fixed:**
+
+* Oopsie! Some field options were playing hard to get, refusing to let you enter or select anything. We've given them a nudge, and they're now much more cooperative! #5034
 
 ### 5.10 [2024-08-20]
 

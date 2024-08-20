@@ -22,7 +22,7 @@ class Uoa_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Uoa_Helpers constructor.

@@ -19,7 +19,7 @@ class Uncanny_Toolkit_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Checks if the Toolkit Pro Group Sign Up module is activated.
@@ -33,7 +33,6 @@ class Uncanny_Toolkit_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = true;
 	}
 
 	/**

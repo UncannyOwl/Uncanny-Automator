@@ -25,7 +25,7 @@ class Zapier_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Zapier_Pro_Helpers constructor.

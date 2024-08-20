@@ -26,13 +26,13 @@ class Event_Tickets_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Event_Tickets_Helpers constructor.
 	 */
 	public function __construct() {
-		$this->load_options = true;
+
 	}
 
 	/**

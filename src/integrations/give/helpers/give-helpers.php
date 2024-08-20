@@ -22,13 +22,13 @@ class Give_Helpers {
 	/**
 	 * @var true
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Give_Helpers constructor.
 	 */
 	public function __construct() {
-		$this->load_options = true;
+
 	}
 
 	/**

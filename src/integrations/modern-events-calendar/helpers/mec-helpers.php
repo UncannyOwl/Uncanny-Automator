@@ -21,7 +21,7 @@ class MEC_HELPERS {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * The event id.
@@ -76,7 +76,7 @@ class MEC_HELPERS {
 	 * @return void.
 	 */
 	public function __construct() {
-		$this->load_options = true;
+
 		add_action(
 			'wp_ajax_ua_mec_select_events',
 			array(

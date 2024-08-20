@@ -33,7 +33,7 @@ class Active_Campaign_Helpers {
 	 *
 	 * @var mixed The trigger options.
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Webhook url.

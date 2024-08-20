@@ -36,7 +36,7 @@ class Zoom_Webinar_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	private $default_questions;
 	private $tab_url;
@@ -51,7 +51,7 @@ class Zoom_Webinar_Helpers {
 		if ( method_exists( '\Uncanny_Automator\Automator_Helpers_Recipe', 'maybe_load_trigger_options' ) ) {
 			$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 		} else {
-			$this->load_options = true;
+
 		}
 
 		$this->automator_api = AUTOMATOR_API_URL . 'v2/zoom';

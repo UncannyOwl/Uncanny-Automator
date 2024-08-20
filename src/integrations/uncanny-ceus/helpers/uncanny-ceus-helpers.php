@@ -18,7 +18,7 @@ class Uncanny_Ceus_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 
 	/**
@@ -31,7 +31,6 @@ class Uncanny_Ceus_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = true;
 	}
 
 	/**

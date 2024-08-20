@@ -25,14 +25,12 @@ class Learnpress_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Learnpress_Helpers constructor.
 	 */
 	public function __construct() {
-
-		$this->load_options = true;
 
 		add_action(
 			'wp_ajax_select_section_from_course_LPMARKLESSONDONE',

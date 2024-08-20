@@ -22,7 +22,7 @@ class Flsupport_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Flsupport_Helpers constructor.

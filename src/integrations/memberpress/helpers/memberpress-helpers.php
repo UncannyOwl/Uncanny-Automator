@@ -25,14 +25,12 @@ class Memberpress_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Memberpress_Helpers constructor.
 	 */
 	public function __construct() {
-
-		$this->load_options = true;
 
 	}
 

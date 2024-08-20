@@ -21,14 +21,13 @@ class Restrict_Content_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Restrict_content_Helpers constructor.
 	 */
 	public function __construct() {
 
-		$this->load_options = true;
 	}
 
 	/**

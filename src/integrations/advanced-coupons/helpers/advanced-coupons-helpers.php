@@ -30,7 +30,7 @@ class Advanced_Coupons_Helpers {
 	 *
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Advanced_Coupons_Helpers constructor.

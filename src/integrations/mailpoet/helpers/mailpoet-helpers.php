@@ -19,7 +19,7 @@ class Mailpoet_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * @var Mailpoet_Pro_Helpers
@@ -31,7 +31,6 @@ class Mailpoet_Helpers {
 	 */
 	public function __construct() {
 
-		$this->load_options = true;
 	}
 
 	/**

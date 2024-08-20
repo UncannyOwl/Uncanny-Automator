@@ -23,7 +23,7 @@ class Masterstudy_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	public $load_any_options = true;
 
@@ -35,8 +35,6 @@ class Masterstudy_Helpers {
 		if ( ! $load_hooks ) {
 			return;
 		}
-
-		$this->load_options = true;
 
 		add_action(
 			'wp_ajax_select_mslms_lesson_from_course_LESSONDONE',

@@ -35,7 +35,7 @@ class Twilio_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * The tab's URL.

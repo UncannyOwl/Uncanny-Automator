@@ -23,7 +23,7 @@ class Learndash_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * @var bool
@@ -35,7 +35,6 @@ class Learndash_Helpers {
 	 */
 	public function __construct( $load_action_hook = true ) {
 
-		$this->load_options = true;
 		if ( true === $load_action_hook ) {
 
 			add_action(
@@ -165,7 +164,6 @@ class Learndash_Helpers {
 	 * @return mixed
 	 */
 	public function get_all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true ) {
-		$this->load_options = true;
 
 		return $this->all_ld_courses( $label, $option_code, $any_option );
 	}

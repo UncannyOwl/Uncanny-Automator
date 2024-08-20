@@ -27,7 +27,7 @@ class Facebook_Helpers {
 	 *
 	 * @var mixed $load_options
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * The endpoint uri.

@@ -82,7 +82,7 @@ class Google_Sheet_Helpers {
 	 *
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Client scope.
@@ -126,7 +126,7 @@ class Google_Sheet_Helpers {
 		if ( method_exists( '\Uncanny_Automator\Automator_Helpers_Recipe', 'maybe_load_trigger_options' ) ) {
 			$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
 		} else {
-			$this->load_options = true;
+
 		}
 
 		$this->setting_tab = 'premium-integrations';

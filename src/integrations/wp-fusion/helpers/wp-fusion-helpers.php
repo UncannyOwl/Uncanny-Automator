@@ -31,7 +31,7 @@ class Wp_Fusion_Helpers {
 	 *
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Load any options.
@@ -44,8 +44,6 @@ class Wp_Fusion_Helpers {
 	 * Learndash_Helpers constructor.
 	 */
 	public function __construct() {
-
-		$this->load_options = true;
 
 	}
 

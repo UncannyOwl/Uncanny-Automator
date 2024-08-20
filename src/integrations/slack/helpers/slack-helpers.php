@@ -19,7 +19,7 @@ class Slack_Helpers {
 	const API_ENDPOINT = 'v2/slack';
 	public $options;
 	public $pro;
-	public $load_options;
+	public $load_options = true;
 	public $api_integration_url;
 	public $scope;
 

@@ -23,14 +23,12 @@ class Buddypress_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Buddypress_Helpers constructor.
 	 */
 	public function __construct() {
-
-		$this->load_options = true;
 
 		add_action( 'wp_ajax_select_topic_from_forum_BDBTOPICREPLY', array( $this, 'select_topic_fields_func' ) );
 	}

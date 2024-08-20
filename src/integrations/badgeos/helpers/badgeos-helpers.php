@@ -22,14 +22,12 @@ class Badgeos_Helpers {
 	/**
 	 * @var bool
 	 */
-	public $load_options;
+	public $load_options = true;
 
 	/**
 	 * Badgeos_Helpers constructor.
 	 */
 	public function __construct() {
-
-		$this->load_options = true;
 
 		add_action(
 			'wp_ajax_select_achievements_from_types_BOAWARDACHIEVEMENT',
