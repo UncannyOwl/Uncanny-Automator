@@ -10,6 +10,14 @@ namespace Uncanny_Automator;
 class Automator_Cache_Handler {
 
 	/**
+	 *
+	 */
+	const OPTION_NAME = 'uncanny_automator_advanced_automator_cache';
+	/**
+	 * @var Automator_Cache_Handler
+	 */
+	public static $instance;
+	/**
 	 * @var mixed|void
 	 */
 	public $expires;
@@ -17,38 +25,14 @@ class Automator_Cache_Handler {
 	 * @var
 	 */
 	public $long_expires;
-
 	/**
 	 * @var string
 	 */
 	public $recipes_data = 'automator_recipes_data';
-
 	/**
 	 * @var string
 	 */
 	public $recipes = 'automator_recipes';
-
-	/**
-	 * @var Automator_Cache_Handler
-	 */
-	public static $instance;
-
-	/**
-	 *
-	 */
-	const OPTION_NAME = 'uncanny_automator_advanced_automator_cache';
-
-	/**
-	 * @return Automator_Cache_Handler
-	 */
-	public static function get_instance() {
-
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
 
 	/**
 	 * Cache_Handler constructor.
@@ -199,6 +183,18 @@ class Automator_Cache_Handler {
 			999,
 			0
 		);
+	}
+
+	/**
+	 * @return Automator_Cache_Handler
+	 */
+	public static function get_instance() {
+
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -365,10 +361,10 @@ class Automator_Cache_Handler {
 	 * @param null|mixed $expires
 	 */
 	public function set( $key, $data, $group = 'automator', $expires = null ) {
-		// Allow users to disable cache
-		if ( false === (bool) $this->is_cache_enabled( $key ) ) {
-			return;
-		}
+		//      // Allow users to disable cache
+		//      if ( false === (bool) $this->is_cache_enabled( $key ) ) {
+		//          return;
+		//      }
 
 		if ( null === $expires ) {
 			$expires = $this->expires;
@@ -382,9 +378,9 @@ class Automator_Cache_Handler {
 	 *
 	 * @return bool|mixed
 	 */
-	public function get( $key, $group = 'automator' ) {
+	public function get( $key, $group = 'automator', $force = false ) {
 		// Allow users to disable cache
-		if ( false === (bool) $this->is_cache_enabled( $key ) ) {
+		if ( false === $force && false === (bool) $this->is_cache_enabled( $key ) ) {
 			return array();
 		}
 

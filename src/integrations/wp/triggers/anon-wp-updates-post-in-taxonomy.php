@@ -91,6 +91,7 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wp_post_updated' ),
 			'options_callback'    => array( $this, 'load_options' ),
+			'loopable_tokens'     => Wp_Helpers::common_trigger_loopable_tokens(),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -364,6 +365,8 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 									)
 								);
 							}
+
+							do_action( 'automator_loopable_token_hydrate', $result['args'], func_get_args() );
 
 							Automator()->maybe_trigger_complete( $result['args'] );
 						}

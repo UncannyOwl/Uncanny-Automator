@@ -464,17 +464,20 @@ class Recipe_Post_Rest_Api {
 		/** Sanitize @var $item_code */
 		$item_code = Automator()->utilities->automator_sanitize( $request->get_param( 'item_code' ) );
 
+		// Check defaults
+		$default_meta     = $request->has_param( 'default_meta' ) ? $request->get_param( 'default_meta' ) : array();
+		$default_meta     = ! empty( $default_meta ) && is_array( $default_meta ) ? (array) Automator()->utilities->automator_sanitize( $default_meta, 'mixed' ) : false;
+		$integration_code = '';
+		if ( isset( $default_meta['integration'] ) ) {
+			$integration_code = $default_meta['integration'];
+			unset( $default_meta['integration'] );
+		}
+
 		if ( 'create_trigger' === $action ) {
-			update_post_meta( $post_id, 'code', $item_code );
+			Automator()->set_recipe_part_meta( $post_id, $item_code, $integration_code, $post_type, $default_meta );
 
-			$trigger_integration = Automator()->get->trigger_integration_from_trigger_code( $item_code );
-
-			update_post_meta( $post_id, 'integration', $trigger_integration );
-			update_post_meta( $post_id, 'uap_trigger_version', Utilities::automator_get_version() );
 			update_post_meta( $post_id, 'sentence_human_readable', $sentence );
-
 			$add_action_hook = Automator()->get->trigger_actions_from_trigger_code( $item_code );
-
 			update_post_meta( $post_id, 'add_action', $add_action_hook );
 
 			// Added NUMTIMES as a default to fix missing meta
@@ -492,10 +495,7 @@ class Recipe_Post_Rest_Api {
 		}
 
 		if ( 'create_action' === $action ) {
-			update_post_meta( $post_id, 'code', $item_code );
-			$action_integration = Automator()->get->action_integration_from_action_code( $item_code );
-			update_post_meta( $post_id, 'integration', $action_integration );
-			update_post_meta( $post_id, 'uap_action_version', Utilities::automator_get_version() );
+			Automator()->set_recipe_part_meta( $post_id, $item_code, $integration_code, $post_type, $default_meta );
 
 			/**
 			 * @since 4.5
@@ -522,10 +522,8 @@ class Recipe_Post_Rest_Api {
 		}
 
 		if ( 'create_closure' === $action ) {
-			update_post_meta( $post_id, 'code', $item_code );
-			$closure_integration = Automator()->get->closure_integration_from_closure_code( $item_code );
-			update_post_meta( $post_id, 'integration', $closure_integration );
-			update_post_meta( $post_id, 'uap_closure_version', Utilities::automator_get_version() );
+			Automator()->set_recipe_part_meta( $post_id, $item_code, $integration_code, $post_type, $default_meta );
+
 			/**
 			 * @param int $post_id Closure ID
 			 * @param string $item_code Closure item code
@@ -537,19 +535,16 @@ class Recipe_Post_Rest_Api {
 			do_action( 'automator_recipe_closure_created', $post_id, $item_code, $request );
 		}
 
-		if ( $request->has_param( 'default_meta' ) ) {
-			if ( is_array( $request->get_param( 'default_meta' ) ) ) {
-				$meta_values = (array) Automator()->utilities->automator_sanitize( $request->get_param( 'default_meta' ), 'mixed' );
-				foreach ( $meta_values as $meta_key => $meta_value ) {
-					if (
-						true === apply_filters( 'automator_sanitize_input_fields', true, $meta_key, $meta_value, $recipe->ID ) &&
-						true === apply_filters( 'automator_sanitize_input_fields_' . $recipe->ID, true, $meta_key, $meta_value )
-					) {
-						$meta_value = Automator()->utilities->automator_sanitize( $meta_value );
-						$meta_key   = Automator()->utilities->automator_sanitize( $meta_key );
-					}
-					update_post_meta( $post_id, $meta_key, $meta_value );
+		if ( ! empty( $default_meta ) && is_array( $default_meta ) ) {
+			foreach ( $default_meta as $meta_key => $meta_value ) {
+				if (
+					true === apply_filters( 'automator_sanitize_input_fields', true, $meta_key, $meta_value, $recipe->ID ) &&
+					true === apply_filters( 'automator_sanitize_input_fields_' . $recipe->ID, true, $meta_key, $meta_value )
+				) {
+					$meta_value = Automator()->utilities->automator_sanitize( $meta_value );
+					$meta_key   = Automator()->utilities->automator_sanitize( $meta_key );
 				}
+				update_post_meta( $post_id, $meta_key, $meta_value );
 			}
 		}
 		Automator()->cache->clear_automator_recipe_part_cache( $recipe->ID );

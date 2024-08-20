@@ -397,6 +397,12 @@ class Recipe_Post_Utilities {
 
 			// YouTube Embed Plus
 			'__ytprefs_admin__',
+
+			/**
+			 * Groundhogg
+			 * Creates a conflict with select2 dropdowns
+			 */
+			'groundhogg-select2',
 		);
 
 		$conflictive_styles = array(
@@ -414,6 +420,18 @@ class Recipe_Post_Utilities {
 
 			// Advanced Custom Fields Pro
 			'acf-input',
+
+			/**
+			 * Groundhogg
+			 * Creates a conflict with select2 dropdowns
+			 */
+			'groundhogg-select2',
+
+			/**
+			 * MemberPress for LearnDash
+			 * Creates a conflict with select2 dropdowns
+			 */
+			'learndash-memberpress-edit-membership',
 		);
 
 		$conflictive_assets = array(
@@ -493,6 +511,8 @@ class Recipe_Post_Utilities {
 
 		// Add the Create first recipe walkthrough.
 		add_filter( 'automator_get_user_walkthroughs', array( $this, 'should_show_create_recipe_walkthrough' ), 10, 3 );
+		$_integrations   = Automator()->get_integrations();
+		$_pro_only_items = Utilities::get_pro_only_items();
 
 		$api_setup = array(
 			// UncannyAutomator._recipe
@@ -623,7 +643,7 @@ class Recipe_Post_Utilities {
 
 			// TODO Remove once `UncannyAutomator._core.integrations is finished
 			// UncannyAutomator.integrations
-			'integrations'   => array_merge( Automator()->get_integrations(), Utilities::get_pro_only_items() ),
+			'integrations'   => automator_array_merge( $_integrations, $_pro_only_items ),
 
 			// TODO Remove once the JS stops using both `recipes_object` and `recipe` objects
 			'recipes_object' => Automator()->get_recipes_data( true, $post_id ),

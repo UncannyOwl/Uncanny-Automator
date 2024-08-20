@@ -105,6 +105,7 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$fields[] = array(
 			'option_code'       => 'CUSTOM_FIELDS',
 			'input_type'        => 'repeater',
+			'relevant_tokens'   => array(),
 			'label'             => _x( 'Custom fields', 'GetResponse', 'uncanny-automator' ),
 			'description'       => sprintf(
 				/* translators: %1$s: opening anchor tag, %2$s: closing anchor tag */

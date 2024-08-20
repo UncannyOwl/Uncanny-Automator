@@ -93,6 +93,7 @@ class EMAILS_SEND_EMAILS {
 				$emailField.insertAdjacentHTML( 'beforeend', `
 					<uo-text-field
 						label="<?php esc_html_e( 'Email address', 'uncanny-automator' ); ?>"
+						value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>"
 						required
 						auto-focus
 					></uo-text-field>
@@ -142,15 +143,15 @@ class EMAILS_SEND_EMAILS {
 
 					// Delete any old error message
 					const $oldErrorMessage = $modal.querySelector( 'uo-alert' );
-					
+
 					if ( $oldErrorMessage ) {
 						$oldErrorMessage.remove();
 					}
 
 					// Start request
 					// Add the nonce as middleware. This automatically adds the `X-WP-Nonce` header to requests.
-					wp.apiFetch.use( 
-						wp.apiFetch.createNonceMiddleware( UncannyAutomatorBackend.rest.nonce ) 
+					wp.apiFetch.use(
+						wp.apiFetch.createNonceMiddleware( UncannyAutomatorBackend.rest.nonce )
 					);
 
 					wp.apiFetch( {
@@ -218,7 +219,7 @@ class EMAILS_SEND_EMAILS {
 						} )
 				} );
 			}
-			
+
 		</script>
 
 		<?php

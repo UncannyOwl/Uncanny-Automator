@@ -59,6 +59,33 @@ trait Integrations {
 	protected $settings_url = '';
 
 	/**
+	 * Loopable tokens.
+	 *
+	 * @var array
+	 */
+	protected $loopable_tokens = array();
+
+	/**
+	 * Set the loopable tokens.
+	 *
+	 * @param array $loopable_tokens
+	 *
+	 * @return void
+	 */
+	public function set_loopable_tokens( array $loopable_tokens = array() ) {
+		$this->loopable_tokens = $loopable_tokens;
+	}
+
+	/**
+	 * Get the loopable tokens.
+	 *
+	 * @return array
+	 */
+	public function get_loopable_tokens() {
+		return $this->loopable_tokens;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function get_settings_url() {
@@ -199,10 +226,11 @@ trait Integrations {
 		Automator()->register->integration(
 			$this->integration,
 			array(
-				'name'         => $this->get_name(),
-				'icon_svg'     => $this->get_icon_url(),
-				'connected'    => apply_filters( 'automator_integration_connected', $this->get_connected(), $this->integration, $this ),
-				'settings_url' => $this->get_settings_url(),
+				'name'            => $this->get_name(),
+				'icon_svg'        => $this->get_icon_url(),
+				'connected'       => apply_filters( 'automator_integration_connected', $this->get_connected(), $this->integration, $this ),
+				'settings_url'    => $this->get_settings_url(),
+				'loopable_tokens' => $this->get_loopable_tokens(),
 			)
 		);
 	}

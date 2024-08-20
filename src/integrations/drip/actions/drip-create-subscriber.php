@@ -77,6 +77,7 @@ class DRIP_CREATE_SUBSCRIBER {
 			'option_code'       => 'FIELDS',
 			'label'             => __( 'Fields', 'uncanny-automator' ),
 			'input_type'        => 'repeater',
+			'relevant_tokens'   => array(),
 			'fields'            => array(
 				array(
 					'option_code'     => 'FIELD_NAME',

@@ -71,12 +71,12 @@ class Mautic_Client_Auth {
 		$cache_group = 'mautic_credentials_field';
 
 		// Ensures run once per run-time.
-		if ( wp_cache_get( $cache_key, $cache_group ) ) {
+		if ( Automator()->cache->get( $cache_key, $cache_group ) ) {
 			return $sanitized_input;
 		}
 
 		// Set the run-time cache before a request is run.
-		wp_cache_set( $cache_key, true, $cache_group );
+		Automator()->cache->set( $cache_key, true, $cache_group );
 
 		try {
 

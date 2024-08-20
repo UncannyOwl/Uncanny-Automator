@@ -178,6 +178,14 @@ final class Action implements \JsonSerializable {
 			return absint( 4 . $ts );
 		}
 
+		if ( 'custom' === $action_meta['async_mode'] ) {
+			$ts = strtotime( $action_meta['async_custom'] );
+			if ( false === $ts ) {
+				$ts = '0000000000';
+			}
+			return absint( 5 . $ts );
+		}
+
 		return 0;
 
 	}

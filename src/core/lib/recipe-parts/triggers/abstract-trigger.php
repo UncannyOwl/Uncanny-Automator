@@ -195,7 +195,20 @@ abstract class Trigger {
 			'validation_function' => array( $this, 'validate_hook' ), // function to call for add_action().
 			'uses_api'            => $this->get_uses_api(),
 			'options_callback'    => array( $this, 'load_options' ),
+			'loopable_tokens'     => $this->get_loopable_tokens(), //@since 5.10
 		);
+
+		if ( ! empty( $this->get_buttons() ) ) {
+			$trigger['buttons'] = $this->get_buttons();
+		}
+
+		if ( ! empty( $this->get_inline_css() ) ) {
+			$trigger['inline_css'] = $this->get_inline_css();
+		}
+
+		if ( null !== $this->get_can_log_in_new_user() ) {
+			$trigger['can_log_in_new_user'] = $this->get_can_log_in_new_user();
+		}
 
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );
 

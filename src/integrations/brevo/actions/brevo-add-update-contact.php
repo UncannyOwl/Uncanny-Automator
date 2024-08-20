@@ -73,6 +73,7 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$fields[] = array(
 			'option_code'       => 'CONTACT_ATTRIBUTES',
 			'input_type'        => 'repeater',
+			'relevant_tokens'   => array(),
 			'label'             => _x( 'Contact attributes', 'Brevo', 'uncanny-automator' ),
 			'description'       => _x( '* Date fields must follow year-month-day format yyyy-mm-dd, boolean fields must use yes, no, true, false, 1 or 0.', 'Brevo', 'uncanny-automator' ),
 			'required'          => false,

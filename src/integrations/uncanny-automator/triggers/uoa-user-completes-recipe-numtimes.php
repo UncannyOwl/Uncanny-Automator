@@ -15,6 +15,22 @@ class UOA_USER_COMPLETES_RECIPE_NUMTIMES {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
+
+		// Migrate old keys to new key w/o underscore
+		add_action(
+			'admin_init',
+			function () {
+				if ( 'yes' === get_option( 'uoa_recipe_completed_migrated', 'no' ) ) {
+					return;
+				}
+				global $wpdb;
+				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key LIKE %s", 'UOARECIPES', 'UOA_RECIPES' ) );
+				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key LIKE %s", 'UOARECIPES_readable', 'UOA_RECIPES_readable' ) );
+				update_option( 'uoa_recipe_completed_migrated', 'yes', false );
+			},
+			99
+		);
+
 		$this->setup_trigger();
 	}
 
@@ -24,7 +40,7 @@ class UOA_USER_COMPLETES_RECIPE_NUMTIMES {
 	public function setup_trigger() {
 		$this->set_integration( 'UOA' );
 		$this->set_trigger_code( 'UOA_RECIPE_COMPLETED' );
-		$this->set_trigger_meta( 'UOA_RECIPES' );
+		$this->set_trigger_meta( 'UOARECIPES' );
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_trigger_code(), 'integration/automator-core/' ) );
 		/* Translators: Trigger sentence - Uncanny Automator */
 		$this->set_sentence( sprintf( esc_html_x( 'A user completes {{a recipe:%1$s}} {{a number of:%2$s}} time(s)', 'Uncanny Automator', 'uncanny-automator' ), 'UOARECIPES:' . $this->get_trigger_meta(), 'NUMTIMES:' . $this->get_trigger_meta() ) );
@@ -67,6 +83,10 @@ class UOA_USER_COMPLETES_RECIPE_NUMTIMES {
 
 		if ( empty( $user_id ) ) {
 			return false;
+		}
+
+		if ( $this->get_user_id() !== $user_id ) {
+			$this->set_user_id( $user_id );
 		}
 
 		global $wpdb;

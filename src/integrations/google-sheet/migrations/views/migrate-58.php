@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div id="uap-review-banner" class="uap notice" style="padding:0">
 
 	<uo-alert heading="<?php esc_html_e( 'Important Notice from Uncanny Automator', 'uncanny-automator' ); ?>" type="white" custom-icon no-radius>
-		
+
 		<p>
-			<?php esc_html_e( 'Google has changed permission requirements for Google Drive apps. You must reconnect your Google account before August 10, 2024 or your Google Sheets actions will stop working.', 'uncanny-automator' ); ?>
+			<?php esc_html_e( 'Google has changed permission requirements for Google Drive apps. You must reconnect your Google account now or your Google Sheets actions will not work as expected.', 'uncanny-automator' ); ?>
 		</p>
 
 		<div class="uap-spacing-top">

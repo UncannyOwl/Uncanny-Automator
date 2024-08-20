@@ -89,10 +89,11 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			),
 			// Street address.
 			array(
-				'option_code' => 'STREET_ADDRESS',
-				'label'       => _x( 'Address', 'Constant Contact', 'uncanny-automator' ),
-				'input_type'  => 'repeater',
-				'fields'      => array(
+				'option_code'     => 'STREET_ADDRESS',
+				'label'           => _x( 'Address', 'Constant Contact', 'uncanny-automator' ),
+				'input_type'      => 'repeater',
+				'relevant_tokens' => array(),
+				'fields'          => array(
 					array(
 						'option_code'           => 'KEY',
 						'label'                 => _x( 'Type', 'Constant Contact', 'uncanny-automator' ),
@@ -131,16 +132,17 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			),
 			// Custom fields.
 			array(
-				'hide_actions' => true,
-				'option_code'  => 'CUSTOM_FIELDS',
-				'label'        => _x( 'Custom fields', 'Constant Contact', 'uncanny-automator' ),
-				'input_type'   => 'repeater',
-				'ajax'         => array(
+				'hide_actions'    => true,
+				'option_code'     => 'CUSTOM_FIELDS',
+				'label'           => _x( 'Custom fields', 'Constant Contact', 'uncanny-automator' ),
+				'input_type'      => 'repeater',
+				'relevant_tokens' => array(),
+				'ajax'            => array(
 					'event'          => 'on_load',
 					'endpoint'       => 'automator_constant_contact_contact_fields_get',
 					'mapping_column' => 'CUSTOM_FIELD_ID',
 				),
-				'fields'       => array(
+				'fields'          => array(
 					array(
 						'option_code' => 'CUSTOM_FIELD_ID',
 						'label'       => _x( 'ID', 'Constant Contact', 'uncanny-automator' ),

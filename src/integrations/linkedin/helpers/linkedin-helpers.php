@@ -496,6 +496,8 @@ class Linkedin_Helpers {
 	}
 
 	/**
+	 * Check refresh access token.
+	 *
 	 * @return void
 	 */
 	public function check_refresh_token_expiration() {
@@ -530,6 +532,28 @@ class Linkedin_Helpers {
 	public function admin_notice_show_reminder() {
 
 		$days = $this->get_refresh_token_remaining_days();
+
+		$days = 0;
+
+		if ( $days <= 0 ) {
+
+			printf(
+				'<div class="notice notice-error"><p>%1$s <a href="%2$s">%3$s</a> %4$s</p></div>',
+				esc_html(
+					/* Translators: Admin notice */
+					__(
+						'Your LinkedIn access and refresh tokens have expired.',
+						'uncanny-automator'
+					)
+				),
+				esc_url( $this->get_settings_url() ),
+				esc_html__( 'Click here', 'uncanny-automator' ),
+				esc_html__( 'to reauthorize Uncanny Automator and continue using LinkedIn actions in your recipes.', 'uncanny-automator' )
+			);
+
+			return;
+
+		}
 
 		printf(
 			'<div class="notice notice-warning"><p>%1$s <a href="%2$s">%3$s</a> %4$s</p></div>',

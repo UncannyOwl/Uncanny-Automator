@@ -103,12 +103,44 @@ final class Tokens implements \JsonSerializable {
 						$relevant_tokens_list[] = $token;
 					}
 					// Add each field as token.
-
 				}
 			}
 		}
 
 		return $relevant_tokens_list;
+
+	}
+
+	/**
+	 * The loopable tokens.
+	 *
+	 * @return stdClass[]
+	 */
+	public function generate_loopable_tokens() {
+
+		$loopable_tokens = Automator()->get_trigger( self::$trigger['meta']['code'] )['loopable_tokens'] ?? array();
+
+		$tokens_collection = array();
+
+		foreach ( $loopable_tokens as $token_class ) {
+
+			$token = new stdClass();
+
+			$definitions = $token_class->get_definitions();
+
+			foreach ( $definitions as $id => $definition ) {
+				$token->id            = sprintf( '%s:%s:%d:%s:%s', 'TOKEN_EXTENDED', 'DATA_TOKEN_' . $id, self::$trigger_id, self::$trigger['meta']['code'], $id );
+				$token->token_type    = 'loopable';
+				$token->data_type     = 'json';
+				$token->name          = $definition['name'] ?? '';
+				$token->log_identifer = $token_class->get_log_identifier();
+			}
+
+			$tokens_collection[] = $token;
+
+		}
+
+		return $tokens_collection;
 
 	}
 
@@ -124,7 +156,9 @@ final class Tokens implements \JsonSerializable {
 
 		$tokens_custom = $this->generate_custom_tokens();
 
-		$this->tokens = array_merge( $tokens_fields, $tokens_custom );
+		$loopable_tokens = $this->generate_loopable_tokens();
+
+		$this->tokens = array_merge( $tokens_fields, $tokens_custom, $loopable_tokens );
 
 		return $this->tokens;
 	}

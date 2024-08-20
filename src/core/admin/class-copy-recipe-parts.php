@@ -434,7 +434,7 @@ class Copy_Recipe_Parts {
 
 		// Check if it's an array : Google sheets etc.
 		$is_array = is_array( $content );
-		$content  = $is_array ? wp_json_encode( $content ) : $content;
+		$content  = $is_array ? wp_json_encode( $content, JSON_UNESCAPED_UNICODE ) : $content;
 
 		// Check if any replaceable token exists
 		if ( false === $this->token_exists_in_content( $content ) ) {
@@ -472,8 +472,8 @@ class Copy_Recipe_Parts {
 			! is_array( $content )
 			&& ! is_object( $content )
 			&& false === preg_match_all( '/{{(ACTION_(FIELD|META)\:)?\d+:\w.+?}}/', $content )
-			&& false === preg_match_all( '/{{TOKEN_EXTENDED:LOOP_TOKEN:\d+:\w+:\w+}}/', $content )
 			&& false === preg_match_all( '/{{id:(WPMAGICBUTTON|WPMAGICLINK)}}/', $content )
+			&& false === preg_match_all( '/{{TOKEN_EXTENDED:(LOOP_TOKEN:\d+:\w+:\w+|DATA_TOKEN[^}]*)}}/', $content )
 		) {
 			return false;
 		}
@@ -538,10 +538,9 @@ class Copy_Recipe_Parts {
 			if ( is_array( $prev_id ) || is_array( $new_id ) ) {
 				continue;
 			}
-
-			// check if content contains a replaceable token by previous ID
-			if ( ! is_object( $content ) && preg_match( '/{{TOKEN_EXTENDED:LOOP_TOKEN:' . $prev_id . ':/', $content ) ) {
-				$content = preg_replace( '/{{TOKEN_EXTENDED:LOOP_TOKEN:' . $prev_id . ':/', '{{TOKEN_EXTENDED:LOOP_TOKEN:' . $new_id . ':', $content );
+			// Check if content contains a replaceable token by previous ID for LOOP_TOKEN or DATA_TOKEN.
+			if ( ! is_object( $content ) && preg_match( '/{{TOKEN_EXTENDED:(LOOP_TOKEN|DATA_TOKEN[^:]*):' . $prev_id . ':/', $content ) ) {
+				$content = preg_replace( '/{{TOKEN_EXTENDED:(LOOP_TOKEN|DATA_TOKEN[^:]*):' . $prev_id . ':/', '{{TOKEN_EXTENDED:$1:' . $new_id . ':', $content );
 			}
 		}
 
@@ -587,7 +586,7 @@ class Copy_Recipe_Parts {
 		}
 
 		// Modify tokens and return encoded json string.
-		return $this->modify_tokens( wp_json_encode( $content ), $new_post_id );
+		return $this->modify_tokens( wp_json_encode( $content, JSON_UNESCAPED_UNICODE ), $new_post_id );
 	}
 
 	/**

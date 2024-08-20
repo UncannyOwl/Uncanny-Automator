@@ -90,13 +90,13 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 		$key_value_pairs = array(
 			'option_code'     => 'FIELD_COLUMN_VALUE',
 			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
 			'label'           => _x( 'Row', 'Notion', 'uncanny-automator' ),
 			'required'        => true,
 			'layout'          => 'transposed',
 			'hide_header'     => true,
 			'hide_actions'    => true,
 			'fields'          => array(),
-			'relevant_tokens' => array(),
 			'ajax'            => array(
 				'event'         => 'parent_fields_change',
 				'endpoint'      => 'automator_notion_get_database',

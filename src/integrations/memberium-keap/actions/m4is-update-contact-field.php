@@ -55,6 +55,7 @@ class M4IS_UPDATE_CONTACT_FIELD extends \Uncanny_Automator\Recipe\Action {
 		$fields[] = array(
 			'option_code'       => 'CONTACT_FIELDS',
 			'input_type'        => 'repeater',
+			'relevant_tokens'   => array(),
 			'label'             => _x( 'Contact fields', 'M4IS - update contact field action', 'uncanny-automator' ),
 			'required'          => false,
 			'fields'            => array(

@@ -771,7 +771,7 @@ function clear_cloudflare_cache() {
 
 	$url = 'https://api.cloudflare.com/client/v4/zones/' . $zone_id . '/purge_cache';
 
-	$body = json_encode( array( 'purge_everything' => true ) );
+	$body = wp_json_encode( array( 'purge_everything' => true ) );
 
 	$response = wp_remote_post(
 		$url,
@@ -822,4 +822,61 @@ function clear_fastly_cache() {
 	}
 
 	return true;
+}
+
+/**
+ * @param $input
+ *
+ * @return array
+ */
+function automator_array_filter_recursive( $input ) {
+	foreach ( $input as &$value ) {
+		if ( is_array( $value ) ) {
+			$value = automator_array_filter_recursive( $value );
+		}
+	}
+
+	return array_filter(
+		$input,
+		function ( $value ) {
+			return ! ( is_string( $value ) && empty( trim( $value ) ) );
+		}
+	);
+}
+
+/**
+ * array_merge with recursion to merge sub-array keys and values
+ *
+ * @param array $array1
+ * @param array $array2
+ *
+ * @return array
+ * @since 5.10
+ */
+function automator_array_merge( array &$array1, array &$array2 ) {
+	$merged = $array1;
+
+	foreach ( $array2 as $key => &$value ) {
+		if ( is_array( $value ) && isset( $merged[ $key ] ) && is_array( $merged[ $key ] ) ) {
+			$merged[ $key ] = automator_array_merge( $merged[ $key ], $value );
+		} else {
+			$merged[ $key ] = $value;
+		}
+	}
+
+	return $merged;
+}
+
+
+
+if ( ! function_exists( 'is_iterable' ) ) {
+	/**
+	 * Add is_iterable function for PHP < 7.1
+	 * @param $var
+	 *
+	 * @return bool
+	 */
+	function is_iterable( $var ) {
+		return is_array( $var ) || $var instanceof Traversable;
+	}
 }

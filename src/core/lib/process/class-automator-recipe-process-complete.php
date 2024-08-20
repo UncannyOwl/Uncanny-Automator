@@ -3,6 +3,7 @@
 namespace Uncanny_Automator;
 
 use Uncanny_Automator\Recipe\Log_Properties;
+use Uncanny_Automator\Services\Properties;
 
 /**
  * Class Automator_Recipe_Process_Complete
@@ -141,7 +142,44 @@ class Automator_Recipe_Process_Complete {
 
 		}
 
+		$this->add_backtrace_property( $args );
+
 		return true;
+
+	}
+
+	/**
+	 * Adds a backtrace property to all triggers.
+	 *
+	 * @param mixed $args - Automator process args.
+	 *
+	 * @return void
+	 */
+	public function add_backtrace_property( $args ) {
+
+		$is_enabled = apply_filters( 'automator_log_backtrace_property_enabled', true, $args );
+
+		// Bail if disabled.
+		if ( false === $is_enabled ) {
+			return;
+		}
+
+		$stack_trace = explode( ' ', wp_debug_backtrace_summary() );
+
+		$properties = new Properties();
+
+		$properties->add_item(
+			array(
+				'type'       => 'code',
+				'label'      => __( 'Trigger backtrace (for support)', 'uncanny-automator' ),
+				'value'      => var_export( $stack_trace, true ), // phpcs:ignore
+				'attributes' => array(
+					'code_language' => 'PHP',
+				),
+			)
+		);
+
+		$properties->record_trigger_properties( array( 'args' => $args ) );
 
 	}
 

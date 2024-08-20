@@ -124,19 +124,20 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 
 		// Custom Fields.
 		$fields[] = array(
-			'option_code' => 'CUSTOM_FIELDS',
-			'input_type'  => 'repeater',
-			'label'       => _x( 'Custom fields', 'Campaign Monitor', 'uncanny-automator' ),
-			'required'    => false,
-			'description' => sprintf(
+			'option_code'     => 'CUSTOM_FIELDS',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => _x( 'Custom fields', 'Campaign Monitor', 'uncanny-automator' ),
+			'required'        => false,
+			'description'     => sprintf(
 			/* translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag */
 				_x( "Custom field values must align with how they are defined in your subscriber list. Multiple values may be separated with commas. To delete a value from a field, set its value to %1\$s, including the square brackets. For more details, be sure to check out Campaign Monitor's tutorial on %2\$screating and using custom fields.%3\$s", 'Campaign Monitor', 'uncanny-automator' ),
 				self::DELETE_KEY,
 				'<a href="https://help.campaignmonitor.com/s/article/subscriber-custom-fields" target="_blank">',
 				'</a>'
 			),
-			'fields'      => $this->helpers->get_repeater_fields_config(),
-			'ajax'        => array(
+			'fields'          => $this->helpers->get_repeater_fields_config(),
+			'ajax'            => array(
 				'event'         => 'parent_fields_change',
 				'listen_fields' => array( 'LIST' ),
 				'endpoint'      => 'automator_campaign_monitor_get_custom_fields',

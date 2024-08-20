@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Integrations\Woocommerce\Tokens\Loopable\Product_Tags;
+use Uncanny_Automator\Integrations\Woocommerce\Tokens\Loopable\Product_Categories;
+use Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable\Order_Items;
 use WC_Order_Item_Product;
 
 /**
@@ -64,6 +67,11 @@ class WC_PURCHASESPRODUCT {
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'payment_completed' ),
 			'options_callback'    => array( $this, 'load_options' ),
+			'loopable_tokens'     => array(
+				'ORDER_ITEMS'        => Order_Items::class,
+				'PRODUCT_TAGS'       => Product_Tags::class,
+				'PRODUCT_CATEGORIES' => Product_Categories::class,
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -205,6 +213,7 @@ class WC_PURCHASESPRODUCT {
 			if ( $args ) {
 				foreach ( $args as $result ) {
 					if ( true === $result['result'] ) {
+						do_action( 'automator_loopable_token_hydrate', $result['args'], func_get_args() );
 						Automator()->process->user->maybe_trigger_complete( $result['args'] );
 					}
 				}

@@ -83,6 +83,7 @@ class HUBSPOT_CREATECONTACT {
 					array(
 						'option_code'       => 'CUSTOM_FIELDS',
 						'input_type'        => 'repeater',
+						'relevant_tokens'   => array(),
 						'label'             => __( 'Custom fields', 'uncanny-automator' ),
 						'description'       => __( 'Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
 						'required'          => false,

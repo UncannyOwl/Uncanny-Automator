@@ -38,11 +38,12 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 	public function options() {
 
 		$email = array(
-			'option_code' => 'EMAIL_ADDRESS',
-			'input_type'  => 'repeater',
-			'label'       => _x( 'Email', 'Google Contacts', 'uncanny-automator' ),
-			'required'    => true,
-			'fields'      => array(
+			'option_code'     => 'EMAIL_ADDRESS',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => _x( 'Email', 'Google Contacts', 'uncanny-automator' ),
+			'required'        => true,
+			'fields'          => array(
 				array(
 					'option_code' => 'EMAIL',
 					'input_type'  => 'email',
@@ -103,11 +104,12 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$phone = array(
-			'option_code' => 'PHONE_NUMBER',
-			'input_type'  => 'repeater',
-			'label'       => _x( 'Phone', 'Google Contacts', 'uncanny-automator' ),
-			'required'    => false,
-			'fields'      => array(
+			'option_code'     => 'PHONE_NUMBER',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => _x( 'Phone', 'Google Contacts', 'uncanny-automator' ),
+			'required'        => false,
+			'fields'          => array(
 				array(
 					'option_code' => 'PHONE',
 					'input_type'  => 'text',
@@ -227,11 +229,12 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$website = array(
-			'option_code' => 'WEBSITE_URL',
-			'input_type'  => 'repeater',
-			'label'       => _x( 'Website', 'Google Contacts', 'uncanny-automator' ),
-			'required'    => false,
-			'fields'      => array(
+			'option_code'     => 'WEBSITE_URL',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => _x( 'Website', 'Google Contacts', 'uncanny-automator' ),
+			'required'        => false,
+			'fields'          => array(
 				array(
 					'option_code' => 'WEBSITE_URL',
 					'input_type'  => 'url',
@@ -265,11 +268,12 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$person_related = array(
-			'option_code' => 'RELATED_PERSON',
-			'input_type'  => 'repeater',
-			'label'       => _x( 'Related person', 'Google Contacts', 'uncanny-automator' ),
-			'required'    => false,
-			'fields'      => array(
+			'option_code'     => 'RELATED_PERSON',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => _x( 'Related person', 'Google Contacts', 'uncanny-automator' ),
+			'required'        => false,
+			'fields'          => array(
 				array(
 					'option_code' => 'RELATED_PERSON',
 					'input_type'  => 'text',
@@ -343,11 +347,12 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$custom_field = array(
-			'option_code' => 'CUSTOM_FIELD',
-			'input_type'  => 'repeater',
-			'label'       => _x( 'Custom field', 'Google Contacts', 'uncanny-automator' ),
-			'required'    => false,
-			'fields'      => array(
+			'option_code'     => 'CUSTOM_FIELD',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => _x( 'Custom field', 'Google Contacts', 'uncanny-automator' ),
+			'required'        => false,
+			'fields'          => array(
 				array(
 					'option_code' => 'CUSTOM_FIELD',
 					'input_type'  => 'text',

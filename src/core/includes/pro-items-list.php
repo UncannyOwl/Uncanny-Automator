@@ -882,17 +882,17 @@ function automator_pro_items_list() {
 			),
 		),
 		'CUSTOMUSERFIELDS' => array(
-			'name' => 'Custom User Fields Addon',
+			'name' => 'Custom User Fields',
 			'pro_only' => 'yes',
 			'triggers' => array(
 				array(
-					/* translators: Logged-in trigger - Custom User Fields Addon */
+					/* translators: Logged-in trigger - Custom User Fields */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "A user's {{custom user field}} is updated", 'uncanny-automator' ),
 					'type'   => 'logged-in',
 				),
 				array(
-					/* translators: Logged-in trigger - Custom User Fields Addon */
+					/* translators: Logged-in trigger - Custom User Fields */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "A user's {{custom user field}} is updated to a value", 'uncanny-automator' ),
 					'type'   => 'logged-in',
@@ -900,7 +900,7 @@ function automator_pro_items_list() {
 			),
 			'actions'   => array(
 				array(
-					/* translators: Action - Custom User Fields Addon */
+					/* translators: Action - Custom User Fields */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Update the user's {{custom user field}} to {{a value}}", 'uncanny-automator' ),
 				),
@@ -992,7 +992,7 @@ function automator_pro_items_list() {
 			),
 		),
 		'EDD' => array(
-			'name' => 'EDD - Recurring Payments',
+			'name' => 'EDD – Recurring Payments',
 			'pro_only' => 'no',
 			'triggers' => array(
 				array(
@@ -1014,13 +1014,13 @@ function automator_pro_items_list() {
 					'type'   => 'anonymous',
 				),
 				array(
-					/* translators: Logged-in trigger - EDD - Recurring Payments */
+					/* translators: Logged-in trigger - EDD – Recurring Payments */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "A user cancels a subscription to {{a download}}", 'uncanny-automator' ),
 					'type'   => 'logged-in',
 				),
 				array(
-					/* translators: Logged-in trigger - EDD - Recurring Payments */
+					/* translators: Logged-in trigger - EDD – Recurring Payments */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "A user's subscription to {{a download}} expires", 'uncanny-automator' ),
 					'type'   => 'logged-in',
@@ -1038,12 +1038,12 @@ function automator_pro_items_list() {
 					'name'   => __( "Delete a customer by {{ID}}", 'uncanny-automator' ),
 				),
 				array(
-					/* translators: Action - EDD - Recurring Payments */
+					/* translators: Action - EDD – Recurring Payments */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Cancel the user's subscription matching a {{subscription ID}}", 'uncanny-automator' ),
 				),
 				array(
-					/* translators: Action - EDD - Recurring Payments */
+					/* translators: Action - EDD – Recurring Payments */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Set {{a subscription download}} to expire on {{a specific date}} for the user", 'uncanny-automator' ),
 				),
@@ -1189,6 +1189,26 @@ function automator_pro_items_list() {
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Create {{a ticket}}", 'uncanny-automator' ),
 				),
+			),
+		),
+		'FLUENT_BOOKING' => array(
+			'name' => 'FluentBooking',
+			'pro_only' => 'no',
+			'triggers' => array(
+				array(
+					/* translators: Anonymous trigger - FluentBooking */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "A group meeting is scheduled with {{a specific host}}", 'uncanny-automator' ),
+					'type'   => 'anonymous',
+				),
+				array(
+					/* translators: Anonymous trigger - FluentBooking */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "A one-to-one meeting is scheduled with {{a specific host}}", 'uncanny-automator' ),
+					'type'   => 'anonymous',
+				),
+			),
+			'actions'   => array(
 			),
 		),
 		'FCRM' => array(
@@ -3157,17 +3177,17 @@ function automator_pro_items_list() {
 			),
 		),
 		'UAUSERLISTS' => array(
-			'name' => 'User Lists Addon',
+			'name' => 'User Lists',
 			'pro_only' => 'yes',
 			'triggers' => array(
 				array(
-					/* translators: Logged-in trigger - User Lists Addon */
+					/* translators: Logged-in trigger - User Lists */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "A user is added to {{a list}}", 'uncanny-automator' ),
 					'type'   => 'logged-in',
 				),
 				array(
-					/* translators: Logged-in trigger - User Lists Addon */
+					/* translators: Logged-in trigger - User Lists */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "A user is removed from {{a list}}", 'uncanny-automator' ),
 					'type'   => 'logged-in',
@@ -3175,17 +3195,17 @@ function automator_pro_items_list() {
 			),
 			'actions'   => array(
 				array(
-					/* translators: Action - User Lists Addon */
+					/* translators: Action - User Lists */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Add the user to {{a list}}", 'uncanny-automator' ),
 				),
 				array(
-					/* translators: Action - User Lists Addon */
+					/* translators: Action - User Lists */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Create {{a list}}", 'uncanny-automator' ),
 				),
 				array(
-					/* translators: Action - User Lists Addon */
+					/* translators: Action - User Lists */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Remove the user from {{a list}}", 'uncanny-automator' ),
 				),

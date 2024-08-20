@@ -42,7 +42,9 @@ class Calculation_Token {
 	 * @return void
 	 */
 	public function __construct() {
-
+		if ( ! class_exists( '\ChrisKonnertz\StringCalc\StringCalc' ) ) {
+			return;
+		}
 		$this->string_calc = new \ChrisKonnertz\StringCalc\StringCalc();
 
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_token' ), 999, 6 );

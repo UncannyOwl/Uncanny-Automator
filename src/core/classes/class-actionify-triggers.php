@@ -342,6 +342,12 @@ class Actionify_Triggers {
 	 * @return void
 	 */
 	public static function run_code_wp_hook_trigger( ...$args ) {
+
 		do_action( 'run_code_wp_hook', current_action(), $args );
+
+		if ( ! empty( $args ) ) {
+			return array_shift( $args );
+		}
+
 	}
 }

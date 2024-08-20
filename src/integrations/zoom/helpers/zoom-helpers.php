@@ -252,6 +252,7 @@ class Zoom_Helpers {
 		return array(
 			'option_code'       => 'MEETINGQUESTIONS',
 			'input_type'        => 'repeater',
+			'relevant_tokens'   => array(),
 			'label'             => __( 'Meeting questions', 'uncanny-automator' ),
 			/* translators: 1. Button */
 			'description'       => '',

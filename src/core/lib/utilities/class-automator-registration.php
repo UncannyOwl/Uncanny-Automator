@@ -225,6 +225,21 @@ class Automator_Registration {
 			throw new Automator_Exception( 'You are trying to register a trigger without setting its trigger_validation_function', 1001 );
 		}
 
+		// Register trigger loopable tokens.
+		// @since 5.10
+		if ( isset( $trigger['loopable_tokens'] ) ) {
+
+			foreach ( (array) $trigger['loopable_tokens'] as $key => $loopable_tokens ) {
+
+				$loopable_token = new $loopable_tokens();
+
+				$loopable_token->set_trigger( $trigger );
+				$loopable_token->register_hooks( $trigger );
+
+				$trigger['loopable_tokens'][ $key ] = $loopable_token; // @todo: Create a filter and use pro to overwrite.
+			}
+		}
+
 		// Register the trigger into the system
 		Automator()->set_triggers( Automator()->utilities->keep_order_of_options( $trigger ) );
 
@@ -264,10 +279,18 @@ class Automator_Registration {
 			Automator()->set_integrations( $integration_code, $integration );
 		}
 
+		// Fire up the loopable tokens.
+		if ( isset( $integration['loopable_tokens'] ) ) {
+			foreach ( (array) $integration['loopable_tokens'] as $id => $loopable_token_class ) {
+				( new $loopable_token_class( $integration_code ) )->register_hooks();
+			}
+		}
+
 		// Order integrations alphabetically
 		Automator()->utilities->sort_integrations_alphabetically();
 
 		return true;
+
 	}
 
 	/**

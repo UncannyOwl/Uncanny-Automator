@@ -83,6 +83,7 @@ class HELPSCOUT_CUSTOMER_PROPERTIES_UPDATE {
 							'option_code'           => 'FIELDS',
 							'label'                 => esc_attr__( 'Property', 'uncanny-automator' ),
 							'input_type'            => 'repeater',
+							'relevant_tokens'       => array(),
 							'supports_custom_value' => true,
 							'required'              => true,
 							'fields'                => array(

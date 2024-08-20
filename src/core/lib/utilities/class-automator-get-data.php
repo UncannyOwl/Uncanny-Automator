@@ -421,6 +421,36 @@ class Automator_Get_Data {
 	}
 
 	/**
+	 * Get loop filter integration by loop filter code
+	 *
+	 * @param string $filter_code
+	 *
+	 * @return string|null
+	 */
+	public function loop_filter_integration_from_loop_filter_code( $filter_code = null ) {
+		if ( null === $filter_code || ! is_string( $filter_code ) ) {
+			Automator()->wp_error->add_error( 'loop_filter_integration_from_loop_filter_code', 'ERROR: You are trying to get a loop filter integration code from a loop filter code without providing an $filter_code', $this );
+
+			return null;
+		}
+
+		$all_filters = Automator()->get_loop_filters();
+		if ( empty( $all_filters ) ) {
+			return null;
+		}
+
+		foreach ( $all_filters as $integration_code => $integration_filters ) {
+			foreach ( $integration_filters as $code => $filter ) {
+				if ( $code === $filter_code ) {
+					return $integration_code;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Accepts an action code(most like from trigger meta) and returns that associated action execution function
 	 *
 	 * @param null $action_code

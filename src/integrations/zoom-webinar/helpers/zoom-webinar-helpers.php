@@ -582,6 +582,7 @@ class Zoom_Webinar_Helpers {
 		return array(
 			'option_code'       => 'WEBINARQUESTIONS',
 			'input_type'        => 'repeater',
+			'relevant_tokens'   => array(),
 			'label'             => __( 'Webinar questions', 'uncanny-automator' ),
 			/* translators: 1. Button */
 			'description'       => '',

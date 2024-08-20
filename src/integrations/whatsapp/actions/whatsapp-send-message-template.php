@@ -225,11 +225,12 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 						'options_show_id'       => false,
 					),
 					array(
-						'option_code'  => 'HEADER_VARIABLES',
-						'label'        => esc_attr__( 'Header', 'uncanny-automator' ),
-						'input_type'   => 'repeater',
-						'hide_actions' => true,
-						'fields'       => array(
+						'option_code'     => 'HEADER_VARIABLES',
+						'label'           => esc_attr__( 'Header', 'uncanny-automator' ),
+						'input_type'      => 'repeater',
+						'relevant_tokens' => array(),
+						'hide_actions'    => true,
+						'fields'          => array(
 							array(
 								'option_code' => 'HEADER_VARIABLE_FORMAT',
 								'input_type'  => 'text',
@@ -247,11 +248,12 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 						),
 					),
 					array(
-						'option_code'  => 'BODY_VARIABLES',
-						'label'        => esc_attr__( 'Body variables', 'uncanny-automator' ),
-						'input_type'   => 'repeater',
-						'hide_actions' => true,
-						'fields'       => array(
+						'option_code'     => 'BODY_VARIABLES',
+						'label'           => esc_attr__( 'Body variables', 'uncanny-automator' ),
+						'input_type'      => 'repeater',
+						'relevant_tokens' => array(),
+						'hide_actions'    => true,
+						'fields'          => array(
 							array(
 								'input_type'  => 'text',
 								'option_code' => 'BODY_VARIABLE',
@@ -263,11 +265,12 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 					),
 
 					array(
-						'option_code'  => 'BUTTON_VARIABLES',
-						'label'        => esc_attr__( 'Buttons', 'uncanny-automator' ),
-						'input_type'   => 'repeater',
-						'hide_actions' => true,
-						'fields'       => array(
+						'option_code'     => 'BUTTON_VARIABLES',
+						'label'           => esc_attr__( 'Buttons', 'uncanny-automator' ),
+						'input_type'      => 'repeater',
+						'relevant_tokens' => array(),
+						'hide_actions'    => true,
+						'fields'          => array(
 							array(
 								'input_type'  => 'text',
 								'option_code' => 'BUTTON_FORMAT',

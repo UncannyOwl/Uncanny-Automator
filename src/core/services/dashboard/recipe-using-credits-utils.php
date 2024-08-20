@@ -129,6 +129,12 @@ class Recipe_Using_Credits_Utils {
 	 * @return array
 	 */
 	public function get_recipes_from( $recipes_determined ) {
+
+		// Bail if empty.
+		if ( empty( $recipes_determined ) ) {
+			return array();
+		}
+
 		$placeholders = implode( ', ', array_fill( 0, count( $recipes_determined ), '%d' ) );
 		$results      = (array) $this->db->get_results(
 			$this->db->prepare(
@@ -137,6 +143,7 @@ class Recipe_Using_Credits_Utils {
 			),
 			ARRAY_A
 		);
+
 		return $results;
 	}
 

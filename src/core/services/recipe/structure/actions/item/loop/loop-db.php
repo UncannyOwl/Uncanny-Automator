@@ -50,9 +50,9 @@ class Loop_Db {
 
 		$cache_key = 'automator_loop_db_fetch_all_recipes_loops';
 
-		$cached_recipes_loops = wp_cache_get( $cache_key, 'automator_recipe' );
+		$cached_recipes_loops = Automator()->cache->get( $cache_key );
 
-		if ( false !== $cached_recipes_loops ) {
+		if ( ! empty( $cached_recipes_loops ) ) {
 			return (array) $cached_recipes_loops;
 		}
 
@@ -75,7 +75,7 @@ class Loop_Db {
 			$all_loops[ $recipe_loop['post_parent'] ][] = $recipe_loop;
 		}
 
-		wp_cache_set( $cache_key, $all_loops, 'automator_recipe' );
+		Automator()->cache->set( $cache_key, $all_loops );
 
 		return $all_loops;
 
