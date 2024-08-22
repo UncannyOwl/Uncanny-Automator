@@ -372,11 +372,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Google Sheets - The system has learned not to freak out (with a PHP warning) when it can't find a Sheet ID. #5042
 * Google Sheets - Settings Page - Caught that sneaky "Unhandled Exception" and handled it properly—because no one likes surprises like that. #5039
 * Recipe UI - Loop tokens in conditions were getting a bit dramatic, showing up as invalid without an action. We've calmed them down. #5027
-* WooCommerce - Loopable tokens were causing some PHP drama on certain sites. We've sorted that out—no more drama! #5051
+* Woo - Loopable tokens were causing some PHP drama on certain sites. We've sorted that out—no more drama! #5051
+* Woo - User's purchased products loopable token now has improved support for WooCommerce HPOS—smooth sailing ahead! #5057
 
 **Under the hood:**
 
 * Added a new WP Filter `automator_wpcpostcontent_should_wp_slash` to give you more control over content sanitization—slash away, if you like! #5045
+* Recipe UI - Integrations were showing off as Elite when they're actually only Pro. We've put them back in their place. #5054
 
 = 5.10.1 [2024-08-20] =
 

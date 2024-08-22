@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Woocommerce\Tokens\Loopable\Universal;
 
 use Uncanny_Automator\Services\Loopable\Loopable_Token_Collection;
@@ -19,6 +20,10 @@ class User_Purchase_Products extends Universal_Loopable_Token {
 	public function register_loopable_token() {
 
 		$child_tokens = array(
+			'ORDER_ID'            => array(
+				'name'       => _x( 'Order ID', 'Woo', 'uncanny-automator' ),
+				'token_type' => 'integer',
+			),
 			'PRODUCT_ID'          => array(
 				'name'       => _x( 'Product ID', 'Woo', 'uncanny-automator' ),
 				'token_type' => 'integer',
@@ -46,6 +51,7 @@ class User_Purchase_Products extends Universal_Loopable_Token {
 	 * Hydrate the tokens.
 	 *
 	 * @param mixed $args
+	 *
 	 * @return Loopable_Token_Collection
 	 */
 	public function hydrate_token_loopable( $args ) {
@@ -58,6 +64,7 @@ class User_Purchase_Products extends Universal_Loopable_Token {
 
 			$loopable->create_item(
 				array(
+					'ODER_ID'             => $product['order_id'],
 					'PRODUCT_ID'          => $product['product_id'],
 					'PRODUCT_NAME'        => $product['name'],
 					'PRODUCT_PRICE'       => $product['price'],
@@ -88,15 +95,16 @@ class User_Purchase_Products extends Universal_Loopable_Token {
 		}
 
 		// Retrieve all orders for the specified user ID
-		$customer_orders = get_posts(
+		$customer_query  = new \WC_Order_Query(
 			array(
-				'numberposts' => -1,
-				'meta_key'    => '_customer_user',
-				'meta_value'  => $user_id,
-				'post_type'   => 'shop_order',
-				'post_status' => 'any',
+				'limit'       => 999999, // Set to -1 to return all orders
+				'customer_id' => $user_id,
+				'orderby'     => 'date',
+				'order'       => 'DESC',
+				'return'      => 'objects', // Can be 'ids', 'objects', or 'both'
 			)
 		);
+		$customer_orders = $customer_query->get_orders();
 
 		// Return false if no orders found
 		if ( empty( $customer_orders ) ) {
@@ -107,8 +115,7 @@ class User_Purchase_Products extends Universal_Loopable_Token {
 		$product_ids = array();
 
 		// Loop through each order and gather unique product details
-		foreach ( $customer_orders as $customer_order ) {
-			$order = wc_get_order( $customer_order->ID );
+		foreach ( $customer_orders as $order ) {
 
 			if ( ! $order ) {
 				continue; // Skip if the order is not found.
@@ -131,6 +138,7 @@ class User_Purchase_Products extends Universal_Loopable_Token {
 				$product_ids[] = $product_id;
 
 				$order_items[] = array(
+					'order_id'    => $order->get_id(),
 					'product_id'  => $product_id,
 					'name'        => $product->get_name(),
 					'price'       => $product->get_price(),
@@ -143,7 +151,6 @@ class User_Purchase_Products extends Universal_Loopable_Token {
 		// Return the unique order items data or false if no items were found
 		return ! empty( $order_items ) ? $order_items : false;
 	}
-
 
 
 }

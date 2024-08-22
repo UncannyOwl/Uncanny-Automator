@@ -5,8 +5,9 @@
 function automator_pro_items_list() {
 	return array(
 		'ADVADS' => array(
-			'name' => 'Advanced Ads',
-			'pro_only' => 'no',
+			'name'       => 'Advanced Ads',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Advanced Ads */
@@ -19,8 +20,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'ACFWC' => array(
-			'name' => 'Advanced Coupons',
-			'pro_only' => 'no',
+			'name'       => 'Advanced Coupons',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Advanced Coupons */
@@ -49,8 +51,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'ACF' => array(
-			'name' => 'Advanced Custom Fields',
-			'pro_only' => 'yes',
+			'name'       => 'Advanced Custom Fields',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Advanced Custom Fields */
@@ -75,8 +78,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'AFFWP' => array(
-			'name' => 'AffiliateWP',
-			'pro_only' => 'no',
+			'name'       => 'AffiliateWP',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - AffiliateWP */
@@ -139,8 +143,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'AMELIABOOKING' => array(
-			'name' => 'Amelia',
-			'pro_only' => 'no',
+			'name'       => 'Amelia',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Amelia */
@@ -195,8 +200,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'ARMEMBER' => array(
-			'name' => 'ARMember',
-			'pro_only' => 'no',
+			'name'       => 'ARMember',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -213,8 +219,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'BO' => array(
-			'name' => 'BadgeOS',
-			'pro_only' => 'no',
+			'name'       => 'BadgeOS',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - BadgeOS */
@@ -247,8 +254,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'BB' => array(
-			'name' => 'bbPress',
-			'pro_only' => 'no',
+			'name'       => 'bbPress',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - bbPress */
@@ -282,8 +290,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'BDB' => array(
-			'name' => 'BuddyBoss',
-			'pro_only' => 'no',
+			'name'       => 'BuddyBoss',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - BuddyBoss */
@@ -597,8 +606,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'BP' => array(
-			'name' => 'BuddyPress',
-			'pro_only' => 'no',
+			'name'       => 'BuddyPress',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - BuddyPress */
@@ -788,8 +798,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'CF' => array(
-			'name' => 'Caldera Forms',
-			'pro_only' => 'no',
+			'name'       => 'Caldera Forms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Caldera Forms */
@@ -813,8 +824,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'CHARITABLE' => array(
-			'name' => 'Charitable',
-			'pro_only' => 'no',
+			'name'       => 'Charitable',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Charitable */
@@ -844,8 +856,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'CODE_SNIPPETS' => array(
-			'name' => 'Code Snippets',
-			'pro_only' => 'no',
+			'name'       => 'Code Snippets',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -857,8 +870,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'CF7' => array(
-			'name' => 'Contact Form 7',
-			'pro_only' => 'no',
+			'name'       => 'Contact Form 7',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Contact Form 7 */
@@ -882,8 +896,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'CUSTOMUSERFIELDS' => array(
-			'name' => 'Custom User Fields',
-			'pro_only' => 'yes',
+			'name'       => 'Custom User Fields',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Custom User Fields */
@@ -907,8 +922,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'DB_QUERY' => array(
-			'name' => 'Database Query',
-			'pro_only' => 'yes',
+			'name'       => 'Database Query',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -925,8 +941,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'DATETIME' => array(
-			'name' => 'Date and Time',
-			'pro_only' => 'yes',
+			'name'       => 'Date and Time',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -948,8 +965,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'DIVI' => array(
-			'name' => 'Divi',
-			'pro_only' => 'no',
+			'name'       => 'Divi',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Divi */
@@ -968,8 +986,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'ESAF' => array(
-			'name' => 'Easy Affiliate',
-			'pro_only' => 'no',
+			'name'       => 'Easy Affiliate',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Easy Affiliate */
@@ -992,8 +1011,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'EDD' => array(
-			'name' => 'EDD – Recurring Payments',
-			'pro_only' => 'no',
+			'name'       => 'EDD – Recurring Payments',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Easy Digital Downloads */
@@ -1050,8 +1070,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'ELEM' => array(
-			'name' => 'Elementor Pro',
-			'pro_only' => 'no',
+			'name'       => 'Elementor Pro',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Elementor Pro */
@@ -1075,8 +1096,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'EVENTSMANAGER' => array(
-			'name' => 'Events Manager',
-			'pro_only' => 'no',
+			'name'       => 'Events Manager',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Events Manager */
@@ -1106,8 +1128,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPFF' => array(
-			'name' => 'Fluent Forms',
-			'pro_only' => 'no',
+			'name'       => 'Fluent Forms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Fluent Forms */
@@ -1131,8 +1154,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'FLSUPPORT' => array(
-			'name' => 'Fluent Support',
-			'pro_only' => 'no',
+			'name'       => 'Fluent Support',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Fluent Support */
@@ -1192,8 +1216,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'FLUENT_BOOKING' => array(
-			'name' => 'FluentBooking',
-			'pro_only' => 'no',
+			'name'       => 'FluentBooking',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - FluentBooking */
@@ -1212,8 +1237,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'FCRM' => array(
-			'name' => 'FluentCRM',
-			'pro_only' => 'no',
+			'name'       => 'FluentCRM',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - FluentCRM */
@@ -1269,8 +1295,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'FORMATTER' => array(
-			'name' => 'Formatter',
-			'pro_only' => 'yes',
+			'name'       => 'Formatter',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -1302,8 +1329,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'FI' => array(
-			'name' => 'Formidable Forms',
-			'pro_only' => 'no',
+			'name'       => 'Formidable Forms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Formidable Forms */
@@ -1333,8 +1361,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'FR' => array(
-			'name' => 'Forminator',
-			'pro_only' => 'no',
+			'name'       => 'Forminator',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Forminator */
@@ -1352,8 +1381,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'AUTONAMI' => array(
-			'name' => 'FunnelKit Automations',
-			'pro_only' => 'no',
+			'name'       => 'FunnelKit Automations',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - FunnelKit Automations */
@@ -1414,8 +1444,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'GP' => array(
-			'name' => 'GamiPress',
-			'pro_only' => 'no',
+			'name'       => 'GamiPress',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - GamiPress */
@@ -1472,8 +1503,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'AUTOMATOR_GENERATOR' => array(
-			'name' => 'Generator',
-			'pro_only' => 'yes',
+			'name'       => 'Generator',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -1500,8 +1532,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'GIVEWP' => array(
-			'name' => 'GiveWP',
-			'pro_only' => 'no',
+			'name'       => 'GiveWP',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - GiveWP */
@@ -1554,8 +1587,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'GOOGLE_SHEETS' => array(
-			'name' => 'Google Sheets Web App',
-			'pro_only' => 'yes',
+			'name'       => 'Google Sheets Web App',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Google Sheets Web App */
@@ -1568,8 +1602,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'GF' => array(
-			'name' => 'Gravity Forms',
-			'pro_only' => 'no',
+			'name'       => 'Gravity Forms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Gravity Forms */
@@ -1655,8 +1690,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'GK' => array(
-			'name' => 'GravityKit',
-			'pro_only' => 'no',
+			'name'       => 'GravityKit',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - GravityKit */
@@ -1675,8 +1711,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'GH' => array(
-			'name' => 'Groundhogg',
-			'pro_only' => 'no',
+			'name'       => 'Groundhogg',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Groundhogg */
@@ -1713,8 +1750,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'H5P' => array(
-			'name' => 'H5P',
-			'pro_only' => 'yes',
+			'name'       => 'H5P',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - H5P */
@@ -1739,8 +1777,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'HF' => array(
-			'name' => 'HappyForms',
-			'pro_only' => 'no',
+			'name'       => 'HappyForms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - HappyForms */
@@ -1764,8 +1803,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'IFTTT' => array(
-			'name' => 'IFTTT',
-			'pro_only' => 'no',
+			'name'       => 'IFTTT',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - IFTTT */
@@ -1783,8 +1823,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'INTEGRATELY' => array(
-			'name' => 'Integrately',
-			'pro_only' => 'no',
+			'name'       => 'Integrately',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Integrately */
@@ -1802,8 +1843,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'INTEGROMAT' => array(
-			'name' => 'Integromat',
-			'pro_only' => 'no',
+			'name'       => 'Integromat',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Integromat */
@@ -1816,8 +1858,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'JETENGINE' => array(
-			'name' => 'JetEngine',
-			'pro_only' => 'yes',
+			'name'       => 'JetEngine',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - JetEngine */
@@ -1836,8 +1879,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'JET_FORM_BUILDER' => array(
-			'name' => 'JetFormBuilder',
-			'pro_only' => 'no',
+			'name'       => 'JetFormBuilder',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - JetFormBuilder */
@@ -1856,8 +1900,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'JETCRM' => array(
-			'name' => 'Jetpack CRM',
-			'pro_only' => 'no',
+			'name'       => 'Jetpack CRM',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Jetpack CRM */
@@ -1923,8 +1968,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'KADENCE' => array(
-			'name' => 'Kadence',
-			'pro_only' => 'no',
+			'name'       => 'Kadence',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Kadence */
@@ -1937,8 +1983,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'KONNECTZ_IT' => array(
-			'name' => 'KonnectzIT',
-			'pro_only' => 'no',
+			'name'       => 'KonnectzIT',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - KonnectzIT */
@@ -1951,8 +1998,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'LD' => array(
-			'name' => 'LearnDash',
-			'pro_only' => 'no',
+			'name'       => 'LearnDash',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - LearnDash */
@@ -2164,8 +2212,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'LP' => array(
-			'name' => 'LearnPress',
-			'pro_only' => 'no',
+			'name'       => 'LearnPress',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -2187,8 +2236,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'LF' => array(
-			'name' => 'LifterLMS',
-			'pro_only' => 'no',
+			'name'       => 'LifterLMS',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - LifterLMS */
@@ -2267,8 +2317,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MAGIC_BUTTON' => array(
-			'name' => 'Magic Button',
-			'pro_only' => 'yes',
+			'name'       => 'Magic Button',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Magic Button */
@@ -2299,8 +2350,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MAILERLITE' => array(
-			'name' => 'MailerLite',
-			'pro_only' => 'yes',
+			'name'       => 'MailerLite',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -2332,8 +2384,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MAILPOET' => array(
-			'name' => 'MailPoet',
-			'pro_only' => 'no',
+			'name'       => 'MailPoet',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -2350,8 +2403,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MAKE' => array(
-			'name' => 'Make',
-			'pro_only' => 'no',
+			'name'       => 'Make',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Make */
@@ -2364,8 +2418,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MSLMS' => array(
-			'name' => 'MasterStudy LMS',
-			'pro_only' => 'no',
+			'name'       => 'MasterStudy LMS',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - MasterStudy LMS */
@@ -2398,8 +2453,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'M4IS' => array(
-			'name' => 'Memberium for Keap',
-			'pro_only' => 'no',
+			'name'       => 'Memberium for Keap',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -2431,8 +2487,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MP' => array(
-			'name' => 'MemberPress',
-			'pro_only' => 'no',
+			'name'       => 'MemberPress',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - MemberPress */
@@ -2502,8 +2559,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MPC' => array(
-			'name' => 'MemberPress Courses',
-			'pro_only' => 'no',
+			'name'       => 'MemberPress Courses',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - MemberPress Courses */
@@ -2527,8 +2585,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'METABOX' => array(
-			'name' => 'Meta Box',
-			'pro_only' => 'yes',
+			'name'       => 'Meta Box',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Meta Box */
@@ -2553,8 +2612,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MEC' => array(
-			'name' => 'Modern Events Calendar',
-			'pro_only' => 'no',
+			'name'       => 'Modern Events Calendar',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Modern Events Calendar */
@@ -2584,8 +2644,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'MYCRED' => array(
-			'name' => 'myCred',
-			'pro_only' => 'no',
+			'name'       => 'myCred',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - myCred */
@@ -2635,8 +2696,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'NEWSLETTER' => array(
-			'name' => 'Newsletter',
-			'pro_only' => 'yes',
+			'name'       => 'Newsletter',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Newsletter */
@@ -2659,8 +2721,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'NF' => array(
-			'name' => 'Ninja Forms',
-			'pro_only' => 'no',
+			'name'       => 'Ninja Forms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Ninja Forms */
@@ -2684,8 +2747,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'OPEN_AI' => array(
-			'name' => 'OpenAI',
-			'pro_only' => 'no',
+			'name'       => 'OpenAI',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -2697,8 +2761,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'OPTINMONSTER' => array(
-			'name' => 'OptinMonster',
-			'pro_only' => 'yes',
+			'name'       => 'OptinMonster',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - OptinMonster */
@@ -2716,8 +2781,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'PMP' => array(
-			'name' => 'Paid Memberships Pro',
-			'pro_only' => 'no',
+			'name'       => 'Paid Memberships Pro',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Paid Memberships Pro */
@@ -2746,8 +2812,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'PP' => array(
-			'name' => 'PeepSo',
-			'pro_only' => 'no',
+			'name'       => 'PeepSo',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - PeepSo */
@@ -2794,8 +2861,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'PRESTO' => array(
-			'name' => 'Presto Player',
-			'pro_only' => 'no',
+			'name'       => 'Presto Player',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Presto Player */
@@ -2808,8 +2876,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'AUTOMATOR_QR_CODE' => array(
-			'name' => 'QR Code',
-			'pro_only' => 'yes',
+			'name'       => 'QR Code',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -2821,8 +2890,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'RAFFLE_PRESS' => array(
-			'name' => 'RafflePress',
-			'pro_only' => 'no',
+			'name'       => 'RafflePress',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - RafflePress */
@@ -2835,8 +2905,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'RC' => array(
-			'name' => 'Restrict Content Pro',
-			'pro_only' => 'no',
+			'name'       => 'Restrict Content Pro',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Restrict Content Pro */
@@ -2860,8 +2931,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'RUN_CODE' => array(
-			'name' => 'Run Code',
-			'pro_only' => 'yes',
+			'name'       => 'Run Code',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -2883,8 +2955,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'Run_Now' => array(
-			'name' => 'Run now',
-			'pro_only' => 'yes',
+			'name'       => 'Run now',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Run now */
@@ -2896,9 +2969,54 @@ function automator_pro_items_list() {
 			'actions'   => array(
 			),
 		),
+		'SALESFORCE' => array(
+			'name'       => 'Salesforce',
+			'pro_only'   => 'no',
+			'elite_only' => 'yes',
+			'triggers' => array(
+			),
+			'actions'   => array(
+				array(
+					/* translators: Action - Salesforce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Add {{a contact}} to a {{campaign}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Salesforce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Add {{a lead}} to a {{campaign}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Salesforce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Create {{a contact}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Salesforce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Create {{a lead}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Salesforce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Delete {{a contact}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Salesforce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Update {{a contact}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Salesforce */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Update {{a lead}}", 'uncanny-automator' ),
+				),
+			),
+		),
 		'SCHEDULE' => array(
-			'name' => 'Schedule',
-			'pro_only' => 'yes',
+			'name'       => 'Schedule',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Schedule */
@@ -2923,8 +3041,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'STUDIOCART' => array(
-			'name' => 'Studiocart',
-			'pro_only' => 'no',
+			'name'       => 'Studiocart',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Studiocart */
@@ -2943,8 +3062,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'SURECART' => array(
-			'name' => 'SureCart',
-			'pro_only' => 'no',
+			'name'       => 'SureCart',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - SureCart */
@@ -2975,8 +3095,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'EC' => array(
-			'name' => 'The Events Calendar',
-			'pro_only' => 'no',
+			'name'       => 'The Events Calendar',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - The Events Calendar */
@@ -3006,8 +3127,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'THRIVE_APPRENTICE' => array(
-			'name' => 'Thrive Apprentice',
-			'pro_only' => 'no',
+			'name'       => 'Thrive Apprentice',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Thrive Apprentice */
@@ -3060,8 +3182,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'THRIVECART' => array(
-			'name' => 'ThriveCart',
-			'pro_only' => 'yes',
+			'name'       => 'ThriveCart',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - ThriveCart */
@@ -3074,8 +3197,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'TUTORLMS' => array(
-			'name' => 'Tutor LMS',
-			'pro_only' => 'no',
+			'name'       => 'Tutor LMS',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Tutor LMS */
@@ -3125,8 +3249,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'TYPEFORM' => array(
-			'name' => 'Typeform',
-			'pro_only' => 'yes',
+			'name'       => 'Typeform',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Typeform */
@@ -3139,8 +3264,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'UM' => array(
-			'name' => 'Ultimate Member',
-			'pro_only' => 'no',
+			'name'       => 'Ultimate Member',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Ultimate Member */
@@ -3163,8 +3289,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'UPSELL' => array(
-			'name' => 'Upsell Plugin',
-			'pro_only' => 'no',
+			'name'       => 'Upsell Plugin',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Upsell Plugin */
@@ -3177,8 +3304,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'UAUSERLISTS' => array(
-			'name' => 'User Lists',
-			'pro_only' => 'yes',
+			'name'       => 'User Lists',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - User Lists */
@@ -3212,8 +3340,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WEBHOOKS' => array(
-			'name' => 'Webhooks',
-			'pro_only' => 'no',
+			'name'       => 'Webhooks',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Webhooks */
@@ -3226,8 +3355,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WHOLESALESUITE' => array(
-			'name' => 'Wholesale Suite',
-			'pro_only' => 'no',
+			'name'       => 'Wholesale Suite',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Wholesale Suite */
@@ -3267,8 +3397,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WISHLISTMEMBER' => array(
-			'name' => 'Wishlist Member',
-			'pro_only' => 'no',
+			'name'       => 'Wishlist Member',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Wishlist Member */
@@ -3334,8 +3465,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WC' => array(
-			'name' => 'Woo Subscriptions',
-			'pro_only' => 'yes',
+			'name'       => 'Woo Subscriptions',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Woo */
@@ -3741,8 +3873,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WC_BOOKINGS' => array(
-			'name' => 'Woo Bookings',
-			'pro_only' => 'no',
+			'name'       => 'Woo Bookings',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - Woo Bookings */
@@ -3771,8 +3904,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WP' => array(
-			'name' => 'WordPress Core',
-			'pro_only' => 'no',
+			'name'       => 'WordPress Core',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WordPress Core */
@@ -4057,8 +4191,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPDM' => array(
-			'name' => 'WordPress Download Manager',
-			'pro_only' => 'no',
+			'name'       => 'WordPress Download Manager',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WordPress Download Manager */
@@ -4071,8 +4206,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPMU' => array(
-			'name' => 'WordPress Multisite',
-			'pro_only' => 'yes',
+			'name'       => 'WordPress Multisite',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WordPress Multisite */
@@ -4095,8 +4231,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPAI' => array(
-			'name' => 'WP All Import',
-			'pro_only' => 'no',
+			'name'       => 'WP All Import',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - WP All Import */
@@ -4109,8 +4246,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WP_BITLY' => array(
-			'name' => 'WP Bitly',
-			'pro_only' => 'yes',
+			'name'       => 'WP Bitly',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -4122,8 +4260,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPCW' => array(
-			'name' => 'WP Courseware',
-			'pro_only' => 'no',
+			'name'       => 'WP Courseware',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -4140,8 +4279,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WF' => array(
-			'name' => 'WP Fusion Lite',
-			'pro_only' => 'no',
+			'name'       => 'WP Fusion Lite',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WP Fusion */
@@ -4182,8 +4322,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPJM' => array(
-			'name' => 'WP Job Manager',
-			'pro_only' => 'no',
+			'name'       => 'WP Job Manager',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WP Job Manager */
@@ -4238,8 +4379,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPLMS' => array(
-			'name' => 'WP LMS',
-			'pro_only' => 'no',
+			'name'       => 'WP LMS',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 			),
 			'actions'   => array(
@@ -4251,8 +4393,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPMAILSMTPPRO' => array(
-			'name' => 'WP Mail SMTP Pro',
-			'pro_only' => 'no',
+			'name'       => 'WP Mail SMTP Pro',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - WP Mail SMTP Pro */
@@ -4271,8 +4414,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPSIMPLEPAY' => array(
-			'name' => 'WP Simple Pay',
-			'pro_only' => 'no',
+			'name'       => 'WP Simple Pay',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - WP Simple Pay */
@@ -4285,8 +4429,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPUSERMANAGER' => array(
-			'name' => 'WP User Manager',
-			'pro_only' => 'no',
+			'name'       => 'WP User Manager',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WP User Manager */
@@ -4347,8 +4492,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPPOLLS' => array(
-			'name' => 'WP-Polls',
-			'pro_only' => 'no',
+			'name'       => 'WP-Polls',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WP-Polls */
@@ -4361,8 +4507,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPCODE_IHAF' => array(
-			'name' => 'WPCode',
-			'pro_only' => 'no',
+			'name'       => 'WPCode',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - WPCode */
@@ -4380,8 +4527,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPDISCUZ' => array(
-			'name' => 'wpDiscuz',
-			'pro_only' => 'no',
+			'name'       => 'wpDiscuz',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - wpDiscuz */
@@ -4405,8 +4553,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPF' => array(
-			'name' => 'WPForms',
-			'pro_only' => 'no',
+			'name'       => 'WPForms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WPForms */
@@ -4454,8 +4603,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WPFORO' => array(
-			'name' => 'wpForo',
-			'pro_only' => 'no',
+			'name'       => 'wpForo',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - wpForo */
@@ -4473,8 +4623,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'WSFORMLITE' => array(
-			'name' => 'WS Form',
-			'pro_only' => 'no',
+			'name'       => 'WS Form',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Logged-in trigger - WS Form */
@@ -4493,8 +4644,9 @@ function automator_pro_items_list() {
 			),
 		),
 		'ZAPIER' => array(
-			'name' => 'Zapier',
-			'pro_only' => 'no',
+			'name'       => 'Zapier',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
 			'triggers' => array(
 				array(
 					/* translators: Anonymous trigger - Zapier */

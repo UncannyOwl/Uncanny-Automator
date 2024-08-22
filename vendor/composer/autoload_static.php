@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4
+class ComposerStaticInit9fa28900ff0da0549dde4fdae7783c2e
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -544,7 +544,7 @@ class ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Day' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-day.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Day_Of_Month' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-day-of-month.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-month.php',
-        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month_Numeric' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-month-in-number.php',
+        'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month_Numeric' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-month-numeric.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-time.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-timestamp.php',
         'Uncanny_Automator\\Integrations\\EDD_SL\\Edd_Software_Licensing_Integration' => __DIR__ . '/../..' . '/src/integrations/edd-sl/class-edd-software-licensing-integration.php',
@@ -1213,8 +1213,8 @@ class ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit9fa28900ff0da0549dde4fdae7783c2e::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit9fa28900ff0da0549dde4fdae7783c2e::$classMap;
 
         }, null, ClassLoader::class);
     }

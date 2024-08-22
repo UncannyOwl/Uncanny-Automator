@@ -533,7 +533,7 @@ return array(
     'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Day' => $baseDir . '/src/integrations/datetime/tokens/current-day.php',
     'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Day_Of_Month' => $baseDir . '/src/integrations/datetime/tokens/current-day-of-month.php',
     'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month' => $baseDir . '/src/integrations/datetime/tokens/current-month.php',
-    'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month_Numeric' => $baseDir . '/src/integrations/datetime/tokens/current-month-in-number.php',
+    'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month_Numeric' => $baseDir . '/src/integrations/datetime/tokens/current-month-numeric.php',
     'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Time' => $baseDir . '/src/integrations/datetime/tokens/current-time.php',
     'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Timestamp' => $baseDir . '/src/integrations/datetime/tokens/current-timestamp.php',
     'Uncanny_Automator\\Integrations\\EDD_SL\\Edd_Software_Licensing_Integration' => $baseDir . '/src/integrations/edd-sl/class-edd-software-licensing-integration.php',
