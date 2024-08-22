@@ -1,5 +1,5 @@
 <?php
-namespace Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable;
+namespace Uncanny_Automator\Integrations\Wp\Tokens\Trigger\Loopable;
 
 use Uncanny_Automator\Services\Loopable\Loopable_Token_Collection;
 use Uncanny_Automator\Services\Loopable\Trigger_Loopable_Token;
@@ -9,9 +9,9 @@ use Uncanny_Automator\Services\Loopable\Trigger_Loopable_Token;
  *
  * @since 5.10
  *
- * @package Uncanny_Automator\Integrations\Woocommerce\Tokens\Loopable
+ * @package Uncanny_Automator\Integrations\Wp\Tokens\Loopable
  */
-class Post_tags extends Trigger_Loopable_Token {
+class Post_Tags extends Trigger_Loopable_Token {
 
 	/**
 	 * Register loopable tokens.

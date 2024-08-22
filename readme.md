@@ -5,7 +5,7 @@
 **Requires at least:** 5.4 \
 **Tested up to:** 6.6.1 \
 **Requires PHP:** 7.0 \
-**Stable tag:** 5.10.1 \
+**Stable tag:** 5.10.2 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -388,6 +388,20 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 5.10.2 [2024-08-22]
+
+**Fixed:**
+
+* Facebook Pages - We've added a little detective work to check if you actually have access to your Pages. If not, we'll let you know—no more guessing! #5023
+* Google Sheets - The system has learned not to freak out (with a PHP warning) when it can't find a Sheet ID. #5042
+* Google Sheets - Settings Page - Caught that sneaky "Unhandled Exception" and handled it properly—because no one likes surprises like that. #5039
+* Recipe UI - Loop tokens in conditions were getting a bit dramatic, showing up as invalid without an action. We've calmed them down. #5027
+* WooCommerce - Loopable tokens were causing some PHP drama on certain sites. We've sorted that out—no more drama! #5051
+
+**Under the hood:**
+
+* Added a new WP Filter `automator_wpcpostcontent_should_wp_slash` to give you more control over content sanitization—slash away, if you like! #5045
 
 ### 5.10.1 [2024-08-20]
 

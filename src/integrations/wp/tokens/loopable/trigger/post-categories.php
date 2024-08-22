@@ -1,5 +1,5 @@
 <?php
-namespace Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable;
+namespace Uncanny_Automator\Integrations\Wp\Tokens\Trigger\Loopable;
 
 use Exception;
 use Uncanny_Automator\Services\Loopable\Loopable_Token_Collection;
@@ -10,7 +10,7 @@ use Uncanny_Automator\Services\Loopable\Trigger_Loopable_Token;
  *
  * @since 5.10
  *
- * @package Uncanny_Automator\Integrations\Woocommerce\Tokens\Loopable
+ * @package Uncanny_Automator\Integrations\Wp\Tokens\Loopable
  */
 class Post_Categories extends Trigger_Loopable_Token {
 

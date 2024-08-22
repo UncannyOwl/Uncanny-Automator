@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 5.10.1\n"
+"Project-Id-Version: Uncanny Automator 5.10.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-20T17:10:26+00:00\n"
+"POT-Creation-Date: 2024-08-22T16:12:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: uncanny-automator\n"
@@ -14890,8 +14890,12 @@ msgstr ""
 msgid "Pages are fetched successfully"
 msgstr ""
 
+#: src/integrations/facebook/helpers/facebook-helpers.php:359
+msgid "No Facebook Pages were found linked to this account. Please click the button below to re-authenticate and ensure the correct pages and permissions are selected."
+msgstr ""
+
 #. translators: Error exception message
-#: src/integrations/facebook/helpers/facebook-helpers.php:548
+#: src/integrations/facebook/helpers/facebook-helpers.php:552
 msgctxt "Facebook pages"
 msgid "Unable to locate a valid access token for the specified Facebook Page. Please edit the recipe and ensure that you have selected the correct Facebook page, then resave the action. Additionally, you can attempt to reconnect the account by navigating to Automator > App Integrations > Facebook Pages. %s"
 msgstr ""
@@ -16672,22 +16676,22 @@ msgctxt "Google Sheets"
 msgid "The following spreadsheets are available for selection in the recipe editor:"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:53
+#: src/integrations/google-sheet/settings/file-picker-view.php:56
 msgctxt "Google Sheets"
 msgid "There are currently no spreadsheets selected"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:54
+#: src/integrations/google-sheet/settings/file-picker-view.php:57
 msgctxt "Google Sheets"
 msgid "Click the button below to select sheets"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:60
+#: src/integrations/google-sheet/settings/file-picker-view.php:63
 msgctxt "Google Sheets"
 msgid "An error occurred while authorizing the request to use File selection feature."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/file-picker-view.php:71
+#: src/integrations/google-sheet/settings/file-picker-view.php:74
 msgctxt "Google Sheets"
 msgid "Select new sheet(s)"
 msgstr ""
@@ -25683,35 +25687,15 @@ msgctxt "WooCommerce"
 msgid "lands on a thank you page for"
 msgstr ""
 
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:319
-msgctxt "Woo"
-msgid "Order ID"
-msgstr ""
-
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:323
-msgctxt "Woo"
-msgid "Date created"
-msgstr ""
-
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:327
-#: src/integrations/woocommerce/tokens/loopable/trigger/order-items.php:30
-msgctxt "Woo"
-msgid "Total"
-msgstr ""
-
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:331
-msgctxt "Woo"
-msgid "Status"
-msgstr ""
-
-#: src/integrations/woocommerce/helpers/woocommerce-helpers.php:335
-msgctxt "Woo"
-msgid "Items"
-msgstr ""
-
 #: src/integrations/woocommerce/tokens/loopable/trigger/order-items.php:26
 msgctxt "Woo"
 msgid "Item ID"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/loopable/trigger/order-items.php:30
+#: src/integrations/woocommerce/tokens/loopable/utils/Loopable_Tokens_Utils.php:28
+msgctxt "Woo"
+msgid "Total"
 msgstr ""
 
 #: src/integrations/woocommerce/tokens/loopable/trigger/order-items.php:33
@@ -25777,22 +25761,22 @@ msgctxt "Woo"
 msgid "Order products tags"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/all-order-24-hours.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/all-order-24-hours.php:26
 msgctxt "Woo"
 msgid "All orders in the past 24 hours"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/all-orders-monthly.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/all-orders-monthly.php:26
 msgctxt "Woo"
 msgid "All orders in the past 30 days"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/all-orders-weekly.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/all-orders-weekly.php:26
 msgctxt "Woo"
 msgid "All orders in the past week"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/all-orders-yearly.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/all-orders-yearly.php:26
 msgctxt "Woo"
 msgid "All orders in the past 365 days"
 msgstr ""
@@ -25802,22 +25786,22 @@ msgctxt "Woo"
 msgid "All products categories"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/user-order-24-hours.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/user-order-24-hours.php:26
 msgctxt "Woo"
 msgid "User's orders in the past 24 hours"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/user-orders-monthly.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/user-orders-monthly.php:26
 msgctxt "Woo"
 msgid "User's orders in the past 30 days"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/user-orders-weekly.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/user-orders-weekly.php:26
 msgctxt "Woo"
 msgid "User's orders in the past week"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/loopable/universal/user-orders-yearly.php:25
+#: src/integrations/woocommerce/tokens/loopable/universal/user-orders-yearly.php:26
 msgctxt "Woo"
 msgid "User's orders in the past 365 days"
 msgstr ""
@@ -25835,6 +25819,26 @@ msgstr ""
 #: src/integrations/woocommerce/tokens/loopable/universal/user-purchased-products.php:39
 msgctxt "Woo"
 msgid "User's purchased products"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/loopable/utils/Loopable_Tokens_Utils.php:20
+msgctxt "Woo"
+msgid "Order ID"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/loopable/utils/Loopable_Tokens_Utils.php:24
+msgctxt "Woo"
+msgid "Date created"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/loopable/utils/Loopable_Tokens_Utils.php:32
+msgctxt "Woo"
+msgid "Status"
+msgstr ""
+
+#: src/integrations/woocommerce/tokens/loopable/utils/Loopable_Tokens_Utils.php:36
+msgctxt "Woo"
+msgid "Items"
 msgstr ""
 
 #: src/integrations/woocommerce/tokens/wc-tokens.php:32

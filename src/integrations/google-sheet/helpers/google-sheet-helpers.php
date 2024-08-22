@@ -811,7 +811,7 @@ class Google_Sheet_Helpers {
 		$access_token = automator_get_option( '_uncannyowl_google_sheet_settings', array() );
 
 		if ( empty( $access_token ) || ! isset( $access_token['access_token'] ) ) {
-			throw new \Exception( 'Google is not connected' );
+			return false;
 		}
 
 		return $access_token;

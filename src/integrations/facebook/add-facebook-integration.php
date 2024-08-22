@@ -52,7 +52,7 @@ class Add_Facebook_Integration {
 		$facebook_options_user  = automator_get_option( '_uncannyowl_facebook_settings', false );
 		$facebook_options_pages = automator_get_option( '_uncannyowl_facebook_pages_settings', false );
 
-		if ( ! empty( $facebook_options_user ) && ! empty( $facebook_options_pages ) ) {
+		if ( ! empty( $facebook_options_user ) ) {
 			$this->connected = true;
 		}
 

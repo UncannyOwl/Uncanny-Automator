@@ -3,8 +3,8 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable\Post_Categories;
-use Uncanny_Automator\Integrations\Woocommerce\Tokens\Trigger\Loopable\Post_Tags;
+use Uncanny_Automator\Integrations\Wp\Tokens\Trigger\Loopable\Post_Categories;
+use Uncanny_Automator\Integrations\Wp\Tokens\Trigger\Loopable\Post_Tags;
 use Uncanny_Automator_Pro\Wp_Pro_Helpers;
 use WP_Error;
 

@@ -1,6 +1,7 @@
 <?php
 namespace Uncanny_Automator\Integrations\Woocommerce\Tokens\Loopable\Universal;
 
+use Uncanny_Automator\Integrations\Woocommerce\Tokens\Loopable\Utils\Loopable_Tokens_Utils;
 use Uncanny_Automator\Services\Loopable\Loopable_Token_Collection;
 use Uncanny_Automator\Services\Loopable\Universal_Loopable_Token;
 use Uncanny_Automator\Woocommerce_Helpers;
@@ -19,7 +20,7 @@ class User_Orders_Yearly extends Universal_Loopable_Token {
 	 */
 	public function register_loopable_token() {
 
-		$child_tokens = Woocommerce_Helpers::get_timed_orders_loopable_tokens();
+		$child_tokens = Loopable_Tokens_Utils::get_timed_orders_loopable_tokens();
 
 		$this->set_id( 'USER_ORDERS_YEARLY' );
 		$this->set_name( _x( "User's orders in the past 365 days", 'Woo', 'uncanny-automator' ) );

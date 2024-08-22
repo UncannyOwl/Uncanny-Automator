@@ -355,6 +355,10 @@ class Facebook_Helpers {
 
 		}
 
+		if ( empty( $pages ) ) {
+			$message = esc_html__( 'No Facebook Pages were found linked to this account. Please click the button below to re-authenticate and ensure the correct pages and permissions are selected.', 'uncanny-automator' );
+		}
+
 		$response = array(
 			'status'  => $status,
 			'message' => $message,

@@ -24,6 +24,9 @@ if ( $this->client ) { ?>
 		<table id="spreadSheetTable">
 			<tbody>
 				<?php foreach ( $spreadsheets as $spreadsheet ) { ?>
+					<?php if ( ! isset( $spreadsheet['id'] ) ) { ?>
+						<?php continue; ?>
+					<?php } ?>
 					<tr class="item">
 					<?php $remove_url = admin_url( "admin-ajax.php?nonce={$nonce}&action=automator_google_sheet_remove_spreadsheet&id={$spreadsheet['id']}" ); ?>
 					<?php if ( isset( $spreadsheet['name'] ) ) { ?>

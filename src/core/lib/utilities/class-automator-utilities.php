@@ -584,6 +584,7 @@ class Automator_Utilities {
 	 * @return mixed
 	 */
 	public function automator_sanitize_array( $data, $meta_key = '', $options = array() ) {
+
 		foreach ( $data as $k => $v ) {
 			$k = esc_attr( $k );
 			if ( is_array( $v ) ) {
@@ -603,6 +604,9 @@ class Automator_Utilities {
 					case 'WPCPOSTCONTENT':
 						if ( apply_filters( 'automator_wpcpostcontent_should_sanitize', false, $data ) ) {
 							$v = wp_kses_post( $v );
+						}
+						if ( apply_filters( 'automator_wpcpostcontent_should_wp_slash', false, $data ) ) {
+							$v = wp_slash( $v );
 						}
 						$data[ $k ] = $v;
 						break;

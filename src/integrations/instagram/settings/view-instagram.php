@@ -90,7 +90,7 @@ namespace Uncanny_Automator;
 						<?php esc_html_e( 'Update linked Facebook pages', 'uncanny-automator' ); ?>
 					</uo-button>
 
-					<div id="facebook-pages-errors" class="uap-spacing-top"></div>
+					<uo-alert type="error" id="facebook-pages-errors" class="uap-spacing-top"></uo-alert>
 
 				<?php } ?>
 

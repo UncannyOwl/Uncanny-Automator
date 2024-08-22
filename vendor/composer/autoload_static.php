@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitfa287a2442b5d19ef54da59f2a7cb3e6
+class ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -690,9 +690,10 @@ class ComposerStaticInitfa287a2442b5d19ef54da59f2a7cb3e6
         'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Orders_Weekly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-orders-weekly.php',
         'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Orders_Yearly' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-orders-yearly.php',
         'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Universal\\User_Purchase_Products' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/universal/user-purchased-products.php',
+        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Loopable\\Utils\\Loopable_Tokens_Utils' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/utils/Loopable_Tokens_Utils.php',
         'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Trigger\\Loopable\\Order_Items' => __DIR__ . '/../..' . '/src/integrations/woocommerce/tokens/loopable/trigger/order-items.php',
-        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Trigger\\Loopable\\Post_Categories' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/trigger/post-categories.php',
-        'Uncanny_Automator\\Integrations\\Woocommerce\\Tokens\\Trigger\\Loopable\\Post_tags' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/trigger/post-tags.php',
+        'Uncanny_Automator\\Integrations\\Wp\\Tokens\\Trigger\\Loopable\\Post_Categories' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/trigger/post-categories.php',
+        'Uncanny_Automator\\Integrations\\Wp\\Tokens\\Trigger\\Loopable\\Post_Tags' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/trigger/post-tags.php',
         'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_ADD_REPLY_TO_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php',
         'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_USER_POST_RECEIVES_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/triggers/wp-discuz-user-post-receives-comment.php',
         'Uncanny_Automator\\Integrations\\Wp_Discuz\\WP_DISCUZ_USER_SUBMITS_COMMENT' => __DIR__ . '/../..' . '/src/integrations/wp-discuz/triggers/wp-discuz-user-submits-comment.php',
@@ -1212,8 +1213,8 @@ class ComposerStaticInitfa287a2442b5d19ef54da59f2a7cb3e6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitfa287a2442b5d19ef54da59f2a7cb3e6::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitfa287a2442b5d19ef54da59f2a7cb3e6::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit8e4e7535e5de07d42f17d63d9c6d19d4::$classMap;
 
         }, null, ClassLoader::class);
     }
