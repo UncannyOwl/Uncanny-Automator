@@ -71,44 +71,81 @@ final class Tokens implements \JsonSerializable {
 
 		foreach ( $fields_options as $options ) {
 			foreach ( $options as $option ) {
-				if ( isset( $option['relevant_tokens'] ) ) {
-					// If there is relevant_tokens attributes, add it.
-					foreach ( $option['relevant_tokens'] as $token_code => $token_label ) {
-						$datatype               = 'text'; // @todo: Determine datatype.
-						$token                  = new stdClass();
-						$token->id              = sprintf( '%d:%s:%s', self::$trigger_id, $option['field_code'], $token_code );
-						$token->token_type      = 'relevant_tokens';
-						$token->data_type       = $datatype;
-						$token->name            = $token_label;
-						$relevant_tokens_list[] = $token;
-					}
-				} else {
-					if ( ! isset( $option['field_code'] ) && is_array( $option ) ) {
-						foreach ( $option as $_option ) {
-							$datatype               = 'text'; // @todo: Determine datatype.
-							$token                  = new stdClass();
-							$token->id              = sprintf( '%d:%s:%s', self::$trigger_id, self::$trigger['meta']['code'], $_option['field_code'] );
-							$token->token_type      = 'field';
-							$token->data_type       = $datatype;
-							$token->name            = $_option['label'];
-							$relevant_tokens_list[] = $token;
+
+				// Check for nested fields.
+				if ( ! isset( $option['field_code'] ) && is_array( $option ) ) {
+
+					foreach ( $option as $_option ) {
+
+						// If there is relevant_tokens attributes, add them.
+						if ( isset( $_option['relevant_tokens'] ) ) {
+							$relevant_tokens = $this->generate_relevant_tokens( $_option['relevant_tokens'] );
+							if ( ! empty( $relevant_tokens ) ) {
+								$relevant_tokens_list = array_merge( $relevant_tokens_list, $relevant_tokens );
+							}
+							continue;
 						}
-					} else {
-						$datatype               = 'text'; // @todo: Determine datatype.
+
+						// If there is no relevant_tokens attributes, add the field as token.
 						$token                  = new stdClass();
-						$token->id              = sprintf( '%d:%s:%s', self::$trigger_id, self::$trigger['meta']['code'], $option['field_code'] );
+						$token->id              = sprintf( '%d:%s:%s', self::$trigger_id, self::$trigger['meta']['code'], $_option['field_code'] );
 						$token->token_type      = 'field';
-						$token->data_type       = $datatype;
-						$token->name            = $option['label'];
+						$token->data_type       = 'text'; // @todo: Determine datatype
+						$token->name            = $_option['label'];
 						$relevant_tokens_list[] = $token;
 					}
-					// Add each field as token.
+
+					continue;
 				}
+
+				// If there is relevant_tokens attributes, add it.
+				if ( isset( $option['relevant_tokens'] ) ) {
+					$relevant_tokens = $this->generate_relevant_tokens( $option['relevant_tokens'] );
+					if ( ! empty( $relevant_tokens ) ) {
+						$relevant_tokens_list = array_merge( $relevant_tokens_list, $relevant_tokens );
+					}
+					continue;
+				}
+
+				// Add each field as token.
+				$token                  = new stdClass();
+				$token->id              = sprintf( '%d:%s:%s', self::$trigger_id, self::$trigger['meta']['code'], $option['field_code'] );
+				$token->token_type      = 'field';
+				$token->data_type       = 'text'; // @todo: Determine datatype.
+				$token->name            = $option['label'];
+				$relevant_tokens_list[] = $token;
+
 			}
 		}
 
 		return $relevant_tokens_list;
+	}
 
+	/**
+	 * Generate relevant tokens.
+	 *
+	 * @param mixed[] $tokens
+	 *
+	 * @return array
+	 */
+	public function generate_relevant_tokens( $tokens ) {
+
+		$relevant_tokens_list = array();
+
+		if ( ! is_array( $tokens ) || empty( $tokens ) ) {
+			return $relevant_tokens_list;
+		}
+
+		foreach ( $tokens as $token_code => $token_label ) {
+			$token                  = new stdClass();
+			$token->id              = sprintf( '%d:%s:%s', self::$trigger_id, self::$trigger['meta']['code'], $token_code );
+			$token->token_type      = 'relevant_tokens';
+			$token->data_type       = 'text'; // @todo: Determine datatype.
+			$token->name            = $token_label;
+			$relevant_tokens_list[] = $token;
+		}
+
+		return $relevant_tokens_list;
 	}
 
 	/**
