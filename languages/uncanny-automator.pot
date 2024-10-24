@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-24T13:07:58+00:00\n"
+"POT-Creation-Date: 2024-10-24T13:37:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: uncanny-automator\n"
@@ -78,8 +78,6 @@ msgstr ""
 #: src/recipe-ui/src/js/item/button-schedule.js:912
 #: src/recipe-ui/dist/bundle.min.js:2
 #: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
 #: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
 #: src/core/admin/class-admin-menu.php:1003
 #: src/core/admin/class-admin-menu.php:1173
@@ -129,86 +127,6 @@ msgstr ""
 #: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
 #: src/recipe-ui/dist/bundle.min.js:2
 msgid "Get Post loops"
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
-#: src/core/lib/utilities/class-automator-translations.php:1402
-#: src/core/lib/utilities/class-automator-translations.php:1519
-msgid "Token loop"
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Token loops let you perform bulk actions on special *loopable tokens*. Here are a few examples:"
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "When a user purchases a specific product, **loop over their previously purchased products** and if a complementary product is found, send an email with special instructions or a coupon code."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Every Friday, **loop over all orders in the past week** and export them to a Google sheet."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "When a user completes a course, **loop over their previously completed courses** and if a corequisite course is found, enroll the user in a new course or issue a certificate of completion."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "When a user purchases a subscription, **loop over their active subscriptions** and if a complementary subscription is found, award an achievement or store credit."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Get Token loops"
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:92
-#: src/recipe-ui/dist/bundle.min.js:2
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:94
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/core/lib/utilities/class-automator-translations.php:1400
-msgid "User loop"
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "A powerful admin tool, user loops let you perform **bulk actions** on any set of **users that meet specific criteria**."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Here are a few examples of what is possible with user loops:"
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Send an email or coupon code to all users that **purchased a specific product** or are a **member of a specific group**."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Add a role to **users with a specific role** or **with a specific membership/access level**."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Export a list of **users matching specific profile criteria** to Google Sheets, AirTable or Notion."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Perform actions in bulk on **users with specific usermeta**."
-msgstr ""
-
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
-msgid "Get User loops"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
@@ -7579,6 +7497,15 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1399
 msgid "Loop filters decide which users will be included in the loop. Action filters within the block, on the other hand, choose what actions are performed for each individual user."
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:1400
+msgid "User loop"
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:1402
+#: src/core/lib/utilities/class-automator-translations.php:1519
+msgid "Token loop"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1403
