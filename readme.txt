@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.4
-Tested up to: 6.6.1
+Tested up to: 6.6.2
 Requires PHP: 7.0
-Stable tag: 5.10.3
+Stable tag: 5.10.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -363,6 +363,22 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 5.10.4 [2024-09-13] =
+
+**Update:**
+
+* LearnDash - Award an achievement to a user - Now supports LearnDash Achievements v2.0+ #5059
+
+**Fixed:**
+
+* Recipe Logs - "Not met" actions conditions block in Pro was having an identity crisis, showing "In progress with errors" instead of the simple "In progress." We sat it down and cleared things up! #5109
+* Recipe UI - "A type of post has a term" loop filter in Pro wasn't loading fields properly—like a chef forgetting the salt. Fields are now back in the mix! #5119
+* Recipe UI - Pro tag was getting a little too clingy, overlapping the recipe item menu like an overenthusiastic garnish. It's been moved to give your menu some breathing room! #5081
+
+**Under the hood:**
+
+* Recipe UI - Hidden required fields are handled better now, even when they're shy and stay out of sight. #5099
 
 = 5.10.3 [2024-08-30] =
 

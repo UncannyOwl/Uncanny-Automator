@@ -918,10 +918,11 @@ class Automator_Recipe_Process_Complete {
 			// Determine whether the user selector has created or has failed creating a new user.
 			$is_user_selector_user_creation_message = self::is_user_selector_user_creation_message( $message );
 
+			// Determine whether the error message is from failed condition block.
+			$is_condition_block_failed_message = self::is_condition_block_failed_message( $message );
+
 			// @^todo: The following if-then-else logic could be wrapped in a method with a filter, and the user-selector logic could be moved to pro that applies the filter to invoke its logic.
-			if ( $is_user_selector_matching_message ) {
-				$skip = true;
-			} elseif ( $is_user_selector_user_creation_message ) {
+			if ( $is_user_selector_matching_message || $is_user_selector_user_creation_message || $is_condition_block_failed_message ) {
 				$skip = true;
 			} elseif ( Automator_Status::DID_NOTHING === (int) $complete ) {
 				$skip = true;
@@ -957,7 +958,7 @@ class Automator_Recipe_Process_Complete {
 			 *
 			 * @since 5.8.0.3 - Added condition to handle user selector notice.
 			 */
-			if ( $scheduled_actions_count > 0 && ! $contains_user_selector_notice ) {
+			if ( $scheduled_actions_count > 0 && ! $contains_user_selector_notice && ! $is_condition_block_failed_message ) {
 				Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, Automator_Status::IN_PROGRESS_WITH_ERROR );
 			}
 		}
@@ -977,6 +978,20 @@ class Automator_Recipe_Process_Complete {
 		do_action( 'automator_recipe_completed', $recipe_id, $user_id, $recipe_log_id, $args );
 
 		return true;
+	}
+
+	/**
+	 * Determines whether the error message is from failed condition block.
+	 *
+	 * @param $error_message
+	 *
+	 * @return bool
+	 */
+	public static function is_condition_block_failed_message( $error_message ) {
+		$error_message = strtolower( $error_message );
+		$substrings    = array( 'failed condition', 'failed conditions' );
+
+		return self::substring_exists( $substrings, $error_message );
 	}
 
 	/**

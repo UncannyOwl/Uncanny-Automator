@@ -28,7 +28,7 @@ class LD_ACHIEVEMENTS_AWARD {
 		$this->action_code = 'LDACHIEVEMENTS';
 		$this->action_meta = 'LDACHIEVEMENTS_META';
 
-		if ( class_exists( '\LearnDash_Achievements' ) ) {
+		if ( defined( 'LEARNDASH_ACHIEVEMENTS_VERSION' ) ) {
 			$this->define_action();
 		}
 
