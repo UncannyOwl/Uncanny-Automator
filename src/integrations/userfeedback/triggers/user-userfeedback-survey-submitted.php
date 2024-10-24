@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Recipe;
-
 /**
  * Class Automator_UserFeedback_Trigger
  */
@@ -135,19 +133,21 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 			$survey          = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_surveys WHERE id = %d", $survey_id ) );
 			$survey_response = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_survey_responses WHERE id = %d", $response_id ) );
 
-			$survey_questions = array_map(
-				function ( $question ) {
-					$ret[ $question->id ] = $question->title;
+			// Build $survey_questions as an associative array of question ID => title
+			$survey_questions = array();
+			foreach ( json_decode( $survey->questions ) as $question ) {
+				$survey_questions[ $question->id ] = $question->title;
+			}
 
-					return $ret;
-				},
-				json_decode( $survey->questions )
-			)[0];
-
+			// Map over the answers and build $response_answers
 			$response_answers = array_map(
 				function ( $answer ) use ( $survey_questions ) {
 					$question = $survey_questions[ $answer->question_id ];
 					$answer   = $answer->value;
+
+					if ( is_array( $answer ) ) {
+						$answer = join( ', ', $answer );
+					}
 
 					return array(
 						'string' => "{$question}: {$answer}",
@@ -155,24 +155,26 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 					);
 				},
 				json_decode( $survey_response->answers )
-			)[0];
+			);
+
+			$data   = array();
+			$string = array();
+			foreach ( $response_answers as $response_answer ) {
+				$string[] = $response_answer['string'];
+				$data[]   = json_encode( $response_answer['data'] );
+			}
 
 			$user_ip      = $survey_response->user_ip;
 			$user_browser = $survey_response->user_browser;
 			$user_os      = $survey_response->user_os;
 			$user_device  = $survey_response->user_device;
 
-			$trigger_meta       = $this->get_trigger_meta();
-			$post_meta_key      = "{$trigger_meta}_readable";
-			$trigger_meta_value = get_post_meta( $this->get_trigger_to_match(), $post_meta_key, true );
-			//$token_values[ $trigger_meta ] = $trigger_meta_value;
-
 			$token_values = array(
-				'UFSURVEY'                          => $trigger_meta_value,
+				'UFSURVEY'                          => isset( $survey->title ) ? $survey->title : '',
 				'USERFEEDBACK_SURVEY_ID'            => $survey_id,
 				'USERFEEDBACK_SURVEY_TITLE'         => $survey->title,
-				'USERFEEDBACK_SURVEY_RESPONSE'      => $response_answers['string'],
-				'USERFEEDBACK_SURVEY_RESPONSE_JSON' => json_encode( $response_answers['data'] ),
+				'USERFEEDBACK_SURVEY_RESPONSE'      => join( ', ', $string ),
+				'USERFEEDBACK_SURVEY_RESPONSE_JSON' => join( ', ', $data ),
 				'USERFEEDBACK_SURVEY_USER_IP'       => $user_ip,
 				'USERFEEDBACK_SURVEY_USER_BROWSER'  => $user_browser,
 				'USERFEEDBACK_SURVEY_USER_OS'       => $user_os,

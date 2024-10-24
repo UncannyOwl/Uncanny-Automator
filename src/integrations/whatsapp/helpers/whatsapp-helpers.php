@@ -593,7 +593,7 @@ class WhatsApp_Helpers {
 
 		$new_key = md5( uniqid( wp_rand(), true ) );
 
-		update_option( self::WEBHOOK_KEY, $new_key );
+		automator_update_option( self::WEBHOOK_KEY, $new_key );
 
 		return $new_key;
 
@@ -653,16 +653,16 @@ class WhatsApp_Helpers {
 		delete_transient( $this->get_dropdown_transient_key() );
 
 		// Remove the client.
-		delete_option( self::CLIENT );
+		automator_delete_option( self::CLIENT );
 
 		// Remove phone id value.
-		delete_option( WhatsApp_Settings::PHONE_ID );
+		automator_delete_option( WhatsApp_Settings::PHONE_ID );
 
 		// Remove access token value.
-		delete_option( WhatsApp_Settings::ACCESS_TOKEN );
+		automator_delete_option( WhatsApp_Settings::ACCESS_TOKEN );
 
 		// Remove business account ID
-		delete_option( WhatsApp_Settings::BUSINESS_ID );
+		automator_delete_option( WhatsApp_Settings::BUSINESS_ID );
 
 		wp_safe_redirect(
 			add_query_arg(
@@ -813,7 +813,7 @@ class WhatsApp_Helpers {
 
 			$body = array(
 				'action'       => 'list_template',
-				'business_id'  => get_option( WhatsApp_Settings::BUSINESS_ID ),
+				'business_id'  => automator_get_option( WhatsApp_Settings::BUSINESS_ID ),
 				'access_token' => $this->get_access_token(),
 			);
 
@@ -832,7 +832,7 @@ class WhatsApp_Helpers {
 
 			wp_send_json_error(
 				array(
-					'message' => __( 'Cannot find the structure for the selected template. Please refresh the page and try again later.', 'uncanny_automator' ),
+					'message' => __( 'Cannot find the structure for the selected template. Please refresh the page and try again later.', 'uncanny-automator' ),
 				),
 				400
 			);
@@ -842,7 +842,7 @@ class WhatsApp_Helpers {
 			wp_send_json_error(
 				array(
 					'message' => strtr(
-						__( 'An unexpected error has with status code [{{status_code}}] has occured. Message: {{error_message}}', 'uncanny_automator' ),
+						__( 'An unexpected error has with status code [{{status_code}}] has occured. Message: {{error_message}}', 'uncanny-automator' ),
 						array(
 							'{{status_code}}'   => $e->getCode(),
 							'{{error_message}}' => $e->getMessage(),

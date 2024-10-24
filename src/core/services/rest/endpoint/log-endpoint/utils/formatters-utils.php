@@ -1,6 +1,7 @@
 <?php
 namespace Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils;
 
+use Exception;
 use Uncanny_Automator\Automator_Status;
 
 class Formatters_Utils {
@@ -60,7 +61,17 @@ class Formatters_Utils {
 	 * @return int|false The timestamp. False if date object is not a valid object.
 	 */
 	public static function strtotime( $date_string = '' ) {
+
+		$ts_string = Automator()->get_timezone_string();
+
+		if ( empty( $ts_string ) ) {
+			return false;
+		}
+
 		try {
+			if ( empty( $date_string ) ) {
+				throw new Exception( 'Invalid date string', 500 );
+			}
 			$date = new \DateTime( $date_string, new \DateTimeZone( Automator()->get_timezone_string() ) );
 			if ( false !== $date ) {
 				return intval( $date->format( 'U' ) );
@@ -108,6 +119,10 @@ class Formatters_Utils {
 	 * @return string|false - Human time difference. Otherwise, false.
 	 */
 	public static function human_time_diff( $start, $to ) {
+
+		if ( empty( $start ) || empty( $to ) ) {
+			return '';
+		}
 
 		return human_time_diff( strtotime( $start ), strtotime( $to ) );
 

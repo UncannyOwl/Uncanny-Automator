@@ -58,14 +58,14 @@ class Zoom_Settings extends Settings\Premium_Integration_Settings {
 	 */
 	public function output() {
 
-		$this->account_id = trim( get_option( 'uap_automator_zoom_api_account_id', '' ) );
-		$this->api_key    = trim( get_option( 'uap_automator_zoom_api_client_id', '' ) );
-		$this->api_secret = trim( get_option( 'uap_automator_zoom_api_client_secret', '' ) );
+		$this->account_id = trim( automator_get_option( 'uap_automator_zoom_api_account_id', '' ) );
+		$this->api_key    = trim( automator_get_option( 'uap_automator_zoom_api_client_id', '' ) );
+		$this->api_secret = trim( automator_get_option( 'uap_automator_zoom_api_client_secret', '' ) );
 
 		$this->user = false;
 
 		if ( ! empty( $this->api_key ) && ! empty( $this->api_secret ) ) {
-			$this->user = get_option( 'uap_zoom_api_connected_user', array() );
+			$this->user = automator_get_option( 'uap_zoom_api_connected_user', array() );
 		}
 
 		$this->is_connected = false;
@@ -83,8 +83,8 @@ class Zoom_Settings extends Settings\Premium_Integration_Settings {
 
 		try {
 
-			delete_option( 'uap_zoom_api_connected_user' );
-			delete_option( '_uncannyowl_zoom_settings' );
+			automator_delete_option( 'uap_zoom_api_connected_user' );
+			automator_delete_option( '_uncannyowl_zoom_settings' );
 
 			$this->user = $this->helpers->api_get_user_info();
 

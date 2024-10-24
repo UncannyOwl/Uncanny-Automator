@@ -205,6 +205,7 @@ class Recipe_Post_Utilities {
 				'uap-codemirror-mode-htmlmixed',
 				'uap-tinymce-plugin-fullpage',
 				'wp-api-fetch',
+				'wp-i18n',
 			),
 			Utilities::automator_get_version(),
 			true
@@ -214,6 +215,11 @@ class Recipe_Post_Utilities {
 			'uncanny-automator-ui',
 			'UncannyAutomator',
 			$this->assets_get_automator_main_object()
+		);
+
+		wp_set_script_translations(
+			'uncanny-automator-ui',
+			'uncanny-automator'
 		);
 
 		wp_enqueue_script( 'uncanny-automator-ui' );
@@ -564,10 +570,10 @@ class Recipe_Post_Utilities {
 					'has_account_connected' => ( ! Api_Server::is_automator_connected( automator_filter_has_var( 'ua_connecting_integration' ) ) ? false : true ),
 
 					// UncannyAutomator._site.automator.has_valid_pro_license
-					'has_valid_pro_license' => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === get_option( 'uap_automator_pro_license_status' ) ),
+					'has_valid_pro_license' => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ),
 
 					// UncannyAutomator._site.automator.marketing_referer
-					'marketing_referer'     => get_option( 'uncannyautomator_source', '' ),
+					'marketing_referer'     => automator_get_option( 'uncannyautomator_source', '' ),
 
 					// UncannyAutomator._site.automator.links
 					'links'                 => array(
@@ -588,7 +594,16 @@ class Recipe_Post_Utilities {
 						),
 
 						// UncannyAutomator._site.automator.links.loops_guide
-						'loops_guide'        => 'https://automatorplugin.com/knowledge-base/user-loops/',
+						'loops_guide'        => array(
+							// UncannyAutomator._site.automator.links.loops_guide.users_loops
+							'users_loops' => 'https://automatorplugin.com/knowledge-base/user-loops/',
+
+							// UncannyAutomator._site.automator.links.loops_guide.posts_loops
+							'posts_loops' => 'https://automatorplugin.com/knowledge-base/post-loops/',
+
+							// UncannyAutomator._site.automator.links.loops_guide.token_loops
+							'token_loops' => 'https://automatorplugin.com/knowledge-base/token-loops/',
+						),
 
 						'all_recipes'        => admin_url( 'edit.php?post_type=uo-recipe' ),
 
@@ -603,7 +618,7 @@ class Recipe_Post_Utilities {
 						// of the "Visual" tab. For that, we need to define an array with the URLs
 						// of both Automator stylesheets
 						'styles_for_tinymce' => array(
-							add_query_arg( array( 'ver' => AUTOMATOR_PLUGIN_VERSION ), Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ) ),
+							add_query_arg( array( 'ver' => AUTOMATOR_PLUGIN_VERSION ), Utilities::automator_get_asset( 'backend/dist/main.bundle.min.css' ) ),
 							add_query_arg( array( 'ver' => AUTOMATOR_PLUGIN_VERSION ), Utilities::automator_get_recipe_dist( 'bundle.min.css' ) ),
 						),
 					),

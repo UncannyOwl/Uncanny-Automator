@@ -1,4 +1,5 @@
 <?php
+//phpcs:disable PHPCompatibility.Operators.NewOperators.t_coalesceFound,PHPCompatibility.FunctionDeclarations.NewParamTypeDeclarations.stringFound
 namespace Uncanny_Automator\Services\Loopable;
 
 /**

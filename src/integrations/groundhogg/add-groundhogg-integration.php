@@ -24,7 +24,7 @@ class Add_Groundhogg_Integration {
 	protected function setup() {
 		$this->set_integration( 'GH' );
 		$this->set_name( 'Groundhogg' );
-		$this->set_icon( 'groundhogg-icon-.svg' );
+		$this->set_icon( 'groundhogg-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'groundhogg/groundhogg.php' );
 	}

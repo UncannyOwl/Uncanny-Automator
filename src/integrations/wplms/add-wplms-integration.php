@@ -45,7 +45,7 @@ class Add_WPLMS_Integration {
 	 *
 	 */
 	public function migrate_wplms_old_version_to_latest() {
-		if ( 'yes' === get_option( 'automator_wplms4_to_wplms_migration' ) ) {
+		if ( 'yes' === automator_get_option( 'automator_wplms4_to_wplms_migration' ) ) {
 			return;
 		}
 
@@ -53,7 +53,7 @@ class Add_WPLMS_Integration {
 		$current_triggers = $wpdb->get_results( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = 'WPLMS4' AND meta_key = 'integration'" );
 
 		if ( empty( $current_triggers ) ) {
-			update_option( 'automator_wplms4_to_wplms_migration', 'yes', true );
+			automator_update_option( 'automator_wplms4_to_wplms_migration', 'yes', true );
 
 			return;
 		}
@@ -63,7 +63,7 @@ class Add_WPLMS_Integration {
 			update_post_meta( $trigger_id, 'integration', 'WPLMS' );
 		}
 
-		update_option( 'automator_wplms4_to_wplms_migration', 'yes', true );
+		automator_update_option( 'automator_wplms4_to_wplms_migration', 'yes', true );
 
 	}
 }

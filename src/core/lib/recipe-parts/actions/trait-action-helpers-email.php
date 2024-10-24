@@ -4,6 +4,8 @@
 namespace Uncanny_Automator\Recipe;
 
 use Uncanny_Automator\Automator_WP_Error;
+use Uncanny_Automator\Services\Email\Attachment\Handler;
+use WP_Error;
 
 /**
  * Trait Action_Helpers_Email
@@ -74,6 +76,11 @@ trait Action_Helpers_Email {
 	private $actions_data = array();
 
 	/**
+	 * @var Handler
+	 */
+	protected $attachment_handler = null;
+
+	/**
 	 * @return array
 	 */
 	public function get_actions_data() {
@@ -106,16 +113,17 @@ trait Action_Helpers_Email {
 	public function set_mail_values( $data = array(), $user_id = null, $recipe_id = null, $args = array() ) {
 
 		$defaults = array(
-			'from'      => Automator()->parse->text( '{{admin_email}}', $recipe_id, $user_id, $args ),
-			'from_name' => Automator()->parse->text( '{{site_name}}', $recipe_id, $user_id, $args ),
-			'to'        => Automator()->parse->text( '{{user_email}}', $recipe_id, $user_id, $args ),
-			'cc'        => '',
-			'bcc'       => '',
-			'reply_to'  => '',
-			'content'   => $this->get_content_type(),
-			'charset'   => $this->get_charset(),
-			'subject'   => '',
-			'body'      => '',
+			'from'       => Automator()->parse->text( '{{admin_email}}', $recipe_id, $user_id, $args ),
+			'from_name'  => Automator()->parse->text( '{{site_name}}', $recipe_id, $user_id, $args ),
+			'to'         => Automator()->parse->text( '{{user_email}}', $recipe_id, $user_id, $args ),
+			'cc'         => '',
+			'bcc'        => '',
+			'reply_to'   => '',
+			'content'    => $this->get_content_type(),
+			'charset'    => $this->get_charset(),
+			'subject'    => '',
+			'body'       => '',
+			'attachment' => '',
 		);
 
 		$data = wp_parse_args( $data, $defaults );
@@ -129,12 +137,15 @@ trait Action_Helpers_Email {
 		$content    = sanitize_text_field( $data['content'] );
 		$charset    = sanitize_text_field( $data['charset'] );
 		$subject    = sanitize_text_field( stripslashes( html_entity_decode( $data['subject'] ) ) );
+		$attachment = $defaults['attachment'];
+
 		if ( 'text/html' !== $this->get_content_type() ) {
 			$body = wp_filter_post_kses( stripslashes( $data['body'] ) );
 		} else {
 			$body = stripslashes( $data['body'] );
 		}
-		// Resetting to array
+
+		// Resetting to array.
 		$this->to = array();
 
 		$this->set_to( $to_email );
@@ -147,8 +158,14 @@ trait Action_Helpers_Email {
 		$this->set_charset( $charset );
 		$this->set_subject( $subject );
 		$this->set_body( $body );
+		$this->set_attachments( $attachment );
+
+		if ( ! empty( $data['attachment'] ) ) {
+			$this->set_attachments( $data['attachment'] );
+		}
 
 		$this->set_actions_data( $data, $user_id, $recipe_id, $args );
+
 	}
 
 	/**
@@ -364,6 +381,24 @@ trait Action_Helpers_Email {
 			'charset'   => $this->get_charset(),
 		);
 
+		// Process the attachments.
+		$attachments = $this->get_attachments();
+
+		$local_attachments = array();
+
+		foreach ( $attachments as $attachment_url ) {
+			if ( ! empty( $attachment_url ) ) {
+
+				$attachment          = $this->process_attachment( $attachment_url );
+				$local_attachments[] = $attachment;
+
+				if ( is_wp_error( $attachment ) ) {
+					$this->set_error_message( $attachment->get_error_message() );
+					return false;
+				}
+			}
+		}
+
 		$headers     = apply_filters( 'automator_email_headers', Automator()->helpers->email->headers( $header_raw ), $this );
 		$to          = apply_filters( 'automator_email_to', $this->get_to(), $this );
 		$subject     = apply_filters( 'automator_email_subject', stripslashes( $this->get_subject() ), $this );
@@ -374,7 +409,7 @@ trait Action_Helpers_Email {
 			'subject'    => $subject,
 			'body'       => $body,
 			'headers'    => $headers,
-			'attachment' => $attachments,
+			'attachment' => $local_attachments,
 			'is_html'    => $this->is_is_html(),
 		);
 
@@ -399,4 +434,46 @@ trait Action_Helpers_Email {
 
 		return $mailed;
 	}
+
+	/**
+	 * Processes the attachment.
+	 *
+	 * @param mixed $attachment_url
+	 *
+	 * @return WP_Error|array|string
+	 */
+	public function process_attachment( $attachment_url ) {
+
+		$this->attachment_handler = new Handler( $attachment_url );
+
+		$attachment_path = $this->attachment_handler->process_attachment();
+
+		// Use pathinfo to get the extension.
+		$path_info = pathinfo( wp_parse_url( $attachment_url, PHP_URL_PATH ) );
+
+		// Check if an extension is available.
+		// @phase 1. Only require file extension.
+		if ( empty( $path_info['extension'] ) ) {
+			return new WP_Error(
+				'file_extension_empty',
+				__( 'Please ensure that the URL you entered ends with a valid file extension, such as .pdf, .png, or .doc. This ensures the file can be properly accessed and opened.', 'uncanny-automator' ),
+			);
+		}
+
+		return $attachment_path;
+
+	}
+
+	/**
+	 * Clean up the files.
+	 *
+	 * @return void
+	 */
+	public function __destruct() {
+
+		if ( $this->attachment_handler && $this->attachment_handler instanceof Handler ) {
+			$this->attachment_handler->cleanup();
+		}
+	}
+
 }

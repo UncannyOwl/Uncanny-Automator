@@ -167,7 +167,7 @@ class PMP_MEMBERSHIPEXPIRES {
 	 */
 	private function maybe_update_action_meta() {
 		// Check updated flag.
-		$check_updated = get_option( 'automator_pmpmembershipexpires_updated', false );
+		$check_updated = automator_get_option( 'automator_pmpmembershipexpires_updated', false );
 		if ( empty( $check_updated ) ) {
 			global $wpdb;
 			// Run query to update add_action post meta
@@ -181,7 +181,7 @@ class PMP_MEMBERSHIPEXPIRES {
 			);
 
 			// Update flag to true.
-			update_option( 'automator_pmpmembershipexpires_updated', true );
+			automator_update_option( 'automator_pmpmembershipexpires_updated', true );
 		}
 	}
 

@@ -75,12 +75,12 @@ class KADENCE_ANON_FORM_SUBMITTED extends Trigger {
 	public function define_tokens( $trigger, $tokens ) {
 		$tokens[] = array(
 			'tokenId'   => 'KADENCE_FORM_ID',
-			'tokenName' => __( 'Form ID', 'uncanny_automator' ),
+			'tokenName' => __( 'Form ID', 'uncanny-automator' ),
 			'tokenType' => 'int',
 		);
 		$tokens[] = array(
 			'tokenId'   => 'KADENCE_FORM_TITLE',
-			'tokenName' => __( 'Form title', 'uncanny_automator' ),
+			'tokenName' => __( 'Form title', 'uncanny-automator' ),
 			'tokenType' => 'text',
 		);
 		if ( ! isset( $trigger['meta'][ $this->get_trigger_meta() ] ) || intval( '-1' ) === intval( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {

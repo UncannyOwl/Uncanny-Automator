@@ -126,7 +126,7 @@ class Prune_Command {
 			WP_CLI::error( $e->getMessage(), true );
 		}
 
-		update_option( self::OPTION_NAME, time() );
+		automator_update_option( self::OPTION_NAME, time() );
 	}
 
 	/**

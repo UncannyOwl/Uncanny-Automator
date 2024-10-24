@@ -86,8 +86,8 @@ class Zoho_Campaigns_Client_Auth {
 
 		try {
 
-			update_option( 'zoho_campaigns_credentials', $this->get_agent_credentials(), true );
-			update_option( 'zoho_campaigns_credentials_last_refreshed', time(), true );
+			automator_update_option( 'zoho_campaigns_credentials', $this->get_agent_credentials(), true );
+			automator_update_option( 'zoho_campaigns_credentials_last_refreshed', time(), true );
 
 			if ( is_callable( $success_callback ) ) {
 				return call_user_func( $success_callback );
@@ -121,9 +121,9 @@ class Zoho_Campaigns_Client_Auth {
 		}
 
 		// Delete credentials.
-		delete_option( 'zoho_campaigns_credentials' );
+		automator_delete_option( 'zoho_campaigns_credentials' );
 		// Delete last refreshed info.
-		delete_option( 'zoho_campaigns_credentials_last_refreshed' );
+		automator_delete_option( 'zoho_campaigns_credentials_last_refreshed' );
 
 		do_action( 'automator_zoho_campaigns_client_disconnected', $this );
 
@@ -144,7 +144,7 @@ class Zoho_Campaigns_Client_Auth {
 
 		$current_datetime = time();
 
-		$last_updated_datetime = get_option( 'zoho_campaigns_credentials_last_refreshed', 0 );
+		$last_updated_datetime = automator_get_option( 'zoho_campaigns_credentials_last_refreshed', 0 );
 
 		if ( empty( $last_updated_datetime ) ) {
 			throw new Exception( 'Failed to renew refresh token. Last refreshed info is unknown. Disconnect and reconnect Zoho Campaigns.', 400 );
@@ -184,7 +184,7 @@ class Zoho_Campaigns_Client_Auth {
 
 		$response = $client::api_call( $params );
 
-		$credentials = get_option( 'zoho_campaigns_credentials' );
+		$credentials = automator_get_option( 'zoho_campaigns_credentials' );
 
 		// Update the access token from the credentials.
 		if ( ! empty( $response['data']['access_token'] ) ) {
@@ -192,10 +192,10 @@ class Zoho_Campaigns_Client_Auth {
 			$credentials['access_token'] = $response['data']['access_token'];
 
 			// Update the access token with the new token coming from refresh token endpoint.
-			update_option( 'zoho_campaigns_credentials', $credentials, true );
+			automator_update_option( 'zoho_campaigns_credentials', $credentials, true );
 
 			// Update last refresh time.
-			update_option( 'zoho_campaigns_credentials_last_refreshed', time(), true );
+			automator_update_option( 'zoho_campaigns_credentials_last_refreshed', time(), true );
 
 			do_action( 'automator_zoho_campaigns_before_access_token_succesful', $credentials, $response, $this );
 
@@ -216,7 +216,7 @@ class Zoho_Campaigns_Client_Auth {
 	 */
 	public function get_access_token() {
 
-		$credentials = get_option( 'zoho_campaigns_credentials' );
+		$credentials = automator_get_option( 'zoho_campaigns_credentials' );
 
 		$access_token = ! empty( $credentials['access_token'] ) ? $credentials['access_token'] : false;
 
@@ -250,7 +250,7 @@ class Zoho_Campaigns_Client_Auth {
 	 */
 	public function get_refresh_token() {
 
-		$credentials = get_option( 'zoho_campaigns_credentials' );
+		$credentials = automator_get_option( 'zoho_campaigns_credentials' );
 
 		$refresh_token = ! empty( $credentials['refresh_token'] ) ? $credentials['refresh_token'] : false;
 

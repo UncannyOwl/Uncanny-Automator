@@ -83,7 +83,7 @@ class Mautic_Client_Auth {
 			$resource_owner = $this->set_credentials_submitted( $original_input )
 				->get_resource_owner();
 
-			update_option( 'automator_mautic_resource_owner', wp_json_encode( $resource_owner['data'] ), false );
+			automator_update_option( 'automator_mautic_resource_owner', wp_json_encode( $resource_owner['data'] ), false );
 
 			return $sanitized_input;
 
@@ -109,7 +109,7 @@ class Mautic_Client_Auth {
 	 */
 	public function get_credentials() {
 
-		$credentials = get_option( 'automator_mautic_credentials', null );
+		$credentials = automator_get_option( 'automator_mautic_credentials', null );
 
 		// Must be a JSON string.
 		if ( ! is_string( $credentials ) ) {
@@ -147,11 +147,11 @@ class Mautic_Client_Auth {
 	 */
 	public function destroy_credentials() {
 
-		delete_option( 'automator_mautic_base_url' );
-		delete_option( 'automator_mautic_username' );
-		delete_option( 'automator_mautic_password' );
-		delete_option( 'automator_mautic_credentials' );
-		delete_option( 'automator_mautic_resource_owner' );
+		automator_delete_option( 'automator_mautic_base_url' );
+		automator_delete_option( 'automator_mautic_username' );
+		automator_delete_option( 'automator_mautic_password' );
+		automator_delete_option( 'automator_mautic_credentials' );
+		automator_delete_option( 'automator_mautic_resource_owner' );
 
 		return true;
 

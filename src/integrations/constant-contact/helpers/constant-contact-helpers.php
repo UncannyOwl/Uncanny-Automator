@@ -132,7 +132,7 @@ class Constant_Contact_Helpers {
 		$this->handle_invalid_access( $secret );
 
 		if ( false !== $decoded ) {
-			add_option( self::OPTION_KEY, $decoded );
+			automator_add_option( self::OPTION_KEY, $decoded );
 			$this->redirect(
 				array(
 					'success' => 'yes',
@@ -359,7 +359,7 @@ class Constant_Contact_Helpers {
 	 */
 	public function integration_status() {
 
-		$credentials = get_option( self::OPTION_KEY, false );
+		$credentials = automator_get_option( self::OPTION_KEY, false );
 
 		return ! empty( $credentials ) ? 'success' : '';
 
@@ -418,7 +418,7 @@ class Constant_Contact_Helpers {
 	 * @return void
 	 */
 	public function disconnect() {
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 	}
 
 	/**
@@ -483,7 +483,7 @@ class Constant_Contact_Helpers {
 				$response = Api_Server::api_call( $params );
 
 				if ( isset( $response['data'] ) && is_array( $response['data'] ) ) {
-					update_option( self::OPTION_KEY, $response['data'], true );
+					automator_update_option( self::OPTION_KEY, $response['data'], true );
 					set_transient( self::TRANSIENT_ACCESS_TOKEN_REFRESH, true, DAY_IN_SECONDS );
 				}
 			} catch ( \Exception $e ) {
@@ -518,7 +518,7 @@ class Constant_Contact_Helpers {
 		);
 
 		return wp_parse_args(
-			(array) get_option( self::OPTION_KEY ),
+			(array) automator_get_option( self::OPTION_KEY ),
 			$defaults
 		);
 

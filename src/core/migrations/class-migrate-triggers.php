@@ -34,7 +34,7 @@ class Migrate_Triggers {
 
 		$this->fill_missing_hook_name_records();
 
-		update_option( self::MIGRATED_FLAG, time(), true );
+		automator_update_option( self::MIGRATED_FLAG, time(), true );
 
 	}
 

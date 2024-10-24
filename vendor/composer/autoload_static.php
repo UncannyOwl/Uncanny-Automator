@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit9920418bd822e876accb87577ce54017
+class ComposerStaticInitc9ab9ed89389287a687bb4979797950c
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -52,6 +52,7 @@ class ComposerStaticInit9920418bd822e876accb87577ce54017
         'Uncanny_Automator\\ANON_CF7_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/contact-form7/triggers/anon-cf7-subform.php',
         'Uncanny_Automator\\ANON_CF_SUBFORM' => __DIR__ . '/../..' . '/src/integrations/caldera-forms/triggers/anon-cf-subform.php',
         'Uncanny_Automator\\ANON_DIVI_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/divi/triggers/anon-divi-submitform.php',
+        'Uncanny_Automator\\ANON_DIVI_SUBMITFORM_DEP' => __DIR__ . '/../..' . '/src/integrations/divi/triggers/anon-divi-submitform-dep.php',
         'Uncanny_Automator\\ANON_ELEM_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/elementor/triggers/anon-elem-submitform.php',
         'Uncanny_Automator\\ANON_EM_REGISTER' => __DIR__ . '/../..' . '/src/integrations/events-manager/triggers/anon-em-register.php',
         'Uncanny_Automator\\ANON_FCRM_ADDED_TO_LIST' => __DIR__ . '/../..' . '/src/integrations/fluent-crm/triggers/anon-fcrm-added-to-list.php',
@@ -283,6 +284,9 @@ class ComposerStaticInit9920418bd822e876accb87577ce54017
         'Uncanny_Automator\\Automator_System_Report' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-system-report.php',
         'Uncanny_Automator\\Automator_Taxonomies' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-taxonomies/class-automator-taxonomies.php',
         'Uncanny_Automator\\Automator_Tokens' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/tokens/class-automator-tokens.php',
+        'Uncanny_Automator\\Automator_Tooltip_48hr' => __DIR__ . '/../..' . '/src/core/admin/tooltip-notification/tooltips/class-create-recipe-reminder.php',
+        'Uncanny_Automator\\Automator_Tooltip_Notification' => __DIR__ . '/../..' . '/src/core/admin/tooltip-notification/class-tooltip-notification.php',
+        'Uncanny_Automator\\Automator_Tooltip_Trait' => __DIR__ . '/../..' . '/src/core/admin/tooltip-notification/trait-tooltip-notification.php',
         'Uncanny_Automator\\Automator_Translations' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-translations.php',
         'Uncanny_Automator\\Automator_User_Walkthroughs' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-user-walkthroughs.php',
         'Uncanny_Automator\\Automator_Utilities' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-utilities.php',
@@ -346,6 +350,7 @@ class ComposerStaticInit9920418bd822e876accb87577ce54017
         'Uncanny_Automator\\ConvertKit_Settings' => __DIR__ . '/../..' . '/src/integrations/convertkit/settings/convertkit-settings.php',
         'Uncanny_Automator\\Copy_Recipe_Parts' => __DIR__ . '/../..' . '/src/core/admin/class-copy-recipe-parts.php',
         'Uncanny_Automator\\DIVI_SUBMITFORM' => __DIR__ . '/../..' . '/src/integrations/divi/triggers/divi-submitform.php',
+        'Uncanny_Automator\\DIVI_SUBMITFORM_DEP' => __DIR__ . '/../..' . '/src/integrations/divi/triggers/divi-submitform-dep.php',
         'Uncanny_Automator\\DRIP_ADD_TAG' => __DIR__ . '/../..' . '/src/integrations/drip/actions/drip-add-tag.php',
         'Uncanny_Automator\\DRIP_CREATE_SUBSCRIBER' => __DIR__ . '/../..' . '/src/integrations/drip/actions/drip-create-subscriber.php',
         'Uncanny_Automator\\DRIP_DELETE_SUBSCRIBER' => __DIR__ . '/../..' . '/src/integrations/drip/actions/drip-delete-subscriber.php',
@@ -614,6 +619,16 @@ class ComposerStaticInit9920418bd822e876accb87577ce54017
         'Uncanny_Automator\\Integrations\\Mautic\\SEGMENT_CONTACT_ADD' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/segment-contact-add.php',
         'Uncanny_Automator\\Integrations\\Mautic\\SEGMENT_CONTACT_REMOVE' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/segment-contact-remove.php',
         'Uncanny_Automator\\Integrations\\Mautic\\SEGMENT_CREATE' => __DIR__ . '/../..' . '/src/integrations/mautic/actions/segment-create.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_BUNDLE_ADDED_TO_MEMBERS_ACCOUNT' => __DIR__ . '/../..' . '/src/integrations/membermouse/triggers/mm-bundle-added-to-members-account.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_MEMBER_ACCOUNT_DELETED' => __DIR__ . '/../..' . '/src/integrations/membermouse/triggers/mm-member-account-deleted.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_MEMBER_CREATED' => __DIR__ . '/../..' . '/src/integrations/membermouse/triggers/mm-member-created.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_MEMBER_UPDATED' => __DIR__ . '/../..' . '/src/integrations/membermouse/triggers/mm-member-updated.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_ORDER_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/membermouse/triggers/mm-order-submitted.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_REFUND_ISSUED' => __DIR__ . '/../..' . '/src/integrations/membermouse/triggers/mm-refund-issued.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_REMOVE_BUNDLE_FROM_MEMBERS_ACCOUNT' => __DIR__ . '/../..' . '/src/integrations/membermouse/actions/mm-remove-bundle-from-members-account.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\MM_RENEWAL_RECEIVED' => __DIR__ . '/../..' . '/src/integrations/membermouse/triggers/mm-renewal-received.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\Membermouse_Helpers' => __DIR__ . '/../..' . '/src/integrations/membermouse/helpers/membermouse-helpers.php',
+        'Uncanny_Automator\\Integrations\\MemberMouse\\Membermouse_Integration' => __DIR__ . '/../..' . '/src/integrations/membermouse/membermouse-integration.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CHANNEL_MESSAGE' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_CHANNEL' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php',
         'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_CREATE_TEAM' => __DIR__ . '/../..' . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php',
@@ -658,6 +673,20 @@ class ComposerStaticInit9920418bd822e876accb87577ce54017
         'Uncanny_Automator\\Integrations\\SliceWP\\SLICEWP_CREATE_AFFILIATE' => __DIR__ . '/../..' . '/src/integrations/slicewp/actions/slicewp-create-affiliate.php',
         'Uncanny_Automator\\Integrations\\SliceWP\\Slicewp_Helpers' => __DIR__ . '/../..' . '/src/integrations/slicewp/helpers/slicewp-helpers.php',
         'Uncanny_Automator\\Integrations\\SliceWP\\Slicewp_Integration' => __DIR__ . '/../..' . '/src/integrations/slicewp/slicewp-integration.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Charge_Failed' => __DIR__ . '/../..' . '/src/integrations/stripe/triggers/charge-failed.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Charge_Refunded' => __DIR__ . '/../..' . '/src/integrations/stripe/triggers/charge-refunded.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Create_Customer' => __DIR__ . '/../..' . '/src/integrations/stripe/actions/create-customer.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Create_Payment_Link' => __DIR__ . '/../..' . '/src/integrations/stripe/actions/create-payment-link.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Customer_Created' => __DIR__ . '/../..' . '/src/integrations/stripe/triggers/customer-created.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Delete_Customer' => __DIR__ . '/../..' . '/src/integrations/stripe/actions/delete-customer.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Payment_Completed' => __DIR__ . '/../..' . '/src/integrations/stripe/triggers/payment-completed.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Stripe_Api' => __DIR__ . '/../..' . '/src/integrations/stripe/helpers/stripe-api.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Stripe_Helpers' => __DIR__ . '/../..' . '/src/integrations/stripe/helpers/stripe-helpers.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Stripe_Integration' => __DIR__ . '/../..' . '/src/integrations/stripe/stripe-integration.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Stripe_Settings' => __DIR__ . '/../..' . '/src/integrations/stripe/settings/stripe-settings.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Stripe_Webhook' => __DIR__ . '/../..' . '/src/integrations/stripe/helpers/stripe-webhook.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\Subscription_Cancelled' => __DIR__ . '/../..' . '/src/integrations/stripe/triggers/subscription-cancelled.php',
+        'Uncanny_Automator\\Integrations\\Stripe\\WebhookVerificator' => __DIR__ . '/../..' . '/src/integrations/stripe/helpers/webhook-verificator.php',
         'Uncanny_Automator\\Integrations\\SureMembers\\Add_User_To_Group' => __DIR__ . '/../..' . '/src/integrations/suremembers/actions/add-user-to-group.php',
         'Uncanny_Automator\\Integrations\\SureMembers\\Remove_User_From_Group' => __DIR__ . '/../..' . '/src/integrations/suremembers/actions/remove-user-from-group.php',
         'Uncanny_Automator\\Integrations\\SureMembers\\SureMembers_Helpers' => __DIR__ . '/../..' . '/src/integrations/suremembers/helpers/suremembers-helpers.php',
@@ -912,16 +941,37 @@ class ComposerStaticInit9920418bd822e876accb87577ce54017
         'Uncanny_Automator\\Services\\CLI\\Logs\\Prune_Command' => __DIR__ . '/../..' . '/src/core/services/cli/logs/prune-command.php',
         'Uncanny_Automator\\Services\\Dashboard\\Recent_Articles' => __DIR__ . '/../..' . '/src/core/services/dashboard/recent-articles.php',
         'Uncanny_Automator\\Services\\Dashboard\\Recipe_Using_Credits_Utils' => __DIR__ . '/../..' . '/src/core/services/dashboard/recipe-using-credits-utils.php',
-        'Uncanny_Automator\\Services\\Email_Tester\\Email_Sender' => __DIR__ . '/../..' . '/src/core/services/email-tester/email-tester.php',
+        'Uncanny_Automator\\Services\\Email\\Attachment\\Handler' => __DIR__ . '/../..' . '/src/core/services/email/attachment/handler.php',
+        'Uncanny_Automator\\Services\\Email\\Attachment\\Validator' => __DIR__ . '/../..' . '/src/core/services/email/attachment/validator.php',
+        'Uncanny_Automator\\Services\\Email\\Tester' => __DIR__ . '/../..' . '/src/core/services/email/tester.php',
+        'Uncanny_Automator\\Services\\File\\Extension_Support' => __DIR__ . '/../..' . '/src/core/services/file/extensions-support.php',
+        'Uncanny_Automator\\Services\\File\\Remote_File_Extension_Identifier' => __DIR__ . '/../..' . '/src/core/services/file/remote-file-extension-identifier.php',
         'Uncanny_Automator\\Services\\Integrations\\Fields' => __DIR__ . '/../..' . '/src/core/services/integrations/fields.php',
         'Uncanny_Automator\\Services\\Integrations\\Structure' => __DIR__ . '/../..' . '/src/core/services/integrations/structure.php',
         'Uncanny_Automator\\Services\\Logger_Auto_Removal' => __DIR__ . '/../..' . '/src/core/services/logger-auto-remove.php',
+        'Uncanny_Automator\\Services\\Loopable\\Action_Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/action-loopable-token.php',
+        'Uncanny_Automator\\Services\\Loopable\\Action_Loopable_Token\\Store' => __DIR__ . '/../..' . '/src/core/services/loopable/action-loopable-token/store.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Array_Group_Classifier' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/array-classifier.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Array_Key_Detector' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/array-key-detector.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Csv_To_Json_Converter' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/csv-to-json-converter.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Json_To_Array_Converter' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/json-to-array.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Traits\\Array_Loopable' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/traits/array-loopable.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Traits\\Token_Loopable_Hydratable' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/traits/token-loopable-hydratable.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Utils' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/utils.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Xml_Parent_Xpath_Generator' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/xml-xpath-generator.php',
+        'Uncanny_Automator\\Services\\Loopable\\Data_Integrations\\Xml_To_Json_Converter' => __DIR__ . '/../..' . '/src/core/services/loopable/data-integrations/xml-to-json-converter.php',
         'Uncanny_Automator\\Services\\Loopable\\Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/loopable-token.php',
         'Uncanny_Automator\\Services\\Loopable\\Loopable_Token_Collection' => __DIR__ . '/../..' . '/src/core/services/loopable/loopable-token-collection.php',
         'Uncanny_Automator\\Services\\Loopable\\Trigger_Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/trigger-loopable-token.php',
         'Uncanny_Automator\\Services\\Loopable\\Universal_Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/universal-loopable-token.php',
         'Uncanny_Automator\\Services\\Multiple_Triggers_Restore_Failed_Logs' => __DIR__ . '/../..' . '/src/core/services/logger-multiple-triggers-restore-failed-logs.php',
         'Uncanny_Automator\\Services\\Properties' => __DIR__ . '/../..' . '/src/core/services/properties.php',
+        'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Entity' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/entity.php',
+        'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Factory' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/factory.php',
+        'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Hydrator' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/hydrator.php',
+        'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Parser' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/parser.php',
+        'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Registry' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/registry.php',
+        'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Store' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/store.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_JSON_Serializer' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-json-serializer.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_Setter_Getter' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-setter-getter.php',
         'Uncanny_Automator\\Services\\Recipe\\Structure' => __DIR__ . '/../..' . '/src/core/services/recipe/structure.php',
@@ -1213,8 +1263,8 @@ class ComposerStaticInit9920418bd822e876accb87577ce54017
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit9920418bd822e876accb87577ce54017::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit9920418bd822e876accb87577ce54017::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInitc9ab9ed89389287a687bb4979797950c::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitc9ab9ed89389287a687bb4979797950c::$classMap;
 
         }, null, ClassLoader::class);
     }

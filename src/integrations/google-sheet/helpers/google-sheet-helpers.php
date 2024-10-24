@@ -195,7 +195,7 @@ class Google_Sheet_Helpers {
 		$spreadsheet_id = automator_filter_input( 'id' );
 
 		// Retrieve the current spreadsheets.
-		$current_spreadsheets = (array) get_option( self::SPREADSHEETS_OPTIONS_KEY, array() );
+		$current_spreadsheets = (array) automator_get_option( self::SPREADSHEETS_OPTIONS_KEY, array() );
 
 		// Unset the spreadsheet item that matches the requested spreadsheet id.
 		foreach ( $current_spreadsheets as $key => $spreadsheet ) {
@@ -205,7 +205,7 @@ class Google_Sheet_Helpers {
 		}
 
 		// Update the spreadsheet. There should be no problem when there is no unset,
-		update_option( self::SPREADSHEETS_OPTIONS_KEY, $current_spreadsheets );
+		automator_update_option( self::SPREADSHEETS_OPTIONS_KEY, $current_spreadsheets );
 
 		// Redirect back to google sheet settings.
 		wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=google-sheet' ) );
@@ -282,7 +282,7 @@ class Google_Sheet_Helpers {
 				$data['refresh_token'] = $refresh_token;
 				$data['since']         = time();
 
-				update_option( '_uncannyowl_google_sheet_settings', $data );
+				automator_update_option( '_uncannyowl_google_sheet_settings', $data );
 
 			}
 		} catch ( Exception $e ) {
@@ -326,14 +326,14 @@ class Google_Sheet_Helpers {
 
 		$spreadsheets = $request_data['spreadsheets'] ?? array();
 
-		$current_spreadsheets = get_option( self::SPREADSHEETS_OPTIONS_KEY );
+		$current_spreadsheets = automator_get_option( self::SPREADSHEETS_OPTIONS_KEY );
 
 		$new_spreadsheets_collection = $this->merge_spreadsheets_options( $current_spreadsheets, $spreadsheets );
 
-		update_option( self::SPREADSHEETS_OPTIONS_KEY, $new_spreadsheets_collection, false );
+		automator_update_option( self::SPREADSHEETS_OPTIONS_KEY, $new_spreadsheets_collection, false );
 
 		wp_send_json_success(
-			(array) get_option( self::SPREADSHEETS_OPTIONS_KEY, array() )
+			(array) automator_get_option( self::SPREADSHEETS_OPTIONS_KEY, array() )
 		);
 
 	}
@@ -525,7 +525,7 @@ class Google_Sheet_Helpers {
 	 */
 	public static function get_spreadsheets() {
 
-		$options_spreadsheets = (array) get_option( self::SPREADSHEETS_OPTIONS_KEY, array() );
+		$options_spreadsheets = (array) automator_get_option( self::SPREADSHEETS_OPTIONS_KEY, array() );
 
 		return apply_filters( 'automator_googlesheets_options_spreadsheets', $options_spreadsheets );
 	}
@@ -843,13 +843,13 @@ class Google_Sheet_Helpers {
 		if ( ! empty( $tokens['access_token'] ) ) {
 
 			// On success.
-			update_option( '_uncannyowl_google_sheet_settings', $tokens );
+			automator_update_option( '_uncannyowl_google_sheet_settings', $tokens );
 			// Set the transient.
 			set_transient( '_uncannyowl_google_sheet_settings', $tokens['access_token'] . '|' . $tokens['refresh_token'], 60 * 50 );
 			// Refresh the user info.
 			delete_transient( '_uncannyowl_google_user_info' );
 			// Delete expired settings.
-			delete_option( '_uncannyowl_google_sheet_settings_expired' );
+			automator_delete_option( '_uncannyowl_google_sheet_settings_expired' );
 
 			if ( $this->has_missing_scope() ) {
 
@@ -1246,11 +1246,11 @@ class Google_Sheet_Helpers {
 
 		$this->api_revoke_access();
 
-		delete_option( '_uncannyowl_google_sheet_settings' );
-		delete_option( '_uncannyowl_google_sheet_settings_expired' );
+		automator_delete_option( '_uncannyowl_google_sheet_settings' );
+		automator_delete_option( '_uncannyowl_google_sheet_settings_expired' );
 		delete_transient( '_uncannyowl_google_sheet_settings' );
 		delete_transient( '_uncannyowl_google_user_info' );
-		delete_option( self::SPREADSHEETS_OPTIONS_KEY );
+		automator_delete_option( self::SPREADSHEETS_OPTIONS_KEY );
 
 		return true;
 
@@ -1271,7 +1271,7 @@ class Google_Sheet_Helpers {
 
 			$response = $this->api_call( $body );
 
-			delete_option( '_uncannyowl_google_sheet_settings' );
+			automator_delete_option( '_uncannyowl_google_sheet_settings' );
 
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
@@ -1547,7 +1547,7 @@ class Google_Sheet_Helpers {
 		}
 
 		// Update the option 'uncanny_automator_google_sheets_migrated'.
-		update_option( 'uncanny_automator_google_sheets_migrated', 'yes', true );
+		automator_update_option( 'uncanny_automator_google_sheets_migrated', 'yes', true );
 
 	}
 

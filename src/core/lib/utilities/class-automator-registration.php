@@ -401,6 +401,20 @@ class Automator_Registration {
 			throw new Automator_Exception( 'You are trying to register an action without setting its execution_function.', 1003 );
 		}
 
+		// Register action loopable tokens.
+		// @since 6.0
+		if ( isset( $uap_action['loopable_tokens'] ) ) {
+
+			foreach ( (array) $uap_action['loopable_tokens'] as $key => $loopable_tokens ) {
+
+				$loopable_token = new $loopable_tokens();
+				$loopable_token->set_action( $uap_action );
+				$loopable_token->register_hooks( $uap_action );
+
+				$uap_action['loopable_tokens'][ $key ] = $loopable_token; // @todo: Create a filter and use pro to overwrite.
+			}
+		}
+
 		Automator()->set_actions( Automator()->utilities->keep_order_of_options( $uap_action ) );
 
 		return true;

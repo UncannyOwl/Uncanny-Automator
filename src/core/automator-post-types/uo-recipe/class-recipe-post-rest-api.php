@@ -627,6 +627,9 @@ class Recipe_Post_Rest_Api {
 	 * @return WP_REST_Response
 	 */
 	public function update( WP_REST_Request $request ) {
+
+		do_action( 'automator_recipe_before_options_update', $request );
+
 		if ( $request->has_param( 'itemId' ) && is_numeric( $request->get_param( 'itemId' ) ) && $request->has_param( 'optionCode' ) && $request->has_param( 'optionValue' ) ) {
 			$item_id    = absint( $request->get_param( 'itemId' ) );
 			$recipe_id  = absint( $request->get_param( 'recipe_id' ) );
@@ -669,6 +672,9 @@ class Recipe_Post_Rest_Api {
 
 			if ( $item ) {
 
+				// @since 6.0
+				do_action( 'automator_recipe_before_update', $item, $request );
+
 				$before_update_value = get_post_meta( $item_id, $meta_key, true );
 
 				if ( is_array( $meta_value ) ) {
@@ -699,6 +705,9 @@ class Recipe_Post_Rest_Api {
 					 */
 					$this->has_action_token( $item, $meta_value );
 				}
+
+				do_action( 'automator_recipe_option_updated_before_cache_is_cleared', $item, $recipe_id );
+
 				Automator()->cache->clear_automator_recipe_part_cache( $recipe_id );
 
 				$return['message']        = 'Option updated!';
@@ -708,14 +717,14 @@ class Recipe_Post_Rest_Api {
 				$return['recipes_object'] = Automator()->get_recipes_data( true, $recipe_id );
 				$return['_recipe']        = Automator()->get_recipe_object( $recipe_id );
 
-				$return = apply_filters( 'automator_option_updated', $return, $item, $meta_key, $meta_value );
-
 				/**
 				 * Fires when a recipe option is updated.
 				 *
 				 * @since 5.7
 				 */
 				do_action( 'automator_recipe_option_updated', $item, $meta_key, $meta_value, $before_update_value, $recipe_id, $return );
+
+				$return = apply_filters( 'automator_option_updated', $return, $item, $meta_key, $meta_value );
 
 				return new WP_REST_Response( $return, 200 );
 			}
@@ -1200,6 +1209,7 @@ class Recipe_Post_Rest_Api {
 		// Make sure we have a post ID and a post status
 		$params = $request->get_body_params();
 		if ( isset( $params['recipe_id'] ) && isset( $params['term_id'] ) ) {
+			$term_ids     = array();
 			$update_count = false;
 			$recipe_id    = absint( $params['recipe_id'] );
 			$taxonomy     = (string) sanitize_text_field( $params['term_id'] );

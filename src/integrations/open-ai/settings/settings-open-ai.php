@@ -153,7 +153,7 @@ class Open_AI_Settings {
 			admin_url( 'admin-ajax.php' )
 		);
 
-		$secret_key = get_option( self::OPTION_KEY, '' );
+		$secret_key = automator_get_option( self::OPTION_KEY, '' );
 
 		$vars = array(
 			'alerts'                  => (array) get_settings_errors( self::SETTINGS_ERROR ),

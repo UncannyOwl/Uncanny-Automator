@@ -44,7 +44,7 @@ class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 
 			$response = $this->get_helper()->verify_token( $sanitize_input );
 
-			update_option( 'automator_whatsapp_client', $response, true );
+			automator_update_option( 'automator_whatsapp_client', $response, true );
 
 			$client = $this->get_helper()->get_client();
 
@@ -136,11 +136,11 @@ class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 
 		$disconnect_url = $this->get_helper()->get_disconnect_url();
 
-		$phone_id = get_option( self::PHONE_ID, '' );
+		$phone_id = automator_get_option( self::PHONE_ID, '' );
 
-		$access_token = get_option( self::ACCESS_TOKEN, '' );
+		$access_token = automator_get_option( self::ACCESS_TOKEN, '' );
 
-		$business_id = get_option( self::BUSINESS_ID, '' );
+		$business_id = automator_get_option( self::BUSINESS_ID, '' );
 
 		$alerts = (array) get_settings_errors( 'automator_whatsapp_connection_alerts' );
 

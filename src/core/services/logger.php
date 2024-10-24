@@ -461,7 +461,7 @@ function log_async_actions( $recipe_id = 0, $user_id = 0, $recipe_log_id = 0, $a
 		$entry_arr = (array) json_decode( $entry, true );
 		if ( empty( $entry_arr['type'] ) ) {
 			// Bail if schedule type is null or empty.
-			return;
+			continue;
 		}
 	}
 

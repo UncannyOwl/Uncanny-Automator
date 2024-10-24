@@ -53,7 +53,7 @@ class Twilio_Settings extends Settings\Premium_Integration_Settings {
 		try {
 
 			$this->client = $this->helpers->get_client();
-			$this->user   = get_option( 'uap_twilio_connected_user', array() );
+			$this->user   = automator_get_option( 'uap_twilio_connected_user', array() );
 
 			if ( empty( $this->user['sid'] ) ) {
 				throw new \Exception( __( 'User account error', 'uncanny-automator' ) );
@@ -67,7 +67,7 @@ class Twilio_Settings extends Settings\Premium_Integration_Settings {
 
 		$account_sid  = ! empty( $this->client['account_sid'] ) ? $this->client['account_sid'] : '';
 		$auth_token   = ! empty( $this->client['auth_token'] ) ? $this->client['auth_token'] : '';
-		$phone_number = get_option( 'uap_automator_twilio_api_phone_number', '' );
+		$phone_number = automator_get_option( 'uap_automator_twilio_api_phone_number', '' );
 
 		$disconnect_uri = add_query_arg(
 			array(

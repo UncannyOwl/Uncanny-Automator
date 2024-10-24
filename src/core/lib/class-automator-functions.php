@@ -351,21 +351,27 @@ class Automator_Functions {
 	}
 
 	/**
+	 * Creates and return a new Action token factory object.
+	 *
+	 * @return Factory
+	 */
+	public function action_tokens() {
+		// The action tokens factory class.
+		return new Services\Recipe\Action\Token\Factory();
+	}
+
+	/**
 	 * @return Singleton\Parsed_Token_Records_Singleton
 	 */
 	public function parsed_token_records() {
-
 		return Singleton\Parsed_Token_Records_Singleton::get_instance();
-
 	}
 
 	/**
 	 * @return Logger\Singleton\Async_Actions_Logger_Singleton
 	 */
 	public function async_action_logger() {
-
 		return Logger\Singleton\Async_Actions_Logger_Singleton::get_instance();
-
 	}
 
 	/**
@@ -379,7 +385,6 @@ class Automator_Functions {
 	 * @return Services\Structure\Actions\Item\Loop\Filters_Db
 	 */
 	public function loop_filters_db() {
-
 		return new Services\Structure\Actions\Item\Loop\Filters_Db();
 
 	}
@@ -975,8 +980,8 @@ class Automator_Functions {
 		foreach ( $types_to_process as $type ) {
 			foreach ( $recipe[ $type ] as $item ) {
 
-				$item_code   = $item['meta']['code'];
-				$integration = $item['meta']['integration'];
+				$item_code   = $item['meta']['code'] ?? '';
+				$integration = $item['meta']['integration'] ?? '';
 
 				// If extra options were already loaded for this item, bail
 				if ( isset( $extra_options[ $integration ][ $item_code ] ) ) {

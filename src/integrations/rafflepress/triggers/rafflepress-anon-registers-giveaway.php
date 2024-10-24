@@ -130,7 +130,7 @@ class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trig
 	 * @return void
 	 */
 	public function migrate_the_hook() {
-		if ( 'yes' === get_option( 'automator_rafflepress_hook_migration' ) ) {
+		if ( 'yes' === automator_get_option( 'automator_rafflepress_hook_migration' ) ) {
 			return;
 		}
 
@@ -138,7 +138,7 @@ class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trig
 		$current_triggers = $wpdb->get_results( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = 'ANON_REGISTERED_FOR_GIVEAWAY' AND meta_key = 'code'" );
 
 		if ( empty( $current_triggers ) ) {
-			update_option( 'automator_rafflepress_hook_migration', 'yes', true );
+			automator_update_option( 'automator_rafflepress_hook_migration', 'yes', true );
 
 			return;
 		}
@@ -148,6 +148,6 @@ class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trig
 			update_post_meta( $trigger_id, 'add_action', 'rafflepress_giveaway_webhooks' );
 		}
 
-		update_option( 'automator_rafflepress_hook_migration', 'yes', true );
+		automator_update_option( 'automator_rafflepress_hook_migration', 'yes', true );
 	}
 }

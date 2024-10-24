@@ -37,7 +37,7 @@ class Multiple_Triggers_Restore_Failed_Logs {
 			Automator()->db->recipe->mark_complete( $recipe_log['ID'], Automator_Status::NOT_COMPLETED );
 		}
 
-		add_option( $this->option_key, time() );
+		automator_add_option( $this->option_key, time() );
 
 		return true;
 
@@ -70,7 +70,7 @@ class Multiple_Triggers_Restore_Failed_Logs {
 	 */
 	public function has_restored() {
 
-		$has_restored = get_option( $this->option_key, false );
+		$has_restored = automator_get_option( $this->option_key, false );
 
 		// Return false if there is no options record.
 		if ( false === $has_restored ) {

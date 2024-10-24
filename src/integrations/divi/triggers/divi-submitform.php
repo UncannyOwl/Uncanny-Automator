@@ -3,7 +3,7 @@
 namespace Uncanny_Automator;
 
 /**
- * Divi Submit Form Trigger
+ * Class DIVI_SUBMIT_FORM
  */
 class DIVI_SUBMITFORM {
 
@@ -31,7 +31,7 @@ class DIVI_SUBMITFORM {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code = 'DIVISUBMITFORM';
+		$this->trigger_code = 'DIVI_SUBMIT_FORM';
 		$this->trigger_meta = 'DIVIFORM';
 		$this->define_trigger();
 	}
@@ -67,7 +67,14 @@ class DIVI_SUBMITFORM {
 	public function load_options() {
 		$options = array(
 			'options' => array(
-				Automator()->helpers->recipe->divi->options->all_divi_forms( null, $this->trigger_meta, array( 'uo_include_any' => true ) ),
+				Automator()->helpers->recipe->divi->options->all_divi_forms(
+					null,
+					$this->trigger_meta,
+					array(
+						'uo_include_any'    => true,
+						'uo_update_form_id' => true,
+					)
+				),
 			),
 		);
 
@@ -95,33 +102,37 @@ class DIVI_SUBMITFORM {
 		if ( ! isset( $contact_form_info['contact_form_unique_id'] ) ) {
 			return;
 		}
-		$unique_id  = $contact_form_info['contact_form_unique_id'];
-		$post_id    = $contact_form_info['post_id'];
-		$form_id    = "$post_id-$unique_id";
+
 		$user_id    = wp_get_current_user()->ID;
 		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-		$conditions = Divi_Helpers::match_condition( $form_id, $recipes, $this->trigger_meta );
+		$conditions = Divi_Helpers::match_condition_v2( $contact_form_info, $recipes, $this->trigger_meta );
 
-		if ( ! $conditions ) {
-			return;
-		}
 		if ( empty( $conditions ) ) {
 			return;
 		}
 
 		foreach ( $conditions['recipe_ids'] as $recipe_id ) {
 			$args = array(
-				'code'            => $this->trigger_code,
-				'meta'            => $this->trigger_meta,
-				'recipe_to_match' => $recipe_id,
-				'ignore_post_id'  => true,
-				'user_id'         => $user_id,
+				'code'             => $this->trigger_code,
+				'meta'             => $this->trigger_meta,
+				'recipe_to_match'  => $recipe_id['recipe_id'],
+				'trigger_to_match' => $recipe_id['trigger_id'],
+				'ignore_post_id'   => true,
+				'user_id'          => $user_id,
 			);
 
 			$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
+
 			if ( empty( $args ) ) {
 				continue;
 			}
+			$form_id = $conditions['form_id'];
+			if ( intval( '-1' ) !== intval( $form_id ) ) {
+				$unique_id = $contact_form_info['contact_form_unique_id'];
+				$post_id   = $contact_form_info['post_id'];
+				$form_id   = "$post_id-$unique_id";
+			}
+
 			foreach ( $args as $result ) {
 				if ( isset( $result['args'] ) && ! empty( $result['args'] ) && is_array( $result['args'] ) ) {
 					Divi_Helpers::save_tokens( $result, $fields_values, $form_id, $this->trigger_meta, $user_id );

@@ -10,10 +10,10 @@ settings_fields( $this->get_settings_id() );
 
 $hide_fields = $this->is_connected ? true : '';
 
-$api_key             = get_option( 'automator_twitter_api_key', '' );
-$api_secret          = get_option( 'automator_twitter_api_secret', '' );
-$access_token        = get_option( 'automator_twitter_access_token', '' );
-$access_token_secret = get_option( 'automator_twitter_access_token_secret', '' );
+$api_key             = automator_get_option( 'automator_twitter_api_key', '' );
+$api_secret          = automator_get_option( 'automator_twitter_api_secret', '' );
+$access_token        = automator_get_option( 'automator_twitter_access_token', '' );
+$access_token_secret = automator_get_option( 'automator_twitter_access_token_secret', '' );
 
 ?>
 

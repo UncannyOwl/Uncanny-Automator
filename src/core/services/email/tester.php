@@ -1,16 +1,22 @@
 <?php
 
-namespace Uncanny_Automator\Services\Email_Tester;
+namespace Uncanny_Automator\Services\Email;
 
 use Exception;
-use Uncanny_Automator\Automator_Utilities;
+use Uncanny_Automator\Services\Email\Attachment\Handler;
 use Uncanny_Automator\Utilities;
+
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 /**
  * @since 5.5
+ *
  * @package Uncanny_Automator\Services\Email_Tester
  */
-class Email_Sender {
+class Tester {
 
 	/**
 	 * The parameters.
@@ -18,6 +24,18 @@ class Email_Sender {
 	 * @var array
 	 */
 	private $parameters = array();
+
+	/**
+	 * The file attachments path.
+	 *
+	 * @var array{}|string[]
+	 */
+	protected $attachments = array();
+
+	/**
+	 * @var Handler
+	 */
+	protected $attachment_handler = null;
 
 	/**
 	 * Sets the default args.
@@ -40,6 +58,25 @@ class Email_Sender {
 	}
 
 	/**
+	 * Get attachments.
+	 *
+	 * @return string[]
+	 */
+	public function get_attachments() {
+		return $this->attachments;
+	}
+
+	/**
+	 * Adds the given path to the attachments property.
+	 *
+	 * @param string $path
+	 *
+	 * @return string[]
+	 */
+	public function add_attachment( $path ) {
+		$this->attachments[] = $path;
+	}
+	/**
 	 * Merges the given parameters with the default ones.
 	 *
 	 * @param mixed[] $args
@@ -60,6 +97,7 @@ class Email_Sender {
 			'to'           => '',
 			'subject'      => '',
 			'body'         => '',
+			'attachments'  => array(),
 		);
 
 		$this->parameters = wp_parse_args( $args, $defaults );
@@ -122,7 +160,9 @@ class Email_Sender {
 		$this->validate_recipient();
 		$this->validate_body();
 
-		$is_sent = wp_mail( $params['to'], $params['subject'], $params['body'], $this->resolve_headers() );
+		$this->process_attachments( $params );
+
+		$is_sent = wp_mail( $params['to'], $params['subject'], $params['body'], $this->resolve_headers(), $this->get_attachments() );
 
 		if ( isset( $_ENV['DOING_AUTOMATOR_TEST'] ) ) {
 			return array( 'success' => $is_sent );
@@ -133,6 +173,45 @@ class Email_Sender {
 				'success' => $is_sent,
 			)
 		);
+	}
+
+	/**
+	 * Process the attachments.
+	 *
+	 * @param mixed[] $params
+	 *
+	 * @return void
+	 */
+	public function process_attachments( $params ) {
+
+		$attachments = $params['attachments'] ?? array();
+
+		if ( ! empty( $attachments ) ) {
+			foreach ( $attachments as $attachment_url ) {
+				$path = $this->process_attachment( $attachment_url );
+				if ( file_exists( $path ) ) {
+					$this->add_attachment( $path );
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * Processes the attachment.
+	 *
+	 * @param mixed $attachment_url
+	 *
+	 * @return WP_Error|array|string
+	 */
+	public function process_attachment( $attachment_url ) {
+
+		$this->attachment_handler = new Handler( $attachment_url );
+
+		$attachment_path = $this->attachment_handler->process_attachment();
+
+		return $attachment_path;
+
 	}
 
 	/**
@@ -162,9 +241,13 @@ class Email_Sender {
 	 */
 	public static function generate_args( $request ) {
 
-		$action_id     = $request->get_param( 'action_id' );
-		$email_address = $request->get_param( 'email_address' );
-		$email_body    = $request->get_param( 'email_body' );
+		$action_id               = $request->get_param( 'action_id' );
+		$email_address           = $request->get_param( 'email_address' );
+		$email_body              = $request->get_param( 'email_body' );
+		$attachments_stringified = $request->get_param( 'attachments' );
+		$attachments_array       = (array) json_decode( $attachments_stringified, true );
+
+		$first_attachment_url = $attachments_array[0]['url'] ?? '';
 
 		// Replace all tokens
 		$regex = '/<ins contenteditable="false">.*?<span class="uap-token__name">(.*?)<\/span>.*?<\/ins>/s';
@@ -184,6 +267,10 @@ class Email_Sender {
 			'subject' => __( 'Uncanny Automator Test', 'uncanny-automator' ),
 			'body'    => $email_body,
 		);
+
+		if ( ! empty( $first_attachment_url ) ) {
+			$args['attachments'][] = $first_attachment_url;
+		}
 
 		if ( isset( $action_meta['EMAILCONTENTTYPE'] ) && 'plain' === $action_meta['EMAILCONTENTTYPE'] ) {
 

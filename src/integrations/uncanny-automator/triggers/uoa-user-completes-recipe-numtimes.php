@@ -20,13 +20,13 @@ class UOA_USER_COMPLETES_RECIPE_NUMTIMES {
 		add_action(
 			'admin_init',
 			function () {
-				if ( 'yes' === get_option( 'uoa_recipe_completed_migrated', 'no' ) ) {
+				if ( 'yes' === automator_get_option( 'uoa_recipe_completed_migrated', 'no' ) ) {
 					return;
 				}
 				global $wpdb;
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key LIKE %s", 'UOARECIPES', 'UOA_RECIPES' ) );
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key LIKE %s", 'UOARECIPES_readable', 'UOA_RECIPES_readable' ) );
-				update_option( 'uoa_recipe_completed_migrated', 'yes', false );
+				automator_update_option( 'uoa_recipe_completed_migrated', 'yes', false );
 			},
 			99
 		);

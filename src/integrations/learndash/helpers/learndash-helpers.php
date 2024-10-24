@@ -1026,7 +1026,7 @@ class Learndash_Helpers {
 			if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
 				$is_activated = false;
 			} else {
-				$active_modules = get_option( 'uncanny_toolkit_active_classes', true );
+				$active_modules = automator_get_option( 'uncanny_toolkit_active_classes', true );
 				$is_activated   = ! empty( $active_modules['uncanny_pro_toolkit\CourseTimer'] );
 			}
 		}
@@ -1135,7 +1135,7 @@ class Learndash_Helpers {
 	public static function migrate_trigger_learndash_quiz_submitted_action_data( $code ) {
 		$option_key = strtolower( $code . '_action_migrated' );
 		// Bail if already migrated.
-		if ( 'yes' === get_option( $option_key, 'no' ) ) {
+		if ( 'yes' === automator_get_option( $option_key, 'no' ) ) {
 			return;
 		}
 		global $wpdb;
@@ -1160,7 +1160,7 @@ class Learndash_Helpers {
 			);
 		}
 		// Update option flag.
-		update_option( $option_key, 'yes' );
+		automator_update_option( $option_key, 'yes' );
 	}
 
 	/**

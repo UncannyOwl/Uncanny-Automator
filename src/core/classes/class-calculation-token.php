@@ -37,6 +37,23 @@ class Calculation_Token {
 	public $result;
 
 	/**
+	 * @var
+	 */
+	public $return;
+	/**
+	 * @var
+	 */
+	public $pieces;
+	/**
+	 * @var
+	 */
+	public $trigger_data;
+	/**
+	 * @var
+	 */
+	public $formula;
+
+	/**
 	 * __construct
 	 *
 	 * @return void

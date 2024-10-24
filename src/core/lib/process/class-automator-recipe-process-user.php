@@ -226,6 +226,7 @@ class Automator_Recipe_Process_User {
 			Automator_Status::COMPLETED,
 			Automator_Status::COMPLETED_WITH_ERRORS,
 			Automator_Status::IN_PROGRESS,
+			Automator_Status::IN_PROGRESS_WITH_ERROR,
 			Automator_Status::DID_NOTHING,
 			Automator_Status::COMPLETED_AWAITING,
 			Automator_Status::COMPLETED_WITH_NOTICE,

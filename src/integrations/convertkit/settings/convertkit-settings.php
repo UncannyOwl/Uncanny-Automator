@@ -124,7 +124,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 			$response = $this->helpers->verify_api_secret( $sanitized_input );
 
 			// At this point, both API Key and API Secret are good to go. Save the Client in the DB.
-			update_option( self::OPTIONS_CLIENT, $response, true );
+			automator_update_option( self::OPTIONS_CLIENT, $response, true );
 
 			$client = $this->helpers->get_client();
 
@@ -161,8 +161,8 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 
 		$vars = array(
 			'is_connected'   => $this->is_connected,
-			'api_key'        => get_option( self::OPTIONS_API_KEY, '' ),
-			'api_secret'     => get_option( self::OPTIONS_API_SECRET, '' ),
+			'api_key'        => automator_get_option( self::OPTIONS_API_KEY, '' ),
+			'api_secret'     => automator_get_option( self::OPTIONS_API_SECRET, '' ),
 			'alerts'         => (array) get_settings_errors( 'automator_convertkit_connection_alerts' ),
 			'client'         => $this->helpers->get_client(),
 			'disconnect_url' => $this->helpers->get_disconnect_url(),

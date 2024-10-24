@@ -64,7 +64,17 @@ class MP_PURCHASEPRODUCTRECURRING {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->memberpress->options->all_memberpress_products_recurring( null, $this->trigger_meta, array( 'uo_include_any' => true ) ),
+					Automator()->helpers->recipe->memberpress->options->all_memberpress_products_recurring(
+						null,
+						$this->trigger_meta,
+						array(
+							'uo_include_any'  => true,
+							'relevant_tokens' => array(
+								$this->trigger_meta . '_TXN_ID'        => esc_attr__( 'Transaction ID', 'uncanny-automator' ),
+								$this->trigger_meta . '_TXN_AMOUNT'        => esc_attr__( 'Transaction amount', 'uncanny-automator' ),
+							),
+						)
+					),
 				),
 			)
 		);
@@ -145,6 +155,14 @@ class MP_PURCHASEPRODUCTRECURRING {
 
 					$trigger_meta['meta_key']   = $this->trigger_meta;
 					$trigger_meta['meta_value'] = $product_id;
+					Automator()->insert_trigger_meta( $trigger_meta );
+
+					$trigger_meta['meta_key']   = 'mp_txn_id';
+					$trigger_meta['meta_value'] = $transaction->id;
+					Automator()->insert_trigger_meta( $trigger_meta );
+
+					$trigger_meta['meta_key']   = 'mp_txn_amount';
+					$trigger_meta['meta_value'] = $transaction->amount;
 					Automator()->insert_trigger_meta( $trigger_meta );
 
 					Automator()->maybe_trigger_complete( $result['args'] );

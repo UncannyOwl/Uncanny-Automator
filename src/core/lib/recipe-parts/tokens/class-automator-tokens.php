@@ -13,6 +13,9 @@
 
 namespace Uncanny_Automator;
 
+use Exception;
+use Uncanny_Automator\Services\Recipe\Action\Token\Entity as Action_Token;
+
 /**
  * Class Automator_Tokens
  *
@@ -240,7 +243,16 @@ class Automator_Tokens {
 	 */
 	public function get_action_tokens_renderable( $action, $action_id = null, $recipe_id = null ) {
 
-		return apply_filters( 'automator_action_' . $action['code'] . '_tokens_renderable', array(), $action_id, $recipe_id );
+		$default_action_tokens = array();
+
+		$status = Automator()->action_tokens()->entity();
+		$status->set_id( 'ACTION_RUN_STATUS' );
+		$status->set_name( _x( 'Completion status', 'Action token', 'uncanny-automator' ) );
+		$status->set_type( 'string' );
+
+		$default_action_tokens[] = $status->toArray();
+
+		return apply_filters( "automator_action_{$action['code']}_tokens_renderable", $default_action_tokens, $action_id, $recipe_id );
 
 	}
 }

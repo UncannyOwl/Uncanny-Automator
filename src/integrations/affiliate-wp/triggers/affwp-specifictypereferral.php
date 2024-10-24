@@ -27,12 +27,12 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 		add_action(
 			'admin_init',
 			function () {
-				if ( 'yes' === get_option( 'affwp_insert_referral_migrated', 'no' ) ) {
+				if ( 'yes' === automator_get_option( 'affwp_insert_referral_migrated', 'no' ) ) {
 					return;
 				}
 				global $wpdb;
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE meta_value = %s AND meta_key LIKE %s", 'affwp_insert_referral', 'affwp_complete_referral', 'add_action' ) );
-				update_option( 'affwp_insert_referral_migrated', 'yes' );
+				automator_update_option( 'affwp_insert_referral_migrated', 'yes' );
 			},
 			99
 		);
@@ -130,7 +130,6 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 
 							Automator()->db->token->save( 'referral', maybe_serialize( $referral ), $trigger_meta );
 							Automator()->maybe_trigger_complete( $result['args'] );
-							break;
 						}
 					}
 				}

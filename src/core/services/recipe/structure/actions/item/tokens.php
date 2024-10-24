@@ -161,6 +161,56 @@ final class Tokens implements \JsonSerializable {
 		return $tokens;
 	}
 
+	public function generate_loopable_tokens() {
+
+		$action_code = self::$action['meta']['code'] ?? null;
+		$action_id   = self::$action_id;
+
+		// Bail if `action code` is falsy.
+		if ( empty( $action_code ) ) {
+			return array();
+		}
+
+		$action = Automator()->get_action( $action_code );
+
+		$loopable_tokens = $action['loopable_tokens'] ?? null;
+
+		// Bail if `loopable tokens` is falsy.
+		if ( empty( $loopable_tokens ) ) {
+			return array();
+		}
+
+		$tokens_collection = array();
+
+		foreach ( $loopable_tokens as $token_class ) {
+
+			$token = new stdClass();
+
+			// Handle new framework.
+			if ( is_string( $token_class ) ) {
+				$token_class = new $token_class( absint( $action_id ) );
+				$token_class->set_action( $action );
+				$token_class->register_hooks( $action );
+			}
+
+			$definitions = $token_class->get_definitions();
+
+			foreach ( $definitions as $id => $definition ) {
+				$token->id            = sprintf( '%s:%s:%s:%d:%s:%s', 'TOKEN_EXTENDED', 'DATA_TOKEN_' . $id, 'ACTION_TOKEN', $action_id, $action_code, $id );
+				$token->token_type    = 'loopable';
+				$token->data_type     = 'json';
+				$token->name          = $definition['name'] ?? '';
+				$token->log_identifer = $token_class->get_log_identifier();
+			}
+
+			$tokens_collection[] = $token;
+
+		}
+
+		return $tokens_collection;
+
+	}
+
 	/**
 	 * Retrieves the Action field tokens and Action meta tokens.
 	 *
@@ -170,10 +220,11 @@ final class Tokens implements \JsonSerializable {
 	 */
 	public function get_tokens( $fields ) {
 
-		$tokens_fields = $this->generate_field_tokens( $fields );
-		$tokens_custom = $this->generate_custom_tokens();
+		$tokens_fields   = $this->generate_field_tokens( $fields );
+		$tokens_custom   = $this->generate_custom_tokens();
+		$tokens_loopable = $this->generate_loopable_tokens();
 
-		$this->tokens = array_merge( $tokens_fields, $tokens_custom );
+		$this->tokens = array_merge( $tokens_fields, $tokens_custom, $tokens_loopable );
 
 		return $this->tokens;
 	}

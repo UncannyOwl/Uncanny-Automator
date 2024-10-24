@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-$user = get_option( 'automator_twitter_user', array() );
+$user = automator_get_option( 'automator_twitter_user', array() );
 
 $twitter_name     = ! empty( $user['name'] ) ? $user['name'] : '';
 $twitter_username = ! empty( $user['screen_name'] ) ? '@' . $user['screen_name'] : '';

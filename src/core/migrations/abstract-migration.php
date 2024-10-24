@@ -39,9 +39,9 @@ abstract class Migration {
 	 * @return void
 	 */
 	public function complete() {
-		$migrations                = get_option( self::OPTION_NAME, array() );
+		$migrations                = automator_get_option( self::OPTION_NAME, array() );
 		$migrations[ $this->name ] = time();
-		update_option( self::OPTION_NAME, $migrations );
+		automator_update_option( self::OPTION_NAME, $migrations );
 		automator_log( 'Migration completed', $this->name, true );
 	}
 
@@ -79,7 +79,7 @@ abstract class Migration {
 	 */
 	public function migration_completed_before() {
 
-		$past_migrations = get_option( self::OPTION_NAME, array() );
+		$past_migrations = automator_get_option( self::OPTION_NAME, array() );
 
 		if ( ! empty( $past_migrations[ $this->name ] ) ) {
 			return $past_migrations[ $this->name ];

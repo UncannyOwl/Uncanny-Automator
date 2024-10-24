@@ -224,9 +224,9 @@ class Ontraport_Helpers {
 	 * @return void
 	 */
 	public static function remove_credentials() {
-		delete_option( self::CREDENTIALS_KEY );
-		delete_option( Ontraport_Settings::OPT_API_KEY );
-		delete_option( Ontraport_Settings::OPT_APP_ID_KEY );
+		automator_delete_option( self::CREDENTIALS_KEY );
+		automator_delete_option( Ontraport_Settings::OPT_API_KEY );
+		automator_delete_option( Ontraport_Settings::OPT_APP_ID_KEY );
 	}
 
 	/**

@@ -42,6 +42,11 @@ class Api_Server {
 	private static $license = null;
 
 	/**
+	 * @var mixed
+	 */
+	public static $last_response = array();
+
+	/**
 	 * __construct
 	 *
 	 * @return void
@@ -359,24 +364,28 @@ class Api_Server {
 
 		$time_before = microtime( true );
 
-		$response = wp_remote_request(
+		self::$last_response = wp_remote_request(
 			$params['url'],
 			$request
 		);
+
+		self::$last_response = apply_filters( 'automator_api_last_response', self::$last_response, $request, $params );
+
+		do_action( 'automator_api_response', self::$last_response, $request, $params );
 
 		$time_spent = round( ( microtime( true ) - $time_before ) * 1000 );
 
 		$params['time_spent'] = $time_spent;
 
-		$api_log_id = $api->maybe_log_action( $params, $request, $response );
+		$api_log_id = $api->maybe_log_action( $params, $request, self::$last_response );
 
-		if ( is_wp_error( $response ) ) {
-			throw new \Exception( 'WordPress was not able to make a request: ' . $response->get_error_message(), 500 );
+		if ( is_wp_error( self::$last_response ) ) {
+			throw new \Exception( 'WordPress was not able to make a request: ' . self::$last_response->get_error_message(), 500 );
 		}
 
-		$response['api_log_id'] = $api_log_id;
+		self::$last_response['api_log_id'] = $api_log_id;
 
-		return $response;
+		return self::$last_response;
 	}
 
 

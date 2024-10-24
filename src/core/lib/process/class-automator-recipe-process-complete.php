@@ -642,7 +642,45 @@ class Automator_Recipe_Process_Complete {
 			return;
 		}
 
+		// Every action sends an action token value. In this case, we need 'action_status'.
+		self::action_tokens_hydrate_default( $do_action_args );
+
 		$this->recipe( $recipe_id, $user_id, $recipe_log_id, $args );
+
+	}
+
+	/**
+	 * @param mixed[] $process_args
+	 *
+	 * @return void
+	 */
+	public static function action_tokens_hydrate_default( $process_args ) {
+
+		// Load the hydrator class from Automator.
+		$hydrator = Automator()->action_tokens()->hydrator();
+
+		$action_log_id = $process_args['action_log_id'] ?? null;
+
+		$status = Automator()->db->action->get_action_log_completion_status( $action_log_id );
+
+		// Hydrate the tokens.
+		$value = array(
+			'ACTION_RUN_STATUS' => Automator_Status::name( $status ),
+		);
+
+		$user_id   = $process_args['user_id'] ?? null;
+		$action_id = $process_args['action_id'] ?? null;
+
+		if ( ! isset( $user_id, $action_id, $action_log_id ) ) {
+			return false;
+		}
+
+		$hydrator->set_user_id( $user_id );
+		$hydrator->set_action_id( $action_id );
+		$hydrator->set_action_log_id( $action_log_id );
+		$hydrator->set_process_args( $process_args );
+
+		return $hydrator->hydrate( $value );
 
 	}
 

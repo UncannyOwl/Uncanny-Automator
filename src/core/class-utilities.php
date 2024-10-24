@@ -76,13 +76,13 @@ class Utilities {
 			return substr( AUTH_KEY, 0, 8 );
 		}
 
-		$key = get_option( $opt_key, false );
+		$key = automator_get_option( $opt_key, false );
 
 		// Generate the key if its falsy.
 		if ( empty( $key ) ) {
 			$key = md5( uniqid( time() ) );
 			// Make sure to autoload.
-			add_option( $opt_key, $key, '', 'yes' );
+			automator_add_option( $opt_key, $key, 'yes' );
 		}
 
 		return substr( $key, 0, 8 );
@@ -661,6 +661,11 @@ class Utilities {
 			return false;
 		}
 
+		// if trace message is empty and file name is error-logs, bail
+		if ( empty( $trace_message ) && 'error-logs' === $file_name ) {
+			return false;
+		}
+
 		$timestamp           = current_time( 'Y-m-d H:i:s A' ); //phpcs ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 		$current_host        = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 		$current_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
@@ -803,6 +808,10 @@ class Utilities {
 	 */
 	public static function flatten_post_meta( $post_metas ) {
 
+		if ( ! is_array( $post_metas ) ) {
+			return array();
+		}
+
 		$flattened_array = array();
 
 		foreach ( $post_metas as $key => $item ) {
@@ -810,6 +819,86 @@ class Utilities {
 		}
 
 		return $flattened_array;
+
+	}
+
+	/**
+	 * Returns the specific value of the array from the path using dot notation.
+	 *
+	 * @param mixed[] $array
+	 * @param string $path
+	 *
+	 * @return mixed
+	 */
+	public static function get_array_value( $array, $path ) {
+
+		if ( null === $path ) {
+			return $array;
+		}
+
+		// Check if the path starts with '$.' followed by a number (e.g., $.0, $.1, $.2)
+		if ( preg_match( '/^\$\.(\d+)$/', $path, $matches ) ) {
+			// Extract the numeric index
+			$index = (int) $matches[1];
+			// Return the corresponding element or null if the index doesn't exist
+			return isset( $array[ $index ] ) ? $array[ $index ] : null;
+		}
+
+		// Remove the '$.' part of the path for further processing
+		$path = ltrim( $path, '$.' );
+
+		// Return the whole array if the path is empty
+		if ( empty( $path ) ) {
+			return $array;
+		}
+
+		// Split the path by '.' to traverse the array
+		$keys = explode( '.', $path );
+
+		// Traverse the array based on the keys
+		foreach ( $keys as $key ) {
+			// Convert numeric keys from string to integer (for numeric array indices)
+			if ( is_numeric( $key ) ) {
+				$key = (int) $key;
+			}
+
+			// Check if the key exists and is part of the array
+			if ( ! is_array( $array ) || ! array_key_exists( $key, $array ) ) {
+				// Return null for non-existent keys
+				return null;
+			}
+
+			// Move to the next level in the array
+			$array = $array[ $key ];
+		}
+
+		// Return the final value directly (no need to wrap in an array for single elements)
+		return $array;
+	}
+
+
+	/**
+	 * Limits the number of elements the array contains.
+	 *
+	 * @param mixed[] $array
+	 * @param int $limit
+	 *
+	 * @return mixed[]
+	 */
+	public static function limit_array_elements( $array, $limit ) {
+
+		// Ensure the limit is a positive integer
+		if ( ! is_int( $limit ) || $limit <= 0 ) {
+			return $array;
+		}
+
+		// If the array has fewer elements than the limit, return it as is
+		if ( count( $array ) <= $limit ) {
+			return $array;
+		}
+
+		// Slice the array to the specified limit
+		return array_slice( $array, 0, $limit, true ); // Use `true` to preserve the keys
 
 	}
 

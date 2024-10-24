@@ -246,7 +246,7 @@ class Gotowebinar_Helpers {
 		$current_refresh_token = isset( $oauth_settings['refresh_token'] ) ? $oauth_settings['refresh_token'] : '';
 
 		if ( empty( $current_refresh_token ) ) {
-			update_option( '_uncannyowl_gtw_settings_expired', true );
+			automator_update_option( '_uncannyowl_gtw_settings_expired', true );
 			throw new \Exception( __( 'GoTo Webinar credentails have expired.', 'uncanny-automator' ) );
 		}
 
@@ -269,8 +269,8 @@ class Gotowebinar_Helpers {
 		$response = Api_Server::call( $params );
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			update_option( '_uncannyowl_gtw_settings', array() );
-			update_option( '_uncannyowl_gtw_settings_expired', true );
+			automator_update_option( '_uncannyowl_gtw_settings', array() );
+			automator_update_option( '_uncannyowl_gtw_settings_expired', true );
 			throw new \Exception( __( 'GoTo Webinar credentails have expired.', 'uncanny-automator' ) );
 		}
 
@@ -283,9 +283,9 @@ class Gotowebinar_Helpers {
 		$tokens_info['organizer_key'] = $jsondata['organizer_key'];
 		$tokens_info['account_key']   = $jsondata['account_key'];
 
-		update_option( '_uncannyowl_gtw_settings', $tokens_info );
+		automator_update_option( '_uncannyowl_gtw_settings', $tokens_info );
 		set_transient( self::TRANSIENT, $tokens_info, 60 * 50 );
-		delete_option( '_uncannyowl_gtw_settings_expired' );
+		automator_delete_option( '_uncannyowl_gtw_settings_expired' );
 
 		//return the array
 		return $tokens_info;
@@ -329,9 +329,9 @@ class Gotowebinar_Helpers {
 			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'uncanny_automator_go-to-webinar-options' )
 			) {
 
-			update_option( 'uap_automator_gtw_api_consumer_key', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtw_api_consumer_key'] ) ) );
+			automator_update_option( 'uap_automator_gtw_api_consumer_key', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtw_api_consumer_key'] ) ) );
 
-			update_option( 'uap_automator_gtw_api_consumer_secret', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtw_api_consumer_secret'] ) ) );
+			automator_update_option( 'uap_automator_gtw_api_consumer_secret', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtw_api_consumer_secret'] ) ) );
 
 			$this->oauth_redirect();
 
@@ -412,8 +412,8 @@ class Gotowebinar_Helpers {
 			//lets get the response and decode it
 			$jsondata = json_decode( $response['body'], true );
 
-			update_option( '_uncannyowl_gtw_settings', $jsondata );
-			delete_option( '_uncannyowl_gtw_settings_expired' );
+			automator_update_option( '_uncannyowl_gtw_settings', $jsondata );
+			automator_delete_option( '_uncannyowl_gtw_settings_expired' );
 
 			// Set the transient.
 			set_transient( self::TRANSIENT, $jsondata, 60 * 50 );
@@ -460,7 +460,7 @@ class Gotowebinar_Helpers {
 
 		// Delete the options.
 		foreach ( $configs['options'] as $option_key ) {
-			delete_option( $option_key );
+			automator_delete_option( $option_key );
 		}
 
 		// Delete the transients.

@@ -55,17 +55,18 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 										<div
 											class='error-message'><?php esc_attr_e( 'Your application access has expired. Please connect again with new credentials.', 'uncanny-automator' ); ?></div>
 									<?php } ?>
-									<?php if ( ! empty ( $connected ) && '1' === $connected ) { ?>
+									<?php if ( ! empty( $connected ) && '1' === $connected ) { ?>
 										<div
 											class='updated'><?php esc_attr_e( 'Your application connected successfully.', 'uncanny-automator' ); ?></div>
-									<?php } elseif ( ! empty ( $connected ) && '2' === $connected ) { ?>
+									<?php } elseif ( ! empty( $connected ) && '2' === $connected ) { ?>
 										<div
 											class='error-message'><?php esc_attr_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator' ); ?></div>
-									<?php } elseif ( ! empty ( $connected ) ) { ?>
+									<?php } elseif ( ! empty( $connected ) ) { ?>
 										<div class='error-message'><?php echo esc_attr( $connected ); ?></div>
 									<?php } ?>
 									<?php if ( isset( $tab->fields ) && $tab->fields ) { ?>
-										<?php foreach ( $tab->fields as $field_id => $field_settings ) {
+										<?php
+										foreach ( $tab->fields as $field_id => $field_settings ) {
 											$attributes = '';
 											if ( isset( $field_settings->custom_atts ) ) {
 												if ( is_object( $field_settings->custom_atts ) ) {
@@ -79,34 +80,38 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 											?>
 											<div class="uo-settings-content-form">
 												<label
-													for="<?php echo esc_attr( $field_id ) ?>"><?php echo esc_attr( $field_settings->title ); ?></label>
-												<input id="<?php echo esc_attr( $field_id ) ?>"
-													   name="<?php echo esc_attr( $field_id ) ?>"
-													   type="<?php echo esc_attr( $field_settings->type ) ?>"
+													for="<?php echo esc_attr( $field_id ); ?>"><?php echo esc_attr( $field_settings->title ); ?></label>
+												<input id="<?php echo esc_attr( $field_id ); ?>"
+													   name="<?php echo esc_attr( $field_id ); ?>"
+													   type="<?php echo esc_attr( $field_settings->type ); ?>"
 													   class="uo-admin-input <?php echo esc_attr( $field_settings->css_classes ); ?>"
 
-													   <?php 
-													   	
-													   $value = '';
-													   $default = '';
-													   if ( isset( $field_settings->default ) && ! empty( $field_settings->default ) ) {
-														   $default = $field_settings->default;
-													   }
+													   <?php
+
+														$value   = '';
+														$default = '';
+														if ( isset( $field_settings->default ) && ! empty( $field_settings->default ) ) {
+															$default = $field_settings->default;
+														}
 
 														if ( 'checkbox' === $field_settings->type ) {
-															$on_off_value = get_option( $field_id, $default );
-															
+															$on_off_value = automator_get_option( $field_id, $default );
+
 															if ( 'on' === $on_off_value ) {
 																$value = 'checked';
 															}
 														} else {
-															$value = 'value="' . get_option( $field_id, $default ) . '"';
+															$value = 'value="' . automator_get_option( $field_id, $default ) . '"';
 														}
 
-													   echo wp_kses_post( $value ); ?> 
-													   placeholder="<?php echo esc_attr( $field_settings->placeholder ) ?>"
+														echo wp_kses_post( $value );
+														?>
+													   placeholder="<?php echo esc_attr( $field_settings->placeholder ); ?>"
 													<?php echo wp_kses_post( $attributes ); ?>
-													   <?php if ( $field_settings->required ){ ?>required="required"<?php } ?>>
+													   <?php
+														if ( $field_settings->required ) {
+															?>
+															required="required"<?php } ?>>
 											</div>
 										<?php } ?>
 									<?php } ?>
@@ -232,15 +237,16 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 										<div
 											class='error-message'><?php esc_attr_e( 'Your application access has expired. Please connect again with new credentials.', 'uncanny-automator' ); ?></div>
 									<?php } ?>
-									<?php if ( ! empty ( $connected ) && '1' === $connected ) { ?>
+									<?php if ( ! empty( $connected ) && '1' === $connected ) { ?>
 										<div
 											class='updated'><?php esc_attr_e( 'Your application connected successfully.', 'uncanny-automator' ); ?></div>
-									<?php } elseif ( ! empty ( $connected ) && '2' === $connected ) { ?>
+									<?php } elseif ( ! empty( $connected ) && '2' === $connected ) { ?>
 										<div
 											class='error-message'><?php esc_attr_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator' ); ?></div>
 									<?php } ?>
 									<?php if ( isset( $tab->fields ) && $tab->fields ) { ?>
-										<?php foreach ( $tab->fields as $field_id => $field_settings ) {
+										<?php
+										foreach ( $tab->fields as $field_id => $field_settings ) {
 											$attributes = '';
 											if ( isset( $field_settings->custom_atts ) ) {
 												if ( is_object( $field_settings->custom_atts ) ) {
@@ -252,15 +258,18 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 											?>
 											<div class="uo-settings-content-form">
 												<label
-													for="<?php echo esc_attr( $field_id ) ?>"><?php echo esc_attr( $field_settings->title ); ?></label>
-												<input id="<?php echo esc_attr( $field_id ) ?>"
-													   name="<?php echo esc_attr( $field_id ) ?>"
-													   type="<?php echo esc_attr( $field_settings->type ) ?>"
+													for="<?php echo esc_attr( $field_id ); ?>"><?php echo esc_attr( $field_settings->title ); ?></label>
+												<input id="<?php echo esc_attr( $field_id ); ?>"
+													   name="<?php echo esc_attr( $field_id ); ?>"
+													   type="<?php echo esc_attr( $field_settings->type ); ?>"
 													   class="uo-admin-input <?php echo esc_attr( $field_settings->css_classes ); ?>"
-													   value="<?php echo wp_kses_post( get_option( $field_id, '' ) ); ?>"
-													   placeholder="<?php echo esc_attr( $field_settings->placeholder ) ?>"
+													   value="<?php echo wp_kses_post( automator_get_option( $field_id, '' ) ); ?>"
+													   placeholder="<?php echo esc_attr( $field_settings->placeholder ); ?>"
 													<?php echo wp_kses_post( $attributes ); ?>
-													   <?php if ( $field_settings->required ){ ?>required="required"<?php } ?>>
+													   <?php
+														if ( $field_settings->required ) {
+															?>
+															required="required"<?php } ?>>
 											</div>
 										<?php } ?>
 									<?php } ?>

@@ -23,6 +23,16 @@ class MP_RENEWS_RECURRING_SUBSCRIPTION {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function setup_trigger() {
+
+		add_action(
+			'mepr-event-renewal-transaction-completed',
+			function( $args ) {
+				do_action( 'uap-event-renewal-transaction-completed', $args );
+			}
+		);
+
+		$this->add_action( 'uap-event-renewal-transaction-completed', 99, 1 );
+
 		$this->set_integration( 'MP' );
 		$this->set_trigger_code( 'MP_RENEW_SUBSCRIPTION' );
 		$this->set_trigger_meta( 'MPPRODUCT' );
@@ -35,7 +45,7 @@ class MP_RENEWS_RECURRING_SUBSCRIPTION {
 		// Non-active state sentence to show
 		$this->set_readable_sentence( esc_attr__( 'A user renews {{a recurring subscription product}}', 'uncanny-automator' ) );
 		// Which do_action() fires this trigger.
-		$this->add_action( 'mepr-event-renewal-transaction-completed', 999, 1 );
+		$this->add_action( 'uap-event-renewal-transaction-completed', 999, 1 );
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_trigger();
 
@@ -50,7 +60,17 @@ class MP_RENEWS_RECURRING_SUBSCRIPTION {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					$this->get_helper()->all_memberpress_products_recurring( null, $this->get_trigger_meta(), array( 'uo_include_any' => true ) ),
+					$this->get_helper()->all_memberpress_products_recurring(
+						null,
+						$this->get_trigger_meta(),
+						array(
+							'uo_include_any'  => true,
+							'relevant_tokens' => array(
+								$this->get_trigger_meta() . '_TXN_ID'        => esc_attr__( 'Transaction ID', 'uncanny-automator' ),
+								$this->get_trigger_meta() . '_TXN_AMOUNT'        => esc_attr__( 'Transaction amount', 'uncanny-automator' ),
+							),
+						)
+					),
 				),
 			)
 		);
@@ -111,5 +131,28 @@ class MP_RENEWS_RECURRING_SUBSCRIPTION {
 					->format( array( 'intval' ) )
 					->get();
 
+	}
+
+
+	public function parse_additional_tokens( $parsed, $args, $trigger ) {
+		list( $event ) = $args['trigger_args'];
+
+		/** @var \MeprTransaction $transaction */
+		$transaction = $event->get_data();
+		/** @var \MeprProduct $product */
+		$product      = $transaction->product();
+		$subscription = $transaction->subscription();
+		$product_id   = $product->ID;
+		$user_id      = absint( $transaction->user()->ID );
+
+		$additional_tokens = array(
+			$this->get_trigger_meta() => get_the_title( $product_id ),
+			'MPPRODUCT_URL'           => get_the_permalink( $product_id ),
+			'MPPRODUCT_ID'            => $product_id,
+			'MPPRODUCT_TXN_ID'        => $transaction->id,
+			'MPPRODUCT_TXN_AMOUNT'    => $transaction->amount,
+		);
+
+		return array_merge( $parsed, $additional_tokens );
 	}
 }

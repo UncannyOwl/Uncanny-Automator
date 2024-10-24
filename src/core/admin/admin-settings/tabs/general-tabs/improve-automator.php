@@ -15,6 +15,7 @@ class Admin_Settings_General_Improve_Automator {
 	 * Class constructor
 	 */
 	public function __construct() {
+
 		// Define the tab
 		$this->create_tab();
 
@@ -24,6 +25,7 @@ class Admin_Settings_General_Improve_Automator {
 		// Add the feedback and review sections
 		$this->send_feedback_section();
 		$this->add_review_section();
+
 	}
 
 	/**
@@ -63,6 +65,7 @@ class Admin_Settings_General_Improve_Automator {
 	 * @return undefined
 	 */
 	private function allow_usage_tracking_setting() {
+
 		// Check if we should add it first
 		// We will show only this to Free users that don't have an automatorplugin.com account connected
 		if (
@@ -87,13 +90,59 @@ class Admin_Settings_General_Improve_Automator {
 				'automator_settings_general_improve_automator_content',
 				function() {
 					// Check if the setting is enabled
-					$is_usage_tracking_enabled = get_option( 'automator_reporting', false );
+					$is_usage_tracking_enabled = automator_get_option( 'automator_reporting', false );
+
+					// Check if updated and reset the state.
+					$updated = $this->save_usage_tracking_setting();
+					if ( ! empty( $updated ) ) {
+						$is_usage_tracking_enabled = 'enabled' === $updated;
+					}
 
 					// Load the view
 					include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/usage-tracking.php' );
 				},
 				10
 			);
+		}
+	}
+
+	/**
+	 * Save the usage tracking setting
+	 *
+	 * @return mixed string || null
+	 */
+	private function save_usage_tracking_setting() {
+
+		$key = 'uncanny_automator_improve_automator_usage_tracking';
+
+		// Check if we are on the correct options page.
+		if ( ! automator_filter_has_var( 'option_page', INPUT_POST ) ) {
+			return;
+		}
+
+		if ( automator_filter_input( 'option_page', INPUT_POST ) !== $key ) {
+			return;
+		}
+
+		// Validate the nonce.
+		if ( ! automator_filter_has_var( '_wpnonce', INPUT_POST ) ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( automator_filter_input( '_wpnonce', INPUT_POST ), "{$key}-options" ) ) {
+			return;
+		}
+
+		// Sanitize and save the setting
+		if ( automator_filter_has_var( 'automator_reporting', INPUT_POST ) ) {
+			// Save enabled state.
+			if ( automator_filter_input( 'automator_reporting', INPUT_POST, FILTER_VALIDATE_BOOLEAN ) ) {
+				automator_update_option( 'automator_reporting', 1 );
+				return 'enabled';
+			}
+			// Delete the option if it's disabled.
+			automator_delete_option( 'automator_reporting' );
+			return 'disabled';
 		}
 	}
 

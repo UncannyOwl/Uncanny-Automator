@@ -93,7 +93,7 @@ class Telegram_Webhook {
 	 * @return bool
 	 */
 	public function store_webhook_details( $webhook ) {
-		return update_option( self::WEBHOOK_OPTION, $webhook );
+		return automator_update_option( self::WEBHOOK_OPTION, $webhook );
 	}
 
 	/**
@@ -109,7 +109,7 @@ class Telegram_Webhook {
 
 		try {
 			$this->functions->api->delete_telegram_webhook();
-			delete_option( self::WEBHOOK_OPTION );
+			automator_delete_option( self::WEBHOOK_OPTION );
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
 		}

@@ -54,7 +54,7 @@ class Open_AI_Helpers {
 
 		$this->verify_access( automator_filter_input( 'nonce' ), 'automator_openai_disconnect' );
 
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 
 		delete_transient( self::HAS_GPT4_ACCESS_TRANSIENT_KEY );
 

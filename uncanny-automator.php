@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             5.10.4
+ * Version:             6.0
  * Requires at least:   5.4
  * Requires PHP:        7.0
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '5.10.4' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '6.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -76,14 +76,21 @@ function automator_autoloader( $class ) {
 
 spl_autoload_register( 'automator_autoloader' );
 
+if ( ! defined( 'UA_ABSPATH' ) ) {
+	/**
+	 * Automator ABSPATH for file includes
+	 */
+	define( 'UA_ABSPATH', dirname( AUTOMATOR_BASE_FILE ) . DIRECTORY_SEPARATOR );
+}
+
 // Autoload files
-require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+require UA_ABSPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 // Add global functions.
-require __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'global-functions.php';
+require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'global-functions.php';
 // Add other global variables for plugin.
-require __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'globals.php';
+require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'globals.php';
 // Add InitializePlugin class for other plugins checking for version.
-require __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'legacy.php';
+require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'legacy.php';
 
 /**
  * @return Automator_Functions
@@ -100,8 +107,12 @@ function Automator() { // phpcs:ignore WordPress.NamingConventions.ValidFunction
 global $uncanny_automator;
 $uncanny_automator = Automator();
 
-if ( AUTOMATOR_PLUGIN_VERSION !== get_option( 'AUTOMATOR_PLUGIN_VERSION', 0 ) ) {
-	update_option( 'AUTOMATOR_PLUGIN_VERSION', AUTOMATOR_PLUGIN_VERSION );
+// Call the function to get all options pre-load.
+automator_get_all_options();
+
+if ( AUTOMATOR_PLUGIN_VERSION !== automator_get_option( 'AUTOMATOR_PLUGIN_VERSION', 0 ) ) {
+	automator_update_option( 'AUTOMATOR_PLUGIN_VERSION', AUTOMATOR_PLUGIN_VERSION );
+
 	Automator()->cache->reset_integrations_directory( null, null );
 }
 

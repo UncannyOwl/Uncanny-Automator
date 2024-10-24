@@ -13,7 +13,7 @@ class Divi_Tokens {
 	public function __construct() {
 
 		add_filter( 'automator_maybe_trigger_divi_diviform_tokens', array( $this, 'divi_possible_tokens' ), 20, 2 );
-		add_filter( 'automator_maybe_parse_token', array( $this, 'divi_token' ), 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'divi_token' ), 100, 6 );
 	}
 
 	/**
@@ -30,6 +30,7 @@ class Divi_Tokens {
 		}
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
+		$trigger_code = $args['triggers_meta']['code'];
 		$form_fields  = array(
 			array(
 				'field_id'    => 'name',
@@ -50,6 +51,9 @@ class Divi_Tokens {
 
 		if ( intval( '-1' ) !== intval( $form_id ) ) {
 			$form_fields = Divi_Helpers::get_form_by_id( $form_id );
+			if ( 'ANON_DIVI_SUBMIT_FORM' === $trigger_code || 'DIVI_SUBMIT_FORM' === $trigger_code ) {
+				$form_fields = Divi_Helpers::get_form_by_id( $form_id, true );
+			}
 			if ( empty( $form_fields ) ) {
 				return $tokens;
 			}
@@ -84,24 +88,32 @@ class Divi_Tokens {
 	 */
 	public function divi_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
-		$piece = 'DIVIFORM';
-		if ( empty( $piece ) ) {
+		if ( empty( $pieces ) ) {
 			return $value;
 		}
+
+		$piece = 'DIVIFORM';
 
 		if ( ! in_array( $piece, $pieces, true ) ) {
 			return $value;
 		}
+
 		if ( empty( $trigger_data ) ) {
 			return $value;
 		}
+
 		foreach ( $trigger_data as $trigger ) {
 			// Meta for form name
-			if ( ( 'DIVISUBMITFORM' === $pieces[1] || 'ANONDIVISUBMITFORM' === $pieces[1] ) && 'DIVIFORM' === $pieces[2] ) {
+			if ( ( 'DIVISUBMITFORM' === $pieces[1] || 'ANONDIVISUBMITFORM' === $pieces[1] ) || ( 'DIVI_SUBMIT_FORM' === $pieces[1] || 'ANON_DIVI_SUBMIT_FORM' === $pieces[1] ) && 'DIVIFORM' === $pieces[2] ) {
 				if ( isset( $trigger['meta'][ $pieces[2] . '_readable' ] ) ) {
-					return $trigger['meta'][ $pieces[2] . '_readable' ];
+					$value = $trigger['meta'][ $pieces[2] . '_readable' ];
+					if ( 'Any form' === $value ) {
+						$value = __( 'Divi form', 'uncanny-automator' );
+					}
 				}
+				return $value;
 			}
+
 			$trigger_id     = absint( $trigger['ID'] );
 			$trigger_log_id = absint( $replace_args['trigger_log_id'] );
 			$parse_tokens   = array(
@@ -111,19 +123,76 @@ class Divi_Tokens {
 			);
 
 			$meta_key = sprintf( '%d:%s', $pieces[0], $pieces[1] );
-			$entry    = Automator()->db->trigger->get_token_meta( $meta_key, $parse_tokens );
+
+			$entry = Automator()->db->trigger->get_token_meta( $meta_key, $parse_tokens );
+
 			if ( empty( $entry ) ) {
 				continue;
 			}
-			$value = $entry;
-			if ( is_array( $value ) ) {
-				$value = isset( $entry[ $pieces[2] ] ) ? $entry[ $pieces[2] ] : '';
+
+			$value       = $entry;
+			$token_piece = $pieces[2];
+			$main_parts  = array();
+			$suffix      = null;
+
+			if ( strpos( $token_piece, '__' ) !== false ) {
+				// Split the string by '__' and '|'
+				$main_parts = explode( '__', $token_piece );
+				$suffix     = strstr( $token_piece, '|' );
+
+				// Combine the first two elements with a hyphen and append the suffix
+				$token_piece = $main_parts[0] . '-' . $main_parts[1] . $suffix;
+			}
+
+			if ( in_array( '-1', explode( '|', $token_piece ), false ) ) {
+				$value = $this->match_token_suffix( $token_piece, $entry );
+
+			} elseif ( is_array( $entry ) ) {
+				$value = isset( $entry[ $token_piece ] ) ? $entry[ $token_piece ] : '';
 				if ( is_array( $value ) ) {
 					$value = implode( ', ', $value );
+				}
+			}
+
+			// If the token is not found, try to find it with unique ID + suffix
+			if ( empty( $value ) && ! empty( $main_parts[1] ) && ! empty( $suffix ) ) {
+				$token_piece = $main_parts[1] . $suffix;
+				if ( is_array( $entry ) ) {
+					foreach ( $entry as $key => $_value ) {
+						if ( strpos( $key, $token_piece ) !== false ) {
+							$value = $_value;
+							break;
+						}
+					}
 				}
 			}
 		}
 
 		return $value;
+	}
+
+	/**
+	 * @param $search_key_suffix
+	 * @param $array
+	 *
+	 * @return mixed|string
+	 */
+	public function match_token_suffix( $search_key_suffix, $array ) {
+		// Initialize a variable to store the matched value
+		$matched_value     = null;
+		$search_key_suffix = str_replace( '-1|', '', $search_key_suffix );
+
+		// Iterate through the array to find a key that ends with the search suffix
+		foreach ( $array as $key => $value ) {
+			if ( substr( $key, -strlen( $search_key_suffix ) ) === $search_key_suffix ) {
+				$matched_value = $value;
+				break;
+			}
+		}
+
+		if ( $matched_value !== null ) {
+			return $matched_value;
+		}
+			return '';
 	}
 }

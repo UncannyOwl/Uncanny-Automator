@@ -431,6 +431,9 @@ class Action_Logs_Resources {
 			$action_sentence_html = $action_meta['sentence_human_readable_html'];
 		}
 
+		// Check if the action is scheduled and can be cancelled.
+		$is_schedule = $this->maybe_action_is_scheduled( $action_log['action_completed'], $action_log['action_log_id'] );
+
 		$item = array(
 			'type'             => 'action',
 			'id'               => $action_id,
@@ -440,6 +443,8 @@ class Action_Logs_Resources {
 			'is_deleted'       => isset( $action_meta['is_deleted'] ),
 			'title_html'       => htmlspecialchars( $action_sentence_html, ENT_QUOTES ),
 			'can_rerun'        => $can_rerun,
+			'can_run_now'      => $is_schedule,
+			'can_cancel'       => $is_schedule,
 			'item_log_id'      => $action_log['action_log_id'],
 			'fields'           => $this->get_fields_values( $params, $action_id, $action_log['action_log_id'] ),
 			'start_date'       => $start_date,
@@ -469,6 +474,33 @@ class Action_Logs_Resources {
 
 		return $item;
 
+	}
+
+	/**
+	 * Check if the action is scheduled and can be cancelled.
+	 * @param $status_id
+	 * @param $action_log_id
+	 *
+	 * @return bool
+	 */
+	public function maybe_action_is_scheduled( $status_id, $action_log_id ) {
+		// If the action is not in progress, then it can't be scheduled.
+		if ( absint( $status_id ) !== (int) \Uncanny_Automator\Automator_Status::IN_PROGRESS ) {
+			return false;
+		}
+
+		// If Pro is not active, then it can't be cancelled.
+		if ( ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
+			return false;
+		}
+
+		$async_job_id = (int) Automator()->db->action->get_meta( $action_log_id, 'async_job_id' );
+
+		if ( is_numeric( $async_job_id ) && class_exists( 'ActionScheduler' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -647,6 +679,9 @@ class Action_Logs_Resources {
 			$result_message = $runs[ count( $runs ) - 1 ]['result_message'];
 		}
 
+		// Check if the action is scheduled and can be cancelled.
+		$is_schedule = $this->maybe_action_is_scheduled( $status_id, $action_log['action_log_id'] );
+
 		return array(
 			'from_legacy_log'  => true,
 			'type'             => 'action',
@@ -660,6 +695,8 @@ class Action_Logs_Resources {
 				'action',
 				$action_log['action_log_id']
 			),
+			'can_run_now'      => $is_schedule,
+			'can_cancel'       => $is_schedule,
 			'fields'           => array(),
 			'result_message'   => $result_message,
 			'runs'             => $runs,
@@ -748,6 +785,8 @@ class Action_Logs_Resources {
 				'end_date'         => $date_time,
 				'title_html'       => htmlentities( $log_entry['meta']['sentence_human_readable_html'], ENT_QUOTES ),
 				'can_rerun'        => false,
+				'can_run_now'      => false,
+				'can_cancel'       => false,
 				'fields'           => array(
 					array(
 						'field_code' => 'REDIRECTURL',
@@ -772,7 +811,6 @@ class Action_Logs_Resources {
 				),
 			);
 		}
-
 		return $results_formatted;
 
 	}

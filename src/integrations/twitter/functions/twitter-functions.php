@@ -200,8 +200,8 @@ class Twitter_Functions {
 			return;
 		}
 
-		delete_option( '_uncannyowl_twitter_settings' );
-		delete_option( 'automator_twitter_user' );
+		automator_delete_option( '_uncannyowl_twitter_settings' );
+		automator_delete_option( 'automator_twitter_user' );
 
 		// Reload the page
 		wp_safe_redirect( $this->get_settings_page_url() );
@@ -338,7 +338,7 @@ class Twitter_Functions {
 		if ( $tokens ) {
 
 			// Save them
-			update_option( '_uncannyowl_twitter_settings', $tokens );
+			automator_update_option( '_uncannyowl_twitter_settings', $tokens );
 
 			$connect = 1;
 		}
@@ -406,7 +406,7 @@ class Twitter_Functions {
 	 */
 	public function get_user_app_username() {
 
-		$user = get_option( 'automator_twitter_user', array() );
+		$user = automator_get_option( 'automator_twitter_user', array() );
 
 		if ( ! empty( $user['screen_name'] ) ) {
 			return $user['screen_name'];

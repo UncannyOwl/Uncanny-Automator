@@ -139,7 +139,7 @@ class CONVERTKIT_FORM_SUBSCRIBER_ADD {
 				'action'        => 'add_subscriber_to_form',
 				'form_id'       => $form_id,
 				'email_address' => $email_address,
-				'access_token'  => get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
+				'access_token'  => automator_get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
 				'first_name'    => $first_name,
 			);
 

@@ -171,7 +171,7 @@ class Trello_Functions {
 			$this->redirect_with_message( __( 'Unable to verify security nonce', 'uncanny-automator' ) );
 		}
 
-		update_option( self::TOKEN, $token );
+		automator_update_option( self::TOKEN, $token );
 
 		$this->redirect_with_message( '1' );
 	}
@@ -237,7 +237,7 @@ class Trello_Functions {
 			return;
 		}
 
-		delete_option( self::TOKEN );
+		automator_delete_option( self::TOKEN );
 
 		wp_safe_redirect( $this->get_settings_page_url() );
 

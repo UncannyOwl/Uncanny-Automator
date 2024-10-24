@@ -112,7 +112,7 @@ class Add_Popup_Maker_Integration {
 			$is_action_popup_ids_enabled = get_user_meta( $user_id, 'display_pop_up_' . $pop_id, false );
 		} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
 			$md5                         = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
-			$is_action_popup_ids_enabled = get_option( 'automator_display_popup_' . $md5, array() );
+			$is_action_popup_ids_enabled = automator_get_option( 'automator_display_popup_' . $md5, array() );
 			$is_action_popup_ids_enabled = array( $is_action_popup_ids_enabled );
 		}
 		// if an this action was competed then a meta value was stores for this pop up.
@@ -122,7 +122,7 @@ class Add_Popup_Maker_Integration {
 				delete_user_meta( $user_id, 'display_pop_up_' . $pop_id );
 			} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
 				$md5 = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
-				delete_option( 'automator_display_popup_' . $md5 );
+				automator_delete_option( 'automator_display_popup_' . $md5 );
 			}
 
 			return true;
@@ -141,7 +141,7 @@ class Add_Popup_Maker_Integration {
 		global $wpdb;
 		$popup_settings = $wpdb->get_results( "SELECT post_id, meta_value as settings FROM $wpdb->postmeta WHERE meta_key = 'popup_settings'" );
 		if ( empty( $popup_settings ) ) {
-			update_option( 'automator_popup_maker_migrated', 'yes', true );
+			automator_update_option( 'automator_popup_maker_migrated', 'yes', true );
 
 			return;
 		}
@@ -176,6 +176,6 @@ class Add_Popup_Maker_Integration {
 				update_post_meta( $popup_id, 'popup_settings', $settings );
 			}
 		}
-		update_option( 'automator_popup_maker_migrated', 'yes', true );
+		automator_update_option( 'automator_popup_maker_migrated', 'yes', true );
 	}
 }

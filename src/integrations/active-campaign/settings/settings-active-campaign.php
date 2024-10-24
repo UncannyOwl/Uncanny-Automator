@@ -90,11 +90,11 @@ class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 
 		$this->is_connected = 'success' === $this->helpers->integration_status();
 
-		$this->users = get_option( 'uap_active_campaign_connected_user', array() );
+		$this->users = automator_get_option( 'uap_active_campaign_connected_user', array() );
 
-		$this->account_url = get_option( 'uap_active_campaign_api_url', '' );
+		$this->account_url = automator_get_option( 'uap_active_campaign_api_url', '' );
 
-		$this->api_key = get_option( 'uap_active_campaign_api_key', '' );
+		$this->api_key = automator_get_option( 'uap_active_campaign_api_key', '' );
 
 		$this->enable_triggers = $this->helpers->is_webhook_enabled() ? 'checked' : '';
 

@@ -235,7 +235,7 @@ class Aweber_Helpers {
 			die;
 		}
 
-		add_option( self::CREDENTIALS, array_merge( $credentials['data'], array( 'date_added' => time() ) ), '', false );
+		automator_add_option( self::CREDENTIALS, array_merge( $credentials['data'], array( 'date_added' => time() ) ), false );
 
 		// Then redirect to settings page. Flag as connected with success=yes.
 		wp_safe_redirect( $this->get_settings_page_url() . '&success=yes' );
@@ -249,7 +249,7 @@ class Aweber_Helpers {
 	 * @return array
 	 */
 	public static function get_credentials() {
-		return (array) get_option( self::CREDENTIALS, array() );
+		return (array) automator_get_option( self::CREDENTIALS, array() );
 	}
 
 	/**
@@ -286,7 +286,7 @@ class Aweber_Helpers {
 	 * @return void
 	 */
 	public function remove_credentials() {
-		delete_option( self::CREDENTIALS );
+		automator_delete_option( self::CREDENTIALS );
 	}
 
 	/**
@@ -382,7 +382,7 @@ class Aweber_Helpers {
 		$credentials['date_added'] = time();
 
 		// Finally, update the credentials.
-		update_option( self::CREDENTIALS, $credentials );
+		automator_update_option( self::CREDENTIALS, $credentials );
 
 		return $response;
 

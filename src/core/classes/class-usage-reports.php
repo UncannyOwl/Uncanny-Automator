@@ -76,8 +76,8 @@ class Usage_Reports {
 
 		add_action( 'automator_recipe_completed', array( $this, 'count_recipe_completion' ) );
 
-		add_action( 'update_option_' . self::OPTION_NAME, array( $this, 'maybe_schedule_report' ), 100, 3 );
-		add_action( 'add_option_' . self::OPTION_NAME, array( $this, 'maybe_schedule_report' ), 100, 3 );
+		add_action( 'automator_update_option_' . self::OPTION_NAME, array( $this, 'maybe_schedule_report' ), 100, 2 );
+		add_action( 'automator_add_option_' . self::OPTION_NAME, array( $this, 'maybe_schedule_report' ), 100, 2 );
 
 		add_action( 'automator_weekly_healthcheck', array( $this, 'maybe_schedule_report' ) );
 
@@ -148,7 +148,7 @@ class Usage_Reports {
 
 		$usage_report_stats['events'][ $event ][] = $data['value'];
 
-		update_option( self::STATS_OPTION_NAME, $usage_report_stats );
+		automator_update_option( self::STATS_OPTION_NAME, $usage_report_stats );
 
 		return new WP_REST_Response( array(), 201 );
 	}
@@ -253,7 +253,7 @@ class Usage_Reports {
 			return AUTOMATOR_REPORTING;
 		}
 
-		if ( (bool) get_option( self::OPTION_NAME, false ) === true ) {
+		if ( (bool) automator_get_option( self::OPTION_NAME, false ) === true ) {
 			$reporting_enabled = true;
 		}
 
@@ -610,7 +610,7 @@ class Usage_Reports {
 	 * @return int
 	 */
 	public function get_completed_runs() {
-		return absint( get_option( self::RECIPE_COUNT_OPTION, Automator()->get->total_completed_runs() ) );
+		return absint( automator_get_option( self::RECIPE_COUNT_OPTION, Automator()->get->total_completed_runs() ) );
 	}
 
 	/**
@@ -641,8 +641,8 @@ WHERE p.post_type LIKE %s
 	 * @return void
 	 */
 	public function count_recipe_completion() {
-		$completed_runs = absint( get_option( self::RECIPE_COUNT_OPTION, Automator()->get->total_completed_runs() - 1 ) );
-		update_option( self::RECIPE_COUNT_OPTION, ++ $completed_runs );
+		$completed_runs = absint( automator_get_option( self::RECIPE_COUNT_OPTION, Automator()->get->total_completed_runs() - 1 ) );
+		automator_update_option( self::RECIPE_COUNT_OPTION, ++ $completed_runs );
 	}
 
 	/**
@@ -924,7 +924,7 @@ WHERE p.post_type LIKE %s
 				throw new \Exception( __( 'Something went wrong', 'uncanny-automator' ) );
 			}
 
-			delete_option( self::STATS_OPTION_NAME );
+			automator_delete_option( self::STATS_OPTION_NAME );
 
 			return true;
 		} catch ( \Exception $e ) {
@@ -1000,7 +1000,7 @@ WHERE p.post_type LIKE %s
 
 		$usage_report_stats['page_views'][ $page ] = $page_views;
 
-		update_option( self::STATS_OPTION_NAME, $usage_report_stats );
+		automator_update_option( self::STATS_OPTION_NAME, $usage_report_stats );
 	}
 
 	public function count_premium_integration_view( $Settings_Page ) {
@@ -1013,13 +1013,13 @@ WHERE p.post_type LIKE %s
 	public function get_settings() {
 
 		$settings_to_report = array(
-			'Background actions' => '1' === get_option( Background_Actions::OPTION_NAME, '' ) ? 'Enabled' : 'Disabled',
-			'Automator cache'    => '1' === get_option( Automator_Cache_Handler::OPTION_NAME, '' ) ? 'Enabled' : 'Disabled',
+			'Background actions' => '1' === automator_get_option( Background_Actions::OPTION_NAME, '' ) ? 'Enabled' : 'Disabled',
+			'Automator cache'    => '1' === automator_get_option( Automator_Cache_Handler::OPTION_NAME, '' ) ? 'Enabled' : 'Disabled',
 		);
 
 		if ( is_automator_pro_active() ) {
 			$settings_to_report['Auto-prune activity logs']        = empty( as_next_scheduled_action( 'uapro_auto_purge_logs' ) ) ? 'Disabled' : 'Enabled';
-			$settings_to_report['Auto-prune activity logs (days)'] = (int) get_option( 'uap_automator_purge_days', 0 );
+			$settings_to_report['Auto-prune activity logs (days)'] = (int) automator_get_option( 'uap_automator_purge_days', 0 );
 		}
 
 		$this->report['settings'] = $settings_to_report;

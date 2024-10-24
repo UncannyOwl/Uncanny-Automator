@@ -201,8 +201,8 @@ class Brevo_Helpers {
 	 */
 	public function remove_credentials() {
 		// Remove the stored options.
-		delete_option( self::OPTION_KEY );
-		delete_option( self::ACCOUNT_KEY );
+		automator_delete_option( self::OPTION_KEY );
+		automator_delete_option( self::ACCOUNT_KEY );
 		// Remove any stored transients.
 		delete_transient( 'automator_brevo_account' );
 		delete_transient( 'automator_brevo_contacts/lists' );
@@ -259,7 +259,7 @@ class Brevo_Helpers {
 		// Check for Legacy invalid key.
 		if ( 0 === strpos( $api_key, $this->invalid_key_message ) ) {
 			$account['error'] = $this->invalid_key_message;
-			update_option( self::ACCOUNT_KEY, $account );
+			automator_update_option( self::ACCOUNT_KEY, $account );
 			return $account;
 		}
 
@@ -269,7 +269,7 @@ class Brevo_Helpers {
 		} catch ( \Exception $e ) {
 			$error            = $e->getMessage();
 			$account['error'] = ! empty( $error ) ? $error : _x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
-			update_option( self::ACCOUNT_KEY, $account );
+			automator_update_option( self::ACCOUNT_KEY, $account );
 
 			return $account;
 		}
@@ -289,7 +289,7 @@ class Brevo_Helpers {
 			}
 		}
 
-		update_option( self::ACCOUNT_KEY, $account );
+		automator_update_option( self::ACCOUNT_KEY, $account );
 
 		return $account;
 	}
@@ -426,7 +426,14 @@ class Brevo_Helpers {
 		$defaults   = array( 'FIRSTNAME', 'LASTNAME', 'SMS', 'DOUBLE_OPT-IN', 'OPT_IN' );
 		$attributes = array();
 		foreach ( $response['data']['attributes'] as $attribute ) {
-			if ( 'global' === $attribute['category'] || ! empty( $attribute['calculatedValue'] ) || empty( $attribute['type'] ) ) {
+			// Add check for Multi-Choice and Category ( enumeration ) select options.
+			$type     = $attribute['type'] ?? '';
+			$type     = empty( $type ) && isset( $attribute['enumeration'] ) ? 'select' : $type;
+			$multiple = 'multiple-choice' === $type;
+			$type     = $multiple ? 'select' : $type;
+			$options  = false;
+
+			if ( 'global' === $attribute['category'] || ! empty( $attribute['calculatedValue'] ) || empty( $type ) ) {
 				continue;
 			}
 			if ( in_array( $attribute['name'], $defaults, true ) ) {
@@ -434,18 +441,22 @@ class Brevo_Helpers {
 				continue;
 			}
 
-			$type = $attribute['type']; //text date float id boolean
 			if ( 'float' === $type || 'id' === $type ) {
 				$type = 'number';
 			}
 			if ( 'boolean' === $type ) {
 				$type = 'checkbox';
 			}
+			if ( 'select' === $type ) {
+				$options = $multiple ? $attribute['multiCategoryOptions'] : $attribute['enumeration'];
+			}
 
 			$attributes[] = array(
-				'value' => $attribute['name'],
-				'text'  => $attribute['name'],
-				'type'  => $type,
+				'value'    => $attribute['name'],
+				'text'     => $attribute['name'],
+				'type'     => $type,
+				'options'  => $options,
+				'multiple' => $multiple,
 			);
 		}
 
@@ -456,7 +467,7 @@ class Brevo_Helpers {
 			}
 		);
 
-		set_transient( $transient, $attributes, HOUR_IN_SECONDS );
+		set_transient( $transient, $attributes, DAY_IN_SECONDS );
 
 		return $attributes;
 	}

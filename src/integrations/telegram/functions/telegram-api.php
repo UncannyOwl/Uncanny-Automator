@@ -79,7 +79,7 @@ class Telegram_Api {
 	 */
 	public function verify_token() {
 
-		delete_option( Telegram_Functions::BOT_INFO );
+		automator_delete_option( Telegram_Functions::BOT_INFO );
 
 		$api_request_body = array(
 			'action' => 'bot_info',
@@ -93,7 +93,7 @@ class Telegram_Api {
 			throw new \Exception( __( 'Bot token verification failed.', 'uncanny-automator' ) );
 		}
 
-		update_option( Telegram_Functions::BOT_INFO, $bot_info['result'] );
+		automator_update_option( Telegram_Functions::BOT_INFO, $bot_info['result'] );
 	}
 
 	/**

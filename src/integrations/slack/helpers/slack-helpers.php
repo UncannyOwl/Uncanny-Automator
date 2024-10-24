@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Api_Server;
-
 /**
  * Class Slack_Helpers
  *
@@ -134,17 +132,17 @@ class Slack_Helpers {
 	 */
 	public function maybe_customize_bot( $message ) {
 
-		$settings_bot_name = get_option( 'uap_automator_slack_api_bot_name', '' );
+		$settings_bot_name = automator_get_option( 'uap_automator_slack_api_bot_name', '' );
 
 		if ( empty( $message['username'] ) && ! empty( $settings_bot_name ) ) {
-			$message['username'] = get_option( 'uap_automator_slack_api_bot_name', '' );
+			$message['username'] = automator_get_option( 'uap_automator_slack_api_bot_name', '' );
 		}
 
-		$settings_bot_icon = get_option( 'uap_automator_alck_api_bot_icon', '' );
+		$settings_bot_icon = automator_get_option( 'uap_automator_alck_api_bot_icon', '' );
 
 		if ( empty( $message['icon_url'] ) && ! empty( $settings_bot_icon ) ) {
 
-			$message['icon_url'] = get_option( 'uap_automator_alck_api_bot_icon', '' );
+			$message['icon_url'] = automator_get_option( 'uap_automator_alck_api_bot_icon', '' );
 		}
 
 		return apply_filters( 'uap_slack_maybe_customize_bot', $message );
@@ -384,7 +382,7 @@ class Slack_Helpers {
 			$response = $this->api_call( $body );
 
 			$options[] = array(
-				'value' => '-1',
+				'value' => '',
 				'text'  => __( 'Select a user', 'uncanny-automator' ),
 			);
 
@@ -502,7 +500,7 @@ class Slack_Helpers {
 
 		// Check is the parsed tokens are valid
 		if ( $tokens ) {
-			update_option( '_uncannyowl_slack_settings', $tokens );
+			automator_update_option( '_uncannyowl_slack_settings', $tokens );
 			$connect = 1;
 		}
 
@@ -532,7 +530,7 @@ class Slack_Helpers {
 
 		if ( '1' === automator_filter_input( 'disconnect' ) ) {
 			// Delete the saved data
-			delete_option( '_uncannyowl_slack_settings' );
+			automator_delete_option( '_uncannyowl_slack_settings' );
 
 			// Reload the page
 			wp_safe_redirect( $this->settings_page_url );
@@ -589,7 +587,8 @@ class Slack_Helpers {
 	/**
 	 * check_for_errors
 	 *
-	 * @param  mixed $response
+	 * @param mixed $response
+	 *
 	 * @return void
 	 */
 	public function check_for_errors( $response ) {
@@ -622,7 +621,7 @@ class Slack_Helpers {
 				'input_type'  => 'text',
 				'required'    => false,
 				'label'       => __( 'Bot name', 'uncanny-automator' ),
-				'default'     => get_option( 'uap_automator_slack_api_bot_name', '' ),
+				'default'     => automator_get_option( 'uap_automator_slack_api_bot_name', '' ),
 			)
 		);
 	}
@@ -639,7 +638,7 @@ class Slack_Helpers {
 				'input_type'  => 'url',
 				'required'    => false,
 				'label'       => __( 'Bot icon', 'uncanny-automator' ),
-				'default'     => get_option( 'uap_automator_alck_api_bot_icon', '' ),
+				'default'     => automator_get_option( 'uap_automator_alck_api_bot_icon', '' ),
 				'description' => _x( 'Enter the URL of the image you wish to share. The image must be publicly accessible and at minimum 512x512 pixels and at maximum 1024x1024 pixels.', 'Slack', 'uncanny-automator' ),
 			)
 		);

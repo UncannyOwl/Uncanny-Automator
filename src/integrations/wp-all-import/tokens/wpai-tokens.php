@@ -87,7 +87,7 @@ class Wpai_Tokens {
 				),
 				array(
 					'tokenId'         => 'POSTID',
-					'tokenName'       => __( 'Post ID', 'uncanny_automator' ),
+					'tokenName'       => __( 'Post ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -99,19 +99,19 @@ class Wpai_Tokens {
 				),
 				array(
 					'tokenId'         => 'POSTCONTENT',
-					'tokenName'       => __( 'Post content (raw)', 'uncanny_automator' ),
+					'tokenName'       => __( 'Post content (raw)', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTCONTENT_BEAUTIFIED',
-					'tokenName'       => __( 'Post content (formatted)', 'uncanny_automator' ),
+					'tokenName'       => __( 'Post content (formatted)', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTEXCERPT',
-					'tokenName'       => __( 'Post excerpt', 'uncanny_automator' ),
+					'tokenName'       => __( 'Post excerpt', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -129,7 +129,7 @@ class Wpai_Tokens {
 				),
 				array(
 					'tokenId'         => 'POSTIMAGEID',
-					'tokenName'       => __( 'Post featured image ID', 'uncanny_automator' ),
+					'tokenName'       => __( 'Post featured image ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),

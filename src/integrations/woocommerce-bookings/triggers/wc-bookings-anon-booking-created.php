@@ -22,13 +22,13 @@ class WC_BOOKINGS_ANON_BOOKING_CREATED extends Trigger {
 		add_action(
 			'admin_init',
 			function () {
-				if ( 'yes' === get_option( 'woo_booking_created_migrated', 'no' ) ) {
+				if ( 'yes' === automator_get_option( 'woo_booking_created_migrated', 'no' ) ) {
 					return;
 				}
 				$searialize = array( 'woocommerce_booking_confirmed', 'woocommerce_booking_unpaid_to_paid' );
 				global $wpdb;
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE meta_value = %s AND meta_key LIKE %s", $searialize, 'woocommerce_booking_unpaid_to_paid', 'add_action' ) );
-				update_option( 'woo_booking_created_migrated', 'yes' );
+				automator_update_option( 'woo_booking_created_migrated', 'yes' );
 			},
 			99
 		);

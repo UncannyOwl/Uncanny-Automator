@@ -276,6 +276,7 @@ abstract class Trigger {
 		);
 
 		add_filter( $filter, array( $this, 'fetch_token_data' ), 20, 6 );
+
 	}
 
 	/**
@@ -349,7 +350,7 @@ abstract class Trigger {
 		$this->set_user_id( get_current_user_id() );
 
 		/**
-		 * GEt all recipes with the current tirgger
+		 * Get all recipes with the current trigger.
 		 */
 		$this->trigger_recipes = Automator()->get->recipes_from_trigger_code( $this->get_trigger_code() );
 
@@ -467,11 +468,37 @@ abstract class Trigger {
 		$process_further = apply_filters( 'automator_trigger_should_complete', true, $do_action, $this );
 
 		if ( $process_further ) {
+			// Register the hook.
+			$this->register_loopable_trigger_tokens_hooks( $do_action );
+			// Fire the hook.
+			do_action( 'automator_loopable_token_hydrate', $do_action['entry_args'], $do_action['trigger_args'] );
+			// Complete the trigger.
 			Automator()->complete->trigger( $this->trigger_records );
 		}
 
 		do_action( 'automator_after_maybe_trigger_complete', $do_action, $this );
 
+	}
+
+	/**
+	 * @param mixed $args
+	 * @return void
+	 */
+	private function register_loopable_trigger_tokens_hooks( $args ) {
+
+		$trigger_code    = $args['entry_args']['code'] ?? null;
+		$trigger         = Automator()->get_trigger( $trigger_code );
+		$loopable_tokens = $trigger['loopable_tokens'] ?? array();
+
+		foreach ( (array) $loopable_tokens as $token_class ) {
+			if ( is_string( $token_class ) && class_exists( $token_class ) ) {
+				$token_class = new $token_class( $this->trigger['ID'] );
+				$token_class->register_hooks( $trigger );
+				$token_class->set_trigger( $trigger );
+			}
+		}
+
+		return;
 	}
 
 	/**

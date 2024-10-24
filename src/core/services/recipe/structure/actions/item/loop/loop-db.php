@@ -132,12 +132,34 @@ class Loop_Db {
 				}
 
 				if ( true === $render_action_tokens ) {
-					$loops_actions[ $key ]['tokens'] = apply_filters( 'automator_action_' . $action_meta['code'] . '_tokens_renderable', array(), $action_id, $recipe_id );
+					$loops_actions[ $key ]['tokens'] = $this->loops_action_tokens_renderable( $action_meta['code'], $action_id, $recipe_id );
 				}
 			}
 		}
 
 		return array_values( (array) $loops_actions );
+	}
+
+	/**
+	 * @param string $action_code
+	 * @param int $action_id
+	 * @param int $recipe_id
+	 *
+	 * @return mixed[]
+	 */
+	private function loops_action_tokens_renderable( $action_code, $action_id, $recipe_id ) {
+
+		$default_action_tokens = array();
+
+		$status = Automator()->action_tokens()->entity();
+		$status->set_id( 'ACTION_RUN_STATUS' );
+		$status->set_name( _x( 'Completion status', 'Action token', 'uncanny-automator' ) );
+		$status->set_type( 'string' );
+
+		$default_action_tokens[] = $status->toArray();
+
+		return apply_filters( "automator_action_{$action_code}_tokens_renderable", $default_action_tokens, $action_id, $recipe_id );
+
 	}
 
 	/**

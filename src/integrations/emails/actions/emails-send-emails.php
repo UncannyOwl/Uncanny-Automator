@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Services\Email\Attachment\Handler as Email_Attachment_Handler;
+
 /**
  * Class EMAILS_SEND_EMAILS
  *
@@ -19,6 +21,11 @@ class EMAILS_SEND_EMAILS {
 	private $key_generated;
 
 	/**
+	 * @var string|null
+	 */
+	private static $attachment_path = null;
+
+	/**
 	 * Property $key.
 	 *
 	 * @var null
@@ -31,9 +38,12 @@ class EMAILS_SEND_EMAILS {
 	 * @return void.
 	 */
 	public function __construct() {
+
 		$this->key_generated = false;
 		$this->key           = null;
+
 		$this->setup_action();
+
 	}
 
 	/**
@@ -138,6 +148,9 @@ class EMAILS_SEND_EMAILS {
 					// Get the email to be sent
 					const emailBody = unsavedFieldValues.EMAILBODY;
 
+					// Get the attachments
+					const attachments = JSON.stringify( unsavedFieldValues.FILE_ATTACHMENT_URL );
+
 					// Add loading animation to the submit button
 					$primaryButton.setAttribute( 'loading', '' );
 
@@ -161,6 +174,7 @@ class EMAILS_SEND_EMAILS {
 							action_id: data.item.id, // Action ID
 							email_body: emailBody, // Body
 							email_address: emailFieldValue, // Email address
+							attachments: attachments, // Attachments
 						}
 					} )
 						.then( response => {
@@ -233,6 +247,18 @@ class EMAILS_SEND_EMAILS {
 	 * @return array
 	 */
 	public function load_options() {
+
+		$file_attachment_description = Emails_Helpers::get_file_attachment_field_description();
+
+		$attachment_field = array(
+			'option_code'              => 'FILE_ATTACHMENT_URL', // Unique identifier for the file field option.
+			'input_type'               => 'file', // Specifies that this field is for file input.
+			'label'                    => __( 'File attachment', 'uncanny-automator' ), // Label for the file field, displayed in the UI.
+			'description'              => $file_attachment_description, // A brief description of the file field.
+			'required'                 => false, // Indicates that this file field is mandatory.
+			'supports_multiple_values' => false, // Allows multiple files to be uploaded.
+		);
+
 		$options_group = array(
 
 			$this->get_action_meta() => array(
@@ -338,6 +364,9 @@ class EMAILS_SEND_EMAILS {
 					)
 				),
 
+				// File attachment URL.
+				$attachment_field,
+
 			),
 		);
 
@@ -375,23 +404,25 @@ class EMAILS_SEND_EMAILS {
 		// Reset the errors.
 		Automator_WP_Error::get_instance()->reset_errors();
 
-		$body_text    = isset( $parsed['EMAILBODY'] ) ? $parsed['EMAILBODY'] : '';
-		$content_type = isset( $parsed['EMAILCONTENTTYPE'] ) ? $parsed['EMAILCONTENTTYPE'] : 'text/html';
+		$body           = $parsed['EMAILBODY'] ?? '';
+		$content_type   = $parsed['EMAILCONTENTTYPE'] ?? 'text/html';
+		$attachment_url = $parsed['FILE_ATTACHMENT_URL'] ?? '';
+		$attachment_url = Email_Attachment_Handler::get_url_from_field_value( $attachment_url );
 
-		if ( false !== strpos( $body_text, '{{reset_pass_link}}' ) ) {
+		if ( false !== strpos( $body, '{{reset_pass_link}}' ) ) {
 			$reset_pass = ! is_null( $this->key ) ? $this->key : Automator()->parse->generate_reset_token( $user_id );
-			$body       = str_replace( '{{reset_pass_link}}', $reset_pass, $body_text );
-		} else {
-			$body = $body_text;
+			$body       = str_replace( '{{reset_pass_link}}', $reset_pass, $body );
 		}
 
+		$content_type = 'text/html';
+
 		if ( 'plain' === (string) $content_type ) {
+
 			$content_type = 'text/plain';
-			$body         = preg_replace( '/<br\s*\/?>/', PHP_EOL, $body );
-			$body         = wp_strip_all_tags( $body );
+			// Strip all the tags.
+			$body = wp_strip_all_tags( preg_replace( '/<br\s*\/?>/', PHP_EOL, $body ) );
 			$this->set_is_html( false );
-		} else {
-			$content_type = 'text/html';
+
 		}
 
 		if ( empty( wp_strip_all_tags( $body ) ) ) {
@@ -399,20 +430,23 @@ class EMAILS_SEND_EMAILS {
 		}
 
 		$this->set_content_type( $content_type );
+
 		$data = array(
-			'to'        => isset( $parsed['EMAILTO'] ) ? $parsed['EMAILTO'] : '',
-			'reply_to'  => isset( $parsed['REPLYTO'] ) ? $parsed['REPLYTO'] : '',
-			'from'      => isset( $parsed['EMAILFROM'] ) ? $parsed['EMAILFROM'] : '',
-			'from_name' => isset( $parsed['EMAILFROMNAME'] ) ? $parsed['EMAILFROMNAME'] : '',
-			'cc'        => isset( $parsed['EMAILCC'] ) ? $parsed['EMAILCC'] : '',
-			'bcc'       => isset( $parsed['EMAILBCC'] ) ? $parsed['EMAILBCC'] : '',
-			'subject'   => isset( $parsed['EMAILSUBJECT'] ) ? $parsed['EMAILSUBJECT'] : '',
-			'body'      => $body,
-			'content'   => $this->get_content_type(),
-			'charset'   => $this->get_charset(),
+			'to'         => isset( $parsed['EMAILTO'] ) ? $parsed['EMAILTO'] : '',
+			'reply_to'   => isset( $parsed['REPLYTO'] ) ? $parsed['REPLYTO'] : '',
+			'from'       => isset( $parsed['EMAILFROM'] ) ? $parsed['EMAILFROM'] : '',
+			'from_name'  => isset( $parsed['EMAILFROMNAME'] ) ? $parsed['EMAILFROMNAME'] : '',
+			'cc'         => isset( $parsed['EMAILCC'] ) ? $parsed['EMAILCC'] : '',
+			'bcc'        => isset( $parsed['EMAILBCC'] ) ? $parsed['EMAILBCC'] : '',
+			'subject'    => isset( $parsed['EMAILSUBJECT'] ) ? $parsed['EMAILSUBJECT'] : '',
+			'body'       => $body,
+			'content'    => $this->get_content_type(),
+			'charset'    => $this->get_charset(),
+			'attachment' => $attachment_url,
 		);
 
 		$this->set_mail_values( $data, $user_id, $recipe_id, $args );
+
 		$mailed = $this->send_email();
 
 		// Set $this->set_error_message(); and complete the action automatically. May be use return true / false.
@@ -425,9 +459,9 @@ class EMAILS_SEND_EMAILS {
 			return;
 		}
 
-		$sent_email_completed = absint( get_option( 'automator_sent_email_completed', 0 ) );
+		$sent_email_completed = absint( automator_get_option( 'automator_sent_email_completed', 0 ) );
 
-		update_option( 'automator_sent_email_completed', $sent_email_completed + 1 );
+		automator_update_option( 'automator_sent_email_completed', $sent_email_completed + 1 );
 
 		if ( ! empty( $this->get_error_message() ) ) {
 			$error_message                       = $this->get_error_message();

@@ -8,7 +8,7 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 
 /**
- *
+ * Loop_Logs_Resources
  */
 class Loop_Logs_Resources {
 
@@ -365,7 +365,8 @@ class Loop_Logs_Resources {
 		$statuses = array();
 
 		$log_identifier = self::get_log_identifier( $loop );
-		$entities       = json_decode( $log['entity_ids'], true );
+
+		$entities = json_decode( $log['entity_ids'], true );
 
 		foreach ( $distinct_statuses as $status ) {
 
@@ -392,13 +393,15 @@ class Loop_Logs_Resources {
 
 				if ( 'token' === $type ) {
 
-					$identifier = $this->replace_placeholders( $log_identifier, $entities[ $entity_id ] );
+					if ( isset( $entities[ $entity_id ] ) ) {
+						$identifier = $this->replace_placeholders( $log_identifier, $entities[ $entity_id ] );
+					}
 
 					if ( empty( $identifier ) ) {
 						$identifier = '#' . $entity_id;
 					}
 
-					$properties = self::build_token_loop_properties_from_entry( $entities, $entity_id );
+					$properties = array_merge( $properties, self::build_token_loop_properties_from_entry( $entities, $entity_id ) );
 				}
 
 				$structure = array(
@@ -503,8 +506,37 @@ class Loop_Logs_Resources {
 		}
 
 		foreach ( $values as $key => $value ) {
+
 			$label = ucfirst( strtolower( str_replace( '_', ' ', $key ) ) );
 			$label = str_replace( ' id', ' ID', $label );
+
+			if ( is_array( $value ) ) {
+
+				$extracted_value = self::extract_xml_text( $value );
+
+				if ( false === $extracted_value ) {
+
+					$properties[] = array(
+						'type'       => 'code',
+						'label'      => $label,
+						'value'      => wp_json_encode( $value, JSON_PRETTY_PRINT ), // phpcs:ignore
+						'attributes' => array(
+							'code_language' => 'JSON',
+						),
+					);
+
+					continue;
+				}
+
+				$properties[] = array(
+					'type'  => 'text',
+					'label' => $label,
+					'value' => $extracted_value, // phpcs:ignore
+				);
+
+				continue;
+
+			}
 
 			$properties[] = array(
 				'type'  => 'text',
@@ -514,6 +546,35 @@ class Loop_Logs_Resources {
 		}
 
 		return $properties;
+	}
+
+	/**
+	 * Extracts the value from loopable xml text.
+	 *
+	 * @param mixed[] $array
+	 *
+	 * @return string
+	 */
+	public static function extract_xml_text( $array ) {
+
+		if ( ! is_array( $array ) ) {
+			return false;
+		}
+
+		if ( 1 !== count( $array ) ) {
+			return false;
+		}
+
+		if ( ! isset( $array[0]['_loopable_xml_text'] ) ) {
+			return false;
+		}
+
+		if ( ! is_string( $array[0]['_loopable_xml_text'] ) ) {
+			return false;
+		}
+
+		return $array[0]['_loopable_xml_text'] ?? '';
+
 	}
 
 	/**
@@ -545,7 +606,9 @@ class Loop_Logs_Resources {
 		}
 
 		if ( ! empty( $loopable_class ) && is_subclass_of( $loopable_class, '\Uncanny_Automator\Services\Loopable\Loopable_Token', true ) ) {
-			return $loopable_class->get_log_identifier();
+			if ( is_object( $loopable_class ) && method_exists( $loopable_class, 'get_log_identifier' ) ) {
+				return $loopable_class->get_log_identifier();
+			}
 		}
 
 		return '';
@@ -561,10 +624,16 @@ class Loop_Logs_Resources {
 	 * @return mixed[]
 	 */
 	private function replace_placeholders( $template, $data ) {
-		foreach ( $data as $key => $value ) {
+
+		foreach ( (array) $data as $key => $value ) {
+			if ( ! is_string( $key ) || ! is_string( $value ) ) {
+				continue;
+			}
 			$template = str_replace( '{{' . $key . '}}', $value, $template );
 		}
+
 		return $template;
+
 	}
 
 	/**

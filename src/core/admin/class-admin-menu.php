@@ -201,7 +201,7 @@ class Admin_Menu {
 
 		if ( false === $uap_automator_allow_tracking && false !== $is_connected ) {
 			// Opt-in the user automatically.
-			update_option( $option_key, true );
+			automator_update_option( $option_key, true );
 		}
 	}
 
@@ -530,13 +530,6 @@ class Admin_Menu {
 	}
 
 	/**
-	 * Create Page view
-	 */
-	public function debug_logs_options_menu_page_output() {
-		include UA_ABSPATH . 'src/core/views/admin-debug-log.php';
-	}
-
-	/**
 	 * @param $admin_title
 	 * @param $title
 	 *
@@ -778,7 +771,7 @@ class Admin_Menu {
 			}
 		}
 		if ( true === $force_check ) {
-			delete_option( 'uap_automator_pro_license_last_checked' );
+			automator_delete_option( 'uap_automator_pro_license_last_checked' );
 		}
 		$license = trim( automator_get_option( 'uap_automator_pro_license_key' ) );
 		if ( empty( $license ) ) {
@@ -795,16 +788,16 @@ class Admin_Menu {
 
 		// this license is still valid
 		if ( $license_data->license === 'valid' ) {
-			update_option( 'uap_automator_pro_license_status', $license_data->license );
+			automator_update_option( 'uap_automator_pro_license_status', $license_data->license );
 			if ( 'lifetime' !== $license_data->expires ) {
-				update_option( 'uap_automator_pro_license_expiry', $license_data->expires );
+				automator_update_option( 'uap_automator_pro_license_expiry', $license_data->expires );
 			} else {
-				update_option( 'uap_automator_pro_license_expiry', date( 'Y-m-d H:i:s', mktime( 12, 59, 59, 12, 31, 2099 ) ) );
+				automator_update_option( 'uap_automator_pro_license_expiry', date( 'Y-m-d H:i:s', mktime( 12, 59, 59, 12, 31, 2099 ) ) );
 			}
 
 			if ( 'lifetime' !== $license_data->expires ) {
 				$expire_notification = new \DateTime( $license_data->expires, wp_timezone() );
-				update_option( 'uap_automator_pro_license_expiry_notice', $expire_notification );
+				automator_update_option( 'uap_automator_pro_license_expiry_notice', $expire_notification );
 				if ( wp_get_scheduled_event( 'uapro_notify_admin_of_license_expiry' ) ) {
 					wp_unschedule_hook( 'uapro_notify_admin_of_license_expiry' );
 				}
@@ -813,11 +806,11 @@ class Admin_Menu {
 
 			}
 		} else {
-			update_option( 'uap_automator_pro_license_status', 'invalid' );
-			update_option( 'uap_automator_pro_license_expiry', '' );
+			automator_update_option( 'uap_automator_pro_license_status', 'invalid' );
+			automator_update_option( 'uap_automator_pro_license_expiry', '' );
 			// this license is no longer valid
 		}
-		update_option( 'uap_automator_pro_license_last_checked', time() );
+		automator_update_option( 'uap_automator_pro_license_last_checked', time() );
 
 		return $license_data;
 	}
@@ -899,7 +892,7 @@ class Admin_Menu {
 		// Enqueue main CSS
 		wp_enqueue_style(
 			'uap-admin',
-			Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ),
+			Utilities::automator_get_asset( 'backend/dist/main.bundle.min.css' ),
 			array(),
 			Utilities::automator_get_version()
 		);
@@ -907,7 +900,7 @@ class Admin_Menu {
 		// Register main JS
 		wp_register_script(
 			'uap-admin',
-			Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
+			Utilities::automator_get_asset( 'backend/dist/main.bundle.min.js' ),
 			array(),
 			Utilities::automator_get_version(),
 			true
@@ -1177,8 +1170,12 @@ class Admin_Menu {
 							/* translators: 1. Number */
 							'tryNumber'              => __( 'Try %1$s', 'uncanny-automator' ),
 							'resend'                 => __( 'Resend', 'uncanny-automator' ),
+							'cancel'                 => __( 'Cancel', 'uncanny-automator' ),
+							'runNow'                 => __( 'Run now', 'uncanny-automator' ),
 							'unknownError'           => __( 'Unknown error', 'uncanny-automator' ),
+							'cancelConfirm'          => __( 'Are you sure you want to cancel this action?', 'uncanny-automator' ),
 							'cantResendInImportMode' => __( 'Resending is not possible in import mode', 'uncanny-automator' ),
+							'cantCancelInImportMode' => __( 'Cancelling is not possible in import mode', 'uncanny-automator' ),
 							'missingItem'            => __( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
 						),
 					),
@@ -1811,20 +1808,20 @@ class Admin_Menu {
 	public function activate_license() {
 		$this->validate_credentials( automator_filter_input( 'state' ) );
 
-		update_option( 'uap_automator_free_license_key', automator_filter_input( 'uap_automator_free_license_key' ) );
+		automator_update_option( 'uap_automator_free_license_key', automator_filter_input( 'uap_automator_free_license_key' ) );
 
 		$license = trim( automator_filter_input( 'uap_automator_free_license_key' ) );
 
 		$license_data = self::licensing_call( 'activate-license', $license );
 
 		if ( ! $license_data ) {
-			delete_option( 'uap_automator_free_license_key' );
+			automator_delete_option( 'uap_automator_free_license_key' );
 		}
 
 		// The $license_data->license_check will be either "valid", "invalid", "expired", "disabled", "inactive", or "site_inactive".
-		update_option( 'uap_automator_free_license_status', $license_data->license );
+		automator_update_option( 'uap_automator_free_license_status', $license_data->license );
 		// Update the license data as well.
-		update_option( 'uap_automator_free_license_data', (array) $license_data );
+		automator_update_option( 'uap_automator_free_license_data', (array) $license_data );
 
 		if ( ! empty( automator_filter_input( 'ua_connecting_integration_id' ) ) ) {
 			wp_safe_redirect(
@@ -1862,9 +1859,9 @@ class Admin_Menu {
 
 			if ( self::licensing_call( 'deactivate-license', $license ) ) {
 
-				delete_option( 'uap_automator_free_license_status' );
-				delete_option( 'uap_automator_free_license_key' );
-				delete_option( 'uap_automator_free_license_data' );
+				automator_delete_option( 'uap_automator_free_license_status' );
+				automator_delete_option( 'uap_automator_free_license_key' );
+				automator_delete_option( 'uap_automator_free_license_data' );
 				delete_transient( 'automator_api_credit_data' );
 				delete_transient( 'automator_api_credits' );
 				delete_transient( 'automator_api_license' );

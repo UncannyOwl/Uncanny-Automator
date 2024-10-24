@@ -111,7 +111,7 @@ class Bitly_Helpers {
 			die;
 		}
 
-		add_option( 'automator_bitly_credentials', $credentials, '', false );
+		automator_add_option( 'automator_bitly_credentials', $credentials, false );
 
 		// Then redirect to settings page. Flag as connected with success=yes.
 		wp_safe_redirect( $this->get_settings_page_url() . '&success=yes' );
@@ -136,7 +136,7 @@ class Bitly_Helpers {
 	 * @return array
 	 */
 	public static function get_account_details() {
-		return (array) get_option( self::ACCOUNT_DETAILS, array() );
+		return (array) automator_get_option( self::ACCOUNT_DETAILS, array() );
 	}
 
 	/**
@@ -174,8 +174,8 @@ class Bitly_Helpers {
 	 * @return void
 	 */
 	public function remove_credentials() {
-		delete_option( self::ACCOUNT_DETAILS );
-		delete_option( self::ACCESS_TOKEN );
+		automator_delete_option( self::ACCOUNT_DETAILS );
+		automator_delete_option( self::ACCESS_TOKEN );
 	}
 
 	/**
@@ -276,7 +276,7 @@ class Bitly_Helpers {
 			$error            = $e->getMessage();
 			$account['error'] = ! empty( $error ) ? $error : _x( 'Bitly API Error', 'Bitly', 'uncanny-automator' );
 
-			update_option( self::ACCOUNT_DETAILS, $account );
+			automator_update_option( self::ACCOUNT_DETAILS, $account );
 
 			return $account;
 		}
@@ -298,7 +298,7 @@ class Bitly_Helpers {
 			$account['error']  = $this->invalid_key_message;
 		}
 
-		update_option( self::ACCOUNT_DETAILS, $account );
+		automator_update_option( self::ACCOUNT_DETAILS, $account );
 
 		return $account;
 	}

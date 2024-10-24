@@ -147,6 +147,7 @@ abstract class Action {
 			'execution_function'    => array( $this, 'do_action' ),
 			'background_processing' => $this->get_background_processing(),
 			'options_callback'      => array( $this, 'load_options' ),
+			'loopable_tokens'       => $this->get_loopable_tokens(),
 		);
 
 		if ( ! empty( $this->get_buttons() ) ) {

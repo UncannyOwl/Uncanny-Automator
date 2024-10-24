@@ -167,9 +167,9 @@ class Facebook_Helpers {
 	 */
 	public function has_connection_data() {
 
-		$facebook_options_user = get_option( self::OPTION_KEY, array() );
+		$facebook_options_user = automator_get_option( self::OPTION_KEY, array() );
 
-		$facebook_options_pages = get_option( '_uncannyowl_facebook_pages_settings', array() );
+		$facebook_options_pages = automator_get_option( '_uncannyowl_facebook_pages_settings', array() );
 
 		if ( ! empty( $facebook_options_user ) && ! empty( $facebook_options_pages ) ) {
 			return true;
@@ -223,13 +223,13 @@ class Facebook_Helpers {
 			$settings['user-info'] = $this->get_user_information( $settings['user']['id'], $settings['user']['token'] );
 
 			// Updates the option value to settings.
-			update_option( self::OPTION_KEY, $settings, true );
+			automator_update_option( self::OPTION_KEY, $settings, true );
 
 			// Updates the option value to settings.
-			update_option( self::OPTION_KEY, $settings, true );
+			automator_update_option( self::OPTION_KEY, $settings, true );
 
 			// Delete any user info left.
-			delete_option( '_uncannyowl_facebook_pages_settings' );
+			automator_delete_option( '_uncannyowl_facebook_pages_settings' );
 
 		}
 
@@ -274,7 +274,7 @@ class Facebook_Helpers {
 
 		}
 
-		$existing_pages = get_option( '_uncannyowl_facebook_pages_settings', false );
+		$existing_pages = automator_get_option( '_uncannyowl_facebook_pages_settings', false );
 
 		if ( ! empty( $existing_pages ) ) {
 
@@ -302,7 +302,7 @@ class Facebook_Helpers {
 	 */
 	public function fetch_pages_from_api() {
 
-		$settings = get_option( self::OPTION_KEY );
+		$settings = automator_get_option( self::OPTION_KEY );
 
 		$message = '';
 
@@ -343,7 +343,7 @@ class Facebook_Helpers {
 			$message = esc_html__( 'Pages are fetched successfully', 'uncanny-automator' );
 
 			// Save the option.
-			update_option( '_uncannyowl_facebook_pages_settings', $pages, true );
+			automator_update_option( '_uncannyowl_facebook_pages_settings', $pages, true );
 
 		} catch ( \Exception $e ) {
 
@@ -394,7 +394,7 @@ class Facebook_Helpers {
 	 */
 	public function is_user_connected() {
 
-		$settings = get_option( self::OPTION_KEY );
+		$settings = automator_get_option( self::OPTION_KEY );
 
 		if ( ! $settings || empty( $settings ) ) {
 			return false;
@@ -452,7 +452,7 @@ class Facebook_Helpers {
 			return false;
 		}
 
-		return get_option( self::OPTION_KEY );
+		return automator_get_option( self::OPTION_KEY );
 
 	}
 
@@ -507,7 +507,7 @@ class Facebook_Helpers {
 
 		$pages = array();
 
-		$options_pages = get_option( '_uncannyowl_facebook_pages_settings' );
+		$options_pages = automator_get_option( '_uncannyowl_facebook_pages_settings' );
 
 		foreach ( $options_pages as $page ) {
 			$pages[] = array(
@@ -529,7 +529,7 @@ class Facebook_Helpers {
 	 */
 	public function get_user_page_access_token( $page_id ) {
 
-		$options_pages = (array) get_option( '_uncannyowl_facebook_pages_settings', array() );
+		$options_pages = (array) automator_get_option( '_uncannyowl_facebook_pages_settings', array() );
 
 		if ( ! empty( $options_pages ) ) {
 			foreach ( $options_pages as $page ) {
@@ -703,9 +703,9 @@ class Facebook_Helpers {
 	private function remove_credentials() {
 
 		// Delete the credentials
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 		// Delete settings info.
-		delete_option( '_uncannyowl_facebook_pages_settings' );
+		automator_delete_option( '_uncannyowl_facebook_pages_settings' );
 
 		return true;
 	}

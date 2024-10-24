@@ -163,6 +163,13 @@ final class Tokens implements \JsonSerializable {
 
 			$token = new stdClass();
 
+			if ( is_string( $token_class ) && class_exists( $token_class ) ) {
+				$token_class = new $token_class( self::$trigger_id );
+				$_trigger    = Automator()->get_trigger( self::$trigger['meta']['code'] );
+				$token_class->register_hooks( $_trigger );
+				$token_class->set_trigger( $_trigger );
+			}
+
 			$definitions = $token_class->get_definitions();
 
 			foreach ( $definitions as $id => $definition ) {
@@ -189,10 +196,8 @@ final class Tokens implements \JsonSerializable {
 	 */
 	public function get_tokens( $fields ) {
 
-		$tokens_fields = $this->generate_field_tokens( $fields );
-
-		$tokens_custom = $this->generate_custom_tokens();
-
+		$tokens_fields   = $this->generate_field_tokens( $fields );
+		$tokens_custom   = $this->generate_custom_tokens();
 		$loopable_tokens = $this->generate_loopable_tokens();
 
 		$this->tokens = array_merge( $tokens_fields, $tokens_custom, $loopable_tokens );

@@ -6,7 +6,7 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VERSION', '5.4' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '6.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VIEWS_VERSION' ) ) {
@@ -71,13 +71,6 @@ if ( ! defined( 'LOAD_AUTOMATOR' ) ) {
 	 * Load Automator on/off
 	 */
 	define( 'LOAD_AUTOMATOR', filter_var( automator_get_option( 'load_automator', true ), FILTER_VALIDATE_BOOLEAN ) );
-}
-
-if ( ! defined( 'UA_ABSPATH' ) ) {
-	/**
-	 * Automator ABSPATH for file includes
-	 */
-	define( 'UA_ABSPATH', dirname( AUTOMATOR_BASE_FILE ) . DIRECTORY_SEPARATOR );
 }
 
 if ( ! defined( 'UA_DEBUG_LOGS_DIR' ) ) {

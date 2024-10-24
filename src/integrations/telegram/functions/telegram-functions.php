@@ -96,8 +96,8 @@ class Telegram_Functions {
 
 		$this->webhook->delete_telegram_webhook();
 
-		delete_option( self::BOT_SECRET_OPTION );
-		delete_option( self::BOT_INFO );
+		automator_delete_option( self::BOT_SECRET_OPTION );
+		automator_delete_option( self::BOT_INFO );
 
 		wp_safe_redirect( $this->get_tab_url() );
 
