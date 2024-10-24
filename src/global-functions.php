@@ -656,6 +656,7 @@ function automator_get_option( $option, $default_value = false, $force = false )
 	}
 
 	$value = '';
+	$found = false;
 
 	// Check if the option is in the cache & return it if it is.
 	if ( false === $force ) {
@@ -664,6 +665,7 @@ function automator_get_option( $option, $default_value = false, $force = false )
 			return apply_filters( "automator_option_{$option}", maybe_unserialize( $maybe_value ), $option );
 		}
 	}
+
 	// Get all options from the database.
 	$all_options = automator_get_all_options();
 
@@ -677,20 +679,22 @@ function automator_get_option( $option, $default_value = false, $force = false )
 
 	// Has to be get_row() instead of get_var() because of funkiness with 0, false, null values.
 	if ( is_object( $row ) ) {
+		$found = true;
 		$value = $row->option_value;
 		wp_cache_set( $option, $value, 'automator_options' );
 	}
 
 	// If the value is empty, get the option from the database.
-	if ( '' === $value ) {
+	if ( false === $found ) {
 		// If the value is empty, get the option from the database.
-		$maybe_value = get_option( $option, $default_value );
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $option ) );
 		// If the value is found in the database, add it to the uap_options table.
-		if ( '' !== $maybe_value ) {
+		if ( is_object( $row ) ) {
+			$found = true;
+			$value = maybe_unserialize( $row->option_value );
 			automator_add_option( $option, $value, true, false );
 			// Delete the option from the database.
 			//delete_option( $option ); // Ignoring the deletion for now.
-			$value = $maybe_value;
 		}
 	}
 
@@ -781,6 +785,7 @@ function automator_add_option( $option, $value, $autoload = true, $run_actions =
 
 	// Update the cache with the new value
 	wp_cache_set( $option, $value, 'automator_options' );
+	wp_cache_delete( 'automator_options', 'automator_options' );
 }
 
 /**
@@ -807,6 +812,7 @@ function automator_delete_option( $option ) {
 	}
 
 	do_action( 'automator_option_deleted', $option );
+	wp_cache_delete( 'automator_options', 'automator_options' );
 
 	return ( false !== $deleted );
 }
@@ -890,6 +896,7 @@ function automator_update_option( $option, $value, $autoload = true ) {
 	do_action( 'automator_option_updated', $option, $value );
 
 	wp_cache_set( $option, $value, 'automator_options' );
+	wp_cache_delete( 'automator_options', 'automator_options' );
 
 	return ( false !== $updated );
 }
@@ -898,7 +905,7 @@ function automator_update_option( $option, $value, $autoload = true ) {
  * @return array
  */
 function automator_get_all_options() {
-	$all_options = wp_cache_get( 'automator_options' );
+	$all_options = wp_cache_get( 'automator_options', 'automator_options' );
 
 	if ( ! empty( $all_options ) ) {
 		return $all_options;
@@ -921,7 +928,7 @@ function automator_get_all_options() {
 		$all_options[ $o->option_name ] = $o->option_value;
 	}
 
-	wp_cache_set( 'automator_options', $all_options );
+	wp_cache_set( 'automator_options', $all_options, 'automator_options' );
 
 	return $all_options;
 }

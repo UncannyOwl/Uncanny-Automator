@@ -806,7 +806,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	 * @return void
 	 */
 	public static function async_wp_options_migration() {
-		if ( '' !== get_option( 'uncanny_automator_options_migrated', '' ) ) {
+		if ( '' !== get_option( 'uncanny_automator_v6_options_migrated', '' ) ) {
 			return;
 		}
 		wp_schedule_single_event( time() + 8, 'uap_options_migration' );
@@ -818,17 +818,47 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	 */
 	public static function uap_options_migration_func() {
 		global $wpdb;
-		$internal_meta = $wpdb->get_col( "SELECT option_name FROM {$wpdb->prefix}uap_options WHERE option_value = ''" );
 
-		if ( empty( $internal_meta ) ) {
-			add_option( 'uncanny_automator_options_migrated', time() );
-			return;
-		}
+		$like_patterns = array(
+			'automator_%',
+			'uncanny_automator_%',
+			'uap_%',
+			'_uoa_%',
+			'_uncanny_automator%',
+			'_uncanny_credits%',
+			'UO_REDIRECTURL_%',
+			'_uncannyowl_zoom_%',
+			'uoa_setup_wiz_has_connected',
+			'zoho_campaigns_%',
+			'USERROLEADDED_migrated',
+			'_uncannyowl_slack_settings',
+			'affwp_insert_referral_migrated',
+			'ua_facebook%',
+			'_uncannyowl_gtt%',
+		);
 
-		foreach ( $internal_meta as $meta ) {
-			$value = get_option( $meta );
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}uap_options SET option_value = %s WHERE option_name = %s", $value, $meta ) );
-		}
+		// Generate LIKE conditions dynamically
+		$like_conditions = array_map(
+			function ( $pattern ) use ( $wpdb ) {
+				return $wpdb->prepare( 'option_name LIKE %s', $pattern );
+			},
+			$like_patterns
+		);
+
+		// Combine all conditions with OR
+		$conditions_query = implode( ' OR ', $like_conditions );
+
+		// SQL query for UPSERT (Insert or Update if option_name exists)
+		$sql_query = "INSERT INTO {$wpdb->prefix}uap_options (option_name, option_value, autoload)
+SELECT option_name, option_value, autoload
+FROM {$wpdb->prefix}options
+WHERE $conditions_query
+ON DUPLICATE KEY UPDATE
+	option_value = VALUES(option_value),
+	                   autoload = VALUES(autoload)";
+
+		// Execute the query
+		$wpdb->query( $sql_query );
 
 		$async_actions = self::get_automator_async_run_with_hash();
 
@@ -851,7 +881,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 			}
 		}
 
-		add_option( 'uncanny_automator_options_migrated', time() );
+		add_option( 'uncanny_automator_v6_options_migrated', time() );
 	}
 
 	/**
