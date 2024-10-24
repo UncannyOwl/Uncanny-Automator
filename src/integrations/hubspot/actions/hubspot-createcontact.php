@@ -144,7 +144,12 @@ class HUBSPOT_CREATECONTACT {
 
 		if ( ! empty( $action_data['meta']['CUSTOM_FIELDS'] ) ) {
 
-			$custom_fields = json_decode( Automator()->parse->text( $action_data['meta']['CUSTOM_FIELDS'], $recipe_id, $user_id, $args ), true );
+			$json = Automator()->parse->text( $action_data['meta']['CUSTOM_FIELDS'], $recipe_id, $user_id, $args );
+
+			// Replace line breaks to prevent invalid json
+			$json = str_replace( "\r\n", '\r\n', $json );
+
+			$custom_fields = json_decode( $json, true );
 
 			if ( ! empty( $custom_fields ) ) {
 				foreach ( $custom_fields as $field ) {

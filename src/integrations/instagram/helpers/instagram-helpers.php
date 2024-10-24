@@ -104,7 +104,7 @@ class Instagram_Helpers {
 
 		if ( wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
 
-			$existing_page_settings = get_option( self::FB_OPTIONS_KEY );
+			$existing_page_settings = automator_get_option( self::FB_OPTIONS_KEY );
 
 			if ( false !== $existing_page_settings ) {
 
@@ -142,7 +142,7 @@ class Instagram_Helpers {
 
 			$page_id = automator_filter_input( 'page_id', INPUT_POST );
 
-			$facebook_pages = get_option( self::FB_OPTIONS_KEY );
+			$facebook_pages = automator_get_option( self::FB_OPTIONS_KEY );
 
 			$access_token = '';
 
@@ -190,7 +190,7 @@ class Instagram_Helpers {
 					}
 				}
 
-				update_option( self::FB_OPTIONS_KEY, $facebook_pages );
+				automator_update_option( self::FB_OPTIONS_KEY, $facebook_pages );
 
 				wp_send_json( $ig_response );
 
@@ -239,7 +239,7 @@ class Instagram_Helpers {
 
 		$ig_accounts = array();
 
-		$fb_options_pages = get_option( self::FB_OPTIONS_KEY );
+		$fb_options_pages = automator_get_option( self::FB_OPTIONS_KEY );
 
 		if ( is_array( $fb_options_pages ) ) {
 
@@ -264,7 +264,7 @@ class Instagram_Helpers {
 
 	public function get_user_page_connected_ig( $page_id = 0 ) {
 
-		$options_pages = get_option( self::FB_OPTIONS_KEY );
+		$options_pages = automator_get_option( self::FB_OPTIONS_KEY );
 
 		if ( ! empty( $options_pages ) ) {
 
@@ -284,7 +284,7 @@ class Instagram_Helpers {
 
 	public function fetch_pages_from_api() {
 
-		$settings = get_option( '_uncannyowl_facebook_settings' );
+		$settings = automator_get_option( '_uncannyowl_facebook_settings' );
 
 		$body = array(
 			'action'       => 'list-user-pages',
@@ -325,7 +325,7 @@ class Instagram_Helpers {
 			$message = esc_html__( 'Pages are fetched successfully', 'automator-pro' );
 
 			// Save the pages.
-			update_option( '_uncannyowl_facebook_pages_settings', $pages );
+			automator_update_option( '_uncannyowl_facebook_pages_settings', $pages );
 
 		} catch ( \Exception $e ) {
 
@@ -347,7 +347,7 @@ class Instagram_Helpers {
 
 	public function is_user_connected() {
 
-		$settings = get_option( self::FB_OPTIONS_KEY );
+		$settings = automator_get_option( self::FB_OPTIONS_KEY );
 
 		if ( ! $settings || empty( $settings ) ) {
 			return false;

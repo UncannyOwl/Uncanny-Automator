@@ -275,7 +275,7 @@ $missing_tables = Automator_DB::verify_base_tables();
 		<div class="uap-settings-panel-bottom-right">
 			<p>
 				<?php
-				$size = get_option( 'automator_db_size', 0 );
+				$size = automator_get_option( 'automator_db_size', 0 );
 				if ( $size > 0 ) {
 					echo sprintf(
 						esc_html_x( 'Total tables size: %.2f MB', 'Database tables', 'uncanny-automator' ),

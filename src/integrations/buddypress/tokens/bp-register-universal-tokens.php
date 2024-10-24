@@ -91,7 +91,7 @@ class BP_Register_Universal_Tokens {
 			'fields' => $fields,
 		);
 
-		update_option( $this->option_key, $data, 'no' );
+		automator_update_option( $this->option_key, $data, 'no' );
 	}
 
 	/**
@@ -101,14 +101,14 @@ class BP_Register_Universal_Tokens {
 	 */
 	public function get_profile_fields() {
 
-		$data   = get_option( $this->option_key, array() );
+		$data   = automator_get_option( $this->option_key, array() );
 		$time   = isset( $data['time'] ) ? $data['time'] : 0;
 		$fields = isset( $data['fields'] ) ? $data['fields'] : array();
 
 		// If cache is older than 1 hour, or fields are empty, refresh it.
 		if ( ( time() - $time ) > 3600 || empty( $fields ) ) {
 			$this->set_cache();
-			$data = get_option( $this->option_key, array() );
+			$data = automator_get_option( $this->option_key, array() );
 		}
 
 		return isset( $data['fields'] ) ? $data['fields'] : array();

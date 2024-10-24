@@ -170,8 +170,8 @@ class Get_Response_Helpers {
 	 */
 	public function remove_credentials() {
 		// Remove the stored options.
-		delete_option( self::OPTION_KEY );
-		delete_option( self::ACCOUNT_KEY );
+		automator_delete_option( self::OPTION_KEY );
+		automator_delete_option( self::ACCOUNT_KEY );
 
 		// Remove any stored transients.
 		delete_transient( 'automator_getresponse_contact/fields' );
@@ -200,7 +200,7 @@ class Get_Response_Helpers {
 		} catch ( \Exception $e ) {
 			$error            = $e->getMessage();
 			$account['error'] = ! empty( $error ) ? $error : _x( 'GetResponse API error', 'GetResponse', 'uncanny-automator' );
-			update_option( self::ACCOUNT_KEY, $account );
+			automator_update_option( self::ACCOUNT_KEY, $account );
 
 			return $account;
 		}
@@ -224,7 +224,7 @@ class Get_Response_Helpers {
 				: _x( 'Invalid API key', 'GetResponse', 'uncanny-automator' );
 		}
 
-		update_option( self::ACCOUNT_KEY, $account );
+		automator_update_option( self::ACCOUNT_KEY, $account );
 
 		return $account;
 	}

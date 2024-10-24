@@ -105,9 +105,9 @@ class Automator_Review {
 
 		$redirect_url = automator_filter_input( 'redirect_url' );
 
-		update_option( '_uncanny_automator_review_reminder', $type );
+		automator_update_option( '_uncanny_automator_review_reminder', $type );
 
-		update_option( '_uncanny_automator_review_reminder_date', strtotime( current_time( 'mysql' ) ) );
+		automator_update_option( '_uncanny_automator_review_reminder_date', strtotime( current_time( 'mysql' ) ) );
 
 		if ( ! empty( $redirect_url ) ) {
 
@@ -162,17 +162,17 @@ class Automator_Review {
 			return;
 		}
 
-		update_option( '_uncanny_credits_notification_' . $type, 'hide-forever', true );
+		automator_update_option( '_uncanny_credits_notification_' . $type, 'hide-forever', true );
 
 		if ( 25 === $type ) {
 			// Also hide '_uncanny_credits_notification_100' notification.
-			update_option( '_uncanny_credits_notification_100', 'hide-forever', true );
+			automator_update_option( '_uncanny_credits_notification_100', 'hide-forever', true );
 		}
 
 		if ( 0 === $type ) {
 			// Also hide '_uncanny_credits_notification_25' and '_uncanny_credits_notification_100' notifications.
-			update_option( '_uncanny_credits_notification_25', 'hide-forever', true );
-			update_option( '_uncanny_credits_notification_100', 'hide-forever', true );
+			automator_update_option( '_uncanny_credits_notification_25', 'hide-forever', true );
+			automator_update_option( '_uncanny_credits_notification_100', 'hide-forever', true );
 		}
 
 		return true;
@@ -248,8 +248,8 @@ class Automator_Review {
 			if ( function_exists( 'is_admin' ) && is_admin() ) {
 				$_action = str_replace( 'uo-', '', automator_filter_input( 'action' ) );
 
-				update_option( '_uncanny_automator_review_reminder', $_action );
-				update_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
+				automator_update_option( '_uncanny_automator_review_reminder', $_action );
+				automator_update_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
 				$back_url = remove_query_arg( 'action' );
 				wp_safe_redirect( $back_url );
 				die;
@@ -257,8 +257,8 @@ class Automator_Review {
 		}
 		if ( automator_filter_has_var( 'action' ) && 'uo-allow-tracking' === automator_filter_input( 'action' ) ) {
 			if ( function_exists( 'is_admin' ) && is_admin() ) {
-				update_option( 'automator_reporting', true );
-				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
+				automator_update_option( 'automator_reporting', true );
+				automator_update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
 
 				$back_url = remove_query_arg( 'action' );
 				wp_safe_redirect( $back_url );
@@ -268,7 +268,7 @@ class Automator_Review {
 		if ( automator_filter_has_var( 'action' ) && 'uo-hide-track' === automator_filter_input( 'action' ) ) {
 			if ( function_exists( 'is_admin' ) && is_admin() ) {
 
-				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
+				automator_update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
 
 				$back_url = remove_query_arg( 'action' );
 				wp_safe_redirect( $back_url );
@@ -348,13 +348,13 @@ class Automator_Review {
 		if ( isset( $data['action'] ) && 'tracking-settings' === $data['action'] ) {
 
 			if ( 'true' === $data['swtich'] ) {
-				update_option( 'automator_reporting', true );
+				automator_update_option( 'automator_reporting', true );
 			} else {
-				delete_option( 'automator_reporting' );
+				automator_delete_option( 'automator_reporting' );
 			}
 
 			if ( isset( $data['hide'] ) ) {
-				update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
+				automator_update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
 			}
 
 			return new WP_REST_Response( array( 'success' => true ), 200 );
@@ -378,7 +378,7 @@ class Automator_Review {
 			return;
 		}
 
-		$automator_reporting = get_option( 'automator_reporting', false );
+		$automator_reporting = automator_get_option( 'automator_reporting', false );
 
 		if ( $automator_reporting ) {
 			return;
@@ -496,12 +496,12 @@ class Automator_Review {
 			return;
 		}
 
-		wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/bundle.min.css' ), array(), Utilities::automator_get_version() );
+		wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/main.bundle.min.css' ), array(), Utilities::automator_get_version() );
 
 		// Register main JS in case it wasnt registered.
 		wp_register_script(
 			'uap-admin',
-			Utilities::automator_get_asset( 'backend/dist/bundle.min.js' ),
+			Utilities::automator_get_asset( 'backend/dist/main.bundle.min.js' ),
 			array(),
 			Utilities::automator_get_version(),
 			true
@@ -953,7 +953,7 @@ class Automator_Review {
 	 */
 	public function get_banner_hidden_days() {
 
-		$date_updated = get_option( '_uncanny_automator_review_reminder_date', 0 );
+		$date_updated = automator_get_option( '_uncanny_automator_review_reminder_date', 0 );
 
 		$current_datetime = strtotime( current_time( 'mysql' ) );
 
@@ -969,7 +969,7 @@ class Automator_Review {
 	 * @return bool
 	 */
 	public function is_banner_hidden_temporarily() {
-		return 'maybe-later' === get_option( '_uncanny_automator_review_reminder' );
+		return 'maybe-later' === automator_get_option( '_uncanny_automator_review_reminder' );
 	}
 
 	/**
@@ -978,7 +978,7 @@ class Automator_Review {
 	 * @return bool
 	 */
 	public function is_banner_hidden_forever() {
-		return 'hide-forever' === get_option( '_uncanny_automator_review_reminder' );
+		return 'hide-forever' === automator_get_option( '_uncanny_automator_review_reminder' );
 	}
 
 	/**
@@ -989,7 +989,7 @@ class Automator_Review {
 	 * @return bool
 	 */
 	public function is_credits_notification_hidden_forever( $notification_type = 100 ) {
-		return 'hide-forever' === get_option( '_uncanny_credits_notification_' . $notification_type );
+		return 'hide-forever' === automator_get_option( '_uncanny_credits_notification_' . $notification_type );
 	}
 
 	/**
@@ -1062,7 +1062,7 @@ class Automator_Review {
 	 */
 	public function get_sent_emails_count() {
 
-		return absint( apply_filters( 'automator_review_get_sent_emails_count', get_option( 'automator_sent_email_completed', 0 ), $this ) );
+		return absint( apply_filters( 'automator_review_get_sent_emails_count', automator_get_option( 'automator_sent_email_completed', 0 ), $this ) );
 
 	}
 

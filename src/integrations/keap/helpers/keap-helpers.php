@@ -154,7 +154,7 @@ class Keap_Helpers {
 		$expires_in                = absint( $credentials['expires_in'] ) - HOUR_IN_SECONDS;
 		$credentials['expires_on'] = time() + $expires_in;
 
-		update_option( self::$option_keys['credentials'], $credentials, false );
+		automator_update_option( self::$option_keys['credentials'], $credentials, false );
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Keap_Helpers {
 	 * @return array
 	 */
 	public static function get_credentials() {
-		return (array) get_option( self::$option_keys['credentials'], array() );
+		return (array) automator_get_option( self::$option_keys['credentials'], array() );
 	}
 
 	/**
@@ -180,12 +180,12 @@ class Keap_Helpers {
 	 * Get / Set account details.
 	 *
 	 * @param  string $app_id
-	 * 
+	 *
 	 * @return mixed - Details of connected account || WP_Error
 	 */
 	public function get_account_details( $app_id = '' ) {
 
-		$account = get_option( self::$option_keys['account'], array() );
+		$account = automator_get_option( self::$option_keys['account'], array() );
 
 		if ( empty( $account ) ) {
 			try {
@@ -209,7 +209,7 @@ class Keap_Helpers {
 					'contact'   => $contact,
 				);
 
-				update_option( self::$option_keys['account'], $account, false );
+				automator_update_option( self::$option_keys['account'], $account, false );
 			}
 			catch ( Exception $e ) {
 				return new WP_Error( 'keap_get_account_details_error', $e->getMessage() );
@@ -252,9 +252,9 @@ class Keap_Helpers {
 
 	/**
 	 * Format contact config data.
-	 * 
+	 *
 	 * @param  array $contact
-	 * 
+	 *
 	 * @return array
 	 */
 	private function format_contact_config_data( $contact ) {
@@ -277,7 +277,7 @@ class Keap_Helpers {
 	 * Get Companies.
 	 *
 	 * @param  bool $refresh
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_companies( $refresh = false ) {
@@ -309,7 +309,7 @@ class Keap_Helpers {
 
 	/**
 	 * Get Companies Ajax handler.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_companies_ajax() {
@@ -317,7 +317,7 @@ class Keap_Helpers {
 		Automator()->utilities->verify_nonce();
 
 		$options = array();
-		
+
 		// Check if we should add an empty option.
 		$group_id  = automator_filter_input( 'group_id', INPUT_POST );
 		if ( 'KEAP_ADD_UPDATE_CONTACT_META' === $group_id ) {
@@ -331,7 +331,7 @@ class Keap_Helpers {
 		if ( ! empty( $companies ) ) {
 			$options = array_merge( $options, array_values( $companies ) );
 		}
-		
+
 		wp_send_json( array(
 			'success' => true,
 			'options' => $options,
@@ -342,7 +342,7 @@ class Keap_Helpers {
 	 * Get Company Selection.
 	 *
 	 * @param  mixed string|int $selected - ID or Name.
-	 * 
+	 *
 	 * @return mixed object || WP_Error - Company || Error.
 	 */
 	public function get_valid_company_selection( $selected, $refresh = false ) {
@@ -388,7 +388,7 @@ class Keap_Helpers {
 			$company_data = $this->get_app_option( 'companies', 120 );
 			if ( $company_data['refresh'] ) {
 				return $this->get_valid_company_selection( $selected, true );
-			}			
+			}
 		}
 
 		// No match found.
@@ -397,10 +397,10 @@ class Keap_Helpers {
 
 	/**
 	 * Add new company to saved options.
-	 * 
+	 *
 	 * @param  int $id
 	 * @param  string $name
-	 * 
+	 *
 	 * @return void
 	 */
 	public function add_new_company_to_saved_options( $id, $name ) {
@@ -432,8 +432,8 @@ class Keap_Helpers {
 					if ( 'Active' !== $user['status'] ) {
 						continue;
 					}
-					$name  = ! empty( $user['preferred_name'] ) 
-						? $user['preferred_name'] 
+					$name  = ! empty( $user['preferred_name'] )
+						? $user['preferred_name']
 						: trim( $user['first_name'] . ' ' . $user['last_name'] );
 					$label = $name . ( ! empty( $user['email_address'] ) ? ' (' . $user['email_address'] . ')' : '' );
 					$users[ $user['id'] ] = array(
@@ -454,7 +454,7 @@ class Keap_Helpers {
 
 	/**
 	 * Get App Account Users Ajax handler.
-	 * 
+	 *
 	 * @return string - JSON response.
 	 */
 	public function get_account_users_ajax() {
@@ -491,9 +491,9 @@ class Keap_Helpers {
 
 	/**
 	 * Get Account User Selection.
-	 * 
+	 *
 	 * @param  mixed string|int $selected
-	 * 
+	 *
 	 * @return mixed int || WP_Error - Account User ID || Error.
 	 */
 	public function get_valid_account_user_selection( $selected, $refresh = false ) {
@@ -564,7 +564,7 @@ class Keap_Helpers {
 	 */
 	public function remove_credentials() {
 		foreach( self::$option_keys as $key ) {
-			delete_option( $key );
+			automator_delete_option( $key );
 		}
 	}
 
@@ -668,7 +668,7 @@ class Keap_Helpers {
 
 	/**
 	 * Common reconnect message.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function common_reconnect_message() {
@@ -726,7 +726,7 @@ class Keap_Helpers {
 	 * @return array
 	 */
 	public function get_app_option( $key, $refresh_check = DAY_IN_SECONDS ) {
-		$data = get_option( self::$option_keys[ $key ], array(
+		$data = automator_get_option( self::$option_keys[ $key ], array(
 			'data'      => array(),
 			'timestamp' => 0,
 		) );
@@ -747,7 +747,7 @@ class Keap_Helpers {
 	 * @return void
 	 */
 	public function save_app_option( $key, $data ) {
-		update_option( self::$option_keys[ $key ], array(
+		automator_update_option( self::$option_keys[ $key ], array(
 			'data'      => $data,
 			'timestamp' => time(),
 		), false );
@@ -755,7 +755,7 @@ class Keap_Helpers {
 
 	/**
 	 * Get Address Fields Config.
-	 * 
+	 *
 	 * @param  string $type - 'contact' || 'company'
 	 *
 	 * @return array
@@ -881,10 +881,10 @@ class Keap_Helpers {
 
 	/**
 	 * Get Address Fields from Parsed Data.
-	 * 
+	 *
 	 * @param  array $parsed
 	 * @param  string $type - billing || shipping || other || company
-	 * @param  string $field - Keap field key 
+	 * @param  string $field - Keap field key
 	 * @return mixed object || false
 	 */
 	public function get_address_fields_from_parsed( $parsed, $type ) {
@@ -932,9 +932,9 @@ class Keap_Helpers {
 
 	/**
 	 * Get common Custom Fields Repeater Config.
-	 * 
+	 *
 	 * @param string $type - 'contact' || 'company'
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_custom_fields_repeater_config( $type = 'contact' ) {
@@ -966,7 +966,7 @@ class Keap_Helpers {
 	 *
 	 * @param  string $type - 'contact' || 'company'
 	 * @param  bool $refresh
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_custom_fields_repeater_fields_config( $type, $refresh = false ) {
@@ -1005,7 +1005,7 @@ class Keap_Helpers {
 	 *
 	 * @param  string $type - 'contact' || 'company'
 	 * @param  bool $refresh
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_custom_field_options( $type, $refresh = false ) {
@@ -1033,7 +1033,7 @@ class Keap_Helpers {
 		try {
 			$method   = 'contact' === $type ? 'get_contact_model' : 'get_company_model';
 			$response = $this->api_request( $method );
-			$data     = $response['data'] ?? array();	
+			$data     = $response['data'] ?? array();
 			$data     = $data['custom_fields'] ?? array();
 
 			if ( empty( $data ) ) {
@@ -1133,7 +1133,7 @@ class Keap_Helpers {
 
 	/**
 	 * Get Company Custom Fields Ajax handler.
-	 * 
+	 *
 	 * @return string - JSON response.
 	 */
 	public function get_company_custom_fields_repeater_ajax() {
@@ -1274,14 +1274,14 @@ class Keap_Helpers {
 	 */
 	public function is_ajax_refresh() {
 		$context = automator_filter_has_var( 'context', INPUT_POST ) ? automator_filter_input( 'context', INPUT_POST ) : '';
-		return 'refresh-button' === $context;	
+		return 'refresh-button' === $context;
 	}
 
 	/**
 	 * Get update existing option config.
-	 * 
+	 *
 	 * @param  string $type - 'contact' || 'company'
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_update_existing_option_config( $type = 'contact' ) {
@@ -1306,7 +1306,7 @@ class Keap_Helpers {
 	 *
 	 * @param  string $code
 	 * @param  bool $required
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_email_field_config( $code, $required = true ) {
@@ -1346,7 +1346,7 @@ class Keap_Helpers {
 	 * Get Tags Select.
 	 *
 	 * @param  string $code
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_tags_select_field_config( $code = 'TAG' ) {
@@ -1369,7 +1369,7 @@ class Keap_Helpers {
 	 * Get Tags.
 	 *
 	 * @param  bool $refresh
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_tags( $refresh = false ) {
@@ -1399,11 +1399,11 @@ class Keap_Helpers {
 
 	/**
 	 * Get Tags Ajax handler.
-	 * 
+	 *
 	 * @return string - JSON response.
 	 */
 	public function get_tags_ajax() {
-		
+
 		Automator()->utilities->verify_nonce();
 		$tags = $this->get_tags( $this->is_ajax_refresh() );
 		$tags = ! empty( $tags ) ? array_values( $tags ) : array();
@@ -1419,7 +1419,7 @@ class Keap_Helpers {
 	 *
 	 * @param  array $parsed
 	 * @param  string $meta_key
-	 * 
+	 *
 	 * @return mixed
 	 * @throws Exception
 	 */
@@ -1443,7 +1443,7 @@ class Keap_Helpers {
 	 * Check if email is valid.
 	 *
 	 * @param  string $email
-	 * 
+	 *
 	 * @return mixed - false | string
 	 */
 	public function get_valid_email( $email ) {
@@ -1457,9 +1457,9 @@ class Keap_Helpers {
 
 	/**
 	 * Check if URL is valid.
-	 * 
+	 *
 	 * @param  string $url
-	 * 
+	 *
 	 * @return mixed - false | string
 	 */
 	public function get_valid_url( $url ) {
@@ -1472,9 +1472,9 @@ class Keap_Helpers {
 
 	/**
 	 * Check if phone number is valid.
-	 * 
+	 *
 	 * @param  string $phone
-	 * 
+	 *
 	 * @return mixed - false | string
 	 */
 	public function get_valid_phone_number( $phone ) {
@@ -1488,15 +1488,15 @@ class Keap_Helpers {
 
 	/**
 	 * Get formatted date.
-	 * 
+	 *
 	 * @param  string $input
 	 * @param  string $format
-	 * 
+	 *
 	 * @return mixed - WP_Error | string
 	 * @throws Exception
 	 */
 	public function get_formatted_date( $input, $format = 'Y-m-d' ) {
-		
+
 		try {
 			// Get the date object.
 			$date = is_numeric( $input ) ? date_create_from_format( 'U', $input ) : date_create( $input );
@@ -1517,13 +1517,13 @@ class Keap_Helpers {
 			);
 		}
 	}
-	
+
 	/**
 	 * Get valid custom field number.
-	 * 
+	 *
 	 * @param  string $number
 	 * @param  string $keap_type
-	 * 
+	 *
 	 * @return mixed - false | string
 	 */
 	public function get_valid_custom_field_number( $number, $keap_type ) {
@@ -1703,10 +1703,10 @@ class Keap_Helpers {
 
 	/**
 	 * Get bool value from parsed.
-	 * 
+	 *
 	 * @param  array $parsed
 	 * @param  string $meta_key
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function get_bool_value_from_parsed( $parsed, $meta_key, $default = false ) {
@@ -1718,7 +1718,7 @@ class Keap_Helpers {
 
 	/**
 	 * Get [delete] key.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function get_delete_key() {
@@ -1752,7 +1752,7 @@ class Keap_Helpers {
 
 	/**
 	 * Define Contact Action Tokens.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function define_contact_action_tokens() {
@@ -1778,7 +1778,7 @@ class Keap_Helpers {
 
 	/**
 	 * Get Tag name(s) Token config.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function define_tag_name_action_token() {
@@ -1792,9 +1792,9 @@ class Keap_Helpers {
 
 	/**
 	 * Hydrate contact tokens.
-	 * 
+	 *
 	 * @param  array $contact
-	 * 
+	 *
 	 * @return array
 	 */
 	public function hydrate_contact_tokens( $contact ) {
@@ -1809,9 +1809,9 @@ class Keap_Helpers {
 
 	/**
 	 * Get Tag names from IDs.
-	 * 
+	 *
 	 * @param  mixed $tag_ids - array | string
-	 * 
+	 *
 	 * @return mixed - array | string
 	 */
 	public function get_tag_names_from_ids( $tag_ids, $string = true ) {
@@ -1829,10 +1829,10 @@ class Keap_Helpers {
 
 	/**
 	 * Prepare tag notices.
-	 * 
+	 *
 	 * @param  array $results
 	 * @param  array $statuses
-	 * 
+	 *
 	 * @return mixed - array | false
 	 */
 	public function prepare_tag_notices( $results, $statuses ) {
@@ -1845,7 +1845,7 @@ class Keap_Helpers {
 			$errors[ $result ]   = isset( $errors[ $result ] ) ? $errors[ $result ] : array();
 			$errors[ $result ][] = $tag_id;
 		}
-	
+
 		// Prepare notices.
 		$notices = ! empty( $errors ) ? array() : false;
 		if ( ! empty( $errors ) ) {
@@ -1857,7 +1857,7 @@ class Keap_Helpers {
 				);
 			}
 		}
-	
+
 		return $notices;
 	}
 

@@ -790,11 +790,11 @@ class Mailchimp_Helpers {
 					}
 
 					// Update user info settings.
-					update_option( '_uncannyowl_mailchimp_settings_user_info', $user_info );
+					automator_update_option( '_uncannyowl_mailchimp_settings_user_info', $user_info );
 
 					// On success.
-					update_option( '_uncannyowl_mailchimp_settings', $tokens );
-					delete_option( '_uncannyowl_mailchimp_settings_expired' );
+					automator_update_option( '_uncannyowl_mailchimp_settings', $tokens );
+					automator_delete_option( '_uncannyowl_mailchimp_settings_expired' );
 
 					// Set the transient.
 					set_transient( '_uncannyowl_mailchimp_settings', $tokens['access_token'] . '|' . $tokens['dc'], 60 * 50 );
@@ -831,9 +831,9 @@ class Mailchimp_Helpers {
 	public function uo_mailchimp_disconnect() {
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), 'uo-mailchimp-disconnect' ) ) {
-			delete_option( '_uncannyowl_mailchimp_settings' );
-			delete_option( '_uncannyowl_mailchimp_settings_expired' );
-			delete_option( '_uncannyowl_mailchimp_settings_user_info' );
+			automator_delete_option( '_uncannyowl_mailchimp_settings' );
+			automator_delete_option( '_uncannyowl_mailchimp_settings_expired' );
+			automator_delete_option( '_uncannyowl_mailchimp_settings_user_info' );
 			delete_transient( 'automator_api_mailchimp_authorize_nonce' );
 			delete_transient( '_uncannyowl_mailchimp_settings' );
 		}
@@ -1244,7 +1244,7 @@ class Mailchimp_Helpers {
 	 */
 	public function get_webhook_key() {
 
-		$webhook_key = get_option( 'uap_mailchimp_webhook_key', false );
+		$webhook_key = automator_get_option( 'uap_mailchimp_webhook_key', false );
 
 		if ( false === $webhook_key ) {
 
@@ -1265,7 +1265,7 @@ class Mailchimp_Helpers {
 
 		$new_key = md5( uniqid( wp_rand(), true ) );
 
-		update_option( 'uap_mailchimp_webhook_key', $new_key );
+		automator_update_option( 'uap_mailchimp_webhook_key', $new_key );
 
 		return $new_key;
 

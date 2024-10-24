@@ -26,7 +26,7 @@ class Google_Contacts_Settings extends Premium_Integration_Settings {
 	 * @return string Returns 'success' if there is a agent. Returns empty string otherwise.
 	 */
 	public function get_status() {
-		$credentials = get_option( Google_Contacts_Helpers::OPTION_KEY, false );
+		$credentials = automator_get_option( Google_Contacts_Helpers::OPTION_KEY, false );
 		return empty( $credentials ) ? '' : 'success'; // return '' to fail.
 	}
 
@@ -149,7 +149,7 @@ class Google_Contacts_Settings extends Premium_Integration_Settings {
 
 		$this->fetch_resource_owner();
 
-		$credentials    = get_option( Google_Contacts_Helpers::OPTION_KEY, false );
+		$credentials    = automator_get_option( Google_Contacts_Helpers::OPTION_KEY, false );
 		$resource_owner = get_transient( Google_Contacts_Helpers::RESOURCE_OWNER_KEY );
 
 		if ( ! is_array( $resource_owner ) && empty( $resource_owner ) ) {

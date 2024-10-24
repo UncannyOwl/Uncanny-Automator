@@ -56,6 +56,7 @@ class Copy_Recipe_Parts {
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'copy_recipe_parts' ) );
 		add_filter( 'post_row_actions', array( $this, 'add_copy_recipe_action_rows' ), 10, 2 );
+		add_filter( 'automator_recipe_copy_modify_tokens', array( $this, 'handle_data_loop_tokens' ), 10, 2 );
 	}
 
 	/**
@@ -432,14 +433,17 @@ class Copy_Recipe_Parts {
 			}
 		}
 
-		// Check if it's an array : Google sheets etc.
-		$is_array = is_array( $content );
-		$content  = $is_array ? wp_json_encode( $content, JSON_UNESCAPED_UNICODE ) : $content;
+		// Check if it's an object or array : Google sheets etc.
+		$encoded      = is_array( $content ) || is_object( $content );
+		$decode_param = is_array( $content ); // Decode as array if it was an array
+		$content      = $encoded
+			? wp_json_encode( $content, JSON_UNESCAPED_UNICODE )
+			: $content;
 
 		// Check if any replaceable token exists
 		if ( false === $this->token_exists_in_content( $content ) ) {
-			// Check if it was an array and convert back.
-			return $is_array ? json_decode( $content ) : $content;
+			// Check if we need to decode.
+			return $encoded ? json_decode( $content, $decode_param ) : $content;
 		}
 
 		// Replace if trigger token exists
@@ -457,8 +461,11 @@ class Copy_Recipe_Parts {
 			$content = $this->replace_loop_token_ids( $content );
 		}
 
-		// Check if it was an array and convert back.
-		return $is_array ? json_decode( $content ) : $content;
+		// Add filter for special tokens.
+		$content = apply_filters( 'automator_recipe_copy_modify_tokens', $content, $new_post_id );
+
+		// Check if we need to decode.
+		return $encoded ? json_decode( $content, $decode_param ) : $content;
 	}
 
 	/**
@@ -473,7 +480,7 @@ class Copy_Recipe_Parts {
 			&& ! is_object( $content )
 			&& false === preg_match_all( '/{{(ACTION_(FIELD|META)\:)?\d+:\w.+?}}/', $content )
 			&& false === preg_match_all( '/{{id:(WPMAGICBUTTON|WPMAGICLINK)}}/', $content )
-			&& false === preg_match_all( '/{{TOKEN_EXTENDED:(LOOP_TOKEN:\d+:\w+:\w+|DATA_TOKEN[^}]*)}}/', $content )
+			&& false === preg_match_all( '/{{TOKEN_EXTENDED:([^}]*)}}/', $content )
 		) {
 			return false;
 		}
@@ -487,6 +494,11 @@ class Copy_Recipe_Parts {
 	 * @return array|mixed|string|string[]|null
 	 */
 	public function replace_trigger_token_ids( $content ) {
+
+		if ( is_object( $content ) ) {
+			return $content;
+		}
+
 		// Loop thru multiple triggers and update token's trigger ID based on that.
 		foreach ( $this->trigger_tokens as $prev_id => $new_id ) {
 			// Sanity check
@@ -496,9 +508,15 @@ class Copy_Recipe_Parts {
 
 			$pattern = '/(\{\{|\[\[)' . preg_quote( $prev_id, '/' ) . '(:|;)/';
 
-			// check if content contains a replaceable token by previous ID
-			if ( ! is_object( $content ) && preg_match_all( $pattern, $content ) ) {
+			// Check if content contains a replaceable token by previous ID.
+			if ( preg_match_all( $pattern, $content ) ) {
 				$content = preg_replace( $pattern, '${1}' . $new_id . '${2}', $content );
+			}
+
+			// Check for extended tokens pattern by previous ID.
+			$extended_pattern = '/\{\{TOKEN_EXTENDED:([^:]+):' . preg_quote( $prev_id, '/' ) . ':([^}]+)\}\}/';
+			if ( preg_match_all( $extended_pattern, $content ) ) {
+				$content = preg_replace( $extended_pattern, '{{TOKEN_EXTENDED:${1}:' . $new_id . ':${2}}}', $content );
 			}
 		}
 
@@ -511,15 +529,26 @@ class Copy_Recipe_Parts {
 	 * @return array|mixed|string|string[]|null
 	 */
 	public function replace_action_token_ids( $content ) {
+
+		if ( is_object( $content ) ) {
+			return $content;
+		}
+
 		// Loop thru multiple actions and update token's action ID based on that.
 		foreach ( $this->action_tokens as $prev_id => $new_id ) {
 			// Sanity check
 			if ( is_array( $prev_id ) || is_array( $new_id ) ) {
 				continue;
 			}
-			// check if content contains a replaceable token by previous ID
-			if ( ! is_object( $content ) && preg_match( '/{{(ACTION_(FIELD|META)\:)' . $prev_id . '\:\w.+?}}/', $content ) ) {
+
+			// Check if content contains a replaceable token by previous ID.
+			if ( preg_match( '/{{(ACTION_(FIELD|META)\:)' . $prev_id . '\:\w.+?}}/', $content ) ) {
 				$content = preg_replace( '/{{ACTION_(FIELD|META)\:' . $prev_id . ':/', '{{ACTION_$1\:' . $new_id . ':', $content );
+			}
+			// Check for extended tokens pattern by previous ID.
+			$extended_pattern = '/\{\{TOKEN_EXTENDED:([^:]+):([^:]+):' . preg_quote( $prev_id, '/' ) . ':([^}]+)\}\}/';
+			if ( preg_match_all( $extended_pattern, $content ) ) {
+				$content = preg_replace( $extended_pattern, '{{TOKEN_EXTENDED:${1}:${2}:' . $new_id . ':${3}}}', $content );
 			}
 		}
 
@@ -532,6 +561,11 @@ class Copy_Recipe_Parts {
 	 * @return array|mixed|string|string[]|null
 	 */
 	public function replace_loop_token_ids( $content ) {
+
+		if ( is_object( $content ) ) {
+			return $content;
+		}
+
 		// Loop thru multiple loops and update token's loop ID based on that.
 		foreach ( $this->loop_tokens as $prev_id => $new_id ) {
 			// Sanity check
@@ -539,7 +573,7 @@ class Copy_Recipe_Parts {
 				continue;
 			}
 			// Check if content contains a replaceable token by previous ID for LOOP_TOKEN or DATA_TOKEN.
-			if ( ! is_object( $content ) && preg_match( '/{{TOKEN_EXTENDED:(LOOP_TOKEN|DATA_TOKEN[^:]*):' . $prev_id . ':/', $content ) ) {
+			if ( preg_match( '/{{TOKEN_EXTENDED:(LOOP_TOKEN|DATA_TOKEN[^:]*):' . $prev_id . ':/', $content ) ) {
 				$content = preg_replace( '/{{TOKEN_EXTENDED:(LOOP_TOKEN|DATA_TOKEN[^:]*):' . $prev_id . ':/', '{{TOKEN_EXTENDED:$1:' . $new_id . ':', $content );
 			}
 		}
@@ -662,5 +696,46 @@ class Copy_Recipe_Parts {
 				'%d',
 			)
 		);
+	}
+
+	/**
+	 * Maybe update the trigger ID in the data loop tokens.
+	 *
+	 * @param mixed $value
+	 * @param int $new_post_id
+	 *
+	 * @return mixed
+	 */
+	public function handle_data_loop_tokens( $value, $new_post_id ) {
+
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+
+		// Pattern to match loopable data tokens.
+		$trigger_pattern = '/\{\{TOKEN_EXTENDED:DATA_TOKEN_CHILDREN_TRIGGER_LOOPABLE[^}]*\}\}/';
+		if ( ! preg_match_all( $trigger_pattern, $value ) ) {
+			return $value;
+		}
+
+		$trigger_replaced = false;
+		if ( ! empty( $this->trigger_tokens ) ) {
+			foreach ( $this->trigger_tokens as $prev_trigger_id => $new_trigger_id ) {
+				while ( false !== strpos( $value, ":{$prev_trigger_id}:TRIGGER_LOOPABLE" ) ) {
+					$before = $value;
+					$value  = str_replace( ":{$prev_trigger_id}:TRIGGER_LOOPABLE", ":{$new_trigger_id}:TRIGGER_LOOPABLE", $value );
+					if ( $before !== $value ) {
+						$trigger_replaced = true;
+					}
+				}
+			}
+		}
+
+		// If we didn't replace the tokens, then we should remove them.
+		if ( ! $trigger_replaced ) {
+			$value = preg_replace( $trigger_pattern, '', $value );
+		}
+
+		return $value;
 	}
 }

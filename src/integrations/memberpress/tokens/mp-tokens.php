@@ -11,9 +11,45 @@ use MeprOptions;
  */
 class Mp_Tokens {
 
+	/**
+	 *
+	 */
 	public function __construct() {
 		add_filter( 'automator_maybe_trigger_mp_mpproduct_tokens', array( $this, 'mp_possible_tokens' ), 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'mp_token' ), 222, 6 );
+		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
+	}
+
+	/**
+	 * @param $args
+	 * @param $trigger
+	 *
+	 * @return void
+	 */
+	public function save_token_data( $args, $trigger ) {
+		if ( ! isset( $args['trigger_args'] ) || ! isset( $args['entry_args']['code'] ) ) {
+			return;
+		}
+
+		$trigger_meta_validations = apply_filters(
+			'automator_mepr_validate_trigger_meta_pieces_save',
+			array( 'MP_RENEW_SUBSCRIPTION' ),
+			$args
+		);
+
+		if ( in_array( $args['entry_args']['code'], $trigger_meta_validations, true ) ) {
+
+			$event = array_shift( $args['trigger_args'] );
+
+			/** @var \MeprTransaction $transaction */
+			$mepr_transaction = $event->get_data();
+
+			$trigger_log_entry = $args['trigger_entry'];
+			if ( ! empty( $mepr_transaction ) ) {
+				Automator()->db->token->save( 'mp_txn_id', $mepr_transaction->id, $trigger_log_entry );
+				Automator()->db->token->save( 'mp_txn_amount', $mepr_transaction->amount, $trigger_log_entry );
+			}
+		}
 	}
 
 	/**
@@ -92,6 +128,8 @@ class Mp_Tokens {
 			'MPPRODUCT',
 			'MPPRODUCT_ID',
 			'MPPRODUCT_URL',
+			'MPPRODUCT_TXN_ID',
+			'MPPRODUCT_TXN_AMOUNT',
 		);
 
 		$mepr_options = MeprOptions::fetch();
@@ -145,6 +183,14 @@ class Mp_Tokens {
 					break;
 				case 'MPPRODUCT_ID':
 					$value = absint( $product_id );
+					break;
+				case 'MPPRODUCT_TXN_ID':
+					$txn_id = Automator()->db->trigger->get_token_meta( 'mp_txn_id', $parse_tokens );
+					$value  = absint( $txn_id );
+					break;
+				case 'MPPRODUCT_TXN_AMOUNT':
+					$txn_amount = Automator()->db->trigger->get_token_meta( 'mp_txn_amount', $parse_tokens );
+					$value      = $txn_amount;
 					break;
 				case 'MPPRODUCT_URL':
 					$value = get_the_permalink( $product_id );

@@ -35,7 +35,7 @@ class WP_USERROLEADDED {
 		add_action(
 			'admin_init',
 			function () {
-				if ( 'yes' === get_option( 'USERROLEADDED_migrated', 'no' ) ) {
+				if ( 'yes' === automator_get_option( 'USERROLEADDED_migrated', 'no' ) ) {
 					return;
 				}
 				global $wpdb;
@@ -45,7 +45,7 @@ class WP_USERROLEADDED {
 						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id = %d AND meta_key LIKE %s", 'add_user_role', $post_id, 'add_action' ) );
 					}
 				}
-				update_option( 'USERROLEADDED_migrated', 'yes' );
+				automator_update_option( 'USERROLEADDED_migrated', 'yes' );
 			},
 			99
 		);

@@ -81,10 +81,10 @@ class Slack_Settings extends Settings\Premium_Integration_Settings {
 		$user_just_connected_site = automator_filter_input( 'connect' ) === '1';
 
 		// Get the current bot name
-		$bot_name = get_option( 'uap_automator_slack_api_bot_name', '' );
+		$bot_name = automator_get_option( 'uap_automator_slack_api_bot_name', '' );
 
 		// Get the current bot icon
-		$bot_icon = get_option( 'uap_automator_alck_api_bot_icon', '' );
+		$bot_icon = automator_get_option( 'uap_automator_alck_api_bot_icon', '' );
 
 		// Load view
 		include_once 'view-slack.php';

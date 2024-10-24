@@ -175,7 +175,7 @@ class PM_POPUPSHOW {
 			return;
 		} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
 			$md5 = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
-			update_option( 'automator_display_popup_' . $md5, $popup_id );
+			automator_update_option( 'automator_display_popup_' . $md5, $popup_id );
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 			return;

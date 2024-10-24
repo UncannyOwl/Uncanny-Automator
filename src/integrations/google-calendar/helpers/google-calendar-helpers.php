@@ -409,7 +409,7 @@ class Google_Calendar_Helpers {
 
 			}
 
-			update_option( self::OPTION_KEY, $tokens );
+			automator_update_option( self::OPTION_KEY, $tokens );
 
 			return true;
 
@@ -758,7 +758,7 @@ class Google_Calendar_Helpers {
 
 		delete_transient( 'automator_google_calendar_user_info' );
 
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 
 		return true;
 

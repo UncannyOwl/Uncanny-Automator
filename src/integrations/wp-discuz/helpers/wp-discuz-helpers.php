@@ -91,7 +91,7 @@ class Wp_Discuz_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'POSTID',
-				'tokenName' => __( 'Post ID', 'uncanny_automator' ),
+				'tokenName' => __( 'Post ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
@@ -106,17 +106,17 @@ class Wp_Discuz_Helpers {
 			),
 			array(
 				'tokenId'   => 'POSTCONTENT',
-				'tokenName' => __( 'Post content (raw)', 'uncanny_automator' ),
+				'tokenName' => __( 'Post content (raw)', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTCONTENT_BEAUTIFIED',
-				'tokenName' => __( 'Post content (formatted)', 'uncanny_automator' ),
+				'tokenName' => __( 'Post content (formatted)', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTEXCERPT',
-				'tokenName' => __( 'Post excerpt', 'uncanny_automator' ),
+				'tokenName' => __( 'Post excerpt', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
@@ -131,7 +131,7 @@ class Wp_Discuz_Helpers {
 			),
 			array(
 				'tokenId'   => 'POSTIMAGEID',
-				'tokenName' => __( 'Post featured image ID', 'uncanny_automator' ),
+				'tokenName' => __( 'Post featured image ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(

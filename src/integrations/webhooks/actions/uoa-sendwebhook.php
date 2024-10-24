@@ -108,7 +108,7 @@ class UOA_SENDWEBHOOK {
 		);
 
 		if ( empty( $current_actions ) ) {
-			update_option( $option_key, 'yes', true );
+			automator_update_option( $option_key, 'yes', true );
 
 			return;
 		}
@@ -119,7 +119,7 @@ class UOA_SENDWEBHOOK {
 			update_post_meta( $action_id, 'integration_name', 'Webhooks' );
 		}
 
-		update_option( $option_key, 'yes', true );
+		automator_update_option( $option_key, 'yes', true );
 
 	}
 }

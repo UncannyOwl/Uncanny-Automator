@@ -1,0 +1,10 @@
+.uap-connection-app-fields {
+    display: none;
+    margin-top: 20px;
+}
+
+.uap-stripe-connect-button-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}

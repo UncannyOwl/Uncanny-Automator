@@ -7,6 +7,15 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 // Check if the 'automator_delete_data_on_uninstall' setting is enabled
 if ( false === get_option( 'automator_delete_data_on_uninstall', false ) ) {
+	// Check if the 'automator_delete_data_on_uninstall' setting is enabled in custom table
+	global $wpdb;
+	$setting = $wpdb->get_var( "SELECT option_value FROM {$wpdb->prefix}uap_options WHERE option_name = 'automator_delete_data_on_uninstall'" );
+
+	if ( false === $setting ) {
+		// The setting is not enabled, so bail out
+		return;
+	}
+
 	// The setting is not enabled, so bail out
 	return;
 }
@@ -40,6 +49,7 @@ try {
 		$wpdb->prefix . 'uap_api_log_response',
 		$wpdb->prefix . 'uap_api_log',
 		$wpdb->prefix . 'uap_recipe_count',
+		$wpdb->prefix . 'uap_options',
 		// Pro tables
 		$wpdb->prefix . 'uap_loop_entries',
 		$wpdb->prefix . 'uap_loop_entries_items',

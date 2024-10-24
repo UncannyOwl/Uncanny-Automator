@@ -157,7 +157,7 @@ class CONVERTKIT_SUBSCRIBER_TAG_ADD {
 				'action'        => 'add_tag_to_subscriber',
 				'tag_id'        => $tag_id,
 				'email_address' => $email_address,
-				'access_token'  => get_option( ConvertKit_Settings::OPTIONS_API_SECRET, null ),
+				'access_token'  => automator_get_option( ConvertKit_Settings::OPTIONS_API_SECRET, null ),
 			);
 
 			$response = $this->get_helpers()->api_request( $body, $action_data );

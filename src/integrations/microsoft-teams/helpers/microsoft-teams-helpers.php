@@ -112,7 +112,7 @@ class Microsoft_Teams_Helpers {
 
 		if ( false === $secret ) {
 			$secret = wp_create_nonce( self::NONCE );
-			update_option( self::API_SECRET, $secret );
+			automator_update_option( self::API_SECRET, $secret );
 		}
 
 		return $secret;
@@ -264,7 +264,7 @@ class Microsoft_Teams_Helpers {
 
 		$client['issued_at'] = time();
 
-		update_option( self::OPTION_KEY, $client );
+		automator_update_option( self::OPTION_KEY, $client );
 	}
 
 	/**
@@ -382,8 +382,8 @@ class Microsoft_Teams_Helpers {
 	 */
 	public function remove_credentials() {
 		// There is no need to revoke access because the token will expire in an hour
-		delete_option( self::OPTION_KEY );
-		delete_option( self::API_SECRET );
+		automator_delete_option( self::OPTION_KEY );
+		automator_delete_option( self::API_SECRET );
 		delete_transient( 'automator_microsoft_teams_user' );
 	}
 

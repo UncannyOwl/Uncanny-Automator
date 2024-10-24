@@ -99,7 +99,7 @@ class Add_Instagram_Integration {
 	 */
 	public function get_total_ig_accounts_connected() {
 
-		$options_facebook_pages = get_option( '_uncannyowl_facebook_pages_settings', array() );
+		$options_facebook_pages = automator_get_option( '_uncannyowl_facebook_pages_settings', array() );
 
 		$total = 0;
 

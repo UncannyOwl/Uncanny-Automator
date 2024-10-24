@@ -17,13 +17,11 @@ namespace Uncanny_Automator;
 
 ?>
 
-<form method="POST" action="options.php">
+<form method="POST">
 
 	<?php
-
 	// Add setting fields
 	settings_fields( 'uncanny_automator_improve_automator_usage_tracking' );
-
 	?>
 
 	<div class="uap-settings-panel-content-subtitle">

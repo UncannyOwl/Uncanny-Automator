@@ -3,6 +3,8 @@
 
 namespace Uncanny_Automator;
 
+use wpdb;
+
 /**
  * Class Automator_DB_Handler_Actions
  *
@@ -25,6 +27,61 @@ class Automator_DB_Handler_Actions {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Returns WordPress instance of wpdb.
+	 *
+	 * @return wpdb
+	 */
+	public function wpdb() {
+		global $wpdb;
+		return $wpdb;
+	}
+
+	/**
+	 * Retrieves the action log id from action id and recipe log id.
+	 *
+	 * @param int $action_id
+	 * @param int $recipe_log_id
+	 *
+	 * @return int
+	 */
+	public function get_action_log_id( int $action_id, int $recipe_log_id ) {
+
+		global $wpdb;
+
+		$action_log_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->prefix}uap_action_log
+				WHERE automator_action_id = %d
+				AND automator_recipe_log_id = %d
+				ORDER BY ID DESC",
+				$action_id,
+				$recipe_log_id
+			)
+		);
+
+		return ! empty( $action_log_id ) ? absint( $action_log_id ) : 0;
+	}
+
+	/**
+	 * @param int $action_log_id
+	 *
+	 * @return int|null
+	 */
+	public function get_action_log_completion_status( $action_log_id ) {
+
+		$action_log_id = $this->wpdb()->get_var(
+			$this->wpdb()->prepare(
+				"SELECT completed FROM {$this->wpdb()->prefix}uap_action_log
+				WHERE ID = %d",
+				$action_log_id
+			)
+		);
+
+		return $action_log_id ?? null;
+
 	}
 
 	/**
@@ -112,10 +169,12 @@ class Automator_DB_Handler_Actions {
 	 * @return bool|int
 	 */
 	public function add_meta( $user_id, $action_log_id, $action_id, $meta_key, $meta_value ) {
+
 		global $wpdb;
+
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
 
-		return $wpdb->insert(
+		$inserted = $wpdb->insert(
 			$table_name,
 			array(
 				'user_id'                 => $user_id,
@@ -132,6 +191,40 @@ class Automator_DB_Handler_Actions {
 				'%s',
 			)
 		);
+
+		return $inserted;
+	}
+
+	/**
+	 * @param int $action_log_id
+	 * @param int $action_id
+	 * @param string $meta_key
+	 * @param string $meta_value
+	 *
+	 * @return int|false
+	 */
+	public function update_meta( $action_log_id, $action_id, $meta_key, $meta_value ) {
+
+		return $this->wpdb()->update(
+			$this->wpdb()->prefix . Automator()->db->tables->action_meta,
+			array(
+				'meta_value' => $meta_value,
+			),
+			array(
+				'meta_key'                => $meta_key,
+				'automator_action_id'     => $action_id,
+				'automator_action_log_id' => $action_log_id,
+			),
+			array(
+				'%s',
+			),
+			array(
+				'%s',
+				'%d',
+				'%d',
+			)
+		);
+
 	}
 
 	/**
@@ -167,7 +260,9 @@ class Automator_DB_Handler_Actions {
 	 * @return string
 	 */
 	public function get_meta( $action_log_id, $meta_key ) {
+
 		global $wpdb;
+
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
 		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $table_name WHERE meta_key =%s AND automator_action_log_id =%d", $meta_key, $action_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
@@ -176,7 +271,36 @@ class Automator_DB_Handler_Actions {
 		}
 
 		return $result->meta_value;
+
 	}
+
+	/**
+	 * Find all metas having the same action log id and meta key.
+	 *
+	 * @param int    $action_log_id The action log ID.
+	 * @param string $meta_key      The meta key.
+	 *
+	 * @return array The array of meta values.
+	 */
+	public function get_multiple_meta( $action_log_id, $meta_key ) {
+
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT meta_value FROM $table_name WHERE meta_key = %s AND automator_action_log_id = %d",
+				$meta_key,
+				$action_log_id
+			),
+			ARRAY_A
+		);
+
+		return (array) $results;
+	}
+
 
 	/**
 	 * @param $action_log_id

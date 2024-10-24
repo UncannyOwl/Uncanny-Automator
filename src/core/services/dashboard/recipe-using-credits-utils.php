@@ -97,7 +97,17 @@ class Recipe_Using_Credits_Utils {
 	 * @return array
 	 */
 	public function identify_loops_and_recipes_from_post_types( $app_actions ) {
+
+		if ( empty( $app_actions ) ) {
+			return array();
+		}
+
 		$post_parents = array_column( $app_actions, 'post_parent' );
+
+		if ( empty( $post_parents ) ) {
+			return array();
+		}
+
 		$placeholders = implode( ', ', array_fill( 0, count( $post_parents ), '%d' ) );
 
 		$stmt = $this->db->prepare(
@@ -115,6 +125,10 @@ class Recipe_Using_Credits_Utils {
 	 * @return array
 	 */
 	public function determine_recipes_from( $loops_and_recipes ) {
+		if ( empty( $loops_and_recipes ) ) {
+			return array();
+		}
+
 		$recipe_ids = array();
 		foreach ( $loops_and_recipes as $_post ) {
 			$recipe_ids[] = 'uo-loop' === $_post['post_type'] ? $_post['post_parent'] : $_post['ID'];
@@ -172,7 +186,10 @@ class Recipe_Using_Credits_Utils {
 		$loops_and_recipes  = $this->identify_loops_and_recipes_from_post_types( $app_actions );
 		$recipes_determined = $this->determine_recipes_from( $loops_and_recipes );
 
-		$recipes      = $this->get_recipes_from( $recipes_determined );
+		$recipes = $this->get_recipes_from( $recipes_determined );
+		if ( empty( $recipes ) ) {
+			return array();
+		}
 		$recipe_items = array();
 
 		foreach ( $recipes as $recipe ) {

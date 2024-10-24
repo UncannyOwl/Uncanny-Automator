@@ -414,7 +414,7 @@ class Helpscout_Helpers {
 		// Manually set the access token and refresh token expiration date.
 		$tokens['expires_on'] = strtotime( current_time( 'mysql' ) ) + $tokens['expires_in'];
 
-		update_option( self::CLIENT, $tokens, true );
+		automator_update_option( self::CLIENT, $tokens, true );
 
 		try {
 
@@ -424,7 +424,7 @@ class Helpscout_Helpers {
 
 			$client['user'] = $response['data'];
 
-			update_option( self::CLIENT, $client, true );
+			automator_update_option( self::CLIENT, $client, true );
 
 		} catch ( \Exception $e ) {
 
@@ -462,9 +462,9 @@ class Helpscout_Helpers {
 
 		$this->verify_access( $nonce );
 
-		delete_option( 'automator_helpscout_client' );
-		delete_option( 'uap_helpscout_enable_webhook' );
-		delete_option( 'uap_helpscout_webhook_key' );
+		automator_delete_option( 'automator_helpscout_client' );
+		automator_delete_option( 'uap_helpscout_enable_webhook' );
+		automator_delete_option( 'uap_helpscout_webhook_key' );
 
 		delete_transient( self::TRANSIENT_MAILBOXES );
 
@@ -607,7 +607,7 @@ class Helpscout_Helpers {
 					$response['expires_on'] = strtotime( current_time( 'mysql' ) ) + $response['expires_in'];
 					$response['user']       = $client['user'];
 
-					update_option( self::CLIENT, $response, true );
+					automator_update_option( self::CLIENT, $response, true );
 
 				}
 			}
@@ -693,7 +693,7 @@ class Helpscout_Helpers {
 
 		$new_key = md5( uniqid( wp_rand(), true ) );
 
-		update_option( 'uap_helpscout_webhook_key', $new_key );
+		automator_update_option( 'uap_helpscout_webhook_key', $new_key );
 
 		return $new_key;
 

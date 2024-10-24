@@ -47,7 +47,7 @@ class Add_UOTC_Integration {
 		global $wpdb;
 		$current_triggers = $wpdb->get_results( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = 'MODULEINTERACTION' AND meta_key = 'code'" );
 		if ( empty( $current_triggers ) ) {
-			update_option( 'automator_tin_canny_trigger_moved', 'yes', true );
+			automator_update_option( 'automator_tin_canny_trigger_moved', 'yes', true );
 
 			return;
 		}
@@ -57,7 +57,7 @@ class Add_UOTC_Integration {
 			update_post_meta( $trigger_id, 'integration_name', 'Tin Canny Reporting' );
 		}
 
-		update_option( 'automator_tin_canny_trigger_moved', 'yes', true );
+		automator_update_option( 'automator_tin_canny_trigger_moved', 'yes', true );
 
 	}
 }

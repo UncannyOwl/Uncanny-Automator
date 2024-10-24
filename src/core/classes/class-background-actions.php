@@ -99,17 +99,17 @@ class Background_Actions {
 	 */
 	public function add_option() {
 
-		$current_option  = get_option( self::OPTION_NAME, 'option_does_not_exist' );
+		$current_option  = automator_get_option( self::OPTION_NAME, 'option_does_not_exist' );
 		$bg_actions_work = $this->test_endpoint( '1' );
 
 		if ( 'option_does_not_exist' === $current_option ) {
-			add_option( self::OPTION_NAME, $bg_actions_work );
+			automator_add_option( self::OPTION_NAME, $bg_actions_work );
 
 			return;
 		}
 
 		if ( '1' === $current_option && '0' === $bg_actions_work ) {
-			update_option( self::OPTION_NAME, '0' );
+			automator_update_option( self::OPTION_NAME, '0' );
 		}
 	}
 
@@ -251,7 +251,7 @@ class Background_Actions {
 	 * @return bool
 	 */
 	public function bg_actions_enabled() {
-		$value = get_option( self::OPTION_NAME, '1' );
+		$value = automator_get_option( self::OPTION_NAME, '1' );
 
 		return '1' === $value;
 	}

@@ -21,11 +21,11 @@ namespace Uncanny_Automator;
 
 				<?php if ( 'yes' === automator_filter_input( 'failed' ) ) { ?>
 
-					<uo-alert class="uap-spacing-bottom" type="error" heading="<?php esc_html_e( 'There was an error removing the file.', 'uncanny-automator' ); ?>"></uo-alert>	
+					<uo-alert class="uap-spacing-bottom" type="error" heading="<?php esc_html_e( 'There was an error removing the file.', 'uncanny-automator' ); ?>"></uo-alert>
 
 				<?php } else { ?>
 
-					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php esc_html_e( 'Log file has been successfully removed.', 'uncanny-automator' ); ?>"></uo-alert>	
+					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php esc_html_e( 'Log file has been successfully removed.', 'uncanny-automator' ); ?>"></uo-alert>
 
 				<?php } ?>
 
@@ -42,8 +42,8 @@ namespace Uncanny_Automator;
 				<div class="uap-field uap-spacing-top--small">
 
 					<uo-switch label="<?php esc_attr_e( 'Logs', 'uncanny-automator' ); ?>"
-						<?php checked( automator_get_option( 'automator_settings_debug_enabled', false ), true, true ); ?> 
-						id="automator_settings_debug_enabled" 
+						<?php checked( automator_get_option( 'automator_settings_debug_enabled', false ), true, true ); ?>
+						id="automator_settings_debug_enabled"
 						status-label="Enabled,Disabled" class="uap-spacing-top">
 					</uo-switch>
 
@@ -58,8 +58,8 @@ namespace Uncanny_Automator;
 				<!-- DISABLED div class="uap-field uap-spacing-top--small">
 
 					<uo-switch label="<?php #esc_attr_e( 'Warnings and notices', 'uncanny-automator' ); ?>"
-						<?php #checked( get_option( 'automator_settings_debug_notices_enabled', false ), true, true ); ?> 
-						id="automator_settings_debug_notices_enabled" 
+						<?php #checked( automator_get_option( 'automator_settings_debug_notices_enabled', false ), true, true ); ?>
+						id="automator_settings_debug_notices_enabled"
 						status-label="Enabled,Disabled" class="uap-spacing-top">
 					</uo-switch>
 

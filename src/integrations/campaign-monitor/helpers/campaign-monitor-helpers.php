@@ -148,7 +148,7 @@ class Campaign_Monitor_Helpers {
 		$expires_in                = absint( $credentials['expires_in'] ) - 86400;
 		$credentials['expires_on'] = time() + $expires_in;
 
-		update_option( self::CREDENTIALS, $credentials, false );
+		automator_update_option( self::CREDENTIALS, $credentials, false );
 	}
 
 	/**
@@ -157,7 +157,7 @@ class Campaign_Monitor_Helpers {
 	 * @return array
 	 */
 	public static function get_credentials() {
-		return (array) get_option( self::CREDENTIALS, array() );
+		return (array) automator_get_option( self::CREDENTIALS, array() );
 	}
 
 	/**
@@ -174,19 +174,19 @@ class Campaign_Monitor_Helpers {
 	 * Get / Set account details.
 	 *
 	 * @param  bool $return_error
-	 * 
+	 *
 	 * @return mixed - Details of connected account || WP_Error
 	 */
 	public function get_account_details( $return_error = true ) {
 
-		$account = get_option( self::ACCOUNT, array() );
+		$account = automator_get_option( self::ACCOUNT, array() );
 
 		if ( empty( $account ) ) {
 			try {
 				$response = $this->api_request( 'get_primary_contact' );
 				$data     = $response['data'] ?? array();
 				$primary  = $data['EmailAddress'] ?? false;
-				
+
 				// Get / set clients.
 				$clients = $this->get_clients( true );
 				$type    = count( $clients ) > 1 ? 'agency' : 'client';
@@ -196,9 +196,9 @@ class Campaign_Monitor_Helpers {
 					'email'  => $primary,
 					'client' => 'client' === $type ? $clients[0] : null,
 				);
-				
+
 				// Save account details.
-				update_option( self::ACCOUNT, $account, false );
+				automator_update_option( self::ACCOUNT, $account, false );
 
 				if ( 'client' === $type ) {
 					// Maybe update the hidden client field for existing actions.
@@ -257,7 +257,7 @@ class Campaign_Monitor_Helpers {
 
 	/**
 	 * Get Clients Ajax handler.
-	 * 
+	 *
 	 * @return string - JSON response.
 	 */
 	public function get_clients_ajax() {
@@ -296,13 +296,14 @@ class Campaign_Monitor_Helpers {
 	public function remove_credentials() {
 
 		// Delete options.
-		delete_option( self::CREDENTIALS );
-		delete_option( self::ACCOUNT );
+		automator_delete_option( self::CREDENTIALS );
+		automator_delete_option( self::ACCOUNT );
 
 		// Query all transients.
 		global $wpdb;
+		$table = "{$wpdb->prefix}uap_options";
 		$transients = $wpdb->get_col( $wpdb->prepare(
-			"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+			"SELECT option_name FROM {$table} WHERE option_name LIKE %s",
 			$wpdb->esc_like( '_transient_automator_campaign_monitor_' ) . '%'
 		) );
 
@@ -414,7 +415,7 @@ class Campaign_Monitor_Helpers {
 
 	/**
 	 * Common reconnect message.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function common_reconnect_message() {
@@ -498,7 +499,7 @@ class Campaign_Monitor_Helpers {
 	 * @return array
 	 */
 	public function get_client_list_field() {
-		
+
 		$account   = $this->get_account_details( false );
 		$is_client = 'client' === $account['type'];
 		$field     = array(
@@ -515,19 +516,19 @@ class Campaign_Monitor_Helpers {
 				'listen_fields' => array( self::ACTION_CLIENT_META_KEY ),
 			)
 		);
-		
-		return $field;	
+
+		return $field;
 	}
 
 	/**
 	 * Get Repeater Fields Config.
 	 *
 	 * @param  array $options
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_repeater_fields_config( $options = array() ) {
-		
+
 		return array(
 			array(
 				'input_type'  => 'select',
@@ -548,14 +549,14 @@ class Campaign_Monitor_Helpers {
 
 	/**
 	 * Get Lists.
-	 * 
+	 *
 	 * @param  mixed $client_id
 	 * @param  bool $refresh
-	 * 
+	 *
 	 * @return mixed - array || WP_Error
 	 */
 	public function get_lists( $client_id = null, $refresh = false ) {
-		
+
 		if ( empty( $client_id ) ) {
 			$account   = $this->get_account_details( false );
 			$client_id = $account['client']['value'] ?? null;
@@ -606,7 +607,7 @@ class Campaign_Monitor_Helpers {
 		Automator()->utilities->verify_nonce();
 		$client_id = isset( $_POST['values'][ self::ACTION_CLIENT_META_KEY ] ) ? sanitize_text_field( wp_unslash( $_POST['values'][ self::ACTION_CLIENT_META_KEY ] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$lists     = $this->get_lists( $client_id, $this->is_ajax_refresh() );
-		
+
 		if ( is_wp_error( $lists ) ) {
 			wp_send_json( array(
 				'success' => false,
@@ -625,7 +626,7 @@ class Campaign_Monitor_Helpers {
 	 *
 	 * @param  mixed $list_id
 	 * @param  bool $refresh
-	 * 
+	 *
 	 * @return mixed array || WP_Error
 	 */
 	public function get_custom_fields( $list_id = null, $refresh = false ) {
@@ -646,7 +647,7 @@ class Campaign_Monitor_Helpers {
 
 		try {
 			$response = $this->api_request( 'get_custom_fields', array( 'list_id' => $list_id ) );
-			$data     = $response['data'] ?? array();			
+			$data     = $response['data'] ?? array();
 
 			if ( empty( $data ) ) {
 				return array(
@@ -697,14 +698,14 @@ class Campaign_Monitor_Helpers {
 
 		$list_id = isset( $_POST['values']['LIST'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['LIST'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$fields  = $this->get_custom_fields( $list_id, $this->is_ajax_refresh() );
-		
+
 		if ( is_wp_error( $fields ) ) {
 			wp_send_json( array(
 				'success' => false,
 				'error'   => $fields->get_error_message(),
 			) );
 		}
-		
+
 		// Format options.
 		$options = array();
 		foreach ( $fields as $field ) {
@@ -745,15 +746,15 @@ class Campaign_Monitor_Helpers {
 	 */
 	public function is_ajax_refresh() {
 		$context = automator_filter_has_var( 'context', INPUT_POST ) ? automator_filter_input( 'context', INPUT_POST ) : '';
-		return 'refresh-button' === $context;	
+		return 'refresh-button' === $context;
 	}
 
 	/**
 	 * Maybe save action CLIENT meta value.
-	 * 
+	 *
 	 * @param  array $meta_value
 	 * @param  WP_Post $item
-	 * 
+	 *
 	 * @return array
 	 */
 	public function maybe_save_action_client_meta( $meta_value, $item ) {
@@ -785,9 +786,9 @@ class Campaign_Monitor_Helpers {
 
 	/**
 	 * Maybe update actions hidden client field meta.
-	 * 
+	 *
 	 * @param string $client_id
-	 * 
+	 *
 	 * @return void
 	 */
 	private function maybe_update_actions_hidden_client_field_meta( $client_id ) {
@@ -833,7 +834,7 @@ class Campaign_Monitor_Helpers {
 
 		return $email;
 	}
-	
+
 	/**
 	 * Get list_id from parsed.
 	 *
@@ -846,13 +847,13 @@ class Campaign_Monitor_Helpers {
 		if ( ! isset( $parsed[ $meta_key ] ) ) {
 			throw new \Exception( esc_html_x( 'List is required', 'Campaign Monitor', 'uncanny-automator' ) );
 		}
-		
+
 		$list_id = sanitize_text_field( $parsed[ $meta_key ] );
-		
+
 		if ( ! $list_id ) {
 			throw new \Exception( esc_html_x( 'List is required', 'Campaign Monitor', 'uncanny-automator' ) );
 		}
-		
+
 		return $list_id;
 	}
 

@@ -26,7 +26,7 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Recipe_Logs_Resources
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Trigger_Logs_Resources;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 use Uncanny_Automator\Rest\Endpoint\User_Endpoint;
-use Uncanny_Automator\Services\Email_Tester\Email_Sender;
+use Uncanny_Automator\Services\Email;
 use WP_HTTP_Response;
 use WP_REST_Response;
 
@@ -61,9 +61,10 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 			'methods'             => 'POST',
 			'permission_callback' => $authentication,
 			'callback'            => function( WP_REST_Request $request ) {
+
 				try {
 
-					$email_sender = new Email_Sender( Email_Sender::generate_args( $request ) );
+					$email_sender = new Email\Tester( Email\Tester::generate_args( $request ) );
 
 					if ( false === $email_sender->send() ) {
 						throw new Exception( 'The system encountered an error while attempting to send the email. Ensure that your email server settings, such as SMTP configuration, are accurate.', 400 );
@@ -77,6 +78,7 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 						400
 					);
 				}
+
 				return new WP_REST_Response(
 					array(
 						'success' => true,
