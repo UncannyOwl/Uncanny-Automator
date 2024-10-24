@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator\Integrations\Brevo;
 
+use Uncanny_Automator\Recipe\Log_Properties;
+
 /**
  * Class BREVO_ADD_UPDATE_CONTACT
  *
@@ -9,7 +11,21 @@ namespace Uncanny_Automator\Integrations\Brevo;
  */
 class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
+	use Log_Properties;
+
+	/**
+	 * Prefix key for action.
+	 *
+	 * @var string
+	 */
 	public $prefix = 'BREVO_ADD_UPDATE_CONTACT';
+
+	/**
+	 * Store the complete with notice messages.
+	 *
+	 * @var array
+	 */
+	public $complete_with_notice_messages = array();
 
 	/**
 	 * Define and register the action by pushing it into the Automator object.
@@ -196,10 +212,22 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 					continue;
 				}
 
-				// Validate Value by type.
-				$attribute_type  = $this->get_attribute_type( $attribute_name, $contact_attributes );
-				$attribute_value = $this->validate_attribute_value( $attribute_value, $attribute_type );
+				// Get Attribute config.
+				$config = $this->get_attribute_config( $attribute_name, $contact_attributes );
+
+				// Validate Value by config settings.
+				$attribute_value = $this->validate_attribute_value( $attribute_value, $config );
+
+				// Skip invalid values.
 				if ( 'invalid' === $attribute_value ) {
+
+					// Log invalid attribute.
+					$this->complete_with_notice_messages[] = sprintf(
+						/* translators: %s: attribute name */
+						_x( 'Invalid value for attribute %s', 'Brevo', 'uncanny-automator' ),
+						$attribute_name
+					);
+
 					continue;
 				}
 
@@ -211,8 +239,14 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( ! $double_optin ) {
 
 			$response = $this->helpers->create_contact( $email, $attributes, $update_existing, $action_data );
-			return true;
 
+			if ( ! empty( $this->complete_with_notice_messages ) ) {
+				$this->set_complete_with_notice( true );
+				$this->add_log_error( implode( ', ', $this->complete_with_notice_messages ) );
+				return null;
+			}
+
+			return true;
 		}
 
 		$template_id  = sanitize_text_field( $this->get_parsed_meta_value( 'DOUBLE_OPT_IN_TEMPLATE', false ) );
@@ -242,43 +276,50 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		$response = $this->helpers->create_contact_with_double_optin( $email, $attributes, $template_id, $redirect_url, $list_id, $update_existing, $action_data );
 
+		if ( ! empty( $this->complete_with_notice_messages ) ) {
+			$this->set_complete_with_notice( true );
+			$this->add_log_error( implode( ', ', $this->complete_with_notice_messages ) );
+			return null;
+		}
+
 		return true;
 	}
 
 	/**
-	 * Get attribute type.
+	 * Get attribute config.
 	 *
 	 * @param string $attribute_name
 	 * @param array $contact_attributes
 	 *
-	 * @return string
+	 * @return array
 	 */
-	private function get_attribute_type( $attribute_name, $contact_attributes ) {
-
-		$type = 'text';
+	private function get_attribute_config( $attribute_name, $contact_attributes ) {
 
 		if ( empty( $contact_attributes ) ) {
-			return $type;
+			return array();
 		}
 
 		foreach ( $contact_attributes as $contact_attribute ) {
 			if ( $attribute_name === $contact_attribute['text'] ) {
-				return $contact_attribute['type'];
+				return $contact_attribute;
 			}
 		}
 
-		return $type;
+		return array();
 	}
 
 	/**
 	 * Validate attribute value.
 	 *
 	 * @param string $value
-	 * @param string $type
+	 * @param array $config
 	 *
 	 * @return string
 	 */
-	private function validate_attribute_value( $value, $type ) {
+	private function validate_attribute_value( $value, $config ) {
+
+		// If no config return value as is.
+		$type = $config['type'] ?? 'text';
 
 		switch ( $type ) {
 			case 'text':
@@ -301,10 +342,73 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 					return false;
 				}
 				return 'invalid';
+			case 'select':
+				return $this->validate_select_value( $value, $config );
 			default:
 				return 'invalid';
 		}
 
+	}
+
+	/**
+	 * Validate select value.
+	 *
+	 * @param string $value
+	 * @param array $config
+	 *
+	 * @return string
+	 */
+	private function validate_select_value( $value, $config ) {
+		$value       = trim( $value );
+		$options     = isset( $config['options'] ) && is_array( $config['options'] ) ? $config['options'] : array();
+		$is_multiple = (bool) $config['multiple'] ?? false;
+
+		if ( $is_multiple ) {
+
+			// Check for multiple values.
+			$values    = array_map( 'trim', array_values( explode( ',', $value ) ) );
+			$validated = array();
+			$invalid   = array();
+			foreach ( $values as $val ) {
+				if ( in_array( $val, $options, true ) ) {
+					$validated[] = $val;
+				} else {
+					$invalid[] = $val;
+				}
+			}
+
+			$has_valid   = ! empty( $validated );
+			$has_invalid = ! empty( $invalid );
+
+			// If we have both valid and invalid values, log invalid values.
+			if ( $has_invalid && $has_valid ) {
+				// Log invalid values.
+				$this->complete_with_notice_messages[] = sprintf(
+					/* translators: %s: list of invalid values */
+					_x( 'Invalid value(s) for attribute %1$s : %2$s', 'Brevo', 'uncanny-automator' ),
+					$config['text'],
+					implode( ', ', $invalid )
+				);
+			}
+
+			// Return as array of labels or invalid.
+			return $has_valid ? $validated : 'invalid';
+
+		}
+
+		// Check for single value.
+		$lables = wp_list_pluck( $options, 'label' );
+		$values = wp_list_pluck( $options, 'value' );
+		if ( in_array( $value, $lables, true ) ) {
+			$key = array_search( $value, $lables, true );
+			// Return value as array.
+			return array( $values[ $key ] );
+		}
+
+		if ( in_array( $value, $values, true ) ) {
+			return array( $value );
+		}
+		return 'invalid';
 	}
 
 }

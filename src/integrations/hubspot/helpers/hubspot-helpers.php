@@ -96,7 +96,7 @@ class Hubspot_Helpers {
 
 		$tokens['stored_at'] = time();
 
-		update_option( '_automator_hubspot_settings', $tokens );
+		automator_update_option( '_automator_hubspot_settings', $tokens );
 
 		delete_transient( '_automator_hubspot_token_info' );
 
@@ -154,7 +154,7 @@ class Hubspot_Helpers {
 		}
 
 		delete_transient( '_automator_hubspot_token_info' );
-		delete_option( '_automator_hubspot_settings' );
+		automator_delete_option( '_automator_hubspot_settings' );
 
 		$redirect_url = $this->tab_url;
 
@@ -198,7 +198,7 @@ class Hubspot_Helpers {
 			),
 		);
 
-		$last_call = get_option( '_automator_hubspot_last_refresh_token_call', 0 );
+		$last_call = automator_get_option( '_automator_hubspot_last_refresh_token_call', 0 );
 
 		// Rate limit token refresh calls if they fail
 		if ( time() - $last_call < 60 ) {
@@ -209,18 +209,18 @@ class Hubspot_Helpers {
 
 		if ( empty( $response['data']['access_token'] ) ) {
 
-			$failed_attempt = get_option( '_automator_hubspot_refresh_token_failed_attempts', 0 ) + 1;
+			$failed_attempt = automator_get_option( '_automator_hubspot_refresh_token_failed_attempts', 0 ) + 1;
 
 			if ( $failed_attempt > 10 ) {
 				// Something is wrong with the token. Disconnect HubSpot after 10 attempts.
-				delete_option( '_automator_hubspot_settings' );
-				delete_option( '_automator_hubspot_refresh_token_attempts' );
-				delete_option( '_automator_hubspot_last_refresh_token_call' );
+				automator_delete_option( '_automator_hubspot_settings' );
+				automator_delete_option( '_automator_hubspot_refresh_token_attempts' );
+				automator_delete_option( '_automator_hubspot_last_refresh_token_call' );
 				throw new \Exception( __( 'HubSpot token refresh failed, please reconnect HubSpot from settings', 'uncanny-automator' ) );
 			}
 
-			update_option( '_automator_hubspot_refresh_token_failed_attempts', $failed_attempt );
-			update_option( '_automator_hubspot_last_refresh_token_call', time() );
+			automator_update_option( '_automator_hubspot_refresh_token_failed_attempts', $failed_attempt );
+			automator_update_option( '_automator_hubspot_last_refresh_token_call', time() );
 
 			$error_msg = __( 'Could not refresh HubSpot token.', 'uncanny-automator' );
 
@@ -231,7 +231,7 @@ class Hubspot_Helpers {
 			throw new \Exception( $error_msg, $response['statusCode'] );
 		}
 
-		delete_option( '_automator_hubspot_refresh_token_failed_attempts' );
+		automator_delete_option( '_automator_hubspot_refresh_token_failed_attempts' );
 
 		$tokens = $this->store_client( $response['data'] );
 

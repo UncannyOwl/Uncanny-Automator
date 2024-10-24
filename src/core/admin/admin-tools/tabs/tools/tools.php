@@ -63,7 +63,7 @@ class Admin_Tools_Tabs_Tools {
 			case 'repair_tables':
 				Automator_DB::verify_base_tables( true );
 
-				delete_option( 'automator_schema_missing_tables' );
+				automator_delete_option( 'automator_schema_missing_tables' );
 
 				$query_params['database_repaired'] = 'yes';
 
@@ -73,7 +73,7 @@ class Admin_Tools_Tabs_Tools {
 			case 'purge_tables':
 				$purged = Automator_DB::purge_tables();
 
-				delete_option( 'automator_schema_missing_tables' );
+				automator_delete_option( 'automator_schema_missing_tables' );
 
 				$query_params['purged'] = $purged ? 'true' : 'false';
 
@@ -102,7 +102,7 @@ class Admin_Tools_Tabs_Tools {
 		// Update the size of the Database on clear
 		$total_size = Automator_System_Report::get_tables_total_size();
 
-		update_option( 'automator_db_size', $total_size, 'no' );
+		automator_update_option( 'automator_db_size', $total_size, 'no' );
 
 		$query_params = array(
 			'post_type' => 'uo-recipe',

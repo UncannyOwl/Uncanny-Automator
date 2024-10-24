@@ -1,7 +1,9 @@
 <?php
+//phpcs:disable PHPCompatibility.Operators.NewOperators.t_coalesceFound
 namespace Uncanny_Automator\Services\Loopable;
 
-use Uncanny_Automator_Pro\Loops\Loop\Entity_Factory;
+use Uncanny_Automator\Services\Loopable\Data_Integrations\Traits\Token_Loopable_Hydratable;
+use Uncanny_Automator\Services\Loopable\Data_Integrations\Utils;
 
 /**
  * The abstract class representation for Trigger Iterabe Tokens.
@@ -9,6 +11,8 @@ use Uncanny_Automator_Pro\Loops\Loop\Entity_Factory;
  * @package Uncanny_Automator\Services\Loopable
  */
 abstract class Trigger_Loopable_Token extends Loopable_Token {
+
+	use Token_Loopable_Hydratable;
 
 	/**
 	 * This property refers to the trigger properties ('trigger_code', 'sentence', 'etc') which is an array. Not collection of triggers.
@@ -22,7 +26,7 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	 *
 	 * @return void
 	 */
-	final public function __construct() {
+	public function __construct() {
 		$this->register_loopable_token();
 	}
 
@@ -100,11 +104,9 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	 */
 	public function hydrate_tokens_children( $field_text = '', $match = array(), $args = array(), $process_args = array() ) {
 
-		$entity_id = $process_args['loop']['entity_id'] ?? null;
-
+		$entity_id        = $process_args['loop']['entity_id'] ?? null;
 		$extracted_tokens = $this->extract_token_children( $field_text );
-
-		$tokens_reference = json_decode( Automator()->db->token->get( 'LOOPABLE_' . $this->get_id(), $process_args ), true );
+		$tokens_reference = (array) json_decode( Automator()->db->token->get( 'LOOPABLE_' . $this->get_id(), $process_args ), true );
 
 		if ( empty( $tokens_reference ) ) {
 			return $field_text;
@@ -112,16 +114,17 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 
 		$key_value_pairs = array();
 
-		foreach ( $extracted_tokens as $extracted_token ) {
+		foreach ( (array) $extracted_tokens as $extracted_token ) {
 
-			if ( isset( $extracted_token['token_id'] ) ) {
-
-				$value = $tokens_reference[ $entity_id ][ $extracted_token['token_id'] ] ?? '';
-
-				// Construct the key value pairs.
-				$key_value_pairs[ '{{' . implode( ':', array_values( $extracted_token ) ) . '}}' ] = $value;
-
+			if ( ! isset( $extracted_token['token_id'] ) ) {
+				continue;
 			}
+
+			$value = self::hydrate_loopable_node( $extracted_token, $tokens_reference, $entity_id );
+
+			// Collect key value pairs.
+			$key_value_pairs[ '{{' . implode( ':', array_values( $extracted_token ) ) . '}}' ] = Utils::convert_to_string( $value, true );
+
 		}
 
 		return strtr( $field_text, $key_value_pairs );
@@ -163,12 +166,23 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	 */
 	public function handle_token_trigger_log_meta_entry( $args, $reference ) {
 
-		$fields                 = $args['iterable_expression']['fields'] ?? '';
-		$loop_type              = $args['iterable_expression']['type'] ?? '';
-		$extracted_tokens       = (array) json_decode( $fields, true );
-		$extracted_tokens_value = $this->extract_token( $extracted_tokens['TOKEN']['value'] ?? '' );
+		$fields    = $args['iterable_expression']['fields'] ?? '';
+		$loop_type = $args['iterable_expression']['type'] ?? '';
 
+		$extracted_tokens = (array) json_decode( $fields, true );
+		$parent_token_raw = $extracted_tokens['TOKEN']['value'] ?? '';
+
+		if ( false === strpos( $parent_token_raw, $this->get_id() ) ) {
+			return;
+		}
+
+		$extracted_tokens_value = $this->extract_token( $parent_token_raw );
 		$loopable_token_in_used = $extracted_tokens_value['token_id'] ?? '';
+
+		// Bail if token id doesn't match.
+		if ( $this->get_id() !== $loopable_token_in_used ) {
+			return;
+		}
 
 		// Bail if the token type is not 'token'.
 		if ( 'token' !== $loop_type ) {
@@ -201,6 +215,8 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 			return;
 		}
 
+		$trigger_args['_result_args'] = $result_args;
+
 		$loopable = $this->hydrate_token_loopable( $trigger_args );
 
 		$user_id        = $result_args['user_id'] ?? '';
@@ -212,7 +228,7 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 			'user_id'        => $user_id,
 			'trigger_id'     => $trigger_id,
 			'meta_key'       => 'LOOPABLE_' . $this->get_id(),
-			'meta_value'     => wp_json_encode( $loopable, true ),
+			'meta_value'     => wp_json_encode( $loopable, JSON_HEX_QUOT ),
 			'run_number'     => $run_number,
 			'trigger_log_id' => $trigger_log_id,
 		);
@@ -309,13 +325,14 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		$pattern = '/\{\{(TOKEN_EXTENDED):(DATA_TOKEN_' . $this->get_id() . '):(\d+):([A-Z_]+):([A-Z_]+)\}\}/';
 
 		if ( preg_match( $pattern, $input, $matches ) ) {
-			return array(
+			$params = array(
 				'signature'    => $matches[1],
 				'type'         => $matches[2],
 				'trigger_id'   => (int) $matches[3],
 				'trigger_code' => $matches[4],
 				'token_id'     => $matches[5],
 			);
+			return $params;
 		}
 
 		return false; // Pattern did not match
@@ -331,7 +348,8 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	 */
 	public function extract_token_children( $input = '' ) {
 
-		$pattern = '/{{TOKEN_EXTENDED:DATA_TOKEN_CHILDREN_' . $this->get_id() . ':(\d+):(\d+):(\w+):(\w+)}}/';
+		$pattern = '/\{\{TOKEN_EXTENDED:DATA_TOKEN_CHILDREN_' . $this->get_id() . ':(\d+):(\d+):([^:]+):([^}]+)\}\}/';
+
 		$matches = array();
 
 		preg_match_all( $pattern, $input, $matches, PREG_SET_ORDER );
@@ -354,6 +372,7 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		}
 
 		return $results;
+
 	}
 
 }

@@ -79,7 +79,7 @@ class Migrate_58 {
 	 */
 	public function has_migrated() {
 
-		$migrated = get_option( $this->id, false );
+		$migrated = automator_get_option( $this->id, false );
 
 		$has_migrated = false !== $migrated && is_numeric( $migrated );
 
@@ -101,7 +101,7 @@ class Migrate_58 {
 
 		$log          = array();
 		$actions      = Automator()->utilities->fetch_integration_actions( 'GOOGLESHEET' );
-		$spreadsheets = get_option( Google_Sheet_Helpers::SPREADSHEETS_OPTIONS_KEY, array() );
+		$spreadsheets = automator_get_option( Google_Sheet_Helpers::SPREADSHEETS_OPTIONS_KEY, array() );
 
 		$migrated_spreadsheets = array();
 		$selected_spreadsheets = array();
@@ -139,10 +139,10 @@ class Migrate_58 {
 			$this->create_log( $log, $migrated_spreadsheets );
 
 			// Merge the selected spreadsheets with the existing ones if there are any.
-			update_option( Google_Sheet_Helpers::SPREADSHEETS_OPTIONS_KEY, $selected_spreadsheets );
+			automator_update_option( Google_Sheet_Helpers::SPREADSHEETS_OPTIONS_KEY, $selected_spreadsheets );
 		}
 
-		add_option( $this->id, time() );
+		automator_add_option( $this->id, time() );
 
 		automator_log( $log, 'Google Sheets 5.8 Migration', true, 'google-sheets-5-8' );
 

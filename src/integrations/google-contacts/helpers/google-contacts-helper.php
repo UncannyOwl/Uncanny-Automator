@@ -48,7 +48,7 @@ class Google_Contacts_Helpers {
 	 */
 	public static function clear_connection() {
 
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 		delete_transient( self::RESOURCE_OWNER_KEY );
 
 		return true;
@@ -179,7 +179,7 @@ class Google_Contacts_Helpers {
 
 			self::clear_connection();
 
-			add_option( self::OPTION_KEY, $tokens );
+			automator_add_option( self::OPTION_KEY, $tokens );
 
 			return true;
 
@@ -269,7 +269,7 @@ class Google_Contacts_Helpers {
 	 */
 	public function get_client() {
 
-		$creds = get_option( self::OPTION_KEY, array() );
+		$creds = automator_get_option( self::OPTION_KEY, array() );
 
 		return $creds;
 

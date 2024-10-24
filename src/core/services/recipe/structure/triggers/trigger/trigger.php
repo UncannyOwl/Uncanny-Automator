@@ -95,8 +95,8 @@ final class Trigger implements \JsonSerializable {
 
 		$this->id               = $trigger['ID'];
 		$this->is_item_on       = 'publish' === $trigger['post_status'];
-		$this->integration_code = $trigger['meta']['integration'];
-		$this->code             = $trigger['meta']['code'];
+		$this->integration_code = $trigger['meta']['integration'] ?? '';
+		$this->code             = $trigger['meta']['code'] ?? '';
 		$this->miscellaneous    = $this->miscellaneous( $trigger );
 		$this->backup           = $this->backup( $trigger );
 		$this->fields           = $fields->get_fields();

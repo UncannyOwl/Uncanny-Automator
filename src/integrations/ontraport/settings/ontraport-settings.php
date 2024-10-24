@@ -96,7 +96,7 @@ class Ontraport_Settings extends \Uncanny_Automator\Settings\Premium_Integration
 			return;
 		}
 
-		update_option( Ontraport_Helpers::CREDENTIALS_KEY, time() );
+		automator_update_option( Ontraport_Helpers::CREDENTIALS_KEY, time() );
 
 		$this->add_alert(
 			array(
@@ -179,22 +179,22 @@ class Ontraport_Settings extends \Uncanny_Automator\Settings\Premium_Integration
 			<ul>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
 						<?php echo esc_html_x( 'Add a tag to a contact', 'Ontraport', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
 						<?php echo esc_html_x( 'Create a tag', 'Ontraport', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
 						<?php echo esc_html_x( 'Create or update a contact', 'Ontraport', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
 						<?php echo esc_html_x( 'Delete a contact', 'Ontraport', 'uncanny-automator' ); ?>
 				</li>
 			</ul>
@@ -221,7 +221,7 @@ class Ontraport_Settings extends \Uncanny_Automator\Settings\Premium_Integration
 						<?php echo esc_html_x( 'Copy and paste the acquired API Key and App ID into the designated fields below.', 'Ontraport', 'uncanny-automator' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html_x( 'Click the "Connect Ontraport Account" button to proceed.', 'Ontraport', 'uncanny-automator' ); ?>	
+						<?php echo esc_html_x( 'Click the "Connect Ontraport Account" button to proceed.', 'Ontraport', 'uncanny-automator' ); ?>
 					</li>
 				</ol>
 			</p>
@@ -241,7 +241,7 @@ class Ontraport_Settings extends \Uncanny_Automator\Settings\Premium_Integration
 					required
 					class="uap-spacing-top"
 				></uo-text-field>
-				
+
 			</p>
 
 		<?php } else { ?>

@@ -51,7 +51,7 @@ class Mautic_Settings extends Premium_Integration_Settings {
 	 */
 	public function get_status() {
 
-		$resource_owner = get_option( 'automator_mautic_resource_owner', false );
+		$resource_owner = automator_get_option( 'automator_mautic_resource_owner', false );
 
 		return ! empty( $resource_owner ) ? 'success' : '';
 
@@ -117,7 +117,7 @@ class Mautic_Settings extends Premium_Integration_Settings {
 
 		$this->load_js( '/mautic/settings/scripts/settings.js' );
 
-		$resource_owner = get_option( 'automator_mautic_resource_owner', false );
+		$resource_owner = automator_get_option( 'automator_mautic_resource_owner', false );
 
 		$vars = array(
 			'alerts'         => (array) get_settings_errors( self::SETTINGS_ERROR ),
@@ -125,10 +125,10 @@ class Mautic_Settings extends Premium_Integration_Settings {
 			'is_connected'   => ! empty( $resource_owner ),
 			'resource_owner' => ! empty( $resource_owner ) ? json_decode( $resource_owner, true ) : false,
 			'fields'         => array(
-				'base_url'    => get_option( 'automator_mautic_base_url', '' ),
-				'username'    => get_option( 'automator_mautic_username', '' ),
-				'password'    => get_option( 'automator_mautic_password', '' ),
-				'credentials' => get_option( 'automator_mautic_credentials', '' ),
+				'base_url'    => automator_get_option( 'automator_mautic_base_url', '' ),
+				'username'    => automator_get_option( 'automator_mautic_username', '' ),
+				'password'    => automator_get_option( 'automator_mautic_password', '' ),
+				'credentials' => automator_get_option( 'automator_mautic_credentials', '' ),
 			),
 		);
 

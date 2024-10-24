@@ -107,9 +107,22 @@ trait Action_Setup {
 	protected $should_apply_extra_formatting = false;
 
 	/**
+	 * @var array{}|array{mixed[]}
+	 */
+	protected $loopable_tokens = array();
+
+	/**
 	 * @var
 	 */
 	protected $helpers;
+
+	public function get_loopable_tokens() {
+		return $this->loopable_tokens;
+	}
+
+	public function set_loopable_tokens( $loopable_tokens ) {
+		$this->loopable_tokens = $loopable_tokens;
+	}
 
 	/**
 	 * @return mixed
@@ -387,6 +400,7 @@ trait Action_Setup {
 			'execution_function'            => array( $this, 'do_action' ),
 			'background_processing'         => $this->get_background_processing(),
 			'should_apply_extra_formatting' => $this->get_should_apply_extra_formatting(),
+			'loopable_tokens'               => $this->get_loopable_tokens(),
 		);
 
 		if ( ! empty( $this->get_options() ) ) {

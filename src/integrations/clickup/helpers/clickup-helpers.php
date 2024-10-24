@@ -136,7 +136,7 @@ class ClickUp_Helpers {
 
 				$resource_owner = $this->api_request( $response, array( 'action' => 'get_authorized_user' ), null );
 
-				update_option( 'automator_clickup_client', array_merge( $response, $resource_owner['data']['user'] ), true );
+				automator_update_option( 'automator_clickup_client', array_merge( $response, $resource_owner['data']['user'] ), true );
 
 			} catch ( \Exception $e ) {
 
@@ -307,7 +307,7 @@ class ClickUp_Helpers {
 	 */
 	public function is_connected() {
 
-		return ! empty( get_option( self::CLIENT, null ) );
+		return ! empty( automator_get_option( self::CLIENT, null ) );
 
 	}
 
@@ -324,7 +324,7 @@ class ClickUp_Helpers {
 
 		$this->verify_access( $nonce );
 
-		delete_option( self::CLIENT );
+		automator_delete_option( self::CLIENT );
 
 		delete_transient( self::TRANSIENT_WORKSPACES );
 

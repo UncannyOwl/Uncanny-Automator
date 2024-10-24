@@ -248,7 +248,7 @@ class Gototraining_Helpers {
 		$current_refresh_token = isset( $oauth_settings['refresh_token'] ) ? $oauth_settings['refresh_token'] : '';
 
 		if ( empty( $current_refresh_token ) ) {
-			update_option( '_uncannyowl_gtt_settings_expired', true );
+			automator_update_option( '_uncannyowl_gtt_settings_expired', true );
 			throw new \Exception( __( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
 		}
 
@@ -271,8 +271,8 @@ class Gototraining_Helpers {
 		$response = Api_Server::call( $params );
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			update_option( '_uncannyowl_gtt_settings', array() );
-			update_option( '_uncannyowl_gtt_settings_expired', true );
+			automator_update_option( '_uncannyowl_gtt_settings', array() );
+			automator_update_option( '_uncannyowl_gtt_settings_expired', true );
 			throw new \Exception( __( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
 		}
 
@@ -281,9 +281,9 @@ class Gototraining_Helpers {
 		//get new access token and refresh token
 		$jsondata = json_decode( $response['body'], true );
 
-		update_option( '_uncannyowl_gtt_settings', $jsondata );
+		automator_update_option( '_uncannyowl_gtt_settings', $jsondata );
 		set_transient( self::TRANSIENT, $jsondata, 60 * 50 );
-		delete_option( '_uncannyowl_gtt_settings_expired' );
+		automator_delete_option( '_uncannyowl_gtt_settings_expired' );
 
 		//return the array
 		return $jsondata;
@@ -326,9 +326,9 @@ class Gototraining_Helpers {
 			&& isset( $_POST['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'uncanny_automator_go-to-training-options' )
 			) {
 
-			update_option( 'uap_automator_gtt_api_consumer_key', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtt_api_consumer_key'] ) ) );
+			automator_update_option( 'uap_automator_gtt_api_consumer_key', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtt_api_consumer_key'] ) ) );
 
-			update_option( 'uap_automator_gtt_api_consumer_secret', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtt_api_consumer_secret'] ) ) );
+			automator_update_option( 'uap_automator_gtt_api_consumer_secret', sanitize_text_field( wp_unslash( $_POST['uap_automator_gtt_api_consumer_secret'] ) ) );
 
 			$this->oauth_redirect();
 
@@ -402,8 +402,8 @@ class Gototraining_Helpers {
 			$jsondata = json_decode( $response['body'], true );
 
 			// Update the options.
-			update_option( '_uncannyowl_gtt_settings', $jsondata );
-			delete_option( '_uncannyowl_gtt_settings_expired' );
+			automator_update_option( '_uncannyowl_gtt_settings', $jsondata );
+			automator_delete_option( '_uncannyowl_gtt_settings_expired' );
 
 			// Set the transient.
 			set_transient( self::TRANSIENT, $jsondata, 60 * 50 );
@@ -450,7 +450,7 @@ class Gototraining_Helpers {
 
 		// Delete the options.
 		foreach ( $configs['options'] as $option_key ) {
-			delete_option( $option_key );
+			automator_delete_option( $option_key );
 		}
 
 		// Delete the transients.

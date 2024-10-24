@@ -41,13 +41,13 @@ class Add_Uoa_Integration {
 	 * @return void
 	 */
 	private function maybe_migrate_numtimes() {
-		if ( 'yes' === get_option( 'uoa_recipenumtimes_changed_to_numtimes', 'no' ) ) {
+		if ( 'yes' === automator_get_option( 'uoa_recipenumtimes_changed_to_numtimes', 'no' ) ) {
 			return;
 		}
 		global $wpdb;
 
 		$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = %s", 'NUMTIMES', 'RECIPENUMTIMES' ) );
 
-		update_option( 'uoa_recipenumtimes_changed_to_numtimes', 'yes' );
+		automator_update_option( 'uoa_recipenumtimes_changed_to_numtimes', 'yes' );
 	}
 }

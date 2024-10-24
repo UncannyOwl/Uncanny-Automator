@@ -268,7 +268,7 @@ class Setup_Wizard {
 	 */
 	public function is_pro_connected() {
 		$is_pro_active   = defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' );
-		$has_pro_license = trim( get_option( 'uap_automator_pro_license_key', '' ) );
+		$has_pro_license = trim( automator_get_option( 'uap_automator_pro_license_key', '' ) );
 
 		return ! ( $is_pro_active && empty( $has_pro_license ) );
 	}
@@ -362,7 +362,7 @@ class Setup_Wizard {
 	 */
 	public static function has_tried_connecting() {
 
-		return get_option( 'uoa_setup_wiz_has_connected', false );
+		return automator_get_option( 'uoa_setup_wiz_has_connected', false );
 
 	}
 
@@ -374,7 +374,7 @@ class Setup_Wizard {
 	 * @return bool
 	 */
 	public static function set_has_tried_connecting( $bool = false ) {
-		update_option( 'uoa_setup_wiz_has_connected', $bool );
+		automator_update_option( 'uoa_setup_wiz_has_connected', $bool );
 
 		return true;
 	}

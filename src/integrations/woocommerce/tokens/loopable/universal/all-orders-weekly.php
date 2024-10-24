@@ -42,7 +42,11 @@ class All_Orders_Weekly extends Universal_Loopable_Token {
 
 		$orders = Woocommerce_Helpers::get_user_orders( null, 'weekly' );
 
-		foreach ( $orders as $order ) {
+		if ( false === $orders ) {
+			return $loopable;
+		}
+
+		foreach ( (array) $orders as $order ) {
 			$loopable->create_item(
 				array(
 					'ORDER_ID'     => $order['order_id'],

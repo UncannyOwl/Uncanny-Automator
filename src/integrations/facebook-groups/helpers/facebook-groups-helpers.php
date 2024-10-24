@@ -249,7 +249,7 @@ class Facebook_Groups_Helpers {
 				// Cache the list of groups.
 				set_transient( 'ua_facebook_group_items', $items, MINUTE_IN_SECONDS * 5 );
 				// Then save to options table.
-				update_option( 'ua_facebook_group_saved_groups', $items );
+				automator_update_option( 'ua_facebook_group_saved_groups', $items );
 			}
 
 			wp_send_json(
@@ -362,7 +362,7 @@ class Facebook_Groups_Helpers {
 			$settings['user-info'] = $this->get_user_information( $settings['user']['id'], $settings['user']['token'] );
 
 			// Updates the option value to settings.
-			update_option( self::OPTION_KEY, $settings );
+			automator_update_option( self::OPTION_KEY, $settings );
 
 		}
 
@@ -532,10 +532,10 @@ class Facebook_Groups_Helpers {
 	private function remove_credentials() {
 
 		// Delete the option key.
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 
 		// Delete the token info.
-		delete_option( self::TOKEN_INFO );
+		automator_delete_option( self::TOKEN_INFO );
 
 		// Delete transients.
 		delete_transient( self::TOKEN_INFO );
@@ -543,7 +543,7 @@ class Facebook_Groups_Helpers {
 		delete_transient( 'ua_facebook_group_items' );
 
 		// Refresh the last requested option.
-		delete_option( '_automator_facebook_groups_last_requested' );
+		automator_delete_option( '_automator_facebook_groups_last_requested' );
 
 		return true;
 
@@ -825,7 +825,7 @@ class Facebook_Groups_Helpers {
 
 				set_transient( self::TOKEN_INFO, $response['data']['data'], 5 * MINUTE_IN_SECONDS ); // Only make a HTTP Request call once every 5 minutes.
 
-				update_option( self::TOKEN_INFO, $response['data']['data'] );
+				automator_update_option( self::TOKEN_INFO, $response['data']['data'] );
 
 				return true;
 
@@ -835,7 +835,7 @@ class Facebook_Groups_Helpers {
 
 		} catch ( \Exception $e ) {
 
-			delete_option( self::TOKEN_INFO );
+			automator_delete_option( self::TOKEN_INFO );
 
 			return false;
 

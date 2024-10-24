@@ -115,7 +115,7 @@ class ConvertKit_Helpers {
 
 			$body = array(
 				'action'       => 'list_forms',
-				'access_token' => get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
+				'access_token' => automator_get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
 			);
 
 			$response = $this->api_request( $body );
@@ -156,7 +156,7 @@ class ConvertKit_Helpers {
 
 			$body = array(
 				'action'       => 'list_sequence',
-				'access_token' => get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
+				'access_token' => automator_get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
 			);
 
 			$response = $this->api_request( $body );
@@ -197,7 +197,7 @@ class ConvertKit_Helpers {
 
 			$body = array(
 				'action'       => 'list_tags',
-				'access_token' => get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
+				'access_token' => automator_get_option( ConvertKit_Settings::OPTIONS_API_KEY, null ),
 			);
 
 			$response = $this->api_request( $body );
@@ -283,7 +283,7 @@ class ConvertKit_Helpers {
 	 */
 	public function get_client() {
 
-		return get_option( 'automator_convertkit_client', null );
+		return automator_get_option( 'automator_convertkit_client', null );
 
 	}
 
@@ -322,13 +322,13 @@ class ConvertKit_Helpers {
 		}
 
 		// Remove API KEY.
-		delete_option( ConvertKit_Settings::OPTIONS_API_KEY );
+		automator_delete_option( ConvertKit_Settings::OPTIONS_API_KEY );
 
 		// Remove API SECRET.
-		delete_option( ConvertKit_Settings::OPTIONS_API_SECRET );
+		automator_delete_option( ConvertKit_Settings::OPTIONS_API_SECRET );
 
 		// Remove business account ID
-		delete_option( ConvertKit_Settings::OPTIONS_CLIENT );
+		automator_delete_option( ConvertKit_Settings::OPTIONS_CLIENT );
 
 		wp_safe_redirect(
 			add_query_arg(

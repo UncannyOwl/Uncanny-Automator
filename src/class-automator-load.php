@@ -190,7 +190,7 @@ class Automator_Load {
 				continue;
 			}
 			// Update an option with the current time for the specific plugin
-			update_option( 'automator_last_updated', current_time( 'mysql' ) );
+			automator_update_option( 'automator_last_updated', current_time( 'mysql' ) );
 			break; // No need to continue the loop
 		}
 	}
@@ -495,14 +495,14 @@ class Automator_Load {
 			)
 		);
 
-		$db_version = get_option( 'uap_database_version', null );
+		$db_version = automator_get_option( 'uap_database_version', null );
 
 		if ( null === $db_version || (string) AUTOMATOR_DATABASE_VERSION !== (string) $db_version ) {
 			Automator_DB::activation();
 			$config_instance->mysql_8_auto_increment_fix();
 		}
 
-		if ( (string) AUTOMATOR_DATABASE_VIEWS_VERSION !== (string) get_option( 'uap_database_views_version', 0 ) ) {
+		if ( (string) AUTOMATOR_DATABASE_VIEWS_VERSION !== (string) automator_get_option( 'uap_database_views_version', 0 ) ) {
 			$config_instance->automator_generate_views();
 		}
 	}
@@ -591,14 +591,16 @@ class Automator_Load {
 
 		do_action( 'automator_before_admin_init' );
 
-		$classes['Admin_Menu']              = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
-		$classes['Prune_Logs']              = UA_ABSPATH . 'src/core/admin/class-prune-logs.php';
-		$classes['Admin_Logs']              = UA_ABSPATH . 'src/core/admin/admin-logs/admin-logs.php';
-		$classes['Admin_Tools']             = UA_ABSPATH . 'src/core/admin/admin-tools/admin-tools.php';
-		$classes['Admin_Settings']          = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
-		$classes['Pro_Upsell']              = UA_ABSPATH . 'src/core/admin/pro-upgrade/class-pro-upsell.php';
-		$classes['Automator_Review']        = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
-		$classes['Automator_Notifications'] = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
+		$classes['Admin_Menu']                     = UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
+		$classes['Prune_Logs']                     = UA_ABSPATH . 'src/core/admin/class-prune-logs.php';
+		$classes['Admin_Logs']                     = UA_ABSPATH . 'src/core/admin/admin-logs/admin-logs.php';
+		$classes['Admin_Tools']                    = UA_ABSPATH . 'src/core/admin/admin-tools/admin-tools.php';
+		$classes['Admin_Settings']                 = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
+		$classes['Pro_Upsell']                     = UA_ABSPATH . 'src/core/admin/pro-upgrade/class-pro-upsell.php';
+		$classes['Automator_Review']               = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
+		$classes['Automator_Notifications']        = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
+		$classes['Automator_Tooltip_Notification'] = UA_ABSPATH . 'src/core/admin/tooltip-notification/class-tooltip-notification.php';
+		$classes['Automator_Tooltip_48hr']         = UA_ABSPATH . 'src/core/admin/tooltip-notification/tooltips/class-create-recipe-reminder.php';
 
 		$classes['Api_Log'] = UA_ABSPATH . 'src/core/admin/api-log/class-api-log.php';
 
@@ -740,11 +742,7 @@ class Automator_Load {
 	 */
 	public function maybe_initialize_automator( $classes ) {
 		// Check if running unit-tests
-		$unit_tests = false;
-
-		if ( isset( $_ENV['DOING_AUTOMATOR_TEST'] ) ) {
-			$unit_tests = true;
-		}
+		$unit_tests = is_automator_running_unit_tests();
 
 		// check if it's REST endpoint call or running unit tests
 		if ( ! Automator()->helpers->recipe->is_automator_ajax() && ! $unit_tests ) {
@@ -999,7 +997,7 @@ class Automator_Load {
 	 */
 	public function auto_prune_user_logs_handler( $id, $reassign, $user ) {
 
-		$should_delete_user_records = get_option( 'automator_delete_user_records_on_user_delete', false );
+		$should_delete_user_records = automator_get_option( 'automator_delete_user_records_on_user_delete', false );
 
 		// Bail on settings disabled. '0' is considered empty.
 		if ( empty( $should_delete_user_records ) ) {

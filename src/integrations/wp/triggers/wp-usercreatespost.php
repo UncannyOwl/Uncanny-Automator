@@ -83,6 +83,16 @@ class WP_USERCREATESPOST {
 	private $child_term_log_properties = array();
 
 	/**
+	 * @var string
+	 */
+	private $action_hook;
+
+	/**
+	 * @var int
+	 */
+	private $internal_post_id = 288662867; // Automator in numbers
+
+	/**
 	 * WP_USERCREATESPOST constructor.
 	 *
 	 * @return void
@@ -90,6 +100,7 @@ class WP_USERCREATESPOST {
 	public function __construct() {
 		$this->trigger_code = 'USERSPOST';
 		$this->trigger_meta = 'WPPOSTTYPES';
+		$this->action_hook  = 'automator_userspost_posts_published';
 
 		if ( Automator()->helpers->recipe->is_edit_page() ) {
 			add_action(
@@ -104,13 +115,18 @@ class WP_USERCREATESPOST {
 		}
 		$this->define_trigger();
 
+		// Legacy support for posts published in a specific post type
 		add_action( 'uoa_wp_after_insert_post', array( $this, 'post_published' ), 99, 1 );
+
+		// New support for posts published in a specific post type
+		add_action( $this->action_hook, array( $this, 'posts_published' ), 99 );
 	}
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 *
 	 * @return void
+	 * @throws \Exception
 	 */
 	public function define_trigger() {
 		$trigger = array(
@@ -119,7 +135,7 @@ class WP_USERCREATESPOST {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'sentence'            => sprintf(
-				/* translators: Logged-in trigger - WordPress */
+			/* translators: Logged-in trigger - WordPress */
 				__( 'A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}', 'uncanny-automator' ),
 				$this->trigger_meta,
 				'WPTAXONOMYTERM:' . $this->trigger_meta,
@@ -140,7 +156,7 @@ class WP_USERCREATESPOST {
 	/**
 	 * Method load_options.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function load_options() {
 
@@ -155,7 +171,6 @@ class WP_USERCREATESPOST {
 				'target_field'        => 'WPTAXONOMIES',
 				'endpoint'            => 'select_post_type_taxonomies',
 				'use_zero_as_default' => true,
-			//              'default_value'       => 'post',
 			)
 		);
 
@@ -189,10 +204,41 @@ class WP_USERCREATESPOST {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function posts_published() {
+		$post_metas = Wp_Helpers::get_pending_posts( $this->action_hook );
+		if ( empty( $post_metas ) ) {
+			return;
+		}
+
+		$post_ids = array();
+
+		// Process each post ID
+		foreach ( $post_metas as $post_meta ) {
+			$post_id = absint( $post_meta->meta_value );
+
+			if ( in_array( $post_id, $post_ids, true ) ) {
+				Wp_Helpers::delete_post_after_trigger( $post_meta );
+				continue;
+			}
+
+			$post_ids[] = $post_id;
+
+			if ( Wp_Helpers::delete_post_after_trigger( $post_meta ) ) {
+				$this->post_published( $post_id );
+			}
+		}
+
+	}
+
+	/**
 	 * @param $post_id
 	 * @param $post
 	 * @param $update
 	 * @param $post_before
+	 *
+	 * @return void|null
 	 */
 	public function schedule_a_post( $post_id, $post, $update, $post_before ) {
 		// only run when posts
@@ -201,7 +247,7 @@ class WP_USERCREATESPOST {
 			return;
 		}
 
-		$cron_enabled = apply_filters( 'automator_wp_user_creates_post_cron_enabled', '__return_true', $post_id, $post, $update, $post_before, $this );
+		$cron_enabled = apply_filters( 'automator_wp_user_creates_post_cron_enabled', true, $post_id, $post, $update, $post_before, $this );
 
 		// Allow people to disable cron processing.
 		if ( false === $cron_enabled ) {
@@ -209,27 +255,24 @@ class WP_USERCREATESPOST {
 			return $this->post_published( $post_id );
 		}
 
-		if ( wp_next_scheduled( 'uoa_wp_after_insert_post', array( $post_id ) ) ) {
-			return;
-		}
-
-		// Scheduling for 5 sec so that all tax/terms are stored
-		return wp_schedule_single_event(
-			apply_filters( 'automator_schedule_a_post_time', time() + 5, $post_id, $post, $update, $post_before ),
-			'uoa_wp_after_insert_post',
-			array(
-				$post_id,
-			)
-		);
-
+		// Add the post ID to the post meta table.
+		Wp_Helpers::add_pending_post( $post_id, $this->action_hook );
 	}
 
 	/**
 	 * Fires when a post is transitioned from one status to another.
+	 * Fires when a post is transitioned from one status to another.
 	 *
 	 * @param $post_id
+	 *
+	 * @return void
 	 */
 	public function post_published( $post_id ) {
+		// Check if the post has already been postponed to avoid duplicate recipe runs.
+		if ( $this->maybe_post_postponed( $post_id ) ) {
+			return;
+		}
+
 		$post                      = get_post( $post_id );
 		$this->post                = $post;
 		$user_id                   = absint( isset( $post->post_author ) ? $post->post_author : 0 );
@@ -279,6 +322,7 @@ class WP_USERCREATESPOST {
 
 		// No taxonomies found, bail
 		if ( empty( $taxonomy_recipes ) ) {
+			Wp_Helpers::requeue_post( $post_id, $this->action_hook );
 			return;
 		}
 
@@ -287,24 +331,64 @@ class WP_USERCREATESPOST {
 
 		// No terms found, bail
 		if ( empty( $terms_recipe ) ) {
+			Wp_Helpers::requeue_post( $post_id, $this->action_hook );
 			return;
 		}
 
 		// Find common recipes between post type + taxonomies + terms
 		$matched = array_intersect( $post_type_recipes, $taxonomy_recipes, $terms_recipe );
+
 		// Empty, bail
 		if ( empty( $matched ) ) {
 			return;
 		}
 		// build matched recipes ids array
 		$matched_recipe_ids = $this->get_matched_recipes( $matched );
-
 		if ( empty( $matched_recipe_ids ) ) {
 			return;
 		}
 
 		// Complete trigger
 		$this->complete_trigger( $matched_recipe_ids, $user_id, $post );
+	}
+
+	/**
+	 * @param      $post
+	 * @param null $request
+	 * @param null $creating
+	 */
+	public function store_thumbnail( $post, $request = null, $creating = null ) {
+
+		// Post Featured Image URL
+		$this->trigger_meta_log['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEURL';
+		$this->trigger_meta_log['meta_value'] = maybe_serialize( get_the_post_thumbnail_url( $this->post->ID, 'full' ) );
+		Automator()->insert_trigger_meta( $this->trigger_meta_log );
+
+		// Post Featured Image ID
+		$this->trigger_meta_log['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEID';
+		$this->trigger_meta_log['meta_value'] = maybe_serialize( get_post_thumbnail_id( $this->post->ID ) );
+		Automator()->insert_trigger_meta( $this->trigger_meta_log );
+
+	}
+
+	/**
+	 * @param $post_id
+	 * @param bool $legacy
+	 *
+	 * @return bool
+	 */
+	private function maybe_post_postponed( $post_id ) {
+
+		$post         = get_post( $post_id );
+		$cron_enabled = apply_filters( 'automator_wp_user_creates_post_cron_enabled', true, $post_id, $post, false, $post, $this );
+
+		// Allow people to disable cron processing.
+		if ( false === $cron_enabled ) {
+			// Immediately run post_publised if cron not enabled.
+			return false;
+		}
+
+		return Wp_Helpers::maybe_post_postponed( $post_id, $this->action_hook );
 	}
 
 	/**
@@ -333,9 +417,11 @@ class WP_USERCREATESPOST {
 				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+
 				if ( empty( $args ) ) {
 					continue;
 				}
+
 				foreach ( $args as $result ) {
 					if ( false === $result['result'] ) {
 						continue;
@@ -608,25 +694,6 @@ class WP_USERCREATESPOST {
 		}
 
 		return $all_terms;
-	}
-
-	/**
-	 * @param      $post
-	 * @param null $request
-	 * @param null $creating
-	 */
-	public function store_thumbnail( $post, $request = null, $creating = null ) {
-
-		// Post Featured Image URL
-		$this->trigger_meta_log['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEURL';
-		$this->trigger_meta_log['meta_value'] = maybe_serialize( get_the_post_thumbnail_url( $this->post->ID, 'full' ) );
-		Automator()->insert_trigger_meta( $this->trigger_meta_log );
-
-		// Post Featured Image ID
-		$this->trigger_meta_log['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEID';
-		$this->trigger_meta_log['meta_value'] = maybe_serialize( get_post_thumbnail_id( $this->post->ID ) );
-		Automator()->insert_trigger_meta( $this->trigger_meta_log );
-
 	}
 
 	/**

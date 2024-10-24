@@ -96,16 +96,16 @@ class Twitter_Settings extends Settings\Premium_Integration_Settings {
 
 		try {
 			$client = array(
-				'api_key'            => get_option( 'automator_twitter_api_key', '' ),
-				'api_secret'         => get_option( 'automator_twitter_api_secret', '' ),
-				'oauth_token'        => get_option( 'automator_twitter_access_token', '' ),
-				'oauth_token_secret' => get_option( 'automator_twitter_access_token_secret', '' ),
+				'api_key'            => automator_get_option( 'automator_twitter_api_key', '' ),
+				'api_secret'         => automator_get_option( 'automator_twitter_api_secret', '' ),
+				'oauth_token'        => automator_get_option( 'automator_twitter_access_token', '' ),
+				'oauth_token_secret' => automator_get_option( 'automator_twitter_access_token_secret', '' ),
 			);
 
 			$user = $this->functions->verify_credentials( $client );
 
-			update_option( '_uncannyowl_twitter_settings', $client );
-			update_option( 'automator_twitter_user', $user );
+			automator_update_option( '_uncannyowl_twitter_settings', $client );
+			automator_update_option( 'automator_twitter_user', $user );
 
 			$this->add_alert(
 				array(
@@ -128,8 +128,8 @@ class Twitter_Settings extends Settings\Premium_Integration_Settings {
 				)
 			);
 
-			delete_option( '_uncannyowl_twitter_settings' );
-			delete_option( 'automator_twitter_user' );
+			automator_delete_option( '_uncannyowl_twitter_settings' );
+			automator_delete_option( 'automator_twitter_user' );
 
 			$this->set_default_connection_type( 'self-hosted' );
 

@@ -89,13 +89,43 @@ class WPF_USERGROUP {
 
 		$group_id = $action_data['meta'][ $this->action_meta ];
 
-		if ( wpforo_feature( 'role-synch' ) ) {
-			WPF()->member->set_usergroup( $user_id, $group_id );
+		if ( $this->should_sync_role() ) {
+			$this->member_set_user_group_id( $user_id, $group_id );
 		} else {
 			WPF()->usergroup->set_users_groupid( array( $group_id => array( $user_id ) ) );
 		}
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+	}
+
+	/**
+	 * Member set the user group id
+	 *
+	 * @param int $user_id
+	 * @param int $group_id
+	 */
+	private function member_set_user_group_id( $user_id, $group_id ) {
+
+		// Check if new method exists.
+		if ( method_exists( WPF()->member, 'set_groupid' ) ) {
+			WPF()->member->set_groupid( $user_id, $group_id );
+			return;
+		}
+
+		return WPF()->member->set_usergroup( $user_id, $group_id );
+	}
+
+	/**
+	 * Check if the Pro role synch is enabled
+	 *
+	 * @return bool
+	 */
+	private function should_sync_role() {
+		// Function migrated in wpForo 2.0.3
+		if ( function_exists( 'wpforo_feature' ) ) {
+			return wpforo_feature( 'role-synch' );
+		}
+		return wpforo_setting( 'authorization ', 'role_synch' );
 	}
 
 }

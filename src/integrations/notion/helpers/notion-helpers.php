@@ -112,7 +112,7 @@ class Notion_Helpers {
 			);
 		}
 
-		add_option( self::OPTION_KEY, $message );
+		automator_add_option( self::OPTION_KEY, $message );
 
 		$this->redirect(
 			$this->get_settings_page_url(),
@@ -129,7 +129,7 @@ class Notion_Helpers {
 	 * @return false|mixed[] Returns false if there are no credentials. Otherwise, returns the credentials in array format.
 	 */
 	public function get_credentials() {
-		return get_option( self::OPTION_KEY, false );
+		return automator_get_option( self::OPTION_KEY, false );
 	}
 
 	/**
@@ -201,7 +201,7 @@ class Notion_Helpers {
 	 */
 	public function disconnect_handler() {
 
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 
 		$this->redirect(
 			$this->get_settings_page_url(),

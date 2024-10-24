@@ -1,4 +1,5 @@
 <?php
+//phpcs:disable PHPCompatibility.Operators.NewOperators.t_coalesceFound
 namespace Uncanny_Automator\Services\Loopable;
 
 use JsonSerializable;
@@ -26,8 +27,19 @@ class Loopable_Token_Collection implements JsonSerializable {
 	 *
 	 * @return void
 	 */
-	public function create_item( array $item ) {
+	public function create_item( $item ) {
 		$this->items[] = $item;
+	}
+
+	/**
+	 * Creates a new item with key that can be iterated.
+	 *
+	 * @param mixed[] $item
+	 *
+	 * @return void
+	 */
+	public function create_item_with_key( $key, $item ) {
+		$this->items[ $key ] = $item;
 	}
 
 	/**

@@ -177,7 +177,7 @@ class Automator_System_Report {
 		}
 
 		$database_version = $this->get_server_database_version();
-		$last_updated     = get_option( 'automator_last_updated' );
+		$last_updated     = automator_get_option( 'automator_last_updated' );
 
 		if ( ! empty( $last_updated ) ) {
 			$last_updated = sprintf( '(Updated: %s)', $last_updated );
@@ -214,7 +214,7 @@ class Automator_System_Report {
 			'remote_get_successful'   => $get_response_successful,
 			'remote_get_response'     => is_wp_error( $get_response_code ) ? $get_response_code->get_error_message() : $get_response_code,
 			'automator_cache'         => Automator()->cache->is_cache_enabled(),
-			'automator_bg_processing' => '1' === get_option( Background_Actions::OPTION_NAME, '1' ) ? true : false,
+			'automator_bg_processing' => '1' === automator_get_option( Background_Actions::OPTION_NAME, '1' ) ? true : false,
 			'permalink_structure'     => get_option( 'permalink_structure' ),
 		);
 	}
@@ -346,6 +346,7 @@ class Automator_System_Report {
 					'api_response_logs' => 'uap_api_log_response',
 					'tokens_logs'       => 'uap_tokens_log',
 					'recipe_count'      => 'uap_recipe_count',
+					'automator_options' => 'uap_options',
 				)
 			);
 
@@ -403,9 +404,9 @@ class Automator_System_Report {
 
 		// Return all database info. Described by JSON Schema.
 		return array(
-			'automator_database_version'                => get_option( 'uap_database_version' ),
+			'automator_database_version'                => automator_get_option( 'uap_database_version' ),
 			'automator_database_available_version'      => AUTOMATOR_DATABASE_VERSION,
-			'automator_database_views_version'          => get_option( 'uap_database_views_version' ),
+			'automator_database_views_version'          => automator_get_option( 'uap_database_views_version' ),
 			'automator_database_available_view_version' => AUTOMATOR_DATABASE_VIEWS_VERSION,
 			'database_prefix'                           => $wpdb->prefix,
 			'database_tables'                           => $tables,

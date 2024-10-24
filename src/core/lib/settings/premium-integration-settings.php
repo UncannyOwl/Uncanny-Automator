@@ -149,6 +149,56 @@ abstract class Premium_Integration_Settings {
 		// Allow running code if settings were updated
 		add_filter( 'admin_init', array( $this, 'maybe_settings_updated' ) );
 
+		// Hook into WordPress option update/add/delete to add/update/delete the option in uap_options table
+		add_action( 'added_option', array( $this, 'add_option_in_uap_options' ), 10, 2 );
+		add_action( 'updated_option', array( $this, 'update_option_in_uap_options' ), 10, 3 );
+		add_action( 'deleted_option', array( $this, 'delete_option_in_uap_optoions' ), 10, 1 );
+
+	}
+
+	/**
+	 * @param $option
+	 * @param $value
+	 *
+	 * @return void
+	 */
+	public function add_option_in_uap_options( $option, $value = '' ) {
+		if ( $this->maybe_automator_setting( $option ) ) {
+			automator_add_option( $option, $value );
+		}
+	}
+
+	/**
+	 * @param $option
+	 * @param $old_value
+	 * @param $value
+	 *
+	 * @return void
+	 */
+	public function update_option_in_uap_options( $option, $old_value, $value ) {
+		if ( $this->maybe_automator_setting( $option ) ) {
+			automator_update_option( $option, $value );
+		}
+	}
+
+	/**
+	 * @param $option
+	 *
+	 * @return void
+	 */
+	public function delete_option_in_uap_optoions( $option ) {
+		if ( $this->maybe_automator_setting( $option ) ) {
+			automator_delete_option( $option );
+		}
+	}
+
+	/**
+	 * @param $option
+	 *
+	 * @return false|int
+	 */
+	public function maybe_automator_setting( $option ) {
+		return preg_match( '/^(automator_|uncanny_automator_|uap_|ua_|_uoa_|_uncanny_|UO_|_uncannyowl_|uoa_)/', $option );
 	}
 
 	/**
@@ -157,6 +207,7 @@ abstract class Premium_Integration_Settings {
 	 * Set the settings page id, name, icon in this method.
 	 *
 	 * @return void
+	 * @throws \Exception
 	 */
 	public function set_properties() {
 		$this->set_id( 'sample-tab' );
@@ -316,6 +367,9 @@ abstract class Premium_Integration_Settings {
 		return $this->options;
 	}
 
+	/**
+	 * @return void
+	 */
 	final public function output_wrapper() {
 		do_action( 'automator_settings_premium_integration_before_output', $this );
 		$this->output();
@@ -369,7 +423,7 @@ abstract class Premium_Integration_Settings {
 				<div class="uap-settings-panel-bottom">
 					<?php $this->output_panel_bottom(); ?>
 				</div>
-			</div>		
+			</div>
 		<?php
 	}
 
@@ -812,10 +866,9 @@ abstract class Premium_Integration_Settings {
 	 * @param  mixed $url
 	 * @return void
 	 */
-	public function redirect_button( $label, $url ) {
+	public function redirect_button( $label, $url, $color = 'primary' ) {
 		?>
-
-		<uo-button href="<?php echo esc_attr( $url ); ?>">
+		<uo-button href="<?php echo esc_attr( $url ); ?>" color="<?php echo esc_attr( $color ); ?>">
 			<?php echo esc_attr( $label ); ?>
 		</uo-button>
 

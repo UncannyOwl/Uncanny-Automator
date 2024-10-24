@@ -65,7 +65,7 @@ class SLACK_SENDDIRECTMESSAGE {
 	 */
 	public function load_options() {
 
-		$user_selector = Automator()->helpers->recipe->slack->options->get_slack_users( null, 'SLACKUSER' );
+		$user_selector = Automator()->helpers->recipe->slack->options->get_slack_users( null, 'SLACKUSER', array( 'supports_custom_value' => true ) );
 
 		$message_input = Automator()->helpers->recipe->slack->textarea_field(
 			'SLACKMESSAGE',

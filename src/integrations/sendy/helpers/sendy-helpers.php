@@ -158,7 +158,7 @@ class Sendy_Helpers {
 			$settings = $value;
 		}
 
-		update_option( self::OPTION_KEY, $settings );
+		automator_update_option( self::OPTION_KEY, $settings );
 		$this->api_settings = $settings;
 	}
 
@@ -181,8 +181,8 @@ class Sendy_Helpers {
 	public function verify_sendy_settings() {
 
 		$settings = $this->get_sendy_settings();
-		$key      = get_option( self::KEY_OPTION_KEY );
-		$url      = get_option( self::URL_OPTION_KEY );
+		$key      = automator_get_option( self::KEY_OPTION_KEY );
+		$url      = automator_get_option( self::URL_OPTION_KEY );
 
 		if ( $key !== $settings['api_key'] || $url !== $settings['url'] ) {
 			$settings['api_key'] = $key;
@@ -222,8 +222,8 @@ class Sendy_Helpers {
 		}
 
 		// Delete temp options.
-		delete_option( self::KEY_OPTION_KEY );
-		delete_option( self::URL_OPTION_KEY );
+		automator_delete_option( self::KEY_OPTION_KEY );
+		automator_delete_option( self::URL_OPTION_KEY );
 	}
 
 	/**
@@ -268,7 +268,7 @@ class Sendy_Helpers {
 	 */
 	public function remove_credentials() {
 		// Remove the stored options.
-		delete_option( self::OPTION_KEY );
+		automator_delete_option( self::OPTION_KEY );
 		// Remove stored transients.
 		delete_transient( 'automator_sendy/lists' );
 	}

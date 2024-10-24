@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Uncanny_Automator;
 
 /**
@@ -87,12 +86,6 @@ class Automator_DB_Handler_Recipes {
 		);
 	}
 
-	/**
-	 *
-	 */
-	public function insert_recipe_log_meta() {
-
-	}
 
 	/**
 	 * @param $recipe_id
@@ -141,11 +134,8 @@ class Automator_DB_Handler_Recipes {
 			array(
 				'%s',
 				'%d',
-				'%d',
 			),
 			array(
-				'%d',
-				'%d',
 				'%d',
 			)
 		);
@@ -352,4 +342,193 @@ class Automator_DB_Handler_Recipes {
 
 		return $result;
 	}
+
+	/**
+	 * Adds meta to the recipe log.
+	 *
+	 * @param string $meta_key
+	 * @param string $meta_value
+	 * @param array{user_id:int,recipe_id:int,recipe_log_id:int} $args
+	 * @param bool $upsert Whether to upsert the value or not.
+	 *
+	 * @return int|false
+	 */
+	public function add_meta( $meta_key = '', $meta_value = '', $args = array(), $upsert = true ) {
+
+		if ( empty( $meta_key ) ) {
+			return false;
+		}
+
+		global $wpdb;
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'user_id'       => 0,
+				'recipe_id'     => 0,
+				'recipe_log_id' => 0,
+			)
+		);
+
+		$has_record = ! empty( $this->get_meta( $meta_key, $args ) );
+
+		if ( $has_record && true === $upsert ) {
+			return $wpdb->update(
+				$wpdb->prefix . 'uap_recipe_log_meta',
+				array(
+					'meta_value' => wp_json_encode( $meta_value ),
+				),
+				array(
+					'user_id'       => $args['user_id'],
+					'recipe_id'     => $args['recipe_id'],
+					'recipe_log_id' => $args['recipe_log_id'],
+					'meta_key'      => $meta_key,
+				),
+				array( '%s' ),
+				array( '%d', '%d', '%d', '%s' )
+			);
+		}
+
+		$meta_value = wp_json_encode( $meta_value );
+
+		$has_existing_record = false;
+
+		if ( is_string( $meta_value ) ) {
+			$has_existing_record = $this->fetch_existing_data( $args, $meta_key, $meta_value );
+		}
+
+		if ( false === $has_existing_record ) {
+
+			$column_val = array(
+				'user_id'       => $args['user_id'],
+				'recipe_id'     => $args['recipe_id'],
+				'recipe_log_id' => $args['recipe_log_id'],
+				'meta_key'      => $meta_key,
+				'meta_value'    => $meta_value,
+			);
+
+			$serialized = maybe_serialize( $column_val );
+
+			if ( is_string( $serialized ) ) {
+				$hashed = md5( $serialized );
+			}
+
+			if ( isset( $hashed ) && ! empty( Automator()->cache->get( $hashed, 'automator_recipe', true ) ) ) {
+				return false;
+			}
+
+			$inserted = $wpdb->insert(
+				$wpdb->prefix . 'uap_recipe_log_meta',
+				$column_val,
+				array( '%d', '%d', '%d', '%s', '%s' )
+			);
+
+			if ( isset( $hashed ) ) {
+				Automator()->cache->set( $hashed, true, 'automator_recipe' );
+			}
+
+			return $inserted;
+
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the meta value from a selected key.
+	 *
+	 * @param string $meta_key
+	 * @param array{user_id:int,recipe_id:int,recipe_log_id:int} $args
+	 *
+	 * @return string
+	 */
+	public function get_meta( $meta_key, $args = array() ) {
+
+		$group = 'automator_recipe';
+
+		$key = sprintf(
+			'%s_%d_%d_%d_%s',
+			$group,
+			$args['user_id'],
+			$args['recipe_id'],
+			$args['recipe_log_id'],
+			$meta_key
+		);
+
+		$meta_val_cached = Automator()->cache->get( $key, $group, true );
+
+		if ( ! empty( $meta_val_cached ) ) {
+			return is_string( $meta_val_cached ) ? $meta_val_cached : '';
+		}
+
+		global $wpdb;
+
+		$meta_val = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value
+					FROM {$wpdb->prefix}uap_recipe_log_meta
+						WHERE recipe_id = %d
+							AND recipe_log_id = %d
+							AND user_id = %d
+							AND meta_key = %s",
+				$args['recipe_id'],
+				$args['recipe_log_id'],
+				$args['user_id'],
+				$meta_key
+			)
+		);
+
+		if ( ! empty( $meta_val ) ) {
+			Automator()->cache->set( $key, $meta_val, $group );
+		}
+
+		return $meta_val;
+	}
+
+	/**
+	 * @param int[] $args
+	 * @param string $meta_key
+	 * @param string $meta_value
+	 *
+	 * @return bool True if existing data already exists. Otherwise, false.
+	 */
+	protected function fetch_existing_data( $args, $meta_key, $meta_value ) {
+
+		$has_record = 'no';
+
+		$key = 'automator_recipe_objects_logger_' . maybe_serialize( $args ) . '_' . $meta_key . '_' . maybe_serialize( $meta_value );
+
+		$has_record_cached = Automator()->cache->get( $key, 'automator_recipe', true );
+
+		if ( ! empty( $has_record_cached ) ) {
+			return 'yes' === $has_record_cached;
+		}
+
+		global $wpdb;
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->prefix}uap_recipe_log_meta
+				WHERE user_id = %d
+				AND recipe_id = %d
+				AND recipe_log_id = %d
+				AND meta_key = %s
+				AND meta_value = %s
+				",
+				$args['user_id'],
+				$args['recipe_id'],
+				$args['recipe_log_id'],
+				$meta_key,
+				wp_json_encode( $meta_value )
+			)
+		);
+
+		if ( ! empty( $results ) ) {
+			$has_record = 'yes';
+		}
+
+		Automator()->cache->set( $key, $has_record, 'automator_recipe' );
+
+		return 'yes' === $has_record;
+	}
+
 }

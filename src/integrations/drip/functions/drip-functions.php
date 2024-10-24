@@ -204,7 +204,7 @@ class Drip_Functions {
 			'account' => $account,
 		);
 
-		update_option( self::TOKEN_OPTION, $client );
+		automator_update_option( self::TOKEN_OPTION, $client );
 
 		return 1;
 	}
@@ -244,7 +244,7 @@ class Drip_Functions {
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
 
-			delete_option( self::TOKEN_OPTION );
+			automator_delete_option( self::TOKEN_OPTION );
 			delete_transient( self::ACCOUNT_TRANSIENT );
 		}
 

@@ -126,7 +126,7 @@ class Prune_Logs {
 			wp_die( 'Unauthorized.' );
 		}
 
-		update_option( 'automator_dismiss_log_last_dismissed', time() );
+		automator_update_option( 'automator_dismiss_log_last_dismissed', time() );
 
 		wp_safe_redirect( wp_get_referer() );
 
@@ -146,7 +146,7 @@ class Prune_Logs {
 			return;
 		}
 
-		$table_size = get_option( 'automator_db_size', 0 );
+		$table_size = automator_get_option( 'automator_db_size', 0 );
 
 		if ( 0 === (int) $table_size ) {
 			$table_size = $this->calculate_and_save_table_size();
@@ -157,7 +157,7 @@ class Prune_Logs {
 
 		$min_db_size = $table_size >= $threshold_size;
 
-		$days_last_dismissed = intval( get_option( 'automator_dismiss_log_last_dismissed', 0 ) );
+		$days_last_dismissed = intval( automator_get_option( 'automator_dismiss_log_last_dismissed', 0 ) );
 
 		// Calculate the difference in seconds
 		$diff_in_seconds = time() - $days_last_dismissed;
@@ -247,7 +247,7 @@ class Prune_Logs {
 
 		$total_size = Automator_System_Report::get_tables_total_size();
 
-		update_option( 'automator_db_size', $total_size, 'no' );
+		automator_update_option( 'automator_db_size', $total_size, 'no' );
 
 		return $total_size;
 	}
@@ -257,7 +257,7 @@ class Prune_Logs {
 	 */
 	public function schedule_table_size_calculation() {
 
-		$table_size = get_option( 'automator_db_size', 0 );
+		$table_size = automator_get_option( 'automator_db_size', 0 );
 
 		if ( 0 === absint( $table_size ) ) {
 			$this->calculate_and_save_table_size();
@@ -293,13 +293,13 @@ class Prune_Logs {
 	public function add_purge_settings() {
 
 		// Get the date of the last time this action was performed
-		$last_manual_prune_date = get_option( 'automator_last_manual_prune_date', '' );
+		$last_manual_prune_date = automator_get_option( 'automator_last_manual_prune_date', '' );
 
 		// Check if it was ever executed
 		$user_pruned_before = ! empty( $last_manual_prune_date );
 
 		// Number of days (value of the field)
-		$number_of_days = get_option( 'automator_manual_purge_days', '' );
+		$number_of_days = automator_get_option( 'automator_manual_purge_days', '' );
 
 		// Check if the logs were JUST pruned
 		$user_just_pruned_logs = automator_filter_has_var( 'pruned' );
@@ -313,7 +313,7 @@ class Prune_Logs {
 	 */
 	public function add_user_deleted_settings() {
 		// Check if the setting is enabled
-		$is_enabled = get_option( 'automator_delete_user_records_on_user_delete', false );
+		$is_enabled = automator_get_option( 'automator_delete_user_records_on_user_delete', false );
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/general/logs/delete-user-records.php' );
@@ -324,7 +324,7 @@ class Prune_Logs {
 	 */
 	public function add_recipe_on_completion_delete_settings() {
 		// Check if the setting is enabled
-		$is_enabled = get_option( 'automator_delete_recipe_records_on_completion', false );
+		$is_enabled = automator_get_option( 'automator_delete_recipe_records_on_completion', false );
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/general/logs/remove-recipe-log-on-completion.php' );
@@ -335,7 +335,7 @@ class Prune_Logs {
 	 */
 	public function automator_delete_data_on_uninstall() {
 		// Check if the setting is enabled
-		$is_enabled = get_option( 'automator_delete_data_on_uninstall', false );
+		$is_enabled = automator_get_option( 'automator_delete_data_on_uninstall', false );
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/general/logs/remove-delete-data-on-uninstall.php' );
@@ -395,7 +395,7 @@ class Prune_Logs {
 			);
 		}
 
-		update_option( 'automator_last_manual_prune_date', time() );
+		automator_update_option( 'automator_last_manual_prune_date', time() );
 
 		$this->redirect(
 			array(
@@ -606,7 +606,7 @@ class Prune_Logs {
 
 		$is_enabled = automator_filter_input( 'automator_delete_user_records_on_user_delete', INPUT_POST );
 
-		update_option( 'automator_delete_user_records_on_user_delete', $is_enabled );
+		automator_update_option( 'automator_delete_user_records_on_user_delete', $is_enabled );
 
 		return;
 	}
@@ -630,7 +630,7 @@ class Prune_Logs {
 
 		$is_enabled = automator_filter_input( 'automator_delete_data_on_uninstall', INPUT_POST );
 
-		update_option( 'automator_delete_data_on_uninstall', $is_enabled );
+		automator_update_option( 'automator_delete_data_on_uninstall', $is_enabled );
 
 		return;
 	}
@@ -654,7 +654,7 @@ class Prune_Logs {
 
 		$is_enabled = automator_filter_input( 'automator_delete_recipe_records_on_completion', INPUT_POST );
 
-		update_option( 'automator_delete_recipe_records_on_completion', $is_enabled );
+		automator_update_option( 'automator_delete_recipe_records_on_completion', $is_enabled );
 
 		return;
 	}
@@ -682,7 +682,7 @@ class Prune_Logs {
 	 * @return mixed|null
 	 */
 	public static function should_remove_log( $params ) {
-		$setting_on = get_option( 'automator_delete_recipe_records_on_completion', false );
+		$setting_on = automator_get_option( 'automator_delete_recipe_records_on_completion', false );
 
 		if ( empty( $setting_on ) || false === boolval( $setting_on ) ) {
 			$setting_on = false;

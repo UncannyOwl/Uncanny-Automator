@@ -431,6 +431,11 @@ class Automator_Input_Parser {
 				$field_text = apply_filters( "automator_token_parser_extended_{$extension_identifier}", $field_text, $match, $args, $trigger_args );
 			}
 
+			// Fix deprecated issue.
+			if ( null === $field_text ) {
+				$field_text = '';
+			}
+
 			$field_text = str_replace( '{{' . $match . '}}', $replaceable, $field_text );
 
 		} // End foreach.
@@ -832,6 +837,7 @@ class Automator_Input_Parser {
 			'recipe_id'   => $recipe_id,
 		);
 
+		// Action tokens hook.
 		$args['field_text'] = apply_filters( 'automator_action_token_input_parser_text_field_text', $args['field_text'], $args, $trigger_args );
 
 		if ( ! empty( $trigger_args['trigger_log_id'] ) ) {

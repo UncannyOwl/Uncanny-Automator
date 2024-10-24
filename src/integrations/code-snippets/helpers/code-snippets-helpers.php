@@ -110,19 +110,19 @@ class Code_Snippets_Helpers {
 			case 'php':
 				$scopes = array(
 					array(
-						'text'  => esc_attr_x( 'Run snippet everywhere', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Run snippet everywhere', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'global',
 					),
 					array(
-						'text'  => esc_attr_x( 'Only run in administration area', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Only run in administration area', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'admin',
 					),
 					array(
-						'text'  => esc_attr_x( 'Only run on site front-end', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Only run on site front-end', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'front-end',
 					),
 					array(
-						'text'  => esc_attr_x( 'Only run once', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Only run once', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'single-use',
 					),
 				);
@@ -130,15 +130,15 @@ class Code_Snippets_Helpers {
 			case 'html':
 				$scopes = array(
 					array(
-						'text'  => esc_attr_x( 'Only display when inserted into a post or page.', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Only display when inserted into a post or page.', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'content',
 					),
 					array(
-						'text'  => esc_attr_x( 'Display in site <head> section.', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Display in site <head> section.', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'head-content',
 					),
 					array(
-						'text'  => esc_attr_x( 'Display at the end of the <body> section, in the footer.', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Display at the end of the <body> section, in the footer.', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'footer-content',
 					),
 				);
@@ -146,11 +146,11 @@ class Code_Snippets_Helpers {
 			case 'css':
 				$scopes = array(
 					array(
-						'text'  => esc_attr_x( 'Site front-end styles', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Site front-end styles', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'admin-css',
 					),
 					array(
-						'text'  => esc_attr_x( 'Administration area styles', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Administration area styles', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'site-css',
 					),
 				);
@@ -158,11 +158,11 @@ class Code_Snippets_Helpers {
 			case 'js':
 				$scopes = array(
 					array(
-						'text'  => esc_attr_x( 'Load JS at the end of the <body> section', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Load JS at the end of the <body> section', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'site-head-js',
 					),
 					array(
-						'text'  => esc_attr_x( 'Load JS in the <head> section', 'Code Snippets', 'uncanny_automator' ),
+						'text'  => esc_attr_x( 'Load JS in the <head> section', 'Code Snippets', 'uncanny-automator' ),
 						'value' => 'site-footer-js',
 					),
 				);
@@ -183,7 +183,7 @@ class Code_Snippets_Helpers {
 		$all_tags = get_all_snippet_tags();
 		foreach ( $all_tags as $tag ) {
 			$options[] = array(
-				'text'  => esc_attr_x( $tag, 'Code Snippets', 'uncanny_automator' ),
+				'text'  => $tag,
 				'value' => $tag,
 			);
 		}

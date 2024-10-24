@@ -1,8 +1,9 @@
 <?php
+//phpcs:disable PHPCompatibility.Operators.NewOperators.t_coalesceFound
 namespace Uncanny_Automator\Services\Loopable;
 
 use Uncanny_Automator\Logger\Recipe_Objects_Logger;
-use Uncanny_Automator_Pro\Loops\Loop\Entity_Factory;
+use Uncanny_Automator_Pro\Loops\Loop\Model\Query\Loop_Entry_Query;
 
 /**
  * Abstract class for universal loopable tokens in Uncanny Automator.
@@ -115,34 +116,40 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 	 */
 	public function hydrate_tokens_children( $field_text, $match, $args, $process_args ) {
 
+		// The current item being iterated at.
 		$entity_id = $process_args['loop']['entity_id'] ?? null;
-
+		// The loopable tokens extracted from the text.
 		$extracted_tokens = $this->extract_token_children( $field_text );
+		// The single and unique process ID of the loop.
+		$process_id = $process_args['loop']['loop_item']['filter_id'] ?? '';
 
-		$recipe_objects_logger = new Recipe_Objects_Logger();
+		// Retrieve the actual token value.
+		$loop_entry_query = new Loop_Entry_Query();
+		$loop_entry       = $loop_entry_query->find_entry_by_process_id( $process_id );
+		$token_value      = $loop_entry->get_user_ids();
 
-		// Retrieve the parent token value.
-		$token_value = $recipe_objects_logger->get_meta( $process_args, 'LOOPABLE_' . $this->get_id() );
+		$tokens_reference = (array) json_decode( $token_value ?? '', true );
 
-		$tokens_reference = json_decode( $token_value ?? '', true );
-
+		// Bail if the tokens cannot be decoded or if its empty.
 		if ( empty( $tokens_reference ) ) {
 			return $field_text;
 		}
 
 		$key_value_pairs = array();
 
+		// For every tokens that are extracted in a field text.
 		foreach ( $extracted_tokens as $extracted_token ) {
-
+			// Check if there is an ID.
 			if ( isset( $extracted_token['token_id'] ) ) {
-
+				// The value should be reference back to the iterated items using entity id and the token id.
 				$value = $tokens_reference[ $entity_id ][ $extracted_token['token_id'] ] ?? '';
-
+				// Store as key value pair.
 				$key_value_pairs[ '{{' . implode( ':', array_values( $extracted_token ) ) . '}}' ] = $value;
 
 			}
 		}
 
+		// Then use php's strtr to replace all tokens occurence with an actual value derived from the user_ids or entity_ids.
 		return strtr( $field_text, $key_value_pairs );
 
 	}

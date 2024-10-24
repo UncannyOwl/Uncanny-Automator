@@ -123,7 +123,7 @@ class Active_Campaign_Helpers {
 			return '';
 		}
 
-		$users = get_option( 'uap_active_campaign_connected_user', array() );
+		$users = automator_get_option( 'uap_active_campaign_connected_user', array() );
 
 		if ( empty( $users[0]['email'] ) ) {
 			return '';
@@ -187,8 +187,8 @@ class Active_Campaign_Helpers {
 	 */
 	public function has_connection_data() {
 
-		$settings_url = get_option( 'uap_active_campaign_api_url', '' );
-		$settings_key = get_option( 'uap_active_campaign_api_key', '' );
+		$settings_url = automator_get_option( 'uap_active_campaign_api_url', '' );
+		$settings_key = automator_get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $settings_key ) || empty( $settings_url ) ) {
 			return false;
@@ -334,13 +334,13 @@ class Active_Campaign_Helpers {
 	 */
 	public function disconnect() {
 
-		delete_option( 'uap_active_campaign_api_url' );
-		delete_option( 'uap_active_campaign_api_key' );
-		delete_option( 'uap_active_campaign_settings_timestamp' );
+		automator_delete_option( 'uap_active_campaign_api_url' );
+		automator_delete_option( 'uap_active_campaign_api_key' );
+		automator_delete_option( 'uap_active_campaign_settings_timestamp' );
 		delete_transient( 'uap_active_campaign_connected_user' );
-		delete_option( 'uap_active_campaign_connected_user' );
-		delete_option( 'uap_active_campaign_enable_webhook' );
-		delete_option( 'uap_active_campaign_webhook_key' );
+		automator_delete_option( 'uap_active_campaign_connected_user' );
+		automator_delete_option( 'uap_active_campaign_enable_webhook' );
+		automator_delete_option( 'uap_active_campaign_webhook_key' );
 
 		$uri = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=active-campaign';
 		wp_safe_redirect( $uri );
@@ -356,8 +356,8 @@ class Active_Campaign_Helpers {
 	 */
 	public function get_connected_users() {
 
-		$account_url = get_option( 'uap_active_campaign_api_url', false );
-		$api_key     = get_option( 'uap_active_campaign_api_key', false );
+		$account_url = automator_get_option( 'uap_active_campaign_api_url', false );
+		$api_key     = automator_get_option( 'uap_active_campaign_api_key', false );
 		$users       = false;
 
 		if ( empty( $account_url ) || empty( $api_key ) ) {
@@ -389,7 +389,7 @@ class Active_Campaign_Helpers {
 			throw new \Exception( __( 'User was not found', 'uncanny-automator' ) );
 		}
 
-		update_option( 'uap_active_campaign_connected_user', $response['users'] );
+		automator_update_option( 'uap_active_campaign_connected_user', $response['users'] );
 
 		return $response['users'];
 
@@ -468,7 +468,7 @@ class Active_Campaign_Helpers {
 
 		$new_key = md5( uniqid( wp_rand(), true ) );
 
-		update_option( 'uap_active_campaign_webhook_key', $new_key );
+		automator_update_option( 'uap_active_campaign_webhook_key', $new_key );
 
 		return $new_key;
 
@@ -481,7 +481,7 @@ class Active_Campaign_Helpers {
 	 */
 	public function get_webhook_key() {
 
-		$webhook_key = get_option( 'uap_active_campaign_webhook_key', false );
+		$webhook_key = automator_get_option( 'uap_active_campaign_webhook_key', false );
 
 		if ( false === $webhook_key ) {
 			$webhook_key = $this->regenerate_webhook_key();
@@ -695,8 +695,8 @@ class Active_Campaign_Helpers {
 			}
 		}
 
-		$settings_url = get_option( 'uap_active_campaign_api_url', '' );
-		$settings_key = get_option( 'uap_active_campaign_api_key', '' );
+		$settings_url = automator_get_option( 'uap_active_campaign_api_url', '' );
+		$settings_key = automator_get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $settings_url ) || empty( $settings_key ) ) {
 			return new WP_Error( 403, 'Invalid ActiveCampaign URL or Api key' );
@@ -782,7 +782,7 @@ class Active_Campaign_Helpers {
 	 */
 	public function sync_contact_fields( $should_verify_nonce = true ) {
 
-		$user = get_option( 'uap_active_campaign_connected_user', false );
+		$user = automator_get_option( 'uap_active_campaign_connected_user', false );
 
 		if ( empty( $user ) ) {
 			return new WP_Error( 404, 'Cannot initiate request. Option key uap_active_campaign_connected_user is empty.' );
@@ -794,8 +794,8 @@ class Active_Campaign_Helpers {
 			}
 		}
 
-		$settings_url = get_option( 'uap_active_campaign_api_url', '' );
-		$settings_key = get_option( 'uap_active_campaign_api_key', '' );
+		$settings_url = automator_get_option( 'uap_active_campaign_api_url', '' );
+		$settings_key = automator_get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $settings_url ) || empty( $settings_key ) ) {
 			return new WP_Error( 403, 'Forbidden. Invalid nonce.' );
@@ -917,8 +917,8 @@ class Active_Campaign_Helpers {
 			}
 		}
 
-		$settings_url = get_option( 'uap_active_campaign_api_url', '' );
-		$settings_key = get_option( 'uap_active_campaign_api_key', '' );
+		$settings_url = automator_get_option( 'uap_active_campaign_api_url', '' );
+		$settings_key = automator_get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $settings_url ) || empty( $settings_key ) ) {
 			return new WP_Error( 403, 'Invalid ActiveCampaign URL or Api key.' );
@@ -1194,12 +1194,12 @@ class Active_Campaign_Helpers {
 	 */
 	public function api_request( $body, $action = null ) {
 
-		$body['url']   = get_option( 'uap_active_campaign_api_url', '' );
-		$body['token'] = get_option( 'uap_active_campaign_api_key', '' );
+		$body['url']   = automator_get_option( 'uap_active_campaign_api_url', '' );
+		$body['token'] = automator_get_option( 'uap_active_campaign_api_key', '' );
 
 		if ( empty( $body['url'] ) || empty( $body['token'] ) ) {
 			throw new Exception(
-				_x( 'Empty Account URL or API key. Go to Automator &rarr; App integrations &rarr; ActiveCampaign to reconnect your account.', 'ActiveCampaign', 'uncanny_automator' ),
+				_x( 'Empty Account URL or API key. Go to Automator &rarr; App integrations &rarr; ActiveCampaign to reconnect your account.', 'ActiveCampaign', 'uncanny-automator' ),
 				500
 			);
 		}
@@ -1350,7 +1350,7 @@ class Active_Campaign_Helpers {
 		try {
 			$this->get_connected_users();
 		} catch ( \Exception $e ) {
-			delete_option( 'uap_active_campaign_connected_user' );
+			automator_delete_option( 'uap_active_campaign_connected_user' );
 			$result = $e->getMessage();
 		}
 
@@ -1376,7 +1376,7 @@ class Active_Campaign_Helpers {
 
 		$switch_value = automator_filter_input( 'uap_active_campaign_enable_webhook', INPUT_POST );
 
-		update_option( 'uap_active_campaign_enable_webhook', $switch_value );
+		automator_update_option( 'uap_active_campaign_enable_webhook', $switch_value );
 
 	}
 
@@ -1387,7 +1387,7 @@ class Active_Campaign_Helpers {
 	 */
 	public function get_users() {
 
-		$users_option_exist = get_option( 'uap_active_campaign_connected_user', 'no' );
+		$users_option_exist = automator_get_option( 'uap_active_campaign_connected_user', 'no' );
 
 		if ( 'no' !== $users_option_exist ) {
 			return $users_option_exist;
@@ -1397,7 +1397,7 @@ class Active_Campaign_Helpers {
 			$users = $this->get_connected_users();
 		} catch ( \Exception $e ) {
 			$users = array();
-			update_option( 'uap_active_campaign_connected_user', $users );
+			automator_update_option( 'uap_active_campaign_connected_user', $users );
 		}
 
 		return $users;
