@@ -198,7 +198,11 @@ abstract class Premium_Integration_Settings {
 	 * @return false|int
 	 */
 	public function maybe_automator_setting( $option ) {
-		return preg_match( '/^(automator_|uncanny_automator_|uap_|ua_|_uoa_|_uncanny_|UO_|_uncannyowl_|uoa_)/', $option );
+		if ( preg_match( '/^(automator_|uncanny_automator_|uap_|ua_|_uoa_|_uncanny_|UO_|_uncannyowl_|uoa_)/', $option ) ) {
+			return array_key_exists( $option, automator_get_all_options() );
+		}
+
+		return false;
 	}
 
 	/**

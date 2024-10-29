@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.4
 Tested up to: 6.6.2
 Requires PHP: 7.0
-Stable tag: 6.0
+Stable tag: 6.0.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -371,6 +371,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.0.0.1 [2024-10-29] =
+
+**Fixed:**
+
+* Core – Optimize uap_options functions - We gave these functions a tune-up, so they run smoother and faster now. #5199
+* Core – Conflicting `automator_option_updated` actions - These actions were bumping into each other like shoppers on Black Friday. We've cleared the aisle, and now everything flows smoothly. #5196
 
 = 6.0 [2024-10-24] =
 

@@ -636,6 +636,62 @@ if ( ! function_exists( 'str_contains' ) ) {
 }
 
 /**
+ * Validates, sanitizes, and determines the correct value to return.
+ *
+ * @param string $option The option name.
+ * @param mixed $value The value retrieved from cache or DB.
+ * @param mixed $default_value The default value to use if needed.
+ *
+ * @return mixed The final sanitized value.
+ */
+function automator_validate_option_value( $option, $value, $default_value ) {
+
+	// Unserialize the value if needed.
+	$value = maybe_unserialize( $value );
+
+	// Return false if the value is false.
+	if ( '__false__' === $value || ( '' === $value && false === $default_value ) ) {
+		return false;
+	}
+
+	// Return true if the value is true.
+	if ( '__true__' === $value || '' === $value && true === $default_value ) {
+		return true;
+	}
+
+	// Return null if the value is null.
+	if ( '__null__' === $value || '' === $value && null === $default_value ) {
+		return $default_value;
+	}
+
+	// Return '' if the value is truly empty.
+	if ( '' === $value ) {
+		return $value;
+	}
+
+	$original_type = null;
+
+	if ( array_key_exists( "{$option}_type", automator_get_all_options() ) ) {
+		$all_options   = automator_get_all_options();
+		$original_type = $all_options[ "{$option}_type" ];
+	}
+
+	// Use the original type to restore the value's type.
+	switch ( $original_type ) {
+		case 'integer':
+			return (int) $value;
+		case 'double':
+			return (float) $value;
+		case 'boolean':
+			return (bool) $value;
+		case 'NULL':
+			return null;
+		default:
+			return $value;  // Return as-is for strings and other types.
+	}
+}
+
+/**
  * automator_get_option
  *
  * @param string $option
@@ -647,31 +703,46 @@ function automator_get_option( $option, $default_value = false, $force = false )
 
 	global $wpdb;
 
-	if ( is_scalar( $option ) ) {
-		$option = trim( $option );
-	}
-
-	if ( empty( $option ) ) {
+	// Bail if the option is not scalar or empty.
+	if ( ! is_scalar( $option ) || empty( trim( $option ) ) ) {
 		return false;
 	}
 
-	$value = '';
-	$found = false;
+	$running_unit_tests = is_automator_running_unit_tests();
 
-	// Check if the option is in the cache & return it if it is.
-	if ( false === $force ) {
+	// Trim the option.
+	$option = trim( $option );
+
+	// Attempt to get the option from cache first.
+	if ( false === $running_unit_tests && false === $force ) {
 		$maybe_value = wp_cache_get( $option, 'automator_options' );
-		if ( ! empty( $maybe_value ) ) {
-			return apply_filters( "automator_option_{$option}", maybe_unserialize( $maybe_value ), $option );
+		if ( false !== $maybe_value ) {
+
+			$validated_value = automator_validate_option_value(
+				$option,
+				$maybe_value,
+				$default_value
+			);
+
+			return $validated_value;
 		}
 	}
 
-	// Get all options from the database.
-	$all_options = automator_get_all_options();
+	if ( false === $running_unit_tests && false === $force ) {
+		// Get all options from the database.
+		$all_options = automator_get_all_options();
 
-	// Check if the option is in the cache & return it if it is.
-	if ( false === $force && isset( $all_options[ $option ] ) && '' !== $all_options[ $option ] ) {
-		return maybe_unserialize( $all_options[ $option ] );
+		// Check if the option is in the cache & return it if it is.
+		if ( array_key_exists( $option, $all_options ) ) {
+			$maybe_value     = $all_options[ $option ];
+			$validated_value = automator_validate_option_value(
+				$option,
+				$maybe_value,
+				$default_value
+			);
+
+			return $validated_value;
+		}
 	}
 
 	// Get the option from the database.
@@ -679,113 +750,119 @@ function automator_get_option( $option, $default_value = false, $force = false )
 
 	// Has to be get_row() instead of get_var() because of funkiness with 0, false, null values.
 	if ( is_object( $row ) ) {
-		$found = true;
 		$value = $row->option_value;
+
+		$validated_value = automator_validate_option_value(
+			$option,
+			$value,
+			$default_value
+		);
+
+		// Cache the value in WordPress and the static cache.
+		wp_cache_set( $option, $validated_value, 'automator_options' );
+
+		return $validated_value;
+	}
+
+	// If the value is still empty, get the option from the database.
+	$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $option ) );
+
+	// If the value is found in the database, add it to the uap_options table.
+	if ( is_object( $row ) ) {
+		$value = $row->option_value;
+
+		$value = automator_validate_option_value(
+			$option,
+			$value,
+			$default_value
+		);
+
+		// Add in uap_options table.
+		automator_add_option( $option, $value, true, false );
+
 		wp_cache_set( $option, $value, 'automator_options' );
+
+		return $value;
 	}
 
-	// If the value is empty, get the option from the database.
-	if ( false === $found ) {
-		// If the value is empty, get the option from the database.
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $option ) );
-		// If the value is found in the database, add it to the uap_options table.
-		if ( is_object( $row ) ) {
-			$found = true;
-			$value = maybe_unserialize( $row->option_value );
-			automator_add_option( $option, $value, true, false );
-			// Delete the option from the database.
-			//delete_option( $option ); // Ignoring the deletion for now.
-		}
-	}
+	// Cache and return the default value if nothing is found.
+	wp_cache_set( $option, $default_value, 'automator_options' );
 
-	if ( '' === $value && false === $default_value ) {
-		return false;
-	}
-
-	if ( maybe_serialize( $default_value ) === $value ) {
-		automator_add_option( $option, $default_value, true, false );
-
-		return $default_value;
-	}
-
-	// Check if the value is empty and the default value is not empty.
-	if ( '' === $value ) {
-
-		return apply_filters( "automator_option_{$option}", $default_value, $option );
-	}
-
-	return apply_filters( "automator_option_{$option}", maybe_unserialize( $value ), $option );
+	return apply_filters( "automator_option_{$option}", $default_value, $option );
 }
 
 /**
+ * Adds or updates an option in the uap_options table.
+ *
  * @param string $option Name of the option.
  * @param mixed $value Value of the option.
  * @param bool $autoload Whether to autoload the option or not.
- * @param bool $run_actions Whether to run do_action or not.
+ * @param bool $run_actions Whether to run do_action hooks or not.
  *
  * @return void
  */
 function automator_add_option( $option, $value, $autoload = true, $run_actions = true ) {
 	global $wpdb;
 
-	// Prepare the serialized value and autoload flag
-	$serialized_value = maybe_serialize( $value );
+	if ( ! is_scalar( $option ) || empty( trim( $option ) ) ) {
+		return;
+	}
+
+	// Determine the original type.
+	$type = gettype( $value );
+
+	// Convert booleans to special strings for storage.
+	if ( is_bool( $value ) ) {
+		$value = $value ? '__true__' : '__false__';
+	}
+
+	if ( null === $value ) {
+		$value = '__null__';
+	}
+
+	$option           = trim( $option );
+	$serialized_value = is_scalar( $value ) ? $value : maybe_serialize( $value );
 	$autoload_flag    = $autoload ? 'yes' : 'no';
 
-	/**
-	 * Fires before adding an option to the database.
-	 *
-	 * @param string $option The option name.
-	 * @param mixed $value The option value.
-	 */
+	// Fire actions before adding or updating the option.
 	if ( $run_actions ) {
 		do_action( 'automator_add_option', $option, $value );
 	}
 
-	$get_row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM {$wpdb->prefix}uap_options WHERE option_name = %s LIMIT 1", $option ) );
+	// Use INSERT ... ON DUPLICATE KEY UPDATE for a single upsert operation.
+	$wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$wpdb->prefix}uap_options (option_name, option_value, autoload)
+VALUES (%s, %s, %s)
+ON DUPLICATE KEY UPDATE option_value = VALUES(option_value), autoload = VALUES(autoload)",
+			$option,
+			$serialized_value,
+			$autoload_flag
+		)
+	);
 
-	if ( empty( $get_row ) ) {
-		// Insert or update the option
-		$wpdb->insert(
-			$wpdb->prefix . 'uap_options',
-			array(
-				'option_name'  => $option,
-				'option_value' => $serialized_value,
-				'autoload'     => $autoload_flag,
-			),
-			array( '%s', '%s', '%s' )
-		);
-	} else {
-		// Update the option if it exists
-		$wpdb->update(
-			$wpdb->prefix . 'uap_options',
-			array(
-				'option_value' => $serialized_value,
-				'autoload'     => $autoload_flag,
-			),
-			array( 'option_name' => $option ),
-			array( '%s', '%s' ),
-			array( '%s' )
-		);
-	}
+	// Store the type as metadata to track the original data type.
+	$wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$wpdb->prefix}uap_options (option_name, option_value, autoload)
+             VALUES (%s, %s, 'no')
+             ON DUPLICATE KEY UPDATE option_value = VALUES(option_value)",
+			$option . '_type',
+			$type
+		)
+	);
 
-	/**
-	 * Fires after a specific option has been added.
-	 *
-	 * The dynamic portion of the hook name, `$option`, refers to the option name.
-	 *
-	 * @param string $option Name of the option to add.
-	 * @param mixed  $value  Value of the option.
-	 */
-
+	// Fire post-add/update actions.
 	if ( $run_actions ) {
 		do_action( "automator_add_option_{$option}", $option, $value );
 		do_action( 'automator_option_added', $option, $value );
 	}
 
-	// Update the cache with the new value
+	// Refresh the cache.
+	automator_get_all_options( true );
+
+	// Update cache with the new value and clear relevant entries.
 	wp_cache_set( $option, $value, 'automator_options' );
-	wp_cache_delete( 'automator_options', 'automator_options' );
 }
 
 /**
@@ -802,6 +879,11 @@ function automator_delete_option( $option ) {
 		array( 'option_name' => $option ),
 		array( '%s' )
 	);
+	$wpdb->delete(
+		$wpdb->prefix . 'uap_options',
+		array( 'option_name' => $option . '_type' ),
+		array( '%s' )
+	);
 
 	// Fallback to deleting the option from the database
 	delete_option( $option );
@@ -812,115 +894,99 @@ function automator_delete_option( $option ) {
 	}
 
 	do_action( 'automator_option_deleted', $option );
-	wp_cache_delete( 'automator_options', 'automator_options' );
+
+	// Refresh the cache.
+	automator_get_all_options( true );
 
 	return ( false !== $deleted );
 }
 
 /**
- * @param $option
- * @param $value
- * @param $autoload
+ * Updates or adds an option in the uap_options table using upsert.
  *
- * @return bool
+ * @param string $option Name of the option.
+ * @param mixed $value Value of the option.
+ * @param bool $autoload Whether to autoload the option or not.
+ *
+ * @return bool True if the operation was successful, false otherwise.
  */
 function automator_update_option( $option, $value, $autoload = true ) {
 	global $wpdb;
 
-	if ( is_scalar( $option ) ) {
-		$option = trim( $option );
-	}
-
-	if ( empty( $option ) ) {
+	if ( ! is_scalar( $option ) || empty( trim( $option ) ) ) {
 		return false;
 	}
 
-	if ( is_object( $value ) ) {
-		$value = clone $value;
-	}
+	// Determine the original type.
+	$type = gettype( $value );
 
-	$value     = sanitize_option( $option, $value );
-	$old_value = automator_get_option( $option );
+	$option           = trim( $option );
+	$serialized_value = is_scalar( $value ) ? $value : maybe_serialize( $value );
+	$autoload_flag    = $autoload ? 'yes' : 'no';
 
-	/*
-	 * If the new and old values are the same, no need to update.
-	 *
-	 * Unserialized values will be adequate in most cases. If the unserialized
-	 * data differs, the (maybe) serialized data is checked to avoid
-	 * unnecessary database calls for otherwise identical object instances.
-	 *
-	 */
-	if ( $value === $old_value || maybe_serialize( $value ) === maybe_serialize( $old_value ) ) {
-		return false;
-	}
-
-	// Prepare the serialized value and autoload flag
-	$serialized_value = maybe_serialize( $value );
-
-	$autoload_flag = $autoload ? 'yes' : 'no';
-
-	/**
-	 * Fires before updating an option in the database.
-	 *
-	 * @param string $option The option name.
-	 * @param mixed $value The option value.
-	 */
-	do_action( 'automator_update_option', $option, $value );
-
-	// Update the option if it exists
-	$updated = $wpdb->update(
-		$wpdb->prefix . 'uap_options',
-		array(
-			'option_value' => $serialized_value,
-			'autoload'     => $autoload_flag,
-		),
-		array( 'option_name' => $option ),
-		array( '%s', '%s' ),
-		array( '%s' )
+	// Perform the upsert operation.
+	$result = $wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$wpdb->prefix}uap_options (option_name, option_value, autoload)
+             VALUES (%s, %s, %s)
+             ON DUPLICATE KEY UPDATE option_value = VALUES(option_value), autoload = VALUES(autoload)",
+			$option,
+			$serialized_value,
+			$autoload_flag
+		)
 	);
 
-	// If no rows were updated, insert the option
-	if ( false === $updated || 0 === $updated ) {
-		automator_add_option( $option, $value, $autoload_flag );
-	}
+	// Store the type as metadata to track the original data type.
+	$wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$wpdb->prefix}uap_options (option_name, option_value, autoload)
+             VALUES (%s, %s, 'no')
+             ON DUPLICATE KEY UPDATE option_value = VALUES(option_value)",
+			$option . '_type',
+			$type
+		)
+	);
 
-	/**
-	 * Fires after a specific option has been updated.
-	 *
-	 * The dynamic portion of the hook name, `$option`, refers to the option name.
-	 *
-	 * @param string $option Name of the option to add.
-	 * @param mixed  $value  Value of the option.
-	 */
-	do_action( "automator_update_option_{$option}", $option, $value );
-	do_action( 'automator_option_updated', $option, $value );
-
+	// Refresh the cache after the update.
+	automator_get_all_options( true );
 	wp_cache_set( $option, $value, 'automator_options' );
-	wp_cache_delete( 'automator_options', 'automator_options' );
 
-	return ( false !== $updated );
+	// Fire post-update actions.
+	do_action( "automator_update_option_{$option}", $option, $value );
+	do_action( 'automator_updated_option', $option, $value );
+
+	return ( false !== $result );
 }
 
 /**
- * @return array
+ * Retrieves all options from the uap_options table, with optional cache refresh.
+ *
+ * @param bool $force Whether to force a cache refresh.
+ *
+ * @return array All options from the uap_options table.
  */
-function automator_get_all_options() {
+function automator_get_all_options( $force = false ) {
+	static $all_options_cache = null;
+
+	// Use the static cache to avoid redundant calls in the same request.
+	if ( ! $force && null !== $all_options_cache ) {
+		return $all_options_cache;
+	}
+
 	$all_options = wp_cache_get( 'automator_options', 'automator_options' );
 
-	if ( ! empty( $all_options ) ) {
+	if ( false !== $all_options && ! $force ) {
+		$all_options_cache = $all_options;
+
 		return $all_options;
 	}
 
-	$autoload_values = array( 'yes', 'on', 'auto-on', 'auto' );
-
 	global $wpdb;
+
 	$suppress       = $wpdb->suppress_errors();
-	$all_options_db = $wpdb->get_results( "SELECT option_name, option_value FROM {$wpdb->prefix}uap_options WHERE autoload IN ( '" . implode( "', '", esc_sql( $autoload_values ) ) . "' )" );
-
-	if ( ! $all_options_db ) {
-		$all_options_db = $wpdb->get_results( "SELECT option_name, option_value FROM {$wpdb->prefix}uap_options" );
-	}
-
+	$all_options_db = $wpdb->get_results(
+		"SELECT option_name, option_value FROM {$wpdb->prefix}uap_options"
+	);
 	$wpdb->suppress_errors( $suppress );
 
 	$all_options = array();
@@ -928,7 +994,11 @@ function automator_get_all_options() {
 		$all_options[ $o->option_name ] = $o->option_value;
 	}
 
+	// Cache the result for future use.
 	wp_cache_set( 'automator_options', $all_options, 'automator_options' );
+
+	// Store the result in the static cache.
+	$all_options_cache = $all_options;
 
 	return $all_options;
 }
