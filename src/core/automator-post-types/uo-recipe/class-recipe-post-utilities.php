@@ -236,7 +236,7 @@ class Recipe_Post_Utilities {
 
 		// Remove conflictive assets
 		// These shouldn't load in the recipe builder
-		$this->dequeue_conflictive_assets();
+		self::dequeue_conflictive_assets();
 	}
 
 	/**
@@ -378,7 +378,8 @@ class Recipe_Post_Utilities {
 	/**
 	 * Dequeues conflictive assets that shouldn't be loading in the recipe builder
 	 */
-	private function dequeue_conflictive_assets() {
+	public static function dequeue_conflictive_assets() {
+
 		// Set conflictive scripts
 		$conflictive_scripts = array(
 			// General

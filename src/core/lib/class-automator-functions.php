@@ -3,6 +3,7 @@
 namespace Uncanny_Automator;
 
 use Exception;
+use Uncanny_Automator\Deprecated\Legacy_Token_Parser;
 use Uncanny_Automator\Resolver\Fields_Shared_Callable;
 use WP_Error;
 
@@ -289,6 +290,11 @@ class Automator_Functions {
 		// Load plugin status checks
 		require_once __DIR__ . '/utilities/class-automator-input-parser.php';
 		$this->parse = Automator_Input_Parser::get_instance();
+
+		$use_legacy_parser = apply_filters( 'automator_use_legacy_token_parser', false );
+		if ( true === $use_legacy_parser ) {
+			$this->parse = Legacy_Token_Parser::get_instance();
+		}
 
 		// Load plugin translated strings
 		require_once __DIR__ . '/utilities/class-automator-translations.php';
@@ -2063,7 +2069,7 @@ WHERE pm.post_id
 		 */
 		$locale = apply_filters( 'plugin_locale', $locale, 'uncanny-automator' );
 
-		unload_textdomain( 'uncanny-automator' );
+		unload_textdomain( 'uncanny-automator', true );
 		load_textdomain( 'uncanny-automator', WP_LANG_DIR . '/uncanny-automator/uncanny-automator-' . $locale . '.mo' );
 		load_plugin_textdomain( 'uncanny-automator', false, plugin_basename( dirname( AUTOMATOR_BASE_FILE ) ) . '/languages' );
 	}

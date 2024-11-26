@@ -347,10 +347,11 @@ class WP_CREATEPOST {
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 
-		$post_title   = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
-		$post_terms   = Automator()->parse->text( $action_data['meta']['TERM'], $recipe_id, $user_id, $args );
-		$post_slug    = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
-		$content      = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+		$post_title = Automator()->parse->text( $action_data['meta']['WPCPOSTTITLE'], $recipe_id, $user_id, $args );
+		$post_terms = Automator()->parse->text( $action_data['meta']['TERM'], $recipe_id, $user_id, $args );
+		$post_slug  = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
+		$content    = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+
 		$post_content = '';
 
 		// Add custom CSS
@@ -369,6 +370,12 @@ class WP_CREATEPOST {
 			$custom_js = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENTCUSTOMJS'], $recipe_id, $user_id, $args );
 
 			$post_content .= '<!-- wp:html --><script>' . $custom_js . '</script><!-- /wp:html -->';
+		}
+
+		$should_wp_slash = apply_filters( 'automator_create_posts_should_wpslash', false, $action_data );
+
+		if ( true === $should_wp_slash ) {
+			$content = wp_slash( $content );
 		}
 
 		$post_content = $post_content . $content;
@@ -414,7 +421,8 @@ class WP_CREATEPOST {
 
 		$return_wp_error  = apply_filters( 'automator_create_post_return_wp_error', true, $post_args, $recipe_id, $action_data );
 		$fire_after_hooks = apply_filters( 'automator_create_post_fire_after_hooks', true, $post_args, $recipe_id, $action_data );
-		$post_id          = wp_insert_post( $post_args, $return_wp_error, $fire_after_hooks );
+
+		$post_id = wp_insert_post( $post_args, $return_wp_error, $fire_after_hooks );
 
 		if ( is_wp_error( $post_id ) ) {
 			$action_data['complete_with_errors'] = true;

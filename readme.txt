@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.4
-Tested up to: 6.6.2
+Tested up to: 6.7.1
 Requires PHP: 7.0
-Stable tag: 6.0.0.1
+Stable tag: 6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -372,96 +372,42 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.0.0.1 [2024-10-29] =
+= 6.1 [2024-11-26] =
 
-**Fixed:**
-
-* Core – Optimize uap_options functions - We gave these functions a tune-up, so they run smoother and faster now. #5199
-* Core – Conflicting `automator_option_updated` actions - These actions were bumping into each other like shoppers on Black Friday. We've cleared the aisle, and now everything flows smoothly. #5196
-
-= 6.0 [2024-10-24] =
+== Changelog ==
 
 **New Feature:**
 
-* Emails – Now with attachment support, because sometimes, "see attached" shouldn't be a lie #4841
-
-**New App Integration:**
-
-* [Stripe](https://automatorplugin.com/integration/stripe/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4324
-
-**New Plugin Integration:**
-
-* [MemberMouse](https://automatorplugin.com/integration/membermouse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4908
+* Recipe template library - Ready-to-use automation templates are here to save the day! Build workflows faster than ever, no assembly required. Just pick, tweak, and automate like a pro. #4916
 
 **New Triggers:**
 
-* MemberMouse - A bundle is added to a member's account #4855
-* MemberMouse - A member's account is deleted #4854
-* MemberMouse - A member's account data is updated #5118
-* MemberMouse - A new member is created #4850
-* MemberMouse - A refund is issued #4858
-* MemberMouse - A renewal payment is received #4857
-* MemberMouse - An order is submitted #4856
-* Stripe - A charge fails #4721
-* Stripe - A charge is refunded #4722
-* Stripe - A customer is created #4719
-* Stripe - A payment is completed #4720
-* Stripe - A subscription is cancelled #4736
+* MemberPress - A user is added to a membership #3608
+* MemberPress - A user is removed from a one-time subscription product #3609
+* MemberPress - A user is removed from a recurring subscription product #5158
 
-**New Actions:**
+**New Action:**
 
-* MemberMouse - Remove a bundle from the member's account #4874
-* Stripe - Create a customer #4740
-* Stripe - Create a payment link #4738
-* Stripe - Delete a customer #4739
-
-**New Tokens:**
-
-* All Actions – Completion status #3264
-* MemberPress - Transaction ID and Transaction amount
-
-**Added:**
-
-* Recipe Logs – "Cancel" button to cancel scheduled actions inside the log details. Now you can pull the plug before things get cooking! #4863
-* Recipe Logs – Add "Run now" button to run the scheduled actions. For those who just can't wait for delicious automation results. #5114
+* Uncanny Codes - Remove a number of unused codes from a batch #4451
 
 **Updated:**
 
-* Brevo – Create or update a contact – Added support for contact attribute select fields. Now you can pick and choose attributes like a pro! #5073
-* Recipe UI – Allow 1-minute increment when scheduling an action. Because sometimes every minute really does count! #5129
-* Slack – Send a direct message to a Slack user – Added "Use a token/custom value" for the user dropdown. Customization is now just a token away! #5121
-* UserFeedback – A visitor submits a survey & A user submits a survey – Added support for multiple questions/answers. #5144
-* WordPress – A user's role changes to a specific role – Added "Any role" option. #5065
+* Restrict Content Pro - Add the user to a membership level - Registration date field now arrives right on time, no more tardy data! #5084
+* WhatsApp - Added an extra user-agent for Webhook validation, because even Webhooks deserve a proper handshake. #5215
 
 **Fixed:**
 
-* Divi – Theme Builder – Forms are not showing for selection when added as global header/footer. No more disappearing acts – forms are here to stay! #4954
-* HubSpot – Added support for line breaks in custom fields. Text flow now looks like poetry instead of a brick wall. #5168
-* MailPoet – Add a subscriber to a list – Not creating new subscribers in a rare occurrence. #5146
-* Recipe Logs – Sidebar button not displaying due to incorrect action status for delayed and scheduled actions. We fixed it—now the button behaves like it's supposed to! #5124
-* WP Courseware – A user completes a module – Only returning 20 results instead of all modules. Now every module gets counted, not just the chosen few. #5083
-* WordPress – A post in a taxonomy is published – Fixed an issue where a recipe would trigger multiple times when a post is published in a rare situation. No more deja vu—one post, one trigger! #5174
-* WordPress – A post in a taxonomy is published – Improved reliability when posts are published in bulk. Bulk publishing without bulk headaches! #5175
-* WordPress – A user publishes a post in a taxonomy – Fixed an issue where a recipe would trigger multiple times when a post is published in a rare situation. We've banished those rogue triggers! #5173
-* WordPress – A user publishes a post in a taxonomy – Improved reliability when posts are published in bulk. Go ahead and publish en masse—we've got you covered! #5172
-* wpForo – Set the user's primary group to a specific group – Support for v2.0.3 update. Everything is now in sync with the latest version—group assignments like clockwork! #5087
+* FluentCRM - Triggers not handling multiple recipes with the same trigger correctly have been whipped into shape—no more identity crises! #5223
+* Token parsing - We've made sure token parsing still plays nice with PHP 7.0, because even older PHP deserves some love. #5202
+* User reset password URL token - No longer going AWOL in that one weird edge case. #5219
+* WordPress - Create a post - Backslashes are back, baby! Your saved actions won't strip them anymore. #5062
 
 **Under the hood:**
 
-* Automator notices when Uncanny Codes Automator type code is generated. #5138
-* Action tokens – Date tokens were running wild, ignoring the format they were given and causing a race condition. We sat them down, gave them a calendar, and now they're on track! #5170
-* Core – Recipe not creating a new recipe run when it is currently "In progress with errors" status in a rare situation. Error-schmerror—we've fixed it so the recipe keeps cooking! #5176
-* Duplicate / Import Export – Support for new Data Integrations. Fresh integrations, now served hot and ready! #5149
-* Groundhogg icon updated. New look, same charming functionality. #5164
-* Move Recipe_Objects_Logger functions to common DB query classes. We relocated them to where all the cool queries hang out. #4979
-* Recipe UI – Enhanced Token loop (for Pro). Now it loops so smoothly, you'll think it's magic! #4606
-* New database table uap_options to store Automator options. Options now have a comfy new home. #5100
-* Recipe UI – Add product education modals for filters, delays, and loops. Learning has never been so... modal-icious! #5075
-* Recipe UI – Loops – Each loop type now opens the related support page. Knowledge is power—click away! #5028
-* Took care of some PHP notices. Less noise, more peace and quiet in the code. #5151
-* Tooltip notification if new recipe hasn't been created 48 hours after installation. Gentle nudges, just in case you forgot! #4318
-* UI adjustment – Allow <uo-button> component to populate a name and value for form submissions. Buttons with purpose—now they mean business. #5107
-* Removed deprecated unused file to avoid any vulnerability issues. It wasn't doing anything anyway, so we showed it the door. #5185
+* Activating Automator via WP-CLI - The uap_options table is mandatory, so we told a couple of impatient lines of code to wait their turn before calling it. Now everything activates in the proper order, like a well-behaved queue. #5235
+* Import recipes - Windows path validation has been improved—no more confusion between slashes and backslashes! #5209
+* Improved token parser - The parser is sharper, faster, and sassier than ever. #4167
+* Translation notice with WP 6.7+ - We've made the translations play nicely with the latest and greatest from WordPress. #5239
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

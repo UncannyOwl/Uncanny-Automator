@@ -364,7 +364,7 @@ class Set_Up_Automator {
 
 		// Adding textdomain fix trigger/action
 		// sentences not getting translated
-		Automator()->automator_load_textdomain();
+		//Automator()->automator_load_textdomain();
 
 		foreach ( $this->active_directories as $dir_name => $object ) {
 			$mod = $dir_name;

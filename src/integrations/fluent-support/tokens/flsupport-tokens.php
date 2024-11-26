@@ -35,7 +35,7 @@ class Flsupport_Tokens {
 
 		$trigger_integration = (string) $args['integration'];
 
-		if ( 'FLSUPPORT' === $trigger_integration && 'FLST_TICKET_OPENED' !== (string) $args['triggers_meta']['code'] ) {
+		if ( 'FLSUPPORT' === $trigger_integration && 'FLST_TICKET_OPENED' !== (string) $args['triggers_meta']['code'] && 'FLST_TICKET_CLOSED' !== (string) $args['triggers_meta']['code'] ) {
 
 			$add_action   = (string) $args['triggers_meta']['add_action'];
 			$trigger_meta = (string) $args['meta'];

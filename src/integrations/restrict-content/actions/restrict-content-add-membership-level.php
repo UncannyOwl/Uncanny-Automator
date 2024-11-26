@@ -65,6 +65,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 							array( 'any' => false )
 						),
 						Automator()->helpers->recipe->field->text_field( 'RCMEMBERSHIPEXPIRY', esc_attr__( 'Expiry date', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Leave empty to use expiry settings from the membership level, or type a specific date in the format YYYY-MM-DD', 'uncanny-automator' ) ),
+						Automator()->helpers->recipe->field->text_field( 'RCMEMBERSHIPREGISTRATION', esc_attr__( 'Registration date', 'uncanny-automator' ), true, 'text', '', false, esc_attr__( 'Type a specific date in the format YYYY-MM-DD', 'uncanny-automator' ) ),
 					),
 				),
 			)
@@ -80,8 +81,9 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 	 */
 	public function add_rcp_membership( $user_id, $action_data, $recipe_id, $args ) {
 
-		$level_id    = absint( $action_data['meta'][ $this->action_meta ] );
-		$expiry_date = Automator()->parse->text( $action_data['meta']['RCMEMBERSHIPEXPIRY'], $recipe_id, $user_id, $args );
+		$level_id        = absint( $action_data['meta'][ $this->action_meta ] );
+		$expiry_date     = Automator()->parse->text( $action_data['meta']['RCMEMBERSHIPEXPIRY'], $recipe_id, $user_id, $args );
+		$registered_date = Automator()->parse->text( $action_data['meta']['RCMEMBERSHIPREGISTRATION'], $recipe_id, $user_id, $args );
 		// Get all the active membership level IDs.
 		$level_ids = rcp_get_membership_levels(
 			array(
@@ -95,8 +97,9 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 			return;
 		}
 
-		$customer     = rcp_get_customer_by_user_id( $user_id );
-		$newest_time  = current_time( 'timestamp' );
+		$customer    = rcp_get_customer_by_user_id( $user_id );
+		$newest_time = ( ! empty( $registered_date ) ) ? strtotime( $registered_date ) : current_time( 'timestamp' );
+
 		$created_date = date( 'Y-m-d H:i:s', $newest_time );
 		// Create a new customer record if one does not exist.
 		if ( empty( $customer ) ) {

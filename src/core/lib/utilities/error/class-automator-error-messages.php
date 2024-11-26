@@ -25,14 +25,9 @@ class Automator_Error_Messages {
 	 */
 	public function __construct() {
 
-		$this->error_messages['email-failed']              = esc_attr__( 'The email was not sent successfully.', 'uncanny-automator' );
-		$this->error_messages['email-success']             = esc_attr__( 'The email was sent successfully.', 'uncanny-automator' );
-		$this->error_messages['not-logged-in']             = esc_attr__( 'The user is not logged in.', 'uncanny-automator' );
-		$this->error_messages['action-not-active']         = esc_attr__( 'The plugin for this action is not active.', 'uncanny-automator' );
-		$this->error_messages['action-function-not-exist'] = esc_attr__( 'An error occurred while running this action.', 'uncanny-automator' );
-		$this->error_messages['plugin-not-active']         = esc_attr__( 'The plugin for this action is not active.', 'uncanny-automator' );
 		apply_filters_deprecated( 'uap_error_messages', array( $this->error_messages ), '3.0', 'automator_error_messages' );
 		apply_filters( 'automator_error_messages', $this->error_messages );
+		add_action( 'init', array( $this, 'register_error_messages' ) );
 	}
 
 	/**
@@ -45,6 +40,18 @@ class Automator_Error_Messages {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function register_error_messages() {
+		$this->error_messages['email-failed']              = esc_attr__( 'The email was not sent successfully.', 'uncanny-automator' );
+		$this->error_messages['email-success']             = esc_attr__( 'The email was sent successfully.', 'uncanny-automator' );
+		$this->error_messages['not-logged-in']             = esc_attr__( 'The user is not logged in.', 'uncanny-automator' );
+		$this->error_messages['action-not-active']         = esc_attr__( 'The plugin for this action is not active.', 'uncanny-automator' );
+		$this->error_messages['action-function-not-exist'] = esc_attr__( 'An error occurred while running this action.', 'uncanny-automator' );
+		$this->error_messages['plugin-not-active']         = esc_attr__( 'The plugin for this action is not active.', 'uncanny-automator' );
 	}
 
 	/**
