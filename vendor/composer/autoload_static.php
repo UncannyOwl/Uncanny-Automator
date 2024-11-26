@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit302df5925683659a4b288082ba1c01aa
+class ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -230,6 +230,7 @@ class ComposerStaticInit302df5925683659a4b288082ba1c01aa
         'Uncanny_Automator\\Admin_Settings_General_License' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/tabs/general-tabs/license.php',
         'Uncanny_Automator\\Admin_Settings_General_Logs' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/tabs/general-tabs/logs.php',
         'Uncanny_Automator\\Admin_Settings_Premium_Integrations' => __DIR__ . '/../..' . '/src/core/admin/admin-settings/tabs/premium-integrations.php',
+        'Uncanny_Automator\\Admin_Template_Library' => __DIR__ . '/../..' . '/src/core/admin/class-admin-template-library.php',
         'Uncanny_Automator\\Admin_Tools' => __DIR__ . '/../..' . '/src/core/admin/admin-tools/admin-tools.php',
         'Uncanny_Automator\\Admin_Tools_Debug_Debug' => __DIR__ . '/../..' . '/src/core/admin/admin-tools/tabs/debug/debug.php',
         'Uncanny_Automator\\Admin_Tools_Status' => __DIR__ . '/../..' . '/src/core/admin/admin-tools/tabs/status.php',
@@ -358,6 +359,7 @@ class ComposerStaticInit302df5925683659a4b288082ba1c01aa
         'Uncanny_Automator\\DRIP_REMOVE_TAG' => __DIR__ . '/../..' . '/src/integrations/drip/actions/drip-remove-tag.php',
         'Uncanny_Automator\\DRIP_SUBSCRIBE_TO_CAMPAIGN' => __DIR__ . '/../..' . '/src/integrations/drip/actions/drip-subscribe-to-campaign.php',
         'Uncanny_Automator\\DRIP_UNSUBSCRIBE_ALL' => __DIR__ . '/../..' . '/src/integrations/drip/actions/drip-unsubscribe-all.php',
+        'Uncanny_Automator\\Deprecated\\Legacy_Token_Parser' => __DIR__ . '/../..' . '/src/core/deprecated/legacy-token-parser.php',
         'Uncanny_Automator\\Divi_Helpers' => __DIR__ . '/../..' . '/src/integrations/divi/helpers/divi-helpers.php',
         'Uncanny_Automator\\Divi_Tokens' => __DIR__ . '/../..' . '/src/integrations/divi/tokens/divi-tokens.php',
         'Uncanny_Automator\\Drip_Functions' => __DIR__ . '/../..' . '/src/integrations/drip/functions/drip-functions.php',
@@ -815,6 +817,9 @@ class ComposerStaticInit302df5925683659a4b288082ba1c01aa
         'Uncanny_Automator\\MP_PURCHASEPRODUCTONETIME' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-purchaseproductonetime.php',
         'Uncanny_Automator\\MP_PURCHASEPRODUCTRECURRING' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-purchaseproductrecurring.php',
         'Uncanny_Automator\\MP_RENEWS_RECURRING_SUBSCRIPTION' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-renews-recurring-subscription.php',
+        'Uncanny_Automator\\MP_USER_ADDED_TO_MEMBERSHIP' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-user-added-to-membership.php',
+        'Uncanny_Automator\\MP_USER_REMOVE_FROM_ONETIME_MEMBERSHIP' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-user-remove-from-onetime-membership.php',
+        'Uncanny_Automator\\MP_USER_REMOVE_FROM_RECURRING_MEMBERSHIP' => __DIR__ . '/../..' . '/src/integrations/memberpress/triggers/mp-user-remove-from-recurring-membership.php',
         'Uncanny_Automator\\MYCRED_AWARDBADGE_A' => __DIR__ . '/../..' . '/src/integrations/mycred/actions/mycred-awardbadge-a.php',
         'Uncanny_Automator\\MYCRED_AWARDPOINTS_A' => __DIR__ . '/../..' . '/src/integrations/mycred/actions/mycred-awardpoints-a.php',
         'Uncanny_Automator\\MYCRED_AWARDRANK_A' => __DIR__ . '/../..' . '/src/integrations/mycred/actions/mycred-awardrank-a.php',
@@ -902,6 +907,7 @@ class ComposerStaticInit302df5925683659a4b288082ba1c01aa
         'Uncanny_Automator\\Recipe_Post_Rest_Api' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php',
         'Uncanny_Automator\\Recipe_Post_Type' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-recipe/class-recipe-post-type.php',
         'Uncanny_Automator\\Recipe_Post_Utilities' => __DIR__ . '/../..' . '/src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php',
+        'Uncanny_Automator\\Recipe_Template_Library' => __DIR__ . '/../..' . '/src/core/lib/class-recipe-template-library.php',
         'Uncanny_Automator\\Resolver\\Conditions\\Errors_Mapping' => __DIR__ . '/../..' . '/src/core/services/resolver/conditions/errors-mapping.php',
         'Uncanny_Automator\\Resolver\\Conditions\\Errors_Registry' => __DIR__ . '/../..' . '/src/core/services/resolver/conditions/errors-registry.php',
         'Uncanny_Automator\\Resolver\\Fields_Conditions_Resolver' => __DIR__ . '/../..' . '/src/core/services/resolver/fields-conditions-resolver.php',
@@ -1062,6 +1068,7 @@ class ComposerStaticInit302df5925683659a4b288082ba1c01aa
         'Uncanny_Automator\\UC_CODESBATCH' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-codesbatch.php',
         'Uncanny_Automator\\UC_CODESPREFIX' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-codesprefix.php',
         'Uncanny_Automator\\UC_CODESSUFFIX' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-codessuffix.php',
+        'Uncanny_Automator\\UC_DELETE_BATCH_CODES' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/actions/uc-delete-batch-codes.php',
         'Uncanny_Automator\\UC_GENERATE_CODES' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/actions/uc-generate-codes.php',
         'Uncanny_Automator\\UM_USERINACTIVE' => __DIR__ . '/../..' . '/src/integrations/ultimate-member/triggers/um-userinactive.php',
         'Uncanny_Automator\\UM_USERLOGSIN' => __DIR__ . '/../..' . '/src/integrations/ultimate-member/triggers/um-userlogsin.php',
@@ -1263,8 +1270,8 @@ class ComposerStaticInit302df5925683659a4b288082ba1c01aa
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit302df5925683659a4b288082ba1c01aa::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit302df5925683659a4b288082ba1c01aa::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855::$classMap;
 
         }, null, ClassLoader::class);
     }

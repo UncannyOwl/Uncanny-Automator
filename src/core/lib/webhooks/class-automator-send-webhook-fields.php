@@ -45,6 +45,14 @@ class Automator_Send_Webhook_Fields {
 	 * Constructor
 	 */
 	public function __construct() {
+
+		add_action( 'init', array( $this, 'register_data_format_types' ) );
+	}
+
+	/**
+	 * @return void
+	 */
+	public function register_data_format_types() {
 		$this->data_format_types = apply_filters(
 			'automator_outgoing_webhook_content_types',
 			array(

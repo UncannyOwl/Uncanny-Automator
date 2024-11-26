@@ -2,85 +2,72 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.0.0.1\n"
+"Project-Id-Version: Uncanny Automator 6.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-29T16:44:56+00:00\n"
+"POT-Creation-Date: 2024-11-26T18:32:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: uncanny-automator\n"
 
-#: src/recipe-ui/src/js/item/button-schedule.js:822
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:822
 msgid "Delay & schedule"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:831
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:831
 msgid "Add **delayed** or **scheduled actions** to your recipes. With the ability to delay or schedule actions, you can run an action a specific number of **minutes, hours, or days after a user completes the recipe's triggers!**"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:836
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:836
 msgid "Here are a few examples of what is possible with delayed and scheduled actions:"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:843
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:843
 msgid "When a new user registers, **send them an onboarding drip campaign over a period of days or weeks** to help them get up to speed with minimal support"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:850
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:850
 msgid "When a user purchases a product, **send them an email a week later to ask them to leave a review**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:857
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:857
 msgid "When a user registers for an event, **send them a reminder before the event**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:864
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:864
 msgid "When a user enrolls in a course or event, **send them supporting materials at regular intervals** during the course or before or after the event."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:870
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:870
 msgid "You can also use the scheduled recipe feature to run recipes at regular intervals to do things like:"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:877
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:877
 msgid "Send **email reminders** to users that haven't completed a key activity."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:884
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:884
 msgid "**Log data for a report** in Google Sheets, AirTable or Notion."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:891
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:891
 msgid "Perform **scheduled maintenance** on a site."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:904
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:904
 msgid "Get Delays"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/recipe-ui/src/js/item/button-schedule.js:912
-#: src/recipe-ui/dist/bundle.min.js:2
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
+#: src/js/item/button-schedule.js:912
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 #: src/core/admin/class-admin-menu.php:1003
 #: src/core/admin/class-admin-menu.php:1173
 #: src/core/admin/class-admin-menu.php:1281
@@ -90,130 +77,106 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 #: src/core/lib/utilities/class-automator-translations.php:1401
 msgid "Post loop"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Post loops let you perform bulk actions on posts that meet specific criteria."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Here are a few examples of what you can do with post loops:"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Export **all blog posts, products or courses in a category** to a Google Sheet, AirTable or Notion."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Change **all posts of written by one author** to another author."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Update meta values on all **posts that match a specific meta value**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Automatically generate SEO descriptions with OpenAI for **all blog posts that don't have a meta description**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Get Post loops"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
 #: src/core/lib/utilities/class-automator-translations.php:1402
 #: src/core/lib/utilities/class-automator-translations.php:1519
 msgid "Token loop"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
 msgid "Token loops let you perform bulk actions on special *loopable tokens*. Here are a few examples:"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
 msgid "When a user purchases a specific product, **loop over their previously purchased products** and if a complementary product is found, send an email with special instructions or a coupon code."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
 msgid "Every Friday, **loop over all orders in the past week** and export them to a Google sheet."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
 msgid "When a user completes a course, **loop over their previously completed courses** and if a corequisite course is found, enroll the user in a new course or issue a certificate of completion."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
 msgid "When a user purchases a subscription, **loop over their active subscriptions** and if a complementary subscription is found, award an achievement or store credit."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
 msgid "Get Token loops"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:92
-#: src/recipe-ui/dist/bundle.min.js:2
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:94
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:92
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:94
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 #: src/core/lib/utilities/class-automator-translations.php:1400
 msgid "User loop"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 msgid "A powerful admin tool, user loops let you perform **bulk actions** on any set of **users that meet specific criteria**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 msgid "Here are a few examples of what is possible with user loops:"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 msgid "Send an email or coupon code to all users that **purchased a specific product** or are a **member of a specific group**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 msgid "Add a role to **users with a specific role** or **with a specific membership/access level**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 msgid "Export a list of **users matching specific profile criteria** to Google Sheets, AirTable or Notion."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 msgid "Perform actions in bulk on **users with specific usermeta**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 msgid "Get User loops"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 #: src/core/lib/utilities/class-automator-translations.php:204
 #: src/core/views/admin-logs/filters.php:48
 #: src/core/views/admin-logs/filters.php:95
@@ -224,53 +187,43 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "Add **conditional logic** to your recipes with filters. With the ability to **run actions only if specific conditions are met**, recipes become much more powerful!"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "Here are a few examples of what is possible with filters:"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "In recipes with a form submission trigger, **run different actions depending on the options the user selected on the form**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "In recipes with a purchase trigger, **run different actions depending on which product the user purchased**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "In recipes with a course or group enrollment trigger, **run different actions depending on which course or group the user enrolled in**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "You can also use filters to simply give recipes additional \"intelligence\" about when actions should run, such as:"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "Whether the user has a **specific role or membership level**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "Whether the user is **enrolled in a specific course or group**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "Whether the user has **specific user meta values**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/conditions/components/condition-add-button/index.js:304
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 msgid "Get Filters"
 msgstr ""
 
@@ -309,7 +262,7 @@ msgstr ""
 msgid "Upgrade to Pro"
 msgstr ""
 
-#: src/class-automator-load.php:560
+#: src/class-automator-load.php:593
 msgid "Heads up!"
 msgstr ""
 
@@ -336,7 +289,7 @@ msgstr ""
 
 #. translators: Log column.
 #: src/core/admin/admin-logs/tabs/recipe.php:49
-#: src/core/admin/class-admin-menu.php:1342
+#: src/core/admin/class-admin-menu.php:1343
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:165
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:72
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:108
@@ -478,7 +431,7 @@ msgstr ""
 
 #. translators: Recipe log user ID column row value.
 #: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1134
-#: src/core/admin/class-admin-menu.php:1057
+#: src/core/admin/class-admin-menu.php:1054
 #: src/core/admin/class-admin-menu.php:1102
 msgid "User ID #%1$s"
 msgstr ""
@@ -486,6 +439,7 @@ msgstr ""
 #. translators: 1. Trademarked term
 #: src/core/admin/admin-settings/admin-settings.php:32
 #: src/core/admin/class-admin-menu.php:376
+#: src/core/admin/class-admin-template-library.php:62
 msgid "%1$s settings"
 msgstr ""
 
@@ -629,7 +583,7 @@ msgstr ""
 #: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:62
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:120
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:239
-#: src/integrations/wp/actions/wp-createpost.php:618
+#: src/integrations/wp/actions/wp-createpost.php:626
 msgid "Type"
 msgstr ""
 
@@ -668,7 +622,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1165
 #: src/core/admin/class-admin-menu.php:1191
 #: src/core/admin/class-admin-menu.php:1210
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1076
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1077
 #: src/core/includes/recipe-logs-view.php:137
 #: src/core/views/admin-logs/component/logs.php:128
 #: src/integrations/slicewp/helpers/slicewp-helpers.php:88
@@ -695,7 +649,7 @@ msgstr ""
 #: src/core/admin/api-log/class-api-log.php:82
 #: src/core/admin/class-admin-menu.php:1100
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:114
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1072
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1073
 #: src/core/includes/recipe-logs-view.php:51
 #: src/core/includes/recipe-logs-view.php:194
 #: src/core/lib/utilities/class-automator-translations.php:86
@@ -733,7 +687,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:332
 #: src/core/admin/class-admin-menu.php:333
-#: src/core/admin/class-admin-menu.php:1639
+#: src/core/admin/class-admin-menu.php:1640
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
@@ -910,66 +864,66 @@ msgstr ""
 msgid "Sign up now!"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1056
+#: src/core/admin/class-admin-menu.php:1053
 msgid "User not found"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1058
+#: src/core/admin/class-admin-menu.php:1055
 msgid "Error: The user data could not be retrieved because of an unknown problem"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1059
+#: src/core/admin/class-admin-menu.php:1056
 msgid "Error: User ID can't be empty"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1065
+#: src/core/admin/class-admin-menu.php:1062
 msgid "Select file"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1066
+#: src/core/admin/class-admin-menu.php:1063
 msgid "Select files"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1067
+#: src/core/admin/class-admin-menu.php:1064
 msgid "Change file"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1068
+#: src/core/admin/class-admin-menu.php:1065
 msgid "Change files"
 msgstr ""
 
 #. translators: 1. The number of rows
-#: src/core/admin/class-admin-menu.php:1070
+#: src/core/admin/class-admin-menu.php:1067
 msgid "%1$s rows"
 msgstr ""
 
 #. translators: 1. The list of headers
-#: src/core/admin/class-admin-menu.php:1072
+#: src/core/admin/class-admin-menu.php:1069
 msgid "Headers: %1$s"
 msgstr ""
 
 #. translators: 1. The number of items
-#: src/core/admin/class-admin-menu.php:1074
+#: src/core/admin/class-admin-menu.php:1071
 msgid "%1$s items"
 msgstr ""
 
 #. translators: 1. The list of keys
-#: src/core/admin/class-admin-menu.php:1076
+#: src/core/admin/class-admin-menu.php:1073
 msgid "Keys: %1$s"
 msgstr ""
 
 #. translators: 1. Child elements
-#: src/core/admin/class-admin-menu.php:1078
+#: src/core/admin/class-admin-menu.php:1075
 msgid "%1$s elements"
 msgstr ""
 
 #. translators: 1. The name of the root element
-#: src/core/admin/class-admin-menu.php:1080
+#: src/core/admin/class-admin-menu.php:1077
 msgid "Root element: %1$s"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:1089
-#: src/core/classes/class-usage-reports.php:924
+#: src/core/classes/class-usage-reports.php:983
 #: src/core/lib/utilities/class-automator-translations.php:1580
 #: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:354
 msgid "Something went wrong"
@@ -987,7 +941,7 @@ msgstr ""
 
 #. translators: Log column.
 #: src/core/admin/class-admin-menu.php:1094
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1015
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1016
 #: src/core/includes/recipe-logs-view.php:49
 #: src/core/includes/recipe-logs-view.php:96
 #: src/core/includes/recipe-logs-view.php:147
@@ -1035,7 +989,7 @@ msgstr ""
 #: src/core/admin/class-admin-menu.php:1099
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:55
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:60
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1071
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1072
 #: src/core/lib/utilities/class-automator-translations.php:43
 msgid "Triggers"
 msgstr ""
@@ -1403,47 +1357,52 @@ msgstr ""
 msgid "Cancelling a loop is not possible in import mode"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1340
+#: src/core/admin/class-admin-menu.php:1341
 #: src/core/views/admin-dashboard.php:1337
 msgid "No recipes using app credits on this site"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1343
+#: src/core/admin/class-admin-menu.php:1344
 msgid "Completions allowed"
 msgstr ""
 
 #. translators: The number of times a recipe was completed
-#: src/core/admin/class-admin-menu.php:1344
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1074
+#: src/core/admin/class-admin-menu.php:1345
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1075
 msgid "Completed runs"
 msgstr ""
 
 #. translators: 1. Number
-#: src/core/admin/class-admin-menu.php:1346
+#: src/core/admin/class-admin-menu.php:1347
 msgid "Per user: %1$s"
 msgstr ""
 
 #. translators: 1. Number
-#: src/core/admin/class-admin-menu.php:1348
+#: src/core/admin/class-admin-menu.php:1349
 msgid "Total: %1$s"
 msgstr ""
 
 #. translators: Unlimited times
-#: src/core/admin/class-admin-menu.php:1350
+#: src/core/admin/class-admin-menu.php:1351
 msgctxt "Times"
 msgid "Unlimited"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1524
+#: src/core/admin/class-admin-menu.php:1525
 msgid "Installed integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1525
+#: src/core/admin/class-admin-menu.php:1526
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1640
+#: src/core/admin/class-admin-menu.php:1641
 msgid "Put your WordPress site on autopilot"
+msgstr ""
+
+#: src/core/admin/class-admin-template-library.php:63
+#: src/core/views/admin-recipe-template-library.php:17
+msgid "Recipe templates"
 msgstr ""
 
 #: src/core/admin/class-copy-recipe-parts.php:81
@@ -1514,36 +1473,46 @@ msgctxt "Import Recipe"
 msgid "No recipe .json file uploaded."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:123
-#: src/core/admin/class-import-recipe.php:133
+#: src/core/admin/class-import-recipe.php:124
+#: src/core/admin/class-import-recipe.php:145
 msgctxt "Import Recipe"
 msgid "The uploaded file is not a valid recipe .json file."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:262
+#: src/core/admin/class-import-recipe.php:132
+msgctxt "Import Recipe"
+msgid "Unable to read the uploaded file."
+msgstr ""
+
+#: src/core/admin/class-import-recipe.php:139
+msgctxt "Import Recipe"
+msgid "The uploaded file contains invalid JSON."
+msgstr ""
+
+#: src/core/admin/class-import-recipe.php:274
 msgctxt "Import Recipe"
 msgid "The Uploaded file is not a valid recipe .json file; the recipe object must contain post and meta."
 msgstr ""
 
 #. translators: %s - Y-m-d date
-#: src/core/admin/class-import-recipe.php:279
+#: src/core/admin/class-import-recipe.php:291
 msgctxt "Import Recipe"
 msgid "Recipe imported on %s. Please make sure to set the correct values before you take this recipe live."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:289
+#: src/core/admin/class-import-recipe.php:301
 msgctxt "Import Recipe"
 msgid "Unable to create imported recipe."
 msgstr ""
 
 #. translators: %s - error message
-#: src/core/admin/class-import-recipe.php:507
+#: src/core/admin/class-import-recipe.php:519
 msgctxt "Import Recipe"
 msgid "Recipe Import Error : %s"
 msgstr ""
 
 #. translators: %s - error message
-#: src/core/admin/class-import-recipe.php:557
+#: src/core/admin/class-import-recipe.php:569
 msgctxt "Import Recipe"
 msgid "Recipes Imported Successfully : %s"
 msgstr ""
@@ -2384,19 +2353,19 @@ msgctxt "Recipe"
 msgid "Not found in trash"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1019
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1020
 #: src/core/lib/utilities/class-automator-translations.php:1367
 msgid "Live"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1019
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1020
 #: src/core/lib/utilities/class-automator-translations.php:1368
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:76
 msgid "Draft"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1075
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1076
 #: src/core/includes/recipe-logs-view.php:88
 #: src/core/includes/recipe-logs-view.php:141
 #: src/core/lib/utilities/class-automator-translations.php:867
@@ -2504,10 +2473,21 @@ msgstr ""
 msgid "Error: Missing formula."
 msgstr ""
 
-#: src/core/classes/class-usage-reports.php:417
+#: src/core/classes/class-usage-reports.php:418
 #: src/integrations/wp-polls/tokens/wpp-tokens.php:96
 #: src/integrations/wp-polls/tokens/wpp-tokens.php:108
 msgid "Not set"
+msgstr ""
+
+#. translators: Article. Fallback. Any type of content (post, page, media, etc)
+#: src/core/deprecated/legacy-token-parser.php:594
+msgid "Any"
+msgstr ""
+
+#: src/core/deprecated/legacy-token-parser.php:816
+#: src/core/lib/utilities/class-automator-input-parser.php:766
+msgctxt "Reset password token text"
+msgid "Click here to reset your password."
 msgstr ""
 
 #. translators: 1. Trademarked term
@@ -4999,6 +4979,14 @@ msgstr ""
 msgid "Trigger run #"
 msgstr ""
 
+#: src/core/lib/class-recipe-template-library.php:249
+msgid "Automator Pro includes conditions, delays and loops, thousands of additional triggers, actions and tokens, and unlimited app credits for app integrations."
+msgstr ""
+
+#: src/core/lib/class-recipe-template-library.php:279
+msgid "The Elite Integrations Addon for Uncanny Automator adds additional integrations with enterprise-level software."
+msgstr ""
+
 #: src/core/lib/helpers/class-automator-cache-handler.php:466
 #: src/core/lib/helpers/class-automator-cache-handler.php:470
 msgid "Automator"
@@ -5025,7 +5013,7 @@ msgstr ""
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:26
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:80
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:133
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:62
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:70
 msgid "Number"
 msgstr ""
 
@@ -5046,7 +5034,7 @@ msgid "Example: 1.1"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:188
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:61
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:69
 #: src/integrations/slack/helpers/slack-helpers.php:298
 #: src/integrations/telegram/actions/telegram-send-message.php:78
 #: src/integrations/telegram/triggers/telegram-message-received.php:92
@@ -5449,16 +5437,6 @@ msgstr ""
 #: src/integrations/wp-polls/triggers/wpp-pollsubmit.php:78
 #: src/integrations/ws-form-lite/helpers/ws-form-lite-helpers.php:51
 msgid "ID: %s (no title)"
-msgstr ""
-
-#. translators: Article. Fallback. Any type of content (post, page, media, etc)
-#: src/core/lib/utilities/class-automator-input-parser.php:580
-msgid "Any"
-msgstr ""
-
-#: src/core/lib/utilities/class-automator-input-parser.php:802
-msgctxt "Reset password token text"
-msgid "Click here to reset your password."
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-system-report.php:124
@@ -6941,8 +6919,8 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1041
 #: src/core/lib/utilities/class-automator-translations.php:1273
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:189
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:228
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:197
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:236
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:152
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:173
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:195
@@ -7236,7 +7214,7 @@ msgid "%1$s support"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1269
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:182
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:190
 #: src/core/views/html-admin-status.php:796
 #: src/integrations/aweber/actions/aweber-subscriber-add.php:104
 #: src/integrations/aweber/actions/aweber-subscriber-add.php:110
@@ -7992,28 +7970,28 @@ msgstr ""
 msgid "nonce validation failed."
 msgstr ""
 
-#: src/core/lib/utilities/error/class-automator-error-messages.php:28
+#: src/core/lib/utilities/error/class-automator-error-messages.php:49
 msgid "The email was not sent successfully."
 msgstr ""
 
-#: src/core/lib/utilities/error/class-automator-error-messages.php:29
+#: src/core/lib/utilities/error/class-automator-error-messages.php:50
 msgid "The email was sent successfully."
 msgstr ""
 
-#: src/core/lib/utilities/error/class-automator-error-messages.php:30
+#: src/core/lib/utilities/error/class-automator-error-messages.php:51
 msgid "The user is not logged in."
 msgstr ""
 
-#: src/core/lib/utilities/error/class-automator-error-messages.php:31
-#: src/core/lib/utilities/error/class-automator-error-messages.php:33
+#: src/core/lib/utilities/error/class-automator-error-messages.php:52
+#: src/core/lib/utilities/error/class-automator-error-messages.php:54
 msgid "The plugin for this action is not active."
 msgstr ""
 
-#: src/core/lib/utilities/error/class-automator-error-messages.php:32
+#: src/core/lib/utilities/error/class-automator-error-messages.php:53
 msgid "An error occurred while running this action."
 msgstr ""
 
-#: src/core/lib/utilities/error/class-automator-error-messages.php:65
+#: src/core/lib/utilities/error/class-automator-error-messages.php:72
 msgid "No message"
 msgstr ""
 
@@ -8045,68 +8023,68 @@ msgstr ""
 msgid "Server has responded with error code: %1$s %2$s"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:63
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:71
 msgid "Boolean"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:64
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:72
 msgid "NULL"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:89
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:97
 msgid "URL"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:92
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:100
 msgid "Enter the URL of the destination webhook."
 msgstr ""
 
 #. translators: HTTP request method
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:100
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:108
 msgid "Request method"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:101
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:109
 msgid "Select the HTTP request method supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues."
 msgstr ""
 
 #. translators: HTTP request method
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:130
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:138
 msgid "Data format"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:131
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:139
 msgid "Select the data format supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues."
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:160
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:168
 msgid "Authorization"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:161
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:169
 msgid "The authorization string will be automatically incorporated into the header. Once saved, the value will be masked."
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:169
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:177
 msgid "Headers"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:170
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:178
 msgid "Add any HTTP request headers required by the webhook destination."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:196
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:204
 msgid "Add header"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:198
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:206
 msgid "Remove header"
 msgstr ""
 
 #. translators: Email field
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:205
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:213
 #: src/integrations/emails/actions/emails-send-emails.php:361
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:125
 #: src/integrations/keap/actions/keap-add-note-contact.php:71
@@ -8115,25 +8093,25 @@ msgstr ""
 msgid "Body"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:211
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:219
 #: src/integrations/wp/actions/wp-createpost.php:317
 msgid "Key"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:214
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:222
 msgid "first_name"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:215
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:223
 msgid "Separate keys with / to build nested data."
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:219
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:227
 msgid "Data type"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:235
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:243
 #: src/integrations/google-sheet/actions/sheet-add-row-v2.php:158
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:135
 #: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:186
@@ -8147,7 +8125,7 @@ msgid "Add pair"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:237
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:245
 #: src/integrations/google-sheet/actions/sheet-add-row-v2.php:159
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:136
 #: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:187
@@ -8160,17 +8138,17 @@ msgstr ""
 msgid "Remove pair"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:255
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:263
 #: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:638
 msgid "Help"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:261
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:269
 msgid "Check data format"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:269
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:277
 msgid "Send test"
 msgstr ""
 
@@ -10946,6 +10924,7 @@ msgstr ""
 
 #: src/integrations/affiliate-wp/tokens/affwp-tokens.php:68
 #: src/integrations/affiliate-wp/tokens/affwp-tokens.php:156
+#: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:68
 #: src/integrations/slicewp/helpers/slicewp-helpers.php:58
 msgid "Registration date"
 msgstr ""
@@ -14836,8 +14815,8 @@ msgstr ""
 
 #: src/integrations/edd/triggers/edd-productpurchase.php:61
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:65
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:121
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:198
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:127
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:204
 #: src/integrations/studiocart/helpers/studiocart-helpers.php:60
 #: src/integrations/surecart/helpers/surecart-helpers.php:45
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:64
@@ -21335,9 +21314,9 @@ msgctxt "Memberpress"
 msgid "Course ID"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:96
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:161
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:236
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:90
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:167
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:242
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:37
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:84
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:89
@@ -21346,9 +21325,9 @@ msgstr ""
 msgid "Product title"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:97
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:162
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:237
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:91
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:168
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:243
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:44
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:45
 #: src/integrations/surecart/tokens/surecart-tokens-new-framework.php:167
@@ -21361,9 +21340,9 @@ msgstr ""
 msgid "Product ID"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:98
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:163
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:238
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:92
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:169
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:244
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:51
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:86
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:88
@@ -21372,9 +21351,9 @@ msgstr ""
 msgid "Product URL"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:99
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:164
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:239
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:93
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:170
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:245
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:87
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:90
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:63
@@ -21382,9 +21361,9 @@ msgstr ""
 msgid "Product featured image ID"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:100
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:165
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:240
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:94
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:171
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:246
 #: src/integrations/upsell-plugin/helpers/upsell-plugin-helpers.php:88
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:91
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:64
@@ -21392,11 +21371,11 @@ msgstr ""
 msgid "Product featured image URL"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:128
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:134
 msgid "Any one-time subscription product"
 msgstr ""
 
-#: src/integrations/memberpress/helpers/memberpress-helpers.php:205
+#: src/integrations/memberpress/helpers/memberpress-helpers.php:211
 msgid "Any recurring subscription product"
 msgstr ""
 
@@ -21439,6 +21418,36 @@ msgstr ""
 
 #: src/integrations/memberpress/triggers/mp-renews-recurring-subscription.php:46
 msgid "A user renews {{a recurring subscription product}}"
+msgstr ""
+
+#. translators: Logged-in trigger - MemberPress
+#: src/integrations/memberpress/triggers/mp-user-added-to-membership.php:47
+msgid "A user is added to a {{membership:%1$s}}"
+msgstr ""
+
+#. translators: Logged-in trigger - MemberPress
+#: src/integrations/memberpress/triggers/mp-user-added-to-membership.php:49
+msgid "A user is added to a {{membership}}"
+msgstr ""
+
+#. translators: Logged-in trigger - MemberPress
+#: src/integrations/memberpress/triggers/mp-user-remove-from-onetime-membership.php:53
+msgid "A user is removed from {{a one-time subscription product:%1$s}}"
+msgstr ""
+
+#. translators: Logged-in trigger - MemberPress
+#: src/integrations/memberpress/triggers/mp-user-remove-from-onetime-membership.php:55
+msgid "A user is removed from {{a one-time subscription product}}"
+msgstr ""
+
+#. translators: Logged-in trigger - MemberPress
+#: src/integrations/memberpress/triggers/mp-user-remove-from-recurring-membership.php:47
+msgid "A user is removed from {{a recurring subscription product:%1$s}}"
+msgstr ""
+
+#. translators: Logged-in trigger - MemberPress
+#: src/integrations/memberpress/triggers/mp-user-remove-from-recurring-membership.php:49
+msgid "A user is removed from {{a recurring subscription product}}"
 msgstr ""
 
 #. translators: channel name
@@ -23116,6 +23125,10 @@ msgstr ""
 
 #: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:67
 msgid "Leave empty to use expiry settings from the membership level, or type a specific date in the format YYYY-MM-DD"
+msgstr ""
+
+#: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:68
+msgid "Type a specific date in the format YYYY-MM-DD"
 msgstr ""
 
 #: src/integrations/restrict-content/helpers/restrict-content-helpers.php:62
@@ -25925,6 +25938,24 @@ msgstr ""
 msgid "Something went wrong! Codes was not cancelled, try again."
 msgstr ""
 
+#. translators: Action - Uncanny Codes
+#: src/integrations/uncanny-codes/actions/uc-delete-batch-codes.php:35
+msgid "Remove {{a number of:%1$s}} unused codes from {{a batch:%2$s}}"
+msgstr ""
+
+#. translators: Action - Uncanny Codes
+#: src/integrations/uncanny-codes/actions/uc-delete-batch-codes.php:38
+msgid "Remove {{a number of}} unused codes from {{a batch}}"
+msgstr ""
+
+#: src/integrations/uncanny-codes/actions/uc-delete-batch-codes.php:90
+msgid "Invalid request."
+msgstr ""
+
+#: src/integrations/uncanny-codes/actions/uc-delete-batch-codes.php:99
+msgid "No codes found in the batch."
+msgstr ""
+
 #. translators: Logged-in trigger - Uncanny Codes.
 #: src/integrations/uncanny-codes/actions/uc-generate-codes.php:52
 msgid "Generate {{a batch of codes:%1$s}} for Automator"
@@ -26608,11 +26639,11 @@ msgstr ""
 msgid "The recipient must have opted-in to receive text messages from your number."
 msgstr ""
 
-#: src/integrations/whatsapp/helpers/whatsapp-helpers.php:835
+#: src/integrations/whatsapp/helpers/whatsapp-helpers.php:837
 msgid "Cannot find the structure for the selected template. Please refresh the page and try again later."
 msgstr ""
 
-#: src/integrations/whatsapp/helpers/whatsapp-helpers.php:845
+#: src/integrations/whatsapp/helpers/whatsapp-helpers.php:847
 msgid "An unexpected error has with status code [{{status_code}}] has occured. Message: {{error_message}}"
 msgstr ""
 

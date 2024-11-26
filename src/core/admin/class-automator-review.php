@@ -656,6 +656,7 @@ class Automator_Review {
 			'edit-recipe_tag',
 			'uo-recipe_page_uncanny-automator-dashboard',
 			'uo-recipe_page_uncanny-automator-integrations',
+			'uo-recipe_page_uncanny-automator-template-library',
 			'uo-recipe_page_uncanny-automator-config',
 			'uo-recipe_page_uncanny-automator-admin-logs',
 			'uo-recipe_page_uncanny-automator-admin-tools',

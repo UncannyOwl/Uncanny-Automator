@@ -1048,9 +1048,6 @@ class Admin_Menu {
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
 			),
 			'components' => array(
-				'icon'     => array(
-					'integrations' => $this->get_integrations_for_components(),
-				),
 				'userCard' => array(
 					'i18n' => array(
 						'userNotFound' => __( 'User not found', 'uncanny-automator' ),
@@ -1080,6 +1077,9 @@ class Admin_Menu {
 							'xmlRootElement'   => __( 'Root element: %1$s', 'uncanny-automator' ),
 						),
 					),
+				),
+				'icon'     => array(
+					'integrations' => $this->get_integrations_for_components(),
 				),
 			),
 			'logs'       => array(
@@ -1289,7 +1289,8 @@ class Admin_Menu {
 
 			'_site'      => array(
 				'automator' => array(
-					'has_pro' => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
+					'has_pro'           => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
+					'marketing_referer' => automator_get_option( 'uncannyautomator_source', '' ),
 				),
 			),
 		);

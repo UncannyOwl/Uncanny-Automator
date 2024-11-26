@@ -117,17 +117,29 @@ class Import_Recipe {
 			return;
 		}
 
-		$file = wp_unslash( $_FILES['recipejson'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-		if ( 'application/json' !== $file['type'] ) {
+		$file = $_FILES['recipejson']; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$type = isset( $file['type'] ) ? $file['type'] : null;
+		$temp = isset( $file['tmp_name'] ) ? $file['tmp_name'] : null;
+		if ( 'application/json' !== $type || empty( $temp ) ) {
 			$this->set_import_error( _x( 'The uploaded file is not a valid recipe .json file.', 'Import Recipe', 'uncanny-automator' ) );
 
 			return;
 		}
 
 		// Read the file.
-		$recipe_json = file_get_contents( $file['tmp_name'] ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$recipe_json = file_get_contents( $temp ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		if ( false === $recipe_json ) {
+			$this->set_import_error( _x( 'Unable to read the uploaded file.', 'Import Recipe', 'uncanny-automator' ) );
+
+			return;
+		}
+
 		$recipe_json = json_decode( $recipe_json );
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			$this->set_import_error( _x( 'The uploaded file contains invalid JSON.', 'Import Recipe', 'uncanny-automator' ) );
+
+			return;
+		}
 
 		if ( ! $recipe_json ) {
 			$this->set_import_error( _x( 'The uploaded file is not a valid recipe .json file.', 'Import Recipe', 'uncanny-automator' ) );
@@ -238,7 +250,7 @@ class Import_Recipe {
 	 *
 	 * @return void
 	 */
-	private function pre_import_filters() {
+	public function pre_import_filters() {
 		$this->draft_post_types        = apply_filters( 'automator_recipe_import_draft_post_types', $this->draft_post_types );
 		$this->published_trigger_codes = apply_filters( 'automator_recipe_import_published_trigger_codes', $this->published_trigger_codes );
 

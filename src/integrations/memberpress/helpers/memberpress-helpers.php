@@ -86,19 +86,25 @@ class Memberpress_Helpers {
 			}
 		}
 
+		$relevant_tokens = array(
+			$option_code                => esc_attr__( 'Product title', 'uncanny-automator' ),
+			$option_code . '_ID'        => esc_attr__( 'Product ID', 'uncanny-automator' ),
+			$option_code . '_URL'       => esc_attr__( 'Product URL', 'uncanny-automator' ),
+			$option_code . '_THUMB_ID'  => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
+			$option_code . '_THUMB_URL' => esc_attr__( 'Product featured image URL', 'uncanny-automator' ),
+		);
+
+		if ( isset( $args['relevant_tokens'] ) && ! empty( $args['relevant_tokens'] ) && is_array( $args['relevant_tokens'] ) ) {
+			$relevant_tokens = array_merge( $relevant_tokens, $args['relevant_tokens'] );
+		}
+
 		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
 			'input_type'      => 'select',
 			'required'        => true,
 			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code                => esc_attr__( 'Product title', 'uncanny-automator' ),
-				$option_code . '_ID'        => esc_attr__( 'Product ID', 'uncanny-automator' ),
-				$option_code . '_URL'       => esc_attr__( 'Product URL', 'uncanny-automator' ),
-				$option_code . '_THUMB_ID'  => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
-				$option_code . '_THUMB_URL' => esc_attr__( 'Product featured image URL', 'uncanny-automator' ),
-			),
+			'relevant_tokens' => $relevant_tokens,
 		);
 
 		return apply_filters( 'uap_option_all_memberpress_products', $option );

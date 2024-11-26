@@ -492,11 +492,13 @@ class WhatsApp_Helpers {
 	 */
 	public function validate_webhook( $request ) {
 
-		$user_agent = $request->get_header( 'user_agent' ); //
+		$user_agent = $request->get_header( 'user_agent' );
 
 		$allowed_user_agents = array(
 			'facebookexternalua',
 			'facebookplatform/1.0 (+http://developers.facebook.com)',
+			'facebookexternalua X-Middleton/1',
+			'facebookplatform/1.0 (+http://developers.facebook.com) X-Middleton/1',
 		);
 
 		// Fail if user agent is not from Facebook.
@@ -507,6 +509,8 @@ class WhatsApp_Helpers {
 		$secret = automator_get_option( 'automator_whatsapp_secret', null );
 
 		$x_hub_signature = $request->get_header( 'x-hub-signature' );
+
+		$is_payload_geniune = false;
 
 		if ( ! empty( $x_hub_signature ) ) {
 			$is_payload_geniune = hash_equals(
@@ -525,9 +529,7 @@ class WhatsApp_Helpers {
 		$actual_key = $this->get_webhook_key();
 
 		if ( $actual_key !== $query_params['key'] ) {
-
 			return false;
-
 		}
 
 		return true;

@@ -323,6 +323,7 @@ class Usage_Reports {
 		$this->get_user_walkthrough_info();
 		$this->get_date();
 		$this->get_views();
+		$this->get_template_library_info();
 		$this->get_settings();
 
 		$finished_at = microtime( true );
@@ -896,6 +897,64 @@ WHERE p.post_type LIKE %s
 		}
 
 		$this->report['stats'] = $stats;
+	}
+
+	/**
+	 * get_template_library_info
+	 *
+	 * @return void
+	 */
+	public function get_template_library_info() {
+		// Collect events stats.
+		$stats   = automator_get_option( self::STATS_OPTION_NAME, array() );
+		$stats   = isset( $stats['events'] ) ? $stats['events'] : array();
+		$pre     = 'template-library-';
+		$library = array(
+			'search' => array(),
+			'import' => array(),
+		);
+
+		// Bail if no stats.
+		if ( empty( $stats ) ) {
+			$this->report['template-library-search'] = array();
+			$this->report['template-library-import'] = array();
+			return;
+		}
+
+		// Loop through stats for library keys.
+		foreach ( $library as $key => $data ) {
+			// Check if 'search' or 'import' key exists in events stats.
+			$data = isset( $stats[ "{$pre}{$key}" ] ) ? $stats[ "{$pre}{$key}" ] : array();
+			if ( empty( $data ) ) {
+				continue;
+			}
+
+			// Group results data and add counts.
+			foreach ( $data as $term ) {
+				// Lowercase search terms.
+				$term = 'search' === $key ? strtolower( $term ) : $term;
+				// Add term to results if not already set.
+				if ( ! isset( $library[ $key ][ $term ] ) ) {
+					$library[ $key ][ $term ] = array(
+						$key    => $term,
+						'count' => 0,
+					);
+				}
+				// Increment count.
+				$library[ $key ][ $term ]['count']++;
+			}
+
+			// Remove the array keys and convert to objects.
+			$library[ $key ] = array_map(
+				function( $item ) {
+					return (object) $item;
+				},
+				array_values( $library[ $key ] )
+			);
+		}
+
+		$this->report['template-library-search'] = $library['search'];
+		$this->report['template-library-import'] = $library['import'];
 	}
 
 	/**

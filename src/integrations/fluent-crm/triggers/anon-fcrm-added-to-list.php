@@ -92,11 +92,12 @@ class ANON_FCRM_ADDED_TO_LIST {
 			foreach ( $matched_recipes as $matched_recipe ) {
 				if ( ! Automator()->is_recipe_completed( $matched_recipe->recipe_id, $user_id ) ) {
 					$args = array(
-						'code'            => $this->trigger_code,
-						'meta'            => $this->trigger_meta,
-						'recipe_to_match' => $matched_recipe->recipe_id,
-						'ignore_post_id'  => true,
-						'user_id'         => absint( $user_id ), // Null will cause the trigger to fail so convert accordingly.
+						'code'             => $this->trigger_code,
+						'meta'             => $this->trigger_meta,
+						'recipe_to_match'  => $matched_recipe->recipe_id,
+						'trigger_to_match' => $matched_recipe->trigger_id,
+						'ignore_post_id'   => true,
+						'user_id'          => absint( $user_id ), // Null will cause the trigger to fail so convert accordingly.
 					);
 
 					$result = Automator()->maybe_add_trigger_entry( $args, false );

@@ -65,7 +65,7 @@ class Automator_Load {
 		// Load text domain
 		add_action(
 			'init',
-			function () {
+			function() {
 				Automator()->automator_load_textdomain();
 			}
 		);
@@ -379,9 +379,42 @@ class Automator_Load {
 		// Load the services.
 		$this->load_services();
 
+		// Load system overwrites.
+		$this->load_overwrites();
+
 		do_action( 'automator_configuration_complete' );
 
 		add_action( 'wpforms_loaded', array( $this, 'wpforms_integration' ) );
+	}
+
+	/**
+	 * Load constant overwrites or early filters.
+	 *
+	 * Adds filters for enabling debug mode and determining whether Automator should load.
+	 *
+	 * @return void
+	 */
+	public function load_overwrites() {
+		add_filter( 'automator_should_enable_debug_mode', array( $this, 'should_enable_debug_mode_handler' ) );
+		add_filter( 'automator_should_load_automator', array( $this, 'should_load_automator' ) );
+	}
+
+	/**
+	 * Check if debug mode should be enabled.
+	 *
+	 * @return bool True if debug mode is enabled, false otherwise.
+	 */
+	public function should_enable_debug_mode_handler() {
+		return ! empty( automator_get_option( 'automator_settings_debug_notices_enabled', false ) );
+	}
+
+	/**
+	 * Check if Automator should load.
+	 *
+	 * @return bool True if Automator should load, false otherwise.
+	 */
+	public function should_load_automator() {
+		return filter_var( automator_get_option( 'load_automator', true ), FILTER_VALIDATE_BOOLEAN );
 	}
 
 	/**
@@ -601,6 +634,7 @@ class Automator_Load {
 		$classes['Automator_Notifications']        = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
 		$classes['Automator_Tooltip_Notification'] = UA_ABSPATH . 'src/core/admin/tooltip-notification/class-tooltip-notification.php';
 		$classes['Automator_Tooltip_48hr']         = UA_ABSPATH . 'src/core/admin/tooltip-notification/tooltips/class-create-recipe-reminder.php';
+		$classes['Admin_Template_Library']         = UA_ABSPATH . 'src/core/admin/class-admin-template-library.php';
 
 		$classes['Api_Log'] = UA_ABSPATH . 'src/core/admin/api-log/class-api-log.php';
 

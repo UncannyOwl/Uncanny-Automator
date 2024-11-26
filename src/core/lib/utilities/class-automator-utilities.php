@@ -787,7 +787,10 @@ class Automator_Utilities {
 	 * @return boolean True if has multiple lines. Otherwise, false.
 	 */
 	public function has_multiple_lines( $text = '' ) {
-
+		// Bail early if empty or not a string.
+		if ( empty( $text ) || ! is_string( $text ) ) {
+			return false;
+		}
 		// Standardize newline characters to "\n".
 		$token_value = str_replace( array( "\r\n", "\r" ), "\n", $text );
 		// Remove more than two contiguous line breaks.
@@ -796,7 +799,6 @@ class Automator_Utilities {
 		$paragraphs = preg_split( '/\n\s*\n/', $token_value, - 1, PREG_SPLIT_NO_EMPTY );
 
 		return count( $paragraphs ) > 1;
-
 	}
 
 	/**

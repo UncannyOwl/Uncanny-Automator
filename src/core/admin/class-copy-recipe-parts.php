@@ -278,14 +278,14 @@ class Copy_Recipe_Parts {
 
 		$new_post = array(
 			'menu_order'     => $post->menu_order,
-			'comment_status' => $post->comment_status,
-			'ping_status'    => $post->ping_status,
+			'comment_status' => $post->comment_status ?? 'closed',
+			'ping_status'    => $post->ping_status ?? 'closed',
 			'post_author'    => $new_post_author->ID,
-			'post_content'   => $this->modify_tokens( $post->post_content ),
-			'post_excerpt'   => $post->post_excerpt,
-			'post_mime_type' => $post->post_mime_type,
+			'post_content'   => $this->modify_tokens( $post->post_content ?? '' ),
+			'post_excerpt'   => $post->post_excerpt ?? '',
+			'post_mime_type' => $post->post_mime_type ?? '',
 			'post_parent'    => empty( $post_parent ) ? $post->post_parent : $post_parent,
-			'post_password'  => $post->post_password,
+			'post_password'  => $post->post_password ?? '',
 			'post_status'    => $status,
 			'post_title'     => $post_title,
 			'post_type'      => $post->post_type,
@@ -424,6 +424,11 @@ class Copy_Recipe_Parts {
 	 * @return mixed
 	 */
 	public function modify_tokens( $content, $new_post_id = 0 ) {
+
+		if ( empty( $content ) ) {
+			return $content;
+		}
+
 		//Check if it's a webhook URL
 		if ( 0 !== $new_post_id && ! is_array( $content ) && ! is_object( $content ) && preg_match( '/\/wp-json\/uap\/v2\/uap-/', $content ) ) {
 			// Only modify webhook URL of the trigger. We are leaving webhook URL of action alone.
