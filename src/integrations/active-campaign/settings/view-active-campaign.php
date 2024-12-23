@@ -117,10 +117,25 @@
 
 						<?php esc_html_e( 'To obtain your ActiveCampaign API URL and Key, follow these steps in your ActiveCampaign account:', 'uncanny-automator' ); ?>
 
-						<ol class="uap-spacing-top uap-spacing-top--small uap-spacing-bottom uap-spacing-bottom--none">
+						<ol>
+							<li>
+								<?php
+								echo wp_kses(
+									__( 'Log in to your <a target="_blank" href="https://www.activecampaign.com/login" target="_blank">ActiveCampaign account</a>.', 'uncanny-automator' ),
+									array(
+										'a' => array(
+											'href'   => array(),
+											'target' => array(),
+										),
+									)
+								);
+								?>
+							</li>
 							<li><?php esc_html_e( 'Click the "Settings" option located in the left side navigation menu.', 'uncanny-automator' ); ?></li>
 							<li><?php esc_html_e( 'The Account Settings menu will appear. Click the "Developer" option.', 'uncanny-automator' ); ?></li>
-							<li><?php esc_html_e( 'The Developer Settings page will load and will display your ActiveCampaign API URL and Key.', 'uncanny-automator' ); ?></li>
+							<li><?php esc_html_e( 'On the "Developer Settings" page, copy your API URL and API Key.', 'uncanny-automator' ); ?></li>
+							<li><?php esc_html_e( 'Paste the API URL and API Key into the respective fields in the form below.', 'uncanny-automator' ); ?></li>
+							<li><?php esc_html_e( 'Click the "Connect ActiveCampaign account" button to save your details and complete the setup.', 'uncanny-automator' ); ?></li>
 						</ol>
 
 					</uo-alert>

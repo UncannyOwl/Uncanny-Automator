@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855
+class ComposerStaticInit084f8b9d9c0ceb4f1cf587e42a81ca3c
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -513,6 +513,7 @@ class ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_HELPERS' => __DIR__ . '/../..' . '/src/integrations/charitable/helpers/charitable-helpers.php',
         'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION' => __DIR__ . '/../..' . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
         'Uncanny_Automator\\Integrations\\Charitable\\Charitable_Integration' => __DIR__ . '/../..' . '/src/integrations/charitable/class-charitable-integration.php',
+        'Uncanny_Automator\\Integrations\\ClickUp\\Utilities\\Time_Utility' => __DIR__ . '/../..' . '/src/integrations/clickup/utilities/time-utility.php',
         'Uncanny_Automator\\Integrations\\Code_Snippets\\CODE_SNIPPETS_ACTIVATE_SNIPPET' => __DIR__ . '/../..' . '/src/integrations/code-snippets/actions/code-snippets-activate-snippet.php',
         'Uncanny_Automator\\Integrations\\Code_Snippets\\CODE_SNIPPETS_DEACTIVATE_SNIPPET' => __DIR__ . '/../..' . '/src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php',
         'Uncanny_Automator\\Integrations\\Code_Snippets\\Code_Snippets_Helpers' => __DIR__ . '/../..' . '/src/integrations/code-snippets/helpers/code-snippets-helpers.php',
@@ -1270,8 +1271,8 @@ class ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit96f333f5e0e9421f73a6ac815fe6c855::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit084f8b9d9c0ceb4f1cf587e42a81ca3c::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit084f8b9d9c0ceb4f1cf587e42a81ca3c::$classMap;
 
         }, null, ClassLoader::class);
     }

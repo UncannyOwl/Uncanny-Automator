@@ -502,6 +502,7 @@ return array(
     'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_HELPERS' => $baseDir . '/src/integrations/charitable/helpers/charitable-helpers.php',
     'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION' => $baseDir . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
     'Uncanny_Automator\\Integrations\\Charitable\\Charitable_Integration' => $baseDir . '/src/integrations/charitable/class-charitable-integration.php',
+    'Uncanny_Automator\\Integrations\\ClickUp\\Utilities\\Time_Utility' => $baseDir . '/src/integrations/clickup/utilities/time-utility.php',
     'Uncanny_Automator\\Integrations\\Code_Snippets\\CODE_SNIPPETS_ACTIVATE_SNIPPET' => $baseDir . '/src/integrations/code-snippets/actions/code-snippets-activate-snippet.php',
     'Uncanny_Automator\\Integrations\\Code_Snippets\\CODE_SNIPPETS_DEACTIVATE_SNIPPET' => $baseDir . '/src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php',
     'Uncanny_Automator\\Integrations\\Code_Snippets\\Code_Snippets_Helpers' => $baseDir . '/src/integrations/code-snippets/helpers/code-snippets-helpers.php',

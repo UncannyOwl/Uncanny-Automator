@@ -45,6 +45,11 @@ class Parser {
 	 */
 	private function get_replace_pairs( $field_text, $process_args, $args ) {
 
+		// Bail early if empty or not a string.
+		if ( empty( $field_text ) || ! is_string( $field_text ) ) {
+			return false;
+		}
+
 		$replaceables = array();
 
 		// Only process tokens that have `ACTION` as prefix. It could either be 'FIELD' or 'META'.

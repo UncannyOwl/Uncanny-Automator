@@ -36,6 +36,9 @@ class Automator_Send_Webhook_Fields {
 
 		if ( null === self::$instance ) {
 			self::$instance = new self();
+			if ( empty( self::$instance->data_format_types ) ) {
+				self::$instance->register_data_format_types();
+			}
 		}
 
 		return self::$instance;

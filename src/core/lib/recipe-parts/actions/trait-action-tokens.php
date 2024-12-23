@@ -100,8 +100,10 @@ trait Action_Tokens {
 
 		// Check if this specific hook has already been executed.
 		if ( isset( $this->executed_hooks[ $hook_identifier ] ) ) {
-			// Prevent duplicate executions.
-			return;
+			// Bail if not a loop action to prevent duplicate executions.
+			if ( ! isset( $hook_args['action_data']['loop'] ) || empty( $hook_args['action_data']['loop'] ) ) {
+				return;
+			}
 		}
 
 		// Mark this hook as executed.

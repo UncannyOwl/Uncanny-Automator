@@ -2487,4 +2487,30 @@ WHERE pm.post_id
 		return $config;
 	}
 
+	/**
+	 * Retrieves the date format from the WordPress options.
+	 *
+	 * This method fetches the 'date_format' option from the WordPress database.
+	 * If the option is not set, it defaults to 'F j, Y'.
+	 *
+	 * @param string $default The default date format. Default is 'F j, Y'.
+	 * @return string The date format.
+	 */
+	public function get_date_format( $default = 'F j, Y' ) {
+		return get_option( 'date_format', $default );
+	}
+
+	/**
+	 * Retrieves the time format from the WordPress options.
+	 *
+	 * This method fetches the 'time_format' option from the WordPress database.
+	 * If the option is not set, it uses the provided default value.
+	 *
+	 * @param string $default The default time format. Default is 'g:i a'.
+	 * @return string The time format.
+	 */
+	public function get_time_format( $default = 'g:i a' ) {
+		return get_option( 'time_format', $default );
+	}
+
 }

@@ -148,9 +148,13 @@ class Automator_Input_Parser {
 	 */
 	public function parse_vars( $args, $trigger_args = array() ) {
 
+		$field_text = isset( $args['field_text'] ) ? $args['field_text'] : '';
+		if ( empty( $field_text ) || ! is_string( $field_text ) ) {
+			return $field_text;
+		}
+
 		$parsed_tokens_record = $this->automator_functions()->parsed_token_records();
 
-		$field_text = isset( $args['field_text'] ) ? $args['field_text'] : '';
 		$user_id    = isset( $trigger_args['user_id'] ) ? $trigger_args['user_id'] : null;
 		$trigger_id = self::extract_int( 'trigger_id', $args );
 
@@ -236,7 +240,9 @@ class Automator_Input_Parser {
 	public function parse_colon_delimited_tokens( $match, $args, $trigger_args, $context ) {
 
 		// This section is for user meta tokens.
-		if ( preg_match( '/(USERMETA)/', $match ) ) {
+		// Also make sure to not early return if the usermeta is inside the calculation token.
+		// This way calculation token will be parsed on the trigger token processor, and eventually in the replace args.
+		if ( preg_match( '/(USERMETA)/', $match ) && ! str_contains( $match, 'CALCULATION:' ) ) {
 			return $this->parse_user_meta( $match, $args, $context );
 		}
 
@@ -602,7 +608,12 @@ class Automator_Input_Parser {
 			return self::identify_post_value_from_substr( $token_id, $meta_value );
 		}
 
-		// If the token is not a relevant token.
+		// If the token is not a relevant token and is user token (not anon) and is any.
+		if ( ! $is_relevant_token && ! preg_match( '/ANON/', $piece ) && $is_any_value ) {
+			return html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, 'UTF-8' );
+		}
+
+		// If the token is not a relevant token and is user token (not anon) regardless of the selected value.
 		if ( ! $is_relevant_token && ! preg_match( '/ANON/', $piece ) ) {
 			return html_entity_decode( get_the_title( $meta_value ), ENT_QUOTES, 'UTF-8' );
 		}
@@ -788,9 +799,14 @@ class Automator_Input_Parser {
 	 */
 	public function text( $field_text = null, $recipe_id = null, $user_id = null, $trigger_args = null ) {
 
-		// Early return if no field text is provided.
-		if ( $field_text === null ) {
+		// Early return if null.
+		if ( is_null( $field_text ) ) {
 			return null;
+		}
+
+		// Early return if empty ( string or array ).
+		if ( empty( $field_text ) ) {
+			return '';
 		}
 
 		// Prepare arguments with optional values.

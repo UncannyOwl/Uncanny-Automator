@@ -567,18 +567,44 @@ class Helpscout_Helpers {
 
 	}
 
-	private function get_access_token() {
+	/**
+	 * Retrieves the access token for the client.
+	 *
+	 * Checks if the token has expired and refreshes it if necessary.
+	 * Includes an allowance of 2 hours (7200 seconds) to account for token expiration timing.
+	 *
+	 * @return string|null The access token if available, otherwise null.
+	 */
+	public function get_access_token() {
 
-		$client = automator_get_option( self::CLIENT, array() );
+		// Retrieve client data from options and ensure it's cast as an array.
+		$client = (array) automator_get_option( self::CLIENT, array() );
 
-		// If date today exceeded the expires on, it means the token has expired already.
-		// Allowance of 2 hours (7200s) to account for token expiration timing.
-		if ( time() >= absint( $client['expires_on'] ) - 7200 ) {
-			// Refresh the token.
+		// Verify that the required 'expires_on' field exists and is a valid integer.
+		if ( empty( $client['expires_on'] ) || ! is_numeric( $client['expires_on'] ) ) {
+			automator_log( 'Client "expires_on" is missing or invalid. Unable to retrieve access token', self::class, true, 'help-scout' );
+			return null;
+		}
+
+		// Parse the expiration time.
+		$expires_on = absint( $client['expires_on'] );
+
+		// Determine if the token is near or past expiration.
+		$is_token_expired = ( time() >= $expires_on - 7200 );
+
+		// Refresh the token if it's expired or near expiration.
+		if ( $is_token_expired ) {
 			$this->refresh_token( $client );
 		}
 
-		return $this->get_client()['access_token'];
+		// Retrieve the client instance and verify that the access token exists.
+		$client_instance = $this->get_client();
+		if ( empty( $client_instance['access_token'] ) ) {
+			automator_log( 'Access token is missing from the client instance', self::class, true, 'help-scout' );
+			return null;
+		}
+
+		return $client_instance['access_token'];
 
 	}
 

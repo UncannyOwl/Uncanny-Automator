@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.1\n"
+"Project-Id-Version: Uncanny Automator 6.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-26T18:32:54+00:00\n"
+"POT-Creation-Date: 2024-12-20T19:18:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: uncanny-automator\n"
@@ -65,8 +65,6 @@ msgstr ""
 #. translators: Non-personal infinitive verb
 #: src/js/item/button-schedule.js:912
 #: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
 #: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 #: src/core/admin/class-admin-menu.php:1003
 #: src/core/admin/class-admin-menu.php:1173
@@ -108,71 +106,6 @@ msgstr ""
 
 #: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Get Post loops"
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-#: src/core/lib/utilities/class-automator-translations.php:1402
-#: src/core/lib/utilities/class-automator-translations.php:1519
-msgid "Token loop"
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-msgid "Token loops let you perform bulk actions on special *loopable tokens*. Here are a few examples:"
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-msgid "When a user purchases a specific product, **loop over their previously purchased products** and if a complementary product is found, send an email with special instructions or a coupon code."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-msgid "Every Friday, **loop over all orders in the past week** and export them to a Google sheet."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-msgid "When a user completes a course, **loop over their previously completed courses** and if a corequisite course is found, enroll the user in a new course or issue a certificate of completion."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-msgid "When a user purchases a subscription, **loop over their active subscriptions** and if a complementary subscription is found, award an achievement or store credit."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:139
-msgid "Get Token loops"
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:92
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:94
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-#: src/core/lib/utilities/class-automator-translations.php:1400
-msgid "User loop"
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-msgid "A powerful admin tool, user loops let you perform **bulk actions** on any set of **users that meet specific criteria**."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-msgid "Here are a few examples of what is possible with user loops:"
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-msgid "Send an email or coupon code to all users that **purchased a specific product** or are a **member of a specific group**."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-msgid "Add a role to **users with a specific role** or **with a specific membership/access level**."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-msgid "Export a list of **users matching specific profile criteria** to Google Sheets, AirTable or Notion."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-msgid "Perform actions in bulk on **users with specific usermeta**."
-msgstr ""
-
-#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
-msgid "Get User loops"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
@@ -2485,7 +2418,7 @@ msgid "Any"
 msgstr ""
 
 #: src/core/deprecated/legacy-token-parser.php:816
-#: src/core/lib/utilities/class-automator-input-parser.php:766
+#: src/core/lib/utilities/class-automator-input-parser.php:777
 msgctxt "Reset password token text"
 msgid "Click here to reset your password."
 msgstr ""
@@ -2528,15 +2461,15 @@ msgid "{{An ad's}} status changes from {{a specific status}} to {{a specific sta
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:30
-msgid "A user's current store credit exceeds {{a specific amount}}"
+msgid "A user receives {{a number}} of loyalty points"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:36
-msgid "A user's lifetime store credit exceeds {{a specific amount}}"
+msgid "A user's current store credit exceeds {{a specific amount}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:42
-msgid "A user receives a number of loyalty points"
+msgid "A user's lifetime store credit exceeds {{a specific amount}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:50
@@ -3737,11 +3670,11 @@ msgid "A user triggers {{an engagement}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2342
-msgid "A user's order status of {{a product type}} changes to {{a specific status}}"
+msgid "A user's enrollment of {{a type}} is changed to {{a status}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2348
-msgid "A user's enrollment of a type is changed to a status"
+msgid "A user's order status of {{a product type}} changes to {{a specific status}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2361
@@ -3842,23 +3775,23 @@ msgid "Remove the user from {{a membership level}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2563
-msgid "A member's account status is changed to a status"
+msgid "A member's account data of {{a specific field}} is updated to {{a specific value}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2569
-msgid "A member's membership level is changed to a specific level"
+msgid "A member's account status is changed to {{a different status}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2575
-msgid "A member's account data of a specific field is updated to a specific value"
+msgid "A member's membership level is changed to {{a different level}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2583
-msgid "Add a bundle to the member's account"
+msgid "Add {{a bundle}} to the member's account"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2588
-msgid "Create or update a member"
+msgid "Create or update {{a member}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2600
@@ -3886,15 +3819,15 @@ msgid "A user's membership to {{a specific product}} is paused"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2636
-msgid "A user's payment for {{a product}} fails"
+msgid "A user's membership to {{a specific product}} is resumed"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2642
-msgid "A user's transaction for {{a membership}} is set to {{a status}}"
+msgid "A user's payment for {{a product}} fails"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2648
-msgid "A user's membership to a specific product is resumed"
+msgid "A user's transaction for {{a membership}} is set to {{a status}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:2656
@@ -4119,19 +4052,19 @@ msgid "A refund for {{a product}} is issued to a customer"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:3229
-msgid "A user attends {{an event}}"
+msgid "A user checks in for {{an event}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:3235
-msgid "An attendee is registered for {{an event}}"
+msgid "An attendee checks in for {{an event}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:3241
-msgid "An attendee is registered for {{an event}} with WooCommerce"
+msgid "An attendee is registered for {{an event}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:3247
-msgid "An attendee checks in for an event"
+msgid "An attendee is registered for {{an event}} with WooCommerce"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:3255
@@ -4540,19 +4473,19 @@ msgid "Remove {{a subscription product}} from the user's {{subscription}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:3991
-msgid "Set the user's subscription of {{a subscription product}} to {{a status}}"
+msgid "Remove {{a variation}} of {{a subscription product}} from the user's {{subscription}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:3996
-msgid "Set the user's subscription to {{a specific}} variation of {{a variable subscription product}} to {{a status}}"
+msgid "Set the user's subscription of {{a subscription product}} to {{a status}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:4001
-msgid "Shorten a user's subscription to {{a specific product}} by {{a number of days}}"
+msgid "Set the user's subscription to {{a specific}} variation of {{a variable subscription product}} to {{a status}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:4006
-msgid "Remove a variation of a subscription product from the user's subscription"
+msgid "Shorten a user's subscription to {{a specific product}} by {{a number of days}}"
 msgstr ""
 
 #: src/core/includes/pro-items-list.php:4018
@@ -5013,7 +4946,7 @@ msgstr ""
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:26
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:80
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:133
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:70
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:73
 msgid "Number"
 msgstr ""
 
@@ -5034,7 +4967,7 @@ msgid "Example: 1.1"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:188
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:69
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:72
 #: src/integrations/slack/helpers/slack-helpers.php:298
 #: src/integrations/telegram/actions/telegram-send-message.php:78
 #: src/integrations/telegram/triggers/telegram-message-received.php:92
@@ -5162,7 +5095,7 @@ msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:942
 #: src/integrations/learndash/actions/ld-marktopicdone.php:88
-#: src/integrations/learndash/helpers/learndash-helpers.php:285
+#: src/integrations/learndash/helpers/learndash-helpers.php:289
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:142
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:122
 #: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:98
@@ -5177,8 +5110,8 @@ msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:950
 #: src/integrations/buddypress/helpers/buddypress-helpers.php:179
-#: src/integrations/learndash/helpers/learndash-helpers.php:398
-#: src/integrations/learndash/helpers/learndash-helpers.php:896
+#: src/integrations/learndash/helpers/learndash-helpers.php:402
+#: src/integrations/learndash/helpers/learndash-helpers.php:900
 msgid "Any topic"
 msgstr ""
 
@@ -5188,7 +5121,7 @@ msgid "All quizzes"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:958
-#: src/integrations/learndash/helpers/learndash-helpers.php:631
+#: src/integrations/learndash/helpers/learndash-helpers.php:635
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:265
 #: src/integrations/thrive-quiz-builder/helpers/thrive-quiz-builder-helpers.php:43
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:192
@@ -6742,7 +6675,7 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:961
 #: src/core/lib/utilities/class-automator-translations.php:1558
-#: src/integrations/active-campaign/settings/view-active-campaign.php:165
+#: src/integrations/active-campaign/settings/view-active-campaign.php:180
 #: src/integrations/instagram/settings/settings-instagram.php:107
 msgid "Refresh"
 msgstr ""
@@ -6919,8 +6852,8 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1041
 #: src/core/lib/utilities/class-automator-translations.php:1273
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:197
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:236
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:200
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:239
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:152
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:173
 #: src/integrations/clickup/fields/space-list-task-update-fields.php:195
@@ -7214,7 +7147,7 @@ msgid "%1$s support"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1269
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:190
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:193
 #: src/core/views/html-admin-status.php:796
 #: src/integrations/aweber/actions/aweber-subscriber-add.php:104
 #: src/integrations/aweber/actions/aweber-subscriber-add.php:110
@@ -7557,6 +7490,15 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1399
 msgid "Loop filters decide which users will be included in the loop. Action filters within the block, on the other hand, choose what actions are performed for each individual user."
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:1400
+msgid "User loop"
+msgstr ""
+
+#: src/core/lib/utilities/class-automator-translations.php:1402
+#: src/core/lib/utilities/class-automator-translations.php:1519
+msgid "Token loop"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1403
@@ -8023,68 +7965,68 @@ msgstr ""
 msgid "Server has responded with error code: %1$s %2$s"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:71
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:74
 msgid "Boolean"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:72
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:75
 msgid "NULL"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:97
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:100
 msgid "URL"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:100
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:103
 msgid "Enter the URL of the destination webhook."
 msgstr ""
 
 #. translators: HTTP request method
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:108
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:111
 msgid "Request method"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:109
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:112
 msgid "Select the HTTP request method supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues."
 msgstr ""
 
 #. translators: HTTP request method
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:138
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:141
 msgid "Data format"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:139
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:142
 msgid "Select the data format supported by the webhook destination. If you are unsure, leave this value unchanged unless you are experiencing issues."
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:168
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:171
 msgid "Authorization"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:169
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:172
 msgid "The authorization string will be automatically incorporated into the header. Once saved, the value will be masked."
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:177
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:180
 msgid "Headers"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:178
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:181
 msgid "Add any HTTP request headers required by the webhook destination."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:204
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:207
 msgid "Add header"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:206
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:209
 msgid "Remove header"
 msgstr ""
 
 #. translators: Email field
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:213
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:216
 #: src/integrations/emails/actions/emails-send-emails.php:361
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:125
 #: src/integrations/keap/actions/keap-add-note-contact.php:71
@@ -8093,25 +8035,25 @@ msgstr ""
 msgid "Body"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:219
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:222
 #: src/integrations/wp/actions/wp-createpost.php:317
 msgid "Key"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:222
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:225
 msgid "first_name"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:223
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:226
 msgid "Separate keys with / to build nested data."
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:227
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:230
 msgid "Data type"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:243
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:246
 #: src/integrations/google-sheet/actions/sheet-add-row-v2.php:158
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:135
 #: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:186
@@ -8125,7 +8067,7 @@ msgid "Add pair"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:245
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:248
 #: src/integrations/google-sheet/actions/sheet-add-row-v2.php:159
 #: src/integrations/google-sheet/actions/sheet-addarecord.php:136
 #: src/integrations/google-sheet/actions/sheet-updaterecord-v2.php:187
@@ -8138,17 +8080,17 @@ msgstr ""
 msgid "Remove pair"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:263
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:266
 #: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:638
 msgid "Help"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:269
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:272
 msgid "Check data format"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:277
+#: src/core/lib/webhooks/class-automator-send-webhook-fields.php:280
 msgid "Send test"
 msgstr ""
 
@@ -9080,7 +9022,7 @@ msgstr ""
 #: src/core/views/admin-settings/tab/advanced/automator-cache.php:40
 #: src/core/views/admin-settings/tab/advanced/background-actions.php:40
 #: src/core/views/admin-tools/tab/debug/debug.php:86
-#: src/integrations/active-campaign/settings/view-active-campaign.php:283
+#: src/integrations/active-campaign/settings/view-active-campaign.php:298
 #: src/integrations/helpscout/settings/view-helpscout.php:262
 #: src/integrations/mailchimp/settings/view-mailchimp.php:218
 #: src/integrations/slack/settings/view-slack.php:292
@@ -10619,13 +10561,13 @@ msgid "Remove the user from a list"
 msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:116
-#: src/integrations/active-campaign/settings/view-active-campaign.php:177
+#: src/integrations/active-campaign/settings/view-active-campaign.php:192
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:65
 #: src/integrations/gototraining/settings/view-gototraining.php:76
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:76
 #: src/integrations/mailchimp/settings/view-mailchimp.php:64
-#: src/integrations/open-ai/settings/view-open-ai.php:87
-#: src/integrations/open-ai/settings/view-open-ai.php:95
+#: src/integrations/open-ai/settings/view-open-ai.php:142
+#: src/integrations/open-ai/settings/view-open-ai.php:150
 #: src/integrations/telegram/settings/view-telegram.php:71
 #: src/integrations/twilio/settings/view-twilio.php:69
 #: src/integrations/twitter/settings/view-twitter-form.php:20
@@ -10639,39 +10581,51 @@ msgstr ""
 msgid "To obtain your ActiveCampaign API URL and Key, follow these steps in your ActiveCampaign account:"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:121
-msgid "Click the \"Settings\" option located in the left side navigation menu."
-msgstr ""
-
-#: src/integrations/active-campaign/settings/view-active-campaign.php:122
-msgid "The Account Settings menu will appear. Click the \"Developer\" option."
-msgstr ""
-
-#: src/integrations/active-campaign/settings/view-active-campaign.php:123
-msgid "The Developer Settings page will load and will display your ActiveCampaign API URL and Key."
+#: src/integrations/active-campaign/settings/view-active-campaign.php:124
+msgid "Log in to your <a target=\"_blank\" href=\"https://www.activecampaign.com/login\" target=\"_blank\">ActiveCampaign account</a>."
 msgstr ""
 
 #: src/integrations/active-campaign/settings/view-active-campaign.php:134
+msgid "Click the \"Settings\" option located in the left side navigation menu."
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:135
+msgid "The Account Settings menu will appear. Click the \"Developer\" option."
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:136
+msgid "On the \"Developer Settings\" page, copy your API URL and API Key."
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:137
+msgid "Paste the API URL and API Key into the respective fields in the form below."
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:138
+msgid "Click the \"Connect ActiveCampaign account\" button to save your details and complete the setup."
+msgstr ""
+
+#: src/integrations/active-campaign/settings/view-active-campaign.php:149
 msgid "Account URL"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:146
+#: src/integrations/active-campaign/settings/view-active-campaign.php:161
 #: src/integrations/convertkit/settings/convertkit-view-settings.php:93
 #: src/integrations/twitter/settings/view-twitter-form.php:37
 msgid "API key"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:172
+#: src/integrations/active-campaign/settings/view-active-campaign.php:187
 #: src/integrations/helpscout/settings/view-helpscout.php:33
 #: src/integrations/mailchimp/settings/view-mailchimp.php:60
 msgid "Enable triggers"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:185
+#: src/integrations/active-campaign/settings/view-active-campaign.php:200
 msgid "Enabling ActiveCampaign triggers requires setting up a webhook in your ActiveCampaign account using the URL below. A few steps and you'll be up and running in no time. Visit our %1$s for simple instructions."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:186
+#: src/integrations/active-campaign/settings/view-active-campaign.php:201
 #: src/integrations/gototraining/settings/view-gototraining.php:84
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:84
 #: src/integrations/helpscout/settings/view-helpscout.php:45
@@ -10684,28 +10638,28 @@ msgstr ""
 msgid "Knowledge Base article"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:194
+#: src/integrations/active-campaign/settings/view-active-campaign.php:209
 #: src/integrations/mailchimp/settings/view-mailchimp.php:79
 #: src/integrations/whatsapp/settings/view-whatsapp.php:177
 msgid "Webhook URL"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:195
+#: src/integrations/active-campaign/settings/view-active-campaign.php:210
 #: src/integrations/helpscout/settings/view-helpscout.php:72
 msgid "You'll be asked to enter a webhook URL."
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:207
+#: src/integrations/active-campaign/settings/view-active-campaign.php:222
 #: src/integrations/mailchimp/settings/view-mailchimp.php:102
 #: src/integrations/whatsapp/settings/view-whatsapp.php:202
 msgid "Regenerate webhook URL"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:256
+#: src/integrations/active-campaign/settings/view-active-campaign.php:271
 msgid "Connect ActiveCampaign account"
 msgstr ""
 
-#: src/integrations/active-campaign/settings/view-active-campaign.php:277
+#: src/integrations/active-campaign/settings/view-active-campaign.php:292
 #: src/integrations/aweber/settings/settings-aweber.php:200
 #: src/integrations/bitly/settings/settings-bitly.php:222
 #: src/integrations/brevo/settings/settings-brevo.php:265
@@ -10729,7 +10683,7 @@ msgstr ""
 #: src/integrations/mailchimp/settings/view-mailchimp.php:212
 #: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:143
 #: src/integrations/ontraport/settings/ontraport-settings.php:313
-#: src/integrations/open-ai/settings/view-open-ai.php:160
+#: src/integrations/open-ai/settings/view-open-ai.php:215
 #: src/integrations/sendy/settings/sendy-settings.php:257
 #: src/integrations/slack/settings/view-slack.php:286
 #: src/integrations/stripe/settings/stripe-settings.php:308
@@ -11698,7 +11652,7 @@ msgid "Point type"
 msgstr ""
 
 #: src/integrations/badgeos/actions/bo-awardpoints-a.php:76
-#: src/integrations/gamipress/actions/gp-awardpoints-a.php:66
+#: src/integrations/gamipress/actions/gp-awardpoints-a.php:75
 #: src/integrations/gamipress/triggers/gp-earnsspecificpoints.php:53
 #: src/integrations/mycred/actions/mycred-awardpoints-a.php:74
 msgid "Points"
@@ -12416,8 +12370,8 @@ msgstr ""
 
 #: src/integrations/buddyboss/helpers/buddyboss-helpers.php:65
 #: src/integrations/buddypress/helpers/buddypress-helpers.php:66
-#: src/integrations/learndash/helpers/learndash-helpers.php:511
-#: src/integrations/learndash/helpers/learndash-helpers.php:513
+#: src/integrations/learndash/helpers/learndash-helpers.php:515
+#: src/integrations/learndash/helpers/learndash-helpers.php:517
 #: src/integrations/mailchimp/helpers/mailchimp-helpers.php:223
 #: src/integrations/uncanny-groups/helpers/uncanny-groups-helpers.php:74
 msgid "Any group"
@@ -12427,7 +12381,7 @@ msgstr ""
 #: src/integrations/buddypress/helpers/buddypress-helpers.php:72
 #: src/integrations/gravity-forms/triggers/gf-subform-groups.php:78
 #: src/integrations/learndash/actions/ld-makeuserleader.php:88
-#: src/integrations/learndash/helpers/learndash-helpers.php:499
+#: src/integrations/learndash/helpers/learndash-helpers.php:503
 #: src/integrations/uncanny-groups/helpers/uncanny-groups-helpers.php:63
 msgid "Group"
 msgstr ""
@@ -12519,7 +12473,7 @@ msgid "Reply content"
 msgstr ""
 
 #: src/integrations/buddyboss/tokens/loopable/universal/user-groups.php:23
-#: src/integrations/learndash/helpers/learndash-helpers.php:524
+#: src/integrations/learndash/helpers/learndash-helpers.php:528
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-groups.php:23
 #: src/integrations/uncanny-groups/helpers/uncanny-groups-helpers.php:89
 msgctxt "LearnDash"
@@ -12558,7 +12512,7 @@ msgstr ""
 #. translators: Action field
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:99
 #: src/integrations/learndash/actions/ld-marktopicdone.php:129
-#: src/integrations/learndash/helpers/learndash-helpers.php:387
+#: src/integrations/learndash/helpers/learndash-helpers.php:391
 #: src/integrations/learndash/triggers/ld-topicdone.php:136
 #: src/integrations/zoho-campaigns/actions/zoho-campaigns-contact-list-sub.php:110
 msgid "Topic"
@@ -13240,15 +13194,15 @@ msgid "Add {{a comment}} to a task"
 msgstr ""
 
 #. translators: Action sentence
-#: src/integrations/clickup/actions/space-list-task-create.php:51
+#: src/integrations/clickup/actions/space-list-task-create.php:52
 msgid "Create a {{task:%1$s}}"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-task-create.php:56
+#: src/integrations/clickup/actions/space-list-task-create.php:57
 msgid "Create a {{task}}"
 msgstr ""
 
-#: src/integrations/clickup/actions/space-list-task-create.php:65
+#: src/integrations/clickup/actions/space-list-task-create.php:64
 msgctxt "ClickUp"
 msgid "Task ID"
 msgstr ""
@@ -15975,6 +15929,19 @@ msgstr ""
 msgid "Achievement maximum earnings reached."
 msgstr ""
 
+#: src/integrations/gamipress/actions/gp-awardpoints-a.php:62
+msgid "Register on user earnings"
+msgstr ""
+
+#: src/integrations/gamipress/actions/gp-awardpoints-a.php:63
+msgid "Check this option to log this movement on user earnings."
+msgstr ""
+
+#: src/integrations/gamipress/actions/gp-awardpoints-a.php:103
+msgctxt "GamiPress no recipe title"
+msgid "(no title)"
+msgstr ""
+
 #. translators: GamiPress achievement type
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:99
 msgid "Points awards"
@@ -17687,7 +17654,7 @@ msgstr ""
 msgid "Any conversation"
 msgstr ""
 
-#: src/integrations/helpscout/helpers/helpscout-helpers.php:639
+#: src/integrations/helpscout/helpers/helpscout-helpers.php:665
 msgid "Any mailbox"
 msgstr ""
 
@@ -17704,7 +17671,7 @@ msgid "for simple instructions.\t"
 msgstr ""
 
 #: src/integrations/helpscout/settings/view-helpscout.php:61
-#: src/integrations/open-ai/settings/view-open-ai.php:105
+#: src/integrations/open-ai/settings/view-open-ai.php:160
 msgid "Secret key"
 msgstr ""
 
@@ -19622,7 +19589,7 @@ msgstr ""
 
 #: src/integrations/learndash/actions/ld-marklessondone.php:100
 #: src/integrations/learndash/actions/ld-marktopicdone.php:113
-#: src/integrations/learndash/helpers/learndash-helpers.php:274
+#: src/integrations/learndash/helpers/learndash-helpers.php:278
 #: src/integrations/learndash/triggers/ld-lessondone.php:108
 #: src/integrations/learndash/triggers/ld-topicdone.php:124
 #: src/integrations/learnpress/actions/lp-marklessondone.php:102
@@ -19674,130 +19641,130 @@ msgstr ""
 msgid "Course time at completion"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:153
+#: src/integrations/learndash/helpers/learndash-helpers.php:157
 #: src/integrations/learndash/tokens/loopable/universal/user-completed-courses.php:23
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-courses-tokens.php:23
 msgctxt "LearnDash"
 msgid "Course ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:183
+#: src/integrations/learndash/helpers/learndash-helpers.php:187
 msgctxt "LearnDash Token"
 msgid "Course title"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:187
+#: src/integrations/learndash/helpers/learndash-helpers.php:191
 msgctxt "LearnDash Token"
 msgid "Course ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:191
+#: src/integrations/learndash/helpers/learndash-helpers.php:195
 msgctxt "LearnDash Token"
 msgid "Course status"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:195
+#: src/integrations/learndash/helpers/learndash-helpers.php:199
 msgctxt "LearnDash Token"
 msgid "Course access expiry date"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:199
+#: src/integrations/learndash/helpers/learndash-helpers.php:203
 msgctxt "LearnDash Token"
 msgid "Course URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:203
+#: src/integrations/learndash/helpers/learndash-helpers.php:207
 msgctxt "LearnDash Token"
 msgid "Course featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:207
+#: src/integrations/learndash/helpers/learndash-helpers.php:211
 msgctxt "LearnDash Token"
 msgid "Course featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:293
+#: src/integrations/learndash/helpers/learndash-helpers.php:297
 msgctxt "LearnDash"
 msgid "Lesson ID"
-msgstr ""
-
-#: src/integrations/learndash/helpers/learndash-helpers.php:311
-msgctxt "LearnDash Token"
-msgid "Lesson title"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:315
 msgctxt "LearnDash Token"
-msgid "Lesson ID"
+msgid "Lesson title"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:319
 msgctxt "LearnDash Token"
-msgid "Lesson URL"
+msgid "Lesson ID"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:323
 msgctxt "LearnDash Token"
-msgid "Lesson featured image ID"
+msgid "Lesson URL"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:327
 msgctxt "LearnDash Token"
+msgid "Lesson featured image ID"
+msgstr ""
+
+#: src/integrations/learndash/helpers/learndash-helpers.php:331
+msgctxt "LearnDash Token"
 msgid "Lesson featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:407
+#: src/integrations/learndash/helpers/learndash-helpers.php:411
 msgctxt "LearnDash"
 msgid "Topic ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:423
+#: src/integrations/learndash/helpers/learndash-helpers.php:427
 msgctxt "LearnDash Token"
 msgid "Topic title"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:427
+#: src/integrations/learndash/helpers/learndash-helpers.php:431
 msgctxt "LearnDash Token"
 msgid "Topic ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:431
+#: src/integrations/learndash/helpers/learndash-helpers.php:435
 msgctxt "LearnDash Token"
 msgid "Topic URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:435
+#: src/integrations/learndash/helpers/learndash-helpers.php:439
 msgctxt "LearnDash Token"
 msgid "Topic featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:439
+#: src/integrations/learndash/helpers/learndash-helpers.php:443
 msgctxt "LearnDash Token"
 msgid "Topic featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:544
+#: src/integrations/learndash/helpers/learndash-helpers.php:548
 msgctxt "LearnDash Token"
 msgid "Group title"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:548
+#: src/integrations/learndash/helpers/learndash-helpers.php:552
 msgctxt "LearnDash Token"
 msgid "Group ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:552
+#: src/integrations/learndash/helpers/learndash-helpers.php:556
 msgctxt "LearnDash Token"
 msgid "Group URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:556
 #: src/integrations/learndash/helpers/learndash-helpers.php:560
+#: src/integrations/learndash/helpers/learndash-helpers.php:564
 msgctxt "LearnDash Token"
 msgid "Group featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:620
+#: src/integrations/learndash/helpers/learndash-helpers.php:624
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:254
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:106
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:108
@@ -19807,88 +19774,88 @@ msgstr ""
 msgid "Quiz"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:640
+#: src/integrations/learndash/helpers/learndash-helpers.php:644
 msgctxt "LearnDash"
 msgid "Quiz ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:656
+#: src/integrations/learndash/helpers/learndash-helpers.php:660
 msgctxt "LearnDash Token"
 msgid "Quiz title"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:660
+#: src/integrations/learndash/helpers/learndash-helpers.php:664
 msgctxt "LearnDash Token"
 msgid "Quiz ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:664
+#: src/integrations/learndash/helpers/learndash-helpers.php:668
 msgctxt "LearnDash Token"
 msgid "Quiz URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:668
+#: src/integrations/learndash/helpers/learndash-helpers.php:672
 msgctxt "LearnDash Token"
 msgid "Quiz featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:672
+#: src/integrations/learndash/helpers/learndash-helpers.php:676
 msgctxt "LearnDash Token"
 msgid "Quiz featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:676
+#: src/integrations/learndash/helpers/learndash-helpers.php:680
 msgctxt "LearnDash Token"
 msgid "Quiz time spent"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:680
+#: src/integrations/learndash/helpers/learndash-helpers.php:684
 msgctxt "LearnDash Token"
 msgid "Quiz score"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:684
+#: src/integrations/learndash/helpers/learndash-helpers.php:688
 msgctxt "LearnDash Token"
 msgid "Quiz number of correct answers"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:688
+#: src/integrations/learndash/helpers/learndash-helpers.php:692
 msgctxt "LearnDash Token"
 msgid "Quiz category scores"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:692
+#: src/integrations/learndash/helpers/learndash-helpers.php:696
 msgctxt "LearnDash Token"
 msgid "Quiz questions and answers"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:696
+#: src/integrations/learndash/helpers/learndash-helpers.php:700
 msgctxt "LearnDash Token"
 msgid "Quiz question & answers (unformatted)"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1046
+#: src/integrations/learndash/helpers/learndash-helpers.php:1050
 msgid "No data provided"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1065
-#: src/integrations/learndash/helpers/learndash-helpers.php:1091
+#: src/integrations/learndash/helpers/learndash-helpers.php:1069
+#: src/integrations/learndash/helpers/learndash-helpers.php:1095
 msgid "Quiz has not been graded"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1086
+#: src/integrations/learndash/helpers/learndash-helpers.php:1090
 msgid "Not an essay post."
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1101
+#: src/integrations/learndash/helpers/learndash-helpers.php:1105
 msgid "No user quiz data recorded"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1117
+#: src/integrations/learndash/helpers/learndash-helpers.php:1121
 msgid "All quizzes have not been graded"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1125
+#: src/integrations/learndash/helpers/learndash-helpers.php:1129
 msgid "No quiz data recorded"
 msgstr ""
 
@@ -22513,23 +22480,67 @@ msgid "Use Uncanny Automator to feed prompts to OpenAI and use AI-generated cont
 msgstr ""
 
 #: src/integrations/open-ai/settings/view-open-ai.php:83
-msgid "Use a prompt to generate text"
+msgid "Analyze sentiment with GPT-4"
 msgstr ""
 
-#: src/integrations/open-ai/settings/view-open-ai.php:89
-msgid "Connecting to OpenAI is a simple 1-step process of creating a secret API key in your OpenAI account."
+#: src/integrations/open-ai/settings/view-open-ai.php:88
+msgid "Correct spelling and grammar with GPT-4"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:93
+msgid "Create a list of links that might help resolve a customer request with GPT-4"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:98
+msgid "Generate a meta description with GPT-4"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:103
+msgid "Generate an excerpt suitable for Instagram with GPT-4"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:108
+msgid "Generate an excerpt suitable for Twitter with GPT-4"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:113
+msgid "Generate an excerpt with GPT-4"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:118
+msgid "Generate an SEO title with GPT-4"
 msgstr ""
 
 #: src/integrations/open-ai/settings/view-open-ai.php:123
-msgid "Connect OpenAI account"
+msgid "Translate text with GPT-4"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:128
+msgid "Use a prompt to generate an image"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:133
+msgid "Use a prompt to generate text"
 msgstr ""
 
 #: src/integrations/open-ai/settings/view-open-ai.php:138
+msgid "Use a prompt to generate text with the GPT model"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:144
+msgid "Connecting to OpenAI is a simple 1-step process of creating a secret API key in your OpenAI account."
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:178
+msgid "Connect OpenAI account"
+msgstr ""
+
+#: src/integrations/open-ai/settings/view-open-ai.php:193
 msgid "OpenAI account"
 msgstr ""
 
 #. translators: %1$s The secret key.
-#: src/integrations/open-ai/settings/view-open-ai.php:144
+#: src/integrations/open-ai/settings/view-open-ai.php:199
 msgid "API key connected: %1$s"
 msgstr ""
 

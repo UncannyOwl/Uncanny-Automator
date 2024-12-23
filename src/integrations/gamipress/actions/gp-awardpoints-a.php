@@ -57,6 +57,15 @@ class GP_AWARDPOINTS_A {
 							'is_ajax' => false,
 						)
 					),
+					array(
+						'option_code'   => 'LOG_MANUAL_POINTS',
+						'label'         => esc_attr__( 'Register on user earnings', 'uncanny-automator' ),
+						'description'   => esc_attr__( 'Check this option to log this movement on user earnings.', 'uncanny-automator' ),
+						'input_type'    => 'checkbox',
+						'is_toggle'     => true,
+						'required'      => false,
+						'default_value' => false,
+					),
 				),
 				'GPPOINTVALUE'     => array(
 					array(
@@ -85,7 +94,37 @@ class GP_AWARDPOINTS_A {
 	public function award_points( $user_id, $action_data, $recipe_id, $args ) {
 
 		$points_type = $action_data['meta'][ $this->action_meta ];
+		$log_entry   = $action_data['meta']['LOG_MANUAL_POINTS'];
 		$points      = Automator()->parse->text( $action_data['meta']['GPPOINTVALUE'], $recipe_id, $user_id, $args );
+		if ( 'true' === $log_entry ) {
+
+			$recipe_title = get_the_title( $recipe_id );
+			if ( empty( $recipe_title ) ) {
+				$recipe_title = _x( '(no title)', 'GamiPress no recipe title', 'uncanny-automator' );
+			}
+
+			// Insert the custom user earning for the manual balance adjustment
+			gamipress_insert_user_earning(
+				$user_id,
+				array(
+					'title'       => sprintf(
+						'<a href="%s" target="_blank">%s</a> recipe.',
+						admin_url(
+							'post.php?post='
+							. $recipe_id . '&action=edit'
+						),
+						$recipe_title
+					),
+					'user_id'     => $user_id,
+					'post_id'     => gamipress_get_points_type_id( $points_type ),
+					'post_type'   => 'points-type',
+					'points'      => $points,
+					'points_type' => $points_type,
+					'date'        => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+				)
+			);
+
+		}
 		gamipress_award_points_to_user( absint( $user_id ), absint( $points ), $points_type );
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );

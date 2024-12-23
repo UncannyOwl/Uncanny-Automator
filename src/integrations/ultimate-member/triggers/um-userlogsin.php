@@ -85,11 +85,8 @@ class UM_USERLOGSIN {
 			return;
 		}
 
-		if ( function_exists( 'um_user' ) ) {
-			$user_id = um_user( 'ID' );
-		} else {
-			return;
-		}
+		$user    = is_email( $um_args['username'] ) ? get_user_by( 'email', $um_args['username'] ) : get_user_by( 'login', $um_args['username'] );
+		$user_id = $user->ID;
 
 		$args = array(
 			'code'         => $this->trigger_code,

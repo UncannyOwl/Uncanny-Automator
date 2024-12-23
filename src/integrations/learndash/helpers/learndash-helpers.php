@@ -113,7 +113,7 @@ class Learndash_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true, $include_relevant_tokens = true ) {
+	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true, $include_relevant_tokens = true, $relevant_tokens = array() ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -126,20 +126,24 @@ class Learndash_Helpers {
 		$args = array(
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		'orderby'            => 'title',
-		'order'              => 'ASC',
-		'post_status'        => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
 		);
 
 		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
 
-		$relevant_tokens = array();
+		$courses_relevant_tokens = array();
 		if ( $include_relevant_tokens ) {
-			$relevant_tokens = wp_list_pluck( $this->get_course_relevant_tokens( 'trigger', $option_code ), 'name' );
+			$courses_relevant_tokens = wp_list_pluck( $this->get_course_relevant_tokens( 'trigger', $option_code ), 'name' );
 
 			if ( self::is_course_timer_activated() ) {
-				$relevant_tokens[ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = __( 'Course cumulative time', 'uncanny-automator' );
-				$relevant_tokens[ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = __( 'Course time at completion', 'uncanny-automator' );
+				$courses_relevant_tokens[ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = __( 'Course cumulative time', 'uncanny-automator' );
+				$courses_relevant_tokens[ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = __( 'Course time at completion', 'uncanny-automator' );
+			}
+
+			if ( is_array( $relevant_tokens ) && ! empty( $relevant_tokens ) ) {
+				$courses_relevant_tokens = array_merge( $courses_relevant_tokens, $relevant_tokens );
 			}
 		}
 
@@ -149,7 +153,7 @@ class Learndash_Helpers {
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $options,
-			'relevant_tokens'          => $relevant_tokens,
+			'relevant_tokens'          => $courses_relevant_tokens,
 			'custom_value_description' => _x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
@@ -1026,8 +1030,8 @@ class Learndash_Helpers {
 			if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
 				$is_activated = false;
 			} else {
-				$active_modules = automator_get_option( 'uncanny_toolkit_active_classes', true );
-				$is_activated   = ! empty( $active_modules['uncanny_pro_toolkit\CourseTimer'] );
+				$active_modules = get_option( 'uncanny_toolkit_active_classes', false );
+				$is_activated   = is_array( $active_modules ) && ! empty( $active_modules['uncanny_pro_toolkit\CourseTimer'] );
 			}
 		}
 

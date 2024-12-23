@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.4
 Tested up to: 6.7.1
 Requires PHP: 7.0
-Stable tag: 6.1
+Stable tag: 6.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -372,9 +372,30 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.1 [2024-11-26] =
+= 6.1.1 [2024-12-23] =
 
-== Changelog ==
+**Updated:**
+
+* ClickUp - Now supports timestamp values on date fields because who doesn't love more precise time-traveling? #5278  
+* GamiPress - Added a toggle to log points when awarding them. No more stealthy points—track those trophies! #5208  
+* ActiveCampaign - Setup instructions are now clearer than your grandma's chicken soup recipe. #3061  
+* ConvertKit - Rebranded to just "Kit." #5232  
+* Forminator - Icon got a glow-up—because appearances matter. #5321  
+* OpenAI - Added a handy list of available actions to the App settings page. More power to you! #3565  
+
+**Fixed:**
+
+* Calculation tokens - They were refusing to do math in certain situations. We gave them a pep talk. #5280  
+* Core - Token parser was clueless about the "Any" use case for title parsing. #5272  
+* Core - Token parser - Extra validation added for action meta variable types to avoid a `preg_split()` error in some actions. Because, hey, safety first! #5284 #5324  
+* HelpScout - App settings - A rare PHP error appeared like a cryptid. We captured it, and it's gone for good. #5268  
+* LearnDash - Timer module in Uncanny Toolkit Pro is now correctly detected—time waits for no plugin! #5274  
+* Outgoing Webhooks - Data types were playing hide-and-seek in the UI. They're now front and center, ready for action. #5282  
+* PHP Warnings - A Webhook trigger caused warnings in rare cases. We sent it to timeout, and it's behaving now. #5248  
+* Recipe templates - The "Recipe User Type" insisted showing as Everyone for the User recipe type. We've reminded it that exclusivity matters sometimes. #5276  
+* Ultimate Member - User tokens weren't parsing when logging in with a username instead of email. We've taught it that usernames are people too! #5211  
+
+= 6.1 [2024-11-26] =
 
 **New Feature:**
 

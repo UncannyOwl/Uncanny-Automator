@@ -86,7 +86,7 @@ class Um_Tokens {
 					foreach ( $trigger_data as $trigger ) {
 
 						// Form title.
-						if ( 'UMUSERREGISTER' === $pieces[1] && 'UMFORM_FORM_TITLE' === $pieces[2] ) {
+						if ( ( 'UMUSERREGISTER' === $pieces[1] && 'UMFORM_FORM_TITLE' === $pieces[2] ) || ( 'UMUSERLOGSIN' === $pieces[1] && 'UMFORM_FORM_TITLE' === $pieces[2] ) ) {
 							return $trigger['meta']['UMFORM_readable'];
 						}
 

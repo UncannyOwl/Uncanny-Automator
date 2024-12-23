@@ -669,12 +669,13 @@ class Api_Server {
 			return $process_further;
 		}
 
-		$log_entry = $args['trigger_entry'];
+		$recipe_log_id  = $args['entry_args']['recipe_log_id'] ?? null;
+		$trigger_log_id = $args['entry_args']['trigger_log_id'] ?? null;
 
 		$log = array(
 			'type'          => 'trigger',
-			'recipe_log_id' => $log_entry['recipe_log_id'],
-			'item_log_id'   => $log_entry['trigger_log_id'],
+			'recipe_log_id' => $recipe_log_id,
+			'item_log_id'   => $trigger_log_id,
 			'params'        => $args['trigger_args'],
 		);
 
