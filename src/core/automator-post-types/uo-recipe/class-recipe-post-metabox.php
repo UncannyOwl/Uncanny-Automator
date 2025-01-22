@@ -27,7 +27,7 @@ class Recipe_Post_Metabox {
 	public function __construct() {
 
 		// Adding entry point for JS based triggers and actions UI into Meta Boxes
-		add_action( 'add_meta_boxes', array( $this, 'recipe_add_meta_box_ui' ), 11 );
+		add_action( 'add_meta_boxes', array( $this, 'recipe_add_meta_box_ui' ), PHP_INT_MAX, 2 );
 
 		// Clear any custom ordering of the sidebar metaboxes.
 		add_filter( 'get_user_option_meta-box-order_uo-recipe', array( $this, 'maybe_clear_user_sidebar_sort' ), PHP_INT_MAX, 1 );
@@ -37,7 +37,7 @@ class Recipe_Post_Metabox {
 	/**
 	 * Creates an entry point with in a metabox to add JS / Rest-Api based UI
 	 */
-	public function recipe_add_meta_box_ui() {
+	public function recipe_add_meta_box_ui( $post_type, $post ) {
 		// Get global $post
 		global $post;
 		if ( ! $post instanceof \WP_Post ) {
@@ -245,6 +245,12 @@ class Recipe_Post_Metabox {
 			'side',
 			'high'
 		);
+
+		if ( 'uo-recipe' === $post_type ) {
+			// Remove the Author meta box
+			remove_meta_box( 'authordiv', $post_type, 'normal' );
+		}
+
 	}
 
 	/**

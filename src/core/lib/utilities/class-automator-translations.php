@@ -39,7 +39,7 @@ class Automator_Translations {
 
 		// Localized strings
 		$this->ls = array(
-			'trigger'             => array(
+			'trigger'                => array(
 				'name'            => esc_attr__( 'Triggers', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.trigger.name
 				'singularName'    => esc_attr__( 'Trigger', 'uncanny-automator' ),
@@ -82,7 +82,7 @@ class Automator_Translations {
 				'save'            => esc_attr__( 'Save trigger', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.trigger.save
 			),
-			'action'              => array(
+			'action'                 => array(
 				'name'         => esc_attr__( 'Actions', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.action.name
 				'singularName' => esc_attr__( 'Action', 'uncanny-automator' ),
@@ -197,10 +197,10 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.action.asyncActions.unlockSchedule
 				),
 			),
-			'closure'             => array(
+			'closure'                => array(
 				'name' => 'Closures', // UncannyAutomator._core.i18n.closure.name
 			),
-			'conditions'          => array(
+			'conditions'             => array(
 				'filter'                               => esc_html__( 'Filter', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.conditions.filter
 
@@ -302,7 +302,7 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.conditions.wantToRemoveConditionsGroup.cancelButtonLabel
 				),
 			),
-			'validation'          => array(
+			'validation'             => array(
 				'recipe' => array(
 					'oneTrigger'   => esc_attr__( 'You have to add at least one live trigger to your recipe', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.validation.recipe.oneTrigger
@@ -423,7 +423,7 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.validation.field.invalidType
 				),
 			),
-			'status'              => array(
+			'status'                 => array(
 				/* translators: Recipe status */
 				'liveRecipe'      => esc_attr_x( 'Live', 'Recipe', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.status.liveRecipe
@@ -437,7 +437,7 @@ class Automator_Translations {
 				'draftRecipeItem' => esc_attr_x( 'Draft', 'Recipe item', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.status.draftRecipeItem
 			),
-			'tokens'              => array(
+			'tokens'                 => array(
 				/* translators: Non-personal infinitive verb */
 				'search'                         => esc_attr__( 'Search tokens', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.tokens.search
@@ -627,7 +627,7 @@ class Automator_Translations {
 				'isScheduledTokensDisclaimer'    => esc_html__( 'These tokens may be empty if the associated action has not yet run when this action runs.', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.tokens.isScheduledTokensDisclaimer
 			),
-			'integration'         => array(
+			'integration'            => array(
 				/* translators: Verb conjugated in present-tense second-person singular */
 				'select'         => esc_attr__( 'Select an integration', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.integration.select
@@ -638,7 +638,7 @@ class Automator_Translations {
 				'dontSeeTrigger' => esc_attr__( "Don't see your trigger? Try a recipe that runs for logged-in users only.", 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.integration.dontSeeTrigger
 			),
-			'publish'             => array(
+			'publish'                => array(
 				/* translators: Number of times the recipe can be triggered per user */
 				'timesPerUser'   => esc_attr__( 'Times per user:', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.publish.timesPerUser
@@ -665,7 +665,7 @@ class Automator_Translations {
 				'recipeRunTimes' => esc_attr_x( 'Completed runs:', 'Recipe', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.publish.recipeRunTimes
 			),
-			'confirmationModal'   => array(
+			'confirmationModal'      => array(
 				'title'         => esc_attr__( 'Are you sure?', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.confirmationModal.title
 				'deleteWarning' => esc_attr__( 'Deleting items in a {{live}} recipe can lead to unexpected behaviors.', 'uncanny-automator' ),
@@ -673,7 +673,7 @@ class Automator_Translations {
 				'statusWarning' => esc_attr__( 'Setting items to draft in a {{live}} recipe can lead to unexpected behaviors.', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.confirmationModal.statusWarning
 			),
-			'walkthrough'         => array(
+			'walkthrough'            => array(
 				'_global'       => array(
 					'set_walkthrough_progress' => array(
 						'enabling_walkthrough' => esc_attr__( 'Enabling walkthrough', 'uncanny-automator' ),
@@ -881,7 +881,7 @@ class Automator_Translations {
 					),
 				),
 			),
-			'proOnly'             => array(
+			'proOnly'                => array(
 				'pro'          => 'Pro',
 				// Don't make this string translatable
 				// UncannyAutomator._core.i18n.proOnly.pro
@@ -907,12 +907,12 @@ class Automator_Translations {
 				'requiresPro'  => esc_attr__( 'Requires %1$s', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.proOnly.requiresPro
 			),
-			'eliteOnly'           => array(
+			'eliteOnly'              => array(
 				'elite' => 'Elite',
 				// Don't make this string translatable
 				// UncannyAutomator._core.i18n.eliteOnly.elite
 			),
-			'sendFeedback'        => array(
+			'sendFeedback'           => array(
 				/* translators: Non-personal infinitive verb */
 				'title' => esc_attr__( 'Send feedback', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.sendFeedback.title
@@ -924,7 +924,7 @@ class Automator_Translations {
 				// 'gotIt'         =>  esc_attr__( 'Got it', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.sendFeedback.gotIt
 			),
-			'apiIntegrations'     => array(
+			'apiIntegrations'        => array(
 				/* translators: 1. Trademarked term */
 				'integrationNotConnected'   => esc_attr__( '%1$s account not connected. Click to connect.', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.apiIntegrations.integrationNotConnected
@@ -962,7 +962,7 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.apiIntegrations.instructionsToConnect.refresh
 				),
 			),
-			'recipeType'          => array(
+			'recipeType'             => array(
 				/* translators: Verb conjugated in present-tense second-person singular */
 				'title'                       => esc_attr__( 'Select a recipe type', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.recipeType.title
@@ -986,7 +986,7 @@ class Automator_Translations {
 				'everyoneOnlyOneTrigger'      => esc_attr__( 'This recipe type supports one trigger per recipe.', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.recipeType.everyoneOnlyOneTrigger
 			),
-			'userSelector'        => array(
+			'userSelector'           => array(
 				/* translators: Verb conjugated in present-tense second-person singular */
 				'firstStepTitle' => esc_attr__( 'Choose who will do the actions', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.userSelector.firstStepTitle
@@ -1157,7 +1157,7 @@ class Automator_Translations {
 					),
 				),
 			),
-			'debugging'           => array(
+			'debugging'              => array(
 				'fatalErrorHandler'   => array(
 					'title'        => esc_html__( 'Sorry, something went wrong', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.debugging.fatalErrorHandler.title
@@ -1274,7 +1274,7 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.debugging.token.columnValue
 				),
 			),
-			'format'              => array(
+			'format'                 => array(
 				'date' => array(
 					'selectDate'       => esc_html__( 'Select date', 'uncanny-automator' ),
 					'selectTime'       => esc_html__( 'Select time', 'uncanny-automator' ),
@@ -1361,7 +1361,7 @@ class Automator_Translations {
 					'minute'           => esc_attr_x( 'Minute', 'Date format', 'uncanny-automator' ),
 				),
 			),
-			'components'          => array(
+			'components'             => array(
 				// UncannyAutomator._core.i18n.components.item
 				'item'     => array(
 					'statusOn'      => esc_html__( 'Live', 'uncanny-automator' ),
@@ -1403,7 +1403,7 @@ class Automator_Translations {
 					'setDataDialogHeading'   => __( 'Set data', 'uncanny-automator' ),
 				),
 			),
-			'core'                => array(
+			'core'                   => array(
 				// UncannyAutomator._core.i18n.core.runNow
 				'runNow'        => array(
 					'starting' => esc_html__( 'Starting recipe', 'uncanny-automator' ),
@@ -1530,7 +1530,7 @@ class Automator_Translations {
 					),
 				),
 			),
-			'runNow'              => array(
+			'runNow'                 => array(
 				'runNowButtonLabel' => esc_html__( 'Run now', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.runNow.runNowButtonLabel
 				'dialog'            => array(
@@ -1553,105 +1553,138 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.runNow.dialog.returnToRecipeList
 				),
 			),
-			'viewLogs'            => esc_html__( 'View logs', 'uncanny-automator' ),
+			'viewLogs'               => esc_html__( 'View logs', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.viewLogs
-			'refresh'             => esc_attr__( 'Refresh', 'uncanny-automator' ),
+			'refresh'                => esc_attr__( 'Refresh', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.refresh
-			'refreshOptions'      => esc_attr__( 'Refresh options', 'uncanny-automator' ),
+			'refreshOptions'         => esc_attr__( 'Refresh options', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.refreshOptions
-			'noResults'           => esc_attr__( 'No results found', 'uncanny-automator' ),
+			'noResults'              => esc_attr__( 'No results found', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.noResults
 			/* translators: Character to separate items */
-			'itemSeparator'       => esc_html__( ',', 'uncanny-automator' ),
+			'itemSeparator'          => esc_html__( ',', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.itemSeparator
 			/* translators: Non-personal infinitive verb */
-			'save'                => esc_attr__( 'Save', 'uncanny-automator' ),
+			'save'                   => esc_attr__( 'Save', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.save
 			/* translators: Non-personal infinitive verb */
-			'search'              => esc_attr__( 'Search', 'uncanny-automator' ),
+			'search'                 => esc_attr__( 'Search', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.search
-			'searchEllipsis'      => esc_attr__( 'Search...', 'uncanny-automator' ),
+			'searchEllipsis'         => esc_attr__( 'Search...', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.searchEllipsis
-			'searching'           => esc_attr__( 'Searching', 'uncanny-automator' ),
+			'searching'              => esc_attr__( 'Searching', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.searching
 			/* translators: Non-personal infinitive verb */
-			'confirm'             => esc_attr__( 'Confirm', 'uncanny-automator' ),
+			'confirm'                => esc_attr__( 'Confirm', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.confirm
-			'somethingWentWrong'  => esc_attr__( 'Something went wrong', 'uncanny-automator' ),
+			'somethingWentWrong'     => esc_attr__( 'Something went wrong', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.somethingWentWrong
 			/* translators: Non-personal infinitive verb */
-			'cancel'              => esc_attr__( 'Cancel', 'uncanny-automator' ),
+			'cancel'                 => esc_attr__( 'Cancel', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.cancel
 			/* translators: Non-personal infinitive verb */
-			'duplicate'           => esc_attr__( 'Duplicate', 'uncanny-automator' ),
+			'duplicate'              => esc_attr__( 'Duplicate', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.duplicate
 			/* translators: Non-personal infinitive verb */
-			'delete'              => esc_attr__( 'Delete', 'uncanny-automator' ),
+			'delete'                 => esc_attr__( 'Delete', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.delete
 			/* translators: Non-personal infinitive verb */
-			'clear'               => esc_attr__( 'Clear', 'uncanny-automator' ),
+			'clear'                  => esc_attr__( 'Clear', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.clear
 			/* translators: Non-personal infinitive verb */
-			'edit'                => esc_attr__( 'Edit', 'uncanny-automator' ),
+			'edit'                   => esc_attr__( 'Edit', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.edit
 			/* translators: Noun */
-			'support'             => esc_attr_x( 'Support', 'Item options', 'uncanny-automator' ),
+			'support'                => esc_attr_x( 'Support', 'Item options', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.support
 			/* translators: Non-personal infinitive verb */
-			'learnMore'           => esc_attr__( 'Learn more', 'uncanny-automator' ),
+			'learnMore'              => esc_attr__( 'Learn more', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.learnMore
-			'trueLabel'           => esc_attr__( 'True', 'uncanny-automator' ),
+			'trueLabel'              => esc_attr__( 'True', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.trueLabel
-			'falseLabel'          => esc_attr__( 'False', 'uncanny-automator' ),
+			'falseLabel'             => esc_attr__( 'False', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.falseLabel
-			'yes'                 => esc_attr__( 'Yes', 'uncanny-automator' ),
+			'yes'                    => esc_attr__( 'Yes', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.yes
-			'no'                  => esc_attr__( 'No', 'uncanny-automator' ),
+			'no'                     => esc_attr__( 'No', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.no
-			'loadingMoreResults'  => esc_attr__( 'Loading more results...', 'uncanny-automator' ),
+			'loadingMoreResults'     => esc_attr__( 'Loading more results...', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.loadingMoreResults
 			/* translators: 1. Post ID */
-			'postIDPlaceholder'   => esc_attr__( 'ID: %1$s' ),
+			'postIDPlaceholder'      => esc_attr__( 'ID: %1$s' ),
 			// UncannyAutomator._core.i18n.postIDPlaceholder
-			'emptyValue'          => esc_html__( '(empty)', 'uncanny-automator' ),
+			'emptyValue'             => esc_html__( '(empty)', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.emptyValue
-			'debuggingTools'      => esc_attr__( 'Debugging tools' ),
+			'debuggingTools'         => esc_attr__( 'Debugging tools' ),
 			// UncannyAutomator._core.i18n.debuggingTools
-			'itemMissing'         => esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),
+			'itemMissing'            => esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.itemMissing
-			'itemPermalink'       => esc_attr__( 'This item was disabled because your Permalinks are not set correctly.', 'uncanny-automator' ),
+			'itemPermalink'          => esc_attr__( 'This item was disabled because your Permalinks are not set correctly.', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.itemPermalink
-			'noLabel'             => esc_attr__( '(no label)', 'uncanny-automator' ),
+			'unsupportedUnavailable' => array(
+				'freeConnection' => array(
+					// translators: Item type (action, trigger)
+					'message' => esc_attr__( 'Please connect your account to use this %s.', 'uncanny-automator' ),
+					'button'  => esc_attr__( 'Connect account', 'uncanny-automator' ),
+					'url'     => AUTOMATOR_STORE_URL . AUTOMATOR_FREE_STORE_CONNECT_URL . '?redirect_url=' . rawurlencode( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ),
+				),
+				'proLicense'     => array(
+					// translators: Item type (action, trigger)
+					'message' => esc_attr__( 'Please enter your Automator Pro license key to use this %s.', 'uncanny-automator' ),
+					'button'  => esc_attr__( 'Enter license key', 'uncanny-automator' ),
+					'url'     => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
+				),
+				'proRequired'    => array(
+					// translators: Item type (action, trigger)
+					'message' => esc_attr__( 'Automator Pro is required to use this %s.', 'uncanny-automator' ),
+					'button'  => esc_attr__( 'Upgrade now', 'uncanny-automator' ),
+					'url'     => automator_utm_parameters( 'https://automatorplugin.com/pricing/', 'recipe_ui', 'update_to_pro' ),
+				),
+				'appConnection'  => array(
+					// translators: Item type (action, trigger)
+					'message' => esc_attr__( 'App integration not connected. Please connect to use this %s.', 'uncanny-automator' ),
+					'button'  => esc_attr__( 'Connect app', 'uncanny-automator' ),
+					//'url' => Uses the App settings URL
+				),
+				'pluginRequired' => array(
+					// translators: 1. Item type (action, trigger), 2. Plugin name
+					'message' => esc_attr__( 'This %1$s requires the %2$s plugin which is not currently activated.', 'uncanny-automator' ),
+					'button'  => esc_attr__( 'Learn more', 'uncanny-automator' ),
+					// translators: 1. Plugin integration code
+					'url'     => automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/the-action-trigger-requires-a-plugin-that-is-not-installed-or-active-message/', 'recipe_ui', 'plugin_required' ),
+				),
+			),
+			'noLabel'                => esc_attr__( '(no label)', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.noLabel
 			/* translators: Non-personal infinitive verb */
-			'upgradeNow'          => esc_attr__( 'Upgrade now', 'uncanny-automator' ),
+			'upgradeNow'             => esc_attr__( 'Upgrade now', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.upgradeNow
 			/* translators: Non-personal infinitive verb */
-			'add'                 => esc_attr__( 'Add', 'uncanny-automator' ),
+			'add'                    => esc_attr__( 'Add', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.add
 			/* translators: Non-personal infinitive verb */
-			'addRow'              => esc_attr__( 'Add row', 'uncanny-automator' ),
+			'addRow'                 => esc_attr__( 'Add row', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.addRow
 			/* translators: Non-personal infinitive verb */
-			'removeRow'           => esc_attr__( 'Remove row', 'uncanny-automator' ),
+			'removeRow'              => esc_attr__( 'Remove row', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.removeRow
 			/* translators: 1. Row number */
-			'rowNumber'           => esc_attr__( 'Row %1$s', 'uncanny-automator' ),
+			'rowNumber'              => esc_attr__( 'Row %1$s', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.no
-			'close'               => esc_attr_x( 'Close', 'Verb', 'uncanny-automator' ),
+			'close'                  => esc_attr_x( 'Close', 'Verb', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.close
-			'areYouSure'          => esc_attr__( 'Are you sure?', 'uncanny-automator' ),
+			'areYouSure'             => esc_attr__( 'Are you sure?', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.areYouSure
-			'needsUserData'       => esc_attr__( 'Needs user data', 'uncanny-automator' ),
+			'needsUserData'          => esc_attr__( 'Needs user data', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.needsUserData
-			'scrollToIncrement'   => esc_attr__( 'Scroll to increment', 'uncanny-automator' ),
+			'scrollToIncrement'      => esc_attr__( 'Scroll to increment', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.scrollToIncrement
-			'clickToToggle'       => esc_attr__( 'Click to toggle', 'uncanny-automator' ),
+			'clickToToggle'          => esc_attr__( 'Click to toggle', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.clickToToggle
-			'uncannyAutomator'    => 'Uncanny Automator',
+			'uncannyAutomator'       => 'Uncanny Automator',
 			// Don't translate this string
 			// UncannyAutomator._core.i18n.uncannyAutomator
-			'uncannyAutomatorPro' => 'Uncanny Automator Pro',
+			'uncannyAutomatorPro'    => 'Uncanny Automator Pro',
 			// Don't translate this string
 			// UncannyAutomator._core.i18n.uncannyAutomatorPro
 		);

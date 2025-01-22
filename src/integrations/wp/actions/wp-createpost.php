@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use Exception;
+use LogicException;
+
 /**
  * Class WP_CREATEPOST
  *
@@ -159,6 +162,16 @@ class WP_CREATEPOST {
 							'text',
 							'',
 							true
+						),
+
+						array(
+							'option_code'   => 'IS_UNIQUE',
+							'label'         => esc_attr__( 'Title must be unique', 'uncanny-automator' ),
+							'description'   => esc_attr__( 'If a post with the same title is found, the action will not create a new post.', 'uncanny-automator' ),
+							'input_type'    => 'checkbox',
+							'is_toggle'     => true,
+							'required'      => false,
+							'default_value' => false,
 						),
 
 						Automator()->helpers->recipe->field->text_field(
@@ -344,6 +357,8 @@ class WP_CREATEPOST {
 	 * @param $action_data
 	 * @param $recipe_id
 	 * @param $args
+	 *
+	 * @throw Exception
 	 */
 	public function create_post( $user_id, $action_data, $recipe_id, $args ) {
 
@@ -351,6 +366,22 @@ class WP_CREATEPOST {
 		$post_terms = Automator()->parse->text( $action_data['meta']['TERM'], $recipe_id, $user_id, $args );
 		$post_slug  = Automator()->parse->text( $action_data['meta']['WPCPOSTSLUG'], $recipe_id, $user_id, $args );
 		$content    = Automator()->parse->text( $action_data['meta']['WPCPOSTCONTENT'], $recipe_id, $user_id, $args );
+
+		// The post type.
+		$post_type = $action_data['meta'][ $this->action_code ] ?? '';
+
+		// The meta value of the unique title toggle.
+		$unique_title_field_val = $action_data['meta']['IS_UNIQUE'] ?? '';
+
+		if ( 'true' === $unique_title_field_val && true === $this->post_title_exists( $post_title, $post_type ) ) {
+			throw new LogicException(
+				sprintf(
+					"Error: Post title must be unique. A post with the title '%s' already exists.",
+					$post_title
+				),
+				1001 // Exception code for duplicate title.
+			);
+		}
 
 		$post_content = '';
 
@@ -637,6 +668,33 @@ class WP_CREATEPOST {
 		unset( $field['options']['-1'] );
 
 		return $field;
+
+	}
+
+	/**
+	 * Check if a post with a specific title exists, regardless of case.
+	 *
+	 * @param string $title The title to search for.
+	 * @return bool True if a post with the title exists (case-insensitive), false otherwise.
+	 */
+	public function post_title_exists( $title, $post_type ) {
+
+		global $wpdb;
+
+		$title = sanitize_title( $title );
+
+		// Modify the query for case-insensitive comparison
+		$query = $wpdb->prepare(
+			"SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
+			$title,
+			$post_type
+		);
+
+		// Execute the query
+		$post_id = $wpdb->get_var( $query );
+
+		// Check if a post ID was returned
+		return ! empty( $post_id );
 
 	}
 

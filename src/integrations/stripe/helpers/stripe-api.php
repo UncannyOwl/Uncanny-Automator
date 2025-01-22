@@ -91,7 +91,7 @@ class Stripe_Api {
 	 *
 	 * @return array
 	 */
-	public function get_prices_options() {
+	public function get_prices_options( $type = null ) {
 
 		$options = array();
 
@@ -108,6 +108,10 @@ class Stripe_Api {
 			}
 
 			foreach ( $response['data']['prices'] as $price ) {
+
+				if ( null !== $type && $price['type'] !== $type ) {
+					continue;
+				}
 
 				$name = $price['product']['name'] . ' - ' . $this->helpers->generate_price_name( $price );
 
@@ -233,5 +237,41 @@ class Stripe_Api {
 		);
 
 		return $this->api_request( $body, $action_data );
+	}
+
+	/**
+	 * Get session details.
+	 *
+	 * @param array $session Stripe checkout session.
+	 * @return array Stripe checkout session with expanded data.
+	 */
+	public function get_session( $session_id ) {
+
+		$body = array(
+			'action'     => 'get_session',
+			'session_id' => $session_id,
+		);
+
+		return $this->api_request( $body );
+	}
+
+	public function get_subscription( $subscription_id ) {
+
+		$body = array(
+			'action'          => 'get_subscription',
+			'subscription_id' => $subscription_id,
+		);
+
+		return $this->api_request( $body );
+	}
+
+	public function get_all_sessions( $payment_intent_id ) {
+
+		$body = array(
+			'action'            => 'get_all_sessions',
+			'payment_intent_id' => $payment_intent_id,
+		);
+
+		return $this->api_request( $body );
 	}
 }

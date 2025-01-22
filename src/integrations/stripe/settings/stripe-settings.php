@@ -211,7 +211,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
 					<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'Create a payment link', 'Stripe', 'uncanny-automator' ); ?>
+					<?php echo esc_html_x( 'Create a payment link for a product', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
@@ -221,12 +221,22 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
 					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A charge is refunded', 'Stripe', 'uncanny-automator' ); ?>
+					<?php echo esc_html_x( 'A subscription is paid', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
 					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A payment is completed', 'Stripe', 'uncanny-automator' ); ?>
+					<?php echo esc_html_x( 'A subscription payment fails', 'Stripe', 'uncanny-automator' ); ?>
+				</li>
+				<li>
+					<uo-icon id="bolt"></uo-icon> <strong>
+					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'A subscription is created', 'Stripe', 'uncanny-automator' ); ?>
+				</li>
+				<li>
+					<uo-icon id="bolt"></uo-icon> <strong>
+					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'A payment for a product is refunded', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
@@ -236,7 +246,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
 					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A charge fails', 'Stripe', 'uncanny-automator' ); ?>
+					<?php echo esc_html_x( 'One-time payment for a product is completed', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 			</ul>
 

@@ -378,59 +378,60 @@ class MC_EVERYONE_ADD_CONTACT {
 			$lang_code       = Automator()->parse->text( $action_data['meta']['MCLANGUAGECODE'], $recipe_id, $user_id, $args );
 
 			$merge_fields = $action_data['meta']['MERGE_FIELDS'];
-			$fields       = json_decode( $merge_fields, true );
-			$key_values   = array();
+			$fields       = (array) json_decode( $merge_fields, true );
 
+			$key_values  = array();
 			$field_count = count( $fields );
 
+			$email = sanitize_text_field( Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args ) );
+
 			for ( $i = 0; $i < $field_count; $i ++ ) {
+
 				$key   = $fields[ $i ]['FIELD_NAME'];
 				$value = Automator()->parse->text( $fields[ $i ]['FIELD_VALUE'], $recipe_id, $user_id, $args );
-				if ( strpos( $key, '_addr1' ) || strpos( $key, '_addr2' ) || strpos( $key, '_city' ) || strpos( $key, '_state' ) || strpos( $key, '_zip' ) || strpos( $key, '_country' ) ) {
-					$key_split = explode( '_', $key, 2 );
-					if ( 2 === count( $key_split ) ) {
-						$key_values[ $key_split[0] ][ $key_split[1] ] = $value;
-					}
-				} else {
-					$key_values[ $key ] = $value;
-				}
-			}
 
-			$email = sanitize_text_field( Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args ) );
+				if ( self::address_field_detected_from_key( $key ) ) {
+					list( $addr_field_id, $addr_sub_field ) = explode( '_', $key, 2 );
+					if ( $addr_field_id && $addr_sub_field ) {
+						$key_values[ $addr_field_id ][ $addr_sub_field ] = $value;
+						continue;
+					}
+				}
+
+				$key_values[ $key ] = $value;
+
+			}
 
 			if ( empty( filter_var( $email, FILTER_VALIDATE_EMAIL ) ) ) {
 				throw new \Exception( 'Invalid email address format.' );
 			}
 
-			$user_hash = md5( strtolower( $email ) );
-
+			$user_hash      = md5( strtolower( $email ) );
 			$user_interests = array();
 
-			$existing_user = $helpers->get_list_user( $list_id, $user_hash );
-
+			$existing_user  = $helpers->get_list_user( $list_id, $user_hash );
 			$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list );
 
 			// If the user already exists in this list
 			if ( false !== $existing_user ) {
-
 				if ( 'no' === $update_existing ) {
 					throw new \Exception( __( 'User already subscribed to the list.', 'uncanny-automator' ) );
 				}
 			}
 
-			// Now create an audience
+			// Now create an audience.
 			$status = 'subscribed';
 
 			if ( 'yes' === $double_optin ) {
 				$status = 'pending';
 			}
 
-			$merge_fields = automator_array_filter_recursive( $key_values );
+			$merge_fields = Mailchimp_Helpers::handle_mailchimp_merge_fields( $key_values );
 
 			$user_data = array(
 				'email_address' => $email,
 				'status'        => $status,
-				'merge_fields'  => $merge_fields,
+				'merge_fields'  => $merge_fields, // Do final empty check.
 				'language'      => $lang_code,
 				'interests'     => $user_interests,
 			);
@@ -450,7 +451,7 @@ class MC_EVERYONE_ADD_CONTACT {
 				'user_data' => wp_json_encode( $user_data ),
 			);
 
-			$response = $helpers->api_request( $request_params, $action_data );
+			$helpers->api_request( $request_params, $action_data );
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
@@ -462,6 +463,22 @@ class MC_EVERYONE_ADD_CONTACT {
 
 		}
 
+	}
+
+	/**
+	 * Determines whether the key contains any signs of being an address field.
+	 *
+	 * @param mixed $key
+	 *
+	 * @return bool
+	 */
+	public static function address_field_detected_from_key( $key ) {
+		return strpos( $key, '_addr1' )
+			|| strpos( $key, '_addr2' )
+			|| strpos( $key, '_city' )
+			|| strpos( $key, '_state' )
+			|| strpos( $key, '_zip' )
+			|| strpos( $key, '_country' );
 	}
 
 }

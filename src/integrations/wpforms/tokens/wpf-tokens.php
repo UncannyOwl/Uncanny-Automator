@@ -102,12 +102,52 @@ class Wpf_Tokens {
 				$input_id    = $field['id'];
 				$input_title = isset( $field['label'] ) ? $field['label'] : sprintf( '%d- %s', $field['id'], __( 'No name', 'uncanny-automator' ) );
 				$token_id    = "$form_id|$input_id";
+				$input_title = 'address' === $field['type'] ? _x( 'Address (full)', 'WPForms', 'uncanny-automator' ) : $input_title;
 				$fields[]    = array(
 					'tokenId'         => $token_id,
 					'tokenName'       => $input_title,
 					'tokenType'       => in_array( $field['type'], $allowed_token_types, true ) ? $field['type'] : 'text',
 					'tokenIdentifier' => $trigger_meta,
 				);
+
+				if ( 'address' === $field['type'] ) {
+					$fields[] = array(
+						'tokenId'         => $token_id . '|address|address1',
+						'tokenName'       => __( 'Address - Line 1', 'uncanny-automator' ),
+						'tokenType'       => 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+					$fields[] = array(
+						'tokenId'         => $token_id . '|address|address2',
+						'tokenName'       => __( 'Address - Line 2', 'uncanny-automator' ),
+						'tokenType'       => 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+					$fields[] = array(
+						'tokenId'         => $token_id . '|address|city',
+						'tokenName'       => __( 'Address - City', 'uncanny-automator' ),
+						'tokenType'       => 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+					$fields[] = array(
+						'tokenId'         => $token_id . '|address|state',
+						'tokenName'       => __( 'Address - State/Province/Region', 'uncanny-automator' ),
+						'tokenType'       => 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+					$fields[] = array(
+						'tokenId'         => $token_id . '|address|postal',
+						'tokenName'       => __( 'Address - Zip/Postal code', 'uncanny-automator' ),
+						'tokenType'       => 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+					$fields[] = array(
+						'tokenId'         => $token_id . '|address|country',
+						'tokenName'       => __( 'Address - Country', 'uncanny-automator' ),
+						'tokenType'       => 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+				}
 
 				// Added support for multiple option (label).
 				if ( isset( $field['choices'] ) ) {
@@ -155,8 +195,8 @@ class Wpf_Tokens {
 		}
 
 		if ( ! in_array( 'WPFFORMS', $pieces, true )
-		&& ! in_array( 'ANONWPFFORMS', $pieces, true )
-		&& ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
+			 && ! in_array( 'ANONWPFFORMS', $pieces, true )
+			 && ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -188,6 +228,7 @@ class Wpf_Tokens {
 					}
 				}
 			}
+
 			// Return original value.
 			return $value;
 		}
@@ -228,6 +269,8 @@ class Wpf_Tokens {
 		// Fetch label if needed.
 		if ( $this->should_fetch_label( $token_info ) ) {
 			$value = $this->get_field_label( $field, $entry, $to_match );
+		} elseif ( 'address' === $token_info[2] ) {
+			$value = Automator()->db->trigger->get_token_meta( $token_info[3], $parse_tokens );
 		} else {
 			// Populate non-dynamic choices index(es).
 			if ( ! empty( $field['choices'] ) && empty( $field['dynamic_choices'] ) ) {
@@ -321,6 +364,10 @@ class Wpf_Tokens {
 							continue;
 						}
 
+						$user_id        = (int) $trigger_result['args']['user_id'];
+						$trigger_log_id = (int) $trigger_result['args']['trigger_log_id'];
+						$run_number     = (int) $trigger_result['args']['run_number'];
+
 						$field_id = $field['id'];
 						$key      = "{$meta_key}:{$form_id}|{$field_id}";
 
@@ -340,6 +387,41 @@ class Wpf_Tokens {
 							}
 						}
 
+						if ( 'address' === $field['type'] ) {
+
+							$args = array(
+								'user_id'        => $user_id,
+								'trigger_id'     => $trigger_id,
+								'run_number'     => $run_number, //get run number
+								'trigger_log_id' => $trigger_log_id,
+							);
+
+							$args['meta_key']   = 'address1';
+							$args['meta_value'] = $field['address1'];
+							Automator()->insert_trigger_meta( $args );
+
+							$args['meta_key']   = 'address2';
+							$args['meta_value'] = $field['address2'];
+							Automator()->insert_trigger_meta( $args );
+
+							$args['meta_key']   = 'city';
+							$args['meta_value'] = $field['city'];
+							Automator()->insert_trigger_meta( $args );
+
+							$args['meta_key']   = 'state';
+							$args['meta_value'] = $field['state'];
+							Automator()->insert_trigger_meta( $args );
+
+							$args['meta_key']   = 'postal';
+							$args['meta_value'] = $field['postal'];
+							Automator()->insert_trigger_meta( $args );
+
+							$args['meta_key']   = 'country';
+							$args['meta_value'] = $field['country'];
+							Automator()->insert_trigger_meta( $args );
+
+						}
+
 						// Maybe add spaces after commas.
 						if ( isset( $field['dynamic_items'] ) || ( strpos( $field['type'], 'payment' ) === 0 && 'payment-single' !== $field['type'] ) ) {
 							$data[ $key ] = str_replace( ',', ', ', $data[ $key ] );
@@ -353,10 +435,6 @@ class Wpf_Tokens {
 							$data[ $quantity_key ] = isset( $field['quantity'] ) ? $field['quantity'] : 1;
 						}
 					}
-
-					$user_id        = (int) $trigger_result['args']['user_id'];
-					$trigger_log_id = (int) $trigger_result['args']['trigger_log_id'];
-					$run_number     = (int) $trigger_result['args']['run_number'];
 
 					$args = array(
 						'user_id'        => $user_id,
@@ -568,7 +646,7 @@ class Wpf_Tokens {
 			$value    = $this->normalize_whitespace( $value );
 			$selected = array_search( $value, $labels, true );
 
-			 // Fallback check: if the value is not found, try the other key. Ticket #64096
+			// Fallback check: if the value is not found, try the other key. Ticket #64096
 			if ( false === $selected ) {
 				$fallback_key    = 'value' === $label_key ? 'label' : 'value';
 				$fallback_labels = wp_list_pluck( $field['choices'], $fallback_key );
@@ -788,7 +866,18 @@ class Wpf_Tokens {
 			$string = preg_replace( '/\s+/', ' ', $string );
 			$string = trim( $string );
 		}
+
 		return $string;
+	}
+
+	/**
+	 * @param $field
+	 * @param $address_key
+	 *
+	 * @return string
+	 */
+	public function get_address_field_value( $field, $address_key ) {
+		return '-';
 	}
 
 }

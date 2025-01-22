@@ -233,4 +233,53 @@ class Formatters_Utils {
 
 	}
 
+	/**
+	 * Converts a string with multiple placeholders into a formatted HTML structure with custom attributes.
+	 *
+	 * @param string $input The input string with placeholders enclosed in double curly braces.
+	 * @return string The formatted HTML output.
+	 */
+	public static function format_sentence_with_placeholders( $input ) {
+		// Validate the input.
+		if ( empty( $input ) || ! is_string( $input ) ) {
+			return '<div><span class="item-title__normal fallback-no-title-saved">Invalid input</span></div>';
+		}
+
+		// Define the pattern to match placeholders enclosed in double curly braces.
+		$pattern = '/\{\{(.*?)\}\}/';
+
+		// Check if there are any placeholders. If not, return the input string as plain text.
+		if ( ! preg_match( $pattern, $input ) ) {
+			return esc_html( $input );
+		}
+
+		// Replace placeholders with the desired HTML span structure.
+		$formatted = preg_replace_callback(
+			$pattern,
+			function ( $matches ) {
+				// Extract and sanitize the placeholder content.
+				$token_content = trim( $matches[1] );
+				$token_id      = strtoupper( str_replace( ' ', '_', $token_content ) ); // Convert to uppercase with underscores.
+				$token_id      = preg_replace( '/[^A-Z0-9_]/', '', $token_id ); // Ensure token ID contains only valid characters.
+
+				// Build the span for the token.
+				return sprintf(
+					'<span class="item-title__token" data-token-id="%s" data-options-id="%s">%s</span>',
+					esc_attr( $token_id ),
+					esc_attr( $token_id ),
+					esc_html( $token_content )
+				);
+			},
+			esc_html( $input )
+		);
+
+		// Wrap plain text (before the first placeholder) with a normal class span.
+		$formatted = preg_replace( '/<span class="item-title__token">/', '<span class="item-title__normal fallback-no-title-saved">', $formatted, 1 );
+
+		// Wrap the entire sentence in a div container.
+		return sprintf( '<div>%s</div>', $formatted );
+
+	}
+
+
 }

@@ -2,11 +2,11 @@
 namespace Uncanny_Automator\Integrations\Stripe;
 
 /**
- * Class Payment_Completed
+ * Class Charge_Refunded
  *
  * @package Uncanny_Automator
  */
-class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
+class Charge_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 
 	protected $helpers;
 
@@ -15,7 +15,7 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 	 *
 	 * @var string
 	 */
-	const TRIGGER_CODE = 'PAYMENT_COMPLETED';
+	const TRIGGER_CODE = 'CHARGE_REFUNDED';
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
@@ -24,6 +24,8 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 	public function setup_trigger() {
 
 		$this->helpers = array_shift( $this->dependencies );
+
+		$this->set_is_deprecated( true );
 
 		$this->set_integration( 'STRIPE' );
 
@@ -38,14 +40,14 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_sentence(
 			sprintf(
 			/* Translators: Trigger sentence */
-				esc_attr__( 'A payment is completed', 'uncanny-automator' ),
+				esc_attr__( 'A charge is refunded', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		// Non-active state sentence to show
 
-		$this->set_readable_sentence( esc_attr__( 'A payment is completed', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'A charge is refunded', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
 		$this->add_action( Stripe_Webhook::INCOMING_WEBHOOK_ACTION );
@@ -62,14 +64,8 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 	public function define_tokens( $trigger, $tokens ) {
 
 		$tokens[] = array(
-			'tokenId'   => 'ID',
-			'tokenName' => _x( 'ID', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'AMOUNT',
-			'tokenName' => _x( 'Amount', 'Stripe', 'uncanny-automator' ),
+			'tokenId'   => 'CHARGE_ID',
+			'tokenName' => _x( 'Charge ID', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
@@ -80,8 +76,14 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 		);
 
 		$tokens[] = array(
-			'tokenId'   => 'DESCRIPTION',
-			'tokenName' => _x( 'Description', 'Stripe', 'uncanny-automator' ),
+			'tokenId'   => 'AMOUNT',
+			'tokenName' => _x( 'Amount', 'Stripe', 'uncanny-automator' ),
+			'tokenType' => 'int',
+		);
+
+		$tokens[] = array(
+			'tokenId'   => 'PAYMENT_INTENT',
+			'tokenName' => _x( 'Payment intent', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
@@ -92,20 +94,14 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 		);
 
 		$tokens[] = array(
-			'tokenId'   => 'INVOICE_ID',
-			'tokenName' => _x( 'Invoice ID', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
 			'tokenId'   => 'PAYMENT_METHOD',
 			'tokenName' => _x( 'Payment method', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
 		$tokens[] = array(
-			'tokenId'   => 'PAYMENT_STATUS',
-			'tokenName' => _x( 'Payment status', 'Stripe', 'uncanny-automator' ),
+			'tokenId'   => 'INVOICE_ID',
+			'tokenName' => _x( 'Invoice ID', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
@@ -115,7 +111,9 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 			'tokenType' => 'string',
 		);
 
-		return $tokens;
+		$billing_tokens = $this->helpers->tokens->billing_tokens();
+
+		return array_merge( $tokens, $billing_tokens );
 	}
 
 	/**
@@ -131,7 +129,7 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 		list( $event ) = $hook_args;
 
 		// Check that the event has the correct type
-		if ( 'payment_intent.succeeded' !== $event['type'] ) {
+		if ( 'charge.refunded' !== $event['type'] ) {
 			return false;
 		}
 
@@ -151,20 +149,21 @@ class Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 
 		list( $event ) = $hook_args;
 
-		$payment_intent = $event['data']['object'];
+		$charge = $event['data']['object'];
 
 		$tokens = array(
-			'ID'             => empty( $payment_intent['id'] ) ? '' : $payment_intent['id'],
-			'AMOUNT'         => empty( $payment_intent['amount'] ) ? '' : $this->helpers->format_amount( $payment_intent['amount'] ),
-			'CURRENCY'       => empty( $payment_intent['currency'] ) ? '' : $payment_intent['currency'],
-			'DESCRIPTION'    => empty( $payment_intent['description'] ) ? '' : $payment_intent['description'],
-			'CUSTOMER_ID'    => empty( $payment_intent['customer'] ) ? '' : $payment_intent['customer'],
-			'INVOICE_ID'     => empty( $payment_intent['invoice'] ) ? '' : $payment_intent['invoice'],
-			'PAYMENT_METHOD' => empty( $payment_intent['payment_method'] ) ? '' : $payment_intent['payment_method'],
-			'PAYMENT_STATUS' => empty( $payment_intent['status'] ) ? '' : $payment_intent['status'],
-			'RECEIPT_URL'    => empty( $payment_intent['charges']['data'][0]['receipt_url'] ) ? '' : $payment_intent['charges']['data'][0]['receipt_url'],
+			'CHARGE_ID'      => empty( $charge['id'] ) ? '' : $charge['id'],
+			'CURRENCY'       => empty( $charge['currency'] ) ? '' : $charge['currency'],
+			'AMOUNT'         => empty( $charge['amount_refunded'] ) ? '' : $this->helpers->format_amount( $charge['amount'] ),
+			'PAYMENT_INTENT' => empty( $charge['payment_intent'] ) ? '' : $charge['payment_intent'],
+			'CUSTOMER_ID'    => empty( $charge['customer'] ) ? '' : $charge['customer'],
+			'PAYMENT_METHOD' => empty( $charge['payment_method'] ) ? '' : $charge['payment_method'],
+			'INVOICE_ID'     => empty( $charge['invoice'] ) ? '' : $charge['invoice'],
+			'RECEIPT_URL'    => empty( $charge['receipt_url'] ) ? '' : $charge['receipt_url'],
 		);
 
-		return $tokens;
+		$billing_tokens = $this->helpers->tokens->hydrate_billing_tokens( $charge );
+
+		return array_merge( $tokens, $billing_tokens );
 	}
 }

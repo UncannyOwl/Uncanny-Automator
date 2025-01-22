@@ -14,10 +14,12 @@ class Stripe_Helpers {
 
 	public $api;
 	public $webhook;
+	public $tokens;
 
 	public function __construct() {
 		$this->api     = new Stripe_Api( $this );
 		$this->webhook = new Stripe_Webhook( $this );
+		$this->tokens  = new Stripe_Tokens( $this );
 	}
 
 	/**
@@ -220,94 +222,5 @@ class Stripe_Helpers {
 		$time_format = get_option( 'time_format' );
 
 		return date( $date_format . ' ' . $time_format, $timestamp );
-	}
-
-	/**
-	 * billing_tokens_definition
-	 *
-	 * @return array
-	 */
-	public function billing_tokens_definition() {
-
-		$tokens = array();
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_EMAIL',
-			'tokenName' => _x( 'Billing email', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'email',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_NAME',
-			'tokenName' => _x( 'Billing name', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_PHONE',
-			'tokenName' => _x( 'Billing phone', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_LINE1',
-			'tokenName' => _x( 'Billing address line 1', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_LINE2',
-			'tokenName' => _x( 'Billing address line 2', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_CITY',
-			'tokenName' => _x( 'Billing address city', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_STATE',
-			'tokenName' => _x( 'Billing address state', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_COUNTRY',
-			'tokenName' => _x( 'Billing address country', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_POSTAL_CODE',
-			'tokenName' => _x( 'Billing address postal code', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		return $tokens;
-	}
-
-	/**
-	 * hydrate_billing_tokens
-	 *
-	 * @param  array $charge
-	 * @return array
-	 */
-	public function hydrate_billing_tokens( $charge ) {
-
-		$tokens = array(
-			'BILLING_EMAIL'               => empty( $charge['billing_details']['email'] ) ? '' : $charge['billing_details']['email'],
-			'BILLING_NAME'                => empty( $charge['billing_details']['name'] ) ? '' : $charge['billing_details']['name'],
-			'BILLING_PHONE'               => empty( $charge['billing_details']['phone'] ) ? '' : $charge['billing_details']['phone'],
-			'BILLING_ADDRESS_LINE1'       => empty( $charge['billing_details']['address']['line1'] ) ? '' : $charge['billing_details']['address']['line1'],
-			'BILLING_ADDRESS_LINE2'       => empty( $charge['billing_details']['address']['line2'] ) ? '' : $charge['billing_details']['address']['line2'],
-			'BILLING_ADDRESS_CITY'        => empty( $charge['billing_details']['address']['city'] ) ? '' : $charge['billing_details']['address']['city'],
-			'BILLING_ADDRESS_STATE'       => empty( $charge['billing_details']['address']['state'] ) ? '' : $charge['billing_details']['address']['state'],
-			'BILLING_ADDRESS_COUNTRY'     => empty( $charge['billing_details']['address']['country'] ) ? '' : $charge['billing_details']['address']['country'],
-			'BILLING_ADDRESS_POSTAL_CODE' => empty( $charge['billing_details']['address']['postal_code'] ) ? '' : $charge['billing_details']['address']['postal_code'],
-		);
-
-		return $tokens;
 	}
 }
