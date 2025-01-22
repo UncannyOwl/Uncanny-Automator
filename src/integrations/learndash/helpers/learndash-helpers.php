@@ -490,10 +490,15 @@ class Learndash_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
+	 * @param mixed  $all_label
+	 * @param bool   $any_option
+	 * @param bool   $multiple_values
+	 * @param bool   $relevant_tokens
+	 * @param bool   $supports_multi_custom
 	 *
 	 * @return mixed
 	 */
-	public function all_ld_groups( $label = null, $option_code = 'LDGROUP', $all_label = false, $any_option = true, $multiple_values = false, $relevant_tokens = true ) {
+	public function all_ld_groups( $label = null, $option_code = 'LDGROUP', $all_label = false, $any_option = true, $multiple_values = false, $relevant_tokens = true, $supports_multi_custom = false ) {
 		if ( ! $this->load_options ) {
 
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
@@ -506,9 +511,9 @@ class Learndash_Helpers {
 		$args = array(
 			'post_type'      => 'groups',
 			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		'orderby'            => 'title',
-		'order'              => 'ASC',
-		'post_status'        => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
 		);
 
 		if ( $all_label ) {
@@ -530,6 +535,10 @@ class Learndash_Helpers {
 
 		if ( false === $relevant_tokens ) {
 			$option['relevant_tokens'] = array();
+		}
+
+		if ( $multiple_values && $supports_multi_custom ) {
+			$option['supports_custom_value'] = true;
 		}
 
 		return apply_filters( 'uap_option_all_ld_groups', $option );

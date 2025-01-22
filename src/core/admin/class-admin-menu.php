@@ -111,6 +111,7 @@ class Admin_Menu {
 
 		// Setup Theme Options Page Menu in Admin
 		add_action( 'admin_init', array( $this, 'plugins_loaded' ), 1 );
+
 		add_action(
 			'admin_menu',
 			array(

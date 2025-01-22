@@ -29,6 +29,10 @@ namespace Uncanny_Automator;
 				<uap-rtl-search></uap-rtl-search>
 			</div><!-- .uap-template-library__search-wrapper -->
 
+			<div class="uap-template-library__filters-wrapper">
+				<uap-rtl-results-base-filters></uap-rtl-results-base-filters>
+			</div><!-- .uap-template-library__filters-wrapper -->
+
 			<div id="uap-template-library__menu-wrapper">
 				<uap-rtl-category-menu></uap-rtl-category-menu>
 				<uap-rtl-integration-menu></uap-rtl-integration-menu>

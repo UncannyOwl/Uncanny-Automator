@@ -2,11 +2,11 @@
 namespace Uncanny_Automator\Integrations\Stripe;
 
 /**
- * Class Subscription_Cancelled
+ * Class Charge_Failed
  *
  * @package Uncanny_Automator
  */
-class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
+class Charge_Failed extends \Uncanny_Automator\Recipe\Trigger {
 
 	protected $helpers;
 
@@ -15,7 +15,7 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 	 *
 	 * @var string
 	 */
-	const TRIGGER_CODE = 'SUBSCRIPTION_CANCELLED';
+	const TRIGGER_CODE = 'CHARGE_FAILED';
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object
@@ -24,6 +24,8 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 	public function setup_trigger() {
 
 		$this->helpers = array_shift( $this->dependencies );
+
+		$this->set_is_deprecated( true );
 
 		$this->set_integration( 'STRIPE' );
 
@@ -38,14 +40,14 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_sentence(
 			sprintf(
 			/* Translators: Trigger sentence */
-				esc_attr__( 'A subscription is cancelled', 'uncanny-automator' ),
+				esc_attr__( 'A charge fails', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		// Non-active state sentence to show
 
-		$this->set_readable_sentence( esc_attr__( 'A subscription is cancelled', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr__( 'A charge fails', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
 		$this->add_action( Stripe_Webhook::INCOMING_WEBHOOK_ACTION );
@@ -68,8 +70,20 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 		);
 
 		$tokens[] = array(
-			'tokenId'   => 'PRICE_ID',
-			'tokenName' => _x( 'Price ID', 'Stripe', 'uncanny-automator' ),
+			'tokenId'   => 'FAILURE_CODE',
+			'tokenName' => _x( 'Failure code', 'Stripe', 'uncanny-automator' ),
+			'tokenType' => 'string',
+		);
+
+		$tokens[] = array(
+			'tokenId'   => 'FAILURE_MESSAGE',
+			'tokenName' => _x( 'Failure message', 'Stripe', 'uncanny-automator' ),
+			'tokenType' => 'string',
+		);
+
+		$tokens[] = array(
+			'tokenId'   => 'CURRENCY',
+			'tokenName' => _x( 'Currency', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
@@ -80,20 +94,8 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 		);
 
 		$tokens[] = array(
-			'tokenId'   => 'CURRENCY',
-			'tokenName' => _x( 'Currency', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'PLAN_NAME',
-			'tokenName' => _x( 'Plan name', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'PRODUCT_ID',
-			'tokenName' => _x( 'Product ID', 'Stripe', 'uncanny-automator' ),
+			'tokenId'   => 'PAYMENT_INTENT',
+			'tokenName' => _x( 'Payment intent', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
@@ -104,18 +106,14 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 		);
 
 		$tokens[] = array(
-			'tokenId'   => 'INTERVAL',
-			'tokenName' => _x( 'Interval', 'Stripe', 'uncanny-automator' ),
+			'tokenId'   => 'PAYMENT_METHOD',
+			'tokenName' => _x( 'Payment method', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
-		$tokens[] = array(
-			'tokenId'   => 'LATEST_INVOICE',
-			'tokenName' => _x( 'Latest invoice', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
+		$billing_tokens = $this->helpers->tokens->billing_tokens();
 
-		return $tokens;
+		return array_merge( $tokens, $billing_tokens );
 	}
 
 	/**
@@ -131,7 +129,7 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 		list( $event ) = $hook_args;
 
 		// Check that the event has the correct type
-		if ( 'customer.subscription.deleted' !== $event['type'] ) {
+		if ( 'charge.failed' !== $event['type'] ) {
 			return false;
 		}
 
@@ -151,22 +149,21 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\Trigger {
 
 		list( $event ) = $hook_args;
 
-		$subscription = $event['data']['object'];
-
-		$plan = $subscription['plan'];
+		$charge = $event['data']['object'];
 
 		$tokens = array(
-			'ID'             => empty( $subscription['id'] ) ? '' : $subscription['id'],
-			'PRICE_ID'       => empty( $plan['id'] ) ? '' : $plan['id'],
-			'AMOUNT'         => empty( $plan['amount'] ) ? '' : $this->helpers->format_amount( $plan['amount'] ),
-			'CURRENCY'       => empty( $plan['currency'] ) ? '' : $plan['currency'],
-			'PLAN_NAME'      => empty( $plan['nickname'] ) ? '' : $plan['nickname'],
-			'PRODUCT_ID'     => empty( $plan['product'] ) ? '' : $plan['product'],
-			'CUSTOMER_ID'    => empty( $subscription['customer'] ) ? '' : $subscription['customer'],
-			'INTERVAL'       => empty( $plan['interval'] ) ? '' : $plan['interval'],
-			'LATEST_INVOICE' => empty( $subscription['latest_invoice'] ) ? '' : $subscription['latest_invoice'],
+			'ID'              => empty( $charge['id'] ) ? '' : $charge['id'],
+			'FAILURE_CODE'    => empty( $charge['failure_code'] ) ? '' : $charge['failure_code'],
+			'FAILURE_MESSAGE' => empty( $charge['failure_message'] ) ? '' : $charge['failure_message'],
+			'CURRENCY'        => empty( $charge['currency'] ) ? '' : $charge['currency'],
+			'AMOUNT'          => empty( $charge['amount'] ) ? '' : $this->helpers->format_amount( $charge['amount'] ),
+			'PAYMENT_INTENT'  => empty( $charge['payment_intent'] ) ? '' : $charge['payment_intent'],
+			'CUSTOMER_ID'     => empty( $charge['customer'] ) ? '' : $charge['customer'],
+			'PAYMENT_METHOD'  => empty( $charge['payment_method'] ) ? '' : $charge['payment_method'],
 		);
 
-		return $tokens;
+		$billing_tokens = $this->helpers->tokens->hydrate_billing_tokens( $charge );
+
+		return array_merge( $tokens, $billing_tokens );
 	}
 }

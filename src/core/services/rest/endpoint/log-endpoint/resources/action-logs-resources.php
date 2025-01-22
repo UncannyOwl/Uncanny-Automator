@@ -428,7 +428,7 @@ class Action_Logs_Resources {
 
 		// Fallback to postmeta if the sentence HTML is not saved.
 		if ( empty( $action_sentence_html ) ) {
-			$action_sentence_html = $action_meta['sentence_human_readable_html'];
+			$action_sentence_html = $this->utils::format_sentence_with_placeholders( $action_meta['sentence_human_readable'] );
 		}
 
 		// Check if the action is scheduled and can be cancelled.

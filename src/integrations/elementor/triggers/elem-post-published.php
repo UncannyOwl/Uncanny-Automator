@@ -9,6 +9,7 @@ namespace Uncanny_Automator;
  */
 class ELEM_POST_PUBLISHED {
 
+
 	/**
 	 * Integration code
 	 *
@@ -39,7 +40,26 @@ class ELEM_POST_PUBLISHED {
 
 
 	public function __construct() {
+		add_action(
+			'admin_init',
+			function () {
+				if ( 'yes' === automator_get_option( 'wp_elementor_after_post_insert_action_migrated', 'no' ) ) {
+					return;
+				}
+				global $wpdb;
+				$results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s", 'code', $this->trigger_code ) );
+				if ( ! empty( $results ) ) {
+					foreach ( $results as $post_id ) {
+						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id = %d AND meta_key LIKE %s", 'wp_after_insert_post', $post_id, 'add_action' ) );
+					}
+				}
+				automator_update_option( 'wp_elementor_after_post_insert_action_migrated', 'yes' );
+			},
+			99
+		);
+
 		add_action( 'elem_wp_after_insert_post', array( $this, 'post_published' ), 99, 1 );
+
 		$this->trigger_code = 'ELEM_POST_PUBLISHED';
 		$this->trigger_meta = 'WPPOSTTYPES';
 		$this->define_trigger();
@@ -65,9 +85,9 @@ class ELEM_POST_PUBLISHED {
 			),
 			/* translators: Logged-in trigger - WordPress */
 			'select_option_name'  => esc_attr_x( 'A post is published with Elementor', 'Elementor', 'uncanny-automator' ),
-			'action'              => 'wp_insert_post',
+			'action'              => 'wp_after_insert_post',
 			'priority'            => 90,
-			'accepted_args'       => 3,
+			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'schedule_a_post' ),
 			'options_callback'    => array( $this, 'load_options' ),
 		);
@@ -81,7 +101,6 @@ class ELEM_POST_PUBLISHED {
 	 * @return array
 	 */
 	public function load_options() {
-
 		$all_post_types = Automator()->helpers->recipe->wp->options->all_post_types(
 			null,
 			'WPPOSTTYPES',
@@ -108,10 +127,10 @@ class ELEM_POST_PUBLISHED {
 	 *
 	 * @return bool|void|\WP_Error|null
 	 */
-	public function schedule_a_post( $post_id, $post, $update ) {
+	public function schedule_a_post( $post_id, $post, $update, $post_before ) {
 		// only run when posts
 		// are published first time
-		if ( $update ) {
+		if ( ! Automator()->utilities->is_wp_post_being_published( $post, $post_before ) ) {
 			return;
 		}
 
@@ -190,6 +209,55 @@ class ELEM_POST_PUBLISHED {
 	}
 
 	/**
+	 * Identify recipes that match criteria based on post type
+	 *
+	 * @param $recipes
+	 * @param $required_post_type
+	 * @param $post
+	 *
+	 * @return array
+	 */
+	private function get_recipes_post_type_matches( $recipes, $required_post_type, $post ) {
+		$matched = array();
+		foreach ( $recipes as $recipe_id => $recipe ) {
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id = absint( $trigger['ID'] );
+				// required post type
+				if ( '0' === (string) $required_post_type[ $recipe_id ][ $trigger_id ] || (string) $post->post_type === (string) $required_post_type[ $recipe_id ][ $trigger_id ] ) {
+					$matched[]                           = $recipe_id;
+					$this->matched_recipes[ $recipe_id ] = $recipe;
+				}
+			}
+		}
+
+		return array_unique( $matched );
+	}
+
+	/**
+	 * @param $matched
+	 *
+	 * @return array
+	 */
+	private function get_matched_recipes( $matched ) {
+		if ( empty( $matched ) || empty( $this->matched_recipes ) ) {
+			return array();
+		}
+		$matched_recipe_ids = array();
+		foreach ( $this->matched_recipes as $recipe_id => $recipe ) {
+			$recipe_id = absint( $recipe_id );
+			if ( ! in_array( $recipe_id, $matched, true ) ) {
+				continue;
+			}
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id                         = absint( $trigger['ID'] );
+				$matched_recipe_ids[][ $recipe_id ] = $trigger_id;
+			}
+		}
+
+		return $matched_recipe_ids;
+	}
+
+	/**
 	 * @param $matched_recipe_ids
 	 * @param $user_id
 	 * @param $post
@@ -248,54 +316,5 @@ class ELEM_POST_PUBLISHED {
 
 		// post_id Token
 		Automator()->db->token->save( 'post_id', $post->ID, $trigger_meta );
-	}
-
-	/**
-	 * Identify recipes that match criteria based on post type
-	 *
-	 * @param $recipes
-	 * @param $required_post_type
-	 * @param $post
-	 *
-	 * @return array
-	 */
-	private function get_recipes_post_type_matches( $recipes, $required_post_type, $post ) {
-		$matched = array();
-		foreach ( $recipes as $recipe_id => $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				$trigger_id = absint( $trigger['ID'] );
-				// required post type
-				if ( '0' === (string) $required_post_type[ $recipe_id ][ $trigger_id ] || (string) $post->post_type === (string) $required_post_type[ $recipe_id ][ $trigger_id ] ) {
-					$matched[]                           = $recipe_id;
-					$this->matched_recipes[ $recipe_id ] = $recipe;
-				}
-			}
-		}
-
-		return array_unique( $matched );
-	}
-
-	/**
-	 * @param $matched
-	 *
-	 * @return array
-	 */
-	private function get_matched_recipes( $matched ) {
-		if ( empty( $matched ) || empty( $this->matched_recipes ) ) {
-			return array();
-		}
-		$matched_recipe_ids = array();
-		foreach ( $this->matched_recipes as $recipe_id => $recipe ) {
-			$recipe_id = absint( $recipe_id );
-			if ( ! in_array( $recipe_id, $matched, true ) ) {
-				continue;
-			}
-			foreach ( $recipe['triggers'] as $trigger ) {
-				$trigger_id                         = absint( $trigger['ID'] );
-				$matched_recipe_ids[][ $recipe_id ] = $trigger_id;
-			}
-		}
-
-		return $matched_recipe_ids;
 	}
 }

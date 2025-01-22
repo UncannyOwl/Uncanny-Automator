@@ -1,6 +1,7 @@
 <?php
 namespace Uncanny_Automator;
 
+use Exception;
 use Uncanny_Automator_Pro\Mailchimp_Pro_Helpers;
 
 use Uncanny_Automator\Api_Server;
@@ -1336,4 +1337,50 @@ class Mailchimp_Helpers {
 		);
 
 	}
+
+	/**
+	 * Dynamically sanitizes and validates Mailchimp merge fields.
+	 *
+	 * @param  array $fields The Mailchimp merge fields to validate.
+	 *
+	 * @return array The sanitized fields.
+	 * @throws \Exception If required sub-array fields are empty.
+	 */
+	public static function handle_mailchimp_merge_fields( $fields ) {
+
+		$sanitized_fields = array();
+
+		foreach ( $fields as $key => $value ) {
+			// Handle nested arrays.
+			if ( is_array( $value ) ) {
+				$nested_sanitized = self::handle_mailchimp_merge_fields( $value );
+
+				// Ensure no empty values exist in nested arrays.
+				foreach ( $nested_sanitized as $sub_key => $sub_value ) {
+					if ( empty( $sub_value ) && $sub_value !== '0' ) {
+						throw new Exception(
+							sprintf(
+								/* translators: %1$s is the sub-field key, %2$s is the parent field key. */
+								__( "The field '%1\$s' in '%2\$s' is required but is empty.", 'text-domain' ),
+								$sub_key,
+								$key
+							)
+						);
+					}
+				}
+
+				$sanitized_fields[ $key ] = $nested_sanitized;
+				continue;
+			}
+
+			// Sanitize scalar fields.
+			$sanitized_value = sanitize_text_field( $value );
+
+			$sanitized_fields[ $key ] = $sanitized_value;
+		}
+
+		return $sanitized_fields;
+
+	}
+
 }

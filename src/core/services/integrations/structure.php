@@ -10,7 +10,6 @@ use Uncanny_Automator\Utilities;
  *
  * @since 5.0
  * @package Uncanny_Automator\Services\Integrations
- *
  */
 class Structure {
 
@@ -115,7 +114,6 @@ class Structure {
 	/**
 	 * Gets the Recipe ID.
 	 *
-	 *
 	 * @return int
 	 */
 	public function get_recipe_id() {
@@ -147,7 +145,7 @@ class Structure {
 	private function has_settings_and_has_connected_prop( $code ) {
 
 		$has_settings       = ! empty( $this->active_integrations[ $code ]['settings_url'] );
-		$has_connected_prop = ! empty( $this->active_integrations[ $code ]['connected'] );
+		$has_connected_prop = isset( $this->active_integrations[ $code ]['connected'] );
 
 		return $has_settings && $has_connected_prop;
 

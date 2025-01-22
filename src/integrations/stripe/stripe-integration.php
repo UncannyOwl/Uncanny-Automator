@@ -36,14 +36,29 @@ class Stripe_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
+
+		// Settings
 		new Stripe_Settings( $this->helpers );
+
+		// Actions
 		new Create_Payment_Link( $this->helpers );
 		new Create_Customer( $this->helpers );
-		new Customer_Created( $this->helpers );
-		new Payment_Completed( $this->helpers );
 		new Delete_Customer( $this->helpers );
-		new Subscription_Cancelled( $this->helpers );
-		new Charge_Refunded( $this->helpers );
+
+		// Triggers
+		new Customer_Created( $this->helpers );
+		new Product_Refunded( $this->helpers );
+		new Subcription_Created( $this->helpers );
+		new Subcription_Cancelled( $this->helpers );
+		new Subcription_Paid( $this->helpers );
+		new Subcription_Payment_Failed( $this->helpers );
+		new Onetime_Payment_Completed( $this->helpers );
+
+		// Deprecated since Nov 2024
+		new Payment_Completed( $this->helpers );
+		new Subscription_Cancelled_Deprecated( $this->helpers );
 		new Charge_Failed( $this->helpers );
+		new Charge_Refunded( $this->helpers );
+		new Customer_Created_Deprecated( $this->helpers );
 	}
 }

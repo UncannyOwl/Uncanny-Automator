@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Seedprod;
 
 /**
@@ -26,6 +27,7 @@ class Seedprod_Integration extends \Uncanny_Automator\Integration {
 	 */
 	protected function load() {
 		new OPTIN_FORM_SUBMITTED();
+		new MAINTENANCE_MODE_SETTINGS();
 	}
 
 	/**

@@ -804,8 +804,8 @@ class Automator_Input_Parser {
 			return null;
 		}
 
-		// Early return if empty ( string or array ).
-		if ( empty( $field_text ) ) {
+		// Early return if empty array.
+		if ( is_array( $field_text ) && empty( $field_text ) ) {
 			return '';
 		}
 

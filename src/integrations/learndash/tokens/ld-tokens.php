@@ -252,6 +252,7 @@ class Ld_Tokens {
 				|| in_array( 'LDQUIZ_achieved_score', $pieces, true )
 				|| in_array( 'LDQUIZ_achieved_points', $pieces, true )
 				|| in_array( 'LDCOURSE_course_completed_on', $pieces, true )
+				|| in_array( 'LDCOURSE_course_points', $pieces, true )
 				|| in_array( 'LDCOURSE_COURSE_CUMULATIVE_TIME', $pieces, true )
 				|| in_array( 'LDCOURSE_COURSE_TIME_AT_COMPLETION', $pieces, true )
 				|| ! empty( $pieces_quiz_token_data )
@@ -298,6 +299,7 @@ class Ld_Tokens {
 					} else {
 						$quiz_id = Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDQUIZ', $user_id, $recipe_log_id );
 					}
+
 					return $this->get_quiz_token_data( $pieces[2], $user_id, $quiz_id );
 				}
 
@@ -345,6 +347,18 @@ class Ld_Tokens {
 					return \learndash_adjust_date_time_display( $completed_on );
 				}
 
+				// LD Course points token
+				if ( in_array( 'LDCOURSE_course_points', $pieces, true ) ) {
+					$course_id = Automator()->get->mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, 'LDCOURSE', $user_id, $recipe_log_id );
+
+					$t_data = array_shift( $trigger_data );
+					if ( isset( $t_data['meta']['LDCOURSE'] ) && 0 === (int) $course_id ) {
+						$course_id = $t_data['meta']['LDCOURSE'];
+					}
+
+					return learndash_get_course_points( $course_id );
+				}
+
 				// Toolkit Course Timer tokens.
 				if ( in_array( 'LDCOURSE_COURSE_TIME_AT_COMPLETION', $pieces, true ) || in_array( 'LDCOURSE_COURSE_CUMULATIVE_TIME', $pieces, true ) ) {
 					if ( Learndash_Helpers::is_course_timer_activated() ) {
@@ -370,6 +384,7 @@ class Ld_Tokens {
 								if ( is_a( $course_post, 'WP_Post' ) && 'sfwd-courses' === $course_post->post_type ) {
 									$completed = get_user_meta( $user_id, "course_timer_completed_{$course_id}", true );
 								}
+
 								return $completed;
 							}
 							if ( 'LDCOURSE_COURSE_CUMULATIVE_TIME' === $token_key ) {
@@ -377,6 +392,7 @@ class Ld_Tokens {
 							}
 						}
 					}
+
 					return $value;
 				}
 
@@ -601,6 +617,12 @@ class Ld_Tokens {
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
+			$new_tokens[] = array(
+				'tokenId'         => $trigger_meta . '_course_points',
+				'tokenName'       => __( 'Course points', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			);
 
 			$tokens = array_merge( $tokens, $new_tokens );
 		}
@@ -665,7 +687,7 @@ class Ld_Tokens {
 					$quiz_q_and_a_tokens[ $quiz_id ][] = array(
 						'tokenId'         => 'LDQUIZ_QUESTION_ID_' . $question_post_id,
 						'tokenName'       => sprintf(
-							/* translators: %d, Question Post ID %s: Question Token title */
+						/* translators: %d, Question Post ID %s: Question Token title */
 							_x( 'Question (%1$d) - %2$s', 'LearnDash Question Token', 'uncanny-automator' ),
 							$question_post_id,
 							$question_title
@@ -677,7 +699,7 @@ class Ld_Tokens {
 					$quiz_q_and_a_tokens[ $quiz_id ][] = array(
 						'tokenId'         => 'LDQUIZ_ANSWER_ID_' . $question_post_id,
 						'tokenName'       => sprintf(
-							/* translators: %d, Question Post ID %s: Question Token title */
+						/* translators: %d, Question Post ID %s: Question Token title */
 							_x( 'Answer (%1$d) - %2$s', 'LearnDash Answer Token', 'uncanny-automator' ),
 							$question_post_id,
 							$question_title
@@ -742,6 +764,7 @@ class Ld_Tokens {
 			if ( empty( $question ) ) {
 				return '-';
 			}
+
 			return $question;
 		}
 
@@ -756,6 +779,7 @@ class Ld_Tokens {
 				return '-';
 			}
 			$question = isset( $user_quiz_data['data'][ $question_id ] ) ? $user_quiz_data['data'][ $question_id ] : false;
+
 			return $question ? $question['string_answer'] : '-';
 		}
 
@@ -909,7 +933,7 @@ class Ld_Tokens {
 			$scores[ $category_id ]['score'] = $score['total_points'] ? ( $score['points'] / $score['total_points'] ) * 100 : 0;
 			// Generate String Output.
 			$results .= sprintf(
-				/* Translators: %1$s = category name, %2$s = score.*/
+			/* Translators: %1$s = category name, %2$s = score.*/
 				'<div><strong>%s:</strong> %s</div>',
 				$scores[ $category_id ]['name'],
 				round( $scores[ $category_id ]['score'], 2 ) . '%'
@@ -976,7 +1000,7 @@ class Ld_Tokens {
 			// REVIEW - Test if this is required adapted from WpProQuiz_View_StatisticsAjax for LD V 2.0.6.8 -> 2.1.x. support.
 			if ( ( 'sort_answer' == $answer_type ) || ( 'matrix_sort_answer' == $answer_type ) ) {
 				if ( ! empty( $question_data ) && ! empty( $answer_data ) ) {
-					if ( ( -1 == $answer_data[0] ) || ( 0 !== strcmp( $answer_data[0], (int) $answer_data[0] ) ) ) {
+					if ( ( - 1 == $answer_data[0] ) || ( 0 !== strcmp( $answer_data[0], (int) $answer_data[0] ) ) ) {
 						foreach ( $question_data as $q_k => $q_v ) {
 							$q_k     = (int) $q_k;
 							$datapos = md5( $user_id . $question_id . $q_k );
@@ -1009,7 +1033,7 @@ class Ld_Tokens {
 				}
 
 				$question_count = count( $question_data );
-				for ( $i = 0; $i < $question_count; $i++ ) {
+				for ( $i = 0; $i < $question_count; $i ++ ) {
 
 					$answer_text = $question_data[ $i ]->isHtml() ? $question_data[ $i ]->getAnswer() : esc_html( $question_data[ $i ]->getAnswer() );
 					$answer_text = do_shortcode( $answer_text );
@@ -1054,7 +1078,7 @@ class Ld_Tokens {
 								$sort_text = $v->isSortStringHtml() ? $v->getSortString() : esc_html( $v->getSortString() );
 								// Output.
 								$data[ $question_post_id ]['answer'][] = sprintf(
-									// translators: placeholder: Answer, Sort Text.
+								// translators: placeholder: Answer, Sort Text.
 									esc_html_x( '%1$s { %2$s }', 'placeholder: Answer, Sort Text', 'learndash' ),
 									do_shortcode( $answer_text ),
 									do_shortcode( $sort_text )
@@ -1094,7 +1118,7 @@ class Ld_Tokens {
 		$c          = 0;
 		$data_count = count( $data );
 		foreach ( $data as $question_post_id => $question ) {
-			$c++;
+			$c ++;
 			$answer = '';
 			if ( ! empty( $question['answer'] ) ) {
 				if ( count( $question['answer'] ) > 1 ) {
@@ -1107,7 +1131,7 @@ class Ld_Tokens {
 
 			// Generate String Output.
 			$results .= sprintf(
-				/* Translators: %1$s = Question, %2$s = score.*/
+			/* Translators: %1$s = Question, %2$s = score.*/
 				'<div><strong>%s:</strong><br>%s</div><br>',
 				$question['question'],
 				$answer
@@ -1130,7 +1154,7 @@ class Ld_Tokens {
 	}
 
 	/**
-	 * @param array  $data
+	 * @param array $data
 	 *
 	 * @return string
 	 */
@@ -1223,7 +1247,7 @@ class Ld_Tokens {
 
 	/**
 	 * @param string $answer_text The answer text.
-	 * @param array  $answer_data The answer data.
+	 * @param array $answer_data The answer data.
 	 *
 	 * @return string
 	 */
@@ -1257,7 +1281,7 @@ class Ld_Tokens {
 
 	/**
 	 * @param string $answer_text The answer text.
-	 * @param array  $answer_data The answer data.
+	 * @param array $answer_data The answer data.
 	 *
 	 * @return string
 	 */
@@ -1291,12 +1315,12 @@ class Ld_Tokens {
 	}
 
 	/**
-	 * @param array  $answer_data
+	 * @param array $answer_data
 	 * @param string $graded_type
-	 * @param int    $reference_id
-	 * @param int    $quiz_pro_id
-	 * @param int    $question_id
-	 * @param int    $user_id
+	 * @param int $reference_id
+	 * @param int $quiz_pro_id
+	 * @param int $question_id
+	 * @param int $user_id
 	 */
 	private function get_quiz_essay_answer( $answer_data, $graded_type, $reference_id, $quiz_pro_id, $question_id, $user_id ) {
 

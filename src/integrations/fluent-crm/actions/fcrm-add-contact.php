@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use FluentCrm\App\Models\Subscriber;
-
 /**
  * Class FCRM_ADD_CONTACT
  *
@@ -228,10 +226,12 @@ class FCRM_ADD_CONTACT {
 			// Status field
 			Automator()->helpers->recipe->field->select(
 				array(
+					'input_type'            => 'select',
 					'option_code'           => 'FCRMSTATUS',
 					'label'                 => esc_attr__( 'Status', 'uncanny-automator' ),
-					'options'               => Automator()->helpers->recipe->fluent_crm->get_subscriber_statuses( false ),
+					'options'               => Automator()->helpers->recipe->fluent_crm->get_subscriber_statuses( false, true ),
 					'supports_custom_value' => false,
+					'default_value'         => null,
 				)
 			),
 			Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists(
