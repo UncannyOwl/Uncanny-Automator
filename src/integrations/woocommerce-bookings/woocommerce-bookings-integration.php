@@ -20,7 +20,7 @@ class Woocommerce_Bookings_Integration extends Integration {
 		$this->helpers = new Wc_Bookings_Helpers();
 		$this->set_integration( 'WC_BOOKINGS' );
 		$this->set_name( 'Woo Bookings' );
-		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/woocommerce-bookings-icon.svg' );
+		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/woo-icon.svg' );
 	}
 
 	/**

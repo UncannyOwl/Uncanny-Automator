@@ -16,7 +16,7 @@ namespace Uncanny_Automator;
 	<div class="uap-integrations-banner-items">
 		<div class="uap-integrations-banner-item">
 			<span class="uap-integrations-banner-item__icon">
-				<uo-icon id="tachometer"></uo-icon>
+				<uo-icon id="gauge-max"></uo-icon>
 			</span>
 			<div class="uap-integrations-banner-item__text">
 				<?php esc_html_e( 'Improve your workflow efficiency', 'uncanny-automator' ); ?>
@@ -32,7 +32,7 @@ namespace Uncanny_Automator;
 		</div>
 		<div class="uap-integrations-banner-item">
 			<span class="uap-integrations-banner-item__icon">
-				<uo-icon id="usd-circle"></uo-icon>
+				<uo-icon id="circle-dollar"></uo-icon>
 			</span>
 			<div class="uap-integrations-banner-item__text">
 				<?php esc_html_e( 'Slash custom development costs', 'uncanny-automator' ); ?>

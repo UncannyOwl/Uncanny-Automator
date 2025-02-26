@@ -30,12 +30,12 @@ class Legacy_Token_Parser {
 		$this->defined_tokens = apply_filters(
 			'automator_pre_defined_tokens',
 			array(
-				'recipe_total_run',
-				'recipe_run',
+				// 'recipe_total_run',
+				// 'recipe_run',
 			)
 		);
 
-		add_filter( 'automator_maybe_parse_token', array( $this, 'automator_maybe_parse_postmeta_token' ), 99999, 6 );
+		// add_filter( 'automator_maybe_parse_token', array( $this, 'automator_maybe_parse_postmeta_token' ), 99999, 6 );
 
 		// Attach the new trigger tokens arch for actions that are scheduled.
 		add_filter( 'automator_pro_before_async_action_executed', array( $this, 'attach_trigger_tokens_hook' ), 10, 1 );

@@ -76,7 +76,7 @@ class Recipe_Post_Metabox {
 								<div>
 									<div class="item-actions">
 										<div class="item-actions__btn">
-											<i class="uo-icon uo-icon--ellipsis-h"></i>
+											<i class="uo-icon uo-icon--ellipsis"></i>
 										</div>
 									</div>
 									<div class="item-icon"></div>
@@ -124,7 +124,7 @@ class Recipe_Post_Metabox {
 								<div>
 									<div class="item-actions">
 										<div class="item-actions__btn">
-											<i class="uo-icon uo-icon--ellipsis-h"></i>
+											<i class="uo-icon uo-icon--ellipsis"></i>
 										</div>
 									</div>
 									<div class="item-icon"></div>

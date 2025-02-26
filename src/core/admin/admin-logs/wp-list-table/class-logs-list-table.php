@@ -495,7 +495,7 @@ class Logs_List_Table extends WP_List_Table {
 					$run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">
-								<uo-icon id="user-slash-solid"></uo-icon>
+								<uo-icon id="user-slash" icon-style="solid"></uo-icon>
 							</div>
 						</div>';
 				}
@@ -711,7 +711,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">
-								<uo-icon id="user-slash-solid"></uo-icon>
+								<uo-icon id="user-slash" icon-style="solid"></uo-icon>
 							</div>
 						</div>';
 				}
@@ -934,7 +934,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">
-								<uo-icon id="user-slash-solid"></uo-icon>
+								<uo-icon id="user-slash" icon-style="solid"></uo-icon>
 							</div>
 						</div>';
 

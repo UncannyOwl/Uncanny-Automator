@@ -7,7 +7,7 @@ namespace Uncanny_Automator;
 <div class="uap-integrations-search" id="uap-integrations-search">
 
 	<div class="uap-field">
-		<uo-icon id="search" class="uap-field-icon"></uo-icon>
+		<uo-icon id="magnifying-glass" class="uap-field-icon"></uo-icon>
 		<input type="text" class="uap-field-text uap-field--has-icon" id="uap-integrations-search-field" placeholder="<?php esc_attr_e( 'Search for integrations', 'uncanny-automator' ); ?>">
 	</div>
 

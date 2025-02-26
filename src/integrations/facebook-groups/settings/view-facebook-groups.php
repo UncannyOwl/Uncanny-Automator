@@ -145,7 +145,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<uo-button color="primary" href="<?php echo esc_url( $login_dialog_uri ); ?>">
 
-						<uo-icon id="exchange"></uo-icon>
+						<uo-icon id="arrow-right-arrow-left"></uo-icon>
 
 						<?php esc_html_e( 'Reconnect account', 'uncanny-automator' ); ?>
 
@@ -200,7 +200,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<uo-button color="danger" href="<?php echo esc_url( $disconnect_uri ); ?>">
 
-						<uo-icon id="sign-out"></uo-icon>
+						<uo-icon id="right-from-bracket"></uo-icon>
 
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 

@@ -132,7 +132,7 @@
 					color="danger"
 					href="<?php echo esc_url_raw( $vars['disconnect_url'] ); ?>"
 				>
-					<uo-icon id="sign-out"></uo-icon>
+					<uo-icon id="right-from-bracket"></uo-icon>
 					<?php echo esc_html_x( 'Disconnect', 'Google Contacts', 'uncanny-automator' ); ?>
 				</uo-button>
 			</div><!--.uap-settings-panel-bottom-right -->

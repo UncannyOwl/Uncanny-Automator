@@ -11,6 +11,10 @@ abstract class Universal_Token extends Token {
 
 	const PREFIX = 'UT';
 
+	public $id_template;
+
+	public $name_template;
+
 	/**
 	 * __construct
 	 *
@@ -36,6 +40,9 @@ abstract class Universal_Token extends Token {
 			'requiresUser'   => $this->get_requires_user(),
 			'type'           => $this->get_type(),
 			'supportedItems' => $this->get_supported_items(),
+			'fields'         => $this->get_fields(),
+			'idTemplate'     => $this->id_template,
+			'nameTemplate'   => $this->name_template,
 		);
 	}
 
@@ -80,5 +87,9 @@ abstract class Universal_Token extends Token {
 	 */
 	public function parse_integration_token( $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		return $return;
+	}
+
+	public function get_fields() {
+		return array();
 	}
 }

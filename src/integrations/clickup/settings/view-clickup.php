@@ -123,7 +123,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<uo-button color="danger" href="<?php echo esc_url( $vars['disconnect_url'] ); ?>">
 
-						<uo-icon id="sign-out"></uo-icon>
+						<uo-icon id="right-from-bracket"></uo-icon>
 
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 

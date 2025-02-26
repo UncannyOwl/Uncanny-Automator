@@ -94,7 +94,7 @@ class AutomatorInstagramSettings {
 
                                     class="uap-instagram-account-refresh-button"
                                 >
-                                    <uo-icon id="sync"></uo-icon>
+                                    <uo-icon id="rotate"></uo-icon>
                                 </uo-button>
                             </uo-tooltip>
                         </div>

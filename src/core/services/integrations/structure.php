@@ -453,6 +453,13 @@ class Structure {
 		// List Free only items
 		foreach ( (array) $this->all_integrations as $code => $props ) {
 
+			$is_pro_only = isset( $props['is_pro_only'] ) && 'yes' === $props['is_pro_only'];
+
+			// If it's Pro only, continue
+			if ( $is_pro_only ) {
+				continue;
+			}
+
 			$is_app_connected = isset( $this->active_integrations[ $code ]['connected'] )
 				? $this->active_integrations[ $code ]['connected']
 				: null;
@@ -460,13 +467,6 @@ class Structure {
 			$url_settings_page = isset( $this->active_integrations[ $code ]['settings_url'] )
 				? $this->active_integrations[ $code ]['settings_url']
 				: null;
-
-			$is_pro_only = isset( $props['is_pro_only'] ) && 'yes' === $props['is_pro_only'];
-
-			// If it's Pro only, continue
-			if ( $is_pro_only ) {
-				continue;
-			}
 
 			$triggers = $this->get_integration_property( $code, 'triggers' );
 			$actions  = $this->get_integration_property( $code, 'actions' );

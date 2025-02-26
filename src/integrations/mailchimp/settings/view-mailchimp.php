@@ -98,7 +98,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								color="secondary"
 								class="uap-spacing-top"
 							>
-								<uo-icon id="sync"></uo-icon> 
+								<uo-icon id="rotate"></uo-icon> 
 								<?php esc_attr_e( 'Regenerate webhook URL', 'uncanny-automator' ); ?>
 							</uo-button>
 
@@ -207,7 +207,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 						<uo-button color="danger" href="<?php echo esc_url( $disconnect_uri ); ?>">
 
-							<uo-icon id="sign-out"></uo-icon>
+							<uo-icon id="right-from-bracket"></uo-icon>
 
 							<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 

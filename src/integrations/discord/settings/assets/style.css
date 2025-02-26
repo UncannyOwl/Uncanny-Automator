@@ -1,0 +1,13 @@
+#uap-discord-server-connect-list{
+	display:block;
+	margin-bottom: 1em;
+}
+
+#uap-discord-server-connect-list table{
+	width:100%;
+}
+
+#uap-discord-server-connect-list table th,
+#uap-discord-server-connect-list table td {
+    text-align: left;
+}

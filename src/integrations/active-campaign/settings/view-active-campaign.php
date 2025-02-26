@@ -176,7 +176,7 @@
 						<p id="active-campaign-local-sync-p" class="uap-spacing-bottom uap-spacing-bottom--none">
 							<hr/>
 							<uo-button size="extra-small" id="active-campaign-local-syn-btn" color="secondary">
-								<uo-icon id="sync"></uo-icon>
+								<uo-icon id="rotate"></uo-icon>
 								<?php esc_html_e( 'Refresh', 'uncanny-automator' ); ?>
 							</uo-button>
 						</p>
@@ -218,7 +218,7 @@
 								color="secondary"
 								class="uap-spacing-top"
 							>
-								<uo-icon id="sync"></uo-icon>
+								<uo-icon id="rotate"></uo-icon>
 								<?php esc_attr_e( 'Regenerate webhook URL', 'uncanny-automator' ); ?>
 							</uo-button>
 
@@ -287,7 +287,7 @@
 						href="<?php echo esc_url( $this->disconnect_url ); ?>"
 						color="danger"
 					>
-						<uo-icon id="sign-out"></uo-icon>
+						<uo-icon id="right-from-bracket"></uo-icon>
 
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 					</uo-button>

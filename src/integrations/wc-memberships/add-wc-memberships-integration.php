@@ -24,7 +24,7 @@ class Add_Wc_Memberships_Integration {
 	protected function setup() {
 		$this->set_integration( 'WCMEMBERSHIPS' );
 		$this->set_name( 'Woo Memberships' );
-		$this->set_icon( 'woocommerce-icon.svg' );
+		$this->set_icon( 'woo-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'woocommerce-memberships/woocommerce-memberships.php' );
 	}

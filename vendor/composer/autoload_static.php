@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
+class ComposerStaticInita70220d756a0ac2f65b3eb9c92052084
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -21,6 +21,7 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Flatted' => __DIR__ . '/../..' . '/src/recipe-ui/node_modules/flatted/php/flatted.php',
         'FlattedString' => __DIR__ . '/../..' . '/src/recipe-ui/node_modules/flatted/php/flatted.php',
+        'UncannyAutomator\\Integrations\\Bricks_Builder\\BRICKS_BUILDER_USER_SUBMITS_FORM' => __DIR__ . '/../..' . '/src/integrations/bricks-builder/triggers/bricks-builder-user-submits-form.php',
         'Uncanny_Automator\\AC_ANNON_ADD' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-add.php',
         'Uncanny_Automator\\AC_ANNON_ADDTAG' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-addtag.php',
         'Uncanny_Automator\\AC_ANNON_LISTREMOVE' => __DIR__ . '/../..' . '/src/integrations/active-campaign/actions/ac-annon-listremove.php',
@@ -329,6 +330,7 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Bdb_Tokens' => __DIR__ . '/../..' . '/src/integrations/buddyboss/tokens/bdb-tokens.php',
         'Uncanny_Automator\\Blocks' => __DIR__ . '/../..' . '/src/core/blocks/class-blocks.php',
         'Uncanny_Automator\\Bp_Tokens' => __DIR__ . '/../..' . '/src/integrations/buddypress/tokens/bp-tokens.php',
+        'Uncanny_Automator\\Bricks_Builder_Helpers' => __DIR__ . '/../..' . '/src/integrations/bricks-builder/helpers/bricks-builder-helpers.php',
         'Uncanny_Automator\\Buddyboss_Helpers' => __DIR__ . '/../..' . '/src/integrations/buddyboss/helpers/buddyboss-helpers.php',
         'Uncanny_Automator\\Buddypress_Helpers' => __DIR__ . '/../..' . '/src/integrations/buddypress/helpers/buddypress-helpers.php',
         'Uncanny_Automator\\CAMPAIGN_CREATEANDSEND' => __DIR__ . '/../..' . '/src/integrations/mailchimp/actions/campaign-createandsend.php',
@@ -485,6 +487,12 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Instagram_Helpers' => __DIR__ . '/../..' . '/src/integrations/instagram/helpers/instagram-helpers.php',
         'Uncanny_Automator\\Instagram_Settings' => __DIR__ . '/../..' . '/src/integrations/instagram/settings/settings-instagram.php',
         'Uncanny_Automator\\Integration' => __DIR__ . '/../..' . '/src/core/lib/recipe-parts/abstract-integration.php',
+        'Uncanny_Automator\\Integrations\\Advanced\\Advanced_Integration' => __DIR__ . '/../..' . '/src/integrations/advanced/class-advanced-integration.php',
+        'Uncanny_Automator\\Integrations\\Advanced\\Calculation_Token' => __DIR__ . '/../..' . '/src/integrations/advanced/tokens/calculation-token.php',
+        'Uncanny_Automator\\Integrations\\Advanced\\Postmeta_Token' => __DIR__ . '/../..' . '/src/integrations/advanced/tokens/postmeta-token.php',
+        'Uncanny_Automator\\Integrations\\Advanced\\Recipe_Run_Token' => __DIR__ . '/../..' . '/src/integrations/advanced/tokens/recipe-run-token.php',
+        'Uncanny_Automator\\Integrations\\Advanced\\Recipe_Run_Total_Token' => __DIR__ . '/../..' . '/src/integrations/advanced/tokens/recipe-run-total-token.php',
+        'Uncanny_Automator\\Integrations\\Advanced\\Usermeta_Token' => __DIR__ . '/../..' . '/src/integrations/advanced/tokens/usermeta-token.php',
         'Uncanny_Automator\\Integrations\\Aweber\\AWEBER_SUBSCRIBER_ADD' => __DIR__ . '/../..' . '/src/integrations/aweber/actions/aweber-subscriber-add.php',
         'Uncanny_Automator\\Integrations\\Aweber\\AWEBER_SUBSCRIBER_TAG_ADD' => __DIR__ . '/../..' . '/src/integrations/aweber/actions/aweber-subscriber-tag-add.php',
         'Uncanny_Automator\\Integrations\\Aweber\\AWEBER_SUBSCRIBER_UPDATE' => __DIR__ . '/../..' . '/src/integrations/aweber/actions/aweber-subscriber-update.php',
@@ -502,6 +510,8 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Helpers' => __DIR__ . '/../..' . '/src/integrations/brevo/helpers/brevo-helpers.php',
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Integration' => __DIR__ . '/../..' . '/src/integrations/brevo/brevo-integration.php',
         'Uncanny_Automator\\Integrations\\Brevo\\Brevo_Settings' => __DIR__ . '/../..' . '/src/integrations/brevo/settings/settings-brevo.php',
+        'Uncanny_Automator\\Integrations\\Bricks_Builder\\BRICKS_BUILDER_ANON_FORM_SUBMIT' => __DIR__ . '/../..' . '/src/integrations/bricks-builder/triggers/bricks-builder-anon-form-submit.php',
+        'Uncanny_Automator\\Integrations\\Bricks_Builder\\Bricks_Builder_Integration' => __DIR__ . '/../..' . '/src/integrations/bricks-builder/bricks-builder-integration.php',
         'Uncanny_Automator\\Integrations\\Buddyboss\\Tokens\\Loopable\\Universal\\User_Groups' => __DIR__ . '/../..' . '/src/integrations/buddyboss/tokens/loopable/universal/user-groups.php',
         'Uncanny_Automator\\Integrations\\Buddypress\\Tokens\\Loopable\\Universal\\User_Groups' => __DIR__ . '/../..' . '/src/integrations/buddypress/tokens/universal/user-groups.php',
         'Uncanny_Automator\\Integrations\\Campaign_Monitor\\CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER' => __DIR__ . '/../..' . '/src/integrations/campaign-monitor/actions/campaign-monitor-add-update-subscriber.php',
@@ -555,6 +565,19 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Month_Numeric' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-month-numeric.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Time' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-time.php',
         'Uncanny_Automator\\Integrations\\DateTime\\Tokens\\Current_Timestamp' => __DIR__ . '/../..' . '/src/integrations/datetime/tokens/current-timestamp.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_ADD_MEMBER_TO_CHANNEL' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-add-member-to-channel.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_ASSIGN_ROLE_TO_MEMBER' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-assign-role-member.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_CREATE_CHANNEL' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-create-channel.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_INVITE_MEMBER_TO_SERVER' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-invite-member-to-server.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_REMOVE_MEMBER' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-remove-member.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_REMOVE_ROLE_FROM_MEMBER' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-remove-role-from-member.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-send-direct-message-to-member.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_SEND_MESSAGE_TO_CHANNEL' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-send-message-to-channel.php',
+        'Uncanny_Automator\\Integrations\\Discord\\DISCORD_UPDATE_MEMBER' => __DIR__ . '/../..' . '/src/integrations/discord/actions/discord-update-member.php',
+        'Uncanny_Automator\\Integrations\\Discord\\Discord_Api' => __DIR__ . '/../..' . '/src/integrations/discord/helpers/discord-api.php',
+        'Uncanny_Automator\\Integrations\\Discord\\Discord_Helpers' => __DIR__ . '/../..' . '/src/integrations/discord/helpers/discord-helpers.php',
+        'Uncanny_Automator\\Integrations\\Discord\\Discord_Integration' => __DIR__ . '/../..' . '/src/integrations/discord/discord-integration.php',
+        'Uncanny_Automator\\Integrations\\Discord\\Discord_Settings' => __DIR__ . '/../..' . '/src/integrations/discord/settings/discord-settings.php',
         'Uncanny_Automator\\Integrations\\Duplicator\\BACKUP_COMPLETES_WITH_STATUS' => __DIR__ . '/../..' . '/src/integrations/duplicator/triggers/backup-completes-with-status.php',
         'Uncanny_Automator\\Integrations\\Duplicator\\Duplicator_Integration' => __DIR__ . '/../..' . '/src/integrations/duplicator/duplicator-integration.php',
         'Uncanny_Automator\\Integrations\\Duplicator\\INITIATE_A_BACKUP' => __DIR__ . '/../..' . '/src/integrations/duplicator/actions/initiate-a-backup.php',
@@ -728,6 +751,10 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\THRIVE_ULTIMATUM_USER_TRIGGERS_EVERGREEN_CAMPAIGN' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/triggers/thrive-ultimatum-user-triggers-evergreen-campaign.php',
         'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\Thrive_Ultimatum_Helpers' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php',
         'Uncanny_Automator\\Integrations\\Thrive_Ultimatum\\Thrive_Ultimatum_Integration' => __DIR__ . '/../..' . '/src/integrations/thrive-ultimatum/class-thrive-ultimatum-integration.php',
+        'Uncanny_Automator\\Integrations\\URL\\URL_HAS_PARAM' => __DIR__ . '/../..' . '/src/integrations/url/triggers/url-has-param.php',
+        'Uncanny_Automator\\Integrations\\URL\\URL_HAS_PARAM_LOGGED_IN' => __DIR__ . '/../..' . '/src/integrations/url/triggers/url-has-param-logged-in.php',
+        'Uncanny_Automator\\Integrations\\URL\\URL_Helpers' => __DIR__ . '/../..' . '/src/integrations/url/helpers/url-helpers.php',
+        'Uncanny_Automator\\Integrations\\URL\\URL_Integration' => __DIR__ . '/../..' . '/src/integrations/url/url-integration.php',
         'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Categories' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/post-categories.php',
         'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Tags' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/post-tags.php',
         'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Utils\\Taxonomy_Fetcher' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/utils/terms.php',
@@ -858,10 +885,12 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Mec_Event_Tokens' => __DIR__ . '/../..' . '/src/integrations/modern-events-calendar/tokens/mec-event-tokens.php',
         'Uncanny_Automator\\Memberpress_Courses_Helpers' => __DIR__ . '/../..' . '/src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php',
         'Uncanny_Automator\\Memberpress_Helpers' => __DIR__ . '/../..' . '/src/integrations/memberpress/helpers/memberpress-helpers.php',
+        'Uncanny_Automator\\Migrations\\Migrate_Nested_Tokens' => __DIR__ . '/../..' . '/src/core/migrations/class-migrate-nested-tokens.php',
         'Uncanny_Automator\\Migrations\\Migrate_Schedules' => __DIR__ . '/../..' . '/src/core/migrations/class-migrate-schedules.php',
         'Uncanny_Automator\\Migrations\\Migrate_Triggers' => __DIR__ . '/../..' . '/src/core/migrations/class-migrate-triggers.php',
         'Uncanny_Automator\\Migrations\\Migration' => __DIR__ . '/../..' . '/src/core/migrations/abstract-migration.php',
         'Uncanny_Automator\\Migrations\\Sample_Migration' => __DIR__ . '/../..' . '/src/core/migrations/class-sample-migration.php',
+        'Uncanny_Automator\\Migrations\\Tokens_Migration' => __DIR__ . '/../..' . '/src/core/migrations/abstract-tokens-migration.php',
         'Uncanny_Automator\\Mp_Tokens' => __DIR__ . '/../..' . '/src/integrations/memberpress/tokens/mp-tokens.php',
         'Uncanny_Automator\\Mpc_Tokens' => __DIR__ . '/../..' . '/src/integrations/memberpress-courses/tokens/mpc-tokens.php',
         'Uncanny_Automator\\Mycred_Helpers' => __DIR__ . '/../..' . '/src/integrations/mycred/helpers/mycred-helpers.php',
@@ -902,6 +931,7 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Populate_From_Query' => __DIR__ . '/../..' . '/src/core/classes/class-populate-from-query.php',
         'Uncanny_Automator\\Presto_Helpers' => __DIR__ . '/../..' . '/src/integrations/presto/helpers/presto-helpers.php',
         'Uncanny_Automator\\Presto_Tokens' => __DIR__ . '/../..' . '/src/integrations/presto/tokens/presto-tokens.php',
+        'Uncanny_Automator\\PricingPlanResolver' => __DIR__ . '/../..' . '/src/core/admin/class-pricing-plan-resolver.php',
         'Uncanny_Automator\\Pro_Upsell' => __DIR__ . '/../..' . '/src/core/admin/pro-upgrade/class-pro-upsell.php',
         'Uncanny_Automator\\Prune_Logs' => __DIR__ . '/../..' . '/src/core/admin/class-prune-logs.php',
         'Uncanny_Automator\\RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL' => __DIR__ . '/../..' . '/src/integrations/restrict-content/actions/restrict-content-add-membership-level.php',
@@ -1088,6 +1118,7 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
         'Uncanny_Automator\\Twitter_Functions' => __DIR__ . '/../..' . '/src/integrations/twitter/functions/twitter-functions.php',
         'Uncanny_Automator\\Twitter_Helpers' => __DIR__ . '/../..' . '/src/integrations/twitter/helpers/twitter-helpers.php',
         'Uncanny_Automator\\Twitter_Settings' => __DIR__ . '/../..' . '/src/integrations/twitter/settings/settings-twitter.php',
+        'Uncanny_Automator\\UC_ADD_BATCH_CODES' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/actions/uc-add-batch-codes.php',
         'Uncanny_Automator\\UC_ANON_CODEBATCHCREATED' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-anon-codebatchcreated.php',
         'Uncanny_Automator\\UC_CANCEL_CODE' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/actions/uc-cancel-code.php',
         'Uncanny_Automator\\UC_CODEREDEEMED' => __DIR__ . '/../..' . '/src/integrations/uncanny-codes/triggers/uc-coderedeemed.php',
@@ -1297,8 +1328,8 @@ class ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitd44a3eb7fc42f038217fb0d55aafbd28::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInita70220d756a0ac2f65b3eb9c92052084::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInita70220d756a0ac2f65b3eb9c92052084::$classMap;
 
         }, null, ClassLoader::class);
     }

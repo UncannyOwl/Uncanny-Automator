@@ -1097,7 +1097,7 @@ $setup_wizard_link = add_query_arg(
 						<div
 							class="uap-dashboard-box-content-below-label uap-dashboard-box-content-below-label--warning">
 							<span
-								class="uap-icon uap-icon--exclamation-triangle"></span> <?php esc_attr_e( 'Site not connected', 'uncanny-automator' ); ?>
+								class="uap-icon uap-icon--triangle-exclamation"></span> <?php esc_attr_e( 'Site not connected', 'uncanny-automator' ); ?>
 						</div>
 					</div>
 					<div class="uap-dashboard-box-footer">
@@ -1334,7 +1334,7 @@ $setup_wizard_link = add_query_arg(
 						<div class="uap-dashboard-credits-recipes__no-recipes">
 							<span class="uap-text-secondary">
 								<span
-									class="uap-icon uap-icon--info-circle"></span> <?php esc_attr_e( 'No recipes using app credits on this site', 'uncanny-automator' ); ?>
+									class="uap-icon uap-icon--circle-info"></span> <?php esc_attr_e( 'No recipes using app credits on this site', 'uncanny-automator' ); ?>
 							</span>
 						</div>
 

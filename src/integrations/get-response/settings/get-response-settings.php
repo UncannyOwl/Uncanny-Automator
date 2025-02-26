@@ -263,7 +263,7 @@ class Get_Response_Settings extends \Uncanny_Automator\Settings\Premium_Integrat
 		if ( $this->is_account_connected ) {
 			?>
 			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
-				<uo-icon id="sign-out"></uo-icon>
+				<uo-icon id="right-from-bracket"></uo-icon>
 				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php
@@ -310,7 +310,7 @@ class Get_Response_Settings extends \Uncanny_Automator\Settings\Premium_Integrat
 						<uo-tooltip>
 							<?php echo esc_html_x( 'Refresh', 'GetResponse', 'uncanny-automator' ); ?>
 							<uo-button color="secondary" size="extra-small" slot="target" class="uap-getresponse-transient-sync-refresh" data-key="<?php echo esc_attr( $key_part ); ?>">
-								<uo-icon id="sync"></uo-icon>
+								<uo-icon id="rotate"></uo-icon>
 							</uo-button>
 						</uo-tooltip>
 					</div>

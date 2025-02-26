@@ -93,7 +93,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 				<div class="uap-settings-panel-bottom-right">
 					<uo-button color="danger" href="<?php echo esc_url( $vars['disconnect_url'] ); ?>">
-						<uo-icon id="sign-out"></uo-icon>
+						<uo-icon id="right-from-bracket"></uo-icon>
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 					</uo-button>
 				</div>

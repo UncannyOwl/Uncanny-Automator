@@ -76,17 +76,16 @@ class Automator_Send_Webhook {
 		}
 
 		$authorization = $meta_value['WEBHOOK_AUTHORIZATIONS'];
+		$item_id       = $_POST['itemId'] ?? null; //phpcs:ignore
 
 		if ( empty( $authorization ) ) {
+			$this->delete_original_auth_value( $item_id );
 			return $meta_value;
 		}
 
-		$item_id = $_POST['itemId'] ?? null; //phpcs:ignore
-
 		// Check if the string contains tokens.
 		if ( preg_match( '/\{\{.*?\}\}/', $authorization ) ) {
-			// Delete the original value if exists.
-			delete_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL' );
+			$this->delete_original_auth_value( $item_id );
 			return $meta_value;
 		}
 
@@ -97,12 +96,27 @@ class Automator_Send_Webhook {
 			$authorization = addslashes( $authorization );
 			update_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', $authorization );
 			$meta_value['WEBHOOK_AUTHORIZATIONS'] = $this->hide_string( $authorization );
-		} else {
-			// Delete the original value if exists.
-			delete_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL' );
 		}
 
 		return $meta_value;
+	}
+
+	/**
+	 * Delete original authorization value.
+	 *
+	 * @param mixed $item_id
+	 *
+	 * @return void
+	 */
+	protected function delete_original_auth_value( $item_id ) {
+
+		// Validate item ID.
+		if ( empty( $item_id ) ) {
+			return;
+		}
+
+		// Delete the original value if exists.
+		delete_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL' );
 	}
 
 	/**

@@ -34,6 +34,16 @@ class Xml_To_Json_Converter {
 	private $xpath = '/';
 
 	/**
+	 * @var int Sensible default HTTP Request timeout. Most servers have 30 seconds default timeout. Adding 25 seconds to allow 5 seconds processing.
+	 */
+	protected $http_request_timeout = 25;
+
+	/**
+	 * @var string The default user agent for HTTP Requests related to data integrations.
+	 */
+	protected $http_request_user_agent = '';
+
+	/**
 	 * Load XML data from a URL using wp_remote_get.
 	 *
 	 * @param string $url The URL of the XML file.
@@ -42,15 +52,22 @@ class Xml_To_Json_Converter {
 	 */
 	public function load_from_url( $url ) {
 
-		$response = wp_remote_get( $url );
+		// Overwrite the default WordPress HTTP agent because some feed doesnt like the syntax and its breaking due to multiple backslashes, or special characters';
+		$this->http_request_user_agent = 'WordPress/' . wp_get_wp_version() . ';' . urlencode( get_bloginfo( 'url' ) );
 
+		$args = array(
+			'timeout'    => apply_filters( 'http_request_timeout', $this->http_request_timeout, $url ),
+			'user-agent' => $this->http_request_user_agent,
+		);
+
+		$response = wp_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {
-			throw new RuntimeException( 'Failed to fetch the XML from the provided URL.' );
+			throw new RuntimeException( 'Failed to fetch the XML from the provided URL. ' . $response->get_error_message() );
 		}
 
 		$xml_data = wp_remote_retrieve_body( $response );
 		if ( empty( $xml_data ) ) {
-			throw new RuntimeException( 'No content found in the provided URL.' );
+			throw new RuntimeException( 'No content found in the provided URL:' . $url );
 		}
 
 		$this->xml_content = $xml_data;
@@ -116,7 +133,6 @@ class Xml_To_Json_Converter {
 	 * @throws RuntimeException If the XPath query returns no results.
 	 */
 	public function to_json() {
-
 		return $this->convert_xml_to_json( $this->xml_content, $this->xpath );
 	}
 
