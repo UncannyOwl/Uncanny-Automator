@@ -16,7 +16,7 @@
 			color="transparent"
 			size="small"
 		>
-			<uo-icon id="times"></uo-icon>
+			<uo-icon id="xmark"></uo-icon>
 		</uo-button>
 
 		<img

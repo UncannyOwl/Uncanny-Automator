@@ -52,6 +52,7 @@ class Automator_Error_Messages {
 		$this->error_messages['action-not-active']         = esc_attr__( 'The plugin for this action is not active.', 'uncanny-automator' );
 		$this->error_messages['action-function-not-exist'] = esc_attr__( 'An error occurred while running this action.', 'uncanny-automator' );
 		$this->error_messages['plugin-not-active']         = esc_attr__( 'The plugin for this action is not active.', 'uncanny-automator' );
+		$this->error_messages['app-not-connected']         = esc_attr__( 'The App integration for this action is not connected.', 'uncanny-automator' );
 	}
 
 	/**

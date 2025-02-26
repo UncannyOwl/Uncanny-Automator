@@ -23,7 +23,7 @@ namespace Uncanny_Automator;
 				<div class="uap-integration-items__title uap-integration-items__title--triggers">
 					<?php esc_html_e( 'Triggers for logged-in users', 'uncanny-automator' ); ?>
 				</div>
-				<div class="uap-integration-items__title-tooltip uap-icon uap-icon--question-circle" uapm-tooltip="Behaviors that can be tracked for logged-in users."></div>
+				<div class="uap-integration-items__title-tooltip uap-icon uap-icon--circle-question" uapm-tooltip="Behaviors that can be tracked for logged-in users."></div>
 			</div>
 
 			<div class="uap-integration-items-container">
@@ -50,7 +50,7 @@ namespace Uncanny_Automator;
 								<div class="uap-integration-item-tokens__title">
 									<?php esc_html_e( 'Tokens', 'uncanny-automator' ); ?>
 								</div>
-								<div class="uap-integration-item-tokens__title-tooltip uap-icon uap-icon--question-circle" uapm-tooltip="Data from triggers that can be used in a recipe's actions, making them much more powerful and customizable."></div>
+								<div class="uap-integration-item-tokens__title-tooltip uap-icon uap-icon--circle-question" uapm-tooltip="Data from triggers that can be used in a recipe's actions, making them much more powerful and customizable."></div>
 							</div>
 							<ul class="uap-integration-item-tokens__list">
 								<li class="uap-integration-item-token">Number of times</li>
@@ -75,7 +75,7 @@ namespace Uncanny_Automator;
 				<div class="uap-integration-items__title uap-integration-items__title--triggers">
 					<?php //_e( 'Triggers for everyone', 'uncanny-automator' ); ?>
 				</div>
-				<div class="uap-integration-items__title-tooltip uap-icon uap-icon--question-circle" uapm-tooltip="Behaviors that can be tracked for logged-in users."></div>
+				<div class="uap-integration-items__title-tooltip uap-icon uap-icon--circle-question" uapm-tooltip="Behaviors that can be tracked for logged-in users."></div>
 			</div>
 
 			<div class="uap-integration-items-container">

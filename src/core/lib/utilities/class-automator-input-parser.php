@@ -14,6 +14,9 @@ use WP_User;
  *
  * @test Automator_Input_Parser
  *
+ * @since 6.2
+ *  - Added check to skip the replacing of double brackets causing the loopable JSON to break.
+ *
  * @since 6.1
  *  - Refactored and covered with unit tests to ensure long-term maintainability and reliability.
  *  - Also fixes the reset password URL where the static instance holds the url value but returns empty string.
@@ -81,7 +84,7 @@ class Automator_Input_Parser {
 		);
 
 		// Hooks into general parser to parse the post meta tokens.
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_postmeta_token' ), 10, 6 );
+		//add_filter( 'automator_maybe_parse_token', array( $this, 'parse_postmeta_token' ), 10, 6 );
 
 		// Attach the new trigger tokens arch for actions that are scheduled.
 		add_filter( 'automator_pro_before_async_action_executed', array( $this, 'attach_trigger_tokens_hook' ), 10, 1 );
@@ -153,7 +156,22 @@ class Automator_Input_Parser {
 			return $field_text;
 		}
 
-		$parsed_tokens_record = $this->automator_functions()->parsed_token_records();
+		$field_text = $args['field_text'];
+
+		$field_text = $this->parse_recursively( $field_text, $args, $trigger_args );
+
+		return $field_text;
+	}
+
+	/**
+	 * parse_recursively
+	 *
+	 * @param $field_text
+	 * @param $args
+	 * @param $trigger_args
+	 * @return string
+	 */
+	public function parse_recursively( $field_text, $args, $trigger_args = array() ) {
 
 		$user_id    = isset( $trigger_args['user_id'] ) ? $trigger_args['user_id'] : null;
 		$trigger_id = self::extract_int( 'trigger_id', $args );
@@ -169,14 +187,21 @@ class Automator_Input_Parser {
 
 		// Look for text wrapped in double curly brackets: {{ ... }}.
 		// If none are found, remove any stray '{{' or '}}' from the string.
-		if ( ! preg_match_all( '/{{\s*(.*?)\s*}}/', $field_text, $matches ) ) {
+		// Do not remove the brackets if its a valid JSON.
+		if ( 0 === preg_match_all( '/{{((?>[^{}]+|(?R))*)}}/', $field_text, $matches ) && ! Automator()->utilities->is_json_string( $field_text ) ) {
 			// Example: '{{Hello}} World' becomes 'Hello World'.
 			return str_replace( array( '{{', '}}' ), '', $field_text );
 		}
 
 		$key_value_pairs = array();
 
+		$parsed_tokens_record = $this->automator_functions()->parsed_token_records();
+
 		foreach ( $matches[1] as $match ) {
+
+			$token_with_brackets = '{{' . $match . '}}';
+
+			$match = $this->parse_recursively( $match, $args, $trigger_args );
 
 			$replaceable = '';
 
@@ -213,7 +238,7 @@ class Automator_Input_Parser {
 				$field_text = apply_filters( "automator_token_parser_extended_{$extension_identifier}", $field_text, $match, $args, $trigger_args );
 			}
 
-			$key_value_pairs[ '{{' . $match . '}}' ] = $replaceable;
+			$key_value_pairs[ $token_with_brackets ] = $replaceable;
 
 		} // End foreach.
 
@@ -238,13 +263,6 @@ class Automator_Input_Parser {
 	 * @return string
 	 */
 	public function parse_colon_delimited_tokens( $match, $args, $trigger_args, $context ) {
-
-		// This section is for user meta tokens.
-		// Also make sure to not early return if the usermeta is inside the calculation token.
-		// This way calculation token will be parsed on the trigger token processor, and eventually in the replace args.
-		if ( preg_match( '/(USERMETA)/', $match ) && ! str_contains( $match, 'CALCULATION:' ) ) {
-			return $this->parse_user_meta( $match, $args, $context );
-		}
 
 		/**
 		 * This section handles Trigger tokens.
@@ -360,56 +378,6 @@ class Automator_Input_Parser {
 			$current_user,
 			$args
 		);
-
-	}
-
-	/**
-	 * Parses the usermeta.
-	 *
-	 * @todo Move this to user meta token class in the next phase.
-	 *
-	 * @param string $match
-	 * @param array $args
-	 * @param array $context
-	 *
-	 * @return string|false The user meta if parsing. Otherwise, false if failing.
-	 */
-	public function parse_user_meta( $match, $args, $context ) {
-
-		$context_user_id = $context['user_id'] ?? null;
-
-		// The user meta should be based from the user which owns the action.
-		$user_meta_uid = $args['user_id'] ?? null;
-
-		// Attempt user ID recovery from current logged-in user for nulled $user_id.
-		if ( ! is_numeric( $context_user_id ) && ! is_numeric( $user_meta_uid ) && 0 !== $context_user_id && 0 !== $user_meta_uid ) {
-			$user_meta_uid = wp_get_current_user()->ID;
-		}
-
-		list( $token_identifier, $meta_key ) = explode( ':', $match );
-
-		$user_data = get_userdata( $user_meta_uid );
-
-		if ( ! $user_data instanceof WP_User ) {
-			return false;
-		}
-
-		$user_data = (array) $user_data->data;
-
-		// Support _user columns as user meta.
-		if ( isset( $user_data[ $meta_key ] ) ) {
-			return $user_data[ $meta_key ];
-		}
-
-		// Retrieve the user meta.
-		$value = get_user_meta( $user_meta_uid, $meta_key, true );
-
-		// If its an array.
-		if ( is_array( $value ) ) {
-			$value = join( ', ', $value );
-		}
-
-		return $value;
 
 	}
 

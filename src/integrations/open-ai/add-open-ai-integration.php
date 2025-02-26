@@ -31,7 +31,7 @@ class Add_Open_AI_Integration {
 
 		$this->set_icon_path( __DIR__ . '/img/' );
 
-		$this->set_connected( false !== automator_get_option( 'automator_open_ai_secret', false ) ? true : false );
+		$this->set_connected( '' !== automator_get_option( 'automator_open_ai_secret', '' ) ? true : false );
 
 		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'open-ai' ) );
 

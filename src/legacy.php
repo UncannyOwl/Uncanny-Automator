@@ -43,7 +43,7 @@ class InitializePlugin {
 	 * @access   private
 	 * @var      string
 	 */
-	const MIN_PHP_VERSION = '7.0';
+	const MIN_PHP_VERSION = '7.3';
 
 	/**
 	 * The plugin version number

@@ -755,6 +755,7 @@ class Automator_Load {
 		$classes['Copy_Recipe_Parts']                   = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
 		$classes['Export_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-export-recipe.php';
 		$classes['Import_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-import-recipe.php';
+		$classes['PricingPlanResolver']                 = UA_ABSPATH . 'src/core/admin/class-pricing-plan-resolver.php';
 
 		require_once UA_ABSPATH . 'src/core/classes/class-api-server.php';
 
@@ -858,6 +859,7 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/migrations/abstract-migration.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-schedules.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-triggers.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens.php';
 	}
 
 	/**

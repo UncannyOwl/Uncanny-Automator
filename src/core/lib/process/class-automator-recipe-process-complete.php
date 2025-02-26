@@ -388,6 +388,11 @@ class Automator_Recipe_Process_Complete {
 				throw new \Exception( Automator()->error_message->get( 'action-not-active' ) );
 			}
 
+			// If the app is not connected, throw an error.
+			if ( ! Automator()->is_app_connected( $action_integration ) ) {
+				throw new \Exception( Automator()->error_message->get( 'app-not-connected' ) );
+			}
+
 			// The plugin for this action is active .. execute
 			$action_execution_function = Automator()->get->action_execution_function_from_action_code( $action_code );
 

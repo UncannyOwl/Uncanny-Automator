@@ -1,12 +1,12 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => 'dev-master',
-    'version' => 'dev-master',
+    'pretty_version' => '6.3.0',
+    'version' => '6.3.0.0',
     'aliases' => 
     array (
     ),
-    'reference' => 'e3037b82d601b5af63a57e0ccfbb145e8505089a',
+    'reference' => NULL,
     'name' => 'uncanny-owl/uncanny-automator',
   ),
   'versions' => 
@@ -22,12 +22,12 @@
     ),
     'uncanny-owl/uncanny-automator' => 
     array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
+      'pretty_version' => '6.3.0',
+      'version' => '6.3.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'e3037b82d601b5af63a57e0ccfbb145e8505089a',
+      'reference' => NULL,
     ),
   ),
 );

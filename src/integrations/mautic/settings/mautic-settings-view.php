@@ -163,7 +163,7 @@ let automatorMauticFieldResolver = () => {
 				</div>
 				<div class="uap-settings-panel-bottom-right">
 					<uo-button color="danger" href="<?php echo esc_url( $vars['disconnect_url'] ); ?>">
-						<uo-icon id="sign-out"></uo-icon>
+						<uo-icon id="right-from-bracket"></uo-icon>
 						<?php echo esc_html_x( 'Disconnect', 'Mautic', 'uncanny-automator' ); ?>
 					</uo-button>
 				</div>

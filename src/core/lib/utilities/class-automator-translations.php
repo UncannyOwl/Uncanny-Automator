@@ -1402,6 +1402,12 @@ class Automator_Translations {
 					'tokenLoop'              => __( 'Token loop', 'uncanny-automator' ),
 					'setDataDialogHeading'   => __( 'Set data', 'uncanny-automator' ),
 				),
+				// UncannyAutomator._core.i18n.components.token
+				'token'    => array(
+					'tokenData' => esc_html__( 'Token data', 'uncanny-automator' ),
+					'confirm'   => esc_html__( 'Confirm', 'uncanny-automator' ),
+					'cancel'    => esc_html__( 'Cancel', 'uncanny-automator' ),
+				),
 			),
 			'core'                   => array(
 				// UncannyAutomator._core.i18n.core.runNow

@@ -561,7 +561,7 @@ class Recipe_Post_Utilities {
 					// UncannyAutomator._site.automator.version
 					'version'               => AUTOMATOR_PLUGIN_VERSION,
 
-					// UncannyAutomator._site.automator.has_pro
+					//UncannyAutomator._site.automator.has_pro
 					'has_pro'               => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
 
 					// UncannyAutomator._site.automator.version_pro

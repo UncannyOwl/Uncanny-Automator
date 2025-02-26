@@ -224,6 +224,30 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'UOA' => array(
+			'name'       => 'Automator Core',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers' => array(
+			),
+			'actions'   => array(
+				array(
+					/* translators: Action - Automator Core */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Cancel the scheduled actions of a recipe for a user", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Automator Core */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Cancel the user's scheduled actions for {{a recipe}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Automator Core */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Activate/deactivate a recipe", 'uncanny-automator' ),
+				),
+			),
+		),
 		'BO' => array(
 			'name'       => 'BadgeOS',
 			'pro_only'   => 'no',
@@ -1246,6 +1270,12 @@ function automator_pro_items_list() {
 					'name'   => __( "A ticket with {{a priority}} is replied to by an agent", 'uncanny-automator' ),
 					'type'   => 'logged-in',
 				),
+				array(
+					/* translators: Anonymous trigger - Fluent Support */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "A ticket is closed", 'uncanny-automator' ),
+					'type'   => 'anonymous',
+				),
 			),
 			'actions'   => array(
 				array(
@@ -2152,6 +2182,12 @@ function automator_pro_items_list() {
 					'name'   => __( "{{A course}} is added to {{a group}}", 'uncanny-automator' ),
 					'type'   => 'anonymous',
 				),
+				array(
+					/* translators: Logged-in trigger - LearnDash */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "A user is added to a group that has access to {{a course}}", 'uncanny-automator' ),
+					'type'   => 'logged-in',
+				),
 			),
 			'actions'   => array(
 				array(
@@ -3054,6 +3090,26 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'LOOPABLE_RSS' => array(
+			'name'       => 'RSS feed',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
+			'triggers' => array(
+				array(
+					/* translators: Anonymous trigger - RSS feed */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Process {{an RSS feed}}", 'uncanny-automator' ),
+					'type'   => 'anonymous',
+				),
+			),
+			'actions'   => array(
+				array(
+					/* translators: Action - RSS feed */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Process {{an RSS feed}}", 'uncanny-automator' ),
+				),
+			),
+		),
 		'RUN_CODE' => array(
 			'name'       => 'Run Code',
 			'pro_only'   => 'yes',
@@ -3934,6 +3990,11 @@ function automator_pro_items_list() {
 					/* translators: Action - Woo */
 					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
 					'name'   => __( "Set {{a specific order}} to {{a specific status}}", 'uncanny-automator' ),
+				),
+				array(
+					/* translators: Action - Woo */
+					// phpcs:ignore Squiz.Strings.DoubleQuoteUsage.NotRequired
+					'name'   => __( "Generate a coupon code", 'uncanny-automator' ),
 				),
 				array(
 					/* translators: Action - Woo Memberships */

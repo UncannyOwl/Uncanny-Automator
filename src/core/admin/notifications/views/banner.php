@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="uap-notifications-list__item-title">
 							<h3 class="uap-settings-panel-content-subtitle"><?php echo esc_html( $notification['title'] ); ?></h3>
 							<uo-button class="uap-notifications-action-dismiss" data-notification-id="<?php echo esc_attr( absint( $notification['id'] ) ); ?>" size="small" color="danger">
-								<uo-icon id="times"></uo-icon>
+								<uo-icon id="xmark"></uo-icon>
 								<?php esc_html_e( 'Dismiss', 'uncanny-automator' ); ?>
 							</uo-button>
 						</div>

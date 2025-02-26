@@ -947,6 +947,8 @@ class Admin_Menu {
 	 * @return array        The inline data
 	 */
 	public function get_js_backend_inline_data( $hook ) {
+		$plan_information = Api_Server::is_automator_connected();
+
 		// Set default data
 		$automator_backend_js = array(
 			'ajax'       => array(
@@ -1290,8 +1292,17 @@ class Admin_Menu {
 
 			'_site'      => array(
 				'automator' => array(
-					'has_pro'           => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
-					'marketing_referer' => automator_get_option( 'uncannyautomator_source', '' ),
+					'plan_details'       => PricingPlanResolver::getPlanDetails(),
+					'marketing_referer'  => automator_get_option( 'uncannyautomator_source', '' ),
+					'url_upgrade_to_pro' => add_query_arg(
+						// UTM
+						array(
+							'utm_source'  => 'uncanny_automator',
+							'utm_medium'  => 'upgrade_to_pro',
+							'utm_content' => 'upgrade_to_pro_button',
+						),
+						'https://automatorplugin.com/pricing/'
+					),
 				),
 			),
 		);

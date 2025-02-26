@@ -161,7 +161,7 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr(
 
 					<div class="uap-settings-panel-bottom-right">
 						<uo-button color="danger" href="<?php echo esc_url( $disconnect_url ); ?>">
-							<uo-icon id="sign-out"></uo-icon>
+							<uo-icon id="right-from-bracket"></uo-icon>
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 						</uo-button>
 					</div>

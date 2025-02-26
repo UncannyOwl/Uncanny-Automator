@@ -218,7 +218,7 @@ class Bitly_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 		if ( $this->is_account_connected ) {
 			?>
 			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
-				<uo-icon id="sign-out"></uo-icon>
+				<uo-icon id="right-from-bracket"></uo-icon>
 				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php

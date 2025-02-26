@@ -162,7 +162,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						color="danger"
 					>
 
-						<uo-icon id="sign-out"></uo-icon>
+						<uo-icon id="right-from-bracket"></uo-icon>
 
 						<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 

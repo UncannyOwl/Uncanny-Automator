@@ -37,7 +37,7 @@ class Add_Wc_Integration {
 	protected function setup() {
 		$this->set_integration( self::integration );
 		$this->set_name( 'Woo' );
-		$this->set_icon( 'woocommerce-icon.svg' );
+		$this->set_icon( 'woo-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'woocommerce/woocommerce.php' );
 		$this->set_loopable_tokens( $this->create_loopable_tokens() );

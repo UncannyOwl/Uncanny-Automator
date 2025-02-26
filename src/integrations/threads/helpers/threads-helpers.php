@@ -93,7 +93,7 @@ class Threads_Helpers {
 		}
 
 		// Make sure to renew the option.
-		delete_option( self::CREDENTIALS );
+		automator_delete_option( self::CREDENTIALS );
 
 		$credentials = array(
 			'access_token' => $access_token,
@@ -155,7 +155,7 @@ class Threads_Helpers {
 	 * @return void
 	 */
 	public function remove_credentials() {
-		delete_option( self::CREDENTIALS );
+		automator_delete_option( self::CREDENTIALS );
 	}
 
 	/**

@@ -314,7 +314,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 
 		?>
 		<uo-button color="danger" href="<?php echo esc_url( $link ); ?>">
-			<uo-icon id="sign-out"></uo-icon>
+			<uo-icon id="right-from-bracket"></uo-icon>
 		<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
 		</uo-button>
 

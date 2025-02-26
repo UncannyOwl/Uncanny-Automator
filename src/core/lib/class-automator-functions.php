@@ -2513,4 +2513,20 @@ WHERE pm.post_id
 		return get_option( 'time_format', $default );
 	}
 
+	/**
+	 * Checks if an app is connected.
+	 *
+	 * @param string $integration_code The integration code.
+	 * @return bool True if it's not an app or the app is connected, false otherwise.
+	 */
+	public function is_app_connected( $integration_code ) {
+
+		$all_integrations = Automator()->get_integrations();
+
+		if ( false === $all_integrations[ $integration_code ]['connected'] ) {
+			return false;
+		}
+
+		return true;
+	}
 }

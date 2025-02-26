@@ -691,6 +691,10 @@ function automator_validate_option_value( $option, $value, $default_value ) {
 	}
 }
 
+// Global cache variable.
+global $all_options_cache;
+$all_options_cache = null;
+
 /**
  * automator_get_option
  *
@@ -783,6 +787,13 @@ function automator_get_option( $option, $default_value = false, $force = false )
 		wp_cache_set( $option, $value, 'automator_options' );
 
 		return $value;
+	}
+
+	global $all_options_cache;
+
+	if ( ! isset( $all_options_cache[ $option ] ) ) {
+		// Add or update the key in the cache.
+		$all_options_cache[ $option ] = $default_value;
 	}
 
 	// Cache and return the default value if nothing is found.
@@ -966,7 +977,7 @@ function automator_update_option( $option, $value, $autoload = true ) {
  * @return array All options from the uap_options table.
  */
 function automator_get_all_options( $force = false ) {
-	static $all_options_cache = null;
+	global $all_options_cache;
 
 	// Use the static cache to avoid redundant calls in the same request.
 	if ( ! $force && null !== $all_options_cache ) {

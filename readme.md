@@ -2,10 +2,10 @@
 
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, openai, learndash, webhooks \
-**Requires at least:** 5.4 \
-**Tested up to:** 6.7.1 \
-**Requires PHP:** 7.0 \
-**Stable tag:** 6.2 \
+**Requires at least:** 5.6 \
+**Tested up to:** 6.7.2 \
+**Requires PHP:** 7.3 \
+**Stable tag:** 6.3 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -69,6 +69,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -118,6 +119,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Autonami](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [bbPress](https://automatorplugin.com/integration/bbpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Bricks Builder](https://automatorplugin.com/integration/bricks-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BuddyBoss](https://automatorplugin.com/integration/buddyboss/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -190,6 +192,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [RSS](https://automatorplugin.com/integration/rss/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Run Code](https://automatorplugin.com/integration/run-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -213,6 +216,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [URL](https://automatorplugin.com/integration/url/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Webhooks](https://automatorplugin.com/integration/webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -401,68 +405,62 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
-### 6.2 [2024-01-22]
+### 6.3 [2025-02-26]
+
+* IMPORTANT: Support for PHP 7.0 has been discontinued. If you are running PHP 7.0, you MUST upgrade PHP to version 7.3 or higher before installing Automator v6.3 or up. Failure to do that will disable Automator core functionality.
 
 **New App Integration:**
 
-* Threads #5154
+* [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5294
 
 **New Plugin Integrations:**
 
-* [Duplicator](https://automatorplugin.com/integration/duplicator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5155
-* [Everest Forms](https://automatorplugin.com/integration/everest-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4890
-* [Thrive Theme Builder](https://automatorplugin.com/integration/thrive-theme-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4277
+* [Bricks Builder](https://automatorplugin.com/integration/bricks-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5326
+* [URL](https://automatorplugin.com/integration/url/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4317
 
 **New Triggers:**
 
-* Duplicator - A backup completes with a specific status #4848
-* Everest Forms - A form is submitted #5094
-* Everest Forms - A user submits a form #5095
-* SeedProd - Maintenance mode is set to a status #4557
-* Stripe - A subscription is cancelled #5228
-* Stripe - A subscription is created #5291
-* Stripe - A subscription is paid #5307
-* Stripe - A subscription payment fails #5308
-* Stripe - One-time payment for a product is completed #5229
-* Stripe - Payment for a product is refunded #5230
-* Thrive Theme Builder - A form is submitted #4280
-* Thrive Theme Builder - A user submits a form #4279
+* Bricks Builder - A form is submitted #5329
+* Bricks Builder - A user submits a form #5330
+* URL - A URL with a URL parameter is visited #5345
+* URL - A user visits a URL with a URL parameter set #5344
 
 **New Actions:**
 
-* Duplicator - Initiate a backup #4849
-* Threads - Create a Threads post #4982
-* WordPress Core - Log the user out #4981
-
-**New Token:**
-
-* LearnDash - A user completes a course - Course points #4479
-* LearnDash - A user completes a group's courses - Course points #4479
+* Discord - Add a member to a channel #5298
+* Discord - Assign a role to a member #5295
+* Discord - Create a channel #5300
+* Discord - Remove a member #5297
+* Discord - Remove a role from a member #5296
+* Discord - Send a direct message to a Discord member #5184
+* Discord - Send a message to a channel #5183
+* Discord - Send an invitation to join a server to an email #5350
+* Discord - Update a member #5299
+* Uncanny Codes - Add a number of codes in a batch #4450
 
 **Added:**
 
-* Core - Added token selector to multiselect fields in some actions - Because who doesn't love a fancy selector? #5103
-* Recipe templates - Filter to show Automator Pro only templates - Automator Pro templates now have their own exclusive VIP section. #5271
-* Recipe templates - Filter to show ready-to-use templates - Ready-to-use templates are officially ready to impress. #5264
-* WordPress - Create a post - Added toggle: Title must be unique - We're enforcing originality; no more twinsies in post titles! #5205
+* Recipe UI - Copy button added beside Incoming Webhook URL in Automator Pro – Because copying by hand is so 2010. #5399
+* Recipe UI - Copy button added beside Magic button/link shortcode in Automator Pro – Now with 100% more copying convenience! #5424
 
 **Updated:**
 
-* FluentCRM - Add/Update a Contact - Default Status Issue - Status is no longer confused—it knows exactly what to do now. #5333
-* Improved recipe UI messaging when Automator Pro is not active - Clearer messages to remind you that Automator Pro took a coffee break. #3233
-* Stripe - Updated the available list of triggers/actions on the settings page - Fresh triggers and actions, straight off the development grill. #5355
-* WPForms - Split "Address" token into separate tokens - Address tokens have found their individuality—they're thriving on their own now! #4840
+* Recipe UI - Email action - File uploader doesn't have a way to remove selected files – You can now say goodbye to accidental uploads. We made deleting files possible! #5422
+* Update content on "Upgrade to Pro" page – Updated with the latest awesome features to make you want to upgrade to Pro even more! #5198
+* Updated Woo branding – WooCommerce got a glow-up, and we made sure to match. #5444
 
 **Fixed:**
 
-* Elementor - A Post is Published with Elementor - Trigger not firing - This trigger is back to work—no more snoozing on the job. #5334
-* MailChimp - Add Contact to Audience - Now completes with an error if any required default address subfield is left empty - We've taught MailChimp not to pretend everything's fine when it isn't. Honesty is key. #5287
-* Recipe UI - Removed Author dropdown from the UI - We've banished the unnecessary Author dropdown—it wasn't contributing to the meeting anyway. #3834
-* Token Parser - Additional validation that the value is text and not an array - Validation has been disciplined; no more rogue conditions. #5368
+* Disable App actions if App is disconnected – Apps were trying to act while disconnected, like a Wi-Fi-less smart fridge. We stopped them. #3227
+* Licensing - Duplicate Queries Triggered by Licensing Function – Licensing was a little too enthusiastic, asking the same thing twice. We've calmed it down. #5452
+* Threads - Settings page - Disconnect is not working – Clicking "Disconnect" and nothing happening? That's history now. #5431
+* Webhooks - "Send data to a webhook" Original Authorization meta gets removed when updating action – We accidentally made it forget its credentials. Not anymore! #5396
 
 **Under the hood:**
 
-* Core - `SENTENCE_NOT_FOUND` issue in logs - We found the missing sentences and brought them back. They were hiding in plain sight! #5293
+* Recipe Logs - Allow Markup text in log messages – Logs can now look fancier, with proper markup support. #5364
+* Recipe UI - Token popup framework - More behind-the-scenes improvements for smoother popups. #4316
+* Token popup framework - Some backend magic happened. Trust us, it's better now. #5137
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

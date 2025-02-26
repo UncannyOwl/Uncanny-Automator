@@ -27,7 +27,7 @@ namespace Uncanny_Automator;
 	<div class="uap-settings-panel">
 		<div class="uap-settings-panel-placeholder">
 
-			<uo-icon id="sync"></uo-icon>
+			<uo-icon id="rotate"></uo-icon>
 
 			<div class="uap-settings-panel-title">
 				<?php esc_html_e( 'App integrations use credits', 'uncanny-automator' ); ?>
